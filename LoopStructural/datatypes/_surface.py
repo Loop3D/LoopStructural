@@ -12,6 +12,41 @@ class Surface:
     values: Optional[np.ndarray] = None
 
     @property
+    def triangle_area(self):
+        """_summary_
+
+        Returns
+        -------
+        _type_
+            _description_
+
+
+        Notes
+        -----
+
+        Area of triangle for a 3d triangle with vertices at points A, B, C is given by
+        det([A-C, B-C])**.5
+        """
+        tri_points = self.vertices[self.triangles, :]
+        mat = np.array(
+            [
+                [
+                    tri_points[:, 0, 0] - tri_points[:, 2, 0],
+                    tri_points[:, 0, 1] - tri_points[:, 2, 1],
+                    tri_points[:, 0, 2] - tri_points[:, 2, 2],
+                ],
+                [
+                    tri_points[:, 1, 0] - tri_points[:, 2, 0],
+                    tri_points[:, 1, 1] - tri_points[:, 2, 1],
+                    tri_points[:, 1, 2] - tri_points[:, 2, 2],
+                ],
+            ]
+        )
+        matdotmatT = np.einsum("ijm,mjk->mik", mat, mat.T)
+        area = np.sqrt(np.linalg.det(matdotmatT))
+        return area
+
+    @property
     def vtk(self):
         import pyvista as pv
 
