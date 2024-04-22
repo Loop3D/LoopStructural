@@ -84,12 +84,17 @@ class LoopIsosurfacer:
             isovalues = values
         elif isinstance(values, float):
             isovalues = [values]
+        elif isinstance(values, int) and values < 1:
+            raise ValueError(
+                "Number of isosurfaces must be greater than 1. Either use a positive integer or provide a list or float for a specific isovalue."
+            )
         elif isinstance(values, int):
             isovalues = np.linspace(
-                np.min(all_values) + np.finfo(float).eps,
-                np.max(all_values) + np.finfo(float).eps,
+                np.nanmin(all_values) + np.finfo(float).eps,
+                np.nanmax(all_values) - np.finfo(float).eps,
                 values,
             )
+        logger.info(f'Isosurfacing at values: {isovalues}')
         for isovalue in isovalues:
             try:
 
@@ -99,6 +104,9 @@ class LoopIsosurfacer:
                     spacing=self.bounding_box.step_vector,
                 )
             except RuntimeError:
+                logger.warning(f"Failed to extract isosurface for {isovalue}")
+                continue
+            except ValueError:
                 logger.warning(f"Failed to extract isosurface for {isovalue}")
                 continue
             values = np.zeros(verts.shape[0]) + isovalue
