@@ -523,7 +523,7 @@ class FaultBuilder(StructuralFrameBuilder):
             anisotropy_feature = AnalyticalGeologicalFeature(
                 vector=strike_vector, origin=[0, 0, 0], name="fault_trace_anisotropy"
             )
-            print('adding fault trace anisotropy')
+            # print('adding fault trace anisotropy')
             self.builders[0].add_orthogonal_feature(
                 anisotropy_feature, w=w, region=None, step=1, B=0
             )
@@ -551,7 +551,7 @@ class FaultBuilder(StructuralFrameBuilder):
             anisotropy_feature = AnalyticalGeologicalFeature(
                 vector=dip_vector, origin=[0, 0, 0], name="fault_dip_anisotropy"
             )
-            print(f'adding fault dip anisotropy {anisotropy_feature.name}')
+            # print(f'adding fault dip anisotropy {anisotropy_feature.name}')
             self.builders[0].add_orthogonal_feature(
                 anisotropy_feature, w=w, region=None, step=1, B=0
             )
