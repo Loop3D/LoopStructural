@@ -11,7 +11,8 @@ import numpy as np
 
 logger = getLogger(__name__)
 
-use_threads = True
+use_threads = False  # there is a bug with threading causing the interpolation dictionary to change size during iterations
+# for now 19/4/24 LG is turning threading off. This will slow down evaluation of models a bit.
 
 
 class FaultSegment(StructuralFrame):
@@ -330,7 +331,7 @@ class FaultSegment(StructuralFrame):
                 gx = self.__getitem__(0).evaluate_value(newp[mask, :])
                 gy = self.__getitem__(1).evaluate_value(newp[mask, :])
                 gz = self.__getitem__(2).evaluate_value(newp[mask, :])
-                g = self.__getitem__(1).evaluate_gradient(newp[mask, :])
+                g = self.__getitem__(1).evaluate_gradient(newp[mask, :], ignore_regions=True)
             # # get the fault frame val/grad for the points
             # determine displacement magnitude, for constant displacement
             # hanging wall should be > 0
@@ -354,6 +355,7 @@ class FaultSegment(StructuralFrame):
             g[g_mag > 0.0] /= g_mag[g_mag > 0, None]
             # multiply displacement vector by the displacement magnitude for
             # step
+
             g *= (1.0 / steps) * d[:, None]
             # newp[mask, :].copy()
             # apply displacement

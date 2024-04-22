@@ -91,11 +91,16 @@ class LoopIsosurfacer:
                 values,
             )
         for isovalue in isovalues:
-            verts, faces, normals, values = marching_cubes(
-                all_values.reshape(self.bounding_box.nsteps, order="C"),
-                isovalue,
-                spacing=self.bounding_box.step_vector,
-            )
+            try:
+
+                verts, faces, normals, values = marching_cubes(
+                    all_values.reshape(self.bounding_box.nsteps, order="C"),
+                    isovalue,
+                    spacing=self.bounding_box.step_vector,
+                )
+            except RuntimeError:
+                logger.warning(f"Failed to extract isosurface for {isovalue}")
+                continue
             values = np.zeros(verts.shape[0]) + isovalue
             surfaces.append(
                 Surface(

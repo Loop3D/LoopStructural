@@ -41,7 +41,7 @@ class GeologicalInterpolator(metaclass=ABCMeta):
         self.up_to_date = up_to_date
         self.constraints = []
         self.__str = "Base Geological Interpolator"
-        self.valid = False
+        self.valid = True
 
     @property
     def data(self):

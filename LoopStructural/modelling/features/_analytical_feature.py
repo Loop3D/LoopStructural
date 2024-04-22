@@ -48,7 +48,7 @@ class AnalyticalGeologicalFeature(BaseFeature):
         json["origin"] = self.origin.tolist()
         return json
 
-    def evaluate_value(self, xyz):
+    def evaluate_value(self, xyz, ignore_regions=False):
         xyz = np.array(xyz)
         if len(xyz.shape) == 1:
             xyz = xyz[None, :]
@@ -65,7 +65,7 @@ class AnalyticalGeologicalFeature(BaseFeature):
         distance = normal[0] * xyz2[:, 0] + normal[1] * xyz2[:, 1] + normal[2] * xyz2[:, 2]
         return distance / np.linalg.norm(self.vector)
 
-    def evaluate_gradient(self, xyz):
+    def evaluate_gradient(self, xyz, ignore_regions=False):
         xyz = np.array(xyz)
         if len(xyz.shape) == 1:
             xyz = xyz[None, :]

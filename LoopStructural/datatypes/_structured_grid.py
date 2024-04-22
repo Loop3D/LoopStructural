@@ -1,4 +1,3 @@
-
 import numpy as np
 from dataclasses import dataclass
 
@@ -6,7 +5,6 @@ from dataclasses import dataclass
 @dataclass
 class StructuredGrid:
     origin: np.ndarray
-    maximum: np.ndarray
     step_vector: np.ndarray
     nsteps: np.ndarray
     data: np.ndarray
@@ -18,12 +16,6 @@ class StructuredGrid:
             "maximum": self.maximum,
             "step_vector": self.step_vector,
             "nsteps": self.nsteps,
-            "data": self.data,
-        }
-
-    
-            "nsteps": self.nsteps,
-            "step_vector": self.step_vector,
             "data": self.data,
             "name": self.name,
         }

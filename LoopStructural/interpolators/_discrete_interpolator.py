@@ -427,8 +427,6 @@ class DiscreteInterpolator(GeologicalInterpolator):
         Interpolation matrix and B
         """
 
-        logger.info("Interpolation matrix is %i x %i" % (self.c_, self.nx))
-
         mats = []
         bs = []
         for c in self.constraints.values():
@@ -437,6 +435,8 @@ class DiscreteInterpolator(GeologicalInterpolator):
             mats.append(c['matrix'].multiply(c['w'][:, None]))
             bs.append(c['b'] * c['w'])
         A = sparse.vstack(mats)
+        logger.info(f"Interpolation matrix is {A.shape[0]} x {A.shape[1]}")
+
         B = np.hstack(bs)
         return A, B
 
@@ -659,6 +659,7 @@ class DiscreteInterpolator(GeologicalInterpolator):
                 )
                 solver = 'cg'
         if solver == 'cg':
+            logger.info("Solving using cg")
             ATA = A.T.dot(A)
             ATB = A.T.dot(b)
             res = sparse.linalg.cg(ATA, ATB, **solver_kwargs)
@@ -670,6 +671,7 @@ class DiscreteInterpolator(GeologicalInterpolator):
             self.up_to_date = True
             return True
         elif solver == 'lsmr':
+            logger.info("Solving using lsmr")
             res = sparse.linalg.lsmr(A, b, **solver_kwargs)
             if res[1] == 1 or res[1] == 4 or res[1] == 2 or res[1] == 5:
                 self.c = res[0]

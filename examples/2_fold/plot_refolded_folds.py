@@ -48,9 +48,7 @@ viewer.display()
 # ~~~~~~~~~~~~
 #
 
-s1 = model.create_and_add_folded_fold_frame(
-    "s1", av_fold_axis=True, nelements=50000, buffer=0.3, solver="lu"
-)
+s1 = model.create_and_add_folded_fold_frame("s1", av_fold_axis=True, nelements=50000, buffer=0.3)
 
 
 viewer = LavaVuModelViewer(model)
@@ -82,8 +80,6 @@ s0 = model.create_and_add_folded_foliation(
     av_fold_axis=True,
     nelements=50000,
     buffer=0.2,
-    damp=True,
-    solver="lu",
 )
 
 viewer = LavaVuModelViewer(model)

@@ -44,7 +44,7 @@ class CrossProductGeologicalFeature(BaseFeature):
         self.geological_feature_b = geological_feature_b
         self.value_feature = None
 
-    def evaluate_gradient(self, locations: np.ndarray) -> np.ndarray:
+    def evaluate_gradient(self, locations: np.ndarray, ignore_regions=False) -> np.ndarray:
         """
         Calculate the gradient of the geological feature by using numpy to
         calculate the cross
@@ -59,13 +59,13 @@ class CrossProductGeologicalFeature(BaseFeature):
         -------
 
         """
-        v1 = self.geological_feature_a.evaluate_gradient(locations)
+        v1 = self.geological_feature_a.evaluate_gradient(locations, ignore_regions)
         # v1 /= np.linalg.norm(v1,axis=1)[:,None]
-        v2 = self.geological_feature_b.evaluate_gradient(locations)
+        v2 = self.geological_feature_b.evaluate_gradient(locations, ignore_regions)
         # v2 /= np.linalg.norm(v2,axis=1)[:,None]
         return np.cross(v1, v2, axisa=1, axisb=1)
 
-    def evaluate_value(self, evaluation_points: np.ndarray) -> np.ndarray:
+    def evaluate_value(self, evaluation_points: np.ndarray, ignore_regions=False) -> np.ndarray:
         """
         Return 0 because there is no value for this feature
         Parameters
@@ -78,7 +78,7 @@ class CrossProductGeologicalFeature(BaseFeature):
         """
         values = np.zeros(evaluation_points.shape[0])
         if self.value_feature is not None:
-            values[:] = self.value_feature.evaluate_value(evaluation_points)
+            values[:] = self.value_feature.evaluate_value(evaluation_points, ignore_regions)
         return values
 
     def mean(self):

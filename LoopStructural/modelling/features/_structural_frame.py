@@ -115,7 +115,7 @@ class StructuralFrame(BaseFeature):
         """
         return self.features[i]
 
-    def evaluate_value(self, evaluation_points):
+    def evaluate_value(self, evaluation_points, ignore_regions=False):
         """
         Evaluate the value of the structural frame for the points.
         Can optionally only evaluate one coordinate
@@ -131,12 +131,12 @@ class StructuralFrame(BaseFeature):
         """
         v = np.zeros(evaluation_points.shape)  # create new 3d array of correct length
         v[:] = np.nan
-        v[:, 0] = self.features[0].evaluate_value(evaluation_points)
-        v[:, 1] = self.features[1].evaluate_value(evaluation_points)
-        v[:, 2] = self.features[2].evaluate_value(evaluation_points)
+        v[:, 0] = self.features[0].evaluate_value(evaluation_points, ignore_regions=ignore_regions)
+        v[:, 1] = self.features[1].evaluate_value(evaluation_points, ignore_regions=ignore_regions)
+        v[:, 2] = self.features[2].evaluate_value(evaluation_points, ignore_regions=ignore_regions)
         return v
 
-    def evaluate_gradient(self, evaluation_points, i=None):
+    def evaluate_gradient(self, evaluation_points, i=None, ignore_regions=False):
         """
         Evaluate the gradient of the structural frame.
         Can optionally only evaluate the ith coordinate
@@ -151,11 +151,19 @@ class StructuralFrame(BaseFeature):
 
         """
         if i is not None:
-            return self.features[i].support.evaluate_gradient(evaluation_points)
+            return self.features[i].support.evaluate_gradient(
+                evaluation_points, ignore_regions=ignore_regions
+            )
         return (
-            self.features[0].support.evaluate_gradient(evaluation_points),
-            self.features[1].support.evaluate_gradient(evaluation_points),
-            self.features[2].support.evaluate_gradient(evaluation_points),
+            self.features[0].support.evaluate_gradient(
+                evaluation_points, ignore_regions=ignore_regions
+            ),
+            self.features[1].support.evaluate_gradient(
+                evaluation_points, ignore_regions=ignore_regions
+            ),
+            self.features[2].support.evaluate_gradient(
+                evaluation_points, ignore_regions=ignore_regions
+            ),
         )
 
     def get_data(self, value_map: Optional[dict] = None) -> List[Union[ValuePoints, VectorPoints]]:

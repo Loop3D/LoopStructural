@@ -584,7 +584,7 @@ class GeologicalModel:
                     self._data[h] = 0
                 if h == "polarity":
                     self._data[h] = 1.0
-        # LS wants polarity as -1 or 1, change 0 to -1
+        # LS wants polarity as -1 or 1, change 0  to -1
         self._data.loc[self._data["polarity"] == 0, "polarity"] = -1.0
         self._data.loc[np.isnan(self._data["w"]), "w"] = 1.0
         if "strike" in self._data and "dip" in self._data:
@@ -1131,10 +1131,13 @@ class GeologicalModel:
 
         """
 
+        if feature.type == FeatureType.FAULT:
+            return
         for f in reversed(self.features):
             if f.type == FeatureType.UNCONFORMITY and f.name != feature.name:
+                logger.info(f"Adding {f.name} as unconformity to {feature.name}")
                 feature.add_region(f)
-                break
+                # break
 
     def add_unconformity(self, feature: GeologicalFeature, value: float) -> UnconformityFeature:
         """
@@ -1160,7 +1163,7 @@ class GeologicalModel:
         # look backwards through features and add the unconformity as a region until
         # we get to an unconformity
         uc_feature = UnconformityFeature(feature, value)
-
+        feature.add_region(uc_feature.inverse())
         for f in reversed(self.features):
             if f.type == FeatureType.UNCONFORMITY:
                 logger.debug(f"Reached unconformity {f.name}")
@@ -1193,15 +1196,17 @@ class GeologicalModel:
             the created unconformity
 
         """
-
-        uc_feature = UnconformityFeature(feature, value, True)
+        feature.regions = []
+        uc_feature = UnconformityFeature(feature, value, False)
         feature.add_region(uc_feature.inverse())
         for f in reversed(self.features):
             if f.type == FeatureType.UNCONFORMITY:
-                break
+                continue
+            if f.type == FeatureType.FAULT:
+                continue
             if f != feature:
                 f.add_region(uc_feature)
-        self._add_feature(uc_feature)
+        self._add_feature(uc_feature.inverse())
 
         return uc_feature
 
@@ -1515,7 +1520,9 @@ class GeologicalModel:
         if scale:
             xyz = self.scale(xyz, inplace=False)
         strat_id = np.zeros(xyz.shape[0], dtype=int)
-        for group in self.stratigraphic_column.keys():
+        # set strat id to -1 to identify which areas of the model aren't covered
+        strat_id[:] = -1
+        for group in reversed(self.stratigraphic_column.keys()):
             if group == "faults":
                 continue
             feature_id = self.feature_name_index.get(group, -1)
@@ -1749,5 +1756,5 @@ class GeologicalModel:
 
     def get_block_model(self):
         grid = self.bounding_box.vtk
-        grid['id'] = self.evaluate_model(grid.points)
+        grid['id'] = self.evaluate_model(grid.points, scale=False)
         return grid, self.stratigraphic_ids()
