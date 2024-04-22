@@ -273,7 +273,7 @@ class BaseFeature(metaclass=ABCMeta):
         self,
         value: Union[float, int, List[Union[float, int]]],
         bounding_box=None,
-        name=Optional[Union[List[str], str]],
+        name: Optional[Union[List[str], str]] = None,
     ) -> surface_list:
         """Find the surfaces of the geological feature at a given value
 
@@ -293,6 +293,8 @@ class BaseFeature(metaclass=ABCMeta):
             bounding_box = self.model.bounding_box
 
         isosurfacer = LoopIsosurfacer(bounding_box, self)
+        if name is None and self.name is not None:
+            name = self.name
         return isosurfacer.fit(value, name)
 
     def scalar_field(self, bounding_box=None):
