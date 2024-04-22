@@ -44,7 +44,7 @@ class VectorPoints:
         geom = pv.Arrow()
 
         # Perform the glyph
-        return points.glyph(orient="vectors", geom=geom)
+        return points.glyph(orient="vectors", geom=geom, tolerance=0.05)
 
     def save(self, filename):
         filename = str(filename)
