@@ -198,7 +198,10 @@ mdata = pd.concat([data[:npoints], data[data["feature_name"] == "s1"]])
 model = GeologicalModel(boundary_points[0, :], boundary_points[1, :])
 model.set_model_data(mdata)
 fold_frame = model.create_and_add_fold_frame(
-    "s1", interpolatortype="PLI", nelements=10000, buffer=0.5, solver="pyamg", damp=True
+    "s1",
+    interpolatortype="PLI",
+    nelements=10000,
+    buffer=0.5,
 )
 stratigraphy = model.create_and_add_folded_foliation(
     "s0",
