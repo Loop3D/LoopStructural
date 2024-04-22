@@ -17,6 +17,7 @@ class StructuredGrid:
             "step_vector": self.step_vector,
             "nsteps": self.nsteps,
             "data": self.data,
+            "name": self.name,
         }
 
     @property
