@@ -64,12 +64,11 @@ class VectorPoints:
         elif ext == 'pkl':
             import pickle
 
-            with open(filename,
-                        'wb') as f:
-                    pickle.dump(self, f)
+            with open(filename, 'wb') as f:
+                pickle.dump(self, f)
         elif ext == 'vs':
             from LoopStructural.export.gocad import _write_pointset
+
             _write_pointset(self, filename)
         else:
             raise ValueError(f'Unknown file extension {ext}')
-        

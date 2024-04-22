@@ -20,5 +20,3 @@ def add_surface_to_geoh5(filename, surface, overwrite=True, groupname="Loop"):
             triangles=surface.triangles,
             parent=group,
         )
-
-

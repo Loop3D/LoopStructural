@@ -229,7 +229,7 @@ class BaseStructuredSupport(BaseSupport):
         inside = self.inside(pos)
         pos = self.check_position(pos)
         cell_indexes = np.zeros((pos.shape[0], 3), dtype=int)
-    
+
         x = pos[:, 0] - self.origin[None, 0]
         y = pos[:, 1] - self.origin[None, 1]
         z = pos[:, 2] - self.origin[None, 2]
