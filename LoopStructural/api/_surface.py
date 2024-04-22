@@ -107,7 +107,7 @@ class LoopIsosurfacer:
                     vertices=verts + self.bounding_box.origin,
                     triangles=faces,
                     normals=normals,
-                    name=f"surface_{isovalue}",
+                    name=f"{name}_{isovalue}",
                     values=values,
                 )
             )
