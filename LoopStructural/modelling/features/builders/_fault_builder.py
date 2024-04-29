@@ -192,7 +192,12 @@ class FaultBuilder(StructuralFrameBuilder):
                 fault_frame_data["coord"] == 0, fault_frame_data["val"] == 0
             )
             fault_center = fault_frame_data.loc[trace_mask, ["X", "Y", "Z"]].mean(axis=0).to_numpy()
-
+            dist = np.linalg.norm(
+                fault_center - fault_frame_data.loc[trace_mask, ["X", "Y", "Z"]].to_numpy(), axis=1
+            )
+            fault_center = fault_frame_data.loc[trace_mask, ["X", "Y", "Z"]].to_numpy()[
+                np.argmin(dist), :
+            ]
         self.fault_normal_vector = fault_normal_vector
         self.fault_slip_vector = fault_slip_vector
 
