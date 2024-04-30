@@ -7,7 +7,6 @@ import numpy as np
 class Surface:
     vertices: np.ndarray
     triangles: np.ndarray
-    normals: np.ndarray
     name: str
     values: Optional[np.ndarray] = None
 
@@ -63,6 +62,15 @@ class Surface:
             "name": self.name,
             "values": self.values,
         }
+
+    @property
+    def normals(self):
+        tri_points = self.vertices[self.triangles, :]
+        normals = np.cross(
+            tri_points[:, 1, :] - tri_points[:, 0, :], tri_points[:, 2, :] - tri_points[:, 0, :]
+        )
+        normals = normals / np.linalg.norm(normals, axis=1)[:, np.newaxis]
+        return normals
 
     def save(self, filename):
         filename = str(filename)
