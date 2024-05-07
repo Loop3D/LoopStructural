@@ -234,7 +234,12 @@ class BaseUnstructured2d(BaseSupport):
         return values
 
     def get_element_for_location(
-        self, points: np.ndarray
+        self,
+        points: np.ndarray,
+        return_verts=True,
+        return_bc=True,
+        return_inside=True,
+        return_tri=True,
     ) -> Tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray]:
         """
         Determine the elements from a numpy array of points
@@ -249,7 +254,10 @@ class BaseUnstructured2d(BaseSupport):
         -------
 
         """
-        verts = np.zeros((points.shape[0], self.dimension + 1, self.dimension))
+        if return_verts:
+            verts = np.zeros((points.shape[0], self.dimension + 1, self.dimension))
+        else:
+            verts = np.zeros((0, 0, 0))
         bc = np.zeros((points.shape[0], self.dimension + 1))
         tetras = np.zeros(points.shape[0], dtype="int64")
         inside = np.zeros(points.shape[0], dtype=bool)
@@ -257,6 +265,7 @@ class BaseUnstructured2d(BaseSupport):
         npts_step = int(1e4)
         # break into blocks of 10k points
         while npts < points.shape[0]:
+            print(npts, npts_step, points.shape[0])
             cell_index, inside = self.aabb_grid.position_to_cell_index(
                 points[: npts + npts_step, :]
             )
@@ -266,6 +275,7 @@ class BaseUnstructured2d(BaseSupport):
             row = tetra_indices.row
             col = tetra_indices.col
             # using returned indexes calculate barycentric coords to determine which tetra the points are in
+
             vertices = self.nodes[self.elements[col, : self.dimension + 1]]
             pos = points[row, : self.dimension]
             row = tetra_indices.row
@@ -286,8 +296,8 @@ class BaseUnstructured2d(BaseSupport):
             c[:, 2] = 1.0 - c[:, 0] - c[:, 1]
 
             mask = np.all(c >= 0, axis=1)
-
-            verts[: npts + npts_step, :, :][row[mask], :, :] = vertices[mask, :, :]
+            if return_verts:
+                verts[: npts + npts_step, :, :][row[mask], :, :] = vertices[mask, :, :]
             bc[: npts + npts_step, :][row[mask], :] = c[mask, :]
             tetras[: npts + npts_step][row[mask]] = col[mask]
             inside[: npts + npts_step][row[mask]] = True
@@ -312,5 +322,5 @@ class BaseUnstructured2d(BaseSupport):
         -------
 
         """
-        verts, c, tri, inside = self.get_element_for_location(pos)
+        verts, c, tri, inside = self.get_element_for_location(pos, return_verts=False)
         return self.evaluate_shape_derivatives(pos, tri)
