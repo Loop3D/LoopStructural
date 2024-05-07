@@ -34,7 +34,6 @@ class BoundingBox:
         # otherwise uses provided origin. This is useful for having multiple bounding boxes rela
         if global_origin is not None and origin is None:
             origin = np.zeros(3)
-
         if maximum is None and nsteps is not None and step_vector is not None:
             maximum = origin + nsteps * step_vector
 
@@ -317,6 +316,7 @@ class BoundingBox:
         y = np.linspace(self.origin[1], self.maximum[1], nsteps[1])
         z = np.linspace(self.origin[2], self.maximum[2], nsteps[2])
         if not local:
+            
             x = np.linspace(self.global_origin[0], self.global_maximum[0], nsteps[0])
             y = np.linspace(self.global_origin[1], self.global_maximum[1], nsteps[1])
             z = np.linspace(self.global_origin[2], self.global_maximum[2], nsteps[2])
@@ -362,9 +362,9 @@ class BoundingBox:
             import pyvista as pv
         except ImportError:
             raise ImportError("pyvista is required for vtk support")
-        x = np.linspace(self.origin[0], self.maximum[0], self.nsteps[0])
-        y = np.linspace(self.origin[1], self.maximum[1], self.nsteps[1])
-        z = np.linspace(self.origin[2], self.maximum[2], self.nsteps[2])
+        x = np.linspace(self.global_origin[0], self.global_maximum[0], self.nsteps[0])
+        y = np.linspace(self.global_origin[1], self.global_maximum[1], self.nsteps[1])
+        z = np.linspace(self.global_origin[2], self.global_maximum[2], self.nsteps[2])
         return pv.RectilinearGrid(
             x,
             y,
