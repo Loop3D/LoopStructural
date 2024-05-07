@@ -7,6 +7,7 @@ import numpy as np
 class Surface:
     vertices: np.ndarray
     triangles: np.ndarray
+    normals: np.ndarray
     name: str
     values: Optional[np.ndarray] = None
 
@@ -46,6 +47,28 @@ class Surface:
         return area
 
     @property
+    def triangle_normal(self) -> np.ndarray:
+        """_summary_
+
+        Returns
+        -------
+        np.ndarray
+            numpy array of normals N,3 where N is the number of triangles
+
+
+        Notes
+        -----
+
+        The normal of a triangle is given by the cross product of two vectors in the plane of the triangle
+        """
+        tri_points = self.vertices[self.triangles, :]
+        normals = np.cross(
+            tri_points[:, 0, :] - tri_points[:, 2, :], tri_points[:, 1, :] - tri_points[:, 2, :]
+        )
+        normals = normals / np.linalg.norm(normals, axis=1)[:, np.newaxis]
+        return normals
+
+    @property
     def vtk(self):
         import pyvista as pv
 
@@ -62,15 +85,6 @@ class Surface:
             "name": self.name,
             "values": self.values,
         }
-
-    @property
-    def normals(self):
-        tri_points = self.vertices[self.triangles, :]
-        normals = np.cross(
-            tri_points[:, 1, :] - tri_points[:, 0, :], tri_points[:, 2, :] - tri_points[:, 0, :]
-        )
-        normals = normals / np.linalg.norm(normals, axis=1)[:, np.newaxis]
-        return normals
 
     def save(self, filename):
         filename = str(filename)
