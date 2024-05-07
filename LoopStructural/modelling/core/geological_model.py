@@ -138,7 +138,10 @@ class GeologicalModel:
         self.scale_factor = 1.0
 
         self.bounding_box = BoundingBox(
-            dimensions=3, origin=np.zeros(3), maximum=self.maximum - self.origin
+            dimensions=3,
+            origin=np.zeros(3),
+            maximum=self.maximum - self.origin,
+            global_origin=self.origin,
         )
 
         self.stratigraphic_column = None
