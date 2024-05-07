@@ -244,7 +244,7 @@ class GeologicalFeature(BaseFeature):
 
             data.append(
                 VectorPoints(
-                    locations=gradient_constraints[:, :3],
+                    locations=self.model.rescale(gradient_constraints[:, :3]),
                     vectors=gradient_constraints[:, 3:6],
                     name=f'{self.name}+_gradient',
                 )
@@ -252,7 +252,7 @@ class GeologicalFeature(BaseFeature):
         if norm_constraints.shape[0] > 0:
             data.append(
                 VectorPoints(
-                    locations=norm_constraints[:, :3],
+                    locations=self.model.rescale(norm_constraints[:, :3]),
                     vectors=norm_constraints[:, 3:6],
                     name=f'{self.name}_norm',
                 )
@@ -262,7 +262,9 @@ class GeologicalFeature(BaseFeature):
                 for name, v in value_map.items():
                     data.append(
                         ValuePoints(
-                            locations=value_constraints[value_constraints == v, :3],
+                            locations=self.model.rescale(
+                                value_constraints[value_constraints == v, :3]
+                            ),
                             values=value_constraints[value_constraints == v, 3],
                             name=f"{name}_value",
                         )
@@ -270,7 +272,7 @@ class GeologicalFeature(BaseFeature):
             else:
                 data.append(
                     ValuePoints(
-                        locations=value_constraints[:, :3],
+                        locations=self.model.rescale(value_constraints[:, :3]),
                         values=value_constraints[:, 3],
                         name=f"{self.name}_value",
                     )

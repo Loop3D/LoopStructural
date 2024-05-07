@@ -291,8 +291,8 @@ class BaseFeature(metaclass=ABCMeta):
             if self.model is None:
                 raise ValueError("Must specify bounding box")
             bounding_box = self.model.bounding_box
-
-        isosurfacer = LoopIsosurfacer(bounding_box, self)
+        callable = lambda xyz: self.evaluate_value(self.model.scale(xyz))
+        isosurfacer = LoopIsosurfacer(bounding_box, callable=callable)
         if name is None and self.name is not None:
             name = self.name
         return isosurfacer.fit(value, name)
@@ -315,8 +315,9 @@ class BaseFeature(metaclass=ABCMeta):
                 raise ValueError("Must specify bounding box")
             bounding_box = self.model.bounding_box
         grid = bounding_box.vtk
-        points = grid.points
-        value = self.evaluate_value(points)
+        value = self.evaluate_value(
+            self.model.scale(bounding_box.regular_grid(local=False, order='F'))
+        )
         grid[self.name] = value
         return grid
 
