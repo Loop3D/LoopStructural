@@ -79,7 +79,7 @@ class LoopIsosurfacer:
         if not callable(self.callable):
             raise ValueError("No interpolator of callable function set")
         surfaces = []
-        all_values = self.callable(self.bounding_box.regular_grid())
+        all_values = self.callable(self.bounding_box.regular_grid(local=False))
         if isinstance(values, list):
             isovalues = values
         elif isinstance(values, float):
@@ -97,11 +97,16 @@ class LoopIsosurfacer:
         logger.info(f'Isosurfacing at values: {isovalues}')
         for isovalue in isovalues:
             try:
-
+                step_vector = (self.bounding_box.maximum - self.bounding_box.origin) / (
+                    np.array(self.bounding_box.nsteps) - 1
+                )
                 verts, faces, normals, values = marching_cubes(
-                    all_values.reshape(self.bounding_box.nsteps, order="C"),
+                    # np.rot90(
+                    all_values.reshape(self.bounding_box.nsteps, order="C"),  # k=2, axes=(0, 1)
+                    # ),
                     isovalue,
-                    spacing=self.bounding_box.step_vector,
+                    spacing=step_vector,
+                    mask=~np.isnan(all_values.reshape(self.bounding_box.nsteps, order="C")),
                 )
             except RuntimeError:
                 logger.warning(f"Failed to extract isosurface for {isovalue}")
@@ -110,9 +115,12 @@ class LoopIsosurfacer:
                 logger.warning(f"Failed to extract isosurface for {isovalue}")
                 continue
             values = np.zeros(verts.shape[0]) + isovalue
+            # need to add both global and local origin. If the bb is a buffer the local
+            # origin may not be 0
+            verts += self.bounding_box.global_origin
             surfaces.append(
                 Surface(
-                    vertices=verts + self.bounding_box.origin,
+                    vertices=verts,
                     triangles=faces,
                     normals=normals,
                     name=f"{name}_{isovalue}",
