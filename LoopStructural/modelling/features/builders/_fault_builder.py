@@ -119,7 +119,20 @@ class FaultBuilder(StructuralFrameBuilder):
         if np.sum(trace_mask) == 0:
             logger.error("You cannot model a fault without defining the location of the fault")
             raise ValueError("There are no points on the fault trace")
-
+        # find the middle point on the fault trace if center is not provided
+        if fault_center is None:
+            trace_mask = np.logical_and(
+                fault_frame_data["coord"] == 0, fault_frame_data["val"] == 0
+            )
+            fault_center = fault_frame_data.loc[trace_mask, ["X", "Y", "Z"]].mean(axis=0).to_numpy()
+            dist = np.linalg.norm(
+                fault_center - fault_frame_data.loc[trace_mask, ["X", "Y", "Z"]].to_numpy(), axis=1
+            )
+            # make the nan points greater than the max dist 10 is arbitrary and doesn't matter
+            dist[np.isnan(dist)] = np.nanmax(dist) + 10
+            fault_center = fault_frame_data.loc[trace_mask, ["X", "Y", "Z"]].to_numpy()[
+                np.argmin(dist), :
+            ]
         # get all of the gradient data associated with the fault trace
         if fault_normal_vector is None:
             gradient_mask = np.logical_and(
@@ -141,16 +154,30 @@ class FaultBuilder(StructuralFrameBuilder):
                     f"No orientation data for fault\n\
                     Defaulting to a dip of {fault_dip}vertical fault"
                 )
+                # if the line is long enough, estimate the normal vector
+                # by finding the centre point of the line and calculating the tangnent
+                # of the two points
                 if fault_frame_data.loc[trace_mask, :].shape[0] > 3:
 
-                    coefficients = np.polyfit(
-                        fault_frame_data.loc[trace_mask, "X"],
-                        fault_frame_data.loc[trace_mask, "Y"],
+                    pts = fault_frame_data.loc[trace_mask, ["X", "Y", "Z"]].to_numpy()
+                    dist = np.abs(np.linalg.norm(fault_center - pts, axis=1))
+                    # any nans just make them max distance + a bit
+                    dist[np.isnan(dist)] = np.nanmax(dist) + 10
+                    # idx = np.argsort(dist)
+                    # direction_vector = pts[idx[-1]] - pts[idx[-2]]
+                    # coefficients = np.polyfit(
+                    #     fault_frame_data.loc[trace_mask, "X"],
+                    #     fault_frame_data.loc[trace_mask, "Y"],
+                    #     1,
+                    # )
+                    # slope, intercept = coefficients
+                    slope, intercept = np.polyfit(
+                        pts[dist < 0.25 * np.nanmax(dist), 0],
+                        pts[dist < 0.25 * np.nanmax(dist), 1],
                         1,
                     )
-                    slope, intercept = coefficients
 
-                    # Create a direction vector using the slope
+                    # # Create a direction vector using the slope
                     direction_vector = np.array([1, slope, 0])
                     direction_vector /= np.linalg.norm(direction_vector)
                     rotation_matrix = rotation(direction_vector[None, :], [90 - fault_dip])
@@ -187,17 +214,7 @@ class FaultBuilder(StructuralFrameBuilder):
                 logger.info(f"Estimated fault slip vector: {fault_slip_vector}")
             else:
                 fault_slip_vector = fault_slip_data.mean(axis=0).to_numpy()
-        if fault_center is None:
-            trace_mask = np.logical_and(
-                fault_frame_data["coord"] == 0, fault_frame_data["val"] == 0
-            )
-            fault_center = fault_frame_data.loc[trace_mask, ["X", "Y", "Z"]].mean(axis=0).to_numpy()
-            dist = np.linalg.norm(
-                fault_center - fault_frame_data.loc[trace_mask, ["X", "Y", "Z"]].to_numpy(), axis=1
-            )
-            fault_center = fault_frame_data.loc[trace_mask, ["X", "Y", "Z"]].to_numpy()[
-                np.argmin(dist), :
-            ]
+
         self.fault_normal_vector = fault_normal_vector
         self.fault_slip_vector = fault_slip_vector
 
@@ -452,8 +469,11 @@ class FaultBuilder(StructuralFrameBuilder):
         if fault_dip_anisotropy > 0:
             self.add_fault_dip_anisotropy(w=fault_dip_anisotropy)
         if force_mesh_geometry:
-            self.set_mesh_geometry(fault_buffer, None)
-        self.update_geometry(fault_frame_data[["X", "Y", "Z"]].to_numpy())
+            self.origin = self.model.bounding_box.origin
+            self.maximum = self.model.bounding_box.maximum
+        else:
+            self.update_geometry(fault_frame_data[["X", "Y", "Z"]].to_numpy())
+        self.set_mesh_geometry(fault_buffer, None)
 
     def set_mesh_geometry(self, buffer, rotation):
         """set the mesh geometry
