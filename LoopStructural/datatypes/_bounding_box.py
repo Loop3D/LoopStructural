@@ -316,7 +316,7 @@ class BoundingBox:
         y = np.linspace(self.origin[1], self.maximum[1], nsteps[1])
         z = np.linspace(self.origin[2], self.maximum[2], nsteps[2])
         if not local:
-            
+
             x = np.linspace(self.global_origin[0], self.global_maximum[0], nsteps[0])
             y = np.linspace(self.global_origin[1], self.global_maximum[1], nsteps[1])
             z = np.linspace(self.global_origin[2], self.global_maximum[2], nsteps[2])
