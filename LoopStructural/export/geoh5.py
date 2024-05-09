@@ -13,10 +13,18 @@ def add_surface_to_geoh5(filename, surface, overwrite=True, groupname="Loop"):
             existing_surf[0].allow_delete = True
             if overwrite:
                 workspace.remove_entity(existing_surf[0])
-        geoh5py.objects.Surface.create(
+        data = {}
+        if surface.properties is not None:
+            for k, v in surface.properties.items():
+                data[k] = {'association': "VERTEX", "values": v}
+        surface = geoh5py.objects.Surface.create(
             workspace,
             name=surface.name,
             vertices=surface.vertices,
-            triangles=surface.triangles,
+            cells=surface.triangles,
             parent=group,
         )
+        surface.add_data(data)
+
+
+# def add_points_to_geoh5(filename, points, overwrite=True, groupname="Loop"):

@@ -25,6 +25,14 @@ def _write_feat_surfs_gocad(surf, file_name):
     """
     from pathlib import Path
 
+    properties_header = None
+    if surf.properties:
+
+        properties_header = f"""PROPERTIES {' '.join(list(surf.properties.keys()))}
+NO_DATA_VALUES -99999
+PROPERTY_CLASSES {' '.join(list(surf.properties.keys()))}
+        """
+
     file_name = Path(file_name).with_suffix(".ts")
     with open(f"{file_name}", "w") as fd:
         fd.write(
@@ -45,6 +53,7 @@ ZPOSITIVE Elevation
 END_ORIGINAL_COORDINATE_SYSTEM
 GEOLOGICAL_FEATURE {surf.name}
 GEOLOGICAL_TYPE fault
+{properties_header if properties_header else ""}
 PROPERTY_CLASS_HEADER X {{
 kind: X
 unit: m
@@ -69,7 +78,11 @@ TFACE
         v_map = {}
         for idx, vert in enumerate(surf.vertices):
             if not np.isnan(vert[0]) and not np.isnan(vert[1]) and not np.isnan(vert[2]):
-                fd.write(f"VRTX {v_idx:} {vert[0]} {vert[1]} {vert[2]} \n")
+                fd.write(f"VRTX {v_idx:} {vert[0]} {vert[1]} {vert[2]}")
+                if surf.properties:
+                    for value in surf.properties.values():
+                        fd.write(f" {value[idx]}")
+                fd.write("\n")
                 v_map[idx] = v_idx
                 v_idx += 1
         for face in surf.triangles:

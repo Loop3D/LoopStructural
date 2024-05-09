@@ -10,6 +10,7 @@ class Surface:
     normals: np.ndarray
     name: str
     values: Optional[np.ndarray] = None
+    properties: Optional[dict] = None
 
     @property
     def triangle_area(self):
