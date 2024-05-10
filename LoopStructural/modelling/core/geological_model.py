@@ -566,6 +566,7 @@ class GeologicalModel:
                 raise BaseException("Cannot load data")
         logger.info(f"Adding data to GeologicalModel with {len(data)} data points")
         self._data = data.copy()
+
         self._data["X"] -= self.origin[0]
         self._data["Y"] -= self.origin[1]
         self._data["Z"] -= self.origin[2]
@@ -598,6 +599,11 @@ class GeologicalModel:
                 * self._data.loc[mask, "polarity"].to_numpy()[:, None]
             )
             self._data.drop(["strike", "dip"], axis=1, inplace=True)
+        self._data[['X', 'Y', 'Z', 'val', 'nx', 'ny', 'nz', 'gx', 'gy', 'gz', 'tx', 'ty', 'tz']] = (
+            self._data[
+                ['X', 'Y', 'Z', 'val', 'nx', 'ny', 'nz', 'gx', 'gy', 'gz', 'tx', 'ty', 'tz']
+            ].astype(float)
+        )
 
     def set_model_data(self, data):
         logger.warning("deprecated method. Model data can now be set using the data attribute")
