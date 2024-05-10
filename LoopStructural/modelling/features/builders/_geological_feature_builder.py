@@ -39,6 +39,7 @@ class GeologicalFeatureBuilder(BaseBuilder):
         nelements: int = 1000,
         name="Feature",
         interpolation_region=None,
+        model=None,
         **kwargs,
     ):
         """
@@ -52,7 +53,7 @@ class GeologicalFeatureBuilder(BaseBuilder):
             defining whether the location (xyz) should be included in the
         kwargs - name of the feature, region to interpolate the feature
         """
-        BaseBuilder.__init__(self, name)
+        BaseBuilder.__init__(self, model, name)
         interpolator = InterpolatorFactory.create_interpolator(
             interpolatortype=interpolatortype,
             boundingbox=bounding_box,
@@ -451,16 +452,21 @@ class GeologicalFeatureBuilder(BaseBuilder):
         while self.interpolator.nx < 100:
             self.interpolator.support.step_vector = self.interpolator.support.step_vector * 0.9
 
-    def check_interpolation_geometry(self, data):
+    def check_interpolation_geometry(self, data, buffer=0.3):
         """Check the interpolation support geometry
-        to data to make sure everything fits"""
+        to data to make sure everything fits
+        Apply the fault to the model grid to ensure that the support
+        is big enough to capture the faulted feature.
+        """
+
         origin = self.interpolator.support.origin
         maximum = self.interpolator.support.maximum
-        origin[origin < np.min(data, axis=0)] = np.min(data, axis=0)[origin < np.min(data, axis=0)]
-        maximum[maximum < np.max(data, axis=0)] = np.max(data, axis=0)[
-            maximum < np.max(data, axis=0)
-        ]
+        pts = self.model.bounding_box.with_buffer(buffer).regular_grid(local=True)
+        for f in self.faults:
+            pts = f.apply_to_points(pts)
 
+        origin[origin > np.min(pts, axis=0)] = np.min(pts, axis=0)[origin > np.min(pts, axis=0)]
+        maximum[maximum < np.max(pts, axis=0)] = np.max(pts, axis=0)[maximum < np.max(pts, axis=0)]
         self.interpolator.support.origin = origin
         self.interpolator.support.maximum = maximum
 
@@ -485,6 +491,9 @@ class GeologicalFeatureBuilder(BaseBuilder):
         # self.get_interpolator(**kwargs)
         for f in self.faults:
             f.builder.update()
+        domain = kwargs.get("domain", None)
+        if domain:
+            self.check_interpolation_geometry(None)
         self.add_data_to_interpolator(**kwargs)
         if data_region is not None:
             xyz = self.interpolator.get_data_locations()

@@ -4,7 +4,7 @@ logger = getLogger(__name__)
 
 
 class BaseBuilder:
-    def __init__(self, name="Feature"):
+    def __init__(self, model, name: str = "Feature"):
         """Base builder that provides a template for
         implementing different builders.
 
@@ -23,10 +23,15 @@ class BaseBuilder:
         If the build arguments are changed, this will flag that the feature needs to be rebuilt
         """
         self._name = name
+        self._model = model
         self._feature = None
         self._up_to_date = False
         self._build_arguments = {}
         self.faults = []
+
+    @property
+    def model(self):
+        return self._model
 
     @property
     def feature(self):

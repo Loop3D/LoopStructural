@@ -692,6 +692,7 @@ class GeologicalModel:
             interpolatortype=interpolatortype,
             nelements=nelements,
             name=series_surface_data,
+            model=self,
             **kwargs,
         )
         # add data
@@ -706,6 +707,9 @@ class GeologicalModel:
         # series_feature = series_builder.build(**kwargs)
         series_feature = series_builder.feature
         series_builder.build_arguments = kwargs
+        # this support is built for the entire model domain? Possibly would
+        # could just pass a regular grid of points - mask by any above unconformities??
+        series_builder.build_arguments['domain'] = True
         series_builder.build_arguments["tol"] = tol
         series_feature.type = FeatureType.INTERPOLATED
         self._add_feature(series_feature)
@@ -746,6 +750,7 @@ class GeologicalModel:
             name=foldframe_data,
             frame=FoldFrame,
             nelements=nelements,
+            model=self,
             **kwargs,
         )
         # add data
@@ -827,6 +832,7 @@ class GeologicalModel:
             fold=fold,
             name=foliation_data,
             svario=svario,
+            model=self,
             **kwargs,
         )
 
@@ -912,6 +918,7 @@ class GeologicalModel:
             name=fold_frame_data,
             fold=fold,
             frame=FoldFrame,
+            model=self,
             **kwargs,
         )
         fold_frame_builder.add_data_from_data_frame(
@@ -1237,6 +1244,7 @@ class GeologicalModel:
             interpolatortype=interpolatortype,
             nelements=nelements,
             name=fault_surface_data,
+            model=self,
             **kwargs,
         )
 

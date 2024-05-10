@@ -36,7 +36,8 @@ class BoundingBox:
             origin = np.zeros(3)
         if maximum is None and nsteps is not None and step_vector is not None:
             maximum = origin + nsteps * step_vector
-
+        if origin is not None and global_origin is None:
+            global_origin = origin
         self._origin = np.array(origin)
         self._maximum = np.array(maximum)
         if global_origin is None:
@@ -248,7 +249,9 @@ class BoundingBox:
         # local coordinates, rescale into the original bounding boxes global coordinates
         origin = self.origin - buffer * (self.maximum - self.origin)
         maximum = self.maximum + buffer * (self.maximum - self.origin)
-        return BoundingBox(origin=origin, maximum=maximum, global_origin=self.global_origin)
+        return BoundingBox(
+            origin=origin, maximum=maximum, global_origin=self.global_origin + origin
+        )
 
     def get_value(self, name):
         ix, iy = self.name_map.get(name, (-1, -1))
