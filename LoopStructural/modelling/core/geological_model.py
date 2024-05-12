@@ -1082,7 +1082,6 @@ class GeologicalModel:
                 f = self.__getitem__(f)
             if f.type == FeatureType.FAULT:
                 feature_builder.add_fault(f)
-           
 
     def _add_domain_fault_above(self, feature):
         """
@@ -1295,9 +1294,9 @@ class GeologicalModel:
         force_mesh_geometry: bool = False,
         points: bool = False,
         fault_buffer=0.2,
-        fault_trace_anisotropy=1.0,
+        fault_trace_anisotropy=0.0,
         fault_dip=90,
-        fault_dip_anisotropy=1.0,
+        fault_dip_anisotropy=0.0,
         **kwargs,
     ):
         """
