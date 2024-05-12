@@ -1082,8 +1082,7 @@ class GeologicalModel:
                 f = self.__getitem__(f)
             if f.type == FeatureType.FAULT:
                 feature_builder.add_fault(f)
-            # if f.type == 'unconformity':
-            #     break
+           
 
     def _add_domain_fault_above(self, feature):
         """
@@ -1153,7 +1152,9 @@ class GeologicalModel:
             if f.type == FeatureType.UNCONFORMITY and f.name != feature.name:
                 logger.info(f"Adding {f.name} as unconformity to {feature.name}")
                 feature.add_region(f)
-                # break
+            if f.type == FeatureType.ONLAPUNCONFORMITY:
+                feature.add_region(f)
+                break
 
     def add_unconformity(self, feature: GeologicalFeature, value: float) -> UnconformityFeature:
         """
@@ -1213,10 +1214,11 @@ class GeologicalModel:
 
         """
         feature.regions = []
-        uc_feature = UnconformityFeature(feature, value, False)
+        uc_feature = UnconformityFeature(feature, value, False, onlap=True)
         feature.add_region(uc_feature.inverse())
         for f in reversed(self.features):
             if f.type == FeatureType.UNCONFORMITY:
+                f.add_region(uc_feature)
                 continue
             if f.type == FeatureType.FAULT:
                 continue
@@ -1773,5 +1775,5 @@ class GeologicalModel:
 
     def get_block_model(self):
         grid = self.bounding_box.vtk
-        grid['id'] = self.evaluate_model(grid.points, scale=False)
+        grid['id'] = self.evaluate_model(grid.points, scale=True)
         return grid, self.stratigraphic_ids()

@@ -7,7 +7,7 @@ import numpy as np
 class UnconformityFeature(GeologicalFeature):
     """ """
 
-    def __init__(self, feature: GeologicalFeature, value: float, sign=True):
+    def __init__(self, feature: GeologicalFeature, value: float, sign=True, onlap=False):
         """
 
         Parameters
@@ -27,7 +27,7 @@ class UnconformityFeature(GeologicalFeature):
             interpolator=feature.interpolator,
         )
         self.value = value
-        self.type = FeatureType.UNCONFORMITY
+        self.type = FeatureType.UNCONFORMITY if onlap is False else FeatureType.ONLAPUNCONFORMITY
         self.sign = sign
         self.parent = feature
 
@@ -52,7 +52,12 @@ class UnconformityFeature(GeologicalFeature):
         UnconformityFeature
             _description_
         """
-        uc = UnconformityFeature(self.parent, self.value, sign=not self.sign)
+        uc = UnconformityFeature(
+            self.parent,
+            self.value,
+            sign=not self.sign,
+            onlap=self.type == FeatureType.ONLAPUNCONFORMITY,
+        )
         uc.name = self.name + "_inverse"
         return uc
 
