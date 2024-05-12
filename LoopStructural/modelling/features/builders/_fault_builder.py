@@ -46,10 +46,10 @@ class FaultBuilder(StructuralFrameBuilder):
             bounding_box,
             nelements,
             frame=FaultSegment,
+            model=model,
             **kwargs,
         )
         self.frame.model = model
-        self.model = model
         self.origin = np.array([np.nan, np.nan, np.nan])
         self.maximum = np.array([np.nan, np.nan, np.nan])  # self.model.bounding_box[1, :]
         # define a maximum area to mesh adding buffer to model

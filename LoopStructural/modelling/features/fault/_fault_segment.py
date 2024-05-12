@@ -20,7 +20,9 @@ class FaultSegment(StructuralFrame):
     Class for representing a slip event of a fault
     """
 
-    def __init__(self, features, name, faultfunction=None, steps=10, displacement=1.0, fold=None):
+    def __init__(
+        self, features, name, faultfunction=None, steps=10, displacement=1.0, fold=None, model=None
+    ):
         """
         A slip event of a fault
 
@@ -34,7 +36,7 @@ class FaultSegment(StructuralFrame):
             how many integration steps for faults
         kwargs
         """
-        StructuralFrame.__init__(self, features, name, fold)
+        StructuralFrame.__init__(self, features, name, fold, model)
         self.type = FeatureType.FAULT
         self.displacement = displacement
         self._faultfunction = BaseFault.fault_displacement
@@ -105,7 +107,7 @@ class FaultSegment(StructuralFrame):
 
     @property
     def displacementfeature(self):
-        return FaultDisplacementFeature(self, self.faultfunction, name=self.name)
+        return FaultDisplacementFeature(self, self.faultfunction, name=self.name, model=self.model)
 
     def set_model(self, model):
         """
