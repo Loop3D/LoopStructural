@@ -98,8 +98,7 @@ interpolator_map = {
 }
 
 support_interpolator_map = {
-    InterpolatorType.FINITE_DIFFERENCE: 
-    {
+    InterpolatorType.FINITE_DIFFERENCE: {
         2: SupportType.StructuredGrid2D,
         3: SupportType.StructuredGrid,
     },
