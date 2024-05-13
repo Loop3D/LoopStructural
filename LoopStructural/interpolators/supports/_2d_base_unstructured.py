@@ -52,18 +52,33 @@ class BaseUnstructured2d(BaseSupport):
         # make a big table to store which tetra are in which element.
         # if this takes up too much memory it could be simplified by using sparse matrices or dict but
         # at the expense of speed
-        self.aabb_table = sparse.csr_matrix(
+        self._aabb_table = sparse.csr_matrix(
             (self.aabb_grid.n_elements, len(self.elements)), dtype=bool
         )
-        self.shared_element_relationships = np.zeros(
+        self._shared_element_relationships = np.zeros(
             (self.neighbours[self.neighbours >= 0].flatten().shape[0], 2), dtype=int
         )
-        self.shared_elements = np.zeros(
+        self._shared_elements = np.zeros(
             (self.neighbours[self.neighbours >= 0].flatten().shape[0], self.dimension), dtype=int
         )
 
-        _init_face_table(self)
-        _initialise_aabb(self)
+    @property
+    def aabb_table(self):
+        if np.sum(self._aabb_table) == 0:
+            _initialise_aabb(self)
+        return self._aabb_table
+    
+    @property
+    def shared_elements(self):
+        if np.sum(self._shared_elements) == 0:
+            _init_face_table(self)
+        return self._shared_elements
+
+    @property
+    def shared_element_relationships(self):
+        if np.sum(self._shared_element_relationships) == 0:
+            _init_face_table(self)
+        return self._shared_element_relationships
 
     @property
     def elements(self):
