@@ -67,7 +67,7 @@ class BaseUnstructured2d(BaseSupport):
         if np.sum(self._aabb_table) == 0:
             _initialise_aabb(self)
         return self._aabb_table
-    
+
     @property
     def shared_elements(self):
         if np.sum(self._shared_elements) == 0:
