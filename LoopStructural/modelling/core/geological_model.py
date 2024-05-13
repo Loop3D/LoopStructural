@@ -1151,7 +1151,7 @@ class GeologicalModel:
             if f.type == FeatureType.UNCONFORMITY and f.name != feature.name:
                 logger.info(f"Adding {f.name} as unconformity to {feature.name}")
                 feature.add_region(f)
-            if f.type == FeatureType.ONLAPUNCONFORMITY:
+            if f.type == FeatureType.ONLAPUNCONFORMITY and f.name != feature.name:
                 feature.add_region(f)
                 break
 
@@ -1217,7 +1217,7 @@ class GeologicalModel:
         feature.add_region(uc_feature.inverse())
         for f in reversed(self.features):
             if f.type == FeatureType.UNCONFORMITY:
-                f.add_region(uc_feature)
+                # f.add_region(uc_feature)
                 continue
             if f.type == FeatureType.FAULT:
                 continue
