@@ -280,7 +280,6 @@ class BaseUnstructured2d(BaseSupport):
         npts_step = int(1e4)
         # break into blocks of 10k points
         while npts < points.shape[0]:
-            print(npts, npts_step, points.shape[0])
             cell_index, inside = self.aabb_grid.position_to_cell_index(
                 points[: npts + npts_step, :]
             )

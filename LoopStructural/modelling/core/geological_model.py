@@ -1558,6 +1558,38 @@ class GeologicalModel:
                 logger.error(f"Model does not contain {group}")
         return strat_id
 
+    def evaluate_model_gradient(self, points: np.ndarray, scale: bool = True) -> np.ndarray:
+        """Evaluate the gradient of the stratigraphic column at each location
+
+        Parameters
+        ----------
+        points : np.ndarray
+            location to evaluate
+        scale : bool, optional
+            whether to scale the points into model domain, by default True
+
+        Returns
+        -------
+        np.ndarray
+            N,3 array of gradient vectors
+        """
+        xyz = np.array(points)
+        if scale:
+            xyz = self.scale(xyz, inplace=False)
+        grad = np.zeros(xyz.shape)
+        for group in reversed(self.stratigraphic_column.keys()):
+            if group == "faults":
+                continue
+            feature_id = self.feature_name_index.get(group, -1)
+            if feature_id >= 0:
+                feature = self.features[feature_id]
+                gradt = feature.evaluate_gradient(xyz)
+                grad[~np.isnan(gradt).any(axis=1)] = gradt[~np.isnan(gradt).any(axis=1)]
+            if feature_id == -1:
+                logger.error(f"Model does not contain {group}")
+
+        return grad
+
     def evaluate_fault_displacements(self, points, scale=True):
         """Evaluate the fault displacement magnitude at each location
 
