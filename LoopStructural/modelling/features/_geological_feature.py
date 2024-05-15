@@ -158,7 +158,8 @@ class GeologicalFeature(BaseFeature):
                 )
             points_faulted = self._apply_faults(points)
             values = self.interpolator.evaluate_value(points_faulted)
-            return self.interpolator.support.evaluate_gradient(pos, values)
+            v[mask, :] = self.interpolator.support.evaluate_gradient(pos[mask, :], values)
+            return v
         pos = self._apply_faults(pos)
         if mask.dtype not in [int, bool]:
             logger.error(f"Unable to evaluate gradient for {self.name}")
