@@ -116,7 +116,7 @@ class FaultBuilder(StructuralFrameBuilder):
         """
         trace_mask = np.logical_and(fault_frame_data["coord"] == 0, fault_frame_data["val"] == 0)
         logger.info(f"There are {np.sum(trace_mask)} points on the fault trace")
-        if np.sum(trace_mask) == 0:
+        if np.sum(trace_mask) == 0 and fault_center is None:
             logger.error("You cannot model a fault without defining the location of the fault")
             raise ValueError("There are no points on the fault trace")
         # find the middle point on the fault trace if center is not provided
@@ -483,7 +483,7 @@ class FaultBuilder(StructuralFrameBuilder):
         buffer : double
             percentage of length to add to edges
         """
-        length = np.max(self.maximum - self.origin)
+        length = np.nanmax(self.maximum - self.origin)
         # for builder in self.builders:
         # all three coordinates share the same support
         self.builders[0].set_interpolation_geometry(
