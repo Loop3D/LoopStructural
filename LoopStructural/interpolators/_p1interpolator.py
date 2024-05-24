@@ -172,12 +172,14 @@ class P1Interpolator(DiscreteInterpolator):
         self.add_norm_constraints(self.interpolation_weights["npw"])
         self.add_value_constraints(self.interpolation_weights["cpw"])
         self.add_tangent_constraints(self.interpolation_weights["tpw"])
+        self.add_value_inequality_constraints()
+        self.add_inequality_pairs_constraints()
         # self.add_interface_constraints(self.interpolation_weights["ipw"])
 
     def add_gradient_orthogonal_constraints(
         self,
         points: np.ndarray,
-        vector: np.ndarray,
+        vectors: np.ndarray,
         w: float = 1.0,
         B: float = 0,
         name='undefined gradient orthogonal constraint',
@@ -210,9 +212,9 @@ class P1Interpolator(DiscreteInterpolator):
             # elements = elements.swapaxes(0, 2)
             # grad = grad.swapaxes(1, 2)
             # elements = elements.swapaxes(1, 2)
-            norm = np.linalg.norm(vector, axis=1)
-            vector[norm > 0, :] /= norm[norm > 0, None]
-            A = np.einsum("ij,ijk->ik", vector[inside, :3], grad[inside, :, :])
+            norm = np.linalg.norm(vectors, axis=1)
+            vectors[norm > 0, :] /= norm[norm > 0, None]
+            A = np.einsum("ij,ijk->ik", vectors[inside, :3], grad[inside, :, :])
             B = np.zeros(points[inside, :].shape[0]) + B
             self.add_constraints_to_least_squares(A, B, elements, w=wt, name="gradient orthogonal")
             if np.sum(inside) <= 0:
