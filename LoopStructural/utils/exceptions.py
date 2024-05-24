@@ -12,6 +12,10 @@ class LoopException(Exception):
 class LoopImportError(LoopException):
     """ """
 
+    def __init__(self, message, additional_information=None):
+        super().__init__(message)
+        self.additional_information = additional_information
+
     pass
 
 
