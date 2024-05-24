@@ -1,5 +1,6 @@
 from dataclasses import dataclass
 import numpy as np
+from LoopStructural.utils import get_vectors
 
 
 @dataclass
@@ -36,12 +37,19 @@ class VectorPoints:
             "name": self.name,
         }
 
-    def vtk(self):
+    def vtk(self, geom='arrow', scale=1.0, scale_function=None):
         import pyvista as pv
 
+        vectors = np.copy(self.vectors)
+        if scale_function is not None:
+            vectors /= np.linalg.norm(vectors, axis=1)[:, None]
+            vectors *= scale_function(self.locations)[:, None]
         points = pv.PolyData(self.locations)
-        points.point_data.set_vectors(self.vectors, 'vectors')
-        geom = pv.Arrow()
+        points.point_data.set_vectors(vectors, 'vectors')
+        if geom == 'arrow':
+            geom = pv.Arrow(scale=scale)
+        elif geom == 'disc':
+            geom = pv.Disc(inner=0, outer=scale)
 
         # Perform the glyph
         return points.glyph(orient="vectors", geom=geom, tolerance=0.05)
