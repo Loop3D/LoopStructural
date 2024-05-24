@@ -275,6 +275,7 @@ class TetMesh(BaseStructuredSupport):
 
         """
         pos = np.array(pos)
+        pos = pos[:, : self.dimension]
         inside = self.inside(pos)
         # initialise array for tetrahedron vertices
         vertices = np.zeros((pos.shape[0], 5, 4, 3))
