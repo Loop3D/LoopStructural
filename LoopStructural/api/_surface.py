@@ -59,7 +59,9 @@ class LoopIsosurfacer:
             raise ValueError("Must specify either interpolator or callable")
 
     def fit(
-        self, values: Union[list, int, float], name: Optional[Union[List[str], str]] = None
+        self,
+        values: Optional[Union[list, int, float]],
+        name: Optional[Union[List[str], str]] = None,
     ) -> surface_list:
         """Extract isosurfaces from the interpolator
 
@@ -76,10 +78,15 @@ class LoopIsosurfacer:
         surface_list
             a dictionary containing the extracted isosurfaces
         """
+
         if not callable(self.callable):
             raise ValueError("No interpolator of callable function set")
+
         surfaces = []
         all_values = self.callable(self.bounding_box.regular_grid(local=False))
+        ## set value to mean value if its not specified
+        if values is None:
+            values = [(np.nanmax(all_values) - np.nanmin(all_values)) / 2]
         if isinstance(values, list):
             isovalues = values
         elif isinstance(values, float):
