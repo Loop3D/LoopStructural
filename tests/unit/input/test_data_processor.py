@@ -5,7 +5,7 @@ import numpy as np
 
 
 def test_create_processor():
-    df = pd.DataFrame(rng.random(10, 3), columns=["X", "Y", "Z"])
+    df = pd.DataFrame(rng.random(size=(10, 3)), columns=["X", "Y", "Z"])
     df["name"] = ["unit_{}".format(name % 2) for name in range(10)]
     stratigraphic_order = [("sg", ["unit_0", "unit_1"])]
     thicknesses = {"unit_0": 1.0, "unit_1": 0.5}
