@@ -126,6 +126,7 @@ autosummary_mock_imports = [
 # from LoopStructural.visualisation.sphinx_scraper import Scraper as LoopScraper
 from sphinx_gallery.sorting import ExampleTitleSortKey
 import pyvista
+
 pyvista.BUILDING_GALLERY = True
 
 sphinx_gallery_conf = {
