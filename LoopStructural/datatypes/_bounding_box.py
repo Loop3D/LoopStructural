@@ -332,6 +332,27 @@ class BoundingBox:
             rng.shuffle(locs)
         return locs
 
+    def cell_centers(self, order: str = "F") -> np.ndarray:
+        """Get the cell centers of a regular grid
+
+        Parameters
+        ----------
+        order : str, optional
+            order of the grid, by default "C"
+
+        Returns
+        -------
+        np.ndarray
+            array of cell centers
+        """
+        x = np.linspace(self.origin[0], self.maximum[0], self.nsteps[0]-1)
+        y = np.linspace(self.origin[1], self.maximum[1], self.nsteps[1]-1)
+        z = np.linspace(self.origin[2], self.maximum[2], self.nsteps[2]-1)
+        xx, yy, zz = np.meshgrid(x, y, z, indexing="ij")
+        locs = np.array(
+            [xx.flatten(order=order), yy.flatten(order=order), zz.flatten(order=order)]
+        ).T
+        return locs + 0.5 * self.step_vector
     def to_dict(self) -> dict:
         """Export the defining characteristics of the bounding
         box to a dictionary for json serialisation
