@@ -1,13 +1,14 @@
 import numpy as np
 import pytest
 from LoopStructural.datatypes._structured_grid import StructuredGrid
+from LoopStructural.utils import rng
 
 
 def test_structured_grid_to_dict():
     origin = np.array([0, 0, 0])
     nsteps = np.array([10, 10, 10])
     step_vector = np.array([1, 1, 1])
-    data = np.random.rand(10, 10, 10)
+    data = rng.random(size=(10, 10, 10))
     name = "grid_data"
 
     grid = StructuredGrid(
@@ -42,7 +43,7 @@ def test_structured_grid_vtk():
     origin = np.array([0, 0, 0])
     nsteps = np.array([10, 10, 10])
     step_vector = np.array([1, 1, 1])
-    data = np.random.rand(10, 10, 10)
+    data = rng.random(size=(10, 10, 10))
     name = "grid_data"
 
     grid = StructuredGrid(origin, step_vector, nsteps, data, name)

@@ -12,6 +12,7 @@ from LoopStructural import GeologicalModel
 from LoopStructural.modelling import ProcessInputData
 from LoopStructural.visualisation import Loop3DView
 from LoopStructural.datasets import load_fault_trace
+from LoopStructural.utils import rng
 import pandas as pd
 import matplotlib.pyplot as plt
 import numpy as np
@@ -25,7 +26,7 @@ faults = []
 for i in range(len(fault_trace)):
     for x, y in zip(fault_trace.loc[i, :].geometry.xy[0], fault_trace.loc[i, :].geometry.xy[1]):
         faults.append(
-            [fault_trace.loc[i, "fault_name"], x, y, np.random.random() * 0.4]
+            [fault_trace.loc[i, "fault_name"], x, y, rng.random() * 0.4]
         )  # better results if points aren't from a single plane
 df = pd.DataFrame(faults, columns=["fault_name", "X", "Y", "Z"])
 

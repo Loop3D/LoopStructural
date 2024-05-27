@@ -1,7 +1,9 @@
 from LoopStructural import GeologicalModel
+from LoopStructural.modelling.features import GeologicalFeature
 from LoopStructural.datasets import load_noddy_single_fold
 
 import pandas as pd
+import numpy as np
 
 data, boundary_points = load_noddy_single_fold()
 data.head()
@@ -20,6 +22,14 @@ def test_average_fold_axis():
         # fold_axis=[-6.51626577e-06, -5.00013645e-01, -8.66017526e-01],
         # limb_wl=1
     )
+    model.update()
+
+    assert np.isclose(
+        stratigraphy.fold.fold_axis,
+        np.array([-6.51626577e-06, -5.00013645e-01, -8.66017526e-01]),
+        rtol=1e-3,
+        atol=1e-3,
+    ).all()
 
 
 def test_fixed_fold_axis():
@@ -35,6 +45,10 @@ def test_fixed_fold_axis():
         fold_axis=[-6.51626577e-06, -5.00013645e-01, -8.66017526e-01],
         # limb_wl=1
     )
+    model.update()
+    assert np.isclose(
+        stratigraphy.fold.fold_axis, np.array([-6.51626577e-06, -5.00013645e-01, -8.66017526e-01])
+    ).all()
 
 
 def test_fixed_wavelength():
@@ -50,6 +64,8 @@ def test_fixed_wavelength():
         fold_axis=[-6.51626577e-06, -5.00013645e-01, -8.66017526e-01],
         limb_wl=1,
     )
+    model.update()
+    assert isinstance(stratigraphy, GeologicalFeature)
 
 
 def test_no_fold_frame():
@@ -65,3 +81,7 @@ def test_no_fold_frame():
         fold_axis=[-6.51626577e-06, -5.00013645e-01, -8.66017526e-01],
         limb_wl=1,
     )
+    model.update()
+    assert isinstance(stratigraphy, GeologicalFeature)
+    assert stratigraphy.fold.foldframe.name == "s1"
+    assert fold_frame.name == "s1"

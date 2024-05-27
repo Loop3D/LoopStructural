@@ -20,9 +20,9 @@ def test_surface_creation():
 
 
 def test_surface_vtk():
-    try:
-        import pyvista as pv
-    except ImportError:
+    import importlib.util
+
+    if importlib.util.find_spec('pyvista') is None:
         pytest.skip("pyvista is required for vtk support")
     vertices = np.array([[0, 0, 0], [1, 0, 0], [0, 1, 0]])
     triangles = np.array([[0, 1, 2]])

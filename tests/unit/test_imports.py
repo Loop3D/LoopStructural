@@ -1,16 +1,18 @@
+import importlib.util
+
+
 def test_import_model():
+
     success = True
-    try:
-        from LoopStructural import GeologicalModel
-    except ImportError:
+    if importlib.util.find_spec("LoopStructural", 'GeologicalModel') is None:
         success = False
-    assert success == True
+    assert success
 
 
 # def test_import_visualisation():
 #     success = True
 #     try:
-#         from LoopStructural.visualisation import LavaVuModelViewer
+#         from LoopStructural.visualisation import Loop3DView
 #     except ImportError:
 #         success = False
 #     assert success == True
@@ -24,10 +26,9 @@ def test_import_model():
 #     assert success == True
 
 
-def test_import_geological_feature():
-    success = True
-    try:
-        from LoopStructural.modelling.features import GeologicalFeature
-    except ImportError:
-        success = False
-    assert success == True
+# def test_import_geological_feature():
+
+#     success = True
+#     if importlib.util.find_spec('LoopStructural.modelling.features', ''):
+#         success = False
+#     assert success

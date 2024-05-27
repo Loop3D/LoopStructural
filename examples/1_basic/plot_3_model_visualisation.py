@@ -22,7 +22,6 @@ from LoopStructural.visualisation import Loop3DView
 
 from LoopStructural.datasets import load_claudius  # demo data
 
-import numpy as np
 
 #####################
 # Build the model
@@ -47,7 +46,7 @@ model.set_stratigraphic_column(strat_column)
 #
 # The Loop3DView is an LoopStructural class that provides easy 3D
 # plotting options for plotting data points and resulting implicit
-# functions. 
+# functions.
 #
 # the Loop3DView is a wrapper around the pyvista Plotter class. Allowing
 # any of the methods for the pyvista Plotter class to be used.
@@ -72,7 +71,7 @@ model.set_stratigraphic_column(strat_column)
 # -  ``vmin`` minimum value of the colour map
 # -  ``vmax`` maximum value of the colour map
 # -  ``pyvista_kwargs`` -  other kwargs for passing directly to pyvista `Plotter.add_mesh`
-# 
+#
 #
 # Alternatively the scalar fields can be displayed on a rectangular cuboid.
 #
@@ -106,11 +105,11 @@ model.set_stratigraphic_column(strat_column)
 # .. code:: python
 #
 #    viewer.add_vector_field(feature, **kwargs)
-# 
+#
 # Where the optional kwargs can be:
 # - ``scale`` - scale of the gradient vectors
 #
-# 
+#
 #
 
 viewer = Loop3DView(model, background="white")

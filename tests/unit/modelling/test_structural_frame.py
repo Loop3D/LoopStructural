@@ -1,4 +1,3 @@
-from math import atan
 from LoopStructural.modelling.features import (
     StructuralFrame,
     GeologicalFeature,
@@ -15,7 +14,7 @@ def test_structural_frame():
     coordinate_1 = GeologicalFeature("coord1", None)
     coordinate_2 = GeologicalFeature("coord2", None)
     frame = StructuralFrame("structural_frame", [coordinate_0, coordinate_1, coordinate_2])
-    assert frame != None
+    assert frame is not None
     assert frame.name == "structural_frame"
 
 

@@ -14,6 +14,8 @@ def model_fit(model, data):
 def test_create_model():
     data, bb = load_claudius()
     model = GeologicalModel(bb[0, :], bb[1, :])
+    assert np.all(np.isclose(model.origin, bb[0, :]))
+    assert np.all(np.isclose(model.maximum, bb[1, :]))
 
 
 def test_add_data():
@@ -26,7 +28,7 @@ def test_create_stratigraphy_FDI_cg():
     data, bb = load_claudius()
     model = GeologicalModel(bb[0, :], bb[1, :])
     model.set_model_data(data)
-    s0 = model.create_and_add_foliation(
+    model.create_and_add_foliation(
         "strati", interpolatortype="FDI", nelements=1000, solver="cg", damp=False
     )
     model.update()
@@ -37,7 +39,7 @@ def test_remove_constraints_PLI():
     data, bb = load_claudius()
     model = GeologicalModel(bb[0, :], bb[1, :])
     model.set_model_data(data)
-    s0 = model.create_and_add_foliation(
+    model.create_and_add_foliation(
         "strati", interpolatortype="FDI", nelements=1000, solver="cg", damp=False
     )
     model.update()
@@ -48,7 +50,7 @@ def test_create_stratigraphy_FDI_lu():
     data, bb = load_claudius()
     model = GeologicalModel(bb[0, :], bb[1, :])
     model.set_model_data(data)
-    s0 = model.create_and_add_foliation(
+    model.create_and_add_foliation(
         "strati", interpolatortype="FDI", nelements=1000, solver="lu", damp=True
     )
     model.update()
@@ -59,7 +61,7 @@ def test_create_stratigraphy_FDI_pyamg():
     data, bb = load_claudius()
     model = GeologicalModel(bb[0, :], bb[1, :])
     model.set_model_data(data)
-    s0 = model.create_and_add_foliation(
+    model.create_and_add_foliation(
         "strati", interpolatortype="FDI", nelements=1000, solver="pyamg", damp=True
     )
     model.update()
@@ -70,7 +72,7 @@ def test_create_stratigraphy_PLI_cg():
     data, bb = load_claudius()
     model = GeologicalModel(bb[0, :], bb[1, :])
     model.set_model_data(data)
-    s0 = model.create_and_add_foliation(
+    model.create_and_add_foliation(
         "strati", interpolatortype="PLI", nelements=1000, solver="cg", damp=False
     )
     model.update()
@@ -81,7 +83,7 @@ def test_create_stratigraphy_PLI_lu():
     data, bb = load_claudius()
     model = GeologicalModel(bb[0, :], bb[1, :])
     model.set_model_data(data)
-    s0 = model.create_and_add_foliation(
+    model.create_and_add_foliation(
         "strati", interpolatortype="PLI", nelements=1000, solver="lu", damp=True
     )
     model.update()
@@ -92,7 +94,7 @@ def test_create_stratigraphy_PLI_pyamg():
     data, bb = load_claudius()
     model = GeologicalModel(bb[0, :], bb[1, :])
     model.set_model_data(data)
-    s0 = model.create_and_add_foliation(
+    model.create_and_add_foliation(
         "strati", interpolatortype="PLI", nelements=1000, solver="pyamg", damp=True
     )
     model.update()

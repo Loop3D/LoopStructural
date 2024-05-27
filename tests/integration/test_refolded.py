@@ -1,4 +1,5 @@
 from LoopStructural import GeologicalModel
+from LoopStructural.modelling.features import StructuralFrame
 from LoopStructural.datasets import load_laurent2016
 
 
@@ -16,3 +17,6 @@ def average_axis():
     s0 = model.create_and_add_folded_fold_frame(
         "s0", limb_wl=1.0, av_fold_axis=True, nelements=50000
     )
+    assert s1.fold.foldframe.name == 's2'
+    assert s0.fold.foldframe.name == 's1'
+    assert isinstance(s2, StructuralFrame)

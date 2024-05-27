@@ -5,6 +5,7 @@ import numpy as np
 ## structured grid 2d tests
 def test_create_structured_grid2d():
     grid = StructuredGrid2D()
+    assert isinstance(grid, StructuredGrid2D)
 
 
 def test_create_structured_grid2d_origin_nsteps():
@@ -13,7 +14,7 @@ def test_create_structured_grid2d_origin_nsteps():
     assert np.sum(grid.maximum - np.ones(2) * 5) == 0
 
 
-def test_create_structured_grid2d_origin_nsteps():
+def test_create_structured_grid2d_origin_nsteps_sv():
     grid = StructuredGrid2D(
         origin=np.zeros(2), nsteps=np.array([10, 10]), step_vector=np.array([0.1, 0.1])
     )
@@ -57,4 +58,4 @@ def test_get_element_outside2d():
     grid = StructuredGrid2D()
     point = np.array([grid.origin - np.ones(2)])
     idc, inside = grid.position_to_cell_corners(point)
-    assert inside[0] == False
+    assert not inside[0]

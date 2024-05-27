@@ -1,6 +1,3 @@
-import numpy as np
-
-
 def test_nx(interpolator, data):
     assert interpolator.nx == 21 * 21 * 21
 
