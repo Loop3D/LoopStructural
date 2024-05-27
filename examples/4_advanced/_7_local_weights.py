@@ -11,7 +11,7 @@ it is also possible to vary these weights per datapoint.
 
 from LoopStructural import GeologicalModel
 from LoopStructural.datasets import load_claudius
-from LoopStructural.visualisation import LavaVuModelViewer
+from LoopStructural.visualisation import Loop3DView
 
 ##################################################################################################
 # Use Cladius case study
@@ -26,7 +26,7 @@ data.head()
 model = GeologicalModel(bb[0, :], bb[1, :])
 model.data = data
 model.create_and_add_foliation("strati", interpolatortype="FDI", cpw=1.0, npw=1.0)
-view = LavaVuModelViewer(model)
+view = Loop3DView(model)
 view.add_isosurface(model["strati"], slices=data["val"].dropna().unique())
 view.rotation = [84.24493408203125, -77.89686584472656, -171.99795532226562]
 view.display()
@@ -36,7 +36,7 @@ view.display()
 model = GeologicalModel(bb[0, :], bb[1, :])
 model.data = data
 model.create_and_add_foliation("strati", interpolatortype="FDI", cpw=10.0, npw=1.0)
-view = LavaVuModelViewer(model)
+view = Loop3DView(model)
 view.add_isosurface(model["strati"], slices=data["val"].dropna().unique())
 view.rotation = [84.24493408203125, -77.89686584472656, -171.99795532226562]
 view.display()
@@ -53,7 +53,7 @@ data.sample(10)
 
 # cpw/npw are multipliers for the weight column
 model.create_and_add_foliation("strati", cpw=1.0, npw=1)
-view = LavaVuModelViewer(model)
+view = Loop3DView(model)
 view.add_isosurface(model["strati"], slices=data["val"].dropna().unique())
 view.rotation = [84.24493408203125, -77.89686584472656, -171.99795532226562]
 view.display()

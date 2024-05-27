@@ -20,7 +20,7 @@
 
 from LoopStructural import GeologicalModel
 from LoopStructural.datasets import load_noddy_single_fold
-from LoopStructural.visualisation import LavaVuModelViewer, RotationAnglePlotter
+from LoopStructural.visualisation import Loop3DView, RotationAnglePlotter
 import pandas as pd
 
 
@@ -142,7 +142,7 @@ model.set_model_data(data[:npoints])
 stratigraphy = model.create_and_add_foliation(
     "s0", interpolatortype="PLI", nelements=5000, buffer=0.3, cgw=0.1
 )  # .2)
-viewer = LavaVuModelViewer(model, background="white")
+viewer = Loop3DView(model, background="white")
 # viewer.add_scalar_field(model.bounding_box,(38,55,30),
 #                       'box',
 #                      paint_with=stratigraphy,
@@ -211,7 +211,7 @@ stratigraphy = model.create_and_add_folded_foliation(
     #                                                    limb_wl=1
     buffer=0.5,
 )
-viewer = LavaVuModelViewer(model, background="white")
+viewer = Loop3DView(model, background="white")
 # viewer.add_scalar_field(model.bounding_box,(38,55,30),
 #                       'box',
 #                      paint_with=stratigraphy,

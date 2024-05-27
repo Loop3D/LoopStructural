@@ -6,7 +6,7 @@
 """
 
 from LoopStructural import GeologicalModel
-from LoopStructural.visualisation import LavaVuModelViewer, RotationAnglePlotter
+from LoopStructural.visualisation import Loop3DView, RotationAnglePlotter
 from LoopStructural.datasets import load_laurent2016
 import pandas as pd
 
@@ -35,7 +35,7 @@ rotation = [-69.11979675292969, 15.704944610595703, 6.00014591217041]
 model = GeologicalModel(bb[0, :], bb[1, :])
 model.set_model_data(data)
 s2 = model.create_and_add_fold_frame("s2", nelements=10000, buffer=0.5, solver="lu", damp=True)
-viewer = LavaVuModelViewer(model)
+viewer = Loop3DView(model)
 viewer.add_scalar_field(s2[0], cmap="prism")
 viewer.add_isosurface(s2[0], slices=[0, 1])
 viewer.add_data(s2[0])
@@ -51,7 +51,7 @@ viewer.display()
 s1 = model.create_and_add_folded_fold_frame("s1", av_fold_axis=True, nelements=50000, buffer=0.3)
 
 
-viewer = LavaVuModelViewer(model)
+viewer = Loop3DView(model)
 viewer.add_scalar_field(s1[0], cmap="prism")
 viewer.rotate([-69.11979675292969, 15.704944610595703, 6.00014591217041])
 viewer.display()
@@ -82,7 +82,7 @@ s0 = model.create_and_add_folded_foliation(
     buffer=0.2,
 )
 
-viewer = LavaVuModelViewer(model)
+viewer = Loop3DView(model)
 viewer.add_scalar_field(s0, cmap="tab20")
 viewer.rotate([-69.11979675292969, 15.704944610595703, 6.00014591217041])
 viewer.display()
@@ -101,7 +101,7 @@ s1_s0_splot.add_fold_limb_curve()
 # ax[0].plot(s0['fold'].fold_limb_rotation.fold_frame_coordinate,s0['fold'].fold_limb_rotation.rotation_angle,'bo')
 # ax[1].plot(s0['limb_svariogram'].lags,s1['limb_svariogram'].variogram,'bo')
 
-viewer = LavaVuModelViewer(model)
+viewer = Loop3DView(model)
 viewer.add_isosurface(s0, nslices=10, paint_with=s0, cmap="tab20")
 # viewer.add_data(s0)
 # viewer.add_fold(s0['fold'],locations=s0['support'].barycentre[::80])

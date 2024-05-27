@@ -9,7 +9,7 @@ This tutorial will demonstrate how to add unconformities to a mode using LoopStr
 from LoopStructural import GeologicalModel
 import pandas as pd
 import numpy as np
-from LoopStructural.visualisation import LavaVuModelViewer
+from LoopStructural.visualisation import Loop3DView
 
 ##################################################################################################
 # Generate synthetic data
@@ -37,16 +37,10 @@ model.update()
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 #
 
-view = LavaVuModelViewer(model)
-view.add_isosurface(model["unit_a"], nslices=5)
-view.add_isosurface(model["unit_b"], nslices=5)
-view.add_isosurface(model["unit_c"], nslices=5)
-view.camera = {
-    "translate": [0.0, 0.0, -20.67],
-    "rotate": [-0.562, -0.438, -0.442, 0.544],
-    "xyzrotate": [-94.021, -77.018, 2.784],
-    "fov": 45.0,
-}
+view = Loop3DView(model)
+view.plot_surface(model["unit_a"], value=5)
+view.plot_surface(model["unit_b"], value=5)
+view.plot_surface(model["unit_c"], value=5)
 view.display()
 
 ##################################################################################################
@@ -82,16 +76,10 @@ model.update()
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 #
 
-view = LavaVuModelViewer(model)
-view.add_isosurface(model["unit_a"], nslices=5)
-view.add_isosurface(model["unit_b"], nslices=5)
-view.add_isosurface(model["unit_c"], nslices=5)
-view.camera = {
-    "translate": [0.0, 0.0, -20.67],
-    "rotate": [-0.562, -0.438, -0.442, 0.544],
-    "xyzrotate": [-94.021, -77.018, 2.784],
-    "fov": 45.0,
-}
+view = Loop3DView(model)
+view.plot_surface(model["unit_a"], value=5)
+view.plot_surface(model["unit_b"], value=5)
+view.plot_surface(model["unit_c"], value=5)
 view.display()
 
 
@@ -116,16 +104,10 @@ model.update()
 # Visualise the model with onlap
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-view = LavaVuModelViewer(model)
-view.add_isosurface(model["unit_a"], nslices=5)
-view.add_isosurface(model["unit_b"], nslices=5)
-view.add_isosurface(model["unit_c"], nslices=5)
+view = Loop3DView(model)
+view.plot_surface(model["unit_a"], value=5)
+view.plot_surface(model["unit_b"], value=5)
+view.plot_surface(model["unit_c"], value=5)
 
-view.camera = {
-    "translate": [0.0, 0.0, -20.67],
-    "rotate": [-0.562, -0.438, -0.442, 0.544],
-    "xyzrotate": [-94.021, -77.018, 2.784],
-    "fov": 45.0,
-}
 
 view.display()

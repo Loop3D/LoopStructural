@@ -5,7 +5,7 @@
 """
 
 from LoopStructural import GeologicalModel
-from LoopStructural.visualisation import LavaVuModelViewer
+from LoopStructural.visualisation import Loop3DView
 from LoopStructural.datasets import load_intrusion
 import numpy as np
 import matplotlib.pyplot as plt
@@ -57,7 +57,7 @@ fault = model.create_and_add_fault(
     "fault", 500, nelements=10000, steps=4, interpolatortype="FDI", buffer=0.3
 )
 
-viewer = LavaVuModelViewer(model)
+viewer = Loop3DView(model)
 viewer.add_isosurface(
     fault,
     isovalue=0,
@@ -86,7 +86,7 @@ fault = model.create_and_add_fault(
 )
 strati = model.create_and_add_foliation("strati", nelements=30000, interpolatortype="PLI", cgw=0.03)
 model.update()
-viewer = LavaVuModelViewer(model)
+viewer = Loop3DView(model)
 viewer.add_isosurface(strati, isovalue=0)
 # viewer.add_data(model.features[0][0])
 viewer.add_data(strati)

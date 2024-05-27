@@ -1,7 +1,7 @@
 """
 3b. Modelling a fault network in LoopStructural
 ===============================================
-Uses GeologicalModel, ProcessInputData and LavaVuModelViewer from LoopStructural library. 
+Uses GeologicalModel, ProcessInputData and Loop3DView from LoopStructural library. 
 Also using geopandas to read a shapefile, pandas, matplotlib and numpy."""
 
 import LoopStructural
@@ -10,7 +10,7 @@ LoopStructural.__version__
 
 from LoopStructural import GeologicalModel
 from LoopStructural.modelling import ProcessInputData
-from LoopStructural.visualisation import LavaVuModelViewer
+from LoopStructural.visualisation import Loop3DView
 from LoopStructural.datasets import load_fault_trace
 import pandas as pd
 import matplotlib.pyplot as plt
@@ -98,7 +98,7 @@ processor = ProcessInputData(
 model = GeologicalModel.from_processor(processor)
 model.update()
 
-view = LavaVuModelViewer(model)
+view = Loop3DView(model)
 for f in model.faults:
     view.add_isosurface(f, slices=[0])  #
 view.rotation = [-50.92916488647461, -30.319700241088867, -20.521053314208984]
@@ -121,7 +121,7 @@ processor = ProcessInputData(
 
 model = GeologicalModel.from_processor(processor)
 
-view = LavaVuModelViewer(model)
+view = Loop3DView(model)
 for f in model.faults:
     view.add_isosurface(f, slices=[0])  #
     view.add_data(f[0], vectors=True)
