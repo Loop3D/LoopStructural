@@ -1,11 +1,9 @@
-cython
 scikit-learn
 scikit-image
 scipy
 numpy
 setuptools
 pandas
-lavavu
 pyevtk
 dill
 
