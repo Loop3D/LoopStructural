@@ -1806,6 +1806,6 @@ class GeologicalModel:
 
     def get_block_model(self):
         grid = self.bounding_box.vtk
-        
+
         grid.cell_data['id'] = self.evaluate_model(self.bounding_box.cell_centers(), scale=False)
         return grid, self.stratigraphic_ids()
