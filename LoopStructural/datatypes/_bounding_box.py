@@ -13,7 +13,7 @@ class BoundingBox:
         global_origin: Optional[np.ndarray] = None,
         nsteps: Optional[np.ndarray] = None,
         step_vector: Optional[np.ndarray] = None,
-        dimensions: int = 3,
+        dimensions: Optional[int] = None,
     ):
         """A bounding box for a model, defined by the
         origin, maximum and number of steps in each direction
@@ -40,14 +40,16 @@ class BoundingBox:
             global_origin = origin
         self._origin = np.array(origin)
         self._maximum = np.array(maximum)
-        if global_origin is None:
-            global_origin = np.zeros(3)
 
-        self._global_origin = global_origin
-        self.dimensions = dimensions
-        self.nsteps = np.array([50, 50, 25])
-        if nsteps is not None:
-            self.nsteps = np.array(nsteps)
+        if dimensions is None:
+            if self.origin is None:
+                raise LoopValueError("Origin is not set")
+            self.dimensions = len(self.origin)
+            print(self.dimensions)
+        else:
+            self.dimensions = dimensions
+        if nsteps is None:
+            self.nsteps = np.array([50, 50, 25])
         self.name_map = {
             "xmin": (0, 0),
             "ymin": (0, 1),
@@ -128,7 +130,7 @@ class BoundingBox:
         box_vol = self.volume
         ele_vol = box_vol / nelements
         # calculate the step vector of a regular cube
-        step_vector = np.zeros(3)
+        step_vector = np.zeros(self.dimensions)
         step_vector[:] = ele_vol ** (1.0 / 3.0)
         # number of steps is the length of the box / step vector
         nsteps = np.ceil((self.maximum - self.origin) / step_vector).astype(int)
@@ -327,6 +329,7 @@ class BoundingBox:
         locs = np.array(
             [xx.flatten(order=order), yy.flatten(order=order), zz.flatten(order=order)]
         ).T
+
         if shuffle:
             # logger.info("Shuffling points")
             rng.shuffle(locs)

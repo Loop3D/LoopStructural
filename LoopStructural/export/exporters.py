@@ -62,9 +62,10 @@ def write_feat_surfs(
         logger.warning("{featurename} is not in the model, skipping")
         return False, []
     has_feats = True
-    x = np.linspace(model.bounding_box[0, 0], model.bounding_box[1, 0], model.nsteps[0])
-    y = np.linspace(model.bounding_box[0, 1], model.bounding_box[1, 1], model.nsteps[1])
-    z = np.linspace(model.bounding_box[1, 2], model.bounding_box[0, 2], model.nsteps[2])
+
+    x = np.linspace(model.bounding_box.bb[0, 0], model.bounding_box.bb[1, 0], model.nsteps[0])
+    y = np.linspace(model.bounding_box.bb[0, 1], model.bounding_box.bb[1, 1], model.nsteps[1])
+    z = np.linspace(model.bounding_box.bb[1, 2], model.bounding_box.bb[0, 2], model.nsteps[2])
     xx, yy, zz = np.meshgrid(x, y, z, indexing="ij")
     points = np.array([xx.flatten(), yy.flatten(), zz.flatten()]).T
     val = model[featurename].evaluate_value(points)
@@ -82,9 +83,9 @@ def write_feat_surfs(
         )
         verts += np.array(
             [
-                model.bounding_box[0, 0],
-                model.bounding_box[0, 1],
-                model.bounding_box[1, 2],
+                model.bounding_box.bb[0, 0],
+                model.bounding_box.bb[0, 1],
+                model.bounding_box.bb[1, 2],
             ]
         )
         model.rescale(verts)
@@ -422,14 +423,7 @@ def _write_vol_evtk(model, file_name, data_label, nsteps, real_coords=True):
 
     """
     # Define grid spacing
-    loop_X = np.linspace(model.bounding_box[0, 0], model.bounding_box[1, 0], nsteps[0])
-    loop_Y = np.linspace(model.bounding_box[0, 1], model.bounding_box[1, 1], nsteps[1])
-    loop_Z = np.linspace(model.bounding_box[0, 2], model.bounding_box[1, 2], nsteps[2])
-
-    # Generate model values in 3d grid
-    xx, yy, zz = np.meshgrid(loop_X, loop_Y, loop_Z, indexing="ij")
-    # xyz is N x 3 vector array
-    xyz = np.array([xx.flatten(), yy.flatten(), zz.flatten()]).T
+    xyz = model.bounding_box.regular_grid(nsteps)
     vals = model.evaluate_model(xyz, scale=False)
     if real_coords:
         model.rescale(xyz)
@@ -471,14 +465,8 @@ def _write_vol_gocad(model, file_name, data_label, nsteps, real_coords=True):
 
     """
     # Define grid spacing in model scale coords
-    loop_X = np.linspace(model.bounding_box[0, 0], model.bounding_box[1, 0], nsteps[0])
-    loop_Y = np.linspace(model.bounding_box[0, 1], model.bounding_box[1, 1], nsteps[1])
-    loop_Z = np.linspace(model.bounding_box[0, 2], model.bounding_box[1, 2], nsteps[2])
+    xyz = model.bounding_box.regular_grid(nsteps)
 
-    # Generate model values in 3d grid
-    xx, yy, zz = np.meshgrid(loop_X, loop_Y, loop_Z, indexing="ij")
-    # xyz is N x 3 vector array
-    xyz = np.array([xx.flatten(), yy.flatten(), zz.flatten()]).T
     vals = model.evaluate_model(xyz, scale=False)
     # Use FORTRAN style indexing for GOCAD VOXET
     vol_vals = np.reshape(vals, nsteps, order="F")
