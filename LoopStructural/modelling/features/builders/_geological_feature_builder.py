@@ -530,7 +530,10 @@ class GeologicalFeatureBuilder(BaseBuilder):
         logger.info(f'installing equality constraints {self.name}')
         self.install_equality_constraints()
         logger.info(f'running interpolation for {self.name}')
-        self.interpolator.solve_system(**kwargs)
+
+        self.interpolator.solve_system(
+            solver=kwargs.get('solver', None), solver_kwargs=kwargs.get('solver_kwargs', {})
+        )
         logger.info(f'Finished building  {self.name}')
         self._up_to_date = True
         return self._feature
