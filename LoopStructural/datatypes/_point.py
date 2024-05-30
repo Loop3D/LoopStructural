@@ -1,6 +1,5 @@
 from dataclasses import dataclass
 import numpy as np
-from LoopStructural.utils import get_vectors
 
 
 @dataclass
