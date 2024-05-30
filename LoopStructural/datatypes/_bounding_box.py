@@ -4,6 +4,10 @@ from LoopStructural.utils.exceptions import LoopValueError
 from LoopStructural.utils import rng
 import numpy as np
 
+from LoopStructural.utils.logging import getLogger
+
+logger = getLogger(__name__)
+
 
 class BoundingBox:
     def __init__(
@@ -13,7 +17,7 @@ class BoundingBox:
         global_origin: Optional[np.ndarray] = None,
         nsteps: Optional[np.ndarray] = None,
         step_vector: Optional[np.ndarray] = None,
-        dimensions: Optional[int] = None,
+        dimensions: Optional[int] = 3,
     ):
         """A bounding box for a model, defined by the
         origin, maximum and number of steps in each direction
@@ -33,23 +37,26 @@ class BoundingBox:
         # we want the local coordinates to start at 0
         # otherwise uses provided origin. This is useful for having multiple bounding boxes rela
         if global_origin is not None and origin is None:
-            origin = np.zeros(3)
+            origin = np.zeros(global_origin.shape)
         if maximum is None and nsteps is not None and step_vector is not None:
             maximum = origin + nsteps * step_vector
         if origin is not None and global_origin is None:
             global_origin = origin
         self._origin = np.array(origin)
         self._maximum = np.array(maximum)
+        self.dimensions = dimensions
+        if self.origin.shape:
+            if self.origin.shape[0] != self.dimensions:
+                logger.warning(
+                    f"Origin has {self.origin.shape[0]} dimensions but bounding box has {self.dimensions}"
+                )
 
-        if dimensions is None:
-            if self.origin is None:
-                raise LoopValueError("Origin is not set")
-            self.dimensions = len(self.origin)
-            print(self.dimensions)
         else:
             self.dimensions = dimensions
-        if nsteps is None:
-            self.nsteps = np.array([50, 50, 25])
+        self._global_origin = global_origin
+        self.nsteps = np.array([50, 50, 25])
+        if nsteps is not None:
+            self.nsteps = np.array(nsteps)
         self.name_map = {
             "xmin": (0, 0),
             "ymin": (0, 1),
@@ -73,6 +80,10 @@ class BoundingBox:
 
     @global_origin.setter
     def global_origin(self, global_origin):
+        if self.dimensions != len(global_origin):
+            logger.warning(
+                f"Global origin has {len(global_origin)} dimensions but bounding box has {self.dimensions}"
+            )
         self._global_origin = global_origin
 
     @property
@@ -91,6 +102,10 @@ class BoundingBox:
 
     @origin.setter
     def origin(self, origin: np.ndarray):
+        if self.dimensions != len(origin):
+            logger.warning(
+                f"Origin has {len(origin)} dimensions but bounding box has {self.dimensions}"
+            )
         self._origin = origin
 
     @property
@@ -147,6 +162,7 @@ class BoundingBox:
         np.ndarray
             array of corners in clockwise order
         """
+
         return np.array(
             [
                 self.origin.tolist(),
@@ -317,18 +333,17 @@ class BoundingBox:
 
         if nsteps is None:
             nsteps = self.nsteps
-        x = np.linspace(self.origin[0], self.maximum[0], nsteps[0])
-        y = np.linspace(self.origin[1], self.maximum[1], nsteps[1])
-        z = np.linspace(self.origin[2], self.maximum[2], nsteps[2])
-        if not local:
+        coordinates = [
+            np.linspace(self.origin[i], self.maximum[i], nsteps[i]) for i in range(self.dimensions)
+        ]
 
-            x = np.linspace(self.global_origin[0], self.global_maximum[0], nsteps[0])
-            y = np.linspace(self.global_origin[1], self.global_maximum[1], nsteps[1])
-            z = np.linspace(self.global_origin[2], self.global_maximum[2], nsteps[2])
-        xx, yy, zz = np.meshgrid(x, y, z, indexing="ij")
-        locs = np.array(
-            [xx.flatten(order=order), yy.flatten(order=order), zz.flatten(order=order)]
-        ).T
+        if not local:
+            coordinates = [
+                np.linspace(self.global_origin[i], self.global_maximum[i], nsteps[i])
+                for i in range(self.dimensions)
+            ]
+        coordinate_grid = np.meshgrid(*coordinates, indexing="ij")
+        locs = np.array([coord.flatten(order=order) for coord in coordinate_grid]).T
 
         if shuffle:
             # logger.info("Shuffling points")
@@ -348,13 +363,8 @@ class BoundingBox:
         np.ndarray
             array of cell centers
         """
-        x = np.linspace(self.origin[0], self.maximum[0], self.nsteps[0] - 1)
-        y = np.linspace(self.origin[1], self.maximum[1], self.nsteps[1] - 1)
-        z = np.linspace(self.origin[2], self.maximum[2], self.nsteps[2] - 1)
-        xx, yy, zz = np.meshgrid(x, y, z, indexing="ij")
-        locs = np.array(
-            [xx.flatten(order=order), yy.flatten(order=order), zz.flatten(order=order)]
-        ).T
+        locs = self.regular_grid(order=order, nsteps=self.nsteps - 1)
+
         return locs + 0.5 * self.step_vector
 
     def to_dict(self) -> dict:
