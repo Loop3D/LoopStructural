@@ -268,15 +268,14 @@ class GeologicalInterpolator(metaclass=ABCMeta):
         self.setup_interpolator(**kwargs)
 
     @abstractmethod
-    def solve_system(self, **kwargs):
+    def solve_system(self, solver, solver_kwargs: dict = {}) -> bool:
         """
         Solves the interpolation equations
         """
-        self._solve(**kwargs)
-        self.up_to_date = True
+        pass
 
     @abstractmethod
-    def update(self):
+    def update(self) -> bool:
         return False
 
     @abstractmethod

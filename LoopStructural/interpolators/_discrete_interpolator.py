@@ -3,7 +3,7 @@ Discrete interpolator base for least squares
 """
 
 from abc import abstractmethod
-from typing import Callable, Optional
+from typing import Callable, Optional, Union
 import logging
 
 from time import time
@@ -489,140 +489,11 @@ class DiscreteInterpolator(GeologicalInterpolator):
         bounds = np.hstack(bounds)
         return Q, bounds
 
-    def _solve_osqp(self, P, A, q, l, u, mkl=False):
-        """Wrapper to use osqp solver
-
-        Parameters
-        ----------
-        P : _type_
-            _description_
-        A : _type_
-            _description_
-        q : _type_
-            _description_
-        l : _type_
-            _description_
-        u : _type_
-            _description_
-        mkl : bool, optional
-            _description_, by default False
-
-        Returns
-        -------
-        _type_
-            _description_
-
-        Raises
-        ------
-        LoopImportError
-            _description_
-        LoopImportError
-            _description_
-        """
-        try:
-            import osqp
-        except ImportError:
-            raise LoopImportError("Missing osqp pip install osqp")
-        prob = osqp.OSQP()
-
-        # Setup workspace
-        # osqp likes csc matrices
-        linsys_solver = "qdldl"
-        if mkl:
-            linsys_solver = "mkl pardiso"
-
-        try:
-            prob.setup(
-                P.tocsc(),
-                np.array(q),
-                A.tocsc(),
-                np.array(u),
-                np.array(l),
-                linsys_solver=linsys_solver,
-            )
-        except ValueError:
-            if mkl:
-                logger.error("MKL solver library path not correct. Please add to LD_LIBRARY_PATH")
-                raise LoopImportError("Cannot import MKL pardiso")
-        res = prob.solve()
-        return res.x
-
-    def _solve_lu(self, A, B):
-        """
-        Call scipy LU decomoposition
-
-        Parameters
-        ----------
-        A : scipy square sparse matrix
-        B : numpy vector
-
-        Returns
-        -------
-
-        """
-        lu = sla.splu(A.tocsc())
-        sol = lu.solve(B)
-        return sol[: self.nx]
-
-    def _solve_lsqr(self, A, B, **kwargs):
-        """
-        Call scipy lsqr
-
-        Parameters
-        ----------
-        A : rectangular sparse matrix
-        B : vector
-
-        Returns
-        -------
-
-        """
-
-        lsqrargs = {}
-        lsqrargs["btol"] = 1e-12
-        lsqrargs["atol"] = 0
-        if "iter_lim" in kwargs:
-            logger.info("Using %i maximum iterations" % kwargs["iter_lim"])
-            lsqrargs["iter_lim"] = kwargs["iter_lim"]
-        if "damp" in kwargs:
-            logger.info("Using damping coefficient")
-            lsqrargs["damp"] = kwargs["damp"]
-        if "atol" in kwargs:
-            logger.info("Using a tolerance of %f" % kwargs["atol"])
-            lsqrargs["atol"] = kwargs["atol"]
-        if "btol" in kwargs:
-            logger.info("Using btol of %f" % kwargs["btol"])
-            lsqrargs["btol"] = kwargs["btol"]
-        if "show" in kwargs:
-            lsqrargs["show"] = kwargs["show"]
-        if "conlim" in kwargs:
-            lsqrargs["conlim"] = kwargs["conlim"]
-        return sla.lsqr(A, B, **lsqrargs)[0]
-
-    def _solve_pyamg(self, A, B, tol=1e-12, x0=None, verb=False, **kwargs):
-        """
-        Solve least squares system using pyamg algorithmic multigrid solver
-
-        Parameters
-        ----------
-        A :  scipy.sparse.matrix
-        B : numpy array
-
-        Returns
-        -------
-
-        """
-        import pyamg
-
-        logger.info("Solving using pyamg: tol {}".format(tol))
-        return pyamg.solve(A, B, tol=tol, x0=x0, verb=verb)[: self.nx]
-
     def solve_system(
         self,
-        solver: Optional[Callable[[sparse.csr_matrix, np.ndarray], np.ndarray]] = None,
+        solver: Optional[Union[Callable[[sparse.csr_matrix, np.ndarray], np.ndarray], str]] = None,
         solver_kwargs: dict = {},
-        **kwargs,
-    ):
+    ) -> bool:
         """
         Main entry point to run the solver and update the node value
         attribute for the
@@ -630,10 +501,10 @@ class DiscreteInterpolator(GeologicalInterpolator):
 
         Parameters
         ----------
-        solver : string
-            solver e.g. cg, lu, chol, custom
-        kwargs
-            kwargs for solver e.g. maxiter, preconditioner etc, damping for
+        solver : string/callable
+            solver 'cg' conjugate gradient, 'lsmr' or callable function
+        solver_kwargs
+            kwargs for solver check scipy documentation for more information
 
         Returns
         -------
@@ -688,8 +559,9 @@ class DiscreteInterpolator(GeologicalInterpolator):
             self.up_to_date = True
             logger.info("Interpolation took %f seconds" % (time() - starttime))
             return True
+        return False
 
-    def update(self):
+    def update(self) -> bool:
         """
         Check if the solver is up to date, if not rerun interpolation using
         the previously used solver. If the interpolation has not been run
