@@ -9,12 +9,10 @@ import logging
 from time import time
 import numpy as np
 from scipy import sparse  # import sparse.coo_matrix, sparse.bmat, sparse.eye
-from scipy.sparse import linalg as sla
 from ..interpolators import InterpolatorType
 
 from ..interpolators import GeologicalInterpolator
 from ..utils import getLogger
-from ..utils.exceptions import LoopImportError
 
 logger = getLogger(__name__)
 
