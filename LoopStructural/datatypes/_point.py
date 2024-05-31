@@ -36,7 +36,7 @@ class VectorPoints:
             "name": self.name,
         }
 
-    def vtk(self, geom='arrow', scale=1.0, scale_function=None):
+    def vtk(self, geom='arrow', scale=1.0, scale_function=None, tolerance=0.05):
         import pyvista as pv
 
         vectors = np.copy(self.vectors)
@@ -51,7 +51,7 @@ class VectorPoints:
             geom = pv.Disc(inner=0, outer=scale)
 
         # Perform the glyph
-        return points.glyph(orient="vectors", geom=geom, tolerance=0.05)
+        return points.glyph(orient="vectors", geom=geom, tolerance=tolerance)
 
     def save(self, filename):
         filename = str(filename)
