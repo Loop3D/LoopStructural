@@ -11,6 +11,5 @@ API
    LoopStructural
    LoopStructural.modelling
    LoopStructural.interpolators
-   LoopStructural.api
    LoopStructural.visualisation
    LoopStructural.datatypes
