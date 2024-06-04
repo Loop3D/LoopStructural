@@ -119,17 +119,10 @@ viewer = Loop3DView(model, background="white")
 
 viewer.plot_surface(strati, value=vals, cmap="prism", paint_with=strati)
 
-# viewer.add_section(
-#     strati,
-#     axis="x",
-#     value=0.0,
-#     boundary_points=model.bounding_box,
-#     nsteps=np.array([30, 30, 30]),
-#     cmap="prism",
-# )
-viewer.plot_scalar_field(strati, cmap="prism")
-viewer.plot_block_model(cmap="tab20")
 
+viewer.plot_scalar_field(strati, cmap="prism")
+print(viewer._build_stratigraphic_cmap(model))
+viewer.plot_block_model()
 # Add the data addgrad/addvalue arguments are optional
 viewer.plot_data(strati, vector=True, value=True)
 viewer.display()  # to add an interactive display
