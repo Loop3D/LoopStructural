@@ -32,9 +32,9 @@ RUN conda install -c conda-forge\
     python=3.10\
     -y
 RUN pip install git+https://github.com/geopandas/geopandas.git@v0.10.2
-RUN pip install lavavu-osmesa==1.8.45 
-ENV LD_LIBRARY_PATH=/opt/conda/lib/python3.10/site-packages/lavavu_osmesa.libs
+
 RUN conda install -c conda-forge pydata-sphinx-theme 
+RUN pip install loopstructuralvisualisation[all]>0.1.14
 RUN pip install sphinxcontrib-bibtex
 ENV TINI_VERSION v0.19.0
 ADD https://github.com/krallin/tini/releases/download/${TINI_VERSION}/tini /tini
