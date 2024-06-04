@@ -1,5 +1,6 @@
 import numpy as np
 from LoopStructural.interpolators import UnStructuredTetMesh
+from LoopStructural.utils import rng
 from os.path import dirname
 
 file_path = dirname(__file__)
@@ -12,7 +13,7 @@ def test_get_elements():
     neighbours = np.loadtxt("{}/neighbours.txt".format(file_path))
 
     mesh = UnStructuredTetMesh(nodes, elements, neighbours)
-    points = np.random.random((100, 3))
+    points = rng.random((100, 3))
     verts, c, tetra, inside = mesh.get_element_for_location(points)
 
     vertices = nodes[elements, :]

@@ -1,7 +1,9 @@
-from typing import Optional, Union, Callable
+from __future__ import annotations
+
+from typing import Optional, Union, Callable, List
 import numpy as np
 import numpy.typing as npt
-from LoopStructural.utils import getLogger
+from LoopStructural.utils.logging import getLogger
 
 logger = getLogger(__name__)
 try:
@@ -10,17 +12,17 @@ except ImportError:
     logger.warning("Using deprecated version of scikit-image")
     from skimage.measure import marching_cubes_lewiner as marching_cubes
 
-from LoopStructural.interpolators import GeologicalInterpolator
+# from LoopStructural.interpolators._geological_interpolator import GeologicalInterpolator
 from LoopStructural.datatypes import Surface, BoundingBox
 
-surface_list = dict[str, tuple[npt.ArrayLike, npt.ArrayLike, npt.ArrayLike, npt.ArrayLike]]
+surface_list = dict[str, Surface]
 
 
 class LoopIsosurfacer:
     def __init__(
         self,
         bounding_box: BoundingBox,
-        interpolator: Optional[GeologicalInterpolator] = None,
+        interpolator=None,
         callable: Optional[Callable[[npt.ArrayLike], npt.ArrayLike]] = None,
     ):
         """Extract isosurfaces from a geological interpolator or a callable function.
@@ -56,7 +58,11 @@ class LoopIsosurfacer:
         if self.callable is None:
             raise ValueError("Must specify either interpolator or callable")
 
-    def fit(self, values: Union[list, int, float]) -> surface_list:
+    def fit(
+        self,
+        values: Optional[Union[list, int, float]],
+        name: Optional[Union[List[str], str]] = None,
+    ) -> surface_list:
         """Extract isosurfaces from the interpolator
 
         Parameters
@@ -72,32 +78,60 @@ class LoopIsosurfacer:
         surface_list
             a dictionary containing the extracted isosurfaces
         """
+
         if not callable(self.callable):
             raise ValueError("No interpolator of callable function set")
-        surfaces = {}
-        all_values = self.callable(self.bounding_box.regular_grid())
+
+        surfaces = []
+        all_values = self.callable(self.bounding_box.regular_grid(local=False))
+        ## set value to mean value if its not specified
+        if values is None:
+            values = [(np.nanmax(all_values) - np.nanmin(all_values)) / 2]
         if isinstance(values, list):
             isovalues = values
         elif isinstance(values, float):
             isovalues = [values]
+        elif isinstance(values, int) and values < 1:
+            raise ValueError(
+                "Number of isosurfaces must be greater than 1. Either use a positive integer or provide a list or float for a specific isovalue."
+            )
         elif isinstance(values, int):
             isovalues = np.linspace(
-                np.min(all_values) + np.finfo(float).eps,
-                np.max(all_values) + np.finfo(float).eps,
+                np.nanmin(all_values) + np.finfo(float).eps,
+                np.nanmax(all_values) - np.finfo(float).eps,
                 values,
             )
+        logger.info(f'Isosurfacing at values: {isovalues}')
         for isovalue in isovalues:
-            verts, faces, normals, values = marching_cubes(
-                all_values.reshape(self.bounding_box.nsteps, order="C"),
-                isovalue,
-                spacing=self.bounding_box.step_vector,
-            )
+            try:
+                step_vector = (self.bounding_box.maximum - self.bounding_box.origin) / (
+                    np.array(self.bounding_box.nsteps) - 1
+                )
+                verts, faces, normals, values = marching_cubes(
+                    # np.rot90(
+                    all_values.reshape(self.bounding_box.nsteps, order="C"),  # k=2, axes=(0, 1)
+                    # ),
+                    isovalue,
+                    spacing=step_vector,
+                    mask=~np.isnan(all_values.reshape(self.bounding_box.nsteps, order="C")),
+                )
+            except RuntimeError:
+                logger.warning(f"Failed to extract isosurface for {isovalue}")
+                continue
+            except ValueError:
+                logger.warning(f"Failed to extract isosurface for {isovalue}")
+                continue
             values = np.zeros(verts.shape[0]) + isovalue
-            surfaces[f"surface_{isovalue}"] = Surface(
-                vertices=verts + self.bounding_box.origin,
-                triangles=faces,
-                normals=normals,
-                name=f"surface_{isovalue}",
-                values=values,
+            # need to add both global and local origin. If the bb is a buffer the local
+            # origin may not be 0
+            verts += self.bounding_box.global_origin
+            surfaces.append(
+                Surface(
+                    vertices=verts,
+                    triangles=faces,
+                    normals=normals,
+                    name=f"{name}_{isovalue}",
+                    values=values,
+                )
             )
         return surfaces

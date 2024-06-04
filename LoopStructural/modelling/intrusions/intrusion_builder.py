@@ -38,11 +38,10 @@ class IntrusionBuilder(BaseBuilder):
             a geological interpolator, by default None
         """
 
-        BaseBuilder.__init__(self, name=name)
+        BaseBuilder.__init__(self, model, name=name)
 
         self.intrusion_frame = frame
         self._up_to_date = False
-        self.model = model
         self._feature = IntrusionFeature(
             frame=frame,
             builder=self,

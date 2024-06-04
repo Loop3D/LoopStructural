@@ -22,7 +22,7 @@ Lets have a look at the logging from the Claudius model.
 """
 
 from LoopStructural import GeologicalModel
-from LoopStructural.visualisation import LavaVuModelViewer
+from LoopStructural.visualisation import Loop3DView
 from LoopStructural.datasets import load_claudius  # demo data
 from LoopStructural import log_to_file
 
@@ -55,7 +55,7 @@ strati = model.create_and_add_foliation(
     buffer=0.3,
     damp=True,
 )
-viewer = LavaVuModelViewer(model, background="white")
+viewer = Loop3DView(model, background="white")
 viewer.add_model_surfaces()
 viewer.rotate([-85.18760681152344, 42.93233871459961, 0.8641873002052307])
 viewer.display()
@@ -83,7 +83,7 @@ log_to_console("info")
 
 
 from LoopStructural import GeologicalModel
-from LoopStructural.visualisation import LavaVuModelViewer
+from LoopStructural.visualisation import Loop3DView
 from LoopStructural.datasets import load_claudius  # demo data
 
 
@@ -107,7 +107,7 @@ strati = model.create_and_add_foliation(
     buffer=0.3,
     damp=True,
 )
-viewer = LavaVuModelViewer(model, background="white")
+viewer = Loop3DView(model, background="white")
 viewer.add_model_surfaces()
 viewer.rotate([-85.18760681152344, 42.93233871459961, 0.8641873002052307])
 viewer.display()

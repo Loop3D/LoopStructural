@@ -3,7 +3,6 @@ Routines to export geological model data to file in a variety of formats
 """
 
 import os
-from types import SimpleNamespace
 from pyevtk.hl import unstructuredGridToVTK, pointsToVTK
 from pyevtk.vtk import VtkTriangle
 import numpy as np
@@ -11,7 +10,7 @@ from skimage.measure import marching_cubes
 
 from LoopStructural.utils.helper import create_box
 from LoopStructural.export.file_formats import FileFormat
-
+from LoopStructural.datatypes import Surface
 
 from ..utils import getLogger
 
@@ -90,12 +89,13 @@ def write_feat_surfs(
             ]
         )
         model.rescale(verts)
-        surf = SimpleNamespace()
-        surf.verts = verts
-        surf.faces = faces
-        surf.normals = normals
-        surf.values = values
-        surf.name = featurename.replace(" ", "-")
+        surf = Surface(
+            vertices=verts,
+            triangles=faces,
+            normals=normals,
+            values=values,
+            name=featurename.replace(" ", "-"),
+        )
 
     except (ValueError, RuntimeError) as e:
         logger.debug(f"Exception creating feature surface {featurename}: {e}")
@@ -222,7 +222,10 @@ def _write_feat_surfs_gocad(surf, file_name):
     True if successful
 
     """
-    with open(f"{file_name}_{surf.name}.TS", "w") as fd:
+    from pathlib import Path
+
+    file_name = Path(file_name).with_suffix(".ts")
+    with open(f"{file_name}", "w") as fd:
         fd.write(
             f"""GOCAD TSurf 1 
 HEADER {{
@@ -263,12 +266,12 @@ TFACE
         )
         v_idx = 1
         v_map = {}
-        for idx, vert in enumerate(surf.verts):
+        for idx, vert in enumerate(surf.vertices):
             if not np.isnan(vert[0]) and not np.isnan(vert[1]) and not np.isnan(vert[2]):
                 fd.write(f"VRTX {v_idx:} {vert[0]} {vert[1]} {vert[2]} \n")
                 v_map[idx] = v_idx
                 v_idx += 1
-        for face in surf.faces:
+        for face in surf.triangles:
             if face[0] in v_map and face[1] in v_map and face[2] in v_map:
                 fd.write(f"TRGL {v_map[face[0]]} {v_map[face[1]]} {v_map[face[2]]} \n")
         fd.write("END\n")

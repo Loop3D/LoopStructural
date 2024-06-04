@@ -6,7 +6,7 @@ from ...utils import getLogger, log_to_file
 
 import numpy as np
 import pandas as pd
-
+from typing import List
 
 from ...modelling.features.fault import FaultSegment
 
@@ -138,26 +138,12 @@ class GeologicalModel:
         self.scale_factor = 1.0
 
         self.bounding_box = BoundingBox(
-            dimensions=3, origin=np.zeros(3), maximum=self.maximum - self.origin
-        )  # np.zeros((2, 3))
-        # self.bounding_box[1, :] = self.maximum - self.origin
-        # self.bounding_box[1, :] = self.maximum - self.origin
-        # if rescale:
-        #     self.scale_factor = float(np.max(lengths))
-        #     logger.info(
-        #         "Rescaling model using scale factor {}".format(self.scale_factor)
-        #     )
+            dimensions=3,
+            origin=np.zeros(3),
+            maximum=self.maximum - self.origin,
+            global_origin=self.origin,
+        )
 
-        # self.bounding_box /= self.scale_factor
-        self.support = {}
-        self.reuse_supports = reuse_supports
-        if self.reuse_supports:
-            logger.warning(
-                "Supports are shared between geological features \n"
-                "this may cause unexpected behaviour and should only\n"
-                "be use by advanced users"
-            )
-        logger.info("Reusing interpolation supports: {}".format(self.reuse_supports))
         self.stratigraphic_column = None
 
         self.tol = 1e-10 * np.max(self.bounding_box.maximum - self.bounding_box.origin)
@@ -175,12 +161,12 @@ class GeologicalModel:
         json = {}
         json["model"] = {}
         json["model"]["features"] = [f.name for f in self.features]
-        json["model"]["data"] = self.data.to_json()
-        json["model"]["origin"] = self.origin.tolist()
-        json["model"]["maximum"] = self.maximum.tolist()
-        json["model"]["nsteps"] = self.nsteps
+        # json["model"]["data"] = self.data.to_json()
+        # json["model"]["origin"] = self.origin.tolist()
+        # json["model"]["maximum"] = self.maximum.tolist()
+        # json["model"]["nsteps"] = self.nsteps
         json["model"]["stratigraphic_column"] = self.stratigraphic_column
-        json["features"] = [f.to_json() for f in self.features]
+        # json["features"] = [f.to_json() for f in self.features]
         return json
 
     # @classmethod
@@ -580,6 +566,7 @@ class GeologicalModel:
                 raise BaseException("Cannot load data")
         logger.info(f"Adding data to GeologicalModel with {len(data)} data points")
         self._data = data.copy()
+
         self._data["X"] -= self.origin[0]
         self._data["Y"] -= self.origin[1]
         self._data["Z"] -= self.origin[2]
@@ -601,7 +588,7 @@ class GeologicalModel:
                     self._data[h] = 0
                 if h == "polarity":
                     self._data[h] = 1.0
-        # LS wants polarity as -1 or 1, change 0 to -1
+        # LS wants polarity as -1 or 1, change 0  to -1
         self._data.loc[self._data["polarity"] == 0, "polarity"] = -1.0
         self._data.loc[np.isnan(self._data["w"]), "w"] = 1.0
         if "strike" in self._data and "dip" in self._data:
@@ -612,6 +599,11 @@ class GeologicalModel:
                 * self._data.loc[mask, "polarity"].to_numpy()[:, None]
             )
             self._data.drop(["strike", "dip"], axis=1, inplace=True)
+        self._data[['X', 'Y', 'Z', 'val', 'nx', 'ny', 'nz', 'gx', 'gy', 'gz', 'tx', 'ty', 'tz']] = (
+            self._data[
+                ['X', 'Y', 'Z', 'val', 'nx', 'ny', 'nz', 'gx', 'gy', 'gz', 'tx', 'ty', 'tz']
+            ].astype(float)
+        )
 
     def set_model_data(self, data):
         logger.warning("deprecated method. Model data can now be set using the data attribute")
@@ -706,6 +698,7 @@ class GeologicalModel:
             interpolatortype=interpolatortype,
             nelements=nelements,
             name=series_surface_data,
+            model=self,
             **kwargs,
         )
         # add data
@@ -720,6 +713,9 @@ class GeologicalModel:
         # series_feature = series_builder.build(**kwargs)
         series_feature = series_builder.feature
         series_builder.build_arguments = kwargs
+        # this support is built for the entire model domain? Possibly would
+        # could just pass a regular grid of points - mask by any above unconformities??
+        series_builder.build_arguments['domain'] = True
         series_builder.build_arguments["tol"] = tol
         series_feature.type = FeatureType.INTERPOLATED
         self._add_feature(series_feature)
@@ -760,6 +756,7 @@ class GeologicalModel:
             name=foldframe_data,
             frame=FoldFrame,
             nelements=nelements,
+            model=self,
             **kwargs,
         )
         # add data
@@ -841,6 +838,7 @@ class GeologicalModel:
             fold=fold,
             name=foliation_data,
             svario=svario,
+            model=self,
             **kwargs,
         )
 
@@ -926,6 +924,7 @@ class GeologicalModel:
             name=fold_frame_data,
             fold=fold,
             frame=FoldFrame,
+            model=self,
             **kwargs,
         )
         fold_frame_builder.add_data_from_data_frame(
@@ -1083,8 +1082,6 @@ class GeologicalModel:
                 f = self.__getitem__(f)
             if f.type == FeatureType.FAULT:
                 feature_builder.add_fault(f)
-            # if f.type == 'unconformity':
-            #     break
 
     def _add_domain_fault_above(self, feature):
         """
@@ -1148,8 +1145,13 @@ class GeologicalModel:
 
         """
 
+        if feature.type == FeatureType.FAULT:
+            return
         for f in reversed(self.features):
             if f.type == FeatureType.UNCONFORMITY and f.name != feature.name:
+                logger.info(f"Adding {f.name} as unconformity to {feature.name}")
+                feature.add_region(f)
+            if f.type == FeatureType.ONLAPUNCONFORMITY and f.name != feature.name:
                 feature.add_region(f)
                 break
 
@@ -1177,7 +1179,7 @@ class GeologicalModel:
         # look backwards through features and add the unconformity as a region until
         # we get to an unconformity
         uc_feature = UnconformityFeature(feature, value)
-
+        feature.add_region(uc_feature.inverse())
         for f in reversed(self.features):
             if f.type == FeatureType.UNCONFORMITY:
                 logger.debug(f"Reached unconformity {f.name}")
@@ -1210,15 +1212,18 @@ class GeologicalModel:
             the created unconformity
 
         """
-
-        uc_feature = UnconformityFeature(feature, value, True)
+        feature.regions = []
+        uc_feature = UnconformityFeature(feature, value, False, onlap=True)
         feature.add_region(uc_feature.inverse())
         for f in reversed(self.features):
             if f.type == FeatureType.UNCONFORMITY:
-                break
+                # f.add_region(uc_feature)
+                continue
+            if f.type == FeatureType.FAULT:
+                continue
             if f != feature:
                 f.add_region(uc_feature)
-        self._add_feature(uc_feature)
+        self._add_feature(uc_feature.inverse())
 
         return uc_feature
 
@@ -1246,6 +1251,7 @@ class GeologicalModel:
             interpolatortype=interpolatortype,
             nelements=nelements,
             name=fault_surface_data,
+            model=self,
             **kwargs,
         )
 
@@ -1288,9 +1294,9 @@ class GeologicalModel:
         force_mesh_geometry: bool = False,
         points: bool = False,
         fault_buffer=0.2,
-        fault_trace_anisotropy=1.0,
+        fault_trace_anisotropy=0.0,
         fault_dip=90,
-        fault_dip_anisotropy=1.0,
+        fault_dip_anisotropy=0.0,
         **kwargs,
     ):
         """
@@ -1532,7 +1538,9 @@ class GeologicalModel:
         if scale:
             xyz = self.scale(xyz, inplace=False)
         strat_id = np.zeros(xyz.shape[0], dtype=int)
-        for group in self.stratigraphic_column.keys():
+        # set strat id to -1 to identify which areas of the model aren't covered
+        strat_id[:] = -1
+        for group in reversed(self.stratigraphic_column.keys()):
             if group == "faults":
                 continue
             feature_id = self.feature_name_index.get(group, -1)
@@ -1549,6 +1557,38 @@ class GeologicalModel:
             if feature_id == -1:
                 logger.error(f"Model does not contain {group}")
         return strat_id
+
+    def evaluate_model_gradient(self, points: np.ndarray, scale: bool = True) -> np.ndarray:
+        """Evaluate the gradient of the stratigraphic column at each location
+
+        Parameters
+        ----------
+        points : np.ndarray
+            location to evaluate
+        scale : bool, optional
+            whether to scale the points into model domain, by default True
+
+        Returns
+        -------
+        np.ndarray
+            N,3 array of gradient vectors
+        """
+        xyz = np.array(points)
+        if scale:
+            xyz = self.scale(xyz, inplace=False)
+        grad = np.zeros(xyz.shape)
+        for group in reversed(self.stratigraphic_column.keys()):
+            if group == "faults":
+                continue
+            feature_id = self.feature_name_index.get(group, -1)
+            if feature_id >= 0:
+                feature = self.features[feature_id]
+                gradt = feature.evaluate_gradient(xyz)
+                grad[~np.isnan(gradt).any(axis=1)] = gradt[~np.isnan(gradt).any(axis=1)]
+            if feature_id == -1:
+                logger.error(f"Model does not contain {group}")
+
+        return grad
 
     def evaluate_fault_displacements(self, points, scale=True):
         """Evaluate the fault displacement magnitude at each location
@@ -1575,7 +1615,7 @@ class GeologicalModel:
                 vals[~np.isnan(disp)] += disp[~np.isnan(disp)]
         return vals * -self.scale_factor  # convert from restoration magnutude to displacement
 
-    def get_feature_by_name(self, feature_name):
+    def get_feature_by_name(self, feature_name) -> GeologicalFeature:
         """Returns a feature from the mode given a name
 
 
@@ -1596,8 +1636,7 @@ class GeologicalModel:
         if feature_index > -1:
             return self.features[feature_index]
         else:
-            logger.error(f"{feature_name} does not exist!")
-            return None
+            raise ValueError(f"{feature_name} does not exist!")
 
     def evaluate_feature_value(self, feature_name, xyz, scale=True):
         """Evaluate the scalar value of the geological feature given the name at locations
@@ -1692,23 +1731,79 @@ class GeologicalModel:
                 f"Updating geological model. There are: \n {nfeatures} \
                     geological features that need to be interpolated\n"
             )
-        import time
-
-        start = time.time()
-        try:
-            from tqdm.auto import tqdm
-        except ImportError:
-            progressbar = False
-            logger.warning("Failed to import tqdm, disabling progress bar")
 
         if progressbar:
-            # Load tqdm with size counter instead of file counter
-            with tqdm(total=nfeatures) as pbar:
-                for f in self.features:
-                    pbar.set_description(f"Interpolating {f.name}")
-                    f.builder.up_to_date(callback=pbar.update)
-        else:
-            for f in self.features:
-                f.builder.up_to_date()
-        if verbose:
-            print(f"Model update took: {time.time()-start} seconds")
+            try:
+                from tqdm.auto import tqdm
+
+                # Load tqdm with size counter instead of file counter
+                with tqdm(total=nfeatures) as pbar:
+                    for f in self.features:
+                        pbar.set_description(f"Interpolating {f.name}")
+                        f.builder.up_to_date(callback=pbar.update)
+                return
+            except ImportError:
+                logger.warning("Failed to import tqdm, disabling progress bar")
+
+        for f in self.features:
+            f.builder.up_to_date()
+
+    def stratigraphic_ids(self):
+        """Return a list of all stratigraphic ids in the model
+
+        Returns
+        -------
+        ids : list
+            list of unique stratigraphic ids, featurename, unit name and min and max scalar values
+        """
+        ids = []
+        for group in self.stratigraphic_column.keys():
+            if group == "faults":
+                continue
+            for name, series in self.stratigraphic_column[group].items():
+                ids.append([series["id"], group, name, series['min'], series['max']])
+        return ids
+
+    def get_fault_surfaces(self, faults: List[str] = []):
+        surfaces = []
+        if len(faults) == 0:
+            faults = self.fault_names()
+
+        for f in faults:
+            surfaces.extend(self.get_feature_by_name(f).surfaces([0], self.bounding_box))
+        return surfaces
+
+    def get_stratigraphic_surfaces(self, units: List[str] = [], bottoms: bool = True):
+        ## TODO change the stratigraphic column to its own class and have methods to get the relevant surfaces
+        surfaces = []
+        units = []
+        for group in self.stratigraphic_column.keys():
+            if group == "faults":
+                continue
+            for series in self.stratigraphic_column[group].values():
+                series['feature_name'] = group
+                units.append(series)
+        unit_table = pd.DataFrame(units)
+        for u in unit_table['feature_name'].unique():
+
+            values = unit_table.loc[unit_table['feature_name'] == u, 'min' if bottoms else 'max']
+            if 'name' not in unit_table.columns:
+                unit_table['name'] = unit_table['feature_name']
+
+            names = unit_table[unit_table['feature_name'] == u]['name']
+            values = values.loc[~np.logical_or(values == np.inf, values == -np.inf)]
+            surfaces.extend(
+                self.get_feature_by_name(u).surfaces(
+                    values.to_list(), self.bounding_box, name=names.loc[values.index].to_list()
+                )
+            )
+
+        return surfaces
+
+    def get_block_model(self):
+        grid = self.bounding_box.vtk()
+
+        grid.cell_data['stratigraphy'] = self.evaluate_model(
+            self.bounding_box.cell_centers(), scale=False
+        )
+        return grid, self.stratigraphic_ids()

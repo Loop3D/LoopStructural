@@ -46,7 +46,7 @@ model.create_and_add_foliation(
 
 import LoopStructural.visualisation as vis
 
-view = vis.LavaVuModelViewer(model)
+view = vis.Loop3DView(model)
 view.add_isosurface(model.features[0], slices=[0])
 view.add_isosurface(model.features[1], nslices=5, paint_with=model.features[1])
 # view.add_vector_field(model["fault"][1], locations=model.regular_grid()[::100])
@@ -113,7 +113,7 @@ model.create_and_add_foliation(
 )
 
 
-view = vis.LavaVuModelViewer(model)
+view = vis.Loop3DView(model)
 view.nelements = 1e5
 view.add_isosurface(model.features[0], slices=[0])
 view.add_isosurface(model['strati'], nslices=5)

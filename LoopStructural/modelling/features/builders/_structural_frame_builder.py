@@ -26,6 +26,7 @@ class StructuralFrameBuilder:
         bounding_box: BoundingBox,
         nelements: Union[int, list] = 1000,
         frame=StructuralFrame,
+        model=None,
         **kwargs,
     ):
         """
@@ -44,6 +45,7 @@ class StructuralFrameBuilder:
         self.support = None
         self.fault_event = None
         self.name = "Undefined"
+        self.model = model
         # self.region = 'everywhere'
         self.builders = []
         if "name" in kwargs:
@@ -115,6 +117,7 @@ class StructuralFrameBuilder:
                 self.builders[2].feature,
             ],
             fold=self.fold,
+            model=self.model,
         )
         self._frame.builder = self
 

@@ -621,7 +621,6 @@ class UnStructuredTetMesh(BaseSupport):
         """
         return self.neighbours
 
-    @property
     def vtk(self):
         try:
             import pyvista as pv

@@ -56,6 +56,7 @@ This tutorial will demonstrate how to setup a basic geological model for using w
 # add some noise to make it interesting!
 #
 import numpy as np
+from LoopStructural.utils import rng
 
 extent = np.zeros((3, 2))
 extent[:, 1] = 10
@@ -65,11 +66,11 @@ y = np.linspace(0, 10, 10)
 
 xx, yy = np.meshgrid(x, y)
 zz = np.zeros_like(xx)
-zz[:] = 1 + np.random.random(zz.shape)
+zz[:] = 1 + rng.random(zz.shape)
 val = np.zeros_like(xx)
 val[:] = 0
 surface_1 = np.array([xx.flatten(), yy.flatten(), zz.flatten(), val.flatten()]).T
-zz[:] = 5 + np.random.random(zz.shape)
+zz[:] = 5 + rng.random(zz.shape)
 val[:] = 1
 surface_2 = np.array([xx.flatten(), yy.flatten(), zz.flatten(), val.flatten()]).T
 

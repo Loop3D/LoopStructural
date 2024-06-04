@@ -3,17 +3,16 @@ Discrete interpolator base for least squares
 """
 
 from abc import abstractmethod
+from typing import Callable, Optional, Union
 import logging
 
 from time import time
 import numpy as np
 from scipy import sparse  # import sparse.coo_matrix, sparse.bmat, sparse.eye
-from scipy.sparse import linalg as sla
 from ..interpolators import InterpolatorType
 
 from ..interpolators import GeologicalInterpolator
 from ..utils import getLogger
-from ..utils.exceptions import LoopImportError
 
 logger = getLogger(__name__)
 
@@ -241,21 +240,126 @@ class DiscreteInterpolator(GeologicalInterpolator):
             )
         return residuals
 
-    def remove_constraints_from_least_squares(self, name="undefined", constraint_ids=None):
-        """
-        Remove constraints from the least squares system using the constraint ids
-        which corresponds to the rows in the interpolation matrix.
+    def add_inequality_constraints_to_matrix(
+        self, A: np.ndarray, bounds: np.ndarray, idc: np.ndarray, name: str = "undefined"
+    ):
+        """Adds constraints for a matrix where the linear function
+        l < Ax > u constrains the objective function
+
 
         Parameters
         ----------
-        constraint_ids : np.array(dtype=int)
-            id of constraints to remove
-
+        A : numpy array
+            matrix of coefficients
+        bounds : numpy array
+            nx3 lower, upper, 1
+        idc : numpy array
+            index of constraints in the matrix
         Returns
         -------
 
         """
-        pass
+        # map from mesh node index to region node index
+        gi = np.zeros(self.support.n_nodes, dtype=int)
+        gi[:] = -1
+        gi[self.region] = np.arange(0, self.nx, dtype=int)
+        idc = gi[idc]
+        rows = np.arange(0, idc.shape[0])
+        rows = np.tile(rows, (A.shape[-1], 1)).T
+
+        self.ineq_constraints[name] = {
+            'matrix': sparse.coo_matrix(
+                (A.flatten(), (rows.flatten(), idc.flatten())), shape=(rows.shape[0], self.nx)
+            ).tocsc(),
+            "bounds": bounds,
+        }
+
+    def add_value_inequality_constraints(self, w: float = 1.0):
+        points = self.get_inequality_value_constraints()
+        # check that we have added some points
+        if points.shape[0] > 0:
+            vertices, a, element, inside = self.support.get_element_for_location(points)
+            rows = np.arange(0, points[inside, :].shape[0], dtype=int)
+            rows = np.tile(rows, (a.shape[-1], 1)).T
+            a = a[inside]
+            cols = self.support.elements[element[inside]]
+            self.add_inequality_constraints_to_matrix(a, points[:, 3:5], cols, 'inequality_value')
+
+    def add_inequality_pairs_constraints(self, w: float = 1.0):
+        pairs = self.get_inequality_pairs_constraints()
+        if pairs['upper'].shape[0] == 0 or pairs['lower'].shape[0] == 0:
+            return
+        upper_interpolation = self.support.get_element_for_location(pairs['upper'])
+        lower_interpolation = self.support.get_element_for_location(pairs['lower'])
+        ij = np.array(
+            [
+                *np.meshgrid(
+                    np.arange(0, int(upper_interpolation[3].sum()), dtype=int),
+                    np.arange(0, int(lower_interpolation[3].sum()), dtype=int),
+                )
+            ],
+            dtype=int,
+        )
+
+        ij = ij.reshape(2, -1).T
+        rows = np.arange(0, ij.shape[0], dtype=int)
+        rows = np.tile(rows, (upper_interpolation[1].shape[-1], 1)).T
+        rows = np.hstack([rows, rows])
+        a = upper_interpolation[1][upper_interpolation[3]][ij[:, 0]]  # np.ones(ij.shape[0])
+        a = np.hstack([a, -lower_interpolation[1][lower_interpolation[3]][ij[:, 1]]])
+        cols = np.hstack(
+            [
+                self.support.elements[upper_interpolation[2][upper_interpolation[3]][ij[:, 0]]],
+                self.support.elements[lower_interpolation[2][lower_interpolation[3]][ij[:, 1]]],
+            ]
+        )
+
+        bounds = np.zeros((ij.shape[0], 2))
+        bounds[:, 0] = np.finfo('float').eps
+        bounds[:, 1] = 1e10
+        self.add_inequality_constraints_to_matrix(a, bounds, cols, 'inequality_pairs')
+
+    def add_inequality_feature(
+        self,
+        feature: Callable[[np.ndarray], np.ndarray],
+        lower: bool = True,
+        mask: Optional[np.ndarray] = None,
+    ):
+        """Add an inequality constraint to the interpolator using an existing feature.
+        This will make the interpolator greater than or less than the exising feature.
+        Evaluate the feature at the interpolation nodes.
+        Can provide a boolean mask to restrict to only some parts
+
+        Parameters
+        ----------
+        feature : BaseFeature
+            the feature that will be used to constraint the interpolator
+        lower : bool, optional
+            lower or upper constraint, by default True
+        mask : np.ndarray, optional
+            restrict the nodes to evaluate on, by default None
+        """
+        # add inequality value for the nodes of the mesh
+        # flag lower determines whether the feature is a lower bound or upper bound
+        # mask is just a boolean array determining which nodes to apply it to
+
+        value = feature(self.support.nodes)
+        if mask is None:
+            mask = np.ones(value.shape[0], dtype=bool)
+        l = np.zeros(value.shape[0]) - np.inf
+        u = np.zeros(value.shape[0]) + np.inf
+        mask = np.logical_and(mask, ~np.isnan(value))
+        if lower:
+            l[mask] = value[mask]
+        if not lower:
+            u[mask] = value[mask]
+
+        self.add_inequality_constraints_to_matrix(
+            np.ones((value.shape[0], 1)),
+            l,
+            u,
+            np.arange(0, self.nx, dtype=int),
+        )
 
     def add_equality_constraints(self, node_idx, values, name="undefined"):
         """
@@ -306,7 +410,7 @@ class DiscreteInterpolator(GeologicalInterpolator):
         if points.shape[0] > 1:
             self.add_gradient_orthogonal_constraints(points[:, :3], points[:, 3:6], w)
 
-    def build_matrix(self, square=True, damp=0.0, ie=False):
+    def build_matrix(self):
         """
         Assemble constraints into interpolation matrix. Adds equaltiy
         constraints
@@ -321,40 +425,6 @@ class DiscreteInterpolator(GeologicalInterpolator):
         Interpolation matrix and B
         """
 
-        logger.info("Interpolation matrix is %i x %i" % (self.c_, self.nx))
-        # To keep the solvers consistent for different model scales the range of the constraints should be similar.
-        # We normalise the row vectors for the interpolation matrix
-        # Each constraint can then be weighted separately for the least squares problem
-        # The weights are normalised so that the max weight is 1.0
-        # This means that the tolerance and other parameters for the solver
-        # are kept the same between iterations.
-        # #TODO currently the element size is not incorporated into the weighting.
-        # For cartesian grids this is probably ok but for tetrahedron could be more problematic if
-        # the tetras have different volumes. Would expect for the size of the element to influence
-        # how much it contributes to the system.
-        # It could be implemented by multiplying the weight array by the element size.
-        # I am not sure how to integrate regularisation into this framework as my gut feeling is the regularisation
-        # should be weighted by the area of the element face and not element volume, but this means the weight decreases with model scale
-        # which is not ideal.
-        # max_weight = 0
-        # for c in self.constraints.values():
-        #     if len(c["w"]) == 0:
-        #         continue
-        #     if c["w"].max() > max_weight:
-        #         max_weight = c["w"].max()
-        # a = []
-        # b = []
-        # rows = []
-        # cols = []
-        # for c in self.constraints.values():
-        #     if len(c["w"]) == 0:
-        #         continue
-        #     aa = (c["A"] * c["w"][:, None] / max_weight).flatten()
-        #     b.extend((c["B"] * c["w"] / max_weight).tolist())
-        #     mask = aa == 0
-        #     a.extend(aa[~mask].tolist())
-        #     rows.extend(c["row"].flatten()[~mask].tolist())
-        #     cols.extend(c["col"].flatten()[~mask].tolist())
         mats = []
         bs = []
         for c in self.constraints.values():
@@ -363,17 +433,15 @@ class DiscreteInterpolator(GeologicalInterpolator):
             mats.append(c['matrix'].multiply(c['w'][:, None]))
             bs.append(c['b'] * c['w'])
         A = sparse.vstack(mats)
+        logger.info(f"Interpolation matrix is {A.shape[0]} x {A.shape[1]}")
+
         B = np.hstack(bs)
+        return A, B
 
-        if not square:
-            logger.info("Using rectangular matrix, equality constraints are not used")
-            return A, B
-        ATA = A.T.dot(A)
-        ATB = A.T.dot(B)
-        # add a small number to the matrix diagonal to smooth the results
-        # can help speed up solving, but might also introduce some errors
-
+    def add_equality_block(self, A, B):
         if len(self.equal_constraints) > 0:
+            ATA = A.T.dot(A)
+            ATB = A.T.dot(B)
             logger.info(f"Equality block is {self.eq_const_c} x {self.nx}")
             # solving constrained least squares using
             # | ATA CT | |c| = b
@@ -407,235 +475,23 @@ class DiscreteInterpolator(GeologicalInterpolator):
             ATA = sparse.bmat([[ATA, C.T], [C, None]])
             ATB = np.hstack([ATB, d])
 
-        if isinstance(damp, bool):
-            if damp:
-                damp = np.finfo("float").eps
-            if not damp:
-                damp = 0.0
-        if isinstance(damp, float):
-            logger.info("Adding eps to matrix diagonal")
-            ATA += sparse.eye(ATA.shape[0]) * damp
-        if len(self.ineq_constraints) > 0 and ie:
-            print("using inequality constraints")
-            a = []
-            l = []
-            u = []
-            rows = []
-            cols = []
-            for c in self.ineq_constraints.values():
-                aa = (c["A"]).flatten()
-                l.extend((c["l"]).tolist())
-                u.extend((c["u"]).tolist())
+            return ATA, ATB
 
-                mask = aa == 0
-                a.extend(aa[~mask].tolist())
-                rows.extend(c["row"].flatten()[~mask].tolist())
-                cols.extend(c["col"].flatten()[~mask].tolist())
-            Aie = sparse.coo_matrix(
-                (np.array(a), (np.array(rows), cols)),
-                shape=(self.ineq_const_c, self.nx),
-                dtype=float,
-            ).tocsc()  # .tocsr()
+    def build_inequality_matrix(self):
+        mats = []
+        bounds = []
+        for c in self.ineq_constraints.values():
+            mats.append(c['matrix'])
+            bounds.append(c['bounds'])
+        Q = sparse.vstack(mats)
+        bounds = np.hstack(bounds)
+        return Q, bounds
 
-            uie = np.array(u)
-            lie = np.array(l)
-
-            return ATA, ATB, Aie.T.dot(Aie), Aie.T.dot(uie), Aie.T.dot(lie)
-        return ATA, ATB
-
-    def _solve_osqp(self, P, A, q, l, u, mkl=False):
-        """Wrapper to use osqp solver
-
-        Parameters
-        ----------
-        P : _type_
-            _description_
-        A : _type_
-            _description_
-        q : _type_
-            _description_
-        l : _type_
-            _description_
-        u : _type_
-            _description_
-        mkl : bool, optional
-            _description_, by default False
-
-        Returns
-        -------
-        _type_
-            _description_
-
-        Raises
-        ------
-        LoopImportError
-            _description_
-        LoopImportError
-            _description_
-        """
-        try:
-            import osqp
-        except ImportError:
-            raise LoopImportError("Missing osqp pip install osqp")
-        prob = osqp.OSQP()
-
-        # Setup workspace
-        # osqp likes csc matrices
-        linsys_solver = "qdldl"
-        if mkl:
-            linsys_solver = "mkl pardiso"
-
-        try:
-            prob.setup(
-                P.tocsc(),
-                np.array(q),
-                A.tocsc(),
-                np.array(u),
-                np.array(l),
-                linsys_solver=linsys_solver,
-            )
-        except ValueError:
-            if mkl:
-                logger.error("MKL solver library path not correct. Please add to LD_LIBRARY_PATH")
-                raise LoopImportError("Cannot import MKL pardiso")
-        res = prob.solve()
-        return res.x
-
-    def _solve_lu(self, A, B):
-        """
-        Call scipy LU decomoposition
-
-        Parameters
-        ----------
-        A : scipy square sparse matrix
-        B : numpy vector
-
-        Returns
-        -------
-
-        """
-        lu = sla.splu(A.tocsc())
-        sol = lu.solve(B)
-        return sol[: self.nx]
-
-    def _solve_lsqr(self, A, B, **kwargs):
-        """
-        Call scipy lsqr
-
-        Parameters
-        ----------
-        A : rectangular sparse matrix
-        B : vector
-
-        Returns
-        -------
-
-        """
-
-        lsqrargs = {}
-        lsqrargs["btol"] = 1e-12
-        lsqrargs["atol"] = 0
-        if "iter_lim" in kwargs:
-            logger.info("Using %i maximum iterations" % kwargs["iter_lim"])
-            lsqrargs["iter_lim"] = kwargs["iter_lim"]
-        if "damp" in kwargs:
-            logger.info("Using damping coefficient")
-            lsqrargs["damp"] = kwargs["damp"]
-        if "atol" in kwargs:
-            logger.info("Using a tolerance of %f" % kwargs["atol"])
-            lsqrargs["atol"] = kwargs["atol"]
-        if "btol" in kwargs:
-            logger.info("Using btol of %f" % kwargs["btol"])
-            lsqrargs["btol"] = kwargs["btol"]
-        if "show" in kwargs:
-            lsqrargs["show"] = kwargs["show"]
-        if "conlim" in kwargs:
-            lsqrargs["conlim"] = kwargs["conlim"]
-        return sla.lsqr(A, B, **lsqrargs)[0]
-
-    def _solve_chol(self, A, B):
-        """
-        Call suitesparse cholmod through scikitsparse
-        LINUX ONLY!
-
-        Parameters
-        ----------
-        A : scipy.sparse.matrix
-            square sparse matrix
-        B : numpy array
-            RHS of equation
-
-        Returns
-        -------
-
-        """
-        try:
-            from sksparse.cholmod import cholesky
-
-            factor = cholesky(A.tocsc())
-            return factor(B)[: self.nx]
-        except ImportError:
-            logger.warning("Scikit Sparse not installed try using cg instead")
-            return False
-
-    def _solve_cg(self, A, B, precon=None, **kwargs):
-        """
-        Call scipy conjugate gradient
-
-        Parameters
-        ----------
-        A : scipy.sparse.matrix
-            square sparse matrix
-        B : numpy vector
-        precon : scipy.sparse.matrix
-            a preconditioner for the conjugate gradient system
-        kwargs
-            kwargs to pass to scipy solve e.g. atol, btol, callback etc
-
-        Returns
-        -------
-        numpy array
-        """
-        cgargs = {}
-        cgargs["tol"] = 1e-12
-        cgargs["atol"] = 1e-10
-        if "maxiter" in kwargs:
-            logger.info("Using %i maximum iterations" % kwargs["maxiter"])
-            cgargs["maxiter"] = kwargs["maxiter"]
-        if "x0" in kwargs:
-            logger.info("Using starting guess")
-            cgargs["x0"] = kwargs["x0"]
-        if "tol" in kwargs:
-            logger.info("Using tolerance of %f" % kwargs["tol"])
-            cgargs["tol"] = kwargs["tol"]
-        if "atol" in kwargs:
-            logger.info("Using atol of %f" % kwargs["atol"])
-            cgargs["atol"] = kwargs["atol"]
-        if "callback" in kwargs:
-            cgargs["callback"] = kwargs["callback"]
-        if precon is not None:
-            cgargs["M"] = precon(A)
-        return sla.cg(A, B, **cgargs)[0][: self.nx]
-
-    def _solve_pyamg(self, A, B, tol=1e-12, x0=None, verb=False, **kwargs):
-        """
-        Solve least squares system using pyamg algorithmic multigrid solver
-
-        Parameters
-        ----------
-        A :  scipy.sparse.matrix
-        B : numpy array
-
-        Returns
-        -------
-
-        """
-        import pyamg
-
-        logger.info("Solving using pyamg: tol {}".format(tol))
-        return pyamg.solve(A, B, tol=tol, x0=x0, verb=verb)[: self.nx]
-
-    def solve_system(self, solver="cg", **kwargs):
+    def solve_system(
+        self,
+        solver: Optional[Union[Callable[[sparse.csr_matrix, np.ndarray], np.ndarray], str]] = None,
+        solver_kwargs: dict = {},
+    ) -> bool:
         """
         Main entry point to run the solver and update the node value
         attribute for the
@@ -643,10 +499,10 @@ class DiscreteInterpolator(GeologicalInterpolator):
 
         Parameters
         ----------
-        solver : string
-            solver e.g. cg, lu, chol, custom
-        kwargs
-            kwargs for solver e.g. maxiter, preconditioner etc, damping for
+        solver : string/callable
+            solver 'cg' conjugate gradient, 'lsmr' or callable function
+        solver_kwargs
+            kwargs for solver check scipy documentation for more information
 
         Returns
         -------
@@ -657,59 +513,53 @@ class DiscreteInterpolator(GeologicalInterpolator):
         starttime = time()
         self.c = np.zeros(self.support.n_nodes)
         self.c[:] = np.nan
-        damp = True
-        if "damp" in kwargs:
-            damp = kwargs["damp"]
-        if solver == "lu":
-            logger.info("Forcing matrix damping for LU")
-            damp = True
-        if solver == "lsqr":
-            A, B = self.build_matrix(False)
-        elif solver == "osqp":
-            P, q, A, l, u = self.build_matrix(True, ie=True)
-        else:
-            A, B = self.build_matrix(damp=damp)
-        # run the chosen solver
-        if solver == "cg":
-            logger.info("Solving using conjugate gradient")
-            self.c[self.region] = self._solve_cg(A, B, **kwargs)
-        if solver == "chol":
-            self.c[self.region] = self._solve_chol(A, B)
-        if solver == "lu":
-            logger.info("Solving using scipy LU")
-            self.c[self.region] = self._solve_lu(A, B)
-        if solver == "pyamg":
-            try:
-                logger.info("Solving with pyamg solve")
-                self.c[self.region] = self._solve_pyamg(A, B, **kwargs)
-            except ImportError:
-                logger.warn("Pyamg not installed using cg instead")
-                self.c[self.region] = self._solve_cg(A, B)
-        if solver == "lsqr":
-            self.c[self.region] = self._solve_lsqr(A, B, **kwargs)
-        if solver == "external":
-            logger.warning("Using external solver")
-            self.c[self.region] = kwargs["external"](A, B)[: self.nx]
-        if solver == "osqp":
-            self.c[self.region] = self._solve_osqp(
-                P, A, q, l, u, mkl=kwargs.get("mkl", False)
-            )  # , **kwargs)
-        # check solution is not nan
-        if np.all(self.c == np.nan):
-            self.valid = False
-            logger.warning("Solver not run, no scalar field")
-            return
-        # if solution is all 0, probably didn't work
-        if np.all(self.c[self.region] == 0):
-            self.valid = False
-            logger.warning("No solution, scalar field 0. Add more data.")
+        A, b = self.build_matrix()
+        if callable(solver):
+            logger.warning('Using custom solver')
+            self.c = solver(A.tocsr(), b)
             self.up_to_date = True
-            return
-        self.valid = True
-        logging.info(f"Solving interpolation took: {time()-starttime}")
-        self.up_to_date = True
 
-    def update(self):
+            return True
+        ## solve with lsmr
+        if isinstance(solver, str):
+            if solver not in ['cg', 'lsmr']:
+                logger.warning(
+                    f'Unknown solver {solver} using cg. \n Available solvers are cg and lsmr or a custom solver as a callable function'
+                )
+                solver = 'cg'
+        if solver == 'cg':
+            logger.info("Solving using cg")
+            ATA = A.T.dot(A)
+            ATB = A.T.dot(b)
+            res = sparse.linalg.cg(ATA, ATB, **solver_kwargs)
+            if res[1] > 0:
+                logger.warning(
+                    f'CG reached iteration limit ({res[1]})and did not converge, check input data. Setting solution to last iteration'
+                )
+            self.c = res[0]
+            self.up_to_date = True
+            return True
+        elif solver == 'lsmr':
+            logger.info("Solving using lsmr")
+            res = sparse.linalg.lsmr(A, b, **solver_kwargs)
+            if res[1] == 1 or res[1] == 4 or res[1] == 2 or res[1] == 5:
+                self.c = res[0]
+            elif res[1] == 0:
+                logger.warning("Solution to least squares problem is all zeros, check input data")
+            elif res[1] == 3 or res[1] == 6:
+                logger.warning("COND(A) seems to be greater than CONLIM, check input data")
+                # self.c = res[0]
+            elif res[1] == 7:
+                logger.warning(
+                    "LSMR reached iteration limit and did not converge, check input data. Setting solution to last iteration"
+                )
+                self.c = res[0]
+            self.up_to_date = True
+            logger.info("Interpolation took %f seconds" % (time() - starttime))
+            return True
+        return False
+
+    def update(self) -> bool:
         """
         Check if the solver is up to date, if not rerun interpolation using
         the previously used solver. If the interpolation has not been run

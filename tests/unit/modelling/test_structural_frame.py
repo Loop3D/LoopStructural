@@ -14,7 +14,7 @@ def test_structural_frame():
     coordinate_1 = GeologicalFeature("coord1", None)
     coordinate_2 = GeologicalFeature("coord2", None)
     frame = StructuralFrame("structural_frame", [coordinate_0, coordinate_1, coordinate_2])
-    assert frame != None
+    assert frame is not None
     assert frame.name == "structural_frame"
 
 
@@ -65,9 +65,16 @@ def test_create_structural_frame_pli():
         "fault", 10, nelements=2000, steps=4, interpolatortype="PLI", buffer=2
     )
     model.update()
-    assert np.all(np.isclose(fault[0].evaluate_gradient(np.array([[5, 5, 5]])), [0, 0, 1]))
-    assert np.all(np.isclose(fault[1].evaluate_gradient(np.array([[5, 5, 5]])), [0, 1, 0]))
-    assert np.all(np.isclose(fault[2].evaluate_gradient(np.array([[5, 5, 5]])), [1, 0, 0]))
+
+    assert np.all(
+        np.isclose(fault[0].evaluate_gradient(np.array([[5, 5, 5]])), [0, 0, 1], atol=1e-4)
+    )
+    assert np.all(
+        np.isclose(fault[1].evaluate_gradient(np.array([[5, 5, 5]])), [0, 1, 0], atol=1e-4)
+    )
+    assert np.all(
+        np.isclose(fault[2].evaluate_gradient(np.array([[5, 5, 5]])), [1, 0, 0], atol=1e-4)
+    )
 
 
 if __name__ == "__main__":

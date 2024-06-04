@@ -61,7 +61,6 @@ def get_interpolator(
         )
 
         return P1Interpolator(support)
-        return P1Interpolator(support)
     if interpolatortype == "P2":
         if support is not None:
             logger.info(

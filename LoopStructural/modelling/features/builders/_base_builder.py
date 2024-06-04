@@ -1,5 +1,10 @@
+from LoopStructural.utils import getLogger
+
+logger = getLogger(__name__)
+
+
 class BaseBuilder:
-    def __init__(self, name="Feature"):
+    def __init__(self, model, name: str = "Feature"):
         """Base builder that provides a template for
         implementing different builders.
 
@@ -18,10 +23,15 @@ class BaseBuilder:
         If the build arguments are changed, this will flag that the feature needs to be rebuilt
         """
         self._name = name
+        self._model = model
         self._feature = None
         self._up_to_date = False
         self._build_arguments = {}
         self.faults = []
+
+    @property
+    def model(self):
+        return self._model
 
     @property
     def feature(self):
@@ -41,6 +51,10 @@ class BaseBuilder:
                 self._up_to_date = False
 
     def update(self):
+        if self._up_to_date:
+            logger.info(f"{self.name} is up to date")
+            return
+        logger.info(f"Updating {self.name}")
         self._feature.faults = self.faults
         self.build(**self.build_arguments)
 
@@ -62,6 +76,7 @@ class BaseBuilder:
             a function that is called when the feature is updated
 
         """
+        logger.info(f'Feature: {self.name} up to date: {self._up_to_date}')
         for f in self.faults:
             f.builder.up_to_date(callback=callback)
         # has anything changed in the builder since we built the feature? if so update

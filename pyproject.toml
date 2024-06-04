@@ -42,8 +42,20 @@ dependencies = [
 dynamic = ['version']
 
 [project.optional-dependencies]
-
-
+all = ['loopstructural[visualisation,export]']
+visualisation = [
+    "matplotlib",
+    "pyvista",
+    "loopstructuralviusualisation>0.1.4"
+    ]
+export = [
+    "geoh5py", 
+    "pyevtk", 
+    "dill"]
+jupyter = [
+    "pyvista[all]",
+    "tqdm"
+    ]
 [project.urls]
 Documentation = 'https://Loop3d.org/LoopStructural/'
 "Bug Tracker" = 'https://github.com/loop3d/loopstructural/issues'

@@ -36,7 +36,7 @@ Visualization of the scalar field.
 # model building
 
 from LoopStructural import GeologicalModel
-from LoopStructural.visualisation import LavaVuModelViewer
+from LoopStructural.visualisation import Loop3DView
 from LoopStructural.datasets import load_claudius  # demo data
 
 import numpy as np
@@ -88,18 +88,15 @@ model = GeologicalModel(bb[0, :], bb[1, :])
 
 data["feature_name"].unique()
 
-viewer = LavaVuModelViewer(background="white")
-viewer.add_value_data(
-    data[~np.isnan(data["val"])][["X", "Y", "Z"]],
-    data[~np.isnan(data["val"])]["val"],
-    name="value points",
+viewer = Loop3DView(background="white")
+viewer.add_points(
+    data[~np.isnan(data["val"])][["X", "Y", "Z"]].values,
+    scalars=data[~np.isnan(data["val"])]["val"].values,
 )
-viewer.add_vector_data(
-    data[~np.isnan(data["nx"])][["X", "Y", "Z"]],
-    data[~np.isnan(data["nx"])][["nx", "ny", "nz"]],
-    name="orientation points",
+viewer.add_arrows(
+    data[~np.isnan(data["nx"])][["X", "Y", "Z"]].values,
+    direction=data[~np.isnan(data["nx"])][["nx", "ny", "nz"]].values,
 )
-viewer.rotate([-85.18760681152344, 42.93233871459961, 0.8641873002052307])
 viewer.display()
 
 
@@ -162,23 +159,20 @@ strati = model.create_and_add_foliation(
     interpolatortype="FDI",  # try changing this to 'PLI'
     nelements=1e4,  # try changing between 1e3 and 5e4
     buffer=0.3,
-    solver="pyamg",
     damp=True,
 )
 ######################################################################
 # Plot the surfaces
 # ------------------------------------
 
-viewer = LavaVuModelViewer(model)
-viewer.add_model_surfaces(cmap="tab20")
-viewer.rotate([-85.18760681152344, 42.93233871459961, 0.8641873002052307])
+viewer = Loop3DView(model)
+viewer.plot_model_surfaces(cmap="tab20")
 viewer.display()
 
 ######################################################################
 # Plot block diagram
 # -------------------
 
-viewer = LavaVuModelViewer(model)
-viewer.add_model(cmap="tab20")
-viewer.rotate([-85.18760681152344, 42.93233871459961, 0.8641873002052307])
+viewer = Loop3DView(model)
+viewer.plot_block_model(cmap="tab20")
 viewer.display()

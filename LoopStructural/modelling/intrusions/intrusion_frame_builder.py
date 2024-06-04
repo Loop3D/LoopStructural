@@ -10,7 +10,12 @@ logger = getLogger(__name__)
 
 import numpy as np
 import pandas as pd
-from sklearn.cluster import KMeans
+
+try:
+    from sklearn.cluster import KMeans
+except ImportError as e:
+    logger.error('Scikitlearn cannot be imported')
+    raise e
 
 
 class IntrusionFrameBuilder(StructuralFrameBuilder):

@@ -43,13 +43,13 @@ def _init_face_table(grid):
     el_rel = el_rel[el_rel[:, 0] >= 0, :]
 
     # el_rel2 = np.zeros((grid.neighbours.flatten().shape[0], 2), dtype=int)
-    grid.shared_element_relationships[:] = -1
+    grid._shared_element_relationships[:] = -1
     el_pairs = sparse.coo_matrix((np.ones(el_rel.shape[0]), (el_rel[:, 0], el_rel[:, 1]))).tocsr()
     i, j = sparse.tril(el_pairs).nonzero()
-    grid.shared_element_relationships[: len(i), 0] = i
-    grid.shared_element_relationships[: len(i), 1] = j
+    grid._shared_element_relationships[: len(i), 0] = i
+    grid._shared_element_relationships[: len(i), 1] = j
 
-    grid.shared_element_relationships = grid.shared_element_relationships[
+    grid._shared_element_relationships = grid.shared_element_relationships[
         grid.shared_element_relationships[:, 0] >= 0, :
     ]
 
@@ -63,8 +63,8 @@ def _init_face_table(grid):
     shared_face_index = np.zeros((shared_faces.shape[0], grid.dimension), dtype=int)
     shared_face_index[:] = -1
     shared_face_index[row.reshape(-1, grid.dimension)[:, 0], :] = col.reshape(-1, grid.dimension)
-    grid.shared_elements[np.arange(grid.shared_element_relationships.shape[0]), :] = (
+    grid._shared_elements[np.arange(grid.shared_element_relationships.shape[0]), :] = (
         shared_face_index
     )
     # resize
-    grid.shared_elements = grid.shared_elements[: len(grid.shared_element_relationships), :]
+    grid._shared_elements = grid.shared_elements[: len(grid.shared_element_relationships), :]

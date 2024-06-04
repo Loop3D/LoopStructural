@@ -20,7 +20,7 @@
 
 from LoopStructural import GeologicalModel
 from LoopStructural.datasets import load_noddy_single_fold
-from LoopStructural.visualisation import LavaVuModelViewer, RotationAnglePlotter
+from LoopStructural.visualisation import Loop3DView, RotationAnglePlotter
 import pandas as pd
 
 
@@ -142,17 +142,14 @@ model.set_model_data(data[:npoints])
 stratigraphy = model.create_and_add_foliation(
     "s0", interpolatortype="PLI", nelements=5000, buffer=0.3, cgw=0.1
 )  # .2)
-viewer = LavaVuModelViewer(model, background="white")
+viewer = Loop3DView(model, background="white")
 # viewer.add_scalar_field(model.bounding_box,(38,55,30),
 #                       'box',
 #                      paint_with=stratigraphy,
 #                      cmap='prism')
-viewer.add_data(stratigraphy)
-viewer.add_isosurface(
-    stratigraphy,
-)
-viewer.rotate([-85.18760681152344, 42.93233871459961, 0.8641873002052307])
-viewer.display()
+viewer.plot_data(stratigraphy, scale=200)
+viewer.plot_surface(stratigraphy, value=10)
+viewer.show()
 
 
 ######################################################################
@@ -198,7 +195,10 @@ mdata = pd.concat([data[:npoints], data[data["feature_name"] == "s1"]])
 model = GeologicalModel(boundary_points[0, :], boundary_points[1, :])
 model.set_model_data(mdata)
 fold_frame = model.create_and_add_fold_frame(
-    "s1", interpolatortype="PLI", nelements=10000, buffer=0.5, solver="pyamg", damp=True
+    "s1",
+    interpolatortype="PLI",
+    nelements=10000,
+    buffer=0.5,
 )
 stratigraphy = model.create_and_add_folded_foliation(
     "s0",
@@ -208,26 +208,26 @@ stratigraphy = model.create_and_add_folded_foliation(
     #                                                    limb_wl=1
     buffer=0.5,
 )
-viewer = LavaVuModelViewer(model, background="white")
+viewer = Loop3DView(model, background="white")
 # viewer.add_scalar_field(model.bounding_box,(38,55,30),
 #                       'box',
 #                      paint_with=stratigraphy,
 #                      cmap='prism')
-viewer.add_isosurface(
+viewer.plot_surface(
     fold_frame[0],
+    value=10,
     colour="blue",
     #                       isovalue=0.4,
-    alpha=0.5,
+    opacity=0.5,
 )
-viewer.add_data(stratigraphy)
+viewer.plot_data(stratigraphy, scale=200)
 # viewer.add_isosurface(fold_frame[1],colour='green',alpha=0.5)
 # viewer.add_vector_field(fold_frame[0],locations=fold_frame[0].get_interpolator().support.barycentre)
 # viewer.add_data(fold_frame[1])
 
 # viewer.add_data(stratigraphy)
-viewer.add_isosurface(stratigraphy)
-viewer.rotate([-85.18760681152344, 42.93233871459961, 0.8641873002052307])
-viewer.display()
+viewer.plot_surface(stratigraphy, value=10)
+viewer.show()
 
 ###########################################
 # Plotting the fold rotation angles
