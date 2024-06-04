@@ -11,7 +11,7 @@ RUN apt-get update -qq && \
     make\
     libgl1\
     libtinfo5\
-    libtiff5\
+    libtiff6\
     libgl1-mesa-glx\
     xvfb
 RUN conda install -c conda-forge\
