@@ -147,12 +147,9 @@ viewer = Loop3DView(model, background="white")
 #                       'box',
 #                      paint_with=stratigraphy,
 #                      cmap='prism')
-viewer.add_data(stratigraphy)
-viewer.add_isosurface(
-    stratigraphy,
-)
-viewer.rotate([-85.18760681152344, 42.93233871459961, 0.8641873002052307])
-viewer.display()
+viewer.plot_data(stratigraphy, scale=200)
+viewer.plot_surface(stratigraphy, value=10)
+viewer.show()
 
 
 ######################################################################
@@ -216,21 +213,21 @@ viewer = Loop3DView(model, background="white")
 #                       'box',
 #                      paint_with=stratigraphy,
 #                      cmap='prism')
-viewer.add_isosurface(
+viewer.plot_surface(
     fold_frame[0],
+    value=10,
     colour="blue",
     #                       isovalue=0.4,
-    alpha=0.5,
+    opacity=0.5,
 )
-viewer.add_data(stratigraphy)
+viewer.plot_data(stratigraphy, scale=200)
 # viewer.add_isosurface(fold_frame[1],colour='green',alpha=0.5)
 # viewer.add_vector_field(fold_frame[0],locations=fold_frame[0].get_interpolator().support.barycentre)
 # viewer.add_data(fold_frame[1])
 
 # viewer.add_data(stratigraphy)
-viewer.add_isosurface(stratigraphy)
-viewer.rotate([-85.18760681152344, 42.93233871459961, 0.8641873002052307])
-viewer.display()
+viewer.plot_surface(stratigraphy, value=10)
+viewer.show()
 
 ###########################################
 # Plotting the fold rotation angles
