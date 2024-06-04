@@ -46,7 +46,7 @@ all = ['loopstructural[visualisation,export]']
 visualisation = [
     "matplotlib",
     "pyvista",
-    "loopstructuralviusualisation"
+    "loopstructuralviusualisation>0.1.4"
     ]
 export = [
     "geoh5py", 
