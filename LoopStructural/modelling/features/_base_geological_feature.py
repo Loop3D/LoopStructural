@@ -5,7 +5,7 @@ from typing import Union, List, Optional
 from LoopStructural.modelling.features import FeatureType
 from LoopStructural.utils import getLogger
 from LoopStructural.utils.typing import NumericInput
-from LoopStructural.api import LoopIsosurfacer, surface_list
+from LoopStructural.utils import LoopIsosurfacer, surface_list
 from LoopStructural.datatypes import VectorPoints
 
 import numpy as np

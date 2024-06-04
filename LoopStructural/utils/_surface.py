@@ -3,7 +3,7 @@ from __future__ import annotations
 from typing import Optional, Union, Callable, List
 import numpy as np
 import numpy.typing as npt
-from LoopStructural.utils import getLogger
+from LoopStructural.utils.logging import getLogger
 
 logger = getLogger(__name__)
 try:
