@@ -90,11 +90,16 @@ interpolator_map = {
 }
 
 support_interpolator_map = {
-    InterpolatorType.FINITE_DIFFERENCE: SupportType.StructuredGrid,
-    InterpolatorType.DISCRETE_FOLD: SupportType.TetMesh,
-    InterpolatorType.PIECEWISE_LINEAR: SupportType.TetMesh,
-    InterpolatorType.PIECEWISE_QUADRATIC: SupportType.P2UnstructuredTetMesh,
+    InterpolatorType.FINITE_DIFFERENCE: {
+        2: SupportType.StructuredGrid2D,
+        3: SupportType.StructuredGrid,
+    },
+    InterpolatorType.DISCRETE_FOLD: {3: SupportType.TetMesh, 2: SupportType.P1Unstructured2d},
+    InterpolatorType.PIECEWISE_LINEAR: {3: SupportType.TetMesh, 2: SupportType.P1Unstructured2d},
+    InterpolatorType.PIECEWISE_QUADRATIC: {
+        3: SupportType.P2UnstructuredTetMesh,
+        2: SupportType.P2Unstructured2d,
+    },
 }
-
 
 from ._interpolator_factory import InterpolatorFactory

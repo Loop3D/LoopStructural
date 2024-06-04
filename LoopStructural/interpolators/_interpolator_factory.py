@@ -30,7 +30,9 @@ class InterpolatorFactory:
             interpolatortype = interpolator_string_map[interpolatortype]
         if support is None:
             # raise Exception("Support must be specified")
-            supporttype = support_interpolator_map[interpolatortype]
+
+            supporttype = support_interpolator_map[interpolatortype][boundingbox.dimensions]
+
             support = SupportFactory.create_support_from_bbox(
                 supporttype,
                 bounding_box=boundingbox,
