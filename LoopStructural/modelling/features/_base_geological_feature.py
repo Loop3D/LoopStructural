@@ -314,7 +314,7 @@ class BaseFeature(metaclass=ABCMeta):
             if self.model is None:
                 raise ValueError("Must specify bounding box")
             bounding_box = self.model.bounding_box
-        grid = bounding_box.vtk
+        grid = bounding_box.vtk()
         value = self.evaluate_value(
             self.model.scale(bounding_box.regular_grid(local=False, order='F'))
         )
@@ -338,7 +338,7 @@ class BaseFeature(metaclass=ABCMeta):
             if self.model is None:
                 raise ValueError("Must specify bounding box")
             bounding_box = self.model.bounding_box
-        grid = bounding_box.vtk
+        grid = bounding_box.vtk()
         points = grid.points
         value = self.evaluate_gradient(points)
 

@@ -382,7 +382,6 @@ class BoundingBox:
             "nsteps": self.nsteps.tolist(),
         }
 
-    @property
     def vtk(self):
         """Export the model as a pyvista RectilinearGrid
 

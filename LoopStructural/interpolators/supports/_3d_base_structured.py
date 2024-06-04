@@ -451,7 +451,6 @@ class BaseStructuredSupport(BaseSupport):
         # all elements are the same size
         return 1.0
 
-    @property
     def vtk(self):
         try:
             import pyvista as pv

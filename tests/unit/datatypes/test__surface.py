@@ -31,7 +31,7 @@ def test_surface_vtk():
     values = np.array([1, 2, 3])
 
     surface = Surface(vertices, triangles, normals, name, values)
-    vtk_surface = surface.vtk
+    vtk_surface = surface.vtk()
 
     assert vtk_surface.n_points == len(vertices)
     assert vtk_surface.n_cells == len(triangles)

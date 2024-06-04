@@ -47,7 +47,7 @@ def test_structured_grid_vtk():
     name = "grid_data"
 
     grid = StructuredGrid(origin, step_vector, nsteps, data, name)
-    vtk_grid = grid.vtk
+    vtk_grid = grid.vtk()
     grid_points = vtk_grid.points
     grid_origin = np.min(grid_points, axis=0)
 

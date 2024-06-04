@@ -69,7 +69,6 @@ class Surface:
         normals = normals / np.linalg.norm(normals, axis=1)[:, np.newaxis]
         return normals
 
-    @property
     def vtk(self):
         import pyvista as pv
 

@@ -24,7 +24,6 @@ class StructuredGrid:
     def maximum(self):
         return self.origin + self.nsteps * self.step_vector
 
-    @property
     def vtk(self):
         try:
             import pyvista as pv
