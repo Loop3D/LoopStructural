@@ -6,7 +6,6 @@ This tutorial will demonstrate how to add unconformities to a mode using LoopStr
 
 """
 
-from matplotlib.cm import cmaps_listed
 import numpy as np
 import pandas as pd
 from LoopStructural import GeologicalModel
@@ -57,7 +56,7 @@ def build_model_and_plot(
         "strati2": {
             "series1": {"min": 0.0, "max": 2.0, "id": 0, "colour": "red"},
             "series2": {"min": 2.0, "max": 5.0, "id": 1, "colour": "red"},
-            "series1": {"min": 5.0, "max": 10.0, "id": 2, "colour": "red"},
+            "series3": {"min": 5.0, "max": 10.0, "id": 2, "colour": "red"},
         },
         "strati": {
             "series2": {"min": -np.inf, "max": -100, "id": 3, "colour": "blue"},
@@ -74,9 +73,8 @@ def build_model_and_plot(
     val2 = model["strati2"].evaluate_value(points)
     val3 = model["strati3"].evaluate_value(points)
     val4 = model["strati4"].evaluate_value(points)
-    uf = model["strati4"].regions[0](points)
     fval = model['fault'].evaluate_value(points)
-    fig, ax = plt.subplots()
+    _fig, ax = plt.subplots()
 
     ax.contourf(val.reshape((100, 100)), extent=(0, 1000, 0, 200), cmap='viridis')
     ax.contourf(val2.reshape((100, 100)), extent=(0, 1000, 0, 200), cmap='Reds')
