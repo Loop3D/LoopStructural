@@ -79,13 +79,6 @@ from ..interpolators._discrete_fold_interpolator import (
 from ..interpolators._p2interpolator import P2Interpolator
 from ..interpolators._p1interpolator import P1Interpolator
 
-
-try:
-    from ..interpolators._surfe_wrapper import SurfeRBFInterpolator
-except ImportError:
-    logger.warning('Can\'t import surfepy - to install "pip install surfe"')
-
-
 interpolator_map = {
     InterpolatorType.BASE: GeologicalInterpolator,
     InterpolatorType.BASE_DISCRETE: DiscreteInterpolator,
@@ -94,7 +87,6 @@ interpolator_map = {
     InterpolatorType.PIECEWISE_LINEAR: P1Interpolator,
     InterpolatorType.PIECEWISE_QUADRATIC: P2Interpolator,
     InterpolatorType.BASE_DATA_SUPPORTED: GeologicalInterpolator,
-    # InterpolatorType.SURFE: SurfeRBFInterpolator,
 }
 
 support_interpolator_map = {

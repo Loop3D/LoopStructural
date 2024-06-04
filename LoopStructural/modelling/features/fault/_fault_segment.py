@@ -11,7 +11,8 @@ import numpy as np
 
 logger = getLogger(__name__)
 
-use_threads = True
+use_threads = False  # there is a bug with threading causing the interpolation dictionary to change size during iterations
+# for now 19/4/24 LG is turning threading off. This will slow down evaluation of models a bit.
 
 
 class FaultSegment(StructuralFrame):
@@ -19,7 +20,9 @@ class FaultSegment(StructuralFrame):
     Class for representing a slip event of a fault
     """
 
-    def __init__(self, features, name, faultfunction=None, steps=10, displacement=1.0, fold=None):
+    def __init__(
+        self, features, name, faultfunction=None, steps=10, displacement=1.0, fold=None, model=None
+    ):
         """
         A slip event of a fault
 
@@ -33,7 +36,7 @@ class FaultSegment(StructuralFrame):
             how many integration steps for faults
         kwargs
         """
-        StructuralFrame.__init__(self, features, name, fold)
+        StructuralFrame.__init__(self, features, name, fold, model)
         self.type = FeatureType.FAULT
         self.displacement = displacement
         self._faultfunction = BaseFault.fault_displacement
@@ -104,7 +107,7 @@ class FaultSegment(StructuralFrame):
 
     @property
     def displacementfeature(self):
-        return FaultDisplacementFeature(self, self.faultfunction, name=self.name)
+        return FaultDisplacementFeature(self, self.faultfunction, name=self.name, model=self.model)
 
     def set_model(self, model):
         """
@@ -330,7 +333,7 @@ class FaultSegment(StructuralFrame):
                 gx = self.__getitem__(0).evaluate_value(newp[mask, :])
                 gy = self.__getitem__(1).evaluate_value(newp[mask, :])
                 gz = self.__getitem__(2).evaluate_value(newp[mask, :])
-                g = self.__getitem__(1).evaluate_gradient(newp[mask, :])
+                g = self.__getitem__(1).evaluate_gradient(newp[mask, :], ignore_regions=True)
             # # get the fault frame val/grad for the points
             # determine displacement magnitude, for constant displacement
             # hanging wall should be > 0
@@ -354,6 +357,7 @@ class FaultSegment(StructuralFrame):
             g[g_mag > 0.0] /= g_mag[g_mag > 0, None]
             # multiply displacement vector by the displacement magnitude for
             # step
+
             g *= (1.0 / steps) * d[:, None]
             # newp[mask, :].copy()
             # apply displacement

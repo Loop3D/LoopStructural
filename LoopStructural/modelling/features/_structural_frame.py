@@ -2,16 +2,17 @@
 Structural frames
 """
 
-from ..features import BaseFeature
+from ..features import BaseFeature, FeatureType
 import numpy as np
 from ...utils import getLogger
-from ..features import FeatureType
+from typing import Optional, List, Union
+from ...datatypes import ValuePoints, VectorPoints
 
 logger = getLogger(__name__)
 
 
 class StructuralFrame(BaseFeature):
-    def __init__(self, name: str, features: list, fold=None):
+    def __init__(self, name: str, features: list, fold=None, model=None):
         """
         Structural frame is a curvilinear coordinate system defined by
         structural observations associated with a fault or fold.
@@ -21,7 +22,7 @@ class StructuralFrame(BaseFeature):
         name - name of the structural frame
         features - list of features to build the frame with
         """
-        BaseFeature.__init__(self, name, None, [], [], None)
+        BaseFeature.__init__(self, name, model, [], [], None)
         self.features = features
         self.fold = fold
         self.type = FeatureType.STRUCTURALFRAME
@@ -114,7 +115,7 @@ class StructuralFrame(BaseFeature):
         """
         return self.features[i]
 
-    def evaluate_value(self, evaluation_points):
+    def evaluate_value(self, evaluation_points, ignore_regions=False):
         """
         Evaluate the value of the structural frame for the points.
         Can optionally only evaluate one coordinate
@@ -130,12 +131,12 @@ class StructuralFrame(BaseFeature):
         """
         v = np.zeros(evaluation_points.shape)  # create new 3d array of correct length
         v[:] = np.nan
-        v[:, 0] = self.features[0].evaluate_value(evaluation_points)
-        v[:, 1] = self.features[1].evaluate_value(evaluation_points)
-        v[:, 2] = self.features[2].evaluate_value(evaluation_points)
+        v[:, 0] = self.features[0].evaluate_value(evaluation_points, ignore_regions=ignore_regions)
+        v[:, 1] = self.features[1].evaluate_value(evaluation_points, ignore_regions=ignore_regions)
+        v[:, 2] = self.features[2].evaluate_value(evaluation_points, ignore_regions=ignore_regions)
         return v
 
-    def evaluate_gradient(self, evaluation_points, i=None):
+    def evaluate_gradient(self, evaluation_points, i=None, ignore_regions=False):
         """
         Evaluate the gradient of the structural frame.
         Can optionally only evaluate the ith coordinate
@@ -150,9 +151,36 @@ class StructuralFrame(BaseFeature):
 
         """
         if i is not None:
-            return self.features[i].support.evaluate_gradient(evaluation_points)
+            return self.features[i].support.evaluate_gradient(
+                evaluation_points, ignore_regions=ignore_regions
+            )
         return (
-            self.features[0].support.evaluate_gradient(evaluation_points),
-            self.features[1].support.evaluate_gradient(evaluation_points),
-            self.features[2].support.evaluate_gradient(evaluation_points),
+            self.features[0].support.evaluate_gradient(
+                evaluation_points, ignore_regions=ignore_regions
+            ),
+            self.features[1].support.evaluate_gradient(
+                evaluation_points, ignore_regions=ignore_regions
+            ),
+            self.features[2].support.evaluate_gradient(
+                evaluation_points, ignore_regions=ignore_regions
+            ),
         )
+
+    def get_data(self, value_map: Optional[dict] = None) -> List[Union[ValuePoints, VectorPoints]]:
+        """Return the data associated with the features in the
+        structural frame
+
+        Parameters
+        ----------
+        value_map : Optional[dict], optional
+            map scalar values to another property, by default None
+
+        Returns
+        -------
+        List
+            container of value or vector points
+        """
+        data = []
+        for f in self.features:
+            data.extend(f.get_data(value_map))
+        return data

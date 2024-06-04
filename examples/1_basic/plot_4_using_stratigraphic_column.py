@@ -7,7 +7,7 @@ We will use the previous example Creating a model with multiple geological featu
 
 from LoopStructural import GeologicalModel
 from LoopStructural.datasets import load_claudius
-from LoopStructural.visualisation import LavaVuModelViewer
+from LoopStructural.visualisation import Loop3DView
 
 import numpy as np
 
@@ -59,7 +59,6 @@ stratigraphic_column["strati"]["unit5"] = {"min": -np.inf, "max": -330, "id": 4}
 
 model.set_stratigraphic_column(stratigraphic_column)
 
-viewer = LavaVuModelViewer(model)
-viewer.add_model(cmap="tab20")
-viewer.rotate([-85.18760681152344, 42.93233871459961, 0.8641873002052307])
+viewer = Loop3DView(model)
+viewer.plot_block_model()
 viewer.display()

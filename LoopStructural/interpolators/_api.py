@@ -39,6 +39,7 @@ class LoopInterpolator:
         """
         self.dimensions = dimensions
         self.type = "FDI"
+        self.bounding_box = bounding_box
         self.interpolator: GeologicalInterpolator = InterpolatorFactory.create_interpolator(
             type,
             bounding_box,

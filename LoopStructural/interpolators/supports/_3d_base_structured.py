@@ -233,9 +233,9 @@ class BaseStructuredSupport(BaseSupport):
         x = pos[:, 0] - self.origin[None, 0]
         y = pos[:, 1] - self.origin[None, 1]
         z = pos[:, 2] - self.origin[None, 2]
-        cell_indexes[:, 0] = x // self.step_vector[None, 0]
-        cell_indexes[:, 1] = y // self.step_vector[None, 1]
-        cell_indexes[:, 2] = z // self.step_vector[None, 2]
+        cell_indexes[inside, 0] = x[inside] // self.step_vector[None, 0]
+        cell_indexes[inside, 1] = y[inside] // self.step_vector[None, 1]
+        cell_indexes[inside, 2] = z[inside] // self.step_vector[None, 2]
         return cell_indexes, inside
 
     def position_to_cell_global_index(self, pos):
@@ -451,7 +451,6 @@ class BaseStructuredSupport(BaseSupport):
         # all elements are the same size
         return 1.0
 
-    @property
     def vtk(self):
         try:
             import pyvista as pv

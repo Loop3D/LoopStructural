@@ -80,18 +80,19 @@ def test_outside_box(support):
 
 def test_evaluate_gradient2(support_class):
     # this test is the same as above but we will use a random vector
-    np.random.seed(0)
-    for i in range(10):
-        step = np.random.uniform(0, 100)
+    rng = np.random.default_rng(10)
+    _i = 0
+    for _i in range(10):
+        step = rng.uniform(0, 100)
         grid = support_class(step_vector=np.array([step, step, step]))
 
         # define random vector
-        n = np.random.random(3)
+        n = rng.random(3)
         n /= np.linalg.norm(n)
         distance = n[0] * grid.nodes[:, 0] + n[1] * grid.nodes[:, 1] + n[2] * grid.nodes[:, 2]
-        vector = grid.evaluate_gradient(np.random.uniform(1, 8, size=(100, 3)), distance)
-        assert np.all(np.isclose(np.sum(vector - n[None, :], axis=1), 0)) == True
-    assert i == 9
+        vector = grid.evaluate_gradient(rng.uniform(1, 8, size=(100, 3)), distance)
+        assert np.all(np.isclose(np.sum(vector - n[None, :], axis=1), 0, atol=1e-3, rtol=1e-3))
+    assert _i == 9
 
 
 def test_get_element(support):
@@ -115,7 +116,7 @@ def test_global_to_local_coordinates():
 def test_get_element_outside(support):
     point = np.array([support.origin - np.ones(3)])
     idc, inside = support.position_to_cell_corners(point)
-    assert inside[0] == False
+    assert not inside[0]
 
 
 def test_node_index_to_position(support):

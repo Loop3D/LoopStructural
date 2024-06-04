@@ -119,7 +119,6 @@ def test_intrusion_builder():
         "geometric_scaling_parameters": {},
     }
 
-    intrusion_feature = intrusion_builder.feature
     intrusion_builder.update()
 
     assert len(intrusion_builder.data_for_lateral_extent_calculation[0]) > 0

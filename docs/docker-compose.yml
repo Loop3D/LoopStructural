@@ -7,3 +7,4 @@ services:
     volumes:
       - ../:/LoopStructural
     command: ./LoopStructural/docs/build_docs.sh
+    tty: true

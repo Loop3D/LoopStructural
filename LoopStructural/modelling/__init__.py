@@ -6,7 +6,7 @@ Geological modelling classes and functions
 __all__ = [
     "GeologicalModel",
     "ProcessInputData",
-    "LavaVuModelViewer",
+    "Loop3DView",
     "Map2LoopProcessor",
     "LoopProjectfileProcessor",
 ]

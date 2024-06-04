@@ -47,6 +47,5 @@ def test_azimuthplunge2vector_array_values():
 def test_azimuthplunge2vector_empty_arrays():
     plunge = []
     plunge_dir = []
-    expected_result = np.empty((1, 3))
     result = azimuthplunge2vector(plunge, plunge_dir)
-    # assert np.allclose(result, expected_result)
+    assert result.shape[0] == 0

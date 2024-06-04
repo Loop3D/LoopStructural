@@ -208,7 +208,7 @@ class ProcessInputData:
         Add a isosurfaces to the model coloured by the map colours
 
         >>> model, processor = GeologicalModel.from_map2loop_directory(directory)
-        >>> view = LavaVuModelViewer(model)
+        >>> view = Loop3DView(model)
         >>> view.add_isosurface(model['supergroup_0'],**processor.stratigraphy_cmap('supergroup_0'))
         >>> view.interactive()
 

@@ -41,7 +41,7 @@ class GeologicalInterpolator(metaclass=ABCMeta):
         self.up_to_date = up_to_date
         self.constraints = []
         self.__str = "Base Geological Interpolator"
-        self.valid = False
+        self.valid = True
 
     @property
     def data(self):
@@ -178,12 +178,13 @@ class GeologicalInterpolator(metaclass=ABCMeta):
         self.data["inequality"] = points
         self.up_to_date = False
 
-    def set_inequality_pairs_constraints(self, pointsa: np.ndarray, pointsb: np.ndarray):
-        if pointsa.shape[1] < 3:
+    def set_inequality_pairs_constraints(self, lower_points: np.ndarray, upper_points: np.ndarray):
+        if lower_points.shape[1] < 3:
             raise ValueError("Inequality pairs constraints must at least have X,Y,Z")
-        if pointsb.shape[1] < 3:
+        if upper_points.shape[1] < 3:
             raise ValueError("Inequality pairs constraints must at least have X,Y,Z")
-        self.data["inequality_pairs"] = {"a": pointsa, "b": pointsb}
+        self.data["inequality_pairs_upper"] = upper_points
+        self.data['inequality_pairs_lower'] = lower_points
         self.up_to_date = False
 
     def get_value_constraints(self):
@@ -243,8 +244,14 @@ class GeologicalInterpolator(metaclass=ABCMeta):
         """
         return self.data["interface"]
 
-    def get_inequality_constraints(self):
+    def get_inequality_value_constraints(self):
         return self.data["inequality"]
+
+    def get_inequality_pairs_constraints(self):
+        return {
+            'lower': self.data["inequality_pairs_lower"],
+            'upper': self.data["inequality_pairs_upper"],
+        }
 
     # @abstractmethod
     def setup(self, **kwargs):
@@ -261,15 +268,14 @@ class GeologicalInterpolator(metaclass=ABCMeta):
         self.setup_interpolator(**kwargs)
 
     @abstractmethod
-    def solve_system(self, **kwargs):
+    def solve_system(self, solver, solver_kwargs: dict = {}) -> bool:
         """
         Solves the interpolation equations
         """
-        self._solve(**kwargs)
-        self.up_to_date = True
+        pass
 
     @abstractmethod
-    def update(self):
+    def update(self) -> bool:
         return False
 
     @abstractmethod
@@ -327,6 +333,8 @@ class GeologicalInterpolator(metaclass=ABCMeta):
             "tangent": np.zeros((0, 7)),
             "interface": np.zeros((0, 5)),
             "inequality": np.zeros((0, 6)),
+            "inequality_pairs_lower": np.zeros((0, 3)),
+            "inequality_pairs_upper": np.zeros((0, 3)),
         }
         self.up_to_date = False
         self.n_g = 0

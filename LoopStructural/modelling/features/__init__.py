@@ -16,6 +16,7 @@ class FeatureType(IntEnum):
     FAULT = 9
     DOMAINFAULT = 10
     INACTIVEFAULT = 11
+    ONLAPUNCONFORMITY = 12
 
 
 # from .builders._geological_feature_builder import GeologicalFeatureBuilder

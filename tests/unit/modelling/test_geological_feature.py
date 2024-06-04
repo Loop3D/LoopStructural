@@ -1,5 +1,4 @@
 from LoopStructural.modelling.features import (
-    BaseFeature,
     GeologicalFeature,
     AnalyticalGeologicalFeature,
     FeatureType,

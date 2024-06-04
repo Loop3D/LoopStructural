@@ -123,13 +123,16 @@ autosummary_mock_imports = [
     "LoopStructural.interpolators._cython",
 ]
 # Sphinx gallery examples
-from LoopStructural.visualisation.sphinx_scraper import Scraper as LoopScraper
+# from LoopStructural.visualisation.sphinx_scraper import Scraper as LoopScraper
 from sphinx_gallery.sorting import ExampleTitleSortKey
+import pyvista
+
+pyvista.BUILDING_GALLERY = True
 
 sphinx_gallery_conf = {
     "examples_dirs": ["../../examples/"],
     "gallery_dirs": ["_auto_examples/"],  # path to where to save gallery generated output
-    "image_scrapers": ("matplotlib", LoopScraper()),
+    "image_scrapers": ("matplotlib", "pyvista"),
     "within_subsection_order": ExampleTitleSortKey,
     "reference_url": {"LoopStructural": None},
 }

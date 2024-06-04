@@ -30,6 +30,3 @@ class SupportFactory:
         return support_map[support_type](
             origin=bbox.origin, step_vector=bbox.step_vector, nsteps=bbox.nsteps
         )
-
-    # @staticmethod
-    # def create_3d_structured_grid(origin, maximum, step_vector, nsteps)

@@ -307,6 +307,7 @@ class FaultDisplacement:
         gx: Optional[FaultProfileFunction] = None,
         gy: Optional[FaultProfileFunction] = None,
         gz: Optional[FaultProfileFunction] = None,
+        scale=0.5,
     ):
         """Function for characterising the displacement of a fault in 3D space
         given the coordinates of the structural frame
@@ -330,7 +331,7 @@ class FaultDisplacement:
             self.gx = Composite(hw, fw)
         self.gy = gy
         self.gz = gz
-
+        self.scale = scale
         if self.gx is None:
             print("Gx function none setting to ones")
             self.gx = Ones()
@@ -350,7 +351,7 @@ class FaultDisplacement:
 
     def __call__(self, gx, gy, gz):
 
-        return self.gx(gx) * self.gy(gy) * self.gz(gz)
+        return self.scale * self.gx(gx) * self.gy(gy) * self.gz(gz)
 
     def to_dict(self) -> dict:
         return {

@@ -52,18 +52,33 @@ class BaseUnstructured2d(BaseSupport):
         # make a big table to store which tetra are in which element.
         # if this takes up too much memory it could be simplified by using sparse matrices or dict but
         # at the expense of speed
-        self.aabb_table = sparse.csr_matrix(
+        self._aabb_table = sparse.csr_matrix(
             (self.aabb_grid.n_elements, len(self.elements)), dtype=bool
         )
-        self.shared_element_relationships = np.zeros(
+        self._shared_element_relationships = np.zeros(
             (self.neighbours[self.neighbours >= 0].flatten().shape[0], 2), dtype=int
         )
-        self.shared_elements = np.zeros(
+        self._shared_elements = np.zeros(
             (self.neighbours[self.neighbours >= 0].flatten().shape[0], self.dimension), dtype=int
         )
 
-        _init_face_table(self)
-        _initialise_aabb(self)
+    @property
+    def aabb_table(self):
+        if np.sum(self._aabb_table) == 0:
+            _initialise_aabb(self)
+        return self._aabb_table
+
+    @property
+    def shared_elements(self):
+        if np.sum(self._shared_elements) == 0:
+            _init_face_table(self)
+        return self._shared_elements
+
+    @property
+    def shared_element_relationships(self):
+        if np.sum(self._shared_element_relationships) == 0:
+            _init_face_table(self)
+        return self._shared_element_relationships
 
     @property
     def elements(self):
@@ -234,7 +249,12 @@ class BaseUnstructured2d(BaseSupport):
         return values
 
     def get_element_for_location(
-        self, points: np.ndarray
+        self,
+        points: np.ndarray,
+        return_verts=True,
+        return_bc=True,
+        return_inside=True,
+        return_tri=True,
     ) -> Tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray]:
         """
         Determine the elements from a numpy array of points
@@ -249,7 +269,10 @@ class BaseUnstructured2d(BaseSupport):
         -------
 
         """
-        verts = np.zeros((points.shape[0], self.dimension + 1, self.dimension))
+        if return_verts:
+            verts = np.zeros((points.shape[0], self.dimension + 1, self.dimension))
+        else:
+            verts = np.zeros((0, 0, 0))
         bc = np.zeros((points.shape[0], self.dimension + 1))
         tetras = np.zeros(points.shape[0], dtype="int64")
         inside = np.zeros(points.shape[0], dtype=bool)
@@ -266,6 +289,7 @@ class BaseUnstructured2d(BaseSupport):
             row = tetra_indices.row
             col = tetra_indices.col
             # using returned indexes calculate barycentric coords to determine which tetra the points are in
+
             vertices = self.nodes[self.elements[col, : self.dimension + 1]]
             pos = points[row, : self.dimension]
             row = tetra_indices.row
@@ -286,8 +310,8 @@ class BaseUnstructured2d(BaseSupport):
             c[:, 2] = 1.0 - c[:, 0] - c[:, 1]
 
             mask = np.all(c >= 0, axis=1)
-
-            verts[: npts + npts_step, :, :][row[mask], :, :] = vertices[mask, :, :]
+            if return_verts:
+                verts[: npts + npts_step, :, :][row[mask], :, :] = vertices[mask, :, :]
             bc[: npts + npts_step, :][row[mask], :] = c[mask, :]
             tetras[: npts + npts_step][row[mask]] = col[mask]
             inside[: npts + npts_step][row[mask]] = True
@@ -312,5 +336,5 @@ class BaseUnstructured2d(BaseSupport):
         -------
 
         """
-        verts, c, tri, inside = self.get_element_for_location(pos)
+        verts, c, tri, inside = self.get_element_for_location(pos, return_verts=False)
         return self.evaluate_shape_derivatives(pos, tri)

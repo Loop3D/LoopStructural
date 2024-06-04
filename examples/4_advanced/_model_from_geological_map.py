@@ -20,7 +20,7 @@ To use incorporate faults into the geological model. """
 
 from LoopStructural.modelling import ProcessInputData
 from LoopStructural import GeologicalModel
-from LoopStructural.visualisation import LavaVuModelViewer
+from LoopStructural.visualisation import Loop3DView
 from LoopStructural.datasets import load_geological_map_data
 
 import matplotlib.pyplot as plt
@@ -137,7 +137,7 @@ model2.update()
 # ~~~~~~~~~~~~~~~~~
 
 
-view = LavaVuModelViewer(model)
+view = Loop3DView(model)
 view.add_model_surfaces()
 view.rotation = [-37.965614318847656, 13.706363677978516, 3.110347032546997]
 view.display()
@@ -171,7 +171,7 @@ processor = ProcessInputData(
 model = GeologicalModel.from_processor(processor)
 model.update()
 
-view = LavaVuModelViewer(model)
+view = Loop3DView(model)
 view.add_model_surfaces()
 view.rotation = [-37.965614318847656, 13.706363677978516, 3.110347032546997]
 view.display()

@@ -1,3 +1,4 @@
+from typing import Optional
 import numpy as np
 import pandas as pd
 from LoopStructural.modelling.features import BaseFeature
@@ -404,3 +405,6 @@ class IntrusionFeature(BaseFeature):
         intrusion_sf[c] = mod_intrusion_coord0_pts[c] - mod_c0_minside_threshold[c]
 
         return intrusion_sf
+
+    def get_data(self, value_map: Optional[dict] = None):
+        pass

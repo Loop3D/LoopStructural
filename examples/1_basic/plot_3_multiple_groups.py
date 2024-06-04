@@ -7,7 +7,7 @@ Creating a model with multiple geological features, dealing with unconformities.
 
 from LoopStructural import GeologicalModel
 from LoopStructural.datasets import load_claudius
-from LoopStructural.visualisation import LavaVuModelViewer
+from LoopStructural.visualisation import Loop3DView
 
 
 data, bb = load_claudius()
@@ -36,12 +36,11 @@ strati = model.create_and_add_foliation(
     nelements=1e4,
 )
 
-viewer = LavaVuModelViewer(model)
-viewer.add_isosurface(
+viewer = Loop3DView(model)
+viewer.plot_surface(
     strati2,
     #                       nslices=5
-    slices=[2, 1.5, 1],
+    value=[2, 1.5, 1],
 )
-viewer.add_isosurface(strati, slices=[0, -60, -250, -330], paint_with=strati)
-viewer.rotate([-85.18760681152344, 42.93233871459961, 0.8641873002052307])
+viewer.plot_surface(strati, value=[0, -60, -250, -330], paint_with=strati)
 viewer.display()

@@ -61,7 +61,7 @@ class P1Unstructured2d(BaseUnstructured2d):
 
     def evaluate_shape(self, locations):
         locations = np.array(locations)
-        vertices, c, tri, inside = self.get_element_for_location(locations)
+        vertices, c, tri, inside = self.get_element_for_location(locations, return_verts=False)
         # c = np.dot(np.array([1,x,y]),np.linalg.inv(M)) # convert to barycentric coordinates
         # order of bary coord is (1-s-t,s,t)
         N = c  # np.zeros((c.shape[0],3)) #evaluate shape functions at barycentric coordinates

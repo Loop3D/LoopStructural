@@ -74,4 +74,4 @@ def _initialise_aabb(grid):
         z_logic = np.logical_or(np.logical_or(a, b), c)
         logic = np.logical_and(logic, z_logic)
 
-    grid.aabb_table = sparse.csr_matrix(logic)
+    grid._aabb_table = sparse.csr_matrix(logic)

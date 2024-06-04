@@ -13,7 +13,7 @@ import numpy as np
 class InterpolatorFactory:
     @staticmethod
     def create_interpolator(
-        interpolatortype: Union[str, InterpolatorType] = None,
+        interpolatortype: Optional[Union[str, InterpolatorType]] = None,
         boundingbox: Optional[BoundingBox] = None,
         nelements: Optional[int] = None,
         element_volume: Optional[float] = None,
