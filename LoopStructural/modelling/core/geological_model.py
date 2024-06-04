@@ -1731,26 +1731,22 @@ class GeologicalModel:
                 f"Updating geological model. There are: \n {nfeatures} \
                     geological features that need to be interpolated\n"
             )
-        import time
-
-        start = time.time()
-        try:
-            from tqdm.auto import tqdm
-        except ImportError:
-            progressbar = False
-            logger.warning("Failed to import tqdm, disabling progress bar")
 
         if progressbar:
-            # Load tqdm with size counter instead of file counter
-            with tqdm(total=nfeatures) as pbar:
-                for f in self.features:
-                    pbar.set_description(f"Interpolating {f.name}")
-                    f.builder.up_to_date(callback=pbar.update)
-        else:
-            for f in self.features:
-                f.builder.up_to_date()
-        if verbose:
-            print(f"Model update took: {time.time()-start} seconds")
+            try:
+                from tqdm.auto import tqdm
+
+                # Load tqdm with size counter instead of file counter
+                with tqdm(total=nfeatures) as pbar:
+                    for f in self.features:
+                        pbar.set_description(f"Interpolating {f.name}")
+                        f.builder.up_to_date(callback=pbar.update)
+                return
+            except ImportError:
+                logger.warning("Failed to import tqdm, disabling progress bar")
+
+        for f in self.features:
+            f.builder.up_to_date()
 
     def stratigraphic_ids(self):
         """Return a list of all stratigraphic ids in the model
@@ -1758,7 +1754,7 @@ class GeologicalModel:
         Returns
         -------
         ids : list
-            list of unique stratigraphic ids
+            list of unique stratigraphic ids, featurename, unit name and min and max scalar values
         """
         ids = []
         for group in self.stratigraphic_column.keys():
@@ -1805,7 +1801,7 @@ class GeologicalModel:
         return surfaces
 
     def get_block_model(self):
-        grid = self.bounding_box.vtk
+        grid = self.bounding_box.vtk()
 
         grid.cell_data['stratigraphy'] = self.evaluate_model(
             self.bounding_box.cell_centers(), scale=False
