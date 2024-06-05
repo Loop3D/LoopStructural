@@ -37,7 +37,6 @@ from ...datatypes import BoundingBox
 from ...modelling.intrusions import IntrusionBuilder
 
 from ...modelling.intrusions import IntrusionFrameBuilder
-from LoopStructural.modelling.features import fault
 
 
 logger = getLogger(__name__)
