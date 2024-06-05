@@ -39,3 +39,6 @@ class StructuredGrid:
         )
         grid[self.name] = self.data.flatten(order="F")
         return grid
+
+    def save(self, filename):
+        raise NotImplementedError("Saving structured grids is not yet implemented")

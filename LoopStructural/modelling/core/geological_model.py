@@ -7,7 +7,7 @@ from ...utils import getLogger, log_to_file
 import numpy as np
 import pandas as pd
 from typing import List
-
+import pathlib
 from ...modelling.features.fault import FaultSegment
 
 from ...modelling.features.builders import (
@@ -37,6 +37,7 @@ from ...datatypes import BoundingBox
 from ...modelling.intrusions import IntrusionBuilder
 
 from ...modelling.intrusions import IntrusionFrameBuilder
+from LoopStructural.modelling.features import fault
 
 
 logger = getLogger(__name__)
@@ -1807,3 +1808,51 @@ class GeologicalModel:
             self.bounding_box.cell_centers(), scale=False
         )
         return grid, self.stratigraphic_ids()
+
+    def save(
+        self,
+        filename: str,
+        block_model: bool = False,
+        stratigraphic_surfaces=True,
+        fault_surfaces=True,
+        stratigraphic_data=True,
+        fault_data=True,
+    ):
+        path = pathlib.Path(filename)
+        extension = path.suffix
+        name = path.stem
+        stratigraphic_surfaces = self.get_stratigraphic_surfaces()
+        if fault_surfaces:
+            for s in self.get_fault_surfaces():
+                ## geoh5 can save everything into the same file
+                if extension == ".geoh5":
+                    s.save(filename)
+                else:
+                    s.save(f'{name}_{s.name}.{extension}')
+        if stratigraphic_surfaces:
+            for s in self.get_stratigraphic_surfaces():
+                if extension == ".geoh5":
+                    s.save(filename)
+                else:
+                    s.save(f'{name}_{s.name}.{extension}')
+        if block_model:
+            grid, ids = self.get_block_model()
+            if extension == ".geoh5":
+                grid.save(filename)
+            else:
+                grid.save(f'{name}_block_model.{extension}')
+        if stratigraphic_data:
+            for group in self.stratigraphic_column.keys():
+                if group == "faults":
+                    continue
+                for series in self.stratigraphic_column[group].keys():
+                    if extension == ".geoh5":
+                        self.__getitem__(series).save(filename)
+                    else:
+                        self.__getitem__(series).save(f'{name}_{series}.{extension}')
+        if fault_data:
+            for f in self.fault_names():
+                if extension == ".geoh5":
+                    self.__getitem__(f).save(filename)
+                else:
+                    self.__getitem__(f).save(f'{name}_{f}.{extension}')
