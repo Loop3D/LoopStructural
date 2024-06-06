@@ -314,11 +314,14 @@ class BaseFeature(metaclass=ABCMeta):
             if self.model is None:
                 raise ValueError("Must specify bounding box")
             bounding_box = self.model.bounding_box
-        grid = bounding_box.vtk()
+        grid = bounding_box.structured_grid(name=self.name)
         value = self.evaluate_value(
             self.model.scale(bounding_box.regular_grid(local=False, order='F'))
         )
-        grid[self.name] = value
+        grid.properties_vertex[self.name] = value
+
+        value = self.evaluate_value(bounding_box.cell_centers(order='F'))
+        grid.properties_cell[self.name] = value
         return grid
 
     def vector_field(self, bounding_box=None, tolerance=0.05, scale=1.0):

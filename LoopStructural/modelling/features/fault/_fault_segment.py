@@ -229,7 +229,9 @@ class FaultSegment(StructuralFrame):
             except:
                 logger.error("nan slicing ")
         # need to scale with fault displacement
-        v[mask, :] = self.__getitem__(0).evaluate_gradient(locations[mask, :])
+        v[mask, :] = self.__getitem__(1).evaluate_gradient(locations[mask, :])
+        scale = self.displacementfeature.evaluate_value(locations[mask, :])
+        v[mask, :] *= scale[:, None]
         return v
 
     def evaluate_displacement(self, points):
@@ -458,3 +460,42 @@ class FaultSegment(StructuralFrame):
             )
         self.abut[abutting_fault_feature.name] = abutting_region
         self.__getitem__(0).add_region(abutting_region)
+
+    def save(self, filename, scalar_field=True, slip_vector=True, surface=True):
+        """
+        Save the fault to a file
+
+        Parameters
+        ----------
+        filename - str
+            filename to save to
+
+        Returns
+        -------
+
+        """
+        filename = str(filename)
+        ext = filename.split(".")[-1]
+        info = ''
+        if scalar_field:
+            if ext == '.geoh5':
+                info = ''
+            else:
+                info = '_scalar_field'
+            a = self.features[0].scalar_field()
+            a.merge(self.features[1].scalar_field())
+            a.merge(self.features[2].scalar_field())
+            a.merge(self.displacementfeature.scalar_field())
+            a.save(f'{filename}{info}.{ext}')
+        if slip_vector:
+            if ext == '.geoh5':
+                info = ''
+            else:
+                info = '_slip_vector'
+            self.vector_field().save(f'{filename}{info}.{ext}')
+        if surface:
+            if ext == '.geoh5':
+                info = ''
+            else:
+                info = '_surface'
+            self.surfaces([0])[0].save(f'{filename}{info}.{ext}')

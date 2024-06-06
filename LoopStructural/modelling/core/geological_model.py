@@ -37,7 +37,6 @@ from ...datatypes import BoundingBox
 from ...modelling.intrusions import IntrusionBuilder
 
 from ...modelling.intrusions import IntrusionFrameBuilder
-from LoopStructural.modelling.features import fault
 
 
 logger = getLogger(__name__)
@@ -112,7 +111,6 @@ class GeologicalModel:
 
 
         """
-        # print('tet')
         if logfile:
             self.logfile = logfile
             log_to_file(logfile, level=loglevel)
@@ -1803,10 +1801,10 @@ class GeologicalModel:
 
         return surfaces
 
-    def get_block_model(self):
-        grid = self.bounding_box.vtk()
+    def get_block_model(self, name='block model'):
+        grid = self.bounding_box.structured_grid(name=name)
 
-        grid.cell_data['stratigraphy'] = self.evaluate_model(
+        grid.properties_cell['stratigraphy'] = self.evaluate_model(
             self.bounding_box.cell_centers(), scale=False
         )
         return grid, self.stratigraphic_ids()
@@ -1814,7 +1812,7 @@ class GeologicalModel:
     def save(
         self,
         filename: str,
-        block_model: bool = False,
+        block_model: bool = True,
         stratigraphic_surfaces=True,
         fault_surfaces=True,
         stratigraphic_data=True,
@@ -1855,7 +1853,8 @@ class GeologicalModel:
                             self.__getitem__(series).save(f'{name}_{series}.{extension}')
         if fault_data:
             for f in self.fault_names():
-                if extension == ".geoh5":
-                    self.__getitem__(f).save(filename)
-                else:
-                    self.__getitem__(f).save(f'{name}_{f}.{extension}')
+                for d in self.__getitem__(f).get_data():
+                    if extension == ".geoh5":
+                        d.save(filename)
+                    else:
+                        d.save(f'{name}_{group}.{extension}')
