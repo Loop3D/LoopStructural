@@ -1759,6 +1759,9 @@ class GeologicalModel:
             list of unique stratigraphic ids, featurename, unit name and min and max scalar values
         """
         ids = []
+        if self.stratigraphic_column is None:
+            logger.warning('No stratigraphic column defined')
+            return ids
         for group in self.stratigraphic_column.keys():
             if group == "faults":
                 continue
