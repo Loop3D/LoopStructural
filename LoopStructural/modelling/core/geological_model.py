@@ -1778,6 +1778,8 @@ class GeologicalModel:
         ## TODO change the stratigraphic column to its own class and have methods to get the relevant surfaces
         surfaces = []
         units = []
+        if self.stratigraphic_column is None:
+            return []
         for group in self.stratigraphic_column.keys():
             if group == "faults":
                 continue
@@ -1842,14 +1844,15 @@ class GeologicalModel:
             else:
                 grid.save(f'{name}_block_model.{extension}')
         if stratigraphic_data:
-            for group in self.stratigraphic_column.keys():
-                if group == "faults":
-                    continue
-                for series in self.stratigraphic_column[group].keys():
-                    if extension == ".geoh5":
-                        self.__getitem__(series).save(filename)
-                    else:
-                        self.__getitem__(series).save(f'{name}_{series}.{extension}')
+            if self.stratigraphic_column is not None:
+                for group in self.stratigraphic_column.keys():
+                    if group == "faults":
+                        continue
+                    for series in self.stratigraphic_column[group].keys():
+                        if extension == ".geoh5":
+                            self.__getitem__(series).save(filename)
+                        else:
+                            self.__getitem__(series).save(f'{name}_{series}.{extension}')
         if fault_data:
             for f in self.fault_names():
                 if extension == ".geoh5":
