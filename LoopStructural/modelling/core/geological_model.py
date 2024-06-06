@@ -1539,6 +1539,9 @@ class GeologicalModel:
         strat_id = np.zeros(xyz.shape[0], dtype=int)
         # set strat id to -1 to identify which areas of the model aren't covered
         strat_id[:] = -1
+        if self.stratigraphic_column is None:
+            logger.warning("No stratigraphic column defined")
+            return strat_id
         for group in reversed(self.stratigraphic_column.keys()):
             if group == "faults":
                 continue
