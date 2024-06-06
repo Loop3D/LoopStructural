@@ -34,7 +34,7 @@ print(surfaces)
 
 print(surfaces[0].vtk)
 
-surfaces[0].save('text.geoh5')
+# surfaces[0].save('text.geoh5')
 
 ######################################################################
 # Export the model to geoh5
@@ -43,4 +43,4 @@ surfaces[0].save('text.geoh5')
 # method. This will save all the data, foliations, faults and other objects
 # in the model to a geoh5 file. This file can be loaded into LoopStructural
 
-model.save('model.geoh5')
+# model.save('model.geoh5')
