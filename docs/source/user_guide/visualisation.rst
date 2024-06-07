@@ -15,19 +15,19 @@ There are four main ways a GeologicalFeature can be visualised.
 
 .. code-block::
 
-    view.add_scalar_field(geological_feature)
+    view.plot_scalar_field(geological_feature)
 
 2. Surfaces extracted from isovalues of the implicit function
 
 .. code-block::
 
-    view.add_isosurface(geological_feature,value=0)
+    view.plot_surface(geological_feature,value=0)
 
 3. Vector field representing the gradient of the implicit function
 
 .. code-block::
 
-    view.add_isosurface(geological_feature)
+    view.plot_surface(geological_feature)
 
 4. Cross section showing the value of the implicit function at a particular location inside the model
 
@@ -43,24 +43,23 @@ When adding to the viewer there are a number of common arguments that can be spe
 
       * - Parameter
         - Options
-      * - name
-        - overwrite the name of the object to be added into the viewer
       * - vmin
         - minimum value for colourmap
       * - vmax
         - maximum value for colourmap
       * - cmap
         - matplotlib colourmap or string with name of matplotlib colourmap e.g. 'rainbow'
+      * - pyvista_kwargs
+        - any arguments to be passed to the :meth:`pyvista.Plotter.add_mesh` method
       
 The default behaviour of the viewer can also be modified.
-To change the resolution of the scalar field or isosurfacing, either set the number of steps in x,y,z or the total number of elements.
+To change the resolution of the scalar field or isosurfacing, either set the number of steps in x,y,z or the total number of elements of tht bounding box
 
 .. code-block::
-
-    view.nsteps = np.array([nx,ny,nz])
-    print(view.nsteps)
-    view.nelements = 1e6
-    print(view.nsteps)
+    model.bounding_box.nsteps = np.array([nx,ny,nz])
+    print(model.bounding_box.nsteps)
+    model.bounding_box.nelements = 1e6
+    print(model.bounding_box.nsteps)
 
 
     
@@ -72,24 +71,24 @@ To add all of the data attached to a GeologicalFeature
 
 .. code-block::
 
-    view.add_data(geological_feature,grad=True,value=True,tang=True,interface=True)
+    view.plot_data(geological_feature,value=True,vector=True,scale=10,pyvista_kwargs={})
 
 Alternatively, points can be added into the model using the:
 
 .. code-block::
 
-    view.add_points(xyz,name='name of viewer object')
+    view.add_points(xyz)
 
 or points with an associated value:
 
 .. code-block::
-    view.add_value_data(xyz,val,name='name of viewer object')
+    view.add_points(xyz,scalars=np.array(values))
 
 or points with an associated vector:
 
 .. code-block::
 
-    view.add_vector_data(xyz,vec,name='name of viewer object')
+    view.add_arrows(xyz,direction)
 
 **Warning, you cannot have two objects in the viewer with the same name**
 
@@ -101,13 +100,13 @@ To add a block model showing the stratigraphic unit distribution, where the valu
 
 .. code-block::
 
-    view.add_model()
+    view.plot_block_model()
 
 alternatively, the surfaces can be added to the visualisation.
 
 .. code-block::
 
-    view.add_model_surfaces(faults=True)
+    view.plot_model_surfaces(faults=True,strati=True)
 
 Where the faults flag allows you to disable visualising the fault surface. 
 This function will add a surface for every stratigraphic unit in the stratigraphic column.
@@ -124,8 +123,8 @@ The LambdaGeologicalFeature is a class allowing for a function describing the va
     def x_function(xyz):
         return xyz[:,0]
     custom_feature = LambdaGeologicalFeature(x_function,name='x feature')
-    view.add_isosurface(custom_feature,value)
-    view.add_scalar_field(custom_feature)
+    view.plot_surface(custom_feature,value)
+    view.plot_scalar_field(custom_feature)
 
 The function passed to the LambdaGeologicalFeature can be as simple or complicated as required. 
 It will be evaluated for the locations within the model that the visualisation requires, usually between the origin and maximum of the geoloical model.
