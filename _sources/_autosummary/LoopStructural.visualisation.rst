@@ -9,14 +9,6 @@
 
    
    
-   .. rubric:: Functions
-
-   .. autosummary::
-      :toctree:
-      :recursive:
-   
-      getLogger
-   
    
 
    
@@ -28,12 +20,10 @@
       :template: custom-class-template.rst
       :recursive:              
    
-      DashView
-      LavaVuModelViewer
-      MapView
+      Loop2DView
+      Loop3DView
       RotationAnglePlotter
-      ScalarField
-      VtkExporter
+      StratigraphicColumnView
    
    
 
@@ -42,19 +32,4 @@
    
 
 
-
-.. rubric:: Modules
-
-.. autosummary::
-   :toctree:
-   :template: custom-module-template.rst                 
-   :recursive:
-
-   LoopStructural.visualisation.lavavu
-   LoopStructural.visualisation.map_viewer
-   LoopStructural.visualisation.model_plotter
-   LoopStructural.visualisation.rotation_angle_plotter
-   LoopStructural.visualisation.sphinx_scraper
-   LoopStructural.visualisation.stratigraphic_column
-   LoopStructural.visualisation.vtk_exporter
 

@@ -11,7 +11,7 @@
         :class: sphx-glr-download-link-note
 
         :ref:`Go to the end <sphx_glr_download__auto_examples_1_basic_plot_1_data_prepration.py>`
-        to download the full example code
+        to download the full example code.
 
 .. rst-class:: sphx-glr-example-title
 
@@ -74,11 +74,12 @@ Create a pointset representing two flat surfaces one at z = 1 with a value of 0 
 add some noise to make it interesting!
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 58-76
+.. GENERATED FROM PYTHON SOURCE LINES 58-77
 
 .. code-block:: Python
 
     import numpy as np
+    from LoopStructural.utils import rng
 
     extent = np.zeros((3, 2))
     extent[:, 1] = 10
@@ -88,11 +89,11 @@ add some noise to make it interesting!
 
     xx, yy = np.meshgrid(x, y)
     zz = np.zeros_like(xx)
-    zz[:] = 1 + np.random.random(zz.shape)
+    zz[:] = 1 + rng.random(zz.shape)
     val = np.zeros_like(xx)
     val[:] = 0
     surface_1 = np.array([xx.flatten(), yy.flatten(), zz.flatten(), val.flatten()]).T
-    zz[:] = 5 + np.random.random(zz.shape)
+    zz[:] = 5 + rng.random(zz.shape)
     val[:] = 1
     surface_2 = np.array([xx.flatten(), yy.flatten(), zz.flatten(), val.flatten()]).T
 
@@ -103,7 +104,7 @@ add some noise to make it interesting!
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 77-91
+.. GENERATED FROM PYTHON SOURCE LINES 78-92
 
 Creating LoopStructural dataset
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -120,7 +121,7 @@ interpolators
 **Note** for the interpolator to solve there needs to be two unique values or a norm constraint
 for the interpolator to be able to find a solution.
 
-.. GENERATED FROM PYTHON SOURCE LINES 91-98
+.. GENERATED FROM PYTHON SOURCE LINES 92-99
 
 .. code-block:: Python
 
@@ -169,7 +170,7 @@ for the interpolator to be able to find a solution.
           <th>0</th>
           <td>0.000000</td>
           <td>0.0</td>
-          <td>1.676823</td>
+          <td>1.143931</td>
           <td>0.0</td>
           <td>conformable</td>
         </tr>
@@ -177,7 +178,7 @@ for the interpolator to be able to find a solution.
           <th>1</th>
           <td>1.111111</td>
           <td>0.0</td>
-          <td>1.905867</td>
+          <td>1.578922</td>
           <td>0.0</td>
           <td>conformable</td>
         </tr>
@@ -185,7 +186,7 @@ for the interpolator to be able to find a solution.
           <th>2</th>
           <td>2.222222</td>
           <td>0.0</td>
-          <td>1.861882</td>
+          <td>1.871078</td>
           <td>0.0</td>
           <td>conformable</td>
         </tr>
@@ -193,7 +194,7 @@ for the interpolator to be able to find a solution.
           <th>3</th>
           <td>3.333333</td>
           <td>0.0</td>
-          <td>1.430647</td>
+          <td>1.377658</td>
           <td>0.0</td>
           <td>conformable</td>
         </tr>
@@ -201,7 +202,7 @@ for the interpolator to be able to find a solution.
           <th>4</th>
           <td>4.444444</td>
           <td>0.0</td>
-          <td>1.086118</td>
+          <td>1.888334</td>
           <td>0.0</td>
           <td>conformable</td>
         </tr>
@@ -212,7 +213,7 @@ for the interpolator to be able to find a solution.
     <br />
     <br />
 
-.. GENERATED FROM PYTHON SOURCE LINES 99-106
+.. GENERATED FROM PYTHON SOURCE LINES 100-107
 
 Creating a GeologicalModel
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -222,7 +223,7 @@ To create a GeologicalModel we need to define the extent of the model with an or
 The pandas dataframe that contains the model data need to be linked to the geological model.
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 106-112
+.. GENERATED FROM PYTHON SOURCE LINES 107-113
 
 .. code-block:: Python
 
@@ -239,14 +240,14 @@ The pandas dataframe that contains the model data need to be linked to the geolo
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 113-117
+.. GENERATED FROM PYTHON SOURCE LINES 114-118
 
 Adding a conformable foliation
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 We can create a geological feature using the create_and_add_foliation method.
 This returns a To build a scalar field representing the
 
-.. GENERATED FROM PYTHON SOURCE LINES 117-120
+.. GENERATED FROM PYTHON SOURCE LINES 118-121
 
 .. code-block:: Python
 
@@ -260,7 +261,7 @@ This returns a To build a scalar field representing the
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 121-134
+.. GENERATED FROM PYTHON SOURCE LINES 122-135
 
 Visualising a 2-D section
 ~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -276,7 +277,7 @@ xyz coordinates.
 In the following example we will use matplotlib to visualise these results however, the
 next tutorial will show how to use the lavavu visualisation model.
 
-.. GENERATED FROM PYTHON SOURCE LINES 134-168
+.. GENERATED FROM PYTHON SOURCE LINES 135-169
 
 .. code-block:: Python
 
@@ -329,7 +330,7 @@ next tutorial will show how to use the lavavu visualisation model.
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 0.216 seconds)
+   **Total running time of the script:** (0 minutes 0.276 seconds)
 
 
 .. _sphx_glr_download__auto_examples_1_basic_plot_1_data_prepration.py:

@@ -8,25 +8,25 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Computation times &#8212; LoopStructural 1.5.13 documentation</title>
+    <title>Computation times &#8212; LoopStructural 1.6.0 documentation</title>
   
   
   
   <script data-cfasync="false">
     document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
-    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
   </script>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="_static/styles/theme.css?digest=8d27b9dea8ad943066ae" rel="stylesheet" />
-<link href="_static/styles/bootstrap.css?digest=8d27b9dea8ad943066ae" rel="stylesheet" />
-<link href="_static/styles/pydata-sphinx-theme.css?digest=8d27b9dea8ad943066ae" rel="stylesheet" />
+  <link href="_static/styles/theme.css?digest=3ee479438cf8b5e0d341" rel="stylesheet" />
+<link href="_static/styles/bootstrap.css?digest=3ee479438cf8b5e0d341" rel="stylesheet" />
+<link href="_static/styles/pydata-sphinx-theme.css?digest=3ee479438cf8b5e0d341" rel="stylesheet" />
 
   
-  <link href="_static/vendor/fontawesome/6.5.1/css/all.min.css?digest=8d27b9dea8ad943066ae" rel="stylesheet" />
-  <link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.5.1/webfonts/fa-solid-900.woff2" />
-<link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.5.1/webfonts/fa-brands-400.woff2" />
-<link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.5.1/webfonts/fa-regular-400.woff2" />
+  <link href="_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=3ee479438cf8b5e0d341" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
 
     <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=a746c00c" />
     <link rel="stylesheet" type="text/css" href="_static/sg_gallery.css?v=61a4c737" />
@@ -36,12 +36,12 @@
     <link rel="stylesheet" type="text/css" href="_static/custom.css" />
   
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=8d27b9dea8ad943066ae" />
-<link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=8d27b9dea8ad943066ae" />
-  <script src="_static/vendor/fontawesome/6.5.1/js/all.min.js?digest=8d27b9dea8ad943066ae"></script>
+  <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=3ee479438cf8b5e0d341" />
+<link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=3ee479438cf8b5e0d341" />
+  <script src="_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=3ee479438cf8b5e0d341"></script>
 
-    <script src="_static/documentation_options.js?v=862cd339"></script>
-    <script src="_static/doctools.js?v=888ff710"></script>
+    <script src="_static/documentation_options.js?v=9e8e7855"></script>
+    <script src="_static/doctools.js?v=9a2dae69"></script>
     <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'sg_execution_times';</script>
     <script src="_static/custom-icon.js?v=40bda21d"></script>
@@ -49,7 +49,7 @@
     <link rel="search" title="Search" href="search.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-    <meta name="docbuild:last-update" content="Mar 20, 2024"/>
+    <meta name="docbuild:last-update" content="Jun 07, 2024"/>
   </head>
   
   
@@ -57,27 +57,23 @@
 
   
   
-  <a id="pst-skip-link" class="skip-link" href="#main-content">Skip to main content</a>
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
   
   <div id="pst-scroll-pixel-helper"></div>
   
   <button type="button" class="btn rounded-pill" id="pst-back-to-top">
-    <i class="fa-solid fa-arrow-up"></i>
-    Back to top
-  </button>
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
 
   
   <input type="checkbox"
           class="sidebar-toggle"
-          name="__primary"
-          id="__primary"/>
-  <label class="overlay overlay-primary" for="__primary"></label>
+          id="pst-primary-sidebar-checkbox"/>
+  <label class="overlay overlay-primary" for="pst-primary-sidebar-checkbox"></label>
   
   <input type="checkbox"
           class="sidebar-toggle"
-          name="__secondary"
-          id="__secondary"/>
-  <label class="overlay overlay-secondary" for="__secondary"></label>
+          id="pst-secondary-sidebar-checkbox"/>
+  <label class="overlay overlay-secondary" for="pst-secondary-sidebar-checkbox"></label>
   
   <div class="search-button__wrapper">
     <div class="search-button__overlay"></div>
@@ -99,12 +95,17 @@
   <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
 </form></div>
   </div>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
   
-    <header class="bd-header navbar navbar-expand-lg bd-navbar">
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
 <div class="bd-header__inner bd-page-width">
-  <label class="sidebar-toggle primary-toggle" for="__primary">
+  <button class="sidebar-toggle primary-toggle" aria-label="Site navigation">
     <span class="fa-solid fa-bars"></span>
-  </label>
+  </button>
   
   
   <div class="col-lg-3 navbar-header-items__start">
@@ -128,7 +129,7 @@
     <script>document.write(`<img src="_static/infinity_loop_icon.svg" class="logo__image only-dark" alt=""/>`);</script>
   
   
-    <p class="title logo__title">LoopStructural - 1.5.13</p>
+    <p class="title logo__title">LoopStructural - 1.6.0</p>
   
 </a></div>
     
@@ -142,45 +143,45 @@
 <nav class="navbar-nav">
   <ul class="bd-navbar-elements navbar-nav">
     
-                    <li class="nav-item">
-                      <a class="nav-link nav-internal" href="getting_started/index.html">
-                        Getting Started
-                      </a>
-                    </li>
-                
+<li class="nav-item pst-header-nav-item">
+  <a class="nav-link nav-internal" href="getting_started/index.html">
+    Getting Started
+  </a>
+</li>
 
-                    <li class="nav-item">
-                      <a class="nav-link nav-internal" href="_auto_examples/index.html">
-                        Examples
-                      </a>
-                    </li>
-                
 
-                    <li class="nav-item">
-                      <a class="nav-link nav-internal" href="user_guide/index.html">
-                        User Guide
-                      </a>
-                    </li>
-                
+<li class="nav-item pst-header-nav-item">
+  <a class="nav-link nav-internal" href="_auto_examples/index.html">
+    Examples
+  </a>
+</li>
 
-                    <li class="nav-item">
-                      <a class="nav-link nav-internal" href="API.html">
-                        API
-                      </a>
-                    </li>
-                
-            <li class="nav-item dropdown">
+
+<li class="nav-item pst-header-nav-item">
+  <a class="nav-link nav-internal" href="user_guide/index.html">
+    User Guide
+  </a>
+</li>
+
+
+<li class="nav-item pst-header-nav-item">
+  <a class="nav-link nav-internal" href="API.html">
+    API
+  </a>
+</li>
+
+            <li class="nav-item dropdown pst-header-nav-item">
                 <button class="btn dropdown-toggle nav-item" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-controls="pst-nav-more-links">
                     More
                 </button>
                 <ul id="pst-nav-more-links" class="dropdown-menu">
                     
-                <li class="nav-item">
-                  <a class="nav-link dropdown-item nav-external" href="https://www.loop3d.org">
-                    Loop3d
-                  </a>
-                </li>
-                
+<li class="nav-item ">
+  <a class="nav-link dropdown-item nav-external" href="https://www.loop3d.org">
+    Loop3d
+  </a>
+</li>
+
                 </ul>
             </li>
             
@@ -279,9 +280,9 @@ document.write(`
   
 
   
-    <label class="sidebar-toggle secondary-toggle" for="__secondary" tabindex="0">
+    <button class="sidebar-toggle secondary-toggle" aria-label="On this page">
       <span class="fa-solid fa-outdent"></span>
-    </label>
+    </button>
   
 </div>
 
@@ -304,54 +305,49 @@ document.write(`
     
       <div class="sidebar-header-items__center">
         
-          <div class="navbar-item">
+          
+          
+            <div class="navbar-item">
 <nav class="navbar-nav">
   <ul class="bd-navbar-elements navbar-nav">
     
-                    <li class="nav-item">
-                      <a class="nav-link nav-internal" href="getting_started/index.html">
-                        Getting Started
-                      </a>
-                    </li>
-                
+<li class="nav-item pst-header-nav-item">
+  <a class="nav-link nav-internal" href="getting_started/index.html">
+    Getting Started
+  </a>
+</li>
 
-                    <li class="nav-item">
-                      <a class="nav-link nav-internal" href="_auto_examples/index.html">
-                        Examples
-                      </a>
-                    </li>
-                
 
-                    <li class="nav-item">
-                      <a class="nav-link nav-internal" href="user_guide/index.html">
-                        User Guide
-                      </a>
-                    </li>
-                
+<li class="nav-item pst-header-nav-item">
+  <a class="nav-link nav-internal" href="_auto_examples/index.html">
+    Examples
+  </a>
+</li>
 
-                    <li class="nav-item">
-                      <a class="nav-link nav-internal" href="API.html">
-                        API
-                      </a>
-                    </li>
-                
-            <li class="nav-item dropdown">
-                <button class="btn dropdown-toggle nav-item" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-controls="pst-nav-more-links-2">
-                    More
-                </button>
-                <ul id="pst-nav-more-links-2" class="dropdown-menu">
-                    
-                <li class="nav-item">
-                  <a class="nav-link dropdown-item nav-external" href="https://www.loop3d.org">
-                    Loop3d
-                  </a>
-                </li>
-                
-                </ul>
-            </li>
-            
+
+<li class="nav-item pst-header-nav-item">
+  <a class="nav-link nav-internal" href="user_guide/index.html">
+    User Guide
+  </a>
+</li>
+
+
+<li class="nav-item pst-header-nav-item">
+  <a class="nav-link nav-internal" href="API.html">
+    API
+  </a>
+</li>
+
+
+<li class="nav-item pst-header-nav-item">
+  <a class="nav-link nav-external" href="https://www.loop3d.org">
+    Loop3d
+  </a>
+</li>
+
   </ul>
 </nav></div>
+          
         
       </div>
     
@@ -424,13 +420,13 @@ document.write(`
 
       </div>
       
-      <main id="main-content" class="bd-main">
+      <main id="main-content" class="bd-main" role="main">
         
         
           <div class="bd-content">
             <div class="bd-article-container">
               
-              <div class="bd-header-article">
+              <div class="bd-header-article d-print-none">
 <div class="header-article-items header-article__inner">
   
     <div class="header-article-items__start">
@@ -439,7 +435,7 @@ document.write(`
 
 
 
-<nav aria-label="Breadcrumb">
+<nav aria-label="Breadcrumb" class="d-print-none">
   <ul class="bd-breadcrumbs">
     
     <li class="breadcrumb-item breadcrumb-home">
@@ -466,7 +462,7 @@ document.write(`
                   
   <section id="computation-times">
 <span id="sphx-glr-sg-execution-times"></span><h1>Computation times<a class="headerlink" href="#computation-times" title="Link to this heading">#</a></h1>
-<p><strong>05:02.533</strong> total execution time for 16 files <strong>from all galleries</strong>:</p>
+<p><strong>01:03.680</strong> total execution time for 13 files <strong>from all galleries</strong>:</p>
 <div class="docutils container">
 <style scoped>
 <link href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet" />
@@ -479,7 +475,7 @@ document.write(`
 $(document).ready( function () {
     $('table.sg-datatable').DataTable({order: [[1, 'desc']]});
 } );
-</script><table class="table table-striped sg-datatable">
+</script><div class="pst-scrollable-table-container"><table class="table table-striped sg-datatable">
 <thead>
 <tr class="row-odd"><th class="head"><p>Example</p></th>
 <th class="head"><p>Time</p></th>
@@ -487,72 +483,61 @@ $(document).ready( function () {
 </tr>
 </thead>
 <tbody>
-<tr class="row-even"><td><p><a class="reference internal" href="_auto_examples/2_fold/plot_refolded_folds.html#sphx-glr-auto-examples-2-fold-plot-refolded-folds-py"><span class="std std-ref">2b. Refolded folds</span></a> (<code class="docutils literal notranslate"><span class="pre">../../examples/2_fold/plot_refolded_folds.py</span></code>)</p></td>
-<td><p>03:40.064</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="_auto_examples/1_basic/plot_6_fault_parameters.html#sphx-glr-auto-examples-1-basic-plot-6-fault-parameters-py"><span class="std std-ref">1i. Fault parameters</span></a> (<code class="docutils literal notranslate"><span class="pre">../../examples/1_basic/plot_6_fault_parameters.py</span></code>)</p></td>
+<td><p>00:32.056</p></td>
 <td><p>0.0</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="_auto_examples/3_fault/plot_faulted_intrusion.html#sphx-glr-auto-examples-3-fault-plot-faulted-intrusion-py"><span class="std std-ref">3a. Modelling faults using structural frames</span></a> (<code class="docutils literal notranslate"><span class="pre">../../examples/3_fault/plot_faulted_intrusion.py</span></code>)</p></td>
-<td><p>00:45.905</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="_auto_examples/2_fold/plot_1_adding_folds_to_surfaces.html#sphx-glr-auto-examples-2-fold-plot-1-adding-folds-to-surfaces-py"><span class="std std-ref">2a. Modelling folds</span></a> (<code class="docutils literal notranslate"><span class="pre">../../examples/2_fold/plot_1_adding_folds_to_surfaces.py</span></code>)</p></td>
+<td><p>00:09.678</p></td>
 <td><p>0.0</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="_auto_examples/3_fault/plot_define_fault_displacement.html#sphx-glr-auto-examples-3-fault-plot-define-fault-displacement-py"><span class="std std-ref">3c. Defining the fault displacement function</span></a> (<code class="docutils literal notranslate"><span class="pre">../../examples/3_fault/plot_define_fault_displacement.py</span></code>)</p></td>
-<td><p>00:07.976</p></td>
-<td><p>0.0</p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="_auto_examples/2_fold/plot_adding_folds_to_surfaces.html#sphx-glr-auto-examples-2-fold-plot-adding-folds-to-surfaces-py"><span class="std std-ref">2a. Modelling folds</span></a> (<code class="docutils literal notranslate"><span class="pre">../../examples/2_fold/plot_adding_folds_to_surfaces.py</span></code>)</p></td>
-<td><p>00:06.609</p></td>
-<td><p>0.0</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="_auto_examples/1_basic/plot_2_surface_modelling.html#sphx-glr-auto-examples-1-basic-plot-2-surface-modelling-py"><span class="std std-ref">1b. Implicit surface modelling</span></a> (<code class="docutils literal notranslate"><span class="pre">../../examples/1_basic/plot_2_surface_modelling.py</span></code>)</p></td>
-<td><p>00:04.325</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="_auto_examples/1_basic/plot_5_unconformities.html#sphx-glr-auto-examples-1-basic-plot-5-unconformities-py"><span class="std std-ref">1h. Unconformities and fault</span></a> (<code class="docutils literal notranslate"><span class="pre">../../examples/1_basic/plot_5_unconformities.py</span></code>)</p></td>
+<td><p>00:07.868</p></td>
 <td><p>0.0</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="_auto_examples/1_basic/plot_3_multiple_groups.html#sphx-glr-auto-examples-1-basic-plot-3-multiple-groups-py"><span class="std std-ref">1c. Multiple groups</span></a> (<code class="docutils literal notranslate"><span class="pre">../../examples/1_basic/plot_3_multiple_groups.py</span></code>)</p></td>
-<td><p>00:04.082</p></td>
+<td><p>00:04.515</p></td>
 <td><p>0.0</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="_auto_examples/1_basic/plot_4_using_stratigraphic_column.html#sphx-glr-auto-examples-1-basic-plot-4-using-stratigraphic-column-py"><span class="std std-ref">1d. Using Stratigraphic Columns</span></a> (<code class="docutils literal notranslate"><span class="pre">../../examples/1_basic/plot_4_using_stratigraphic_column.py</span></code>)</p></td>
-<td><p>00:03.905</p></td>
+<td><p>00:04.507</p></td>
 <td><p>0.0</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="_auto_examples/1_basic/plot_5_using_logging.html#sphx-glr-auto-examples-1-basic-plot-5-using-logging-py"><span class="std std-ref">1e. Using logging</span></a> (<code class="docutils literal notranslate"><span class="pre">../../examples/1_basic/plot_5_using_logging.py</span></code>)</p></td>
-<td><p>00:03.556</p></td>
-<td><p>0.0</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="_auto_examples/1_basic/plot_7_local_weights.html#sphx-glr-auto-examples-1-basic-plot-7-local-weights-py"><span class="std std-ref">1f. Local data weighting</span></a> (<code class="docutils literal notranslate"><span class="pre">../../examples/1_basic/plot_7_local_weights.py</span></code>)</p></td>
-<td><p>00:02.454</p></td>
-<td><p>0.0</p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="_auto_examples/1_basic/plot_6_unconformities.html#sphx-glr-auto-examples-1-basic-plot-6-unconformities-py"><span class="std std-ref">1f. Unconformities</span></a> (<code class="docutils literal notranslate"><span class="pre">../../examples/1_basic/plot_6_unconformities.py</span></code>)</p></td>
-<td><p>00:02.431</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="_auto_examples/1_basic/plot_2_surface_modelling.html#sphx-glr-auto-examples-1-basic-plot-2-surface-modelling-py"><span class="std std-ref">1b. Implicit surface modelling</span></a> (<code class="docutils literal notranslate"><span class="pre">../../examples/1_basic/plot_2_surface_modelling.py</span></code>)</p></td>
+<td><p>00:03.242</p></td>
 <td><p>0.0</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="_auto_examples/1_basic/plot_3_model_visualisation.html#sphx-glr-auto-examples-1-basic-plot-3-model-visualisation-py"><span class="std std-ref">1c. Visualising models</span></a> (<code class="docutils literal notranslate"><span class="pre">../../examples/1_basic/plot_3_model_visualisation.py</span></code>)</p></td>
-<td><p>00:01.010</p></td>
+<td><p>00:01.333</p></td>
 <td><p>0.0</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="_auto_examples/1_basic/plot_1_data_prepration.html#sphx-glr-auto-examples-1-basic-plot-1-data-prepration-py"><span class="std std-ref">1a. Getting started</span></a> (<code class="docutils literal notranslate"><span class="pre">../../examples/1_basic/plot_1_data_prepration.py</span></code>)</p></td>
-<td><p>00:00.216</p></td>
+<td><p>00:00.276</p></td>
 <td><p>0.0</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="_auto_examples/1_basic/example_surfe.html#sphx-glr-auto-examples-1-basic-example-surfe-py"><span class="std std-ref">1f. Radial Basis Interpolation Using Surfe</span></a> (<code class="docutils literal notranslate"><span class="pre">../../examples/1_basic/example_surfe.py</span></code>)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="_auto_examples/1_basic/plot_7_exporting.html#sphx-glr-auto-examples-1-basic-plot-7-exporting-py"><span class="std std-ref">1j. Exporting models</span></a> (<code class="docutils literal notranslate"><span class="pre">../../examples/1_basic/plot_7_exporting.py</span></code>)</p></td>
+<td><p>00:00.204</p></td>
+<td><p>0.0</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="_auto_examples/2_fold/_refolded_folds.html#sphx-glr-auto-examples-2-fold-refolded-folds-py"><span class="std std-ref">2b. Refolded folds</span></a> (<code class="docutils literal notranslate"><span class="pre">../../examples/2_fold/_refolded_folds.py</span></code>)</p></td>
 <td><p>00:00.000</p></td>
 <td><p>0.0</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="_auto_examples/1_basic/least_squares.html#sphx-glr-auto-examples-1-basic-least-squares-py"><span class="std std-ref">1a. Advanced least squares</span></a> (<code class="docutils literal notranslate"><span class="pre">../../examples/1_basic/least_squares.py</span></code>)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="_auto_examples/3_fault/_define_fault_displacement.html#sphx-glr-auto-examples-3-fault-define-fault-displacement-py"><span class="std std-ref">3c. Defining the fault displacement function</span></a> (<code class="docutils literal notranslate"><span class="pre">../../examples/3_fault/_define_fault_displacement.py</span></code>)</p></td>
 <td><p>00:00.000</p></td>
 <td><p>0.0</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="_auto_examples/1_basic/scalar_field.html#sphx-glr-auto-examples-1-basic-scalar-field-py"><span class="std std-ref">1f. Implicit modelling: signed distance field</span></a> (<code class="docutils literal notranslate"><span class="pre">../../examples/1_basic/scalar_field.py</span></code>)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="_auto_examples/3_fault/_faulted_intrusion.html#sphx-glr-auto-examples-3-fault-faulted-intrusion-py"><span class="std std-ref">3a. Modelling faults using structural frames</span></a> (<code class="docutils literal notranslate"><span class="pre">../../examples/3_fault/_faulted_intrusion.py</span></code>)</p></td>
 <td><p>00:00.000</p></td>
 <td><p>0.0</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="_auto_examples/3_fault/fault_network.html#sphx-glr-auto-examples-3-fault-fault-network-py"><span class="std std-ref">3b. Modelling a fault network in LoopStructural</span></a> (<code class="docutils literal notranslate"><span class="pre">../../examples/3_fault/fault_network.py</span></code>)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="_auto_examples/3_fault/fault_network.html#sphx-glr-auto-examples-3-fault-fault-network-py"><span class="std std-ref">3b. Modelling a fault network in LoopStructural</span></a> (<code class="docutils literal notranslate"><span class="pre">../../examples/3_fault/fault_network.py</span></code>)</p></td>
 <td><p>00:00.000</p></td>
 <td><p>0.0</p></td>
 </tr>
 </tbody>
 </table>
+</div>
 </div>
 </section>
 
@@ -563,7 +548,7 @@ $(document).ready( function () {
               
               
               
-                <footer class="prev-next-footer">
+                <footer class="prev-next-footer d-print-none">
                   
 <div class="prev-next-area">
 </div>
@@ -598,8 +583,8 @@ $(document).ready( function () {
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script src="_static/scripts/bootstrap.js?digest=8d27b9dea8ad943066ae"></script>
-<script src="_static/scripts/pydata-sphinx-theme.js?digest=8d27b9dea8ad943066ae"></script>
+  <script src="_static/scripts/bootstrap.js?digest=3ee479438cf8b5e0d341"></script>
+<script src="_static/scripts/pydata-sphinx-theme.js?digest=3ee479438cf8b5e0d341"></script>
 
  <script type="text/javascript">
     $(document).ready(function() {

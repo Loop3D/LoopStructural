@@ -32,17 +32,23 @@ LoopStructural.GeologicalModel
       ~GeologicalModel.evaluate_feature_gradient
       ~GeologicalModel.evaluate_feature_value
       ~GeologicalModel.evaluate_model
+      ~GeologicalModel.evaluate_model_gradient
       ~GeologicalModel.fault_names
       ~GeologicalModel.feature_names
       ~GeologicalModel.from_file
       ~GeologicalModel.from_map2loop_directory
       ~GeologicalModel.from_processor
+      ~GeologicalModel.get_block_model
+      ~GeologicalModel.get_fault_surfaces
       ~GeologicalModel.get_feature_by_name
+      ~GeologicalModel.get_stratigraphic_surfaces
       ~GeologicalModel.regular_grid
       ~GeologicalModel.rescale
+      ~GeologicalModel.save
       ~GeologicalModel.scale
       ~GeologicalModel.set_model_data
       ~GeologicalModel.set_stratigraphic_column
+      ~GeologicalModel.stratigraphic_ids
       ~GeologicalModel.to_dict
       ~GeologicalModel.to_file
       ~GeologicalModel.update

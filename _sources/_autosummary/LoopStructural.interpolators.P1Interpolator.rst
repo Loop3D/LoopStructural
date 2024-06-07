@@ -18,13 +18,19 @@ LoopStructural.interpolators.P1Interpolator
    
       ~P1Interpolator.__init__
       ~P1Interpolator.add_constraints_to_least_squares
+      ~P1Interpolator.add_equality_block
       ~P1Interpolator.add_equality_constraints
       ~P1Interpolator.add_gradient_constraints
       ~P1Interpolator.add_gradient_orthogonal_constraints
+      ~P1Interpolator.add_inequality_constraints_to_matrix
+      ~P1Interpolator.add_inequality_feature
+      ~P1Interpolator.add_inequality_pairs_constraints
       ~P1Interpolator.add_interface_constraints
       ~P1Interpolator.add_norm_constraints
       ~P1Interpolator.add_tangent_constraints
       ~P1Interpolator.add_value_constraints
+      ~P1Interpolator.add_value_inequality_constraints
+      ~P1Interpolator.build_inequality_matrix
       ~P1Interpolator.build_matrix
       ~P1Interpolator.calculate_residual_for_constraints
       ~P1Interpolator.check_array
@@ -34,13 +40,13 @@ LoopStructural.interpolators.P1Interpolator
       ~P1Interpolator.evaluate_value
       ~P1Interpolator.get_data_locations
       ~P1Interpolator.get_gradient_constraints
-      ~P1Interpolator.get_inequality_constraints
+      ~P1Interpolator.get_inequality_pairs_constraints
+      ~P1Interpolator.get_inequality_value_constraints
       ~P1Interpolator.get_interface_constraints
       ~P1Interpolator.get_norm_constraints
       ~P1Interpolator.get_tangent_constraints
       ~P1Interpolator.get_value_constraints
       ~P1Interpolator.minimise_edge_jumps
-      ~P1Interpolator.remove_constraints_from_least_squares
       ~P1Interpolator.reset
       ~P1Interpolator.set_gradient_constraints
       ~P1Interpolator.set_inequality_pairs_constraints

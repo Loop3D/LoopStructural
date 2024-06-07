@@ -1,0 +1,268 @@
+LoopStructural.visualisation.Loop3DView
+=======================================
+
+.. currentmodule:: LoopStructural.visualisation
+
+.. autoclass:: Loop3DView
+   :members:                                   
+   :show-inheritance:                           
+   :inherited-members:                          
+
+   
+   .. automethod:: __init__
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+      ~Loop3DView.__init__
+      ~Loop3DView.add_actor
+      ~Loop3DView.add_affine_transform_widget
+      ~Loop3DView.add_arrows
+      ~Loop3DView.add_axes
+      ~Loop3DView.add_axes_at_origin
+      ~Loop3DView.add_background_image
+      ~Loop3DView.add_blurring
+      ~Loop3DView.add_bounding_box
+      ~Loop3DView.add_box_widget
+      ~Loop3DView.add_camera_orientation_widget
+      ~Loop3DView.add_chart
+      ~Loop3DView.add_checkbox_button_widget
+      ~Loop3DView.add_composite
+      ~Loop3DView.add_cursor
+      ~Loop3DView.add_floor
+      ~Loop3DView.add_key_event
+      ~Loop3DView.add_legend
+      ~Loop3DView.add_legend_scale
+      ~Loop3DView.add_light
+      ~Loop3DView.add_line_widget
+      ~Loop3DView.add_lines
+      ~Loop3DView.add_logo_widget
+      ~Loop3DView.add_measurement_widget
+      ~Loop3DView.add_mesh
+      ~Loop3DView.add_mesh_clip_box
+      ~Loop3DView.add_mesh_clip_plane
+      ~Loop3DView.add_mesh_isovalue
+      ~Loop3DView.add_mesh_slice
+      ~Loop3DView.add_mesh_slice_orthogonal
+      ~Loop3DView.add_mesh_slice_spline
+      ~Loop3DView.add_mesh_threshold
+      ~Loop3DView.add_on_render_callback
+      ~Loop3DView.add_orientation_widget
+      ~Loop3DView.add_plane_widget
+      ~Loop3DView.add_point_labels
+      ~Loop3DView.add_point_scalar_labels
+      ~Loop3DView.add_points
+      ~Loop3DView.add_ruler
+      ~Loop3DView.add_scalar_bar
+      ~Loop3DView.add_silhouette
+      ~Loop3DView.add_slider_widget
+      ~Loop3DView.add_sphere_widget
+      ~Loop3DView.add_spline_widget
+      ~Loop3DView.add_text
+      ~Loop3DView.add_text_slider_widget
+      ~Loop3DView.add_timer_event
+      ~Loop3DView.add_title
+      ~Loop3DView.add_volume
+      ~Loop3DView.add_volume_clip_plane
+      ~Loop3DView.clear
+      ~Loop3DView.clear_actors
+      ~Loop3DView.clear_box_widgets
+      ~Loop3DView.clear_button_widgets
+      ~Loop3DView.clear_camera_widgets
+      ~Loop3DView.clear_events_for_key
+      ~Loop3DView.clear_line_widgets
+      ~Loop3DView.clear_logo_widgets
+      ~Loop3DView.clear_measure_widgets
+      ~Loop3DView.clear_on_render_callbacks
+      ~Loop3DView.clear_plane_widgets
+      ~Loop3DView.clear_slider_widgets
+      ~Loop3DView.clear_sphere_widgets
+      ~Loop3DView.clear_spline_widgets
+      ~Loop3DView.close
+      ~Loop3DView.deep_clean
+      ~Loop3DView.disable
+      ~Loop3DView.disable_3_lights
+      ~Loop3DView.disable_anti_aliasing
+      ~Loop3DView.disable_depth_of_field
+      ~Loop3DView.disable_depth_peeling
+      ~Loop3DView.disable_eye_dome_lighting
+      ~Loop3DView.disable_hidden_line_removal
+      ~Loop3DView.disable_parallel_projection
+      ~Loop3DView.disable_picking
+      ~Loop3DView.disable_shadows
+      ~Loop3DView.disable_ssao
+      ~Loop3DView.disable_stereo_render
+      ~Loop3DView.display
+      ~Loop3DView.enable
+      ~Loop3DView.enable_3_lights
+      ~Loop3DView.enable_anti_aliasing
+      ~Loop3DView.enable_block_picking
+      ~Loop3DView.enable_cell_picking
+      ~Loop3DView.enable_depth_of_field
+      ~Loop3DView.enable_depth_peeling
+      ~Loop3DView.enable_element_picking
+      ~Loop3DView.enable_eye_dome_lighting
+      ~Loop3DView.enable_fly_to_right_click
+      ~Loop3DView.enable_geodesic_picking
+      ~Loop3DView.enable_hidden_line_removal
+      ~Loop3DView.enable_horizon_picking
+      ~Loop3DView.enable_image_style
+      ~Loop3DView.enable_joystick_actor_style
+      ~Loop3DView.enable_joystick_style
+      ~Loop3DView.enable_lightkit
+      ~Loop3DView.enable_mesh_picking
+      ~Loop3DView.enable_parallel_projection
+      ~Loop3DView.enable_path_picking
+      ~Loop3DView.enable_point_picking
+      ~Loop3DView.enable_rectangle_picking
+      ~Loop3DView.enable_rectangle_through_picking
+      ~Loop3DView.enable_rectangle_visible_picking
+      ~Loop3DView.enable_rubber_band_2d_style
+      ~Loop3DView.enable_rubber_band_style
+      ~Loop3DView.enable_shadows
+      ~Loop3DView.enable_ssao
+      ~Loop3DView.enable_stereo_render
+      ~Loop3DView.enable_surface_point_picking
+      ~Loop3DView.enable_terrain_style
+      ~Loop3DView.enable_trackball_actor_style
+      ~Loop3DView.enable_trackball_style
+      ~Loop3DView.enable_zoom_style
+      ~Loop3DView.export_gltf
+      ~Loop3DView.export_html
+      ~Loop3DView.export_obj
+      ~Loop3DView.export_vrml
+      ~Loop3DView.export_vtksz
+      ~Loop3DView.fly_to
+      ~Loop3DView.fly_to_mouse_position
+      ~Loop3DView.generate_orbital_path
+      ~Loop3DView.get_default_cam_pos
+      ~Loop3DView.get_image_depth
+      ~Loop3DView.get_pick_position
+      ~Loop3DView.hide_axes
+      ~Loop3DView.hide_axes_all
+      ~Loop3DView.image_scale_context
+      ~Loop3DView.import_gltf
+      ~Loop3DView.import_vrml
+      ~Loop3DView.increment_point_size_and_line_width
+      ~Loop3DView.isometric_view
+      ~Loop3DView.isometric_view_interactive
+      ~Loop3DView.key_press_event
+      ~Loop3DView.left_button_down
+      ~Loop3DView.link_views
+      ~Loop3DView.open_gif
+      ~Loop3DView.open_movie
+      ~Loop3DView.orbit_on_path
+      ~Loop3DView.pick_click_position
+      ~Loop3DView.pick_mouse_position
+      ~Loop3DView.plot_block_model
+      ~Loop3DView.plot_data
+      ~Loop3DView.plot_fault
+      ~Loop3DView.plot_fault_displacements
+      ~Loop3DView.plot_fold
+      ~Loop3DView.plot_model_surfaces
+      ~Loop3DView.plot_scalar_field
+      ~Loop3DView.plot_surface
+      ~Loop3DView.plot_vector_field
+      ~Loop3DView.remove_actor
+      ~Loop3DView.remove_all_lights
+      ~Loop3DView.remove_background_image
+      ~Loop3DView.remove_blurring
+      ~Loop3DView.remove_bounding_box
+      ~Loop3DView.remove_bounds_axes
+      ~Loop3DView.remove_chart
+      ~Loop3DView.remove_environment_texture
+      ~Loop3DView.remove_floors
+      ~Loop3DView.remove_legend
+      ~Loop3DView.remove_scalar_bar
+      ~Loop3DView.render
+      ~Loop3DView.reset_camera
+      ~Loop3DView.reset_camera_clipping_range
+      ~Loop3DView.reset_key_events
+      ~Loop3DView.rotate
+      ~Loop3DView.save_graphic
+      ~Loop3DView.screenshot
+      ~Loop3DView.set_background
+      ~Loop3DView.set_chart_interaction
+      ~Loop3DView.set_color_cycler
+      ~Loop3DView.set_environment_texture
+      ~Loop3DView.set_focus
+      ~Loop3DView.set_position
+      ~Loop3DView.set_scale
+      ~Loop3DView.set_viewup
+      ~Loop3DView.show
+      ~Loop3DView.show_axes
+      ~Loop3DView.show_axes_all
+      ~Loop3DView.show_bounds
+      ~Loop3DView.show_grid
+      ~Loop3DView.store_click_position
+      ~Loop3DView.store_mouse_position
+      ~Loop3DView.subplot
+      ~Loop3DView.track_click_position
+      ~Loop3DView.track_mouse_position
+      ~Loop3DView.unlink_views
+      ~Loop3DView.untrack_click_position
+      ~Loop3DView.untrack_mouse_position
+      ~Loop3DView.update
+      ~Loop3DView.update_bounds_axes
+      ~Loop3DView.update_coordinates
+      ~Loop3DView.update_scalar_bar_range
+      ~Loop3DView.update_scalars
+      ~Loop3DView.view_isometric
+      ~Loop3DView.view_vector
+      ~Loop3DView.view_xy
+      ~Loop3DView.view_xz
+      ~Loop3DView.view_yx
+      ~Loop3DView.view_yz
+      ~Loop3DView.view_zx
+      ~Loop3DView.view_zy
+      ~Loop3DView.where_is
+      ~Loop3DView.window_size_context
+      ~Loop3DView.write_frame
+      ~Loop3DView.zoom_camera
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+   
+      ~Loop3DView.actors
+      ~Loop3DView.background_color
+      ~Loop3DView.bounds
+      ~Loop3DView.camera
+      ~Loop3DView.camera_position
+      ~Loop3DView.camera_set
+      ~Loop3DView.center
+      ~Loop3DView.click_position
+      ~Loop3DView.image
+      ~Loop3DView.image_depth
+      ~Loop3DView.image_scale
+      ~Loop3DView.last_update_time
+      ~Loop3DView.legend
+      ~Loop3DView.length
+      ~Loop3DView.meshes
+      ~Loop3DView.mouse_position
+      ~Loop3DView.parallel_projection
+      ~Loop3DView.parallel_scale
+      ~Loop3DView.pickable_actors
+      ~Loop3DView.picked_actor
+      ~Loop3DView.picked_block_index
+      ~Loop3DView.picked_cell
+      ~Loop3DView.picked_cells
+      ~Loop3DView.picked_mesh
+      ~Loop3DView.picked_point
+      ~Loop3DView.render_window
+      ~Loop3DView.renderer
+      ~Loop3DView.scalar_bar
+      ~Loop3DView.scalar_bars
+      ~Loop3DView.scale
+      ~Loop3DView.shape
+      ~Loop3DView.suppress_rendering
+      ~Loop3DView.theme
+      ~Loop3DView.window_size
+   
+   

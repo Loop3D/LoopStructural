@@ -43,6 +43,7 @@ LoopStructural.interpolators.StructuredGrid
       ~StructuredGrid.rotate
       ~StructuredGrid.to_dict
       ~StructuredGrid.trilinear
+      ~StructuredGrid.vtk
    
    
 
@@ -66,6 +67,5 @@ LoopStructural.interpolators.StructuredGrid
       ~StructuredGrid.origin
       ~StructuredGrid.rotation_xy
       ~StructuredGrid.step_vector
-      ~StructuredGrid.vtk
    
    

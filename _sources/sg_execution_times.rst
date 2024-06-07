@@ -6,7 +6,7 @@
 
 Computation times
 =================
-**05:02.533** total execution time for 16 files **from all galleries**:
+**01:03.680** total execution time for 13 files **from all galleries**:
 
 .. container::
 
@@ -32,49 +32,40 @@ Computation times
    * - Example
      - Time
      - Mem (MB)
-   * - :ref:`sphx_glr__auto_examples_2_fold_plot_refolded_folds.py` (``../../examples/2_fold/plot_refolded_folds.py``)
-     - 03:40.064
+   * - :ref:`sphx_glr__auto_examples_1_basic_plot_6_fault_parameters.py` (``../../examples/1_basic/plot_6_fault_parameters.py``)
+     - 00:32.056
      - 0.0
-   * - :ref:`sphx_glr__auto_examples_3_fault_plot_faulted_intrusion.py` (``../../examples/3_fault/plot_faulted_intrusion.py``)
-     - 00:45.905
+   * - :ref:`sphx_glr__auto_examples_2_fold_plot_1_adding_folds_to_surfaces.py` (``../../examples/2_fold/plot_1_adding_folds_to_surfaces.py``)
+     - 00:09.678
      - 0.0
-   * - :ref:`sphx_glr__auto_examples_3_fault_plot_define_fault_displacement.py` (``../../examples/3_fault/plot_define_fault_displacement.py``)
-     - 00:07.976
-     - 0.0
-   * - :ref:`sphx_glr__auto_examples_2_fold_plot_adding_folds_to_surfaces.py` (``../../examples/2_fold/plot_adding_folds_to_surfaces.py``)
-     - 00:06.609
-     - 0.0
-   * - :ref:`sphx_glr__auto_examples_1_basic_plot_2_surface_modelling.py` (``../../examples/1_basic/plot_2_surface_modelling.py``)
-     - 00:04.325
+   * - :ref:`sphx_glr__auto_examples_1_basic_plot_5_unconformities.py` (``../../examples/1_basic/plot_5_unconformities.py``)
+     - 00:07.868
      - 0.0
    * - :ref:`sphx_glr__auto_examples_1_basic_plot_3_multiple_groups.py` (``../../examples/1_basic/plot_3_multiple_groups.py``)
-     - 00:04.082
+     - 00:04.515
      - 0.0
    * - :ref:`sphx_glr__auto_examples_1_basic_plot_4_using_stratigraphic_column.py` (``../../examples/1_basic/plot_4_using_stratigraphic_column.py``)
-     - 00:03.905
+     - 00:04.507
      - 0.0
-   * - :ref:`sphx_glr__auto_examples_1_basic_plot_5_using_logging.py` (``../../examples/1_basic/plot_5_using_logging.py``)
-     - 00:03.556
-     - 0.0
-   * - :ref:`sphx_glr__auto_examples_1_basic_plot_7_local_weights.py` (``../../examples/1_basic/plot_7_local_weights.py``)
-     - 00:02.454
-     - 0.0
-   * - :ref:`sphx_glr__auto_examples_1_basic_plot_6_unconformities.py` (``../../examples/1_basic/plot_6_unconformities.py``)
-     - 00:02.431
+   * - :ref:`sphx_glr__auto_examples_1_basic_plot_2_surface_modelling.py` (``../../examples/1_basic/plot_2_surface_modelling.py``)
+     - 00:03.242
      - 0.0
    * - :ref:`sphx_glr__auto_examples_1_basic_plot_3_model_visualisation.py` (``../../examples/1_basic/plot_3_model_visualisation.py``)
-     - 00:01.010
+     - 00:01.333
      - 0.0
    * - :ref:`sphx_glr__auto_examples_1_basic_plot_1_data_prepration.py` (``../../examples/1_basic/plot_1_data_prepration.py``)
-     - 00:00.216
+     - 00:00.276
      - 0.0
-   * - :ref:`sphx_glr__auto_examples_1_basic_example_surfe.py` (``../../examples/1_basic/example_surfe.py``)
+   * - :ref:`sphx_glr__auto_examples_1_basic_plot_7_exporting.py` (``../../examples/1_basic/plot_7_exporting.py``)
+     - 00:00.204
+     - 0.0
+   * - :ref:`sphx_glr__auto_examples_2_fold__refolded_folds.py` (``../../examples/2_fold/_refolded_folds.py``)
      - 00:00.000
      - 0.0
-   * - :ref:`sphx_glr__auto_examples_1_basic_least_squares.py` (``../../examples/1_basic/least_squares.py``)
+   * - :ref:`sphx_glr__auto_examples_3_fault__define_fault_displacement.py` (``../../examples/3_fault/_define_fault_displacement.py``)
      - 00:00.000
      - 0.0
-   * - :ref:`sphx_glr__auto_examples_1_basic_scalar_field.py` (``../../examples/1_basic/scalar_field.py``)
+   * - :ref:`sphx_glr__auto_examples_3_fault__faulted_intrusion.py` (``../../examples/3_fault/_faulted_intrusion.py``)
      - 00:00.000
      - 0.0
    * - :ref:`sphx_glr__auto_examples_3_fault_fault_network.py` (``../../examples/3_fault/fault_network.py``)

@@ -18,14 +18,20 @@ LoopStructural.interpolators.DiscreteFoldInterpolator
    
       ~DiscreteFoldInterpolator.__init__
       ~DiscreteFoldInterpolator.add_constraints_to_least_squares
+      ~DiscreteFoldInterpolator.add_equality_block
       ~DiscreteFoldInterpolator.add_equality_constraints
       ~DiscreteFoldInterpolator.add_fold_constraints
       ~DiscreteFoldInterpolator.add_gradient_constraints
       ~DiscreteFoldInterpolator.add_gradient_orthogonal_constraints
+      ~DiscreteFoldInterpolator.add_inequality_constraints_to_matrix
+      ~DiscreteFoldInterpolator.add_inequality_feature
+      ~DiscreteFoldInterpolator.add_inequality_pairs_constraints
       ~DiscreteFoldInterpolator.add_interface_constraints
       ~DiscreteFoldInterpolator.add_norm_constraints
       ~DiscreteFoldInterpolator.add_tangent_constraints
       ~DiscreteFoldInterpolator.add_value_constraints
+      ~DiscreteFoldInterpolator.add_value_inequality_constraints
+      ~DiscreteFoldInterpolator.build_inequality_matrix
       ~DiscreteFoldInterpolator.build_matrix
       ~DiscreteFoldInterpolator.calculate_residual_for_constraints
       ~DiscreteFoldInterpolator.check_array
@@ -35,13 +41,13 @@ LoopStructural.interpolators.DiscreteFoldInterpolator
       ~DiscreteFoldInterpolator.evaluate_value
       ~DiscreteFoldInterpolator.get_data_locations
       ~DiscreteFoldInterpolator.get_gradient_constraints
-      ~DiscreteFoldInterpolator.get_inequality_constraints
+      ~DiscreteFoldInterpolator.get_inequality_pairs_constraints
+      ~DiscreteFoldInterpolator.get_inequality_value_constraints
       ~DiscreteFoldInterpolator.get_interface_constraints
       ~DiscreteFoldInterpolator.get_norm_constraints
       ~DiscreteFoldInterpolator.get_tangent_constraints
       ~DiscreteFoldInterpolator.get_value_constraints
       ~DiscreteFoldInterpolator.minimise_edge_jumps
-      ~DiscreteFoldInterpolator.remove_constraints_from_least_squares
       ~DiscreteFoldInterpolator.reset
       ~DiscreteFoldInterpolator.set_gradient_constraints
       ~DiscreteFoldInterpolator.set_inequality_pairs_constraints

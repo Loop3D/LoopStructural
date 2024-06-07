@@ -6,7 +6,7 @@
 
 Computation times
 =================
-**00:21.979** total execution time for 11 files **from _auto_examples/1_basic**:
+**00:54.002** total execution time for 8 files **from _auto_examples/1_basic**:
 
 .. container::
 
@@ -32,36 +32,27 @@ Computation times
    * - Example
      - Time
      - Mem (MB)
-   * - :ref:`sphx_glr__auto_examples_1_basic_plot_2_surface_modelling.py` (``plot_2_surface_modelling.py``)
-     - 00:04.325
+   * - :ref:`sphx_glr__auto_examples_1_basic_plot_6_fault_parameters.py` (``plot_6_fault_parameters.py``)
+     - 00:32.056
+     - 0.0
+   * - :ref:`sphx_glr__auto_examples_1_basic_plot_5_unconformities.py` (``plot_5_unconformities.py``)
+     - 00:07.868
      - 0.0
    * - :ref:`sphx_glr__auto_examples_1_basic_plot_3_multiple_groups.py` (``plot_3_multiple_groups.py``)
-     - 00:04.082
+     - 00:04.515
      - 0.0
    * - :ref:`sphx_glr__auto_examples_1_basic_plot_4_using_stratigraphic_column.py` (``plot_4_using_stratigraphic_column.py``)
-     - 00:03.905
+     - 00:04.507
      - 0.0
-   * - :ref:`sphx_glr__auto_examples_1_basic_plot_5_using_logging.py` (``plot_5_using_logging.py``)
-     - 00:03.556
-     - 0.0
-   * - :ref:`sphx_glr__auto_examples_1_basic_plot_7_local_weights.py` (``plot_7_local_weights.py``)
-     - 00:02.454
-     - 0.0
-   * - :ref:`sphx_glr__auto_examples_1_basic_plot_6_unconformities.py` (``plot_6_unconformities.py``)
-     - 00:02.431
+   * - :ref:`sphx_glr__auto_examples_1_basic_plot_2_surface_modelling.py` (``plot_2_surface_modelling.py``)
+     - 00:03.242
      - 0.0
    * - :ref:`sphx_glr__auto_examples_1_basic_plot_3_model_visualisation.py` (``plot_3_model_visualisation.py``)
-     - 00:01.010
+     - 00:01.333
      - 0.0
    * - :ref:`sphx_glr__auto_examples_1_basic_plot_1_data_prepration.py` (``plot_1_data_prepration.py``)
-     - 00:00.216
+     - 00:00.276
      - 0.0
-   * - :ref:`sphx_glr__auto_examples_1_basic_example_surfe.py` (``example_surfe.py``)
-     - 00:00.000
-     - 0.0
-   * - :ref:`sphx_glr__auto_examples_1_basic_least_squares.py` (``least_squares.py``)
-     - 00:00.000
-     - 0.0
-   * - :ref:`sphx_glr__auto_examples_1_basic_scalar_field.py` (``scalar_field.py``)
-     - 00:00.000
+   * - :ref:`sphx_glr__auto_examples_1_basic_plot_7_exporting.py` (``plot_7_exporting.py``)
+     - 00:00.204
      - 0.0

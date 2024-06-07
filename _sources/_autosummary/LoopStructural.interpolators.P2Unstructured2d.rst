@@ -40,6 +40,7 @@ LoopStructural.interpolators.P2Unstructured2d
 
    .. autosummary::
    
+      ~P2Unstructured2d.aabb_table
       ~P2Unstructured2d.barycentre
       ~P2Unstructured2d.dimension
       ~P2Unstructured2d.element_size
@@ -49,6 +50,8 @@ LoopStructural.interpolators.P2Unstructured2d
       ~P2Unstructured2d.ncps
       ~P2Unstructured2d.nodes
       ~P2Unstructured2d.shared_element_norm
+      ~P2Unstructured2d.shared_element_relationships
       ~P2Unstructured2d.shared_element_size
+      ~P2Unstructured2d.shared_elements
    
    

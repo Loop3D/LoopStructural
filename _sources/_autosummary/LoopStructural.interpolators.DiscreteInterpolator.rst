@@ -18,13 +18,19 @@ LoopStructural.interpolators.DiscreteInterpolator
    
       ~DiscreteInterpolator.__init__
       ~DiscreteInterpolator.add_constraints_to_least_squares
+      ~DiscreteInterpolator.add_equality_block
       ~DiscreteInterpolator.add_equality_constraints
       ~DiscreteInterpolator.add_gradient_constraints
       ~DiscreteInterpolator.add_gradient_orthogonal_constraints
+      ~DiscreteInterpolator.add_inequality_constraints_to_matrix
+      ~DiscreteInterpolator.add_inequality_feature
+      ~DiscreteInterpolator.add_inequality_pairs_constraints
       ~DiscreteInterpolator.add_interface_constraints
       ~DiscreteInterpolator.add_norm_constraints
       ~DiscreteInterpolator.add_tangent_constraints
       ~DiscreteInterpolator.add_value_constraints
+      ~DiscreteInterpolator.add_value_inequality_constraints
+      ~DiscreteInterpolator.build_inequality_matrix
       ~DiscreteInterpolator.build_matrix
       ~DiscreteInterpolator.calculate_residual_for_constraints
       ~DiscreteInterpolator.check_array
@@ -34,12 +40,12 @@ LoopStructural.interpolators.DiscreteInterpolator
       ~DiscreteInterpolator.evaluate_value
       ~DiscreteInterpolator.get_data_locations
       ~DiscreteInterpolator.get_gradient_constraints
-      ~DiscreteInterpolator.get_inequality_constraints
+      ~DiscreteInterpolator.get_inequality_pairs_constraints
+      ~DiscreteInterpolator.get_inequality_value_constraints
       ~DiscreteInterpolator.get_interface_constraints
       ~DiscreteInterpolator.get_norm_constraints
       ~DiscreteInterpolator.get_tangent_constraints
       ~DiscreteInterpolator.get_value_constraints
-      ~DiscreteInterpolator.remove_constraints_from_least_squares
       ~DiscreteInterpolator.reset
       ~DiscreteInterpolator.set_gradient_constraints
       ~DiscreteInterpolator.set_inequality_pairs_constraints

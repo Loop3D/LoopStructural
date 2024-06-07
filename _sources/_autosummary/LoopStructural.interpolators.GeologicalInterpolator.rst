@@ -29,7 +29,8 @@ LoopStructural.interpolators.GeologicalInterpolator
       ~GeologicalInterpolator.evaluate_value
       ~GeologicalInterpolator.get_data_locations
       ~GeologicalInterpolator.get_gradient_constraints
-      ~GeologicalInterpolator.get_inequality_constraints
+      ~GeologicalInterpolator.get_inequality_pairs_constraints
+      ~GeologicalInterpolator.get_inequality_value_constraints
       ~GeologicalInterpolator.get_interface_constraints
       ~GeologicalInterpolator.get_norm_constraints
       ~GeologicalInterpolator.get_tangent_constraints

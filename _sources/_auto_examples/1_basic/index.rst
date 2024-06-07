@@ -10,23 +10,7 @@
 
     <div class="sphx-glr-thumbnails">
 
-
-.. raw:: html
-
-    <div class="sphx-glr-thumbcontainer" tooltip="1a. Advanced least squares">
-
-.. only:: html
-
-  .. image:: /_auto_examples/1_basic/images/thumb/sphx_glr_least_squares_thumb.png
-    :alt:
-
-  :ref:`sphx_glr__auto_examples_1_basic_least_squares.py`
-
-.. raw:: html
-
-      <div class="sphx-glr-thumbnail-title">1a. Advanced least squares</div>
-    </div>
-
+.. thumbnail-parent-div-open
 
 .. raw:: html
 
@@ -115,88 +99,56 @@
 
 .. raw:: html
 
-    <div class="sphx-glr-thumbcontainer" tooltip="LoopStructural uses all of these logging levels to report the various aspects of the model buil...">
+    <div class="sphx-glr-thumbcontainer" tooltip="1h. Unconformities and fault">
 
 .. only:: html
 
-  .. image:: /_auto_examples/1_basic/images/thumb/sphx_glr_plot_5_using_logging_thumb.png
+  .. image:: /_auto_examples/1_basic/images/thumb/sphx_glr_plot_5_unconformities_thumb.png
     :alt:
 
-  :ref:`sphx_glr__auto_examples_1_basic_plot_5_using_logging.py`
+  :ref:`sphx_glr__auto_examples_1_basic_plot_5_unconformities.py`
 
 .. raw:: html
 
-      <div class="sphx-glr-thumbnail-title">1e. Using logging</div>
+      <div class="sphx-glr-thumbnail-title">1h. Unconformities and fault</div>
     </div>
 
 
 .. raw:: html
 
-    <div class="sphx-glr-thumbcontainer" tooltip="This example explores the relationship between the value of the scalar field and the geometry t...">
+    <div class="sphx-glr-thumbcontainer" tooltip="1i. Fault parameters">
 
 .. only:: html
 
-  .. image:: /_auto_examples/1_basic/images/thumb/sphx_glr_scalar_field_thumb.png
+  .. image:: /_auto_examples/1_basic/images/thumb/sphx_glr_plot_6_fault_parameters_thumb.png
     :alt:
 
-  :ref:`sphx_glr__auto_examples_1_basic_scalar_field.py`
+  :ref:`sphx_glr__auto_examples_1_basic_plot_6_fault_parameters.py`
 
 .. raw:: html
 
-      <div class="sphx-glr-thumbnail-title">1f. Implicit modelling: signed distance field</div>
+      <div class="sphx-glr-thumbnail-title">1i. Fault parameters</div>
     </div>
 
 
 .. raw:: html
 
-    <div class="sphx-glr-thumbcontainer" tooltip="1f. Local data weighting">
+    <div class="sphx-glr-thumbcontainer" tooltip="Models can be exported to vtk, gocad and geoh5 formats.">
 
 .. only:: html
 
-  .. image:: /_auto_examples/1_basic/images/thumb/sphx_glr_plot_7_local_weights_thumb.png
+  .. image:: /_auto_examples/1_basic/images/thumb/sphx_glr_plot_7_exporting_thumb.png
     :alt:
 
-  :ref:`sphx_glr__auto_examples_1_basic_plot_7_local_weights.py`
+  :ref:`sphx_glr__auto_examples_1_basic_plot_7_exporting.py`
 
 .. raw:: html
 
-      <div class="sphx-glr-thumbnail-title">1f. Local data weighting</div>
+      <div class="sphx-glr-thumbnail-title">1j. Exporting models</div>
     </div>
 
 
-.. raw:: html
-
-    <div class="sphx-glr-thumbcontainer" tooltip="Python wrappers allow for the library to be used from within a python interface.  There are two...">
-
-.. only:: html
-
-  .. image:: /_auto_examples/1_basic/images/thumb/sphx_glr_example_surfe_thumb.png
-    :alt:
-
-  :ref:`sphx_glr__auto_examples_1_basic_example_surfe.py`
-
-.. raw:: html
-
-      <div class="sphx-glr-thumbnail-title">1f. Radial Basis Interpolation Using Surfe</div>
-    </div>
-
-
-.. raw:: html
-
-    <div class="sphx-glr-thumbcontainer" tooltip="1f. Unconformities">
-
-.. only:: html
-
-  .. image:: /_auto_examples/1_basic/images/thumb/sphx_glr_plot_6_unconformities_thumb.png
-    :alt:
-
-  :ref:`sphx_glr__auto_examples_1_basic_plot_6_unconformities.py`
-
-.. raw:: html
-
-      <div class="sphx-glr-thumbnail-title">1f. Unconformities</div>
-    </div>
-
+.. thumbnail-parent-div-close
 
 .. raw:: html
 
@@ -206,15 +158,12 @@
 .. toctree::
    :hidden:
 
-   /_auto_examples/1_basic/least_squares
    /_auto_examples/1_basic/plot_1_data_prepration
    /_auto_examples/1_basic/plot_2_surface_modelling
    /_auto_examples/1_basic/plot_3_multiple_groups
    /_auto_examples/1_basic/plot_3_model_visualisation
    /_auto_examples/1_basic/plot_4_using_stratigraphic_column
-   /_auto_examples/1_basic/plot_5_using_logging
-   /_auto_examples/1_basic/scalar_field
-   /_auto_examples/1_basic/plot_7_local_weights
-   /_auto_examples/1_basic/example_surfe
-   /_auto_examples/1_basic/plot_6_unconformities
+   /_auto_examples/1_basic/plot_5_unconformities
+   /_auto_examples/1_basic/plot_6_fault_parameters
+   /_auto_examples/1_basic/plot_7_exporting
 

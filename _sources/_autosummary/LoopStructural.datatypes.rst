@@ -21,7 +21,10 @@
       :recursive:              
    
       BoundingBox
+      StructuredGrid
       Surface
+      ValuePoints
+      VectorPoints
    
    
 

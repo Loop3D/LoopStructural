@@ -11,7 +11,7 @@
         :class: sphx-glr-download-link-note
 
         :ref:`Go to the end <sphx_glr_download__auto_examples_1_basic_plot_3_multiple_groups.py>`
-        to download the full example code
+        to download the full example code.
 
 .. rst-class:: sphx-glr-example-title
 
@@ -22,7 +22,7 @@
 ===================
 Creating a model with multiple geological features, dealing with unconformities.
 
-.. GENERATED FROM PYTHON SOURCE LINES 7-48
+.. GENERATED FROM PYTHON SOURCE LINES 7-47
 
 
 
@@ -40,7 +40,7 @@ Creating a model with multiple geological features, dealing with unconformities.
 
     from LoopStructural import GeologicalModel
     from LoopStructural.datasets import load_claudius
-    from LoopStructural.visualisation import LavaVuModelViewer
+    from LoopStructural.visualisation import Loop3DView
 
 
     data, bb = load_claudius()
@@ -69,20 +69,19 @@ Creating a model with multiple geological features, dealing with unconformities.
         nelements=1e4,
     )
 
-    viewer = LavaVuModelViewer(model)
-    viewer.add_isosurface(
+    viewer = Loop3DView(model)
+    viewer.plot_surface(
         strati2,
         #                       nslices=5
-        slices=[2, 1.5, 1],
+        value=[2, 1.5, 1],
     )
-    viewer.add_isosurface(strati, slices=[0, -60, -250, -330], paint_with=strati)
-    viewer.rotate([-85.18760681152344, 42.93233871459961, 0.8641873002052307])
+    viewer.plot_surface(strati, value=[0, -60, -250, -330], paint_with=strati)
     viewer.display()
 
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 4.082 seconds)
+   **Total running time of the script:** (0 minutes 4.515 seconds)
 
 
 .. _sphx_glr_download__auto_examples_1_basic_plot_3_multiple_groups.py:

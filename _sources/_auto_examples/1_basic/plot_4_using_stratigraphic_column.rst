@@ -11,7 +11,7 @@
         :class: sphx-glr-download-link-note
 
         :ref:`Go to the end <sphx_glr_download__auto_examples_1_basic_plot_4_using_stratigraphic_column.py>`
-        to download the full example code
+        to download the full example code.
 
 .. rst-class:: sphx-glr-example-title
 
@@ -29,7 +29,7 @@ We will use the previous example Creating a model with multiple geological featu
 
     from LoopStructural import GeologicalModel
     from LoopStructural.datasets import load_claudius
-    from LoopStructural.visualisation import LavaVuModelViewer
+    from LoopStructural.visualisation import Loop3DView
 
     import numpy as np
 
@@ -100,16 +100,15 @@ Adding stratigraphic column to the model
 The stratigraphic column can be added to the geological model. Allowing
 for the `model.evaluate_model(xyz)` function to be called.
 
-.. GENERATED FROM PYTHON SOURCE LINES 59-66
+.. GENERATED FROM PYTHON SOURCE LINES 59-65
 
 .. code-block:: Python
 
 
     model.set_stratigraphic_column(stratigraphic_column)
 
-    viewer = LavaVuModelViewer(model)
-    viewer.add_model(cmap="tab20")
-    viewer.rotate([-85.18760681152344, 42.93233871459961, 0.8641873002052307])
+    viewer = Loop3DView(model)
+    viewer.plot_block_model()
     viewer.display()
 
 
@@ -126,7 +125,7 @@ for the `model.evaluate_model(xyz)` function to be called.
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 3.905 seconds)
+   **Total running time of the script:** (0 minutes 4.507 seconds)
 
 
 .. _sphx_glr_download__auto_examples_1_basic_plot_4_using_stratigraphic_column.py:

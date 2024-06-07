@@ -18,16 +18,21 @@ LoopStructural.interpolators.FiniteDifferenceInterpolator
    
       ~FiniteDifferenceInterpolator.__init__
       ~FiniteDifferenceInterpolator.add_constraints_to_least_squares
+      ~FiniteDifferenceInterpolator.add_equality_block
       ~FiniteDifferenceInterpolator.add_equality_constraints
       ~FiniteDifferenceInterpolator.add_gradient_constraints
       ~FiniteDifferenceInterpolator.add_gradient_orthogonal_constraints
-      ~FiniteDifferenceInterpolator.add_inequality_constraints
+      ~FiniteDifferenceInterpolator.add_inequality_constraints_to_matrix
+      ~FiniteDifferenceInterpolator.add_inequality_feature
+      ~FiniteDifferenceInterpolator.add_inequality_pairs_constraints
       ~FiniteDifferenceInterpolator.add_interface_constraints
       ~FiniteDifferenceInterpolator.add_norm_constraints
       ~FiniteDifferenceInterpolator.add_regularisation
       ~FiniteDifferenceInterpolator.add_tangent_constraints
       ~FiniteDifferenceInterpolator.add_value_constraints
+      ~FiniteDifferenceInterpolator.add_value_inequality_constraints
       ~FiniteDifferenceInterpolator.assemble_inner
+      ~FiniteDifferenceInterpolator.build_inequality_matrix
       ~FiniteDifferenceInterpolator.build_matrix
       ~FiniteDifferenceInterpolator.calculate_residual_for_constraints
       ~FiniteDifferenceInterpolator.check_array
@@ -38,12 +43,12 @@ LoopStructural.interpolators.FiniteDifferenceInterpolator
       ~FiniteDifferenceInterpolator.evaluate_value
       ~FiniteDifferenceInterpolator.get_data_locations
       ~FiniteDifferenceInterpolator.get_gradient_constraints
-      ~FiniteDifferenceInterpolator.get_inequality_constraints
+      ~FiniteDifferenceInterpolator.get_inequality_pairs_constraints
+      ~FiniteDifferenceInterpolator.get_inequality_value_constraints
       ~FiniteDifferenceInterpolator.get_interface_constraints
       ~FiniteDifferenceInterpolator.get_norm_constraints
       ~FiniteDifferenceInterpolator.get_tangent_constraints
       ~FiniteDifferenceInterpolator.get_value_constraints
-      ~FiniteDifferenceInterpolator.remove_constraints_from_least_squares
       ~FiniteDifferenceInterpolator.reset
       ~FiniteDifferenceInterpolator.set_gradient_constraints
       ~FiniteDifferenceInterpolator.set_inequality_pairs_constraints

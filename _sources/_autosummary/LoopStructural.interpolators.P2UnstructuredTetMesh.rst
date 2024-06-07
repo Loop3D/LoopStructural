@@ -31,6 +31,7 @@ LoopStructural.interpolators.P2UnstructuredTetMesh
       ~P2UnstructuredTetMesh.get_quadrature_points
       ~P2UnstructuredTetMesh.inside
       ~P2UnstructuredTetMesh.onGeometryChange
+      ~P2UnstructuredTetMesh.vtk
    
    
 
@@ -51,6 +52,5 @@ LoopStructural.interpolators.P2UnstructuredTetMesh
       ~P2UnstructuredTetMesh.ntetra
       ~P2UnstructuredTetMesh.shared_element_norm
       ~P2UnstructuredTetMesh.shared_element_size
-      ~P2UnstructuredTetMesh.vtk
    
    

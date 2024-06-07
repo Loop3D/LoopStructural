@@ -11,7 +11,7 @@
         :class: sphx-glr-download-link-note
 
         :ref:`Go to the end <sphx_glr_download__auto_examples_1_basic_plot_2_surface_modelling.py>`
-        to download the full example code
+        to download the full example code.
 
 .. rst-class:: sphx-glr-example-title
 
@@ -58,7 +58,7 @@ model building
 
 
     from LoopStructural import GeologicalModel
-    from LoopStructural.visualisation import LavaVuModelViewer
+    from LoopStructural.visualisation import Loop3DView
     from LoopStructural.datasets import load_claudius  # demo data
 
     import numpy as np
@@ -148,25 +148,22 @@ Having a look at the data for this example by looking at the top of the
 dataframe and then using a 3D plot
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 88-106
+.. GENERATED FROM PYTHON SOURCE LINES 88-103
 
 .. code-block:: Python
 
 
     data["feature_name"].unique()
 
-    viewer = LavaVuModelViewer(background="white")
-    viewer.add_value_data(
-        data[~np.isnan(data["val"])][["X", "Y", "Z"]],
-        data[~np.isnan(data["val"])]["val"],
-        name="value points",
+    viewer = Loop3DView(background="white")
+    viewer.add_points(
+        data[~np.isnan(data["val"])][["X", "Y", "Z"]].values,
+        scalars=data[~np.isnan(data["val"])]["val"].values,
     )
-    viewer.add_vector_data(
-        data[~np.isnan(data["nx"])][["X", "Y", "Z"]],
-        data[~np.isnan(data["nx"])][["nx", "ny", "nz"]],
-        name="orientation points",
+    viewer.add_arrows(
+        data[~np.isnan(data["nx"])][["X", "Y", "Z"]].values,
+        direction=data[~np.isnan(data["nx"])][["nx", "ny", "nz"]].values,
     )
-    viewer.rotate([-85.18760681152344, 42.93233871459961, 0.8641873002052307])
     viewer.display()
 
 
@@ -182,13 +179,13 @@ dataframe and then using a 3D plot
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 107-110
+.. GENERATED FROM PYTHON SOURCE LINES 104-107
 
 The pandas dataframe can be linked to the ``GeologicalModel`` using
 ``.set_model_data(dataframe``
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 110-114
+.. GENERATED FROM PYTHON SOURCE LINES 107-111
 
 .. code-block:: Python
 
@@ -203,7 +200,7 @@ The pandas dataframe can be linked to the ``GeologicalModel`` using
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 115-146
+.. GENERATED FROM PYTHON SOURCE LINES 112-143
 
 The ``GeologicalModel`` contains an ordered list of the different
 geological features within a model and how these features interact. This
@@ -237,7 +234,7 @@ matrix for discrete interpolators - this can help speed up the solver
 and makes the solution more stable for some interpolators
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 146-168
+.. GENERATED FROM PYTHON SOURCE LINES 143-164
 
 .. code-block:: Python
 
@@ -260,7 +257,6 @@ and makes the solution more stable for some interpolators
         interpolatortype="FDI",  # try changing this to 'PLI'
         nelements=1e4,  # try changing between 1e3 and 5e4
         buffer=0.3,
-        solver="pyamg",
         damp=True,
     )
 
@@ -270,19 +266,18 @@ and makes the solution more stable for some interpolators
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 169-171
+.. GENERATED FROM PYTHON SOURCE LINES 165-167
 
 Plot the surfaces
 ------------------------------------
 
-.. GENERATED FROM PYTHON SOURCE LINES 171-177
+.. GENERATED FROM PYTHON SOURCE LINES 167-172
 
 .. code-block:: Python
 
 
-    viewer = LavaVuModelViewer(model)
-    viewer.add_model_surfaces(cmap="tab20")
-    viewer.rotate([-85.18760681152344, 42.93233871459961, 0.8641873002052307])
+    viewer = Loop3DView(model)
+    viewer.plot_model_surfaces(cmap="tab20")
     viewer.display()
 
 
@@ -294,29 +289,21 @@ Plot the surfaces
    :class: sphx-glr-single-img
 
 
-.. rst-class:: sphx-glr-script-out
-
- .. code-block:: none
-
-      0%|          | 0/1 [00:00<?, ?it/s]    Interpolating strati:   0%|          | 0/1 [00:00<?, ?it/s]    Interpolating strati: 100%|██████████| 1/1 [00:02<00:00,  2.48s/it]    Interpolating strati: 100%|██████████| 1/1 [00:02<00:00,  2.48s/it]
-      0%|          | 0/4 [00:00<?, ?it/s]    Isosurfacing strati:   0%|          | 0/4 [00:00<?, ?it/s]    Isosurfacing strati: 100%|██████████| 4/4 [00:00<00:00, 55.70it/s]
 
 
 
-
-.. GENERATED FROM PYTHON SOURCE LINES 178-180
+.. GENERATED FROM PYTHON SOURCE LINES 173-175
 
 Plot block diagram
 -------------------
 
-.. GENERATED FROM PYTHON SOURCE LINES 180-185
+.. GENERATED FROM PYTHON SOURCE LINES 175-179
 
 .. code-block:: Python
 
 
-    viewer = LavaVuModelViewer(model)
-    viewer.add_model(cmap="tab20")
-    viewer.rotate([-85.18760681152344, 42.93233871459961, 0.8641873002052307])
+    viewer = Loop3DView(model)
+    viewer.plot_block_model(cmap="tab20")
     viewer.display()
 
 
@@ -333,7 +320,7 @@ Plot block diagram
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 4.325 seconds)
+   **Total running time of the script:** (0 minutes 3.242 seconds)
 
 
 .. _sphx_glr_download__auto_examples_1_basic_plot_2_surface_modelling.py:

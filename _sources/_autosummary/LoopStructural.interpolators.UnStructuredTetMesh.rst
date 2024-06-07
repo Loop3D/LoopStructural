@@ -28,6 +28,7 @@ LoopStructural.interpolators.UnStructuredTetMesh
       ~UnStructuredTetMesh.get_neighbours
       ~UnStructuredTetMesh.inside
       ~UnStructuredTetMesh.onGeometryChange
+      ~UnStructuredTetMesh.vtk
    
    
 
@@ -48,6 +49,5 @@ LoopStructural.interpolators.UnStructuredTetMesh
       ~UnStructuredTetMesh.ntetra
       ~UnStructuredTetMesh.shared_element_norm
       ~UnStructuredTetMesh.shared_element_size
-      ~UnStructuredTetMesh.vtk
    
    

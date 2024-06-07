@@ -17,9 +17,9 @@ Fault can be added into LoopStructural using the :meth:`LoopStructural.Geologica
                                displacement,
                                fault_slip_vector=None,
                                fault_center = None, 
-                               fault_extent = None, 
-                               fault_influence = None, 
-                               fault_vectical_radius = None, 
+                               fault_major_axis = None, 
+                               fault_minor_axis = None, 
+                               fault_intermediate_axis = None, 
                                faultfunction = None,
                                **kwargs
                                )

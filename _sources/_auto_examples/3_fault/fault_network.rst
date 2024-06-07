@@ -11,7 +11,7 @@
         :class: sphx-glr-download-link-note
 
         :ref:`Go to the end <sphx_glr_download__auto_examples_3_fault_fault_network.py>`
-        to download the full example code
+        to download the full example code.
 
 .. rst-class:: sphx-glr-example-title
 
@@ -20,10 +20,10 @@
 
 3b. Modelling a fault network in LoopStructural
 ===============================================
-Uses GeologicalModel, ProcessInputData and LavaVuModelViewer from LoopStructural library. 
+Uses GeologicalModel, ProcessInputData and Loop3DView from LoopStructural library. 
 Also using geopandas to read a shapefile, pandas, matplotlib and numpy.
 
-.. GENERATED FROM PYTHON SOURCE LINES 6-19
+.. GENERATED FROM PYTHON SOURCE LINES 6-20
 
 .. code-block:: Python
 
@@ -34,20 +34,21 @@ Also using geopandas to read a shapefile, pandas, matplotlib and numpy.
 
     from LoopStructural import GeologicalModel
     from LoopStructural.modelling import ProcessInputData
-    from LoopStructural.visualisation import LavaVuModelViewer
+    from LoopStructural.visualisation import Loop3DView
     from LoopStructural.datasets import load_fault_trace
+    from LoopStructural.utils import rng
     import pandas as pd
     import matplotlib.pyplot as plt
     import numpy as np
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 20-23
+.. GENERATED FROM PYTHON SOURCE LINES 21-24
 
 Read shapefile
 ~~~~~~~~~~~~~~
 Read the shapefile and create a point for each node of the line
 
-.. GENERATED FROM PYTHON SOURCE LINES 23-41
+.. GENERATED FROM PYTHON SOURCE LINES 24-42
 
 .. code-block:: Python
 
@@ -56,7 +57,7 @@ Read the shapefile and create a point for each node of the line
     for i in range(len(fault_trace)):
         for x, y in zip(fault_trace.loc[i, :].geometry.xy[0], fault_trace.loc[i, :].geometry.xy[1]):
             faults.append(
-                [fault_trace.loc[i, "fault_name"], x, y, np.random.random() * 0.4]
+                [fault_trace.loc[i, "fault_name"], x, y, rng.random() * 0.4]
             )  # better results if points aren't from a single plane
     df = pd.DataFrame(faults, columns=["fault_name", "X", "Y", "Z"])
 
@@ -70,13 +71,13 @@ Read the shapefile and create a point for each node of the line
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 42-45
+.. GENERATED FROM PYTHON SOURCE LINES 43-46
 
 Orientation data
 ~~~~~~~~~~~~~~~~
 We can generate vertical dip data at the centre of the fault.
 
-.. GENERATED FROM PYTHON SOURCE LINES 45-59
+.. GENERATED FROM PYTHON SOURCE LINES 46-60
 
 .. code-block:: Python
 
@@ -95,13 +96,13 @@ We can generate vertical dip data at the centre of the fault.
     ori = pd.DataFrame(ori, columns=["fault_name", "X", "Y", "Z", "gx", "gy", "gz"])
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 60-63
+.. GENERATED FROM PYTHON SOURCE LINES 61-64
 
 Model extent
 ~~~~~~~~~~~~
 # Calculate the bounding box for the model using the extent of the shapefiles. We make the Z coordinate 10% of the maximum x/y length.
 
-.. GENERATED FROM PYTHON SOURCE LINES 63-69
+.. GENERATED FROM PYTHON SOURCE LINES 64-70
 
 .. code-block:: Python
 
@@ -112,7 +113,7 @@ Model extent
     maximum = [df["X"].max() + z, df["Y"].max() + z, z]
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 70-82
+.. GENERATED FROM PYTHON SOURCE LINES 71-83
 
 Setting up the data
 ~~~~~~~~~~~~~~~~~~~
@@ -127,14 +128,14 @@ To build a fault network we need to provide:# * fault locations - a table of x,y
 
  Below is an example of setting the number of interpolation elements for each fault
 
-.. GENERATED FROM PYTHON SOURCE LINES 84-88
+.. GENERATED FROM PYTHON SOURCE LINES 85-89
 
 Modelling splay faults
 ~~~~~~~~~~~~~~~~~~~~~~
 A splay fault relationship is defined for any fault where the angle between the faults is less than :math:`30^\circ`.
 In this example we specify the angle between the faults as :math:`10^\circ`.
 
-.. GENERATED FROM PYTHON SOURCE LINES 88-107
+.. GENERATED FROM PYTHON SOURCE LINES 89-108
 
 .. code-block:: Python
 
@@ -151,21 +152,21 @@ In this example we specify the angle between the faults as :math:`10^\circ`.
     model = GeologicalModel.from_processor(processor)
     model.update()
 
-    view = LavaVuModelViewer(model)
+    view = Loop3DView(model)
     for f in model.faults:
         view.add_isosurface(f, slices=[0])  #
     view.rotation = [-50.92916488647461, -30.319700241088867, -20.521053314208984]
     view.display()
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 108-112
+.. GENERATED FROM PYTHON SOURCE LINES 109-113
 
 Modelling abutting faults
 ~~~~~~~~~~~~~~~~~~~~~~~~~
 In this exampe we will use the same faults but specify the angle between the faults as :math:`40^\circ` which will change
 the fault relationship to be abutting rather than splay.
 
-.. GENERATED FROM PYTHON SOURCE LINES 112-131
+.. GENERATED FROM PYTHON SOURCE LINES 113-132
 
 .. code-block:: Python
 
@@ -181,7 +182,7 @@ the fault relationship to be abutting rather than splay.
 
     model = GeologicalModel.from_processor(processor)
 
-    view = LavaVuModelViewer(model)
+    view = Loop3DView(model)
     for f in model.faults:
         view.add_isosurface(f, slices=[0])  #
         view.add_data(f[0], vectors=True)
