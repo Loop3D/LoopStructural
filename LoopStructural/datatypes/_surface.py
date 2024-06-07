@@ -95,7 +95,7 @@ class Surface:
             with open(filename, 'w') as f:
                 json.dump(self.to_dict(), f)
         elif ext == 'vtk':
-            self.vtk.save(filename)
+            self.vtk().save(filename)
         elif ext == 'obj':
             import meshio
 

@@ -1,7 +1,8 @@
 from __future__ import annotations
-from typing import Optional, Union
+from typing import Optional, Union, Dict
 from LoopStructural.utils.exceptions import LoopValueError
 from LoopStructural.utils import rng
+from LoopStructural.datatypes._structured_grid import StructuredGrid
 import numpy as np
 
 from LoopStructural.utils.logging import getLogger
@@ -408,6 +409,14 @@ class BoundingBox:
             z,
         )
 
-    @property
-    def structured_grid(self):
-        pass
+    def structured_grid(
+        self, cell_data: Dict[str, np.ndarray] = {}, vertex_data={}, name: str = "bounding_box"
+    ):
+        return StructuredGrid(
+            origin=self.global_origin,
+            step_vector=self.step_vector,
+            nsteps=self.nsteps,
+            properties_cell=cell_data,
+            properties_vertex=vertex_data,
+            name=name,
+        )
