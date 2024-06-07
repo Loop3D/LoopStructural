@@ -34,7 +34,7 @@ RUN conda install -c conda-forge\
     pydata-sphinx-theme\
     -y
 RUN pip install git+https://github.com/geopandas/geopandas.git@v0.10.2
-RUN pip install loopstructuralvisualisation[all]
+RUN pip install loopstructuralvisualisation[all] geoh5py
 RUN pip install sphinxcontrib-bibtex
 ENV TINI_VERSION v0.19.0
 ADD https://github.com/krallin/tini/releases/download/${TINI_VERSION}/tini /tini

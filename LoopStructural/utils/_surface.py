@@ -102,7 +102,13 @@ class LoopIsosurfacer:
                 values,
             )
         logger.info(f'Isosurfacing at values: {isovalues}')
-        for isovalue in isovalues:
+        if name is None:
+            names = ["surface"] * len(isovalues)
+        if isinstance(name, str):
+            names = [name] * len(isovalues)
+        if isinstance(name, list):
+            names = name
+        for name, isovalue in zip(names, isovalues):
             try:
                 step_vector = (self.bounding_box.maximum - self.bounding_box.origin) / (
                     np.array(self.bounding_box.nsteps) - 1
