@@ -483,6 +483,8 @@ class DiscreteInterpolator(GeologicalInterpolator):
         for c in self.ineq_constraints.values():
             mats.append(c['matrix'])
             bounds.append(c['bounds'])
+        if len(mats) == 0:
+            return None, None
         Q = sparse.vstack(mats)
         bounds = np.hstack(bounds)
         return Q, bounds
@@ -514,6 +516,7 @@ class DiscreteInterpolator(GeologicalInterpolator):
         self.c = np.zeros(self.support.n_nodes)
         self.c[:] = np.nan
         A, b = self.build_matrix()
+        Q, bounds = self.build_inequality_matrix()
         if callable(solver):
             logger.warning('Using custom solver')
             self.c = solver(A.tocsr(), b)
@@ -522,7 +525,7 @@ class DiscreteInterpolator(GeologicalInterpolator):
             return True
         ## solve with lsmr
         if isinstance(solver, str):
-            if solver not in ['cg', 'lsmr']:
+            if solver not in ['cg', 'lsmr', 'admm']:
                 logger.warning(
                     f'Unknown solver {solver} using cg. \n Available solvers are cg and lsmr or a custom solver as a callable function'
                 )
@@ -557,6 +560,35 @@ class DiscreteInterpolator(GeologicalInterpolator):
             self.up_to_date = True
             logger.info("Interpolation took %f seconds" % (time() - starttime))
             return True
+        elif solver == 'admm':
+            logger.info("Solving using admm")
+            if Q is None:
+                logger.warning("No inequality constraints, using lsmr")
+                return self.solve_system('lsmr', solver_kwargs)
+
+            try:
+                from loopsolver import admm_solve
+            except ImportError:
+                logger.warning(
+                    "Cannot import admm solver. Please install loopsolver or use lsmr or cg"
+                )
+                return False
+            try:
+                res = admm_solve(
+                    A,
+                    b,
+                    Q,
+                    bounds,
+                    x0=solver_kwargs.pop('x0', np.zeros(A.shape[1])),
+                    admm_weight=solver_kwargs.pop('admm_weight', 0.01),
+                    nmajor=solver_kwargs.pop('nmajor', 200),
+                    linsys_solver_kwargs=solver_kwargs,
+                )
+                self.c = res
+                self.up_to_date = True
+            except ValueError as e:
+                logger.error(f"ADMM solver failed: {e}")
+                return False
         return False
 
     def update(self) -> bool:
