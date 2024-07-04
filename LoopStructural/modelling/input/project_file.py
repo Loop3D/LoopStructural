@@ -30,7 +30,7 @@ class LoopProjectfileProcessor(ProcessInputData):
         thicknesses = dict(
             zip(
                 projectfile["stratigraphicLog"].name,
-                projectfile["stratigraphicLog"].ThicknessMedian,
+                projectfile["stratigraphicLog"].thickness,
             )
         )
         fault_properties = self.projectfile.faultLog
