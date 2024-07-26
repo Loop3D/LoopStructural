@@ -47,6 +47,7 @@ class FaultSegment(StructuralFrame):
         self.builder = None
         self.splay = {}
         self.abut = {}
+        self.fault_offset = 0.0
 
     @property
     def faultfunction(self):
@@ -108,6 +109,9 @@ class FaultSegment(StructuralFrame):
     @property
     def displacementfeature(self):
         return FaultDisplacementFeature(self, self.faultfunction, name=self.name, model=self.model)
+
+    def set_fault_offset(self, offset: float):
+        self.fault_offset = offset
 
     def set_model(self, model):
         """
@@ -263,7 +267,7 @@ class FaultSegment(StructuralFrame):
         gx_mask[mask] = gx[mask] > 0
         d[gx_mask] = 1.0
         if self.faultfunction is not None:
-            d[mask] = self.faultfunction(gx[mask], gy[mask], gz[mask])
+            d[mask] = self.faultfunction(gx[mask] + self.fault_offset, gy[mask], gz[mask])
         return d * self.displacement
 
     def apply_to_points(self, points, reverse=False):
