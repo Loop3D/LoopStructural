@@ -186,13 +186,11 @@ class GeologicalInterpolator(metaclass=ABCMeta):
         self.data["inequality"] = points
         self.up_to_date = False
 
-    def set_inequality_pairs_constraints(self, lower_points: np.ndarray, upper_points: np.ndarray):
-        if lower_points.shape[1] < 3:
-            raise ValueError("Inequality pairs constraints must at least have X,Y,Z")
-        if upper_points.shape[1] < 3:
-            raise ValueError("Inequality pairs constraints must at least have X,Y,Z")
-        self.data["inequality_pairs_upper"] = upper_points
-        self.data['inequality_pairs_lower'] = lower_points
+    def set_inequality_pairs_constraints(self, points: np.ndarray):
+        if points.shape[1] < 4:
+            raise ValueError("Inequality pairs constraints must at least have X,Y,Z,rock_id")
+
+        self.data["inequality_pairs"] = points
         self.up_to_date = False
 
     def get_value_constraints(self):
@@ -256,10 +254,7 @@ class GeologicalInterpolator(metaclass=ABCMeta):
         return self.data["inequality"]
 
     def get_inequality_pairs_constraints(self):
-        return {
-            'lower': self.data["inequality_pairs_lower"],
-            'upper': self.data["inequality_pairs_upper"],
-        }
+        return self.data["inequality_pairs"]
 
     # @abstractmethod
     def setup(self, **kwargs):
@@ -341,8 +336,7 @@ class GeologicalInterpolator(metaclass=ABCMeta):
             "tangent": np.zeros((0, 7)),
             "interface": np.zeros((0, 5)),
             "inequality": np.zeros((0, 6)),
-            "inequality_pairs_lower": np.zeros((0, 3)),
-            "inequality_pairs_upper": np.zeros((0, 3)),
+            "inequality_pairs": np.zeros((0, 4)),
         }
         self.up_to_date = False
         self.n_g = 0

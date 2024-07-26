@@ -267,6 +267,10 @@ def polarity_name():
     return ["polarity"]
 
 
+def pairs_name():
+    return ["pair_id"]
+
+
 def all_heading():
     return (
         xyz_names()
@@ -280,6 +284,7 @@ def all_heading():
         + interface_name()
         + polarity_name()
         + inequality_name()
+        + pairs_name()
     )
 
 

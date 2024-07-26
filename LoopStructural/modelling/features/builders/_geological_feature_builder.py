@@ -18,6 +18,7 @@ from ....utils.helper import (
     tangent_vec_names,
     interface_name,
     inequality_name,
+    pairs_name,
 )
 from ....modelling.features import GeologicalFeature
 from ....modelling.features.builders import BaseBuilder
@@ -283,8 +284,11 @@ class GeologicalFeatureBuilder(BaseBuilder):
         mask = np.all(~np.isnan(data.loc[:, inequality_name()].to_numpy(float)), axis=1)
         if mask.sum() > 0:
             inequality_data = data.loc[mask, xyz_names() + inequality_name()].to_numpy(float)
-            self.interpolator.set_inequality_constraints(inequality_data)
-
+            self.interpolator.set_value_inequality_constraints(inequality_data)
+        mask = np.all(~np.isnan(data.loc[:, pairs_name()].to_numpy(float)), axis=1)
+        if mask.sum() > 0:
+            pairs_data = data.loc[mask, xyz_names() + pairs_name()].to_numpy(float)
+            self.interpolator.set_inequality_pairs_constraints(pairs_data)
         self.data_added = True
         self._up_to_date = False
 

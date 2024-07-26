@@ -285,39 +285,66 @@ class DiscreteInterpolator(GeologicalInterpolator):
             cols = self.support.elements[element[inside]]
             self.add_inequality_constraints_to_matrix(a, points[:, 3:5], cols, 'inequality_value')
 
-    def add_inequality_pairs_constraints(self, w: float = 1.0):
-        pairs = self.get_inequality_pairs_constraints()
-        if pairs['upper'].shape[0] == 0 or pairs['lower'].shape[0] == 0:
-            return
-        upper_interpolation = self.support.get_element_for_location(pairs['upper'])
-        lower_interpolation = self.support.get_element_for_location(pairs['lower'])
-        ij = np.array(
-            [
-                *np.meshgrid(
-                    np.arange(0, int(upper_interpolation[3].sum()), dtype=int),
-                    np.arange(0, int(lower_interpolation[3].sum()), dtype=int),
+    def add_inequality_pairs_constraints(
+        self, w: float = 1.0, upper_bound=np.finfo(float).eps, lower_bound=-np.inf
+    ):
+
+        points = self.get_inequality_pairs_constraints()
+        if points.shape[0] > 0:
+
+            # assemble a list of pairs in the model
+            # this will make pairs even across stratigraphic boundaries
+            # TODO add option to only add stratigraphic pairs
+            pairs = {}
+            k = 0
+            for i in np.unique(points[:, self.support.dimension]):
+                for j in np.unique(points[:, self.support.dimension]):
+                    if i == j:
+                        continue
+                    if tuple(sorted([i, j])) not in pairs:
+                        pairs[tuple(sorted([i, j]))] = k
+                        k += 1
+            pairs = list(pairs.keys())
+            for pair in pairs:
+                upper_points = points[points[:, self.support.dimension] == pair[0]]
+                lower_points = points[points[:, self.support.dimension] == pair[1]]
+
+                upper_interpolation = self.support.get_element_for_location(upper_points)
+                lower_interpolation = self.support.get_element_for_location(lower_points)
+                ij = np.array(
+                    [
+                        *np.meshgrid(
+                            np.arange(0, int(upper_interpolation[3].sum()), dtype=int),
+                            np.arange(0, int(lower_interpolation[3].sum()), dtype=int),
+                        )
+                    ],
+                    dtype=int,
                 )
-            ],
-            dtype=int,
-        )
 
-        ij = ij.reshape(2, -1).T
-        rows = np.arange(0, ij.shape[0], dtype=int)
-        rows = np.tile(rows, (upper_interpolation[1].shape[-1], 1)).T
-        rows = np.hstack([rows, rows])
-        a = upper_interpolation[1][upper_interpolation[3]][ij[:, 0]]  # np.ones(ij.shape[0])
-        a = np.hstack([a, -lower_interpolation[1][lower_interpolation[3]][ij[:, 1]]])
-        cols = np.hstack(
-            [
-                self.support.elements[upper_interpolation[2][upper_interpolation[3]][ij[:, 0]]],
-                self.support.elements[lower_interpolation[2][lower_interpolation[3]][ij[:, 1]]],
-            ]
-        )
+                ij = ij.reshape(2, -1).T
+                rows = np.arange(0, ij.shape[0], dtype=int)
+                rows = np.tile(rows, (upper_interpolation[1].shape[-1], 1)).T
+                rows = np.hstack([rows, rows])
+                a = upper_interpolation[1][upper_interpolation[3]][ij[:, 0]]  # np.ones(ij.shape[0])
+                a = np.hstack([a, -lower_interpolation[1][lower_interpolation[3]][ij[:, 1]]])
+                cols = np.hstack(
+                    [
+                        self.support.elements[
+                            upper_interpolation[2][upper_interpolation[3]][ij[:, 0]]
+                        ],
+                        self.support.elements[
+                            lower_interpolation[2][lower_interpolation[3]][ij[:, 1]]
+                        ],
+                    ]
+                )
 
-        bounds = np.zeros((ij.shape[0], 2))
-        bounds[:, 0] = np.finfo('float').eps
-        bounds[:, 1] = 1e10
-        self.add_inequality_constraints_to_matrix(a, bounds, cols, 'inequality_pairs')
+                bounds = np.zeros((ij.shape[0], 2))
+                bounds[:, 0] = lower_bound
+                bounds[:, 1] = upper_bound
+
+                self.add_inequality_constraints_to_matrix(
+                    a, bounds, cols, f'inequality_pairs_{pair[0]}_{pair[1]}'
+                )
 
     def add_inequality_feature(
         self,
@@ -486,7 +513,7 @@ class DiscreteInterpolator(GeologicalInterpolator):
         if len(mats) == 0:
             return None, None
         Q = sparse.vstack(mats)
-        bounds = np.hstack(bounds)
+        bounds = np.vstack(bounds)
         return Q, bounds
 
     def solve_system(
@@ -562,6 +589,12 @@ class DiscreteInterpolator(GeologicalInterpolator):
             return True
         elif solver == 'admm':
             logger.info("Solving using admm")
+
+            if 'x0' in solver_kwargs:
+                x0 = solver_kwargs['x0'](self.support)
+            else:
+                x0 = np.zeros(A.shape[1])
+            solver_kwargs.pop('x0', None)
             if Q is None:
                 logger.warning("No inequality constraints, using lsmr")
                 return self.solve_system('lsmr', solver_kwargs)
@@ -579,7 +612,7 @@ class DiscreteInterpolator(GeologicalInterpolator):
                     b,
                     Q,
                     bounds,
-                    x0=solver_kwargs.pop('x0', np.zeros(A.shape[1])),
+                    x0=x0,
                     admm_weight=solver_kwargs.pop('admm_weight', 0.01),
                     nmajor=solver_kwargs.pop('nmajor', 200),
                     linsys_solver_kwargs=solver_kwargs,
