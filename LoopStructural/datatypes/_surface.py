@@ -1,16 +1,18 @@
 from dataclasses import dataclass
 from typing import Optional
 import numpy as np
+import io
 
 
 @dataclass
 class Surface:
     vertices: np.ndarray
     triangles: np.ndarray
-    normals: np.ndarray
-    name: str
+    normals: Optional[np.ndarray] = None
+    name: str = 'surface'
     values: Optional[np.ndarray] = None
     properties: Optional[dict] = None
+    cell_properties: Optional[dict] = None
 
     @property
     def triangle_area(self):
@@ -75,26 +77,77 @@ class Surface:
         surface = pv.PolyData.from_regular_faces(self.vertices, self.triangles)
         if self.values is not None:
             surface["values"] = self.values
+        if self.properties is not None:
+            for k, v in self.properties.items():
+                surface.point_data[k] = np.array(v)
+        if self.cell_properties is not None:
+            for k, v in self.cell_properties.items():
+                surface.cell_data[k] = np.array(v)
         return surface
 
-    def to_dict(self):
+    def to_dict(self, flatten=False):
+        triangles = self.triangles
+        vertices = self.vertices
+        if flatten:
+            vertices = self.vertices.flatten()
+            triangles = (
+                np.hstack([np.ones((self.triangles.shape[0], 1)) * 3, self.triangles])
+                .astype(int)
+                .flatten()
+            )
         return {
-            "vertices": self.vertices,
-            "triangles": self.triangles,
-            "normals": self.normals,
+            "vertices": vertices.tolist(),
+            "triangles": triangles.tolist(),
+            "normals": self.normals.tolist() if self.normals is not None else None,
+            "properties": (
+                {k: p.tolist() for k, p in self.properties.items()} if self.properties else None
+            ),
+            "cell_properties": (
+                {k: p.tolist() for k, p in self.cell_properties.items()}
+                if self.cell_properties
+                else None
+            ),
             "name": self.name,
-            "values": self.values,
+            "values": self.values.tolist() if self.values is not None else None,
         }
 
-    def save(self, filename):
-        filename = str(filename)
-        ext = filename.split('.')[-1]
+    @classmethod
+    def from_dict(cls, d, flatten=False):
+        vertices = np.array(d['vertices'])
+        triangles = np.array(d['triangles'])
+        if flatten:
+            vertices = vertices.reshape((-1, 3))
+            triangles = triangles.reshape((-1, 4))[:, 1:]
+        return cls(
+            vertices,
+            triangles,
+            np.array(d['normals']),
+            d['name'],
+            np.array(d['values']),
+            d.get('properties', None),
+            d.get('cell_properties', None),
+        )
+
+    def save(self, filename, ext=None):
+        import pyvista as pv
+
+        print(filename, ext)
+        if isinstance(filename, (io.StringIO, io.BytesIO)):
+            if ext is None:
+                raise ValueError('Please provide an extension for StringIO')
+            ext = ext.lower()
+        else:
+            filename = str(filename)
+            if ext is None:
+                ext = filename.split('.')[-1].lower()
+
         if ext == 'json':
             import json
 
             with open(filename, 'w') as f:
                 json.dump(self.to_dict(), f)
         elif ext == 'vtk':
+            print(filename)
             self.vtk().save(filename)
         elif ext == 'obj':
             import meshio
@@ -105,7 +158,7 @@ class Surface:
                 [("triangle", self.triangles)],
                 point_data={"normals": self.normals},
             )
-        elif ext == 'ts':
+        elif ext == 'ts' or ext == 'gocad':
             from LoopStructural.export.exporters import _write_feat_surfs_gocad
 
             _write_feat_surfs_gocad(self, filename)
@@ -119,5 +172,13 @@ class Surface:
 
             with open(filename, 'wb') as f:
                 pickle.dump(self, f)
+        elif ext == 'csv':
+            import pandas as pd
+
+            df = pd.DataFrame(self.vertices, columns=['x', 'y', 'z'])
+            if self.properties:
+                for k, v in self.properties.items():
+                    df[k] = v
+            df.to_csv(filename, index=False)
         else:
             raise ValueError(f"Extension {ext} not supported")
