@@ -129,7 +129,6 @@ class Surface:
         )
 
     def save(self, filename, ext=None):
-        import pyvista as pv
 
         print(filename, ext)
         if isinstance(filename, (io.StringIO, io.BytesIO)):
