@@ -2,7 +2,6 @@ from dataclasses import dataclass
 from typing import Optional
 import numpy as np
 import io
-from pathlib import Path
 
 
 @dataclass

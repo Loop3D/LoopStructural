@@ -5,7 +5,6 @@ except ImportError:
         "You need to install the omf package to use this feature. "
         "You can install it with: pip install --pre omf"
     )
-import numpy as np
 
 
 def get_project(filename):
