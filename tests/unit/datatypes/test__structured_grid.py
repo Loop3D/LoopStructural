@@ -15,8 +15,8 @@ def test_structured_grid_to_dict():
         origin=origin,
         step_vector=step_vector,
         nsteps=nsteps,
-        properties_vertex=data,
-        properties_cell={},
+        properties=data,
+        cell_properties={},
         name=name,
     )
     grid_dict = grid.to_dict()
@@ -24,7 +24,7 @@ def test_structured_grid_to_dict():
     assert np.all(grid_dict["origin"] == origin)
     assert np.all(grid_dict["nsteps"] == nsteps)
     assert np.all(grid_dict["step_vector"] == step_vector)
-    assert np.all(grid_dict["properties_vertex"] == data)
+    assert np.all(grid_dict["properties"] == data)
     assert grid_dict["name"] == name
 
 
@@ -37,8 +37,8 @@ def test_structured_grid_maximum():
         origin=origin,
         step_vector=step_vector,
         nsteps=nsteps,
-        properties_cell={},
-        properties_vertex={},
+        cell_properties={},
+        properties={},
         name=None,
     )
     maximum = grid.maximum
@@ -62,8 +62,8 @@ def test_structured_grid_vtk():
         origin=origin,
         step_vector=step_vector,
         nsteps=nsteps,
-        properties_vertex=data,
-        properties_cell={},
+        properties=data,
+        cell_properties={},
         name=name,
     )
     vtk_grid = grid.vtk()

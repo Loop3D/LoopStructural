@@ -8,8 +8,8 @@ class StructuredGrid:
     origin: np.ndarray
     step_vector: np.ndarray
     nsteps: np.ndarray
-    properties_cell: Dict[str, np.ndarray]
-    properties_vertex: Dict[str, np.ndarray]
+    cell_properties: Dict[str, np.ndarray]
+    properties: Dict[str, np.ndarray]
     name: str
 
     def to_dict(self):
@@ -18,8 +18,8 @@ class StructuredGrid:
             "maximum": self.maximum,
             "step_vector": self.step_vector,
             "nsteps": self.nsteps,
-            "properties_cell": self.properties_cell,
-            "properties_vertex": self.properties_vertex,
+            "cell_properties": self.cell_properties,
+            "properties": self.properties,
             "name": self.name,
         }
 
@@ -40,9 +40,9 @@ class StructuredGrid:
             y,
             z,
         )
-        for name, data in self.properties_vertex.items():
+        for name, data in self.properties.items():
             grid[name] = data.flatten(order="F")
-        for name, data in self.properties_cell.items():
+        for name, data in self.cell_properties.items():
             grid.cell_data[name] = data.flatten(order="F")
         return grid
 
@@ -54,10 +54,10 @@ class StructuredGrid:
         if not np.all(np.isclose(self.nsteps, other.nsteps)):
             raise ValueError("Number of steps of grids must be the same")
 
-        for name, data in other.properties_cell.items():
-            self.properties_cell[name] = data
-        for name, data in other.properties_vertex.items():
-            self.properties_vertex[name] = data
+        for name, data in other.cell_properties.items():
+            self.cell_properties[name] = data
+        for name, data in other.properties.items():
+            self.properties[name] = data
 
     def save(self, filename):
         filename = str(filename)
@@ -79,6 +79,10 @@ class StructuredGrid:
 
             with open(filename, 'wb') as f:
                 pickle.dump(self, f)
+        elif ext == 'omf':
+            from LoopStructural.export.omf_wrapper import add_structured_grid_to_omf
+
+            add_structured_grid_to_omf(self, filename)
         elif ext == 'vs':
             raise NotImplementedError(
                 "Saving structured grids in gocad format is not yet implemented"

@@ -75,8 +75,8 @@ def add_structured_grid_to_geoh5(filename, structured_grid, overwrite=True, grou
             if overwrite:
                 workspace.remove_entity(existing_block[0])
         data = {}
-        if structured_grid.properties_cell is not None:
-            for k, v in structured_grid.properties_cell.items():
+        if structured_grid.cell_properties is not None:
+            for k, v in structured_grid.cell_properties.items():
                 data[k] = {
                     'association': "CELL",
                     "values": np.rot90(v.reshape(structured_grid.nsteps - 1, order="F")).flatten(),

@@ -298,7 +298,6 @@ class StructuredGrid(BaseStructuredSupport):
         v[:, :] = np.nan
         v[inside, :] = self.position_to_dof_coefs(evaluation_points[inside, :])
         v[inside, :] *= property_array[idc[inside, :]]
-
         return np.sum(v, axis=1)
 
     def evaluate_gradient(self, evaluation_points, property_array) -> np.ndarray:

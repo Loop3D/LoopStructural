@@ -416,7 +416,7 @@ class BoundingBox:
             origin=self.global_origin,
             step_vector=self.step_vector,
             nsteps=self.nsteps,
-            properties_cell=cell_data,
-            properties_vertex=vertex_data,
+            cell_properties=cell_data,
+            properties=vertex_data,
             name=name,
         )

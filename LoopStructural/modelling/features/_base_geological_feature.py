@@ -318,10 +318,10 @@ class BaseFeature(metaclass=ABCMeta):
         value = self.evaluate_value(
             self.model.scale(bounding_box.regular_grid(local=False, order='F'))
         )
-        grid.properties_vertex[self.name] = value
+        grid.properties[self.name] = value
 
         value = self.evaluate_value(bounding_box.cell_centers(order='F'))
-        grid.properties_cell[self.name] = value
+        grid.cell_properties[self.name] = value
         return grid
 
     def vector_field(self, bounding_box=None, tolerance=0.05, scale=1.0):
