@@ -67,6 +67,10 @@ class ValuePoints:
                 for k, v in self.properties.items():
                     df[k] = v
             df.to_csv(filename, index=False)
+        elif ext == 'omf':
+            from LoopStructural.export.omf_wrapper import add_pointset_to_omf
+
+            add_pointset_to_omf(self, filename)
         else:
             raise ValueError(f'Unknown file extension {ext}')
 
@@ -154,5 +158,9 @@ class VectorPoints:
                 for k, v in self.properties.items():
                     df[k] = v
             df.to_csv(filename)
+        elif ext == 'omf':
+            from LoopStructural.export.omf_wrapper import add_pointset_to_omf
+
+            add_pointset_to_omf(self, filename)
         else:
             raise ValueError(f'Unknown file extension {ext}')

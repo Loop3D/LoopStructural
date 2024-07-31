@@ -2,6 +2,7 @@ from dataclasses import dataclass
 from typing import Optional
 import numpy as np
 import io
+from pathlib import Path
 
 
 @dataclass
@@ -128,9 +129,8 @@ class Surface:
             d.get('cell_properties', None),
         )
 
-    def save(self, filename, ext=None):
-
-        print(filename, ext)
+    def save(self, filename, replace_spaces=True, ext=None):
+        filename = filename.replace(' ', '_') if replace_spaces else filename
         if isinstance(filename, (io.StringIO, io.BytesIO)):
             if ext is None:
                 raise ValueError('Please provide an extension for StringIO')
@@ -139,14 +139,12 @@ class Surface:
             filename = str(filename)
             if ext is None:
                 ext = filename.split('.')[-1].lower()
-
         if ext == 'json':
             import json
 
             with open(filename, 'w') as f:
                 json.dump(self.to_dict(), f)
         elif ext == 'vtk':
-            print(filename)
             self.vtk().save(filename)
         elif ext == 'obj':
             import meshio
@@ -179,5 +177,9 @@ class Surface:
                 for k, v in self.properties.items():
                     df[k] = v
             df.to_csv(filename, index=False)
+        elif ext == 'omf':
+            from LoopStructural.export.omf_wrapper import add_surface_to_omf
+
+            add_surface_to_omf(self, filename)
         else:
             raise ValueError(f"Extension {ext} not supported")

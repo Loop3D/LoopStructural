@@ -90,7 +90,7 @@ class GeologicalFeature(BaseFeature):
     def set_model(self, model):
         self.model = model
 
-    def evaluate_value(self, pos: np.ndarray, ignore_regions=False) -> np.ndarray:
+    def evaluate_value(self, pos: np.ndarray, ignore_regions=False, fillnan=None) -> np.ndarray:
         """
         Evaluate the scalar field value of the geological feature at the locations
         specified
@@ -122,6 +122,13 @@ class GeologicalFeature(BaseFeature):
             logger.error(f"Unable to evaluate value for {self.name}")
         else:
             v[mask] = self.interpolator.evaluate_value(evaluation_points[mask, :])
+        if fillnan == 'nearest':
+            import scipy.spatial as spatial
+
+            nanmask = np.isnan(v)
+            tree = spatial.cKDTree(evaluation_points[~nanmask, :])
+            _d, i = tree.query(evaluation_points[nanmask, :])
+            v[nanmask] = v[~nanmask][i]
         return v
 
     def evaluate_gradient(self, pos: np.ndarray, ignore_regions=False) -> np.ndarray:

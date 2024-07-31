@@ -1810,7 +1810,7 @@ class GeologicalModel:
     def get_block_model(self, name='block model'):
         grid = self.bounding_box.structured_grid(name=name)
 
-        grid.properties_cell['stratigraphy'] = self.evaluate_model(
+        grid.cell_properties['stratigraphy'] = self.evaluate_model(
             self.bounding_box.cell_centers(), scale=False
         )
         return grid, self.stratigraphic_ids()
@@ -1831,19 +1831,19 @@ class GeologicalModel:
         if fault_surfaces:
             for s in self.get_fault_surfaces():
                 ## geoh5 can save everything into the same file
-                if extension == ".geoh5":
+                if extension == ".geoh5" or extension == '.omf':
                     s.save(filename)
                 else:
                     s.save(f'{name}_{s.name}.{extension}')
         if stratigraphic_surfaces:
             for s in self.get_stratigraphic_surfaces():
-                if extension == ".geoh5":
+                if extension == ".geoh5" or extension == '.omf':
                     s.save(filename)
                 else:
                     s.save(f'{name}_{s.name}.{extension}')
         if block_model:
             grid, ids = self.get_block_model()
-            if extension == ".geoh5":
+            if extension == ".geoh5" or extension == '.omf':
                 grid.save(filename)
             else:
                 grid.save(f'{name}_block_model.{extension}')
@@ -1852,15 +1852,16 @@ class GeologicalModel:
                 for group in self.stratigraphic_column.keys():
                     if group == "faults":
                         continue
-                    for series in self.stratigraphic_column[group].keys():
-                        if extension == ".geoh5":
-                            self.__getitem__(series).save(filename)
+                    for data in self.__getitem__(group).get_data():
+                        if extension == ".geoh5" or extension == '.omf':
+                            data.save(filename)
                         else:
-                            self.__getitem__(series).save(f'{name}_{series}.{extension}')
+                            data.save(f'{name}_{group}_data.{extension}')
         if fault_data:
             for f in self.fault_names():
                 for d in self.__getitem__(f).get_data():
-                    if extension == ".geoh5":
+                    if extension == ".geoh5" or extension == '.omf':
+
                         d.save(filename)
                     else:
                         d.save(f'{name}_{group}.{extension}')
