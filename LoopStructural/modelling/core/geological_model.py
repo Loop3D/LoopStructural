@@ -371,7 +371,7 @@ class GeologicalModel:
             logger.error("Cannot import from file, dill not installed")
             return None
         model = pickle.load(open(file, "rb"))
-        if type(model) == GeologicalModel:
+        if isinstance(model, GeologicalModel):
             logger.info("GeologicalModel initialised from file")
             return model
         else:
@@ -423,7 +423,7 @@ class GeologicalModel:
         """
         faults = []
         for f in self.features:
-            if type(f) == FaultSegment:
+            if isinstance(f, FaultSegment):
                 faults.append(f)
 
         return faults
@@ -556,7 +556,7 @@ class GeologicalModel:
         """
         if data is None:
             return
-        if type(data) != pd.DataFrame:
+        if not issubclass(type(data), pd.DataFrame):
             logger.warning("Data is not a pandas data frame, trying to read data frame " "from csv")
             try:
                 data = pd.read_csv(data)
@@ -821,7 +821,7 @@ class GeologicalModel:
         if fold_frame is None:
             logger.info("Using last feature as fold frame")
             fold_frame = self.features[-1]
-        assert type(fold_frame) == FoldFrame, "Please specify a FoldFrame"
+        assert isinstance(fold_frame, FoldFrame), "Please specify a FoldFrame"
 
         fold = FoldEvent(fold_frame, name=f"Fold_{foliation_data}", invert_norm=invert_fold_norm)
 
@@ -908,7 +908,7 @@ class GeologicalModel:
         if fold_frame is None:
             logger.info("Using last feature as fold frame")
             fold_frame = self.features[-1]
-        assert type(fold_frame) == FoldFrame, "Please specify a FoldFrame"
+        assert isinstance(fold_frame, FoldFrame), "Please specify a FoldFrame"
         fold = FoldEvent(fold_frame, name=f"Fold_{fold_frame_data}")
 
         interpolatortypes = [

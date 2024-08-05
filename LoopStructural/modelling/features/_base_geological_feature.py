@@ -110,7 +110,7 @@ class BaseFeature(metaclass=ABCMeta):
         from LoopStructural import GeologicalModel
 
         # causes circular import, could delay import?
-        if type(model) == GeologicalModel:
+        if isinstance(model, GeologicalModel):
             self._model = model
         elif not model:
             self._model = None
