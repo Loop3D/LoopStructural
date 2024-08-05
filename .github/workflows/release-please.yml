@@ -138,16 +138,14 @@ jobs:
           path: dist/
 
   upload_to_conda:
+    runs-on: ubuntu-latest
     needs: ["release-please", "conda-deploy"]
-    strategy:
-      fail-fast: false
-      matrix:
-        os: ["ubuntu-latest"]
+
     if: ${{ needs.release-please.outputs.release_created }}
     steps:
       - uses: actions/download-artifact@v4
         with:
-          name: conda-${{ matrix.os }}-${{ matrix.python-version }}
+          name: conda-buiild
           path: conda
       - uses: conda-incubator/setup-miniconda@v3
       - name: upload all files to conda-forge
