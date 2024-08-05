@@ -92,13 +92,10 @@ jobs:
           folder: docs/build/html # The folder the action should deploy.
 
   conda-deploy:
-    name: Building conda package for python ${{ matrix.os }})
+    name: Building conda package
     needs: ["documentation-test", "continuous-integration"]
-    runs-on: ${{matrix.os}}
-    strategy:
-      fail-fast: false
-      matrix:
-        os: ["ubuntu-latest"]
+    runs-on: ubuntu-latest
+
     steps:
       - uses: conda-incubator/setup-miniconda@v3
         with:
