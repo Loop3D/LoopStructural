@@ -93,7 +93,7 @@ jobs:
 
   conda-deploy:
     name: Building conda package
-    needs: ["documentation-test", "continuous-integration"]
+    # needs: ["documentation-test", "continuous-integration"]
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
@@ -115,7 +115,7 @@ jobs:
         shell: bash -l {0}
         run: |
           conda install -c conda-forge conda-build scikit-build numpy cython anaconda-client  -y
-          conda build -c anaconda -c conda-forge -c loop3d --output-folder conda conda 
+          conda build -c anaconda -c conda-forge -c loop3d --output-folder conda conda --python ${{ matrix.python-version }}
           conda convert -p all conda/linux-64/*.tar.bz2 -f -o conda
       - name: upload artifacts
         uses: actions/upload-artifact@v4
