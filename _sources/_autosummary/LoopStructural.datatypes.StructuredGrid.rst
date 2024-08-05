@@ -34,8 +34,8 @@ LoopStructural.datatypes.StructuredGrid
       ~StructuredGrid.origin
       ~StructuredGrid.step_vector
       ~StructuredGrid.nsteps
-      ~StructuredGrid.properties_cell
-      ~StructuredGrid.properties_vertex
+      ~StructuredGrid.cell_properties
+      ~StructuredGrid.properties
       ~StructuredGrid.name
    
    

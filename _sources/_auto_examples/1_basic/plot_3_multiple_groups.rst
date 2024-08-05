@@ -81,7 +81,7 @@ Creating a model with multiple geological features, dealing with unconformities.
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 4.515 seconds)
+   **Total running time of the script:** (0 minutes 4.582 seconds)
 
 
 .. _sphx_glr_download__auto_examples_1_basic_plot_3_multiple_groups.py:
@@ -97,6 +97,10 @@ Creating a model with multiple geological features, dealing with unconformities.
     .. container:: sphx-glr-download sphx-glr-download-python
 
       :download:`Download Python source code: plot_3_multiple_groups.py <plot_3_multiple_groups.py>`
+
+    .. container:: sphx-glr-download sphx-glr-download-zip
+
+      :download:`Download zipped: plot_3_multiple_groups.zip <plot_3_multiple_groups.zip>`
 
 
 .. only:: html

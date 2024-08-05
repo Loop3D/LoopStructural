@@ -156,6 +156,10 @@ fault frame and an expected displacement model.
 
       :download:`Download Python source code: _faulted_intrusion.py <_faulted_intrusion.py>`
 
+    .. container:: sphx-glr-download sphx-glr-download-zip
+
+      :download:`Download zipped: _faulted_intrusion.zip <_faulted_intrusion.zip>`
+
 
 .. only:: html
 

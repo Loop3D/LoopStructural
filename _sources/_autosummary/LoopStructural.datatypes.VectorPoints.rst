@@ -17,6 +17,7 @@ LoopStructural.datatypes.VectorPoints
    .. autosummary::
    
       ~VectorPoints.__init__
+      ~VectorPoints.from_dict
       ~VectorPoints.save
       ~VectorPoints.to_dict
       ~VectorPoints.vtk

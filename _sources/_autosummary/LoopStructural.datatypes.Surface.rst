@@ -17,6 +17,7 @@ LoopStructural.datatypes.Surface
    .. autosummary::
    
       ~Surface.__init__
+      ~Surface.from_dict
       ~Surface.save
       ~Surface.to_dict
       ~Surface.vtk
@@ -29,13 +30,14 @@ LoopStructural.datatypes.Surface
 
    .. autosummary::
    
+      ~Surface.cell_properties
+      ~Surface.name
+      ~Surface.normals
       ~Surface.properties
       ~Surface.triangle_area
       ~Surface.triangle_normal
       ~Surface.values
       ~Surface.vertices
       ~Surface.triangles
-      ~Surface.normals
-      ~Surface.name
    
    

@@ -45,7 +45,7 @@ Examples
 
 .. raw:: html
 
-    <div class="sphx-glr-thumbcontainer" tooltip="Implicit surface representation involves finding an unknown function where f(x,y,z) matches obs...">
+    <div class="sphx-glr-thumbcontainer" tooltip="Implicit surface representation involves finding an unknown function where f(x,y,z) matches observations of the surface geometry. We generate a scalar field where the scalar value is the distance away from a reference horizon. The reference horizon is arbritary and can either be:">
 
 .. only:: html
 
@@ -79,7 +79,7 @@ Examples
 
 .. raw:: html
 
-    <div class="sphx-glr-thumbcontainer" tooltip="Lavavu allows for interactive visualisation of 3D models within a jupyter notebook environment....">
+    <div class="sphx-glr-thumbcontainer" tooltip="Lavavu allows for interactive visualisation of 3D models within a jupyter notebook environment. ">
 
 .. only:: html
 
@@ -180,7 +180,7 @@ Examples
 
 .. raw:: html
 
-    <div class="sphx-glr-thumbcontainer" tooltip=" This tutorial will show how Loop Structural improves the modelling of  folds by using an accur...">
+    <div class="sphx-glr-thumbcontainer" tooltip=" This tutorial will show how Loop Structural improves the modelling of  folds by using an accurate parameterization of folds geometry. This will  be done by: 1. Modelling folded surfaces without structural geology,  i.e. using only data points and adjusting the scalar fields to those  points. 2. Modelling folds using structural geology, which includes: \  Description of local fold frame and rotation angles calculation \  Construction of folded foliations using fold geostatistics inside the  fold frame coordinate system">
 
 .. only:: html
 

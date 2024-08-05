@@ -109,7 +109,7 @@ method. The supported file formats are `vtk`, `ts` and `geoh5`.
            ...,
            [-0.03647267, -0.08397566,  0.9958001 ],
            [-0.03921535, -0.08051164,  0.99598193],
-           [-0.04905119, -0.06791639,  0.9964845 ]], dtype=float32), name='strati_0.0', values=array([0., 0., 0., ..., 0., 0., 0.]), properties=None)]
+           [-0.04905119, -0.06791639,  0.9964845 ]], dtype=float32), name='strati_0.0', values=array([0., 0., 0., ..., 0., 0., 0.]), properties=None, cell_properties=None)]
     <bound method Surface.vtk of Surface(vertices=array([[ 548800.        , 7816600.        ,   -8890.0935173 ],
            [ 548875.51020408, 7816600.        ,   -8884.0983367 ],
            [ 548800.        , 7816710.20408163,   -8889.89708662],
@@ -128,7 +128,7 @@ method. The supported file formats are `vtk`, `ts` and `geoh5`.
            ...,
            [-0.03647267, -0.08397566,  0.9958001 ],
            [-0.03921535, -0.08051164,  0.99598193],
-           [-0.04905119, -0.06791639,  0.9964845 ]], dtype=float32), name='strati_0.0', values=array([0., 0., 0., ..., 0., 0., 0.]), properties=None)>
+           [-0.04905119, -0.06791639,  0.9964845 ]], dtype=float32), name='strati_0.0', values=array([0., 0., 0., ..., 0., 0., 0.]), properties=None, cell_properties=None)>
 
 
 
@@ -157,7 +157,7 @@ in the model to a geoh5 file. This file can be loaded into LoopStructural
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 0.204 seconds)
+   **Total running time of the script:** (0 minutes 0.198 seconds)
 
 
 .. _sphx_glr_download__auto_examples_1_basic_plot_7_exporting.py:
@@ -173,6 +173,10 @@ in the model to a geoh5 file. This file can be loaded into LoopStructural
     .. container:: sphx-glr-download sphx-glr-download-python
 
       :download:`Download Python source code: plot_7_exporting.py <plot_7_exporting.py>`
+
+    .. container:: sphx-glr-download sphx-glr-download-zip
+
+      :download:`Download zipped: plot_7_exporting.zip <plot_7_exporting.zip>`
 
 
 .. only:: html

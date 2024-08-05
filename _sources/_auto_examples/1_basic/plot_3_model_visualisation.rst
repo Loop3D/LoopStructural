@@ -195,7 +195,7 @@ Where the optional kwargs can be:
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 1.333 seconds)
+   **Total running time of the script:** (0 minutes 1.340 seconds)
 
 
 .. _sphx_glr_download__auto_examples_1_basic_plot_3_model_visualisation.py:
@@ -211,6 +211,10 @@ Where the optional kwargs can be:
     .. container:: sphx-glr-download sphx-glr-download-python
 
       :download:`Download Python source code: plot_3_model_visualisation.py <plot_3_model_visualisation.py>`
+
+    .. container:: sphx-glr-download sphx-glr-download-zip
+
+      :download:`Download zipped: plot_3_model_visualisation.zip <plot_3_model_visualisation.zip>`
 
 
 .. only:: html

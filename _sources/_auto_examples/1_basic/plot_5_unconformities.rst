@@ -38,7 +38,7 @@ This tutorial will demonstrate how to add unconformities to a mode using LoopStr
  .. code-block:: none
 
 
-    <matplotlib.contour.QuadContourSet object at 0x7fd8e5790250>
+    <matplotlib.contour.QuadContourSet object at 0x7f963e6a1d80>
 
 
 
@@ -122,7 +122,7 @@ This tutorial will demonstrate how to add unconformities to a mode using LoopStr
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 7.868 seconds)
+   **Total running time of the script:** (0 minutes 7.815 seconds)
 
 
 .. _sphx_glr_download__auto_examples_1_basic_plot_5_unconformities.py:
@@ -138,6 +138,10 @@ This tutorial will demonstrate how to add unconformities to a mode using LoopStr
     .. container:: sphx-glr-download sphx-glr-download-python
 
       :download:`Download Python source code: plot_5_unconformities.py <plot_5_unconformities.py>`
+
+    .. container:: sphx-glr-download sphx-glr-download-zip
+
+      :download:`Download zipped: plot_5_unconformities.zip <plot_5_unconformities.zip>`
 
 
 .. only:: html

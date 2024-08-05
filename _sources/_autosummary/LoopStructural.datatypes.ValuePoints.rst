@@ -17,6 +17,7 @@ LoopStructural.datatypes.ValuePoints
    .. autosummary::
    
       ~ValuePoints.__init__
+      ~ValuePoints.from_dict
       ~ValuePoints.save
       ~ValuePoints.to_dict
       ~ValuePoints.vtk

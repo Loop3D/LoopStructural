@@ -193,6 +193,10 @@ We will modify this profile so that the hanging wall is displaced by a constant 
 
       :download:`Download Python source code: _define_fault_displacement.py <_define_fault_displacement.py>`
 
+    .. container:: sphx-glr-download sphx-glr-download-zip
+
+      :download:`Download zipped: _define_fault_displacement.zip <_define_fault_displacement.zip>`
+
 
 .. only:: html
 

@@ -25,7 +25,9 @@ LoopStructural.visualisation.Loop3DView
       ~Loop3DView.add_background_image
       ~Loop3DView.add_blurring
       ~Loop3DView.add_bounding_box
+      ~Loop3DView.add_box_axes
       ~Loop3DView.add_box_widget
+      ~Loop3DView.add_camera3d_widget
       ~Loop3DView.add_camera_orientation_widget
       ~Loop3DView.add_chart
       ~Loop3DView.add_checkbox_button_widget
@@ -48,6 +50,7 @@ LoopStructural.visualisation.Loop3DView
       ~Loop3DView.add_mesh_slice_orthogonal
       ~Loop3DView.add_mesh_slice_spline
       ~Loop3DView.add_mesh_threshold
+      ~Loop3DView.add_north_arrow_widget
       ~Loop3DView.add_on_render_callback
       ~Loop3DView.add_orientation_widget
       ~Loop3DView.add_plane_widget
@@ -70,6 +73,7 @@ LoopStructural.visualisation.Loop3DView
       ~Loop3DView.clear_actors
       ~Loop3DView.clear_box_widgets
       ~Loop3DView.clear_button_widgets
+      ~Loop3DView.clear_camera3d_widgets
       ~Loop3DView.clear_camera_widgets
       ~Loop3DView.clear_events_for_key
       ~Loop3DView.clear_line_widgets
@@ -96,10 +100,12 @@ LoopStructural.visualisation.Loop3DView
       ~Loop3DView.disable_stereo_render
       ~Loop3DView.display
       ~Loop3DView.enable
+      ~Loop3DView.enable_2d_style
       ~Loop3DView.enable_3_lights
       ~Loop3DView.enable_anti_aliasing
       ~Loop3DView.enable_block_picking
       ~Loop3DView.enable_cell_picking
+      ~Loop3DView.enable_custom_trackball_style
       ~Loop3DView.enable_depth_of_field
       ~Loop3DView.enable_depth_peeling
       ~Loop3DView.enable_element_picking
@@ -143,7 +149,9 @@ LoopStructural.visualisation.Loop3DView
       ~Loop3DView.hide_axes
       ~Loop3DView.hide_axes_all
       ~Loop3DView.image_scale_context
+      ~Loop3DView.import_3ds
       ~Loop3DView.import_gltf
+      ~Loop3DView.import_obj
       ~Loop3DView.import_vrml
       ~Loop3DView.increment_point_size_and_line_width
       ~Loop3DView.isometric_view

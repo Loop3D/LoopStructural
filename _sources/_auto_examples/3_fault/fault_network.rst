@@ -205,6 +205,10 @@ the fault relationship to be abutting rather than splay.
 
       :download:`Download Python source code: fault_network.py <fault_network.py>`
 
+    .. container:: sphx-glr-download sphx-glr-download-zip
+
+      :download:`Download zipped: fault_network.zip <fault_network.zip>`
+
 
 .. only:: html
 

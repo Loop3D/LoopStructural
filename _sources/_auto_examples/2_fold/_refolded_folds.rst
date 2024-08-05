@@ -179,6 +179,10 @@ S1/S0 S-Plots
 
       :download:`Download Python source code: _refolded_folds.py <_refolded_folds.py>`
 
+    .. container:: sphx-glr-download sphx-glr-download-zip
+
+      :download:`Download zipped: _refolded_folds.zip <_refolded_folds.zip>`
+
 
 .. only:: html
 
