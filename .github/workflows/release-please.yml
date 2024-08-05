@@ -95,12 +95,15 @@ jobs:
     name: Building conda package
     needs: ["documentation-test", "continuous-integration"]
     runs-on: ubuntu-latest
-
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ${{ fromJSON(vars.PYTHON_VERSIONS)}}
     steps:
       - uses: conda-incubator/setup-miniconda@v3
         with:
           auto-update-conda: true
-
+          python-version: ${{ matrix.python-version }}
       - uses: actions/checkout@v4
       - name: update submodules
         #       shell: bash -l {0}
