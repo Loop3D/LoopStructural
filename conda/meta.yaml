@@ -12,28 +12,26 @@ build:
   script: "{{ PYTHON }} -m pip install ."
 
 requirements:
-  build:
-    - numpy
   host:
-    - pip
-    - python
-    - cython
+    - python >=3.8
     - setuptools
-    - numpy
+    - pip
   run:
-    - numpy
+    - python >=3.8
+    - numpy >=1.18
     - pandas
     - scipy
     - scikit-image
     - scikit-learn
     - tqdm
-    - python >=3.6
 
 test:
-  import:
-    - numpy
-    - pandas
-    - loopstructural
+  imports:
+    - LoopStructural
+  commands:
+    - pip check
+  requires:
+    - pip
 
 
 about:
