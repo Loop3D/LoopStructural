@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Optional, Union, Callable, List, Dict
+from typing import Optional, Union, Callable, List
 import numpy as np
 import numpy.typing as npt
 from LoopStructural.utils.logging import getLogger
