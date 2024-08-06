@@ -157,7 +157,7 @@ in the model to a geoh5 file. This file can be loaded into LoopStructural
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 0.198 seconds)
+   **Total running time of the script:** (0 minutes 0.200 seconds)
 
 
 .. _sphx_glr_download__auto_examples_1_basic_plot_7_exporting.py:
