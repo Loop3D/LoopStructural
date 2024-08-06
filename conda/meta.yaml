@@ -20,7 +20,7 @@ requirements:
     - python 
     - numpy >=1.18
     - pandas
-    - scipy
+    - scipy >=1.10
     - scikit-image
     - scikit-learn
     - tqdm
