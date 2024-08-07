@@ -93,8 +93,10 @@ jobs:
 
   conda-deploy:
     name: Building conda package for python ${{ matrix.os }})
-    needs: ["documentation-test", "continuous-integration"]
+    needs: ["documentation-test", "continuous-integration", "release-please"]
     runs-on: ${{matrix.os}}
+    if: github.ref == 'refs/heads/master'
+
     strategy:
       fail-fast: false
       matrix:
@@ -117,7 +119,7 @@ jobs:
         shell: bash -l {0}
         run: |
           conda install -c conda-forge conda-build scikit-build numpy cython anaconda-client -y
-          conda build -c anaconda -c conda-forge -c loop3d --output-folder conda conda 
+          conda build -c anaconda -c conda-forge -c loop3d --output-folder conda conda  --python ${{matrix.python-version}}
           conda convert -p all conda/linux-64/*.tar.bz2 -f -o conda
           conda install anaconda-client -y
       - name: upload artifacts
@@ -127,7 +129,7 @@ jobs:
           path: conda
 
   make_sdist:
-    needs: ["documentation-test", "continuous-integration"]
+    needs: ["documentation-test", "continuous-integration", "release-please"]
     name: Make SDist
     runs-on: ubuntu-latest
     steps:
