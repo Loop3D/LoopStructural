@@ -282,6 +282,7 @@ class FaultSegment(StructuralFrame):
         -------
 
         """
+        logger.info(f'Applying fault {self.name} to points {points.shape}')
         steps = self.steps
         newp = np.copy(points).astype(float)
         # evaluate fault function for all points
