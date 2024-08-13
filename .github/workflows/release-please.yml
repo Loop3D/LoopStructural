@@ -120,7 +120,7 @@ jobs:
       - name: upload artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: conda-build-$${{ matrix.python-version }}
+          name: conda-build-${{ matrix.python-version }}
           path: conda
 
   make_sdist:
@@ -152,7 +152,7 @@ jobs:
     steps:
       - uses: actions/download-artifact@v4
         with:
-          name: conda-build-$${{ matrix.python-version }}
+          name: conda-build-${{ matrix.python-version }}
           path: conda
       - uses: conda-incubator/setup-miniconda@v3
       - name: upload all files to conda-forge
