@@ -3,35 +3,55 @@ try:
 except ImportError:
     raise ImportError(
         "You need to install the omf package to use this feature. "
-        "You can install it with: pip install --pre omf"
+        "You can install it with: pip install mira-omf"
     )
+import numpy as np
+import datetime
+import os
 
 
 def get_project(filename):
-    try:
-        project = omf.load(filename)
-    except FileNotFoundError:
-        project = omf.Project(name='LoopStructural Model')
-    return project
+    if os.path.exists(filename):
+
+        try:
+            reader = omf.OMFReader(filename)
+            project = reader.get_project()
+        except (FileNotFoundError, ValueError):
+            project = omf.Project(name='LoopStructural Model')
+        return project
+    else:
+        return omf.Project(name='LoopStructural Model')
 
 
 def get_cell_attributes(loopobject):
     attributes = []
     if loopobject.cell_properties:
-        attributes += [
-            omf.NumericAttribute(name=k, array=v, location="faces")
-            for k, v in loopobject.cell_properties.items()
-        ]
+        for k, v in loopobject.cell_properties.items():
+            v = np.array(v)
+            if len(v.shape) > 1 and v.shape[1] > 1:
+                for i in range(v.shape[1]):
+                    attributes.append(
+                        omf.ScalarData(name=f'{k}_{i}', array=v[:, i], location="faces")
+                    )
+            else:
+                attributes.append(omf.ScalarData(name=k, array=v, location="faces"))
+
     return attributes
 
 
 def get_point_attributed(loopobject):
     attributes = []
     if loopobject.properties:
-        attributes += [
-            omf.NumericAttribute(name=k, array=v, location="vertices")
-            for k, v in loopobject.properties.items()
-        ]
+        for k, v in loopobject.properties.items():
+            v = np.array(v)
+            if len(v.shape) > 1 and v.shape[1] > 1:
+                for i in range(v.shape[1]):
+                    attributes.append(
+                        omf.ScalarData(name=f'{k}_{i}', array=v[:, i], location="vertices")
+                    )
+            else:
+                attributes.append(omf.ScalarData(name=k, array=v, location="vertices"))
+
     return attributes
 
 
@@ -40,16 +60,24 @@ def add_surface_to_omf(surface, filename):
     attributes = []
     attributes += get_cell_attributes(surface)
     attributes += get_point_attributed(surface)
-    surface = omf.Surface(
-        vertices=surface.vertices,
-        triangles=surface.triangles,
-        attributes=attributes,
+    surface = omf.SurfaceElement(
+        geometry=omf.SurfaceGeometry(
+            vertices=surface.vertices,
+            triangles=surface.triangles,
+        ),
+        data=attributes,
         name=surface.name,
     )
     project = get_project(filename)
 
     project.elements += [surface]
-    omf.save(project, filename, mode='w')
+    project.metadata = {
+        "coordinate_reference_system": "epsg 3857",
+        "date_created": datetime.datetime.utcnow(),
+        "version": "v1.3",
+        "revision": "10",
+    }
+    omf.OMFWriter(project, filename)
 
 
 def add_pointset_to_omf(points, filename):
@@ -57,7 +85,7 @@ def add_pointset_to_omf(points, filename):
     attributes = []
     attributes += get_point_attributed(points)
 
-    points = omf.PointSet(
+    points = omf.PointSetElement(
         vertices=points.locations,
         attributes=attributes,
         name=points.name,
@@ -65,7 +93,7 @@ def add_pointset_to_omf(points, filename):
 
     project = get_project(filename)
     project.elements += [points]
-    omf.save(project, filename, mode='w')
+    omf.OMFWriter(project, filename)
 
 
 def add_structured_grid_to_omf(grid, filename):
