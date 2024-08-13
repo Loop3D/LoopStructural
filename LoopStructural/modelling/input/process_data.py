@@ -442,6 +442,12 @@ class ProcessInputData:
                 if g not in self.thicknesses:
                     logger.warning(f"No thicknesses for {g}")
                     stratigraphic_value[g] = np.nan
+                if self.thicknesses[g] <= 0:
+                    logger.error(
+                        f"Thickness for {g} is less than or equal to 0\n Update the thickness value for {g} before continuing"
+                    )
+
+                    stratigraphic_value[g] = np.nan
                 else:
                     stratigraphic_value[g] = value
                     value += self.thicknesses[g]

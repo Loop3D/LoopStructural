@@ -109,6 +109,7 @@ class GeologicalFeatureBuilder(BaseBuilder):
         else:
             self._interpolation_region = RegionEverywhere()
             self._interpolator.set_region(region=self._interpolation_region)
+        logger.info(f'Setting interpolation region {self.name}')
         self._up_to_date = False
 
     def add_data_from_data_frame(self, data_frame, overwrite=False):
@@ -156,6 +157,8 @@ class GeologicalFeatureBuilder(BaseBuilder):
             logger.error("Cannot cast {} as integer, setting step to 1".format(step))
             step = 1
         self._orthogonal_features[feature.name] = [feature, w, region, step, B]
+
+        logger.info(f"Adding orthogonal constraint {feature.name} to {self.name}")
         self._up_to_date = False
 
     def add_data_to_interpolator(self, constrained=False, force_constrained=False, **kwargs):
@@ -321,6 +324,7 @@ class GeologicalFeatureBuilder(BaseBuilder):
 
     def add_equality_constraints(self, feature, region, scalefactor=1.0):
         self._equality_constraints[feature.name] = [feature, region, scalefactor]
+        logger.info(f'Adding equality constraints to {self.name}')
         self._up_to_date = False
 
     def install_equality_constraints(self):
@@ -536,7 +540,9 @@ class GeologicalFeatureBuilder(BaseBuilder):
         logger.info(f'running interpolation for {self.name}')
 
         self.interpolator.solve_system(
-            solver=kwargs.get('solver', None), solver_kwargs=kwargs.get('solver_kwargs', {})
+            solver=kwargs.get('solver', None),
+            tol=kwargs.get('tol', None),
+            solver_kwargs=kwargs.get('solver_kwargs', {}),
         )
         logger.info(f'Finished building  {self.name}')
         self._up_to_date = True

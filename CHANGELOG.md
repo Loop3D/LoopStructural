@@ -1,5 +1,14 @@
 # Changelog
 
+## [1.6.2](https://github.com/Loop3D/LoopStructural/compare/v1.6.1...v1.6.2) (2024-08-06)
+
+
+### Bug Fixes
+
+* extra import ([7d10434](https://github.com/Loop3D/LoopStructural/commit/7d10434eb11631fa501275c14d617ed014f092a7))
+* tuple to Tuple ([e567810](https://github.com/Loop3D/LoopStructural/commit/e567810e4fafd36da7ccf5696dd9245a904d4462))
+* updating type hints ([a064224](https://github.com/Loop3D/LoopStructural/commit/a0642243fac0bd7e90f28957b95d68e31bac0af7))
+
 ## [1.6.1](https://github.com/Loop3D/LoopStructural/compare/v1.6.0...v1.6.1) (2024-08-05)
 
 

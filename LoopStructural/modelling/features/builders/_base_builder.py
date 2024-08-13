@@ -46,6 +46,7 @@ class BaseBuilder:
         # self._build_arguments = {}
         for k, i in build_arguments.items():
             if i != self._build_arguments.get(k, None):
+                logger.info(f"Setting {k} to {i} for {self.name}")
                 self._build_arguments[k] = i
                 ## if build_arguments change then flag to reinterpolate
                 self._up_to_date = False
@@ -107,5 +108,6 @@ class BaseBuilder:
         -------
 
         """
+        logger.info(f'Adding fault {fault.name} to {self.name}')
         self._up_to_date = False
         self.faults.append(fault)

@@ -62,7 +62,6 @@ class DiscreteInterpolator(GeologicalInterpolator):
         self.interpolation_weights = {}
         logger.info("Creating discrete interpolator with {} degrees of freedom".format(self.nx))
         self.type = InterpolatorType.BASE_DISCRETE
-        self.c = np.zeros(self.support.n_nodes)
 
     @property
     def nx(self) -> int:
@@ -133,6 +132,28 @@ class DiscreteInterpolator(GeologicalInterpolator):
             self.up_to_date = False
             self.interpolation_weights[key] = weights[key]
 
+    def _pre_solve(self):
+        """
+        Pre solve function to be run before solving the interpolation
+        """
+        self.c = np.zeros(self.support.n_nodes)
+        self.c[:] = np.nan
+        return True
+
+    def _post_solve(self):
+        """Post solve function(s) to be run after the solver has been called"""
+        self.clear_constraints()
+        return True
+
+    def clear_constraints(self):
+        """
+        Clear the constraints from the interpolator, this makes sure we are not storing
+        the constraints after the solver has been run
+        """
+        self.constraints = {}
+        self.ineq_constraints = {}
+        self.equal_constraints = {}
+
     def reset(self):
         """
         Reset the interpolation constraints
@@ -140,7 +161,7 @@ class DiscreteInterpolator(GeologicalInterpolator):
         """
         self.constraints = {}
         self.c_ = 0
-        logger.debug("Resetting interpolation constraints")
+        logger.info("Resetting interpolation constraints")
 
     def add_constraints_to_least_squares(self, A, B, idc, w=1.0, name="undefined"):
         """
@@ -511,7 +532,7 @@ class DiscreteInterpolator(GeologicalInterpolator):
             mats.append(c['matrix'])
             bounds.append(c['bounds'])
         if len(mats) == 0:
-            return None, None
+            return sparse.csr_matrix((0, self.nx), dtype=float), np.zeros((0, 3))
         Q = sparse.vstack(mats)
         bounds = np.vstack(bounds)
         return Q, bounds
@@ -519,6 +540,7 @@ class DiscreteInterpolator(GeologicalInterpolator):
     def solve_system(
         self,
         solver: Optional[Union[Callable[[sparse.csr_matrix, np.ndarray], np.ndarray], str]] = None,
+        tol: Optional[float] = None,
         solver_kwargs: dict = {},
     ) -> bool:
         """
@@ -540,18 +562,16 @@ class DiscreteInterpolator(GeologicalInterpolator):
 
         """
         starttime = time()
-        self.c = np.zeros(self.support.n_nodes)
-        self.c[:] = np.nan
+        if not self._pre_solve():
+            raise ValueError("Pre solve failed")
+
         A, b = self.build_matrix()
         Q, bounds = self.build_inequality_matrix()
         if callable(solver):
             logger.warning('Using custom solver')
             self.c = solver(A.tocsr(), b)
             self.up_to_date = True
-
-            return True
-        ## solve with lsmr
-        if isinstance(solver, str):
+        elif isinstance(solver, str) or solver is None:
             if solver not in ['cg', 'lsmr', 'admm']:
                 logger.warning(
                     f'Unknown solver {solver} using cg. \n Available solvers are cg and lsmr or a custom solver as a callable function'
@@ -559,18 +579,29 @@ class DiscreteInterpolator(GeologicalInterpolator):
                 solver = 'cg'
         if solver == 'cg':
             logger.info("Solving using cg")
-            ATA = A.T.dot(A)
-            ATB = A.T.dot(b)
-            res = sparse.linalg.cg(ATA, ATB, **solver_kwargs)
+            if 'atol' not in solver_kwargs or 'rtol' not in solver_kwargs:
+                if tol is not None:
+                    solver_kwargs['atol'] = tol
+
+            logger.info(f"Solver kwargs: {solver_kwargs}")
+
+            res = sparse.linalg.cg(A.T @ A, A.T @ b, **solver_kwargs)
             if res[1] > 0:
                 logger.warning(
                     f'CG reached iteration limit ({res[1]})and did not converge, check input data. Setting solution to last iteration'
                 )
             self.c = res[0]
             self.up_to_date = True
-            return True
+
         elif solver == 'lsmr':
             logger.info("Solving using lsmr")
+            if 'atol' not in solver_kwargs:
+                if tol is not None:
+                    solver_kwargs['atol'] = tol
+            if 'btol' not in solver_kwargs:
+                if tol is not None:
+                    solver_kwargs['btol'] = tol
+            logger.info(f"Solver kwargs: {solver_kwargs}")
             res = sparse.linalg.lsmr(A, b, **solver_kwargs)
             if res[1] == 1 or res[1] == 4 or res[1] == 2 or res[1] == 5:
                 self.c = res[0]
@@ -585,8 +616,7 @@ class DiscreteInterpolator(GeologicalInterpolator):
                 )
                 self.c = res[0]
             self.up_to_date = True
-            logger.info("Interpolation took %f seconds" % (time() - starttime))
-            return True
+
         elif solver == 'admm':
             logger.info("Solving using admm")
 
@@ -601,28 +631,35 @@ class DiscreteInterpolator(GeologicalInterpolator):
 
             try:
                 from loopsolver import admm_solve
+
+                try:
+                    linsys_solver = solver_kwargs.pop('linsys_solver', 'lsmr')
+                    res = admm_solve(
+                        A,
+                        b,
+                        Q,
+                        bounds,
+                        x0=x0,
+                        admm_weight=solver_kwargs.pop('admm_weight', 0.01),
+                        nmajor=solver_kwargs.pop('nmajor', 200),
+                        linsys_solver_kwargs=solver_kwargs,
+                        linsys_solver=linsys_solver,
+                    )
+                    self.c = res
+                    self.up_to_date = True
+                except ValueError as e:
+                    logger.error(f"ADMM solver failed: {e}")
+                    self.up_to_date = False
             except ImportError:
                 logger.warning(
                     "Cannot import admm solver. Please install loopsolver or use lsmr or cg"
                 )
-                return False
-            try:
-                res = admm_solve(
-                    A,
-                    b,
-                    Q,
-                    bounds,
-                    x0=x0,
-                    admm_weight=solver_kwargs.pop('admm_weight', 0.01),
-                    nmajor=solver_kwargs.pop('nmajor', 200),
-                    linsys_solver_kwargs=solver_kwargs,
-                )
-                self.c = res
-                self.up_to_date = True
-            except ValueError as e:
-                logger.error(f"ADMM solver failed: {e}")
-                return False
-        return False
+                self.up_to_date = False
+        else:
+            logger.error(f"Unknown solver {solver}")
+            self.up_to_date = False
+        # self._post_solve()
+        return self.up_to_date
 
     def update(self) -> bool:
         """
@@ -641,7 +678,8 @@ class DiscreteInterpolator(GeologicalInterpolator):
             return False
         if not self.up_to_date:
             self.setup_interpolator()
-            return self.solve_system(self.solver)
+            self.up_to_date = self.solve_system(self.solver)
+            return self.up_to_date
 
     def evaluate_value(self, locations: np.ndarray) -> np.ndarray:
         """Evaluate the value of the interpolator at location

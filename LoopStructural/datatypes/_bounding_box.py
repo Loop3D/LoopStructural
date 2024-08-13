@@ -4,6 +4,7 @@ from LoopStructural.utils.exceptions import LoopValueError
 from LoopStructural.utils import rng
 from LoopStructural.datatypes._structured_grid import StructuredGrid
 import numpy as np
+import copy
 
 from LoopStructural.utils.logging import getLogger
 
@@ -412,11 +413,16 @@ class BoundingBox:
     def structured_grid(
         self, cell_data: Dict[str, np.ndarray] = {}, vertex_data={}, name: str = "bounding_box"
     ):
+        # python is passing a reference to the cell_data, vertex_data dicts so we need to
+        # copy them to make sure that different instances of StructuredGrid are not sharing the same
+        # underlying objects
+        _cell_data = copy.deepcopy(cell_data)
+        _vertex_data = copy.deepcopy(vertex_data)
         return StructuredGrid(
             origin=self.global_origin,
             step_vector=self.step_vector,
             nsteps=self.nsteps,
-            cell_properties=cell_data,
-            properties=vertex_data,
+            cell_properties=_cell_data,
+            properties=_vertex_data,
             name=name,
         )
