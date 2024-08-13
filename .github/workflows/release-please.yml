@@ -100,14 +100,12 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: ["ubuntu-latest"]
         python-version: ${{ fromJSON(vars.PYTHON_VERSIONS)}}
     steps:
       - uses: conda-incubator/setup-miniconda@v3
         with:
           auto-update-conda: true
           python-version: ${{ matrix.python-version }}
-
       - uses: actions/checkout@v4
       - name: update submodules
         #       shell: bash -l {0}
@@ -121,17 +119,17 @@ jobs:
           conda install -c conda-forge conda-build scikit-build numpy cython anaconda-client -y
           conda build -c anaconda -c conda-forge -c loop3d --output-folder conda conda  --python ${{matrix.python-version}}
           conda convert -p all conda/linux-64/*.tar.bz2 -f -o conda
-          conda install anaconda-client -y
       - name: upload artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: conda-${{ matrix.os }}-${{ matrix.python-version }}
+          name: conda-build-$${{ matrix.python-version }}
           path: conda
 
   make_sdist:
     needs: ["documentation-test", "continuous-integration", "release-please"]
     name: Make SDist
     runs-on: ubuntu-latest
+
     steps:
       - uses: actions/checkout@v4
 
@@ -146,18 +144,17 @@ jobs:
           path: dist/
 
   upload_to_conda:
+    runs-on: ubuntu-latest
     needs: ["release-please", "conda-deploy"]
-    runs-on: ${{matrix.os}}
     strategy:
       fail-fast: false
       matrix:
-        os: ["ubuntu-latest"]
         python-version: ${{ fromJSON(vars.PYTHON_VERSIONS)}}
     if: ${{ needs.release-please.outputs.release_created }}
     steps:
       - uses: actions/download-artifact@v4
         with:
-          name: conda-${{ matrix.os }}-${{ matrix.python-version }}
+          name: conda-build-$${{ matrix.python-version }}
           path: conda
       - uses: conda-incubator/setup-miniconda@v3
       - name: upload all files to conda-forge

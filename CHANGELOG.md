@@ -1,5 +1,29 @@
 # Changelog
 
+## [1.6.2](https://github.com/Loop3D/LoopStructural/compare/v1.6.1...v1.6.2) (2024-08-06)
+
+
+### Bug Fixes
+
+* extra import ([7d10434](https://github.com/Loop3D/LoopStructural/commit/7d10434eb11631fa501275c14d617ed014f092a7))
+* tuple to Tuple ([e567810](https://github.com/Loop3D/LoopStructural/commit/e567810e4fafd36da7ccf5696dd9245a904d4462))
+* updating type hints ([a064224](https://github.com/Loop3D/LoopStructural/commit/a0642243fac0bd7e90f28957b95d68e31bac0af7))
+
+## [1.6.1](https://github.com/Loop3D/LoopStructural/compare/v1.6.0...v1.6.1) (2024-08-05)
+
+
+### Bug Fixes
+
+* adding inequality pairs ([ce33ac9](https://github.com/Loop3D/LoopStructural/commit/ce33ac9914d04550192fe621070e3b1b19e7038b))
+* adding loopsolver optional depencency + admm solver option ([26edd3f](https://github.com/Loop3D/LoopStructural/commit/26edd3fa8ee7de429a7cd3682f030dfebf79f40b))
+* adding offset to fault ([b75df73](https://github.com/Loop3D/LoopStructural/commit/b75df73410f2a2662ef90cfb0b15e2413acc7d00))
+* adding omf export ([d03949e](https://github.com/Loop3D/LoopStructural/commit/d03949e109c2d2c3ed35c4b3dcd7893f18179494))
+* linting ([0e75342](https://github.com/Loop3D/LoopStructural/commit/0e75342788624a691755a889db7293b39308eb3c))
+* linting ([ad3bb55](https://github.com/Loop3D/LoopStructural/commit/ad3bb5540dd5a232fd014b8131ffdc4429b6d649))
+* linting ([0d7a052](https://github.com/Loop3D/LoopStructural/commit/0d7a0522bc706f2018bdd642cb2f28db303fd057))
+* rename properties_cell to cell_properties and properties_vertex to properties for the structured grid ([4368eb6](https://github.com/Loop3D/LoopStructural/commit/4368eb60f7e2f170782a91cc6003159fdd98875b))
+* updating point/surface export and constructor ([6b74cfd](https://github.com/Loop3D/LoopStructural/commit/6b74cfd5d5edda5769653be9e3bc3d9dd6cb4415))
+
 ## [1.6.0](https://github.com/Loop3D/LoopStructural/compare/v1.5.13...v1.6.0) (2024-06-07)
 
 

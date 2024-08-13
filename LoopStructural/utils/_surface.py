@@ -15,7 +15,7 @@ except ImportError:
 # from LoopStructural.interpolators._geological_interpolator import GeologicalInterpolator
 from LoopStructural.datatypes import Surface, BoundingBox
 
-surface_list = dict[str, Surface]
+surface_list = List[Surface]
 
 
 class LoopIsosurfacer:

@@ -13,14 +13,14 @@ build:
 
 requirements:
   host:
-    - python >=3.8
+    - python 
     - setuptools
     - pip
   run:
-    - python >=3.8
+    - python 
     - numpy >=1.18
     - pandas
-    - scipy
+    - scipy >=1.10
     - scikit-image
     - scikit-learn
     - tqdm
