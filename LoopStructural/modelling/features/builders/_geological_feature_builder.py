@@ -479,7 +479,7 @@ class GeologicalFeatureBuilder(BaseBuilder):
         self.interpolator.support.origin = origin
         self.interpolator.support.maximum = maximum
 
-    def build(self, fold=None, fold_weights={}, data_region=None, **kwargs):
+    def build(self, data_region=None, **kwargs):
         """
         Runs the interpolation and builds the geological feature
 

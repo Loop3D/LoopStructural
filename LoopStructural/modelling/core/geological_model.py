@@ -825,8 +825,6 @@ class GeologicalModel:
 
         fold = FoldEvent(fold_frame, name=f"Fold_{foliation_data}", invert_norm=invert_fold_norm)
 
-        if "fold_weights" not in kwargs:
-            kwargs["fold_weights"] = {}
         if interpolatortype != "DFI":
             logger.warning("Folded foliation only supports DFI interpolator, changing to DFI")
             interpolatortype = "DFI"
