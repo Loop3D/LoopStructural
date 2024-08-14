@@ -6,7 +6,6 @@ from abc import abstractmethod
 from typing import Callable, Optional, Union
 import logging
 
-from time import time
 import numpy as np
 from scipy import sparse  # import sparse.coo_matrix, sparse.bmat, sparse.eye
 from ..interpolators import InterpolatorType
@@ -561,7 +560,6 @@ class DiscreteInterpolator(GeologicalInterpolator):
             True if the interpolation is run
 
         """
-        starttime = time()
         if not self._pre_solve():
             raise ValueError("Pre solve failed")
 
