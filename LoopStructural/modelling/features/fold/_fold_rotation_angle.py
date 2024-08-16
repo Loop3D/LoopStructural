@@ -89,11 +89,19 @@ class FoldRotationAngle:
                     # otherwise set the fourier series parameters to 0
                     popt = guess
                     logger.error("Could not fit curve to S-Plot, check the wavelength")
+            self.fitted_params = popt
             logger.info(f"Fitted: {popt[0]} {popt[1]} {popt[2]} {popt[3]}")
             self.fold_rotation_function = lambda x: np.rad2deg(
-                np.arctan(fourier_series(x, popt[0], popt[1], popt[2], popt[3]))
+                np.arctan(
+                    fourier_series(
+                        x,
+                        self.fitted_params[0],
+                        self.fitted_params[1],
+                        self.fitted_params[2],
+                        self.fitted_params[3],
+                    )
+                )
             )
-            self.fitted_params = popt
 
     def __call__(self, fold_frame_coordinate):
         """
