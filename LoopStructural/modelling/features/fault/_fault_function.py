@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from abc import abstractmethod, ABCMeta
-from typing import Optional
+from typing import Optional, List
 import numpy as np
 
 from ....utils import getLogger
@@ -366,6 +366,24 @@ class FaultDisplacement:
         gy = CubicFunction.from_dict(data["gy"])
         gz = CubicFunction.from_dict(data["gz"])
         return cls(gx=gx, gy=gy, gz=gz)
+
+    def plot(self, range=(-1, 1), axs: Optional[List] = None):
+        try:
+            import matplotlib.pyplot as plt
+
+            if axs is None:
+                fig, ax = plt.subplots(1, 3, figsize=(15, 5))
+            for i, (name, f) in enumerate(zip(["gx", "gy", "gz"], [self.gx, self.gy, self.gz])):
+                x = np.linspace(range[0], range[1], 100)
+                ax[i].plot(x, f(x), label=name)
+                ax[i].set_title(name)
+                ax[i].set_xlabel("Fault frame coordinate")
+                ax[i].set_ylabel("Displacement")
+                ax[i].legend()
+
+        except ImportError:
+            logger.warning("matplotlib not installed, not plotting")
+            return
 
 
 class BaseFault(object):
