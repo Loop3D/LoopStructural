@@ -1,3 +1,4 @@
+from LoopStructural.utils.maths import regular_tetraherdron_for_points, gradient_from_tetrahedron
 from ....modelling.features.fault._fault_function_feature import (
     FaultDisplacementFeature,
 )
@@ -390,51 +391,12 @@ class FaultSegment(StructuralFrame):
         # the nodes of the tetrahedron are then restored by the fault and then gradient is
         # recalculated using the updated node positions but the original corner values
 
-        regular_tetrahedron = np.array(
-            [
-                [np.sqrt(8 / 9), 0, -1 / 3],
-                [-np.sqrt(2 / 9), np.sqrt(2 / 3), -1 / 3],
-                [-np.sqrt(2 / 9), -np.sqrt(2 / 3), -1 / 3],
-                [0, 0, 1],
-            ]
-        )
-        regular_tetrahedron *= scale_parameter
-        xyz = vector[:, :3]
-        tetrahedron = np.zeros((xyz.shape[0], 4, 3))
-        tetrahedron[:] = xyz[:, None, :]
-        tetrahedron[:, :, :] += regular_tetrahedron[None, :, :]
+        tetrahedron = regular_tetraherdron_for_points(vector[:, :3], scale_parameter)
+        corners = np.einsum('ikj,ij->ik', tetrahedron - vector[:, None, :3], vector[:, 3:])
 
-        vectors = vector[:, 3:]
-        corners = np.einsum('ikj,ij->ik', tetrahedron - xyz[:, None, :], vectors)
-        tetrahedron = tetrahedron.reshape(-1, 3)
-        tetrahedron = self.apply_to_points(tetrahedron)
-        tetrahedron = tetrahedron.reshape(-1, 4, 3)
-        m = np.array(
-            [
-                [
-                    (tetrahedron[:, 1, 0] - tetrahedron[:, 0, 0]),
-                    (tetrahedron[:, 1, 1] - tetrahedron[:, 0, 1]),
-                    (tetrahedron[:, 1, 2] - tetrahedron[:, 0, 2]),
-                ],
-                [
-                    (tetrahedron[:, 2, 0] - tetrahedron[:, 0, 0]),
-                    (tetrahedron[:, 2, 1] - tetrahedron[:, 0, 1]),
-                    (tetrahedron[:, 2, 2] - tetrahedron[:, 0, 2]),
-                ],
-                [
-                    (tetrahedron[:, 3, 0] - tetrahedron[:, 0, 0]),
-                    (tetrahedron[:, 3, 1] - tetrahedron[:, 0, 1]),
-                    (tetrahedron[:, 3, 2] - tetrahedron[:, 0, 2]),
-                ],
-            ]
-        )
-        I = np.array([[-1.0, 1.0, 0.0, 0.0], [-1.0, 0.0, 1.0, 0.0], [-1.0, 0.0, 0.0, 1.0]])
-        m = np.swapaxes(m, 0, 2)
-        element_gradients = np.linalg.inv(m)
+        tetrahedron = self.apply_to_points(tetrahedron.reshape(-1, 3)).reshape(-1, 4, 3)
+        v = gradient_from_tetrahedron(tetrahedron, corners)
 
-        element_gradients = element_gradients.swapaxes(1, 2)
-        element_gradients = element_gradients @ I
-        v = np.sum(element_gradients * corners[:, None, :], axis=2)
         return v
 
     def add_abutting_fault(self, abutting_fault_feature, positive=None):

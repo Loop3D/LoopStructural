@@ -2,6 +2,7 @@
 Geological features
 """
 
+from LoopStructural.utils.maths import regular_tetraherdron_for_points, gradient_from_tetrahedron
 from ...modelling.features import BaseFeature
 from ...utils import getLogger
 from ...modelling.features import FeatureType
@@ -131,7 +132,9 @@ class GeologicalFeature(BaseFeature):
             v[nanmask] = v[~nanmask][i]
         return v
 
-    def evaluate_gradient(self, pos: np.ndarray, ignore_regions=False) -> np.ndarray:
+    def evaluate_gradient(
+        self, pos: np.ndarray, ignore_regions=False, element_scale_parameter=None
+    ) -> np.ndarray:
         """
 
         Parameters
@@ -147,6 +150,17 @@ class GeologicalFeature(BaseFeature):
         if pos.shape[1] != 3:
             raise LoopValueError("Need Nx3 array of xyz points to evaluate gradient")
         logger.info(f'Calculating gradient for {self.name}')
+        if element_scale_parameter is None:
+            if self.model is not None:
+                element_scale_parameter = np.min(self.model.bounding_box.step_vector) / 10
+            else:
+                element_scale_parameter = 1
+        else:
+            try:
+                element_scale_parameter = float(element_scale_parameter)
+            except ValueError:
+                logger.error("element_scale_parameter must be a float")
+                element_scale_parameter = 1
 
         self.builder.up_to_date()
 
@@ -156,16 +170,38 @@ class GeologicalFeature(BaseFeature):
         # evaluate the faults on the nodes of the faulted feature support
         # then evaluate the gradient at these points
         if len(self.faults) > 0:
+            # generate a regular tetrahedron for each point
+            # we will then move these points by the fault and then recalculate the gradient.
+            # this should work...
+            resolved = False
+            tetrahedron = regular_tetraherdron_for_points(pos, element_scale_parameter)
 
-            if issubclass(type(self.interpolator), DiscreteInterpolator):
-                points = self.interpolator.support.nodes
-            else:
-                raise NotImplementedError(
-                    "Faulted feature gradients are only supported by DiscreteInterpolator at the moment."
-                )
-            points_faulted = self._apply_faults(points)
-            values = self.interpolator.evaluate_value(points_faulted)
-            v[mask, :] = self.interpolator.support.evaluate_gradient(pos[mask, :], values)
+            while resolved:
+                for f in self.faults:
+                    v = (
+                        f[0]
+                        .evaluate_value(tetrahedron.reshape(-1, 3), fillnan='nearest')
+                        .reshape(tetrahedron.shape[0], 4)
+                    )
+                    flag = np.logical_or(np.all(v > 0, axis=1), np.all(v < 0, axis=1))
+                    if np.any(~flag):
+                        logger.warning(
+                            f"Points are too close to fault {f[0].name}. Refining the tetrahedron"
+                        )
+                        element_scale_parameter *= 0.5
+                        tetrahedron = regular_tetraherdron_for_points(pos, element_scale_parameter)
+
+                resolved = True
+
+            tetrahedron_faulted = self._apply_faults(np.array(tetrahedron.reshape(-1, 3))).reshape(
+                tetrahedron.shape
+            )
+
+            values = self.interpolator.evaluate_value(tetrahedron_faulted.reshape(-1, 3)).reshape(
+                (-1, 4)
+            )
+            v[mask, :] = gradient_from_tetrahedron(tetrahedron_faulted[mask, :, :], values[mask])
+
             return v
         pos = self._apply_faults(pos)
         if mask.dtype not in [int, bool]:

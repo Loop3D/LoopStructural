@@ -244,3 +244,54 @@ def get_dip_vector(strike, dip):
         ]
     )
     return v
+
+
+def regular_tetraherdron_for_points(xyz, scale_parameter):
+    regular_tetrahedron = np.array(
+        [
+            [np.sqrt(8 / 9), 0, -1 / 3],
+            [-np.sqrt(2 / 9), np.sqrt(2 / 3), -1 / 3],
+            [-np.sqrt(2 / 9), -np.sqrt(2 / 3), -1 / 3],
+            [0, 0, 1],
+        ]
+    )
+    regular_tetrahedron *= scale_parameter
+    tetrahedron = np.zeros((xyz.shape[0], 4, 3))
+    tetrahedron[:] = xyz[:, None, :]
+    tetrahedron[:, :, :] += regular_tetrahedron[None, :, :]
+
+    return tetrahedron
+
+
+def gradient_from_tetrahedron(tetrahedron, value):
+    """
+    Calculate the gradient from a tetrahedron
+    """
+    tetrahedron = tetrahedron.reshape(-1, 4, 3)
+    m = np.array(
+        [
+            [
+                (tetrahedron[:, 1, 0] - tetrahedron[:, 0, 0]),
+                (tetrahedron[:, 1, 1] - tetrahedron[:, 0, 1]),
+                (tetrahedron[:, 1, 2] - tetrahedron[:, 0, 2]),
+            ],
+            [
+                (tetrahedron[:, 2, 0] - tetrahedron[:, 0, 0]),
+                (tetrahedron[:, 2, 1] - tetrahedron[:, 0, 1]),
+                (tetrahedron[:, 2, 2] - tetrahedron[:, 0, 2]),
+            ],
+            [
+                (tetrahedron[:, 3, 0] - tetrahedron[:, 0, 0]),
+                (tetrahedron[:, 3, 1] - tetrahedron[:, 0, 1]),
+                (tetrahedron[:, 3, 2] - tetrahedron[:, 0, 2]),
+            ],
+        ]
+    )
+    I = np.array([[-1.0, 1.0, 0.0, 0.0], [-1.0, 0.0, 1.0, 0.0], [-1.0, 0.0, 0.0, 1.0]])
+    m = np.swapaxes(m, 0, 2)
+    element_gradients = np.linalg.inv(m)
+
+    element_gradients = element_gradients.swapaxes(1, 2)
+    element_gradients = element_gradients @ I
+    v = np.sum(element_gradients * value[:, None, :], axis=2)
+    return v
