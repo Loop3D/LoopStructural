@@ -236,6 +236,7 @@ class BaseStructuredSupport(BaseSupport):
         cell_indexes[inside, 0] = x[inside] // self.step_vector[None, 0]
         cell_indexes[inside, 1] = y[inside] // self.step_vector[None, 1]
         cell_indexes[inside, 2] = z[inside] // self.step_vector[None, 2]
+        
         return cell_indexes, inside
 
     def position_to_cell_global_index(self, pos):
@@ -331,12 +332,9 @@ class BaseStructuredSupport(BaseSupport):
         return corner_indexes
 
     def position_to_cell_corners(self, pos):
-
         cell_indexes, inside = self.position_to_cell_index(pos)
         corner_indexes = self.cell_corner_indexes(cell_indexes)
-
         globalidx = self.global_node_indices(corner_indexes)
-
         # if global index is not inside the support set to -1
         globalidx[~inside] = -1
         return globalidx, inside
@@ -451,7 +449,7 @@ class BaseStructuredSupport(BaseSupport):
         # all elements are the same size
         return 1.0
 
-    def vtk(self):
+    def vtk(self, node_properties={}, cell_properties={}):
         try:
             import pyvista as pv
         except ImportError:
@@ -464,4 +462,9 @@ class BaseStructuredSupport(BaseSupport):
             [np.zeros(self.elements.shape[0], dtype=int)[:, None] + 8, self.elements]
         )
         elements = elements.flatten()
-        return pv.UnstructuredGrid(elements, celltype, self.nodes)
+        grid = pv.UnstructuredGrid(elements, celltype, self.nodes)
+        for key, value in node_properties.items():
+            grid.point_arrays[key] = value
+        for key, value in cell_properties.items():
+            grid.cell_arrays[key] = value
+        return grid
