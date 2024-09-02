@@ -1,11 +1,11 @@
 import numpy as np
-
+from typing import List, Tuple
 from ....utils import getLogger
 
 logger = getLogger(__name__)
 
 
-def find_peaks_and_troughs(x, y):
+def find_peaks_and_troughs(x: np.ndarray, y: np.ndarray) -> Tuple[List, List]:
     """
 
     Parameters
@@ -24,7 +24,7 @@ def find_peaks_and_troughs(x, y):
     finding the change in derivative
     """
     if len(x) != len(y):
-        return False
+        raise ValueError("Cannot guess wavelength, x and y must be the same length")
     pairsx = []
     pairsy = []
     # #TODO numpyize
@@ -51,16 +51,74 @@ class SVariogram:
     The SVariogram is an experimental semi-variogram.
     """
 
-    def __init__(self, xdata, ydata):
-        self.xdata = xdata
-        self.ydata = ydata
+    def __init__(self, xdata: np.ndarray, ydata: np.ndarray):
+        self.xdata = np.asarray(xdata)
+        self.ydata = np.asarray(ydata)
+        mask = np.logical_or(np.isnan(self.xdata), np.isnan(self.ydata))
+        self.xdata = self.xdata[~mask]
+        self.ydata = self.ydata[~mask]
+        ## maybe check that xdata is not too big here, if it is then this should be done
+        ## using another library maybe gstools?
         self.dist = np.abs(self.xdata[:, None] - self.xdata[None, :])
         self.variance_matrix = (self.ydata[:, None] - self.ydata[None, :]) ** 2
         self.lags = None
         self.variogram = None
-        self.wavelength_guess = [None, None]
+        self.wavelength_guesses = []
 
-    def calc_semivariogram(self, lag=None, nlag=None, lags=None):
+    def initialise_lags(self, step: float, nsteps: int):
+        """
+        Initialise the lags for the s-variogram
+
+        Parameters
+        ----------
+        lag: float
+            lag distance for the s-variogram
+        nlag: int
+            number of lags for the s-variogram
+
+        Returns
+        -------
+
+        """
+        if step is not None:
+            logger.info(f"Using lag: {step} kwarg for S-variogram")
+
+        if nsteps is not None:
+            logger.info(f"Using nlag {nsteps} kwarg for s-variogram")
+
+            self.lags = np.arange(step / 2.0, nsteps * step, step)
+
+        if nsteps is None and step is not None:
+            nsteps = int(np.ceil((np.nanmax(self.xdata) - np.nanmin(self.xdata)) / step))
+            logger.info(f"Using lag kwarg but calculating nlag as {nsteps} for s-variogram")
+
+            self.lags = np.arange(step / 2.0, nsteps * step, step)
+
+        if self.lags is None:
+            # time to guess the step size
+            # find the average distance between elements in the input data
+            d = np.copy(self.dist)
+            d[d == 0] = np.nan
+
+            step = np.nanmean(np.nanmin(d, axis=1)) * 4.0
+            # find number of steps to cover range in data
+            nsteps = int(np.ceil((np.nanmax(self.xdata) - np.nanmin(self.xdata)) / step))
+            if nsteps > 200:
+                logger.warning(f"Variogram has too many steps: {nstep}, using 200")
+                maximum = step * nsteps
+                nstep = 200
+                step = maximum / nstep
+            self.lags = np.arange(step / 2.0, nsteps * step, step)
+            logger.info(
+                f"Using average minimum nearest neighbour distance as lag distance size {step} and using {nstep} lags"
+            )
+
+    def calc_semivariogram(
+        self,
+        step: Optional[float] = None,
+        nsteps: Optional[int] = None,
+        lags: Optional[np.ndarray] = None,
+    ):
         """
         Calculate a semi-variogram for the x and y data for this object.
         You can specify the lags as an array or specify the step size and
@@ -82,42 +140,12 @@ class SVariogram:
 
         """
         logger.info("Calculating S-Variogram")
-        if lag is not None:
-            step = lag
-            logger.info(f"Using lag: {step} kwarg for S-variogram")
-
-        if nlag is not None:
-            nstep = nlag
-            logger.info(f"Using nlag {nstep} kwarg for s-variogram")
-
-            self.lags = np.arange(step / 2.0, nstep * step, step)
-
-        if nlag is None and lag is not None:
-            nstep = int(np.ceil((np.nanmax(self.xdata) - np.nanmin(self.xdata)) / step))
-            logger.info(f"Using lag kwarg but calculating nlag as {nstep} for s-variogram")
-
-            self.lags = np.arange(step / 2.0, nstep * step, step)
-
         if lags is not None:
             self.lags = lags
-
+        self.initialise_lags(step, nsteps)
         if self.lags is None:
-            # time to guess the step size
-            # find the average distance between elements in the input data
-            d = np.copy(self.dist)
-            d[d == 0] = np.nan
-
-            step = np.nanmean(np.nanmin(d, axis=1)) * 4.0
-            # find number of steps to cover range in data
-            nstep = int(np.ceil((np.nanmax(self.xdata) - np.nanmin(self.xdata)) / step))
-            if nstep > 200:
-                logger.warning(f"Variogram has too many steps: {nstep}, using 200")
-                maximum = step * nstep
-                nstep = 200
-                step = maximum / nstep
-            self.lags = np.arange(step / 2.0, nstep * step, step)
-            logger.info(
-                f"Using average minimum nearest neighbour distance as lag distance size {step} and using {nstep} lags"
+            raise ValueError(
+                "S-Variogram cannot calculate the variogram step size, please specify either step or nsteps"
             )
         tol = self.lags[1] - self.lags[0]
         self.variogram = np.zeros(self.lags.shape)
@@ -133,7 +161,7 @@ class SVariogram:
                 self.variogram[i] = np.mean(self.variance_matrix[logic])
         return self.lags, self.variogram, npairs
 
-    def find_wavelengths(self, **kwargs):
+    def find_wavelengths(self, **svariogram_kwargs) -> List:
         """
         Picks the wavelengths of the fold by finding the maximum and
         minimums of the s-variogram
@@ -145,7 +173,7 @@ class SVariogram:
         ----------
         kwargs : object
         """
-        h, var, npairs = self.calc_semivariogram(**kwargs)
+        h, var, _npairs = self.calc_semivariogram(**svariogram_kwargs)
 
         px, py = find_peaks_and_troughs(h, var)
 
@@ -156,7 +184,7 @@ class SVariogram:
             averagey.append((py[i] + py[i + 1]) / 2.0)
             i += 1  # iterate twice
         # find the extrema of the average curve
-        px2, py2 = find_peaks_and_troughs(averagex, averagey)
+        px2, py2 = find_peaks_and_troughs(np.ndarray(averagex), np.ndarray(averagey))
         wl1 = 0.0
         wl1py = 0.0
         for i in range(len(px)):
@@ -178,11 +206,14 @@ class SVariogram:
                         if wl2 > 0.0 and wl2 > wl1 * 2 and wl1py < py2[i]:
                             break
         if wl1 == 0.0 and wl2 == 0.0:
+            logger.warning(
+                'Could not automatically guess the wavelength, using 2x the range of the data'
+            )
             self.wavelength_guess = [2 * (np.max(self.xdata) - np.min(self.xdata)), 0.0]
             return self.wavelength_guess
         if np.isclose(wl1, 0.0):
             self.wavelength_guess = np.array([wl2 * 2.0, wl1 * 2.0])
-            return self.wavelength_guess
+            return [wl2]
         # wavelength is 2x the peak on the curve
-        self.wavelength_guess = np.array([wl1 * 2.0, wl2 * 2.0])
+        self.wavelength_guess = [wl1 * 2.0, wl2 * 2.0]
         return self.wavelength_guess
