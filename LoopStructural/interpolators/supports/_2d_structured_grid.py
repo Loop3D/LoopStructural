@@ -3,7 +3,6 @@ Cartesian grid for fold interpolator
 
 """
 
-from ast import Not
 import logging
 
 from typing import Tuple

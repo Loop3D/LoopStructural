@@ -1,6 +1,5 @@
 import numpy as np
 from ....modelling.features import BaseFeature
-
 from ....utils import getLogger
 
 logger = getLogger(__name__)
@@ -46,6 +45,40 @@ class FoldRotationAngleFeature(BaseFeature):
         return r
 
 
+# class BaseFoldProfile(ABCMeta):
+#     def __init__(self):
+#         pass
+
+#     @abstractmethod
+#     def params(self):
+#         pass
+
+
+#     @abstractmethod
+#     def __call__(self, s):
+#         pass
+
+
+# class TrigoFoldProfile(BaseFoldProfile):
+#     def __init__(self, origin, wavelength, inflectionpointangle):
+#         self.origin = origin
+#         self.wavelength = wavelength
+#         self.inflectionpointangle = inflectionpointangle
+#         self.tan_alpha_delta_half = np.tan(self.inflectionpointangle)
+
+#         self.tan_alpha_shift = 0
+
+#     def position_in_period(self, s):
+#         return (s - self.origin) / self.wavelength
+
+#     def __call__(self, s):
+#         x = self.position_in_period(s)
+#         return np.rad2deg(
+#             np.arctan(self.tan_alpha_delta_half * np.sin(2 * np.pi * x) + self.tan_alpha_shift)
+#         )
+# class FourierSeriesFoldProfile(BaseFoldProfile):
+
+
 def fourier_series(x, c0, c1, c2, w):
     """
 
@@ -65,3 +98,23 @@ def fourier_series(x, c0, c1, c2, w):
     # v.fill(c0)
     v = c0 + c1 * np.cos(2 * np.pi / w * x) + c2 * np.sin(2 * np.pi / w * x)
     return np.rad2deg(np.arctan(v))
+
+
+def trigo_fold_profile(s, origin, wavelength, inflectionpointangle):
+    """
+
+    Parameters
+    ----------
+    s
+    origin
+    wavelength
+    inflectionpointangle
+
+    Returns
+    -------
+
+    """
+    tan_alpha_delta_half = np.tan(inflectionpointangle)
+    tan_alpha_shift = 0
+    x = (s - origin) / wavelength
+    return np.rad2deg(np.arctan(tan_alpha_delta_half * np.sin(2 * np.pi * x) + tan_alpha_shift))
