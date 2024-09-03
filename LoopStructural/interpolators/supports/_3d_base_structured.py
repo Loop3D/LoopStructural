@@ -236,7 +236,7 @@ class BaseStructuredSupport(BaseSupport):
         cell_indexes[inside, 0] = x[inside] // self.step_vector[None, 0]
         cell_indexes[inside, 1] = y[inside] // self.step_vector[None, 1]
         cell_indexes[inside, 2] = z[inside] // self.step_vector[None, 2]
-        
+
         return cell_indexes, inside
 
     def position_to_cell_global_index(self, pos):
@@ -464,7 +464,7 @@ class BaseStructuredSupport(BaseSupport):
         elements = elements.flatten()
         grid = pv.UnstructuredGrid(elements, celltype, self.nodes)
         for key, value in node_properties.items():
-            grid.point_arrays[key] = value
+            grid[key] = value
         for key, value in cell_properties.items():
             grid.cell_arrays[key] = value
         return grid

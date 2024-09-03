@@ -291,7 +291,6 @@ class StructuredGrid(BaseStructuredSupport):
             )
         idc, inside = self.position_to_cell_corners(evaluation_points)
         # print(idc[inside,:], self.n_nodes,inside)
-
         if idc.shape[0] != inside.shape[0]:
             raise ValueError("index does not match number of nodes")
         v = np.zeros(idc.shape)

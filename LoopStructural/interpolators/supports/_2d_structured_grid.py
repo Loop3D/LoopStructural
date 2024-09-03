@@ -3,6 +3,7 @@ Cartesian grid for fold interpolator
 
 """
 
+from ast import Not
 import logging
 
 from typing import Tuple
@@ -459,4 +460,8 @@ class StructuredGrid2D(BaseSupport):
         return self.node_indexes_to_position(node_indexes), inside
 
     def onGeometryChange(self):
+        pass
+
+    def vtk(self, node_properties={}, cell_properties={}):
+        raise NotImplementedError("VTK output not implemented for structured grid")
         pass

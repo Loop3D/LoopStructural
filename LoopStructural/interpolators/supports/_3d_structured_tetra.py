@@ -730,7 +730,7 @@ class TetMesh(BaseStructuredSupport):
         return neighbours
 
     @property
-    def vtk(self):
+    def vtk(self, node_properties={}, cell_properties={}):
         try:
             import pyvista as pv
         except ImportError:
@@ -743,4 +743,9 @@ class TetMesh(BaseStructuredSupport):
             [np.zeros(self.elements.shape[0], dtype=int)[:, None] + 4, self.elements]
         )
         elements = elements.flatten()
-        return pv.UnstructuredGrid(elements, celltype, self.nodes)
+        grid = pv.UnstructuredGrid(elements, celltype, self.nodes)
+        for prop in node_properties:
+            grid[prop] = node_properties[prop]
+        for prop in cell_properties:
+            grid.cell_arrays[prop] = cell_properties[prop]
+        return grid

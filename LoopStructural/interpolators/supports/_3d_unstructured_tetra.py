@@ -621,7 +621,7 @@ class UnStructuredTetMesh(BaseSupport):
         """
         return self.neighbours
 
-    def vtk(self):
+    def vtk(self, node_properties={}, cell_properties={}):
         try:
             import pyvista as pv
         except ImportError:
@@ -634,4 +634,10 @@ class UnStructuredTetMesh(BaseSupport):
             [np.zeros(self.elements.shape[0], dtype=int)[:, None] + 4, self.elements]
         )
         elements = elements.flatten()
-        return pv.UnstructuredGrid(elements, celltype, self.nodes)
+        grid = pv.UnstructuredGrid(elements, celltype, self.nodes)
+        for key, value in node_properties.items():
+            grid[key] = value
+        for key, value in cell_properties.items():
+            grid.cell_arrays[key] = value
+
+        return grid

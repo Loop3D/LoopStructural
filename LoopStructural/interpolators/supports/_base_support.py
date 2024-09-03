@@ -112,3 +112,10 @@ class BaseSupport(metaclass=ABCMeta):
         Return the element size
         """
         pass
+
+    @abstractmethod
+    def vtk(self, node_properties={}, cell_properties={}):
+        """
+        Return a vtk object
+        """
+        pass
