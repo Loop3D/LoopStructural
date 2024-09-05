@@ -200,7 +200,7 @@ class GeologicalFeature(BaseFeature):
             values = self.interpolator.evaluate_value(tetrahedron_faulted.reshape(-1, 3)).reshape(
                 (-1, 4)
             )
-            v[mask, :] = gradient_from_tetrahedron(tetrahedron_faulted[mask, :, :], values[mask])
+            v[mask, :] = gradient_from_tetrahedron(tetrahedron[mask, :, :], values[mask])
 
             return v
         pos = self._apply_faults(pos)
