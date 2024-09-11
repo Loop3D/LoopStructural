@@ -94,7 +94,7 @@ jobs:
   conda-deploy:
     name: Building conda package for python ${{ matrix.os }})
     needs: ["documentation-test", "continuous-integration", "release-please"]
-    runs-on: ${{matrix.os}}
+    runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/master'
 
     strategy:
