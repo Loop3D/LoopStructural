@@ -96,9 +96,12 @@ class LoopIsosurfacer:
                 "Number of isosurfaces must be greater than 1. Either use a positive integer or provide a list or float for a specific isovalue."
             )
         elif isinstance(values, int):
+            var = np.nanmax(all_values) - np.nanmin(all_values)
+            # buffer slices by 5% to make sure that we don't get isosurface does't exist issues
+            buffer = var * 0.05
             isovalues = np.linspace(
-                np.nanmin(all_values) + np.finfo(float).eps,
-                np.nanmax(all_values) - np.finfo(float).eps,
+                np.nanmin(all_values) + buffer,
+                np.nanmax(all_values) - buffer,
                 values,
             )
         logger.info(f'Isosurfacing at values: {isovalues}')
