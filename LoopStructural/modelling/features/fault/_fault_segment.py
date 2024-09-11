@@ -3,7 +3,7 @@ from ....modelling.features.fault._fault_function_feature import (
     FaultDisplacementFeature,
 )
 from ....modelling.features import FeatureType
-from ....modelling.features.fault._fault_function import BaseFault, BaseFault3D
+from ....modelling.features.fault._fault_function import BaseFault, BaseFault3D, FaultDisplacement
 from ....utils import getLogger, NegativeRegion, PositiveRegion
 from ....modelling.features import StructuralFrame
 
@@ -40,7 +40,7 @@ class FaultSegment(StructuralFrame):
         StructuralFrame.__init__(self, features, name, fold, model)
         self.type = FeatureType.FAULT
         self.displacement = displacement
-        self._faultfunction = BaseFault.fault_displacement
+        self._faultfunction = BaseFault().fault_displacement
         self.steps = steps
         self.regions = []
         self.faults_enabled = True
@@ -58,10 +58,13 @@ class FaultSegment(StructuralFrame):
     def faultfunction(self, value):
         if callable(value):
             self._faultfunction = value
+        if issubclass(FaultDisplacement, type(value)):
+            self._faultfunction = value
+
         elif isinstance(value, str) and value == "BaseFault":
-            self._faultfunction = BaseFault.fault_displacement
+            self._faultfunction = BaseFault().fault_displacement
         elif isinstance(value, str) and value == "BaseFault3D":
-            self._faultfunction = BaseFault3D.fault_displacement
+            self._faultfunction = BaseFault3D().fault_displacement
         else:
             raise ValueError("Fault function must be a function or BaseFault")
 
