@@ -3,6 +3,9 @@ import numpy as np
 
 from typing import Optional, Union
 import io
+from LoopStructural.utils import getLogger
+
+logger = getLogger(__name__)
 
 
 @dataclass
@@ -28,6 +31,22 @@ class ValuePoints:
         points = pv.PolyData(self.locations)
         points["values"] = self.values
         return points
+
+    def plot(self, pyvista_kwargs={}):
+        """Calls pyvista plot on the vtk object
+
+        Parameters
+        ----------
+        pyvista_kwargs : dict, optional
+            kwargs passed to pyvista.DataSet.plot(), by default {}
+        """
+        try:
+            import pyvista as pv
+
+            self.vtk().plot(**pyvista_kwargs)
+            return
+        except ImportError:
+            logger.error("pyvista is required for vtk")
 
     def save(self, filename: Union[str, io.StringIO], ext=None):
         if isinstance(filename, io.StringIO):
@@ -122,6 +141,22 @@ class VectorPoints:
 
         # Perform the glyph
         return points.glyph(orient="vectors", geom=geom, tolerance=tolerance)
+
+    def plot(self, pyvista_kwargs={}):
+        """Calls pyvista plot on the vtk object
+
+        Parameters
+        ----------
+        pyvista_kwargs : dict, optional
+            kwargs passed to pyvista.DataSet.plot(), by default {}
+        """
+        try:
+            import pyvista as pv
+
+            self.vtk().plot(**pyvista_kwargs)
+            return
+        except ImportError:
+            logger.error("pyvista is required for vtk")
 
     def save(self, filename):
         filename = str(filename)

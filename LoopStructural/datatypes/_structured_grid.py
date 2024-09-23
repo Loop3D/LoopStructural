@@ -1,6 +1,9 @@
 from typing import Dict
 import numpy as np
 from dataclasses import dataclass
+from LoopStructural.utils import getLogger
+
+logger = getLogger(__name__)
 
 
 @dataclass
@@ -45,6 +48,22 @@ class StructuredGrid:
         for name, data in self.cell_properties.items():
             grid.cell_data[name] = data.flatten(order="F")
         return grid
+
+    def plot(self, pyvista_kwargs={}):
+        """Calls pyvista plot on the vtk object
+
+        Parameters
+        ----------
+        pyvista_kwargs : dict, optional
+            kwargs passed to pyvista.DataSet.plot(), by default {}
+        """
+        try:
+            import pyvista as pv
+
+            self.vtk().plot(**pyvista_kwargs)
+            return
+        except ImportError:
+            logger.error("pyvista is required for vtk")
 
     def merge(self, other):
         if not np.all(np.isclose(self.origin, other.origin)):

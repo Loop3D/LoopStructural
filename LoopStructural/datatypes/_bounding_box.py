@@ -270,7 +270,10 @@ class BoundingBox:
         origin = self.origin - buffer * (self.maximum - self.origin)
         maximum = self.maximum + buffer * (self.maximum - self.origin)
         return BoundingBox(
-            origin=origin, maximum=maximum, global_origin=self.global_origin + origin
+            origin=origin,
+            maximum=maximum,
+            global_origin=self.global_origin + origin,
+            dimensions=self.dimensions,
         )
 
     def get_value(self, name):

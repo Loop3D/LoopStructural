@@ -2,6 +2,9 @@ from dataclasses import dataclass
 from typing import Optional
 import numpy as np
 import io
+from LoopStructural.utils import getLogger
+
+logger = getLogger(__name__)
 
 
 @dataclass
@@ -84,6 +87,22 @@ class Surface:
             for k, v in self.cell_properties.items():
                 surface.cell_data[k] = np.array(v)
         return surface
+
+    def plot(self, pyvista_kwargs={}):
+        """Calls pyvista plot on the vtk object
+
+        Parameters
+        ----------
+        pyvista_kwargs : dict, optional
+            kwargs passed to pyvista.DataSet.plot(), by default {}
+        """
+        try:
+            import pyvista as pv
+
+            self.vtk().plot(**pyvista_kwargs)
+            return
+        except ImportError:
+            logger.error("pyvista is required for vtk")
 
     def to_dict(self, flatten=False):
         triangles = self.triangles
