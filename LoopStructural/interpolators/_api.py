@@ -52,6 +52,7 @@ class LoopInterpolator:
         tangent_vectors: Optional[np.ndarray] = None,
         normal_vectors: Optional[np.ndarray] = None,
         inequality_constraints: Optional[np.ndarray] = None,
+        inequality_pairs: Optional[np.ndarray] = None,
     ):
         """_summary_
 
@@ -74,7 +75,6 @@ class LoopInterpolator:
             self.interpolator.set_normal_constraints(normal_vectors)
         if inequality_constraints:
             pass
-
         self.interpolator.setup()
 
     def evaluate_scalar_value(self, locations: np.ndarray) -> np.ndarray:
