@@ -58,8 +58,6 @@ class StructuredGrid:
             kwargs passed to pyvista.DataSet.plot(), by default {}
         """
         try:
-            import pyvista as pv
-
             self.vtk().plot(**pyvista_kwargs)
             return
         except ImportError:

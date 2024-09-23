@@ -41,8 +41,6 @@ class ValuePoints:
             kwargs passed to pyvista.DataSet.plot(), by default {}
         """
         try:
-            import pyvista as pv
-
             self.vtk().plot(**pyvista_kwargs)
             return
         except ImportError:
@@ -151,8 +149,6 @@ class VectorPoints:
             kwargs passed to pyvista.DataSet.plot(), by default {}
         """
         try:
-            import pyvista as pv
-
             self.vtk().plot(**pyvista_kwargs)
             return
         except ImportError:
