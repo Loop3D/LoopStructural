@@ -540,7 +540,7 @@ class GeologicalFeatureBuilder(BaseBuilder):
         logger.info(f'running interpolation for {self.name}')
 
         self.interpolator.solve_system(
-            solver=kwargs.get('solver', None),
+            solver=kwargs.get('solver', 'cg'),
             tol=kwargs.get('tol', None),
             solver_kwargs=kwargs.get('solver_kwargs', {}),
         )
