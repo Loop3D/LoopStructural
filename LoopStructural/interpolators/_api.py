@@ -141,3 +141,19 @@ class LoopInterpolator:
         )
         locations = self.interpolator.get_data_locations()
         return self.evaluate_gradient(locations)
+
+    def fit_and_evaluate_value_and_gradient(
+        self,
+        values: Optional[np.ndarray] = None,
+        tangent_vectors: Optional[np.ndarray] = None,
+        normal_vectors: Optional[np.ndarray] = None,
+        inequality_constraints: Optional[np.ndarray] = None,
+    ):
+        self.fit(
+            values=values,
+            tangent_vectors=tangent_vectors,
+            normal_vectors=normal_vectors,
+            inequality_constraints=inequality_constraints,
+        )
+        locations = self.interpolator.get_data_locations()
+        return self.evaluate_scalar_value(locations), self.evaluate_gradient(locations)
