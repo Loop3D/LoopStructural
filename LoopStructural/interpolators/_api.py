@@ -19,6 +19,8 @@ class LoopInterpolator:
         dimensions: int = 3,
         type=InterpolatorType.FINITE_DIFFERENCE,
         nelements: int = 1000,
+        interpolator_setup_kwargs={},
+        buffer: float = 0.2,
     ):
         """Scikitlearn like interface for LoopStructural interpolators
         useful for quickly building an interpolator to apply to a dataset
@@ -37,22 +39,22 @@ class LoopInterpolator:
         nelements : int, optional
             degrees of freedom for interpolator, by default 1000
         """
+        logger.warning("LoopInterpolator is experimental and the API is subject to change")
         self.dimensions = dimensions
         self.type = "FDI"
         self.bounding_box = bounding_box
         self.interpolator: GeologicalInterpolator = InterpolatorFactory.create_interpolator(
-            type,
-            bounding_box,
-            nelements,
+            type, bounding_box, nelements, buffer=buffer
         )
+        self.interpolator_setup_kwargs = interpolator_setup_kwargs
 
     def fit(
         self,
         values: Optional[np.ndarray] = None,
         tangent_vectors: Optional[np.ndarray] = None,
         normal_vectors: Optional[np.ndarray] = None,
-        inequality_constraints: Optional[np.ndarray] = None,
-        inequality_pairs: Optional[np.ndarray] = None,
+        inequality_value_constraints: Optional[np.ndarray] = None,
+        inequality_pairs_constraints: Optional[np.ndarray] = None,
     ):
         """_summary_
 
@@ -67,15 +69,18 @@ class LoopInterpolator:
         inequality_constraints : Optional[np.ndarray], optional
             _description_, by default None
         """
+
         if values is not None:
             self.interpolator.set_value_constraints(values)
         if tangent_vectors is not None:
             self.interpolator.set_tangent_constraints(tangent_vectors)
         if normal_vectors is not None:
             self.interpolator.set_normal_constraints(normal_vectors)
-        if inequality_constraints:
-            pass
-        self.interpolator.setup()
+        if inequality_value_constraints is not None:
+            self.interpolator.set_value_inequality_constraints(inequality_value_constraints)
+        if inequality_pairs_constraints is not None:
+            self.interpolator.set_inequality_pairs_constraints(inequality_pairs_constraints)
+        self.interpolator.setup(**self.interpolator_setup_kwargs)
 
     def evaluate_scalar_value(self, locations: np.ndarray) -> np.ndarray:
         """Evaluate the value of the interpolator at locations
