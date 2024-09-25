@@ -8,8 +8,6 @@ from ..utils import get_vectors
 from ._discrete_interpolator import DiscreteInterpolator
 from ..interpolators import InterpolatorType
 
-from ._operator import Operator
-
 from LoopStructural.utils import getLogger
 
 logger = getLogger(__name__)
@@ -26,8 +24,6 @@ class FiniteDifferenceInterpolator(DiscreteInterpolator):
         """
         self.shape = "rectangular"
         DiscreteInterpolator.__init__(self, grid, data=data)
-        # default weights for the interpolation matrix are 1 in x,y,z and
-        # 1/
         self.set_interpolation_weights(
             {
                 "dxy": 1.0,
@@ -47,7 +43,6 @@ class FiniteDifferenceInterpolator(DiscreteInterpolator):
             }
         )
 
-        # grid.step_vector[2]
         self.type = InterpolatorType.FINITE_DIFFERENCE
 
     def setup_interpolator(self, **kwargs):

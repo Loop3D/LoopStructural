@@ -103,3 +103,5 @@ support_interpolator_map = {
 }
 
 from ._interpolator_factory import InterpolatorFactory
+
+# from ._api import LoopInterpolator

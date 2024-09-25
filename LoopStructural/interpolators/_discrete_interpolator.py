@@ -32,6 +32,7 @@ class DiscreteInterpolator(GeologicalInterpolator):
         GeologicalInterpolator.__init__(self, data=data, up_to_date=up_to_date)
         self.B = []
         self.support = support
+        self.dimensions = support.dimension
         self.c = (
             np.array(c)
             if c is not None and np.array(c).shape[0] == self.support.n_nodes

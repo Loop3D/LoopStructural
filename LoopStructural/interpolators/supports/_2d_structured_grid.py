@@ -5,7 +5,6 @@ Cartesian grid for fold interpolator
 
 import logging
 
-from typing import Tuple
 import numpy as np
 from . import SupportType
 from ._base_support import BaseSupport
