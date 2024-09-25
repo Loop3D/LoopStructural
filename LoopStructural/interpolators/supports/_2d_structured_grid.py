@@ -482,8 +482,8 @@ class StructuredGrid2D(BaseSupport):
         """
         # in a map we only want the xy operators
         operators = {
-            'dxy': (Operator.Dxy_mask[:, 1, :], weights['dxy'] * 2),
-            'dxx': (Operator.Dxx_mask[:, 1, :], weights['dxx']),
-            'dyy': (Operator.Dyy_mask[:, 1, :], weights['dyy']),
+            'dxy': (Operator.Dxy_mask[1, :, :], weights['dxy'] * 2),
+            'dxx': (Operator.Dxx_mask[1, :, :], weights['dxx']),
+            'dyy': (Operator.Dyy_mask[1, :, :], weights['dyy']),
         }
         return operators
