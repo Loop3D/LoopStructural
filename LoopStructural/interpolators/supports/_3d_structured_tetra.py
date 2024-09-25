@@ -729,7 +729,6 @@ class TetMesh(BaseStructuredSupport):
 
         return neighbours
 
-    @property
     def vtk(self, node_properties={}, cell_properties={}):
         try:
             import pyvista as pv

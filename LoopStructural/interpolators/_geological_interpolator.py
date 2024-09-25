@@ -42,6 +42,7 @@ class GeologicalInterpolator(metaclass=ABCMeta):
         self.constraints = []
         self.__str = "Base Geological Interpolator"
         self.valid = True
+        self.dimensions = 3  # default to 3d
 
     @property
     def data(self):
@@ -106,9 +107,9 @@ class GeologicalInterpolator(metaclass=ABCMeta):
 
         """
         points = self.check_array(points)
-        if points.shape[1] == 4:
+        if points.shape[1] == self.dimensions + 1:
             points = np.hstack([points, np.ones((points.shape[0], 1))])
-        if points.shape[1] < 5:
+        if points.shape[1] < self.dimensions + 2:
             raise ValueError("Value points must at least have X,Y,Z,val,w")
         self.data["value"] = points
         self.n_i = points.shape[0]
@@ -127,9 +128,9 @@ class GeologicalInterpolator(metaclass=ABCMeta):
         -------
 
         """
-        if points.shape[1] == 6:
+        if points.shape[1] == self.dimensions * 2:
             points = np.hstack([points, np.ones((points.shape[0], 1))])
-        if points.shape[1] < 7:
+        if points.shape[1] < self.dimensions * 2 + 1:
             raise ValueError("Gradient constraints must at least have X,Y,Z,gx,gy,gz")
         self.n_g = points.shape[0]
         self.data["gradient"] = points
@@ -148,9 +149,9 @@ class GeologicalInterpolator(metaclass=ABCMeta):
         -------
 
         """
-        if points.shape[1] == 6:
+        if points.shape[1] == self.dimensions * 2:
             points = np.hstack([points, np.ones((points.shape[0], 1))])
-        if points.shape[1] < 7:
+        if points.shape[1] < self.dimensions * 2 + 1:
             raise ValueError("Nonrmal constraints must at least have X,Y,Z,nx,ny,nz")
         self.n_n = points.shape[0]
         self.data["normal"] = points
@@ -169,9 +170,9 @@ class GeologicalInterpolator(metaclass=ABCMeta):
         -------
 
         """
-        if points.shape[1] == 6:
+        if points.shape[1] == self.dimensions * 2:
             points = np.hstack([points, np.ones((points.shape[0], 1))])
-        if points.shape[1] < 7:
+        if points.shape[1] < self.dimensions * 2 + 1:
             raise ValueError("Tangent constraints must at least have X,Y,Z,tx,ty,tz")
         self.data["tangent"] = points
         self.up_to_date = False
@@ -181,13 +182,13 @@ class GeologicalInterpolator(metaclass=ABCMeta):
         self.up_to_date = False
 
     def set_value_inequality_constraints(self, points: np.ndarray):
-        if points.shape[1] < 5:
+        if points.shape[1] < self.dimensions + 2:
             raise ValueError("Inequality constraints must at least have X,Y,Z,lower,upper")
         self.data["inequality"] = points
         self.up_to_date = False
 
     def set_inequality_pairs_constraints(self, points: np.ndarray):
-        if points.shape[1] < 4:
+        if points.shape[1] < self.dimensions + 1:
             raise ValueError("Inequality pairs constraints must at least have X,Y,Z,rock_id")
 
         self.data["inequality_pairs"] = points
