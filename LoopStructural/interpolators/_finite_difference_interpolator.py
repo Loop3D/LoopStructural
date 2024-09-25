@@ -30,9 +30,9 @@ class FiniteDifferenceInterpolator(DiscreteInterpolator):
         # 1/
         self.set_interpolation_weights(
             {
-                "dxy": 0.7,
-                "dyz": 0.7,
-                "dxz": 0.7,
+                "dxy": 1.0,
+                "dyz": 1.0,
+                "dxz": 1.0,
                 "dxx": 1.0,
                 "dyy": 1.0,
                 "dzz": 1.0,
