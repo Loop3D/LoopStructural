@@ -5,8 +5,10 @@ Cartesian grid for fold interpolator
 
 import numpy as np
 
-from ._3d_base_structured import BaseStructuredSupport
+from LoopStructural.interpolators._operator import Operator
 
+from ._3d_base_structured import BaseStructuredSupport
+from typing import Dict, Tuple
 from . import SupportType
 
 from LoopStructural.utils import getLogger
@@ -467,3 +469,26 @@ class StructuredGrid(BaseStructuredSupport):
             "type": self.type.numerator,
             **super().to_dict(),
         }
+
+    def get_operators(self, weights: Dict[str, float]) -> Dict[str, Tuple[np.ndarray, float]]:
+        """Gets the operators specific to this support
+
+        Parameters
+        ----------
+        weights : Dict[str, float]
+            weight value per operator
+
+        Returns
+        -------
+        operators
+            A dictionary with a numpy array and float weight
+        """
+        operators = {
+            'dxy': (Operator.Dxy_mask, weights['dxy'] / 4),
+            'dyz': (Operator.Dyz_mask, weights['dyz'] / 4),
+            'dxz': (Operator.Dxz_mask, weights['dxz'] / 4),
+            'dxx': (Operator.Dxx_mask, weights['dxx'] / 1),
+            'dyy': (Operator.Dyy_mask, weights['dyy'] / 1),
+            'dzz': (Operator.Dzz_mask, weights['dzz'] / 1),
+        }
+        return operators

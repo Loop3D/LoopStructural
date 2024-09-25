@@ -9,6 +9,8 @@ from typing import Tuple
 import numpy as np
 from . import SupportType
 from ._base_support import BaseSupport
+from typing import Dict, Tuple
+from .._operator import Operator
 
 logger = logging.getLogger(__name__)
 
@@ -33,7 +35,7 @@ class StructuredGrid2D(BaseSupport):
         step_vector - 2d list or numpy array of int
         """
         self.type = SupportType.StructuredGrid2D
-        self.nsteps = np.array(nsteps)
+        self.nsteps = np.ceil(np.array(nsteps)).astype(int)
         self.step_vector = np.array(step_vector)
         self.origin = np.array(origin)
         self.maximum = origin + self.nsteps * self.step_vector
@@ -464,3 +466,24 @@ class StructuredGrid2D(BaseSupport):
     def vtk(self, node_properties={}, cell_properties={}):
         raise NotImplementedError("VTK output not implemented for structured grid")
         pass
+
+    def get_operators(self, weights: Dict[str, float]) -> Dict[str, Tuple[np.ndarray, float]]:
+        """Get
+
+        Parameters
+        ----------
+        weights : Dict[str, float]
+            _description_
+
+        Returns
+        -------
+        Dict[str, Tuple[np.ndarray, float]]
+            _description_
+        """
+        # in a map we only want the xy operators
+        operators = {
+            'dxy': (Operator.Dxy_mask[:, 1, :], weights['dxy'] * 2),
+            'dxx': (Operator.Dxx_mask[:, 1, :], weights['dxx']),
+            'dyy': (Operator.Dyy_mask[:, 1, :], weights['dyy']),
+        }
+        return operators

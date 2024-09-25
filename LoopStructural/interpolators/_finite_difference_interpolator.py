@@ -88,43 +88,24 @@ class FiniteDifferenceInterpolator(DiscreteInterpolator):
                 self.interpolation_weights["dyy"] = 0.1 * kwargs["regularisation"]
                 self.interpolation_weights["dzz"] = 0.1 * kwargs["regularisation"]
             self.interpolation_weights[key] = kwargs[key]
-        # if we want to define the operators manually
-        if "operators" in kwargs:
-            for o in kwargs["operators"].values():
-                self.assemble_inner(o[0], o[1])
-        # otherwise just use defaults
-        if "operators" not in kwargs:
-            operator = Operator.Dxy_mask
-            weight = (
-                self.interpolation_weights["dxy"] / 4
-            )  # (4*self.support.step_vector[0]*self.support.step_vector[1])
-            self.assemble_inner(operator, weight)
-            operator = Operator.Dyz_mask
-            weight = (
-                self.interpolation_weights["dyz"] / 4
-            )  # (4*self.support.step_vector[1]*self.support.step_vector[2])
-            self.assemble_inner(operator, weight)
-            operator = Operator.Dxz_mask
-            weight = (
-                self.interpolation_weights["dxz"] / 4
-            )  # (4*self.support.step_vector[0]*self.support.step_vector[2])
-            self.assemble_inner(operator, weight)
-            operator = Operator.Dxx_mask
-            weight = self.interpolation_weights["dxx"] / 1  # self.support.step_vector[0]**2
-            self.assemble_inner(operator, weight)
-            operator = Operator.Dyy_mask
-            weight = self.interpolation_weights["dyy"] / 1  # self.support.step_vector[1]**2
-            self.assemble_inner(operator, weight)
-            operator = Operator.Dzz_mask
-            weight = self.interpolation_weights["dzz"] / 1  # self.support.step_vector[2]**2
-            self.assemble_inner(operator, weight)
+        # either use the default operators or the ones passed to the function
+        operators = kwargs.get(
+            "operators", self.support.get_operators(weights=self.interpolation_weights)
+        )
+        for k, o in operators.items():
+            self.assemble_inner(o[0], o[1], name=k)
+
         self.add_norm_constraints(self.interpolation_weights["npw"])
         self.add_gradient_constraints(self.interpolation_weights["gpw"])
         self.add_value_constraints(self.interpolation_weights["cpw"])
         self.add_tangent_constraints(self.interpolation_weights["tpw"])
         self.add_interface_constraints(self.interpolation_weights["ipw"])
         self.add_value_inequality_constraints()
-        self.add_inequality_pairs_constraints()
+        self.add_inequality_pairs_constraints(
+            kwargs.get('inequality_pairs', None),
+            upper_bound=kwargs.get('inequality_pair_upper_bound', np.finfo(float).eps),
+            lower_bound=kwargs.get('inequality_pair_lower_bound', -np.inf),
+        )
 
     def copy(self):
         """
@@ -432,7 +413,7 @@ class FiniteDifferenceInterpolator(DiscreteInterpolator):
 
     # def assemble_borders(self, operator, w):
 
-    def assemble_inner(self, operator, w):
+    def assemble_inner(self, operator, w, name='regularisation'):
         """
 
         Parameters
@@ -465,6 +446,6 @@ class FiniteDifferenceInterpolator(DiscreteInterpolator):
             B[inside],
             idc[inside, :],
             w=w,
-            name="regularisation",
+            name=name,
         )
         return
