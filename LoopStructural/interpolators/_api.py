@@ -146,3 +146,44 @@ class LoopInterpolator:
         )
         locations = self.interpolator.get_data_locations()
         return self.evaluate_gradient(locations)
+
+    def plot(self, ax=None, **kwargs):
+        """Plots a 2d map scalar field or 3d pyvista plot
+
+        Parameters
+        ----------
+        ax : matplotlib axes, optional
+            The axes you want to add the plot to, otherwise it will make one, by default None
+
+        Returns
+        -------
+        _type_
+            _description_
+        """
+        if self.dimensions == 3:
+            vtkgrid = self.interpolator.support.vtk()
+            vtkgrid['val'] = self.interpolator.c
+            vtkgrid.plot(**kwargs)
+            return vtkgrid
+        elif self.dimensions == 2:
+            if ax is None:
+                import matplotlib.pyplot as plt
+
+                fig, ax = plt.subplots()
+            val = self.interpolator.c
+            val = np.rot90(val.reshape(self.interpolator.support.nsteps, order='F'), 3)
+            ax.imshow(
+                val,
+                origin='lower',
+                extent=[
+                    self.bounding_box.origin[0],
+                    self.bounding_box.maximum[0],
+                    self.bounding_box.origin[1],
+                    self.bounding_box.maximum[1],
+                ],
+                **kwargs,
+            )
+            return val, ax
+
+    # def isovalue(self, value: float, **kwargs):
+    #     self.interpolator.isovalue(value, **kwargs)
