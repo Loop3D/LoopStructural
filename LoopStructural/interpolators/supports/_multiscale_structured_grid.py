@@ -66,7 +66,7 @@ class MultiScaleStructuredGrid(StructuredGrid):
         # set the grid to be the shape of the new level
         # and get the node locations
         self.set_level(to_level)
-        new_nodes = self.nodes
+        new_nodes = self.nodes.copy()
         self.set_level(from_level)  # elf.levels[from_level]['nsteps']
         # calculate the global indices of the shared nodes (every 2**level nodes)
         # we dont' want to interpolate these just reuse the values
@@ -74,19 +74,30 @@ class MultiScaleStructuredGrid(StructuredGrid):
         yi = np.arange(0, self.levels[to_level]['nsteps'][1], 2 ** (to_level - from_level))
         zi = np.arange(0, self.levels[to_level]['nsteps'][2], 2 ** (to_level - from_level))
         ii, jj, kk = np.meshgrid(xi, yi, zi, indexing='ij')
-        new_nodes = np.vstack(
+        new_nodes_idx = np.vstack(
             [ii.flatten(order='f'), jj.flatten(order='f'), kk.flatten(order='f')]
         ).T
         self.nsteps = self.levels[to_level]['nsteps']
-        gi = self.global_node_indices(new_nodes).astype(int)
+        gi = self.global_node_indices(new_nodes_idx).astype(int)
         self.set_level(from_level)  # reset to the original level
         # get property value on all nodes
+        print(property.shape, self.n_nodes)
+        print(self.n_nodes, new_nodes.shape)
+
         new_property = self.evaluate_value(
             new_nodes,
             property,
         )
+        import scipy.spatial as spatial
+
+        nanmask = np.isnan(new_property)
+        tree = spatial.cKDTree(new_nodes[~nanmask, :])
+        _d, i = tree.query(new_nodes[nanmask, :])
+        new_property[nanmask] = new_property[~nanmask][i]
+        print(new_property.shape, self.n_nodes, new_nodes.shape)
         # set all of the shared nodes to the previous value
-        new_property[gi] = property
+        # new_property[gi] = property
+        print(f'Nan count: {np.isnan(new_property).sum()}')
         return new_property
 
     @classmethod
