@@ -160,13 +160,18 @@ class StructuredGrid(BaseStructuredSupport):
         if "indexes" in kwargs:
             indexes = kwargs["indexes"]
         if "indexes" not in kwargs:
-            indexes = np.array(
-                np.meshgrid(
-                    np.arange(1, self.nsteps[0] - 1),
-                    np.arange(1, self.nsteps[1] - 1),
-                    np.arange(1, self.nsteps[2] - 1),
-                )
-            ).reshape((3, -1))
+            gi = np.arange(self.n_nodes)
+            indexes = self.global_index_to_node_index(gi)
+            edge_mask = (
+                (indexes[:, 0] > 0)
+                & (indexes[:, 0] < self.nsteps[0] - 1)
+                & (indexes[:, 1] > 0)
+                & (indexes[:, 1] < self.nsteps[1] - 1)
+                & (indexes[:, 2] > 0)
+                & (indexes[:, 2] < self.nsteps[2] - 1)
+            )
+            indexes = indexes[edge_mask, :].T
+
         # indexes = np.array(indexes).T
         if indexes.ndim != 2:
             return
