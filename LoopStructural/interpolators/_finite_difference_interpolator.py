@@ -143,9 +143,9 @@ class FiniteDifferenceInterpolator(DiscreteInterpolator):
             # a/=self.support.enp.product(self.support.step_vector)
             self.add_constraints_to_least_squares(
                 a,
-                points[inside, 3],
+                points[inside, self.support.dimension],
                 idc[inside, :],
-                w=w * points[inside, 4],
+                w=w * points[inside, self.support.dimension + 1],
                 name="value",
             )
             if np.sum(inside) <= 0:
@@ -182,8 +182,13 @@ class FiniteDifferenceInterpolator(DiscreteInterpolator):
             # A *= vol[:,None]
             idc = tetras[inside, :]
 
-            for unique_id in np.unique(points[np.logical_and(~np.isnan(points[:, 3]), inside), 3]):
-                mask = points[inside, 3] == unique_id
+            for unique_id in np.unique(
+                points[
+                    np.logical_and(~np.isnan(points[:, self.support.dimension]), inside),
+                    self.support.dimension,
+                ]
+            ):
+                mask = points[inside, self.support.dimension] == unique_id
                 ij = np.array(
                     np.meshgrid(
                         np.arange(0, A[mask, :].shape[0]),
@@ -226,7 +231,9 @@ class FiniteDifferenceInterpolator(DiscreteInterpolator):
             # calculate unit vector for orientation data
             # points[:,3:]/=np.linalg.norm(points[:,3:],axis=1)[:,None]
 
-            node_idx, inside = self.support.position_to_cell_corners(points[:, :3])
+            node_idx, inside = self.support.position_to_cell_corners(
+                points[:, : self.support.dimension]
+            )
             # calculate unit vector for node gradients
             # this means we are only constraining direction of grad not the
             # magnitude
@@ -243,13 +250,20 @@ class FiniteDifferenceInterpolator(DiscreteInterpolator):
                 T,
                 elements,
                 inside_,
-            ) = self.support.get_element_gradient_for_location(points[inside, :3])
+            ) = self.support.get_element_gradient_for_location(
+                points[inside, : self.support.dimension]
+            )
             # normalise constraint vector and scale element matrix by this
-            norm = np.linalg.norm(points[:, 3:6], axis=1)
+            norm = np.linalg.norm(
+                points[:, self.support.dimension : self.support.dimension + self.support.dimension],
+                axis=1,
+            )
             points[:, 3:6] /= norm[:, None]
             T /= norm[inside, None, None]
             # calculate two orthogonal vectors to constraint (strike and dip vector)
-            strike_vector, dip_vector = get_vectors(points[inside, 3:6])
+            strike_vector, dip_vector = get_vectors(
+                points[inside, self.support.dimension : self.support.dimension]
+            )
             A = np.einsum("ij,ijk->ik", strike_vector.T, T)
             B = np.zeros(points[inside, :].shape[0])
             self.add_constraints_to_least_squares(A, B, idc[inside, :], w=w, name="gradient")
@@ -278,7 +292,9 @@ class FiniteDifferenceInterpolator(DiscreteInterpolator):
         if points.shape[0] > 0:
             # calculate unit vector for orientation data
             # points[:,3:]/=np.linalg.norm(points[:,3:],axis=1)[:,None]
-            node_idx, inside = self.support.position_to_cell_corners(points[:, :3])
+            node_idx, inside = self.support.position_to_cell_corners(
+                points[:, : self.support.dimension]
+            )
             gi = np.zeros(self.support.n_nodes)
             gi[:] = -1
             gi[self.region] = np.arange(0, self.nx)
@@ -295,31 +311,23 @@ class FiniteDifferenceInterpolator(DiscreteInterpolator):
                 T,
                 elements,
                 inside_,
-            ) = self.support.get_element_gradient_for_location(points[inside, :3])
+            ) = self.support.get_element_gradient_for_location(
+                points[inside, : self.support.dimension]
+            )
             # T*=np.product(self.support.step_vector)
             # T/=self.support.step_vector[0]
+
             w /= 3
-            self.add_constraints_to_least_squares(
-                T[:, 0, :],
-                points[inside, 3],
-                idc[inside, :],
-                w=w,
-                name="norm",
-            )
-            self.add_constraints_to_least_squares(
-                T[:, 1, :],
-                points[inside, 4],
-                idc[inside, :],
-                w=w,
-                name="norm",
-            )
-            self.add_constraints_to_least_squares(
-                T[:, 2, :],
-                points[inside, 5],
-                idc[inside, :],
-                w=w,
-                name="norm",
-            )
+            for d in range(self.support.dimension):
+
+                self.add_constraints_to_least_squares(
+                    T[:, d, :],
+                    points[inside, self.support.dimension + d],
+                    idc[inside, :],
+                    w=w,
+                    name=f"norm_{d}",
+                )
+
             if np.sum(inside) <= 0:
                 logger.warning(
                     f"{np.sum(~inside)} \
@@ -332,7 +340,7 @@ class FiniteDifferenceInterpolator(DiscreteInterpolator):
         points: np.ndarray,
         vectors: np.ndarray,
         w: float = 1.0,
-        B: float = 0,
+        b: float = 0,
         name="gradient orthogonal",
     ):
         """
@@ -354,7 +362,9 @@ class FiniteDifferenceInterpolator(DiscreteInterpolator):
         if points.shape[0] > 0:
 
             # calculate unit vector for orientation data
-            node_idx, inside = self.support.position_to_cell_corners(points[:, :3])
+            node_idx, inside = self.support.position_to_cell_corners(
+                points[:, : self.support.dimension]
+            )
             # calculate unit vector for node gradients
             # this means we are only constraining direction of grad not the
             # magnitude
@@ -376,13 +386,15 @@ class FiniteDifferenceInterpolator(DiscreteInterpolator):
                 T,
                 elements,
                 inside_,
-            ) = self.support.get_element_gradient_for_location(points[inside, :3])
+            ) = self.support.get_element_gradient_for_location(
+                points[inside, : self.support.dimension]
+            )
             T[norm > 0, :, :] /= norm[norm > 0, None, None]
 
             # dot product of vector and element gradient = 0
-            A = np.einsum("ij,ijk->ik", vectors[inside, :3], T)
-            B = np.zeros(points[inside, :].shape[0]) + B
-            self.add_constraints_to_least_squares(A, B, idc[inside, :], w=w, name=name)
+            A = np.einsum("ij,ijk->ik", vectors[inside, : self.support.dimension], T)
+            b_ = np.zeros(points[inside, :].shape[0]) + b
+            self.add_constraints_to_least_squares(A, b_, idc[inside, :], w=w, name=name)
 
             if np.sum(inside) <= 0:
                 logger.warning(
