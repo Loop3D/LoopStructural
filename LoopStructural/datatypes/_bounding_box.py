@@ -148,7 +148,13 @@ class BoundingBox:
         ele_vol = box_vol / nelements
         # calculate the step vector of a regular cube
         step_vector = np.zeros(self.dimensions)
-        step_vector[:] = ele_vol ** (1.0 / 3.0)
+        if self.dimensions == 2:
+            step_vector[:] = ele_vol ** (1.0 / 2.0)
+        elif self.dimensions == 3:
+            step_vector[:] = ele_vol ** (1.0 / 3.0)
+        else:
+            logger.warning("Can only set nelements for 2d or 3D bounding box")
+            return
         # number of steps is the length of the box / step vector
         nsteps = np.ceil((self.maximum - self.origin) / step_vector).astype(int)
         self.nsteps = nsteps
