@@ -202,7 +202,8 @@ class DiscreteInterpolator(GeologicalInterpolator):
             B = B.reshape((A.shape[0]))
             # w = w.reshape((A.shape[0]))
         # normalise by rows of A
-        length = np.linalg.norm(A, axis=1)  # .getcol(0).norm()
+        # Should this be done? It should make the solution more stable
+        length = np.linalg.norm(A, axis=1)
         B[length > 0] /= length[length > 0]
         # going to assume if any are nan they are all nan
         mask = np.any(np.isnan(A), axis=1)
@@ -214,9 +215,6 @@ class DiscreteInterpolator(GeologicalInterpolator):
             raise BaseException("w must be a numpy array")
 
         if w.shape[0] != A.shape[0]:
-            #     # make w the same size as A
-            #     w = np.tile(w,(A.shape[1],1)).T
-            # else:
             raise BaseException("Weight array does not match number of constraints")
         if np.any(np.isnan(idc)) or np.any(np.isnan(A)) or np.any(np.isnan(B)):
             logger.warning("Constraints contain nan not adding constraints: {}".format(name))
