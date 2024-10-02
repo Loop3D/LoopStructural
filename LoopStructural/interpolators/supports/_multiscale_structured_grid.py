@@ -74,11 +74,11 @@ class MultiScaleStructuredGrid(StructuredGrid):
         yi = np.arange(0, self.levels[to_level]['nsteps'][1], 2 ** (to_level - from_level))
         zi = np.arange(0, self.levels[to_level]['nsteps'][2], 2 ** (to_level - from_level))
         ii, jj, kk = np.meshgrid(xi, yi, zi, indexing='ij')
-        new_nodes_idx = np.vstack(
-            [ii.flatten(order='f'), jj.flatten(order='f'), kk.flatten(order='f')]
-        ).T
+        # new_nodes_idx = np.vstack(
+        #     [ii.flatten(order='f'), jj.flatten(order='f'), kk.flatten(order='f')]
+        # ).T
         self.nsteps = self.levels[to_level]['nsteps']
-        gi = self.global_node_indices(new_nodes_idx).astype(int)
+        # gi = self.global_node_indices(new_nodes_idx).astype(int)
         self.set_level(from_level)  # reset to the original level
         # get property value on all nodes
         print(property.shape, self.n_nodes)
