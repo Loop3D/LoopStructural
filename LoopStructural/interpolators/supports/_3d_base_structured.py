@@ -134,7 +134,15 @@ class BaseStructuredSupport(BaseSupport):
         origin = np.array(origin)
         length = self.maximum - origin
         length /= self.step_vector
-        self._nsteps = np.ceil(length).astype(int)
+        self._nsteps = np.ceil(length).astype(np.int64)
+        self._nsteps[self._nsteps == 0] = (
+            3  # need to have a minimum of 3 elements to apply the finite difference mask
+        )
+        if np.any(~(self._nsteps > 0)):
+            logger.error(
+                f"Cannot resize the interpolation support. The proposed number of steps is {self._nsteps}, these must be all > 0"
+            )
+            raise ValueError("Cannot resize the interpolation support.")
         self._origin = origin
         self.onGeometryChange()
 
@@ -150,7 +158,8 @@ class BaseStructuredSupport(BaseSupport):
         maximum = np.array(maximum, dtype=float)
         length = maximum - self.origin
         length /= self.step_vector
-        self._nsteps = np.ceil(length).astype(np.int64) + 1
+        self._nsteps = np.ceil(length).astype(np.int64)
+        self._nsteps[self._nsteps == 0] = 3
         if np.any(~(self._nsteps > 0)):
             logger.error(
                 f"Cannot resize the interpolation support. The proposed number of steps is {self._nsteps}, these must be all > 0"
