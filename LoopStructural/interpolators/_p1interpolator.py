@@ -216,7 +216,7 @@ class P1Interpolator(DiscreteInterpolator):
             vectors[norm > 0, :] /= norm[norm > 0, None]
             A = np.einsum("ij,ijk->ik", vectors[inside, :3], grad[inside, :, :])
             B = np.zeros(points[inside, :].shape[0]) + b
-            self.add_constraints_to_least_squares(A, B, elements, w=wt, name="gradient orthogonal")
+            self.add_constraints_to_least_squares(A, B, elements, w=wt, name=name)
             if np.sum(inside) <= 0:
                 logger.warning(
                     f"{np.sum(~inside)} \
