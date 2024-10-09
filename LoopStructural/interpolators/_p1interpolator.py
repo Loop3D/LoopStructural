@@ -181,7 +181,7 @@ class P1Interpolator(DiscreteInterpolator):
         points: np.ndarray,
         vectors: np.ndarray,
         w: float = 1.0,
-        B: float = 0,
+        b: float = 0,
         name='undefined gradient orthogonal constraint',
     ):
         """
@@ -215,7 +215,7 @@ class P1Interpolator(DiscreteInterpolator):
             norm = np.linalg.norm(vectors, axis=1)
             vectors[norm > 0, :] /= norm[norm > 0, None]
             A = np.einsum("ij,ijk->ik", vectors[inside, :3], grad[inside, :, :])
-            B = np.zeros(points[inside, :].shape[0]) + B
+            B = np.zeros(points[inside, :].shape[0]) + b
             self.add_constraints_to_least_squares(A, B, elements, w=wt, name="gradient orthogonal")
             if np.sum(inside) <= 0:
                 logger.warning(
