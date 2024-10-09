@@ -7,6 +7,7 @@ from LoopStructural.utils.exceptions import LoopTypeError
 from ..interpolators import InterpolatorType
 import numpy as np
 
+from typing import Optional
 from ..utils import getLogger
 
 logger = getLogger(__name__)
@@ -43,6 +44,7 @@ class GeologicalInterpolator(metaclass=ABCMeta):
         self.__str = "Base Geological Interpolator"
         self.valid = True
         self.dimensions = 3  # default to 3d
+        self.support = None
 
     @property
     def data(self):
@@ -312,6 +314,20 @@ class GeologicalInterpolator(metaclass=ABCMeta):
 
     @abstractmethod
     def add_interface_constraints(self, w: float = 1.0):
+        pass
+
+    @abstractmethod
+    def add_value_inequality_constraints(self, w: float = 1.0):
+        pass
+
+    @abstractmethod
+    def add_inequality_pairs_constraints(
+        self,
+        w: float = 1.0,
+        upper_bound=np.finfo(float).eps,
+        lower_bound=-np.inf,
+        pairs: Optional[list] = None,
+    ):
         pass
 
     def to_dict(self):
