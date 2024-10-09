@@ -22,7 +22,8 @@ class LoopProjectfileProcessor(ProcessInputData):
         orientations = self.projectfile.stratigraphyOrientations
         fault_orientations = self.projectfile.faultOrientations
         fault_locations = self.projectfile.faultLocations
-
+        fault_relationships = self.projectfile["eventRelationships"]
+        faultLog = self.projectfile.faultLog.set_index("eventId")
         orientations.rename(columns=column_map, inplace=True)
         contacts.rename(columns=column_map, inplace=True)
         fault_locations.rename(columns=column_map, inplace=True)
@@ -63,6 +64,26 @@ class LoopProjectfileProcessor(ProcessInputData):
                 ],
             )
         )
+
+        for i in fault_relationships.index:
+            fault_relationships.loc[i, "Fault1"] = faultLog.loc[
+                fault_relationships.loc[i, "eventId1"], "name"
+            ]
+            fault_relationships.loc[i, "Fault2"] = faultLog.loc[
+                fault_relationships.loc[i, "eventId2"], "name"
+            ]
+        fault_edges = []
+        fault_edge_properties = []
+        for i in fault_relationships.index:
+            fault_edges.append(
+                (fault_relationships.loc[i, "Fault1"], fault_relationships.loc[i, "Fault2"])
+            )
+            fault_edge_properties.append(
+                {
+                    "type": fault_relationships.loc[i, "type"],
+                    "angle": fault_relationships.loc[i, "angle"],
+                }
+            )
         super().__init__(
             contacts=contacts,
             contact_orientations=orientations,
@@ -73,12 +94,12 @@ class LoopProjectfileProcessor(ProcessInputData):
             fault_orientations=fault_orientations,
             fault_locations=fault_locations,
             fault_properties=fault_properties,
-            fault_edges=[],  # list(fault_graph.edges),
+            fault_edges=fault_edges,  # list(fault_graph.edges),
             colours=colours,
             fault_stratigraphy=None,
             intrusions=None,
             use_thickness=use_thickness,
             origin=self.projectfile.origin,
             maximum=self.projectfile.maximum,
-            #                     fault_edge_properties=fault_edge_properties
+            fault_edge_properties=fault_edge_properties,
         )

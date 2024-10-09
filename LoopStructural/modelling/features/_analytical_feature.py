@@ -28,7 +28,16 @@ class AnalyticalGeologicalFeature(BaseFeature):
         list of FaultSegments that affect this feature
     """
 
-    def __init__(self, name, vector, origin, regions=[], faults=[], model=None, builder=None):
+    def __init__(
+        self,
+        name: str,
+        vector: np.ndarray,
+        origin: np.ndarray,
+        regions=[],
+        faults=[],
+        model=None,
+        builder=None,
+    ):
         BaseFeature.__init__(self, name, model, faults, regions, builder)
         self.vector = np.array(vector, dtype=float)
         self.origin = np.array(origin, dtype=float)
@@ -48,16 +57,16 @@ class AnalyticalGeologicalFeature(BaseFeature):
         json["origin"] = self.origin.tolist()
         return json
 
-    def evaluate_value(self, xyz, ignore_regions=False):
-        xyz = np.array(xyz)
-        if len(xyz.shape) == 1:
-            xyz = xyz[None, :]
-        if len(xyz.shape) != 2:
+    def evaluate_value(self, pos: np.ndarray, ignore_regions=False):
+        pos = np.array(pos)
+        if len(pos.shape) == 1:
+            pos = pos[None, :]
+        if len(pos.shape) != 2:
             raise ValueError("xyz must be a 1D or 2D array")
-        xyz2 = np.zeros(xyz.shape)
-        xyz2[:] = xyz[:]
+        xyz2 = np.zeros(pos.shape)
+        xyz2[:] = pos[:]
         for f in self.faults:
-            xyz2[:] = f.apply_to_points(xyz)
+            xyz2[:] = f.apply_to_points(pos)
         if self.model is not None:
             xyz2[:] = self.model.rescale(xyz2, inplace=False)
         xyz2[:] = xyz2 - self.origin
@@ -65,13 +74,13 @@ class AnalyticalGeologicalFeature(BaseFeature):
         distance = normal[0] * xyz2[:, 0] + normal[1] * xyz2[:, 1] + normal[2] * xyz2[:, 2]
         return distance / np.linalg.norm(self.vector)
 
-    def evaluate_gradient(self, xyz, ignore_regions=False):
-        xyz = np.array(xyz)
-        if len(xyz.shape) == 1:
-            xyz = xyz[None, :]
-        if len(xyz.shape) != 2:
-            raise ValueError("xyz must be a 1D or 2D array")
-        v = np.zeros(xyz.shape)
+    def evaluate_gradient(self, pos: np.ndarray, ignore_regions=False):
+        pos = np.array(pos)
+        if len(pos.shape) == 1:
+            pos = pos[None, :]
+        if len(pos.shape) != 2:
+            raise ValueError("pos must be a 1D or 2D array")
+        v = np.zeros(pos.shape)
         v[:, :] = self.vector[None, :]
         return v
 
