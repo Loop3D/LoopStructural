@@ -6,7 +6,7 @@ from LoopStructural.utils.maths import regular_tetraherdron_for_points, gradient
 from ...modelling.features import BaseFeature
 from ...utils import getLogger
 from ...modelling.features import FeatureType
-from ...interpolators import GeologicalInterpolator, DiscreteInterpolator
+from ...interpolators import GeologicalInterpolator
 import numpy as np
 from typing import Optional, List, Union
 from ...datatypes import ValuePoints, VectorPoints
@@ -200,7 +200,7 @@ class GeologicalFeature(BaseFeature):
             values = self.interpolator.evaluate_value(tetrahedron_faulted.reshape(-1, 3)).reshape(
                 (-1, 4)
             )
-            v[mask, :] = gradient_from_tetrahedron(tetrahedron_faulted[mask, :, :], values[mask])
+            v[mask, :] = gradient_from_tetrahedron(tetrahedron[mask, :, :], values[mask])
 
             return v
         pos = self._apply_faults(pos)

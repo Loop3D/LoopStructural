@@ -1,6 +1,9 @@
 import numpy as np
 from ....modelling.features import BaseFeature
+<<<<<<< HEAD
 from abc import ABCMeta, abstractmethod
+=======
+>>>>>>> master
 from ....utils import getLogger
 
 logger = getLogger(__name__)
@@ -101,3 +104,21 @@ def fourier_series(x, c0, c1, c2, w):
     return np.rad2deg(np.arctan(v))
 
 
+def trigo_fold_profile(s, origin, wavelength, inflectionpointangle):
+    """
+
+    Parameters
+    ----------
+    s
+    origin
+    wavelength
+    inflectionpointangle
+
+    Returns
+    -------
+
+    """
+    tan_alpha_delta_half = np.tan(inflectionpointangle)
+    tan_alpha_shift = 0
+    x = (s - origin) / wavelength
+    return np.rad2deg(np.arctan(tan_alpha_delta_half * np.sin(2 * np.pi * x) + tan_alpha_shift))

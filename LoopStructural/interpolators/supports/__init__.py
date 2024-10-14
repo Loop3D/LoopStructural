@@ -18,6 +18,7 @@ class SupportType(IntEnum):
     BaseStructured = 6
     TetMesh = 10
     P2UnstructuredTetMesh = 11
+    DataSupported = 12
 
 
 from ._2d_base_unstructured import BaseUnstructured2d
@@ -29,6 +30,11 @@ from ._3d_unstructured_tetra import UnStructuredTetMesh
 from ._3d_structured_tetra import TetMesh
 from ._3d_p2_tetra import P2UnstructuredTetMesh
 
+
+def no_support(*args, **kwargs):
+    return None
+
+
 support_map = {
     SupportType.StructuredGrid2D: StructuredGrid2D,
     SupportType.StructuredGrid: StructuredGrid,
@@ -37,6 +43,7 @@ support_map = {
     SupportType.P2Unstructured2d: P2Unstructured2d,
     SupportType.TetMesh: TetMesh,
     SupportType.P2UnstructuredTetMesh: P2UnstructuredTetMesh,
+    SupportType.DataSupported: no_support,
 }
 
 from ._support_factory import SupportFactory

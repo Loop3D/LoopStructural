@@ -2,7 +2,8 @@ import numpy as np
 from scipy.optimize import curve_fit
 
 from ....modelling.features.fold._fold_rotation_angle_feature import (
-    fourier_series,
+    # fourier_series,
+    trigo_fold_profile,
 )
 from ....modelling.features.fold import SVariogram
 
@@ -53,9 +54,10 @@ class FoldRotationAngle:
             wl = self.svario.find_wavelengths(lags=lags, nlag=nlag, lag=lag)
             # for now only consider single fold wavelength
             wl = wl[0]
-        guess = np.zeros(4)
-        guess[3] = wl  # np.max(limb_wl)
-        logger.info(f"Guess: {guess[0]} {guess[1]} {guess[2]} {guess[3]}")
+        guess = np.zeros(3)
+        guess[1] = wl
+        guess[2] = np.deg2rad(45)  # np.max(limb_wl)
+        logger.info(f"Guess: {guess[0]} {guess[1]} {guess[2]} ")
         # mask nans
         mask = np.logical_or(~np.isnan(self.fold_frame_coordinate), ~np.isnan(self.rotation_angle))
         logger.info(
@@ -71,7 +73,7 @@ class FoldRotationAngle:
             try:
                 # try fitting using wavelength guess
                 popt, pcov = curve_fit(
-                    fourier_series,
+                    trigo_fold_profile,
                     self.fold_frame_coordinate[mask],
                     np.tan(np.deg2rad(self.rotation_angle[mask])),
                     guess,
@@ -81,7 +83,7 @@ class FoldRotationAngle:
                     # if fitting failed, try with just 0s
                     logger.info("Running curve fit without initial guess")
                     popt, pcov = curve_fit(
-                        fourier_series,
+                        trigo_fold_profile,
                         self.fold_frame_coordinate[mask],
                         np.tan(np.deg2rad(self.rotation_angle[mask])),
                     )
@@ -90,15 +92,14 @@ class FoldRotationAngle:
                     popt = guess
                     logger.error("Could not fit curve to S-Plot, check the wavelength")
             self.fitted_params = popt
-            logger.info(f"Fitted: {popt[0]} {popt[1]} {popt[2]} {popt[3]}")
+            logger.info(f"Fitted: {popt[0]} {popt[1]} {popt[2]} ")
             self.fold_rotation_function = lambda x: np.rad2deg(
                 np.arctan(
-                    fourier_series(
+                    trigo_fold_profile(
                         x,
                         self.fitted_params[0],
                         self.fitted_params[1],
                         self.fitted_params[2],
-                        self.fitted_params[3],
                     )
                 )
             )

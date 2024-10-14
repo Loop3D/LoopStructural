@@ -2,15 +2,16 @@
 Wrapper for using surfepy
 """
 
-from ..utils.helper import get_vectors
+from ..utils.maths import get_vectors
 from ..interpolators import GeologicalInterpolator
 
 import numpy as np
 
 from ..utils import getLogger
+import surfepy
+from typing import Optional
 
 logger = getLogger(__name__)
-import surfepy
 
 
 class SurfeRBFInterpolator(GeologicalInterpolator):
@@ -19,6 +20,8 @@ class SurfeRBFInterpolator(GeologicalInterpolator):
     def __init__(self, method="single_surface"):
         GeologicalInterpolator.__init__(self)
         self.surfe = None
+        if not method:
+            method = "single_surface"
         if method == "single_surface":
             logger.info("Using single surface interpolator")
             self.surfe = surfepy.Surfe_API(1)
@@ -29,7 +32,10 @@ class SurfeRBFInterpolator(GeologicalInterpolator):
             logger.info("Using surfe horizon")
             self.surfe = surfepy.Surfe_API(4)
 
-    def add_gradient_ctr_pts(self):
+    def set_region(self, **kwargs):
+        pass
+
+    def add_gradient_constraints(self, w=1):
         points = self.get_gradient_constraints()
         if points.shape[0] > 0:
             logger.info("Adding ")
@@ -40,12 +46,12 @@ class SurfeRBFInterpolator(GeologicalInterpolator):
             self.surfe.SetTangentConstraints(strike_vector)
             self.surfe.SetTangentConstraints(dip_vector)
 
-    def add_norm_ctr_pts(self):
+    def add_norm_constraints(self, w=1):
         points = self.get_norm_constraints()
         if points.shape[0] > 0:
             self.surfe.SetPlanarConstraints(points[:, :6])
 
-    def add_ctr_pts(self):
+    def add_value_constraints(self, w=1):
 
         points = self.get_value_constraints()
         if points.shape[0] > 0:
@@ -59,15 +65,39 @@ class SurfeRBFInterpolator(GeologicalInterpolator):
                     points[i, 3],
                 )
 
-    def add_tangent_ctr_pts(self):
+    def add_interface_constraints(self, w=1):
+        pass
+
+    def add_value_inequality_constraints(self, w=1):
+        ## inequalities are causing a segfault
+        # points = self.get_value_inequality_constraints()
+        # if points.shape[0] > 0:
+        #     #
+        #     self.surfe.AddValueInequalityConstraints(points[:,0],points[:,1],points[:,2],points[:,3])
+        pass
+
+    def add_inequality_pairs_constraints(
+        self,
+        w: float = 1.0,
+        upper_bound=np.finfo(float).eps,
+        lower_bound=-np.inf,
+        pairs: Optional[list] = None,
+    ):
+        # self.surfe.Add
+        pass
+
+    def reset(self):
+        pass
+
+    def add_tangent_constraints(self, w=1):
         points = self.get_tangent_constraints()
         if points.shape[0] > 0:
             self.surfe.SetTangentConstraints(points[:, :6])
 
-    def _solve(self, **kwargs):
+    def solve_system(self, **kwargs):
         self.surfe.ComputeInterpolant()
 
-    def _setup_interpolator(self, **kwargs):
+    def setup_interpolator(self, **kwargs):
         """
         Setup the interpolator
 
@@ -90,10 +120,10 @@ class SurfeRBFInterpolator(GeologicalInterpolator):
 
 
         """
-        self.add_gradient_ctr_pts()
-        self.add_norm_ctr_pts()
-        self.add_ctr_pts()
-        self.add_tangent_ctr_pts()
+        self.add_gradient_constraints()
+        self.add_norm_constraints()
+        self.add_value_constraints()
+        self.add_tangent_constraints()
 
         kernel = kwargs.get("kernel", "r3")
         logger.info("Setting surfe RBF kernel to %s" % kernel)

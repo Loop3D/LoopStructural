@@ -52,6 +52,7 @@ interpolator_string_map = {
     "P2": InterpolatorType.PIECEWISE_QUADRATIC,
     "P1": InterpolatorType.PIECEWISE_LINEAR,
     "DFI": InterpolatorType.DISCRETE_FOLD,
+    'surfe': InterpolatorType.SURFE,
 }
 from ..interpolators._geological_interpolator import GeologicalInterpolator
 from ..interpolators._discrete_interpolator import DiscreteInterpolator
@@ -79,6 +80,11 @@ from ..interpolators._discrete_fold_interpolator import (
 from ..interpolators._p2interpolator import P2Interpolator
 from ..interpolators._p1interpolator import P1Interpolator
 
+try:
+    from ..interpolators._surfe_wrapper import SurfeRBFInterpolator
+except ImportError:
+    logger.warning("Surfe is not installed, SurfeRBFInterpolator will not be available")
+    SurfeRBFInterpolator = None
 interpolator_map = {
     InterpolatorType.BASE: GeologicalInterpolator,
     InterpolatorType.BASE_DISCRETE: DiscreteInterpolator,
@@ -87,6 +93,7 @@ interpolator_map = {
     InterpolatorType.PIECEWISE_LINEAR: P1Interpolator,
     InterpolatorType.PIECEWISE_QUADRATIC: P2Interpolator,
     InterpolatorType.BASE_DATA_SUPPORTED: GeologicalInterpolator,
+    InterpolatorType.SURFE: SurfeRBFInterpolator,
 }
 
 support_interpolator_map = {
@@ -100,6 +107,12 @@ support_interpolator_map = {
         3: SupportType.P2UnstructuredTetMesh,
         2: SupportType.P2Unstructured2d,
     },
+    InterpolatorType.SURFE: {
+        3: SupportType.DataSupported,
+        2: SupportType.DataSupported,
+    },
 }
 
 from ._interpolator_factory import InterpolatorFactory
+
+# from ._api import LoopInterpolator

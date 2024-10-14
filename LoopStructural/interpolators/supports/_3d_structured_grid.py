@@ -5,8 +5,10 @@ Cartesian grid for fold interpolator
 
 import numpy as np
 
-from ._3d_base_structured import BaseStructuredSupport
+from LoopStructural.interpolators._operator import Operator
 
+from ._3d_base_structured import BaseStructuredSupport
+from typing import Dict, Tuple
 from . import SupportType
 
 from LoopStructural.utils import getLogger
@@ -158,13 +160,18 @@ class StructuredGrid(BaseStructuredSupport):
         if "indexes" in kwargs:
             indexes = kwargs["indexes"]
         if "indexes" not in kwargs:
-            indexes = np.array(
-                np.meshgrid(
-                    np.arange(1, self.nsteps[0] - 1),
-                    np.arange(1, self.nsteps[1] - 1),
-                    np.arange(1, self.nsteps[2] - 1),
-                )
-            ).reshape((3, -1))
+            gi = np.arange(self.n_nodes)
+            indexes = self.global_index_to_node_index(gi)
+            edge_mask = (
+                (indexes[:, 0] > 0)
+                & (indexes[:, 0] < self.nsteps[0] - 1)
+                & (indexes[:, 1] > 0)
+                & (indexes[:, 1] < self.nsteps[1] - 1)
+                & (indexes[:, 2] > 0)
+                & (indexes[:, 2] < self.nsteps[2] - 1)
+            )
+            indexes = indexes[edge_mask, :].T
+
         # indexes = np.array(indexes).T
         if indexes.ndim != 2:
             return
@@ -291,7 +298,6 @@ class StructuredGrid(BaseStructuredSupport):
             )
         idc, inside = self.position_to_cell_corners(evaluation_points)
         # print(idc[inside,:], self.n_nodes,inside)
-
         if idc.shape[0] != inside.shape[0]:
             raise ValueError("index does not match number of nodes")
         v = np.zeros(idc.shape)
@@ -468,3 +474,26 @@ class StructuredGrid(BaseStructuredSupport):
             "type": self.type.numerator,
             **super().to_dict(),
         }
+
+    def get_operators(self, weights: Dict[str, float]) -> Dict[str, Tuple[np.ndarray, float]]:
+        """Gets the operators specific to this support
+
+        Parameters
+        ----------
+        weights : Dict[str, float]
+            weight value per operator
+
+        Returns
+        -------
+        operators
+            A dictionary with a numpy array and float weight
+        """
+        operators = {
+            'dxy': (Operator.Dxy_mask, weights['dxy'] / 4),
+            'dyz': (Operator.Dyz_mask, weights['dyz'] / 4),
+            'dxz': (Operator.Dxz_mask, weights['dxz'] / 4),
+            'dxx': (Operator.Dxx_mask, weights['dxx'] / 1),
+            'dyy': (Operator.Dyy_mask, weights['dyy'] / 1),
+            'dzz': (Operator.Dzz_mask, weights['dzz'] / 1),
+        }
+        return operators

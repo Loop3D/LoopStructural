@@ -2,7 +2,7 @@
 Piecewise linear interpolator using folds
 """
 
-from typing import Optional
+from typing import Optional, Callable
 
 import numpy as np
 
@@ -64,6 +64,7 @@ class DiscreteFoldInterpolator(PiecewiseLinearInterpolator):
         fold_normalisation=1.0,
         fold_norm=1.0,
         step=2,
+        mask_fn: Optional[Callable] = None,
     ):
         """
 
@@ -104,6 +105,10 @@ class DiscreteFoldInterpolator(PiecewiseLinearInterpolator):
         # calculate element volume for weighting
         vecs = nodes[:, 1:, :] - nodes[:, 0, None, :]
         vol = np.abs(np.linalg.det(vecs)) / 6
+        weight = np.ones(self.support.n_elements, dtype=float)
+        if mask_fn is not None:
+            weight[mask_fn(self.support.barycentre)] = 0
+        weight = weight[::step]
         if fold_orientation is not None:
             """
             dot product between vector in deformed ori plane = 0
@@ -120,7 +125,7 @@ class DiscreteFoldInterpolator(PiecewiseLinearInterpolator):
             B = np.zeros(A.shape[0])
             idc = self.support.get_elements()[element_idx[::step], :]
             self.add_constraints_to_least_squares(
-                A, B, idc, w=fold_orientation, name="fold orientation"
+                A, B, idc, w=weight * fold_orientation, name="fold orientation"
             )
 
         if fold_axis_w is not None:
@@ -139,7 +144,9 @@ class DiscreteFoldInterpolator(PiecewiseLinearInterpolator):
             B = np.zeros(A.shape[0]).tolist()
             idc = self.support.get_elements()[element_idx[::step], :]
 
-            self.add_constraints_to_least_squares(A, B, idc, w=fold_axis_w, name="fold axis")
+            self.add_constraints_to_least_squares(
+                A, B, idc, w=weight * fold_axis_w, name="fold axis"
+            )
 
         if fold_normalisation is not None:
             """
@@ -160,7 +167,7 @@ class DiscreteFoldInterpolator(PiecewiseLinearInterpolator):
             idc = self.support.get_elements()[element_idx[::step], :]
 
             self.add_constraints_to_least_squares(
-                A, B, idc, w=fold_normalisation, name="fold normalisation"
+                A, B, idc, w=weight * fold_normalisation, name="fold normalisation"
             )
 
         if fold_regularisation is not None:

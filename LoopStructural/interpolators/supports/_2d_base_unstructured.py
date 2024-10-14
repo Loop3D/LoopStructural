@@ -338,3 +338,19 @@ class BaseUnstructured2d(BaseSupport):
         """
         verts, c, tri, inside = self.get_element_for_location(pos, return_verts=False)
         return self.evaluate_shape_derivatives(pos, tri)
+
+    def vtk(self, node_properties={}, cell_properties={}):
+        """
+        Create a vtk unstructured grid from the mesh
+        """
+        import pyvista as pv
+
+        grid = pv.UnstructuredGrid()
+        grid.points = self.nodes
+        grid.cell_types = np.ones(self.elements.shape[0]) * pv.vtk.VTK_TRIANGLE
+        grid.cells = np.c_[np.ones(self.elements.shape[0]) * 3, self.elements]
+        for key, value in node_properties.items():
+            grid.point_data[key] = value
+        for key, value in cell_properties.items():
+            grid.cell_data[key] = value
+        return grid
