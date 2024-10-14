@@ -318,7 +318,7 @@ class GeologicalFeatureBuilder(BaseBuilder):
                     self.interpolator.support.barycentre[element_idx[::step], :],
                     vector[element_idx[::step], :],
                     w=w,
-                    B=B,
+                    b=B,
                     name=f'{feature.name}_orthogonal',
                 )
 
@@ -467,17 +467,20 @@ class GeologicalFeatureBuilder(BaseBuilder):
         Apply the fault to the model grid to ensure that the support
         is big enough to capture the faulted feature.
         """
+        if self.interpolator.support is not None:
 
-        origin = self.interpolator.support.origin
-        maximum = self.interpolator.support.maximum
-        pts = self.model.bounding_box.with_buffer(buffer).regular_grid(local=True)
-        for f in self.faults:
-            pts = f.apply_to_points(pts)
+            origin = self.interpolator.support.origin
+            maximum = self.interpolator.support.maximum
+            pts = self.model.bounding_box.with_buffer(buffer).regular_grid(local=True)
+            for f in self.faults:
+                pts = f.apply_to_points(pts)
 
-        origin[origin > np.min(pts, axis=0)] = np.min(pts, axis=0)[origin > np.min(pts, axis=0)]
-        maximum[maximum < np.max(pts, axis=0)] = np.max(pts, axis=0)[maximum < np.max(pts, axis=0)]
-        self.interpolator.support.origin = origin
-        self.interpolator.support.maximum = maximum
+            origin[origin > np.min(pts, axis=0)] = np.min(pts, axis=0)[origin > np.min(pts, axis=0)]
+            maximum[maximum < np.max(pts, axis=0)] = np.max(pts, axis=0)[
+                maximum < np.max(pts, axis=0)
+            ]
+            self.interpolator.support.origin = origin
+            self.interpolator.support.maximum = maximum
 
     def build(self, data_region=None, **kwargs):
         """
@@ -540,7 +543,7 @@ class GeologicalFeatureBuilder(BaseBuilder):
         logger.info(f'running interpolation for {self.name}')
 
         self.interpolator.solve_system(
-            solver=kwargs.get('solver', None),
+            solver=kwargs.get('solver', 'cg'),
             tol=kwargs.get('tol', None),
             solver_kwargs=kwargs.get('solver_kwargs', {}),
         )

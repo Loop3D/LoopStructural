@@ -5,10 +5,11 @@ Cartesian grid for fold interpolator
 
 import logging
 
-from typing import Tuple
 import numpy as np
 from . import SupportType
 from ._base_support import BaseSupport
+from typing import Dict, Tuple
+from .._operator import Operator
 
 logger = logging.getLogger(__name__)
 
@@ -33,7 +34,7 @@ class StructuredGrid2D(BaseSupport):
         step_vector - 2d list or numpy array of int
         """
         self.type = SupportType.StructuredGrid2D
-        self.nsteps = np.array(nsteps)
+        self.nsteps = np.ceil(np.array(nsteps)).astype(int)
         self.step_vector = np.array(step_vector)
         self.origin = np.array(origin)
         self.maximum = origin + self.nsteps * self.step_vector
@@ -261,13 +262,22 @@ class StructuredGrid2D(BaseSupport):
         if "indexes" in kwargs:
             indexes = kwargs["indexes"]
         if "indexes" not in kwargs:
-            ii = []
-            jj = []
-            for i in range(1, self.nsteps[0] - 1):
-                for j in range(1, self.nsteps[1] - 1):
-                    ii.append(i)
-                    jj.append(j)
-            indexes = np.array([ii, jj])
+            gi = np.arange(self.n_nodes)
+            indexes = self.global_index_to_node_index(gi)
+            edge_mask = (
+                (indexes[:, 0] > 0)
+                & (indexes[:, 0] < self.nsteps[0] - 1)
+                & (indexes[:, 1] > 0)
+                & (indexes[:, 1] < self.nsteps[1] - 1)
+            )
+            indexes = indexes[edge_mask, :].T
+            # ii = []
+            # jj = []
+            # for i in range(1, self.nsteps[0] - 1):
+            #     for j in range(1, self.nsteps[1] - 1):
+            #         ii.append(i)
+            #         jj.append(j)
+            # indexes = np.array([ii, jj])
         # indexes = np.array(indexes).T
         if indexes.ndim != 2:
             print(indexes.ndim)
@@ -464,3 +474,24 @@ class StructuredGrid2D(BaseSupport):
     def vtk(self, node_properties={}, cell_properties={}):
         raise NotImplementedError("VTK output not implemented for structured grid")
         pass
+
+    def get_operators(self, weights: Dict[str, float]) -> Dict[str, Tuple[np.ndarray, float]]:
+        """Get
+
+        Parameters
+        ----------
+        weights : Dict[str, float]
+            _description_
+
+        Returns
+        -------
+        Dict[str, Tuple[np.ndarray, float]]
+            _description_
+        """
+        # in a map we only want the xy operators
+        operators = {
+            'dxy': (Operator.Dxy_mask[1, :, :], weights['dxy'] * 2),
+            'dxx': (Operator.Dxx_mask[1, :, :], weights['dxx']),
+            'dyy': (Operator.Dyy_mask[1, :, :], weights['dyy']),
+        }
+        return operators

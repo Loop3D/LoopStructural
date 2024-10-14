@@ -32,6 +32,7 @@ class DiscreteInterpolator(GeologicalInterpolator):
         GeologicalInterpolator.__init__(self, data=data, up_to_date=up_to_date)
         self.B = []
         self.support = support
+        self.dimensions = support.dimension
         self.c = (
             np.array(c)
             if c is not None and np.array(c).shape[0] == self.support.n_nodes
@@ -201,7 +202,8 @@ class DiscreteInterpolator(GeologicalInterpolator):
             B = B.reshape((A.shape[0]))
             # w = w.reshape((A.shape[0]))
         # normalise by rows of A
-        length = np.linalg.norm(A, axis=1)  # .getcol(0).norm()
+        # Should this be done? It should make the solution more stable
+        length = np.linalg.norm(A, axis=1)
         B[length > 0] /= length[length > 0]
         # going to assume if any are nan they are all nan
         mask = np.any(np.isnan(A), axis=1)
@@ -213,9 +215,6 @@ class DiscreteInterpolator(GeologicalInterpolator):
             raise BaseException("w must be a numpy array")
 
         if w.shape[0] != A.shape[0]:
-            #     # make w the same size as A
-            #     w = np.tile(w,(A.shape[1],1)).T
-            # else:
             raise BaseException("Weight array does not match number of constraints")
         if np.any(np.isnan(idc)) or np.any(np.isnan(A)) or np.any(np.isnan(B)):
             logger.warning("Constraints contain nan not adding constraints: {}".format(name))
@@ -306,31 +305,43 @@ class DiscreteInterpolator(GeologicalInterpolator):
             self.add_inequality_constraints_to_matrix(a, points[:, 3:5], cols, 'inequality_value')
 
     def add_inequality_pairs_constraints(
-        self, w: float = 1.0, upper_bound=np.finfo(float).eps, lower_bound=-np.inf
+        self,
+        w: float = 1.0,
+        upper_bound=np.finfo(float).eps,
+        lower_bound=-np.inf,
+        pairs: Optional[list] = None,
     ):
 
         points = self.get_inequality_pairs_constraints()
         if points.shape[0] > 0:
-
             # assemble a list of pairs in the model
             # this will make pairs even across stratigraphic boundaries
             # TODO add option to only add stratigraphic pairs
-            pairs = {}
-            k = 0
-            for i in np.unique(points[:, self.support.dimension]):
-                for j in np.unique(points[:, self.support.dimension]):
-                    if i == j:
-                        continue
-                    if tuple(sorted([i, j])) not in pairs:
-                        pairs[tuple(sorted([i, j]))] = k
-                        k += 1
-            pairs = list(pairs.keys())
+            if not pairs:
+                pairs = {}
+                k = 0
+                for i in np.unique(points[:, self.support.dimension]):
+                    for j in np.unique(points[:, self.support.dimension]):
+                        if i == j:
+                            continue
+                        if tuple(sorted([i, j])) not in pairs:
+                            pairs[tuple(sorted([i, j]))] = k
+                            k += 1
+                pairs = list(pairs.keys())
             for pair in pairs:
                 upper_points = points[points[:, self.support.dimension] == pair[0]]
                 lower_points = points[points[:, self.support.dimension] == pair[1]]
 
                 upper_interpolation = self.support.get_element_for_location(upper_points)
                 lower_interpolation = self.support.get_element_for_location(lower_points)
+                if (~upper_interpolation[3]).sum() > 0:
+                    logger.warning(
+                        f'Upper points not in mesh {upper_points[~upper_interpolation[3]]}'
+                    )
+                if (~lower_interpolation[3]).sum() > 0:
+                    logger.warning(
+                        f'Lower points not in mesh {lower_points[~lower_interpolation[3]]}'
+                    )
                 ij = np.array(
                     [
                         *np.meshgrid(
@@ -345,7 +356,7 @@ class DiscreteInterpolator(GeologicalInterpolator):
                 rows = np.arange(0, ij.shape[0], dtype=int)
                 rows = np.tile(rows, (upper_interpolation[1].shape[-1], 1)).T
                 rows = np.hstack([rows, rows])
-                a = upper_interpolation[1][upper_interpolation[3]][ij[:, 0]]  # np.ones(ij.shape[0])
+                a = upper_interpolation[1][upper_interpolation[3]][ij[:, 0]]
                 a = np.hstack([a, -lower_interpolation[1][lower_interpolation[3]][ij[:, 1]]])
                 cols = np.hstack(
                     [
