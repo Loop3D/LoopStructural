@@ -69,6 +69,11 @@ class SurfeRBFInterpolator(GeologicalInterpolator):
         pass
 
     def add_value_inequality_constraints(self, w=1):
+        ## inequalities are causing a segfault
+        # points = self.get_value_inequality_constraints()
+        # if points.shape[0] > 0:
+        #     #
+        #     self.surfe.AddValueInequalityConstraints(points[:,0],points[:,1],points[:,2],points[:,3])
         pass
 
     def add_inequality_pairs_constraints(
@@ -78,7 +83,7 @@ class SurfeRBFInterpolator(GeologicalInterpolator):
         lower_bound=-np.inf,
         pairs: Optional[list] = None,
     ):
-        self.surfe.Add
+        # self.surfe.Add
         pass
 
     def reset(self):
