@@ -262,7 +262,9 @@ class FiniteDifferenceInterpolator(DiscreteInterpolator):
             T /= norm[inside, None, None]
             # calculate two orthogonal vectors to constraint (strike and dip vector)
             strike_vector, dip_vector = get_vectors(
-                points[inside, self.support.dimension : self.support.dimension]
+                points[
+                    inside, self.support.dimension : self.support.dimension + self.support.dimension
+                ]
             )
             A = np.einsum("ij,ijk->ik", strike_vector.T, T)
             B = np.zeros(points[inside, :].shape[0])
