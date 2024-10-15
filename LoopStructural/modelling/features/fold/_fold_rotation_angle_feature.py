@@ -1,4 +1,3 @@
-import numpy as np
 from ....modelling.features import BaseFeature
 from ....utils import getLogger
 
