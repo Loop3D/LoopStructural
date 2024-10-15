@@ -1,38 +1,42 @@
-from _base_fold_rotation_angle import BaseFoldRotationAngle
+from ._base_fold_rotation_angle import BaseFoldRotationAngleProfile
 import numpy as np
+import numpy.typing as npt
+from typing import Optional, Union, List
+from .._svariogram import SVariogram
+from .....utils import getLogger
 
-from scipy.optimize import curve_fit
-from ...svariogram import SVariogram
-from ....utils import getLogger
-
-
-def trigo_fold_profile(s, origin, wavelength, inflectionpointangle):
-    """
-
-    Parameters
-    ----------
-    s
-    origin
-    wavelength
-    inflectionpointangle
-
-    Returns
-    -------
-
-    """
-    tan_alpha_delta_half = np.tan(inflectionpointangle)
-    tan_alpha_shift = 0
-    x = (s - origin) / wavelength
-    return np.rad2deg(np.arctan(tan_alpha_delta_half * np.sin(2 * np.pi * x) + tan_alpha_shift))
+logger = getLogger(__name__)
 
 
-class TrigoFoldRotationAngle(BaseFoldRotationAngle):
-    def __init__(self, rotation_angle, fold_frame_coordinate):
-        self.rotation_angle = rotation_angle
-        self.fold_frame_coordinate = fold_frame_coordinate
-        self._origin = 0
-        self._wavelength = 0
-        self._inflectionpointangle = 0
+class TrigoFoldRotationAngleProfile(BaseFoldRotationAngleProfile):
+
+    def __init__(
+        self,
+        rotation_angle: Optional[npt.NDArray[np.float64]] = None,
+        fold_frame_coordinate: Optional[npt.NDArray[np.float64]] = None,
+        origin: float = 0,
+        wavelength: float = 0,
+        inflectionpointangle: float = 0,
+    ):
+        """The fold frame function using the trigo profile from Laurent 2016
+
+        Parameters
+        ----------
+        rotation_angle : npt.NDArray[np.float64], optional
+            the calculated fold rotation angle from observations in degrees, by default None
+        fold_frame_coordinate : npt.NDArray[np.float64], optional
+            fold frame coordinate scalar field value, by default None
+        origin : float, optional
+            phase shift parameter, by default 0
+        wavelength : float, optional
+            wavelength of the profile, by default 0
+        inflectionpointangle : float, optional
+            height of the profile, tightness of fold, by default 0
+        """
+        super().__init__(rotation_angle, fold_frame_coordinate)
+        self._origin = origin
+        self._wavelength = wavelength
+        self._inflectionpointangle = inflectionpointangle
 
     @property
     def origin(self):
@@ -70,6 +74,7 @@ class TrigoFoldRotationAngle(BaseFoldRotationAngle):
         else:
             raise ValueError("inflectionpointangle must be a finite number")
 
+    @property
     def params(self):
         return {
             "origin": self.origin,
@@ -77,77 +82,62 @@ class TrigoFoldRotationAngle(BaseFoldRotationAngle):
             "inflectionpointangle": self.inflectionpointangle,
         }
 
-    def fit(self, rotation_angle, fold_frame_coordinate, params={}) -> bool:
-        """Fit the trigo fold profile
+    @staticmethod
+    def _function(s, origin, wavelength, inflectionpointangle):
+        """
 
         Parameters
         ----------
-        rotation_angle : _type_
-            _description_
-        fold_frame_coordinate : _type_
-            _description_
-        params : dict, optional
-            - wl, fold wavelength
-            - origin, origin of the fold profile
-            - inflectionpointangle, inflection point angle
-            - svariogram_params, see :func:`~LoopStructural.modelling.fold.Svariogram.calc_semivariogram`, by default {}
+        s
+        origin
+        wavelength
+        inflectionpointangle
 
         Returns
         -------
-        _type_
-            _description_
+
         """
-        success = False
+        tan_alpha_delta_half = np.tan(inflectionpointangle)
+        tan_alpha_shift = 0
+        x = (s - origin) / wavelength
+        return tan_alpha_delta_half * np.sin(2 * np.pi * x) + tan_alpha_shift
 
-        wl = params.get('wl', None)
-        if wl is None:
-            svariogram = SVariogram(self.fold_frame_coordinate, self.rotation_angle)
-            wl = svariogram.find_wavelengths(**params.get('svariogram_params', {}))
-        origin = params.get('origin', 0)
-        inflectionpointangle = params.get('inflectionpointangle', 45)  ## default to 45 degrees
-        guess = np.array([origin, wl, np.deg2rad(inflectionpointangle)])
-        logger.info(f"Guess: {guess[0]} {guess[1]} {guess[2]} ")
-        # mask nans
-        mask = np.logical_or(~np.isnan(self.fold_frame_coordinate), ~np.isnan(self.rotation_angle))
-        logger.info(
-            f"There are {np.sum(~mask)} nans for the fold limb rotation angle and { np.sum(mask)} observations"
-        )
-        if np.sum(mask) < len(guess):
-            logger.error(
-                "Not enough data points to fit Fourier series setting " "fold rotation angle" "to 0"
-            )
-            self.fold_rotation_function = lambda x: np.zeros(x.shape)
-        else:
-            try:
-                # try fitting using wavelength guess
-                popt, pcov = curve_fit(
-                    trigo_fold_profile,
-                    self.fold_frame_coordinate[mask],
-                    np.tan(np.deg2rad(self.rotation_angle[mask])),
-                    guess,
-                )
-                success = True
-            except RuntimeError:
-                try:
-                    # if fitting failed, try with just 0s
-                    logger.info("Running curve fit without initial guess")
-                    popt, pcov = curve_fit(
-                        trigo_fold_profile,
-                        self.fold_frame_coordinate[mask],
-                        np.tan(np.deg2rad(self.rotation_angle[mask])),
-                    )
-                    success = True
-                except RuntimeError:
-                    # otherwise set the fourier series parameters to 0
-                    popt = guess
-                    success = False
-                    logger.error("Could not fit curve to S-Plot, check the wavelength")
-            self._origin = popt[0]
-            self._wavelength = popt[1]
-            self._inflectionpointangle = popt[2]
-            return success
+    # def __call__(self, fold_frame_coordinate):
+    #     return np.rad2deg(
+    #         np.tan(
+    #             self._function(
+    #                 fold_frame_coordinate, self.origin, self.wavelength, self.inflectionpointangle
+    #             )
+    #         )
+    #     )
 
-    def __call__(self, fold_frame_coordinate):
-        return trigo_fold_profile(
-            fold_frame_coordinate, self.origin, self.wavelength, self.inflectionpointangle
-        )
+    def calculate_misfit(
+        self, rotation_angle: np.ndarray, fold_frame_coordinate: np.ndarray
+    ) -> np.ndarray:
+        return super().calculate_misfit(rotation_angle, fold_frame_coordinate)
+
+    def update_params(self, params: Union[List, npt.NDArray[np.float64]]) -> None:
+        self.origin = params[0]
+        self.wavelength = params[1]
+        self.inflectionpointangle = params[2]
+
+    def initial_guess(
+        self,
+        calculate_wavelength: bool = True,
+        svariogram_parameters: dict = {},
+        reset: bool = True,
+    ):
+        # reset the fold paramters before fitting
+        # otherwise use the current values to fit
+        if reset:
+            self.origin = 0
+            self.wavelength = 0
+            self.inflectionpointangle = np.deg2rad(45)  # otherwise there is a numerical error
+        if calculate_wavelength:
+            self.wavelength = self.estimate_wavelength(svariogram_parameters=svariogram_parameters)
+        guess = [
+            self.fold_frame_coordinate.mean(),
+            self.wavelength,
+            np.max(np.arctan(np.deg2rad(self.rotation_angle))),
+        ]
+        return np.array(guess)
