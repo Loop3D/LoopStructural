@@ -1,5 +1,6 @@
 from ....modelling.features.builders import GeologicalFeatureBuilder
 from ....modelling.features.fold import FoldRotationAngle
+from ....modelling.features.fold.fold_function import FoldRotationType, get_fold_rotation_profile
 import numpy as np
 
 from ....utils import getLogger, InterpolatorError
@@ -19,6 +20,8 @@ class FoldedFeatureBuilder(GeologicalFeatureBuilder):
         name="Feature",
         region=None,
         svario=True,
+        axis_profile_type=FoldRotationType.FOURIER_SERIES,
+        limb_profile_type=FoldRotationType.FOURIER_SERIES,
         **kwargs,
     ):
         """Builder for creating a geological feature using fold constraints
@@ -36,6 +39,7 @@ class FoldedFeatureBuilder(GeologicalFeatureBuilder):
         region : _type_, optional
             _description_, by default None
         """
+        # create the feature builder, this intialises the interpolator
         GeologicalFeatureBuilder.__init__(
             self,
             interpolatortype=interpolatortype,
@@ -45,11 +49,14 @@ class FoldedFeatureBuilder(GeologicalFeatureBuilder):
             region=region,
             **kwargs,
         )
+        # link the interpolator to the fold object
         self.interpolator.fold = fold
         self.fold = fold
         self.fold_weights = fold_weights
         self.kwargs = kwargs
         self.svario = svario
+        self.axis_profile_type = axis_profile_type
+        self.limb_profile_type = limb_profile_type
 
     def set_fold_axis(self):
         """calculates the fold axis/ fold axis rotation and adds this to the fold"""
@@ -67,31 +74,41 @@ class FoldedFeatureBuilder(GeologicalFeatureBuilder):
             if not self.fold.foldframe[1].is_valid():
                 raise InterpolatorError("Fold frame direction coordinate is not valid")
             far, fad = self.fold.foldframe.calculate_fold_axis_rotation(self)
-            fold_axis_rotation = FoldRotationAngle(far, fad, svario=self.svario)
-            a_wl = kwargs.get("axis_wl", None)
+            fold_axis_rotation = get_fold_rotation_profile(self.axis_profile_type, far, fad)
             if "axis_function" in kwargs:
                 # allow predefined function to be used
                 fold_axis_rotation.set_function(kwargs["axis_function"])
             else:
-                fold_axis_rotation.fit_fourier_series(wl=a_wl)
+                fold_axis_rotation.fit(params={'wavelength': kwargs.get("axis_wl", None)})
             self.fold.fold_axis_rotation = fold_axis_rotation
+            fold_axis_rotation.add_observer(self)
 
     def set_fold_limb_rotation(self):
         """Calculates the limb rotation of the fold and adds it to the fold object"""
         kwargs = self.kwargs
+        # need to calculate the fold axis before the fold limb rotation angle
+        if self.fold.fold_axis is None:
+            self.set_fold_axis()
         # give option of passing own fold limb rotation function
-        flr, fld = self.fold.foldframe.calculate_fold_limb_rotation(
-            self, self.fold.get_fold_axis_orientation
-        )
-        fold_limb_rotation = FoldRotationAngle(flr, fld, svario=self.svario)
-        l_wl = kwargs.get("limb_wl", None)
+        flr, fld = self.calculate_fold_limb_rotation_angle()
+
+        fold_limb_rotation = get_fold_rotation_profile(self.limb_profile_type, flr, fld)
         if "limb_function" in kwargs:
             # allow for predefined functions to be used
             fold_limb_rotation.set_function(kwargs["limb_function"])
         else:
-            fold_limb_rotation.fit_fourier_series(wl=l_wl, **kwargs)
-        self.fold.fold_limb_rotation = fold_limb_rotation
+            fold_limb_rotation.fit(params={'wavelength': kwargs.get("limb_wl", None)})
 
+        self.fold.fold_limb_rotation = fold_limb_rotation
+        fold_limb_rotation.add_observer(self)
+
+    def calculate_fold_limb_rotation_angle(self):
+        flr, fld = self.fold.foldframe.calculate_fold_limb_rotation(
+            self, self.fold.get_fold_axis_orientation
+        )
+        return flr, fld
+
+    # def
     def build(self, data_region=None, constrained=None, **kwargs):
         """the main function to run the interpolation and set up the parameters
 
@@ -115,8 +132,10 @@ class FoldedFeatureBuilder(GeologicalFeatureBuilder):
         self.add_data_to_interpolator(constrained=constrained)
         if not self.fold.foldframe[0].is_valid():
             raise InterpolatorError("Fold frame main coordinate is not valid")
-        self.set_fold_axis()
-        self.set_fold_limb_rotation()
+        if self.fold.fold_axis is None:
+            self.set_fold_axis()
+        if self.fold.fold_limb_rotation is None:
+            self.set_fold_limb_rotation()
         logger.info("Adding fold to {}".format(self.name))
         self.interpolator.fold = self.fold
         # if we have fold weights use those, otherwise just use default
