@@ -53,6 +53,8 @@ class TrigoFoldRotationAngleProfile(BaseFoldRotationAngleProfile):
     @origin.setter
     def origin(self, value):
         if np.isfinite(value):
+            self.notify_observers()
+
             self._origin = value
         else:
             raise ValueError("origin must be a finite number")
@@ -60,6 +62,8 @@ class TrigoFoldRotationAngleProfile(BaseFoldRotationAngleProfile):
     @wavelength.setter
     def wavelength(self, value):
         if np.isfinite(value):
+            self.notify_observers()
+
             self._wavelength = value
         else:
             raise ValueError("wavelength must be a finite number")
@@ -68,7 +72,9 @@ class TrigoFoldRotationAngleProfile(BaseFoldRotationAngleProfile):
     def inflectionpointangle(self, value):
         if np.isfinite(value):
             if value < np.deg2rad(-90) or value > np.deg2rad(90):
+                logger.error(f"Inflection point angle is {np.rad2deg(value)} degrees")
                 raise ValueError("inflectionpointangle must be between 0 and 90")
+            self.notify_observers()
             self._inflectionpointangle = value
 
         else:
@@ -123,6 +129,7 @@ class TrigoFoldRotationAngleProfile(BaseFoldRotationAngleProfile):
 
     def initial_guess(
         self,
+        wavelength: Optional[float] = None,
         calculate_wavelength: bool = True,
         svariogram_parameters: dict = {},
         reset: bool = True,
@@ -135,6 +142,8 @@ class TrigoFoldRotationAngleProfile(BaseFoldRotationAngleProfile):
             self.inflectionpointangle = np.deg2rad(45)  # otherwise there is a numerical error
         if calculate_wavelength:
             self.wavelength = self.estimate_wavelength(svariogram_parameters=svariogram_parameters)
+        if wavelength is not None:
+            self.wavelength = wavelength
         guess = [
             self.fold_frame_coordinate.mean(),
             self.wavelength,

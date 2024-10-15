@@ -31,45 +31,14 @@ class BaseFoldRotationAngleProfile(metaclass=ABCMeta):
         self.rotation_angle = rotation_angle
         self.fold_frame_coordinate = fold_frame_coordinate
         self._evaluation_points = None
+        self._observers = []
 
-    @abstractmethod
-    def fit(self, params: dict = {}) -> bool:
-        """Method is called to setup the fold rotation angle for the given data
-        any parameters that are required to fit the fold rotation angle can be injected
-        using the params dictionary
+    def add_observer(self, watcher):
+        self._observers.append(watcher)
 
-        Parameters
-        ----------
-        params : dict, optional
-            Any parameters required to fit the function to the data, by default {}
-        rotation_angle : np.ndarray
-            fold rotation angle in degrees
-        fold_frame_coordinate : np.ndarray
-            fold frame coordinate
-        Returns
-        -------
-        success : bool
-            returns True if the fit was successful
-        """
-        pass
-
-    # @abstractmethod
-    # def __call__(self, fold_frame_coordinate: Union[float, np.ndarray]) -> Union[float, np.ndarray]:
-    #     """This is called during the fold interpolation to return the fold rotation angle for a given
-    #     fold frame coordinate.
-    #     Should be able to be called with a single value or an array of values
-
-    #     Parameters
-    #     ----------
-    #     fold_frame_coordinate : Union[float, np.ndarray]
-    #         fold frame coordinate to return a rotation angle
-
-    #     Returns
-    #     -------
-    #     Union[float, np.ndarray]
-    #         fold rotation angle
-    #     """
-    #     pass
+    def notify_observers(self):
+        for observer in self._observers:
+            observer.set_not_up_to_date(self)
 
     def calculate_misfit(
         self,
@@ -148,39 +117,44 @@ class BaseFoldRotationAngleProfile(metaclass=ABCMeta):
         bool
             _description_
         """
-        success = False
-        if self.rotation_angle is None or self.fold_frame_coordinate is None:
-            logger.error("Fold rotation angle and fold frame coordinate must be set")
-            return False
-        guess = params.get(
-            "guess",
-            self.initial_guess(
-                params.get("reset", False),
-                params.get("svariogram_parameters", {}),
-                params.get("calculate_wavelength", True),
-            ),
-        )
-        mask = np.logical_or(~np.isnan(self.fold_frame_coordinate), ~np.isnan(self.rotation_angle))
-        logger.info(f"Percentage of points not used {np.sum(~mask)/len(mask)*100}")
-        try:
-            logger.info(f"Trying to fit fold rotation angle with guess {guess}")
-            logger.info(f"Fold profile type: {self.__class__.__name__}")
-            res = curve_fit(
-                self._function,
-                self.fold_frame_coordinate[mask],
-                np.arctan(np.deg2rad(self.rotation_angle[mask])),
-                p0=guess,
-                full_output=True,
+        if len(self.params) > 0:
+            success = False
+            if self.rotation_angle is None or self.fold_frame_coordinate is None:
+                logger.error("Fold rotation angle and fold frame coordinate must be set")
+                return False
+            guess = params.get(
+                "guess",
+                self.initial_guess(
+                    wavelength=params.get("wavelength", None),
+                    reset=params.get("reset", False),
+                    svariogram_parameters=params.get("svariogram_parameters", {}),
+                    calculate_wavelength=params.get("calculate_wavelength", True),
+                ),
             )
-            logger.info(f'Fit results: {res[0]}')
-            guess = res[0]
-            logger.info(res[3])
-            success = True
-        except Exception as e:
-            logger.error("Could not fit curve to S-Plot, check the wavelength")
+            mask = np.logical_or(
+                ~np.isnan(self.fold_frame_coordinate), ~np.isnan(self.rotation_angle)
+            )
+            logger.info(f"Percentage of points not used {np.sum(~mask)/len(mask)*100}")
+            try:
+                logger.info(f"Trying to fit fold rotation angle with guess {guess}")
+                logger.info(f"Fold profile type: {self.__class__.__name__}")
+                res = curve_fit(
+                    self._function,
+                    self.fold_frame_coordinate[mask],
+                    np.tan(np.deg2rad(self.rotation_angle[mask])),
+                    p0=guess,
+                    full_output=True,
+                )
+                logger.info(f'Fit results: {res[0]}')
+                guess = res[0]
+                logger.info(res[3])
+                success = True
+            except Exception as e:
+                logger.error("Could not fit curve to S-Plot, check the wavelength")
 
-        self.update_params(guess)
-        return success
+            self.update_params(guess)
+            return success
+        return True
 
     @abstractmethod
     def update_params(self, params: Union[List, npt.NDArray[np.float64]]) -> None:
@@ -196,6 +170,7 @@ class BaseFoldRotationAngleProfile(metaclass=ABCMeta):
     @abstractmethod
     def initial_guess(
         self,
+        wavelength: Optional[float] = None,
         calculate_wavelength: bool = True,
         svariogram_parameters: dict = {},
         reset: bool = False,
@@ -236,7 +211,7 @@ class BaseFoldRotationAngleProfile(metaclass=ABCMeta):
         """
         pass
 
-    def plot(self, ax=None, **kwargs):
+    def plot(self, ax=None, show_data=True, **kwargs):
         """Plot the fold rotation angle function
 
         Parameters
@@ -250,8 +225,10 @@ class BaseFoldRotationAngleProfile(metaclass=ABCMeta):
             import matplotlib.pyplot as plt
 
             fig, ax = plt.subplots()
+        if show_data:
+            ax.scatter(self.fold_frame_coordinate, self.rotation_angle, c="r")
         ax.plot(self.evaluation_points, self(self.evaluation_points), **kwargs)
         return ax
 
     def __call__(self, s):
-        return np.rad2deg(np.tan(self._function(s, **self.params)))
+        return np.rad2deg(np.arctan(self._function(s, **self.params)))

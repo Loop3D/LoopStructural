@@ -49,6 +49,7 @@ class FourierSeriesFoldRotationAngleProfile(BaseFoldRotationAngleProfile):
 
     @c0.setter
     def c0(self, value):
+        self.notify_observers()
         self._c0 = value
 
     @property
@@ -57,6 +58,7 @@ class FourierSeriesFoldRotationAngleProfile(BaseFoldRotationAngleProfile):
 
     @c1.setter
     def c1(self, value):
+        self.notify_observers()
         self._c1 = value
 
     @property
@@ -65,6 +67,7 @@ class FourierSeriesFoldRotationAngleProfile(BaseFoldRotationAngleProfile):
 
     @c2.setter
     def c2(self, value):
+        self.notify_observers()
         self._c2 = value
 
     @property
@@ -75,6 +78,7 @@ class FourierSeriesFoldRotationAngleProfile(BaseFoldRotationAngleProfile):
     def w(self, value):
         if value <= 0:
             raise ValueError('wavelength must be greater than 0')
+        self.notify_observers()
         self._w = value
 
     @staticmethod
@@ -100,6 +104,7 @@ class FourierSeriesFoldRotationAngleProfile(BaseFoldRotationAngleProfile):
 
     def initial_guess(
         self,
+        wavelength: Optional[float] = None,
         calculate_wavelength: bool = True,
         svariogram_parameters: dict = {},
         reset: bool = False,
@@ -113,6 +118,8 @@ class FourierSeriesFoldRotationAngleProfile(BaseFoldRotationAngleProfile):
             self.w = 1
         if calculate_wavelength:
             self.w = self.estimate_wavelength(svariogram_parameters=svariogram_parameters)
+        if wavelength is not None:
+            self.w = wavelength
         guess = [self.c0, self.c1, self.c2, self.w]
         return guess
 
