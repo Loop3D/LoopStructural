@@ -2,7 +2,6 @@ from ._base_fold_rotation_angle import BaseFoldRotationAngleProfile
 import numpy as np
 import numpy.typing as npt
 from typing import Optional, Union, List
-from .._svariogram import SVariogram
 from .....utils import getLogger
 
 logger = getLogger(__name__)

@@ -1,5 +1,4 @@
 from ....modelling.features.builders import GeologicalFeatureBuilder
-from ....modelling.features.fold import FoldRotationAngle
 from ....modelling.features.fold.fold_function import FoldRotationType, get_fold_rotation_profile
 import numpy as np
 

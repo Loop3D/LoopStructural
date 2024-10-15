@@ -1,10 +1,7 @@
-from ast import Dict
 from ._base_fold_rotation_angle import BaseFoldRotationAngleProfile
 import numpy as np
 import numpy.typing as npt
 from typing import Optional, List, Union
-from scipy.optimize import curve_fit
-from .._svariogram import SVariogram
 from .....utils import getLogger
 
 logger = getLogger(__name__)
