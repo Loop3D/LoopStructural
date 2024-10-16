@@ -32,6 +32,23 @@ class BaseFoldRotationAngleProfile(metaclass=ABCMeta):
         self.fold_frame_coordinate = fold_frame_coordinate
         self._evaluation_points = None
         self._observers = []
+        self._svariogram = None
+
+    @property
+    def svario(self) -> SVariogram:
+        if self.fold_frame_coordinate is None or self.rotation_angle is None:
+            raise ValueError("Fold rotation angle and fold frame coordinate must be set")
+        if self._svariogram is None:
+            self._svariogram = SVariogram(self.fold_frame_coordinate, self.rotation_angle)
+        return self._svariogram
+
+    @svario.setter
+    def svario(self, value: SVariogram):
+        if isinstance(value, SVariogram):
+            self._svariogram = value
+        else:
+            logger.error("svario must be an instance of SVariogram")
+            raise ValueError("svario must be an instance of SVariogram")
 
     def add_observer(self, watcher):
         self._observers.append(watcher)
@@ -79,8 +96,7 @@ class BaseFoldRotationAngleProfile(metaclass=ABCMeta):
         float
             estimated wavelength
         """
-        svariogram = SVariogram(self.fold_frame_coordinate, self.rotation_angle)
-        wl = svariogram.find_wavelengths(**svariogram_parameters)
+        wl = self.svario.find_wavelengths(**svariogram_parameters)
         if wavelength_number == 1:
             return wl[0]
         return wl
