@@ -167,8 +167,11 @@ class BaseFoldRotationAngleProfile(metaclass=ABCMeta):
                 success = True
             except Exception as _e:
                 logger.error("Could not fit curve to S-Plot, check the wavelength")
-
-            self.update_params(guess)
+            try:
+                self.update_params(guess)
+            except Exception as _e:
+                logger.error("Could not update parameters")
+                return False
             return success
         return True
 
