@@ -57,6 +57,19 @@ class FoldedFeatureBuilder(GeologicalFeatureBuilder):
         self.axis_profile_type = axis_profile_type
         self.limb_profile_type = limb_profile_type
 
+    @property
+    def fold_axis_rotation(self):
+        if self.fold.fold_axis_rotation is None:
+            self.set_fold_axis()
+        return self.fold.fold_axis_rotation
+
+    @property
+    def fold_limb_rotation(self):
+        _axis = self.fold.fold_axis  # get axis to make sure its initialised
+        if self.fold.fold_limb_rotation is None:
+            self.set_fold_limb_rotation()
+        return self.fold.fold_limb_rotation
+
     def set_fold_axis(self):
         """calculates the fold axis/ fold axis rotation and adds this to the fold"""
         kwargs = self.kwargs
