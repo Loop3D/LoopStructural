@@ -1,8 +1,12 @@
 Modelling Workflows
 ------------------------
-The Modeling Workflows section dives deeper into the key geological modeling tasks that LoopStructural excels at, including fault modeling, fold modeling, and managing unconformities. 
-These examples guide users through more complex geological scenarios, showing how to model multiple interacting structures with varying constraints. 
-Each workflow demonstrates how to customize LoopStructural to fit specific geological environments, highlighting the library's flexibility in handling intricate subsurface relationships. 
-This section is ideal for users who are comfortable with the basics and want to explore specific geological processes in greater detail. 
-Whether you're working with faults, folds, or unconformities, these examples will help you apply LoopStructural to a variety of real-world geological modeling challenges.
+This section focuses on the advanced structural geology modelling algorithms built into LoopStructural. 
+At the base of all structures in LoopStructural is the StructuralFrame, a curvilinear coodinate system that allows for the complex geometries of geological structures to be represented in simple coordinate systems.
+The structural frames have three main coordinates:
+
+1. The major structural feature measures the distance to the main structural feature
+2. The structural direction measures the distance along the main structural direction of the object
+3. An intermediate direction orthogonal to 1 and 2.
+
+These coordinates are built to represent the directions of the finite strain ellipsoid and can help for modelling folds, faults and intrusions. 
 
