@@ -27,13 +27,17 @@ RUN conda install -c conda-forge\
     scikit-learn\ 
     scikit-image\ 
     networkx\
-    # geopandas\
+    geopandas\
     libstdcxx-ng\
     meshio\
-    python=3.10\
+    python\
     pydata-sphinx-theme\
+    numpydoc\
+    sphinxcontrib-bibtex\
+    sphinx-design\
+    jupyter-sphinx\
+    sphinx-book-theme\
     -y
-RUN pip install git+https://github.com/geopandas/geopandas.git@v0.10.2
 RUN pip install loopstructuralvisualisation[all] geoh5py
 RUN pip install sphinxcontrib-bibtex
 ENV TINI_VERSION v0.19.0
