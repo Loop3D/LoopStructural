@@ -1,0 +1,4 @@
+ERROR: In /croot/vtk_1679752179819/work/Rendering/OpenGL2/vtkXOpenGLRenderWindow.cxx, line 448
+vtkXOpenGLRenderWindow (0x55d7995a5dc0): bad X server connection. DISPLAY=
+
+

@@ -1,6 +1,6 @@
 """
 ============================
-1a. Getting started
+Getting started
 ============================
 This tutorial will demonstrate how to setup a basic geological model for using with LoopStructural.
 

@@ -1,6 +1,6 @@
 """
-1c. Multiple groups
-===================
+Unconformities and stratigraphy
+================================
 Creating a model with multiple geological features, dealing with unconformities.
 
 """
@@ -43,4 +43,4 @@ viewer.plot_surface(
     value=[2, 1.5, 1],
 )
 viewer.plot_surface(strati, value=[0, -60, -250, -330], paint_with=strati)
-viewer.display()
+viewer.show()

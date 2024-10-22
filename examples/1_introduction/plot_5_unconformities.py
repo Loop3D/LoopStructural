@@ -1,6 +1,6 @@
 """
 ============================
-1h. Unconformities and fault
+Unconformities and fault
 ============================
 This tutorial will demonstrate how to add unconformities to a mode using LoopStructural.
 

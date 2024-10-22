@@ -1,6 +1,6 @@
 """
 
-1b. Implicit surface modelling
+Implicit surface modelling
 ===============================
 This tutorial will demonstrate how to create an implicit surface
 representation of surfaces from a combination of orientation and
@@ -97,7 +97,7 @@ viewer.add_arrows(
     data[~np.isnan(data["nx"])][["X", "Y", "Z"]].values,
     direction=data[~np.isnan(data["nx"])][["nx", "ny", "nz"]].values,
 )
-viewer.display()
+viewer.show()
 
 
 ######################################################################
@@ -167,7 +167,7 @@ strati = model.create_and_add_foliation(
 
 viewer = Loop3DView(model)
 viewer.plot_model_surfaces(cmap="tab20")
-viewer.display()
+viewer.show()
 
 ######################################################################
 # Plot block diagram
@@ -175,4 +175,4 @@ viewer.display()
 
 viewer = Loop3DView(model)
 viewer.plot_block_model(cmap="tab20")
-viewer.display()
+viewer.show()

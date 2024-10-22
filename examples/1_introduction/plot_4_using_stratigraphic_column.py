@@ -1,5 +1,5 @@
 """
-1d. Using Stratigraphic Columns
+Defining a stratigraphic column
 ===============================
 We will use the previous example Creating a model with multiple geological features, dealing with unconformities.
 
@@ -61,4 +61,4 @@ model.set_stratigraphic_column(stratigraphic_column)
 
 viewer = Loop3DView(model)
 viewer.plot_block_model()
-viewer.display()
+viewer.show()

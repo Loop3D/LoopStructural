@@ -47,16 +47,10 @@ model.create_and_add_foliation(
 import LoopStructural.visualisation as vis
 
 view = vis.Loop3DView(model)
-view.add_isosurface(model.features[0], slices=[0])
-view.add_isosurface(model.features[1], nslices=5, paint_with=model.features[1])
-# view.add_vector_field(model["fault"][1], locations=model.regular_grid()[::100])
-view.camera = {
-    'translate': [0.0, 0.0, -17.321],
-    'rotate': [-0.703, -0.055, -0.043, 0.708],
-    'xyzrotate': [-89.604, -8.007, 0.933],
-    'fov': 45.0,
-}
-view.display()
+view.plot_surface(model.features[0], [0])
+view.plot_surface(model.features[1], 5, paint_with=model.features[1])
+
+view.show()
 
 ######################################################################
 # Define a fault displacement profile which
@@ -115,15 +109,9 @@ model.create_and_add_foliation(
 
 view = vis.Loop3DView(model)
 view.nelements = 1e5
-view.add_isosurface(model.features[0], slices=[0])
-view.add_isosurface(model['strati'], nslices=5)
+view.plot_surface(model.features[0], [0])
+view.plot_surface(model['strati'], 5)
 # view.add_scalar_field(model['strati'], cmap='tab20')
 # view.add_vector_field(model["fault"][1], locations=model.regular_grid()[::100])
-view.camera = {
-    'translate': [0.0, 0.0, -17.321],
-    'rotate': [-0.703, -0.055, -0.043, 0.708],
-    'xyzrotate': [-89.604, -8.007, 0.933],
-    'fov': 45.0,
-}
 
-view.display()
+view.show()

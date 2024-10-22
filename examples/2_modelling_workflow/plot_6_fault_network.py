@@ -1,5 +1,9 @@
 """
-3b. Modelling a fault network in LoopStructural
+Fault network
+"""
+
+"""
+Modelling a fault network in LoopStructural
 ===============================================
 Uses GeologicalModel, ProcessInputData and Loop3DView from LoopStructural library. 
 Also using geopandas to read a shapefile, pandas, matplotlib and numpy."""
@@ -101,9 +105,8 @@ model.update()
 
 view = Loop3DView(model)
 for f in model.faults:
-    view.add_isosurface(f, slices=[0])  #
-view.rotation = [-50.92916488647461, -30.319700241088867, -20.521053314208984]
-view.display()
+    view.plot_surface(f, value=[0])  #
+view.show()
 
 ##############################
 # Modelling abutting faults
@@ -124,8 +127,7 @@ model = GeologicalModel.from_processor(processor)
 
 view = Loop3DView(model)
 for f in model.faults:
-    view.add_isosurface(f, slices=[0])  #
-    view.add_data(f[0], vectors=True)
+    view.plot_surface(f, value=[0])  #
+    view.plot_data(f[0])
 
-view.rotation = [-50.92916488647461, -30.319700241088867, -20.521053314208984]
-view.display()
+view.show()

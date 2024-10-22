@@ -1,6 +1,6 @@
 """
 
-1j. Exporting models
+Exporting models 
 ===============================
 
 Models can be exported to vtk, gocad and geoh5 formats.

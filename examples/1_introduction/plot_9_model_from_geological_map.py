@@ -1,5 +1,5 @@
 """
-4.a Building a model using the ProcessInputData
+Building a model from a geological map
 ===============================================
 There is a disconnect between the input data required by 3D modelling software and a geological map. 
 In LoopStructural the geological model is a collection of implicit functions that can be mapped to 
@@ -138,9 +138,8 @@ model2.update()
 
 
 view = Loop3DView(model)
-view.add_model_surfaces()
-view.rotation = [-37.965614318847656, 13.706363677978516, 3.110347032546997]
-view.display()
+view.plot_model_surfaces()
+view.show()
 
 ##############################
 # Adding faults
@@ -172,6 +171,5 @@ model = GeologicalModel.from_processor(processor)
 model.update()
 
 view = Loop3DView(model)
-view.add_model_surfaces()
-view.rotation = [-37.965614318847656, 13.706363677978516, 3.110347032546997]
-view.display()
+view.plot_model_surfaces()
+view.show()
