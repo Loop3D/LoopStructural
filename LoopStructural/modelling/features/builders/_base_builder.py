@@ -29,6 +29,12 @@ class BaseBuilder:
         self._build_arguments = {}
         self.faults = []
 
+    def set_not_up_to_date(self, caller):
+        logger.info(
+            f"Setting {self.name} to not up to date from an instance of {caller.__class__.__name__}"
+        )
+        self._up_to_date = False
+
     @property
     def model(self):
         return self._model

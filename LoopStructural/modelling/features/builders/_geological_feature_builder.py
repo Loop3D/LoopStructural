@@ -67,7 +67,7 @@ class GeologicalFeatureBuilder(BaseBuilder):
                 "interpolator is {} and must be a GeologicalInterpolator".format(type(interpolator))
             )
         self._interpolator = interpolator
-
+        self._up_to_date = self._interpolator.up_to_date
         header = (
             xyz_names()
             + val_name()
@@ -92,6 +92,13 @@ class GeologicalFeatureBuilder(BaseBuilder):
         )
         self._orthogonal_features = {}
         self._equality_constraints = {}
+
+    def set_not_up_to_date(self, caller):
+        logger.info(
+            f"Setting {self.name} to not up to date from an instance of {caller.__class__.__name__}"
+        )
+        self._up_to_date = False
+        self._interpolator.up_to_date = False
 
     @property
     def interpolator(self):
