@@ -3,11 +3,7 @@
 Visualising models
 ===============================
 The following tutorial will demonstrate how to use the Loop structural visualisation module. 
-This module provides a wrapper for the lavavu model that is written by
-Owen Kaluza. 
-
-Lavavu allows for interactive visualisation of 3D models within a jupyter
-notebook environment. 
+This module provides a wrapper for the pyvista library.
 
 """
 

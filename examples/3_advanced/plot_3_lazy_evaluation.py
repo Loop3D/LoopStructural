@@ -1,0 +1,3 @@
+"""
+Understanding lazy evaluation
+"""
