@@ -4,8 +4,8 @@
 
 """
 
-from LoopStructural import GeologicalModel
-from LoopStructural.visualisation import Loop3DView
+# from LoopStructural import GeologicalModel
+# from LoopStructural.visualisation import Loop3DView
 from LoopStructural.datasets import load_intrusion
 import numpy as np
 import matplotlib.pyplot as plt
