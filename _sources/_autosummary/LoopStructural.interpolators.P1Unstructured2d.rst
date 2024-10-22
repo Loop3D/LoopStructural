@@ -26,6 +26,7 @@ LoopStructural.interpolators.P1Unstructured2d
       ~P1Unstructured2d.get_element_gradient_for_location
       ~P1Unstructured2d.inside
       ~P1Unstructured2d.onGeometryChange
+      ~P1Unstructured2d.vtk
    
    
 

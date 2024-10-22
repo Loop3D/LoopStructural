@@ -18,10 +18,12 @@ LoopStructural.interpolators.GeologicalInterpolator
    
       ~GeologicalInterpolator.__init__
       ~GeologicalInterpolator.add_gradient_constraints
+      ~GeologicalInterpolator.add_inequality_pairs_constraints
       ~GeologicalInterpolator.add_interface_constraints
       ~GeologicalInterpolator.add_norm_constraints
       ~GeologicalInterpolator.add_tangent_constraints
       ~GeologicalInterpolator.add_value_constraints
+      ~GeologicalInterpolator.add_value_inequality_constraints
       ~GeologicalInterpolator.check_array
       ~GeologicalInterpolator.clean
       ~GeologicalInterpolator.debug

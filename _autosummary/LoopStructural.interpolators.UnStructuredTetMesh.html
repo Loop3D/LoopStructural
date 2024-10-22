@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>LoopStructural.interpolators.UnStructuredTetMesh &#8212; LoopStructural 1.6.2 documentation</title>
+    <title>LoopStructural.interpolators.UnStructuredTetMesh &#8212; LoopStructural 1.6.3 documentation</title>
   
   
   
@@ -40,8 +40,8 @@
 <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
   <script src="../_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
 
-    <script src="../_static/documentation_options.js?v=32067a2e"></script>
-    <script src="../_static/doctools.js?v=9a2dae69"></script>
+    <script src="../_static/documentation_options.js?v=89faf833"></script>
+    <script src="../_static/doctools.js?v=9bcbadda"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = '_autosummary/LoopStructural.interpolators.UnStructuredTetMesh';</script>
     <script src="../_static/custom-icon.js?v=40bda21d"></script>
@@ -51,7 +51,7 @@
     <link rel="prev" title="LoopStructural.interpolators.StructuredGrid" href="LoopStructural.interpolators.StructuredGrid.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-    <meta name="docbuild:last-update" content="Aug 06, 2024"/>
+    <meta name="docbuild:last-update" content="Oct 22, 2024"/>
   </head>
   
   
@@ -133,7 +133,7 @@
     <script>document.write(`<img src="../_static/infinity_loop_icon.svg" class="logo__image only-dark" alt=""/>`);</script>
   
   
-    <p class="title logo__title">LoopStructural - 1.6.2</p>
+    <p class="title logo__title">LoopStructural - 1.6.3</p>
   
 </a></div>
     
@@ -582,8 +582,8 @@ element.</p>
 <tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.interpolators.UnStructuredTetMesh.onGeometryChange" title="LoopStructural.interpolators.UnStructuredTetMesh.onGeometryChange"><code class="xref py py-obj docutils literal notranslate"><span class="pre">onGeometryChange</span></code></a>()</p></td>
 <td><p>Called when the geometry changes</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">vtk</span></code>()</p></td>
-<td><p></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.interpolators.UnStructuredTetMesh.vtk" title="LoopStructural.interpolators.UnStructuredTetMesh.vtk"><code class="xref py py-obj docutils literal notranslate"><span class="pre">vtk</span></code></a>([node_properties, cell_properties])</p></td>
+<td><p>Return a vtk object</p></td>
 </tr>
 </tbody>
 </table>
@@ -778,6 +778,12 @@ with the neighbours for each element</p>
 <dd><p>Get the area of the share triangle</p>
 </dd></dl>
 
+<dl class="py method">
+<dt class="sig sig-object py" id="LoopStructural.interpolators.UnStructuredTetMesh.vtk">
+<span class="sig-name descname"><span class="pre">vtk</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">node_properties</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{}</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cell_properties</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{}</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.interpolators.UnStructuredTetMesh.vtk" title="Link to this definition">#</a></dt>
+<dd><p>Return a vtk object</p>
+</dd></dl>
+
 </dd></dl>
 
 </section>
@@ -848,6 +854,7 @@ with the neighbours for each element</p>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#LoopStructural.interpolators.UnStructuredTetMesh.onGeometryChange"><code class="docutils literal notranslate"><span class="pre">UnStructuredTetMesh.onGeometryChange()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#LoopStructural.interpolators.UnStructuredTetMesh.shared_element_norm"><code class="docutils literal notranslate"><span class="pre">UnStructuredTetMesh.shared_element_norm</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#LoopStructural.interpolators.UnStructuredTetMesh.shared_element_size"><code class="docutils literal notranslate"><span class="pre">UnStructuredTetMesh.shared_element_size</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#LoopStructural.interpolators.UnStructuredTetMesh.vtk"><code class="docutils literal notranslate"><span class="pre">UnStructuredTetMesh.vtk()</span></code></a></li>
 </ul>
 </li>
 </ul>

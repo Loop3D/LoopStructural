@@ -35,6 +35,7 @@ LoopStructural.interpolators.P2Interpolator
       ~P2Interpolator.calculate_residual_for_constraints
       ~P2Interpolator.check_array
       ~P2Interpolator.clean
+      ~P2Interpolator.clear_constraints
       ~P2Interpolator.copy
       ~P2Interpolator.debug
       ~P2Interpolator.evaluate_d2

@@ -36,6 +36,7 @@ LoopStructural.interpolators.DiscreteFoldInterpolator
       ~DiscreteFoldInterpolator.calculate_residual_for_constraints
       ~DiscreteFoldInterpolator.check_array
       ~DiscreteFoldInterpolator.clean
+      ~DiscreteFoldInterpolator.clear_constraints
       ~DiscreteFoldInterpolator.debug
       ~DiscreteFoldInterpolator.evaluate_gradient
       ~DiscreteFoldInterpolator.evaluate_value

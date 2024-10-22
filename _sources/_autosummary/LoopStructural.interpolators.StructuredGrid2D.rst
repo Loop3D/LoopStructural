@@ -25,6 +25,7 @@ LoopStructural.interpolators.StructuredGrid2D
       ~StructuredGrid2D.evaluate_value
       ~StructuredGrid2D.get_element_for_location
       ~StructuredGrid2D.get_element_gradient_for_location
+      ~StructuredGrid2D.get_operators
       ~StructuredGrid2D.global_cell_indices
       ~StructuredGrid2D.global_index_to_cell_index
       ~StructuredGrid2D.global_index_to_node_index
@@ -39,6 +40,7 @@ LoopStructural.interpolators.StructuredGrid2D
       ~StructuredGrid2D.position_to_dof_coefs
       ~StructuredGrid2D.position_to_local_coordinates
       ~StructuredGrid2D.print_geometry
+      ~StructuredGrid2D.vtk
    
    
 

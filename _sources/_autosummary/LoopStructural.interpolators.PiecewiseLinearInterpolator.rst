@@ -35,6 +35,7 @@ LoopStructural.interpolators.PiecewiseLinearInterpolator
       ~PiecewiseLinearInterpolator.calculate_residual_for_constraints
       ~PiecewiseLinearInterpolator.check_array
       ~PiecewiseLinearInterpolator.clean
+      ~PiecewiseLinearInterpolator.clear_constraints
       ~PiecewiseLinearInterpolator.debug
       ~PiecewiseLinearInterpolator.evaluate_gradient
       ~PiecewiseLinearInterpolator.evaluate_value

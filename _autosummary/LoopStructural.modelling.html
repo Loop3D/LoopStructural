@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>LoopStructural.modelling &#8212; LoopStructural 1.6.2 documentation</title>
+    <title>LoopStructural.modelling &#8212; LoopStructural 1.6.3 documentation</title>
   
   
   
@@ -40,18 +40,18 @@
 <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
   <script src="../_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
 
-    <script src="../_static/documentation_options.js?v=32067a2e"></script>
-    <script src="../_static/doctools.js?v=9a2dae69"></script>
+    <script src="../_static/documentation_options.js?v=89faf833"></script>
+    <script src="../_static/doctools.js?v=9bcbadda"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = '_autosummary/LoopStructural.modelling';</script>
     <script src="../_static/custom-icon.js?v=40bda21d"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="LoopStructural.modelling.ProcessInputData" href="LoopStructural.modelling.ProcessInputData.html" />
+    <link rel="next" title="LoopStructural.modelling.GeologicalModel" href="LoopStructural.modelling.GeologicalModel.html" />
     <link rel="prev" title="LoopStructural.GeologicalModel" href="LoopStructural.GeologicalModel.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-    <meta name="docbuild:last-update" content="Aug 06, 2024"/>
+    <meta name="docbuild:last-update" content="Oct 22, 2024"/>
   </head>
   
   
@@ -133,7 +133,7 @@
     <script>document.write(`<img src="../_static/infinity_loop_icon.svg" class="logo__image only-dark" alt=""/>`);</script>
   
   
-    <p class="title logo__title">LoopStructural - 1.6.2</p>
+    <p class="title logo__title">LoopStructural - 1.6.3</p>
   
 </a></div>
     
@@ -422,6 +422,7 @@ document.write(`
 <ul class="current nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="LoopStructural.html">LoopStructural</a></li>
 <li class="toctree-l1 current active has-children"><a class="current reference internal" href="#">LoopStructural.modelling</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="LoopStructural.modelling.GeologicalModel.html">LoopStructural.modelling.GeologicalModel</a></li>
 <li class="toctree-l2"><a class="reference internal" href="LoopStructural.modelling.ProcessInputData.html">LoopStructural.modelling.ProcessInputData</a></li>
 <li class="toctree-l2"><a class="reference internal" href="LoopStructural.modelling.Map2LoopProcessor.html">LoopStructural.modelling.Map2LoopProcessor</a></li>
 </ul>
@@ -492,10 +493,13 @@ document.write(`
 <p class="rubric">Classes</p>
 <div class="pst-scrollable-table-container"><table class="autosummary longtable table autosummary">
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="LoopStructural.modelling.ProcessInputData.html#LoopStructural.modelling.ProcessInputData" title="LoopStructural.modelling.ProcessInputData"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ProcessInputData</span></code></a>([contacts, ...])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="LoopStructural.modelling.GeologicalModel.html#LoopStructural.modelling.GeologicalModel" title="LoopStructural.modelling.GeologicalModel"><code class="xref py py-obj docutils literal notranslate"><span class="pre">GeologicalModel</span></code></a>(origin, maximum[, data, ...])</p></td>
+<td><p>A geological model is the recipe for building a 3D model and  can include the rescaling of the model between 0 and 1.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="LoopStructural.modelling.ProcessInputData.html#LoopStructural.modelling.ProcessInputData" title="LoopStructural.modelling.ProcessInputData"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ProcessInputData</span></code></a>([contacts, ...])</p></td>
 <td><p>Object to generate loopstructural input dataset from a geological map</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="LoopStructural.modelling.Map2LoopProcessor.html#LoopStructural.modelling.Map2LoopProcessor" title="LoopStructural.modelling.Map2LoopProcessor"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Map2LoopProcessor</span></code></a>(m2l_directory[, use_thickness])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="LoopStructural.modelling.Map2LoopProcessor.html#LoopStructural.modelling.Map2LoopProcessor" title="LoopStructural.modelling.Map2LoopProcessor"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Map2LoopProcessor</span></code></a>(m2l_directory[, use_thickness])</p></td>
 <td><p>Function to build a ProcessInputData object for using m2l data</p></td>
 </tr>
 </tbody>
@@ -523,11 +527,11 @@ document.write(`
       </div>
     </a>
     <a class="right-next"
-       href="LoopStructural.modelling.ProcessInputData.html"
+       href="LoopStructural.modelling.GeologicalModel.html"
        title="next page">
       <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">LoopStructural.modelling.ProcessInputData</p>
+        <p class="prev-next-title">LoopStructural.modelling.GeologicalModel</p>
       </div>
       <i class="fa-solid fa-angle-right"></i>
     </a>

@@ -18,6 +18,7 @@ LoopStructural.datatypes.Surface
    
       ~Surface.__init__
       ~Surface.from_dict
+      ~Surface.plot
       ~Surface.save
       ~Surface.to_dict
       ~Surface.vtk

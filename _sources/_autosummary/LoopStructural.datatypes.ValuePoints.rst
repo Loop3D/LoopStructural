@@ -18,6 +18,7 @@ LoopStructural.datatypes.ValuePoints
    
       ~ValuePoints.__init__
       ~ValuePoints.from_dict
+      ~ValuePoints.plot
       ~ValuePoints.save
       ~ValuePoints.to_dict
       ~ValuePoints.vtk

@@ -35,6 +35,7 @@ LoopStructural.interpolators.DiscreteInterpolator
       ~DiscreteInterpolator.calculate_residual_for_constraints
       ~DiscreteInterpolator.check_array
       ~DiscreteInterpolator.clean
+      ~DiscreteInterpolator.clear_constraints
       ~DiscreteInterpolator.debug
       ~DiscreteInterpolator.evaluate_gradient
       ~DiscreteInterpolator.evaluate_value

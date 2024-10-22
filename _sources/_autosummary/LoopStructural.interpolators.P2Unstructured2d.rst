@@ -31,6 +31,7 @@ LoopStructural.interpolators.P2Unstructured2d
       ~P2Unstructured2d.get_quadrature_points
       ~P2Unstructured2d.inside
       ~P2Unstructured2d.onGeometryChange
+      ~P2Unstructured2d.vtk
    
    
 

@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>LoopStructural.interpolators.P2Unstructured2d &#8212; LoopStructural 1.6.2 documentation</title>
+    <title>LoopStructural.interpolators.P2Unstructured2d &#8212; LoopStructural 1.6.3 documentation</title>
   
   
   
@@ -40,8 +40,8 @@
 <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
   <script src="../_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
 
-    <script src="../_static/documentation_options.js?v=32067a2e"></script>
-    <script src="../_static/doctools.js?v=9a2dae69"></script>
+    <script src="../_static/documentation_options.js?v=89faf833"></script>
+    <script src="../_static/doctools.js?v=9bcbadda"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = '_autosummary/LoopStructural.interpolators.P2Unstructured2d';</script>
     <script src="../_static/custom-icon.js?v=40bda21d"></script>
@@ -51,7 +51,7 @@
     <link rel="prev" title="LoopStructural.interpolators.P1Unstructured2d" href="LoopStructural.interpolators.P1Unstructured2d.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-    <meta name="docbuild:last-update" content="Aug 06, 2024"/>
+    <meta name="docbuild:last-update" content="Oct 22, 2024"/>
   </head>
   
   
@@ -133,7 +133,7 @@
     <script>document.write(`<img src="../_static/infinity_loop_icon.svg" class="logo__image only-dark" alt=""/>`);</script>
   
   
-    <p class="title logo__title">LoopStructural - 1.6.2</p>
+    <p class="title logo__title">LoopStructural - 1.6.3</p>
   
 </a></div>
     
@@ -563,6 +563,9 @@ document.write(`
 <tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.interpolators.P2Unstructured2d.onGeometryChange" title="LoopStructural.interpolators.P2Unstructured2d.onGeometryChange"><code class="xref py py-obj docutils literal notranslate"><span class="pre">onGeometryChange</span></code></a>()</p></td>
 <td><p>Called when the geometry changes</p></td>
 </tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.interpolators.P2Unstructured2d.vtk" title="LoopStructural.interpolators.P2Unstructured2d.vtk"><code class="xref py py-obj docutils literal notranslate"><span class="pre">vtk</span></code></a>([node_properties, cell_properties])</p></td>
+<td><p>Create a vtk unstructured grid from the mesh</p></td>
+</tr>
 </tbody>
 </table>
 </div>
@@ -783,6 +786,12 @@ global index</p>
 <dd><p>Get the size of the shared elements</p>
 </dd></dl>
 
+<dl class="py method">
+<dt class="sig sig-object py" id="LoopStructural.interpolators.P2Unstructured2d.vtk">
+<span class="sig-name descname"><span class="pre">vtk</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">node_properties</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{}</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cell_properties</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{}</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.interpolators.P2Unstructured2d.vtk" title="Link to this definition">#</a></dt>
+<dd><p>Create a vtk unstructured grid from the mesh</p>
+</dd></dl>
+
 </dd></dl>
 
 </section>
@@ -854,6 +863,7 @@ global index</p>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#LoopStructural.interpolators.P2Unstructured2d.onGeometryChange"><code class="docutils literal notranslate"><span class="pre">P2Unstructured2d.onGeometryChange()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#LoopStructural.interpolators.P2Unstructured2d.shared_element_norm"><code class="docutils literal notranslate"><span class="pre">P2Unstructured2d.shared_element_norm</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#LoopStructural.interpolators.P2Unstructured2d.shared_element_size"><code class="docutils literal notranslate"><span class="pre">P2Unstructured2d.shared_element_size</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#LoopStructural.interpolators.P2Unstructured2d.vtk"><code class="docutils literal notranslate"><span class="pre">P2Unstructured2d.vtk()</span></code></a></li>
 </ul>
 </li>
 </ul>

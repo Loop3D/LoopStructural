@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>LoopStructural.datatypes.ValuePoints &#8212; LoopStructural 1.6.2 documentation</title>
+    <title>LoopStructural.datatypes.ValuePoints &#8212; LoopStructural 1.6.3 documentation</title>
   
   
   
@@ -40,8 +40,8 @@
 <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
   <script src="../_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
 
-    <script src="../_static/documentation_options.js?v=32067a2e"></script>
-    <script src="../_static/doctools.js?v=9a2dae69"></script>
+    <script src="../_static/documentation_options.js?v=89faf833"></script>
+    <script src="../_static/doctools.js?v=9bcbadda"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = '_autosummary/LoopStructural.datatypes.ValuePoints';</script>
     <script src="../_static/custom-icon.js?v=40bda21d"></script>
@@ -51,7 +51,7 @@
     <link rel="prev" title="LoopStructural.datatypes.Surface" href="LoopStructural.datatypes.Surface.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-    <meta name="docbuild:last-update" content="Aug 06, 2024"/>
+    <meta name="docbuild:last-update" content="Oct 22, 2024"/>
   </head>
   
   
@@ -133,7 +133,7 @@
     <script>document.write(`<img src="../_static/infinity_loop_icon.svg" class="logo__image only-dark" alt=""/>`);</script>
   
   
-    <p class="title logo__title">LoopStructural - 1.6.2</p>
+    <p class="title logo__title">LoopStructural - 1.6.3</p>
   
 </a></div>
     
@@ -512,13 +512,16 @@ document.write(`
 <tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">from_dict</span></code>(d[, flatten])</p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">save</span></code>(filename[, ext])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.datatypes.ValuePoints.plot" title="LoopStructural.datatypes.ValuePoints.plot"><code class="xref py py-obj docutils literal notranslate"><span class="pre">plot</span></code></a>([pyvista_kwargs])</p></td>
+<td><p>Calls pyvista plot on the vtk object</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">save</span></code>(filename[, ext])</p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">to_dict</span></code>()</p></td>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">to_dict</span></code>()</p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">vtk</span></code>()</p></td>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">vtk</span></code>()</p></td>
 <td><p></p></td>
 </tr>
 </tbody>
@@ -542,6 +545,17 @@ document.write(`
 </tbody>
 </table>
 </div>
+<dl class="py method">
+<dt class="sig sig-object py" id="LoopStructural.datatypes.ValuePoints.plot">
+<span class="sig-name descname"><span class="pre">plot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pyvista_kwargs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{}</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.datatypes.ValuePoints.plot" title="Link to this definition">#</a></dt>
+<dd><p>Calls pyvista plot on the vtk object</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>pyvista_kwargs</strong> (<em>dict</em><em>, </em><em>optional</em>) – kwargs passed to pyvista.DataSet.plot(), by default {}</p>
+</dd>
+</dl>
+</dd></dl>
+
 </dd></dl>
 
 </section>
@@ -594,6 +608,7 @@ document.write(`
     <ul class="visible nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#LoopStructural.datatypes.ValuePoints"><code class="docutils literal notranslate"><span class="pre">ValuePoints</span></code></a><ul class="nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#LoopStructural.datatypes.ValuePoints.__init__"><code class="docutils literal notranslate"><span class="pre">ValuePoints.__init__()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#LoopStructural.datatypes.ValuePoints.plot"><code class="docutils literal notranslate"><span class="pre">ValuePoints.plot()</span></code></a></li>
 </ul>
 </li>
 </ul>

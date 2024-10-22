@@ -26,6 +26,7 @@ LoopStructural.interpolators.StructuredGrid
       ~StructuredGrid.get_element_for_location
       ~StructuredGrid.get_element_gradient_for_location
       ~StructuredGrid.get_elements
+      ~StructuredGrid.get_operators
       ~StructuredGrid.global_cell_indices
       ~StructuredGrid.global_index_to_cell_index
       ~StructuredGrid.global_index_to_node_index

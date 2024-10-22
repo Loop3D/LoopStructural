@@ -18,6 +18,7 @@ LoopStructural.datatypes.StructuredGrid
    
       ~StructuredGrid.__init__
       ~StructuredGrid.merge
+      ~StructuredGrid.plot
       ~StructuredGrid.save
       ~StructuredGrid.to_dict
       ~StructuredGrid.vtk

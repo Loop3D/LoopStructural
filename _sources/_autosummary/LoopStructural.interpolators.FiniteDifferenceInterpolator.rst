@@ -37,6 +37,7 @@ LoopStructural.interpolators.FiniteDifferenceInterpolator
       ~FiniteDifferenceInterpolator.calculate_residual_for_constraints
       ~FiniteDifferenceInterpolator.check_array
       ~FiniteDifferenceInterpolator.clean
+      ~FiniteDifferenceInterpolator.clear_constraints
       ~FiniteDifferenceInterpolator.copy
       ~FiniteDifferenceInterpolator.debug
       ~FiniteDifferenceInterpolator.evaluate_gradient
