@@ -26,6 +26,12 @@ import numpy as np
 # ~~~~~~~~~~~~~~
 # Read the shapefile and create a point for each node of the line
 fault_trace = load_fault_trace()
+fault_trace.plot()
+
+##################################
+# Convert the shapefile to points
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+##############################
 faults = []
 for i in range(len(fault_trace)):
     for x, y in zip(fault_trace.loc[i, :].geometry.xy[0], fault_trace.loc[i, :].geometry.xy[1]):
@@ -55,8 +61,9 @@ for f in df["fault_name"].unique():
         df.loc[df["fault_name"] == f, ["X", "Y", "Z"]].to_numpy()[0, :]
         - df.loc[df["fault_name"] == f, ["X", "Y", "Z"]].to_numpy()[-1, :]
     )
-    norm = tangent / np.linalg.norm(tangent)
-    norm = norm.dot(np.array([[0, -1, 0], [1, 0, 0], [0, 0, 0]]))
+    tangent /= np.linalg.norm(tangent)
+    norm = np.cross(tangent, [0, 0, 1])
+    # norm = norm.dot(np.array([[0, -1, 0], [1, 0, 0], [0, 0, 0]]))
     ori.append([f, *centre, *norm])  # .extend(centre.extend(norm.tolist())))
 # fault_orientations = pd.DataFrame([[
 ori = pd.DataFrame(ori, columns=["fault_name", "X", "Y", "Z", "gx", "gy", "gz"])
@@ -106,6 +113,7 @@ model.update()
 view = Loop3DView(model)
 for f in model.faults:
     view.plot_surface(f, value=[0])  #
+    view.plot_data(f[0], name="data")
 view.show()
 
 ##############################
