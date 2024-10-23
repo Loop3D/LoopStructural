@@ -28,11 +28,13 @@ model.set_model_data(data)
 strati = model.create_and_add_foliation("strati")
 strat_column = {"strati": {}}
 vals = [0, 60, 250, 330, 600]
+colours = ["red", "green", "blue", "yellow"]
 for i in range(len(vals) - 1):
     strat_column["strati"]["unit_{}".format(i)] = {
         "min": vals[i],
         "max": vals[i + 1],
         "id": i,
+        "colour": colours[i],
     }
 model.set_stratigraphic_column(strat_column)
 
