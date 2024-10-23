@@ -1,6 +1,6 @@
 """
 ============================
-1f. Local data weighting 
+Local data weighting 
 ============================
 LoopStructural primarily uses discrete interpolation methods (e.g. finite differences on a regular grid,
 or linear/quadratic on tetrahedral meshes). The interpolation is determined by combining a regularisation

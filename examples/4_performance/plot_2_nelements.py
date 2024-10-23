@@ -1,0 +1,3 @@
+"""
+Resolution of interpolator
+"""
