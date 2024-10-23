@@ -123,12 +123,15 @@ class VectorPoints:
     def from_dict(self, d):
         return VectorPoints(d['locations'], d['vectors'], d['name'], d.get('properties', None))
 
-    def vtk(self, geom='arrow', scale=1.0, scale_function=None, tolerance=0.05):
+    def vtk(self, geom='arrow', scale=1.0, scale_function=None, normalise=True, tolerance=0.05):
         import pyvista as pv
 
         vectors = np.copy(self.vectors)
+        if normalise:
+            norm = np.linalg.norm(vectors, axis=1)
+            vectors[norm > 0, :] /= norm[norm > 0][:, None]
         if scale_function is not None:
-            vectors /= np.linalg.norm(vectors, axis=1)[:, None]
+            # vectors /= np.linalg.norm(vectors, axis=1)[:, None]
             vectors *= scale_function(self.locations)[:, None]
         points = pv.PolyData(self.locations)
         points.point_data.set_vectors(vectors, 'vectors')
