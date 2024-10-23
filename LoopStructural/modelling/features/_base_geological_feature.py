@@ -341,10 +341,10 @@ class BaseFeature(metaclass=ABCMeta):
             if self.model is None:
                 raise ValueError("Must specify bounding box")
             bounding_box = self.model.bounding_box
-        grid = bounding_box.vtk()
-        points = grid.points
+        points = bounding_box.cell_centers()
         value = self.evaluate_gradient(points)
-
+        if self.model is not None:
+            points = self.model.rescale(points)
         return VectorPoints(points, value, self.name)
 
     @abstractmethod
