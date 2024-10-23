@@ -25,5 +25,3 @@ except (LoopImportError, ImportError):
     logger.warning(
         "Cannot use LoopProjectfileProcessor: Loop project file cannot be imported, try installing LoopProjectFile"
     )
-# from LoopStructural.modelling.features import StructuralFrame
-# from LoopStructural.modelling.features.fault import FaultSegment

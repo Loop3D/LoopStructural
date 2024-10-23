@@ -1,5 +1,37 @@
 # Changelog
 
+## [1.6.3](https://github.com/Loop3D/LoopStructural/compare/v1.6.2...v1.6.3) (2024-10-22)
+
+
+### Bug Fixes
+
+* add fault displacement to init for fault module ([a6b326f](https://github.com/Loop3D/LoopStructural/commit/a6b326f3e455ca143e5631ef8b386793ca7c6165))
+* add node/cell props to a vtk structured grid ([37bbb88](https://github.com/Loop3D/LoopStructural/commit/37bbb88790bda366415cfb3eb4986d8f778d54cb))
+* adding abstract vtk method for support ([d15e0ad](https://github.com/Loop3D/LoopStructural/commit/d15e0ad81a76e5b4587ad60031a31352c28d8cac))
+* adding additional logging ([5f1e65a](https://github.com/Loop3D/LoopStructural/commit/5f1e65ac05f56ec22758f631e0908fc78635a129))
+* adding coordinate features ([464934b](https://github.com/Loop3D/LoopStructural/commit/464934b9f19e800648c27749121cd2efaa8de568))
+* adding fault topology. Also requires map2loop updaet ([9a32b4c](https://github.com/Loop3D/LoopStructural/commit/9a32b4cea7e395683d6875e4edadb1d13da8b1f7))
+* adding option to spatially vary fold weight ([af970a0](https://github.com/Loop3D/LoopStructural/commit/af970a085f49576ccac15f3ee0061d0782a83b4a))
+* adding plot function to fault displacement ([4771c1b](https://github.com/Loop3D/LoopStructural/commit/4771c1bee13e0c4c62c3ac7b2608ba3318b2d8b9))
+* adding presolve and postsolve calls for interpolator ([4af60f9](https://github.com/Loop3D/LoopStructural/commit/4af60f985dee85913f4e9b19fea0e33f1fd6905f))
+* adding random colour generator ([1a850c2](https://github.com/Loop3D/LoopStructural/commit/1a850c27d7cb67ad89899a1641195e4a74de58ff))
+* buffer n slices for surfaces method by 5% if range ([82c24f4](https://github.com/Loop3D/LoopStructural/commit/82c24f4fa6abd334963a163776f8d80b4b898b57))
+* cast to int64 and add positive nsteps check ([10535e9](https://github.com/Loop3D/LoopStructural/commit/10535e97c7a4090ba4f53cd66422820a905cf2c3))
+* copy dictionary before creating structured grid to prevent shared variable ([2b05f69](https://github.com/Loop3D/LoopStructural/commit/2b05f6938f7e73e93a45e61d0e6f399a8975b00e))
+* default solver is 'cg' when none specified ([5fdd296](https://github.com/Loop3D/LoopStructural/commit/5fdd296ca7cb396c72a90c3e969c014f861adddb))
+* faulted feature gradient was incorrect ([4ba56c7](https://github.com/Loop3D/LoopStructural/commit/4ba56c7838bf2bc41198f811dbc57b1eed54d0db))
+* flag when m2l thickness isn't estimated ([0f565f4](https://github.com/Loop3D/LoopStructural/commit/0f565f4de4a04407d5e632e5b56eebad844bbd9b))
+* fold weights weren't being passed to interpolator ([97003a6](https://github.com/Loop3D/LoopStructural/commit/97003a68b756e7fd91fa73d0f810cc1aaa311bed))
+* fourier series should use fitted params ([a78a8de](https://github.com/Loop3D/LoopStructural/commit/a78a8de2e7d8cd40695a6c6c108f628a24724858))
+* gradient of faulted feature will not be aliased by the interpolation grid ([7e6da5b](https://github.com/Loop3D/LoopStructural/commit/7e6da5b417702d29ccee8435b0ce734d62046b0a))
+* if nsteps &lt;0 raise error for support reshape ([bff079f](https://github.com/Loop3D/LoopStructural/commit/bff079fd31f500ec178af480e2c7931d60e1d80d))
+* linting ([7ad2311](https://github.com/Loop3D/LoopStructural/commit/7ad2311f82514d4bac02a65b71657a4e5a947e8c))
+* linting ([b8d6532](https://github.com/Loop3D/LoopStructural/commit/b8d65329998696e139b5896966c96b8c9bbb442b))
+* migrate to omf mira, omf doesn't seem to work with anything ([b7330b9](https://github.com/Loop3D/LoopStructural/commit/b7330b97882ff468badc1168fdb7149f594fb70b))
+* refactoring fold profiles to allow for easy user modification of fold geometry ([364ce9a](https://github.com/Loop3D/LoopStructural/commit/364ce9a22f86ec36199f08e7061ef0eb0abc4f32))
+* remove anaconda channel to prevent libmamba error ([3c3501d](https://github.com/Loop3D/LoopStructural/commit/3c3501d14910d157058aaa5d84536c666dfefdd0))
+* use an instance of fault displacement function ([6d98fb9](https://github.com/Loop3D/LoopStructural/commit/6d98fb9ccbfdd3127b46a78091faaaf95f861c06))
+
 ## [1.6.2](https://github.com/Loop3D/LoopStructural/compare/v1.6.1...v1.6.2) (2024-08-06)
 
 

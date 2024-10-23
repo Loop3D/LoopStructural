@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from typing import Optional, Union, Callable, List
+from collections.abc import Iterable
 import numpy as np
 import numpy.typing as npt
 from LoopStructural.utils.logging import getLogger
@@ -86,11 +87,14 @@ class LoopIsosurfacer:
         all_values = self.callable(self.bounding_box.regular_grid(local=False))
         ## set value to mean value if its not specified
         if values is None:
-            values = [(np.nanmax(all_values) - np.nanmin(all_values)) / 2]
-        if isinstance(values, list):
+            values = [((np.nanmax(all_values) - np.nanmin(all_values)) / 2) + np.nanmin(all_values)]
+        if isinstance(values, Iterable):
             isovalues = values
         elif isinstance(values, float):
             isovalues = [values]
+        if isinstance(values, int) and values == 0:
+            values = 0.0  # assume 0 isosurface is meant to be a float
+
         elif isinstance(values, int) and values < 1:
             raise ValueError(
                 "Number of isosurfaces must be greater than 1. Either use a positive integer or provide a list or float for a specific isovalue."

@@ -1,7 +1,7 @@
 from LoopStructural.utils import rng
 
 
-def random_colour(n: int, cmap='tab20'):
+def random_colour(n: int = 1, cmap='tab20'):
     """
     Generate a list of random colours
 

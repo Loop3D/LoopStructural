@@ -649,7 +649,7 @@ class GeologicalModel:
             for g in stratigraphic_column.keys():
                 for u in stratigraphic_column[g].keys():
                     stratigraphic_column[g][u]["colour"] = cmap_colours[ci, :]
-
+                    ci += 1
         self.stratigraphic_column = stratigraphic_column
 
     def create_and_add_foliation(
@@ -1809,7 +1809,7 @@ class GeologicalModel:
         grid = self.bounding_box.structured_grid(name=name)
 
         grid.cell_properties['stratigraphy'] = self.evaluate_model(
-            self.bounding_box.cell_centers(), scale=False
+            self.rescale(self.bounding_box.cell_centers())
         )
         return grid, self.stratigraphic_ids()
 
