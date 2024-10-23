@@ -14,7 +14,7 @@ RUN apt-get update -qq && \
     libtiff6\
     libgl1-mesa-glx\
     xvfb
-RUN conda install -c conda-forge\
+RUN conda install -c conda-forge -c loop3d\
     # python"<=3.8"\
     cython\
     numpy\ 
@@ -37,8 +37,13 @@ RUN conda install -c conda-forge\
     sphinx-design\
     jupyter-sphinx\
     sphinx-book-theme\
+    loopstructuralvisualisation\
+    trame-vtk\
+    trame\
+    trame-vuetify\
+    pyvista\
     -y
-RUN pip install loopstructuralvisualisation[all] geoh5py
+RUN pip install geoh5py
 RUN pip install sphinxcontrib-bibtex
 ENV TINI_VERSION v0.19.0
 ADD https://github.com/krallin/tini/releases/download/${TINI_VERSION}/tini /tini
