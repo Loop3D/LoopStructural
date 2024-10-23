@@ -235,3 +235,8 @@ class StructuralFrameBuilder:
     def up_to_date(self, callback=None):
         for i in range(3):
             self.builders[i].up_to_date(callback=callback)
+
+    def set_not_up_to_date(self, caller):
+
+        for i in range(3):
+            self.builders[i].set_not_up_to_date(caller)
