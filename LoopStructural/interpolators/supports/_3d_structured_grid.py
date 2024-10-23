@@ -342,9 +342,6 @@ class StructuredGrid(BaseStructuredSupport):
         idc, inside = self.position_to_cell_corners(evaluation_points)
         T = np.zeros((idc.shape[0], 3, 8))
         T[inside, :, :] = self.get_element_gradient_for_location(evaluation_points[inside, :])[1]
-        # indices = np.array([self.position_to_cell_index(evaluation_points)])
-        # idc = self.global_indicies(indices.swapaxes(0,1))
-        # print(idc)
         if np.max(idc[inside, :]) > property_array.shape[0]:
             cix, ciy, ciz = self.position_to_cell_index(evaluation_points)
             if not np.all(cix[inside] < self.nsteps_cells[0]):
