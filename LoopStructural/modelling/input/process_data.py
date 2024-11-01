@@ -469,7 +469,25 @@ class ProcessInputData:
 
     @property
     def contacts(self):
-        return self._contacts
+        contacts = self._contacts.copy()
+        if self._use_thickness:
+            contacts["val"] = np.nan
+            for k, v in self._stratigraphic_value().items():
+                contacts.loc[contacts["name"] == k, "val"] = v
+
+            contacts = contacts.loc[
+                ~np.isnan(contacts["val"]), ["X", "Y", "Z", "feature_name", "val"]
+            ]
+        if not self._use_thickness:
+            contacts["interface"] = np.nan
+            interface_val = 0
+            for k in self._stratigraphic_value().keys():
+                contacts.loc[contacts["name"] == k, "interface"] = interface_val
+            contacts = contacts.loc[
+                ~np.isnan(contacts["interface"]),
+                ["X", "Y", "Z", "feature_name", "interface"],
+            ]
+        return contacts
 
     @contacts.setter
     def contacts(self, contacts):
@@ -485,25 +503,8 @@ class ProcessInputData:
         """
         if contacts is None:
             return
-        contacts = contacts.copy()
-        self._update_feature_names(contacts)
-        if self._use_thickness:
-            contacts["val"] = np.nan
-            for k, v in self._stratigraphic_value().items():
-                contacts.loc[contacts["name"] == k, "val"] = v
-
-            self._contacts = contacts.loc[
-                ~np.isnan(contacts["val"]), ["X", "Y", "Z", "feature_name", "val"]
-            ]
-        if not self._use_thickness:
-            contacts["interface"] = np.nan
-            interface_val = 0
-            for k in self._stratigraphic_value().keys():
-                contacts.loc[contacts["name"] == k, "interface"] = interface_val
-            self._contacts = contacts.loc[
-                ~np.isnan(contacts["interface"]),
-                ["X", "Y", "Z", "feature_name", "interface"],
-            ]
+        self._contacts = contacts.copy()
+        self._update_feature_names(self._contacts)
 
     @property
     def contact_orientations(self):
