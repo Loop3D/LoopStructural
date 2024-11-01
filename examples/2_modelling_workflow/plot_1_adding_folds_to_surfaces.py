@@ -1,5 +1,5 @@
 """
-2a. Modelling folds
+Modelling folds
 ====================
 
  This tutorial will show how Loop Structural improves the modelling of

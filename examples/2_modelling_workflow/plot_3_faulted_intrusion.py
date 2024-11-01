@@ -1,11 +1,11 @@
 """
-3a. Modelling faults using structural frames
+Modelling faults using structural frames
 ========================================
 
 """
 
-# from LoopStructural import GeologicalModel
-# from LoopStructural.visualisation import Loop3DView
+from LoopStructural import GeologicalModel
+from LoopStructural.visualisation import Loop3DView
 from LoopStructural.datasets import load_intrusion
 import numpy as np
 import matplotlib.pyplot as plt
@@ -51,54 +51,54 @@ plt.contourf(val)
 # # fault frame and an expected displacement model.
 # #
 
-# model = GeologicalModel(bb[0, :], bb[1, :])
-# model.set_model_data(data)
-# fault = model.create_and_add_fault(
-#     "fault", 500, nelements=10000, steps=4, interpolatortype="FDI", buffer=0.3
-# )
+model = GeologicalModel(bb[0, :], bb[1, :])
+model.set_model_data(data)
+fault = model.create_and_add_fault(
+    "fault", 500, nelements=10000, steps=4, interpolatortype="FDI", buffer=0.3
+)
 
-# viewer = Loop3DView(model)
-# viewer.plot_surface(
-#     fault,
-#     0.0,
-#     #                       slices=[0,1]#nslices=10
-# )
-# xyz = model.data[model.data["feature_name"] == "strati"][["X", "Y", "Z"]].to_numpy()
-# xyz = xyz[fault.evaluate(xyz).astype(bool), :]
-# viewer.plot_vector_field(fault)
-# viewer.add_points(
-#     model.rescale(
-#         model.data[model.data["feature_name"] == "strati"][["X", "Y", "Z"]],
-#         inplace=False,
-#     ),
-#     name="prefault",
-# )
-# viewer.show()
+viewer = Loop3DView(model)
+viewer.plot_surface(
+    fault,
+    0.0,
+    #                       slices=[0,1]#nslices=10
+)
+xyz = model.data[model.data["feature_name"] == "strati"][["X", "Y", "Z"]].to_numpy()
+xyz = xyz[fault.evaluate(xyz).astype(bool), :]
+viewer.plot_vector_field(fault)
+viewer.add_points(
+    model.rescale(
+        model.data[model.data["feature_name"] == "strati"][["X", "Y", "Z"]].values,
+        inplace=False,
+    ),
+    name="prefault",
+)
+viewer.show()
 
 
-# displacement = 400  # INSERT YOUR DISPLACEMENT NUMBER HERE BEFORE #
+displacement = 400  # INSERT YOUR DISPLACEMENT NUMBER HERE BEFORE #
 
-# model = GeologicalModel(bb[0, :], bb[1, :])
-# model.set_model_data(data)
-# fault = model.create_and_add_fault(
-#     "fault", displacement, nelements=2000, steps=4, interpolatortype="PLI", buffer=2
-# )
-# strati = model.create_and_add_foliation("strati", nelements=30000, interpolatortype="PLI", cgw=0.03)
-# model.update()
-# viewer = Loop3DView(model)
-# viewer.plot_surface(strati, 0.0)
-# # viewer.add_data(model.features[0][0])
-# viewer.plot_data(strati)
-# viewer.plot_surface(
-#     fault,
-#     value=0.0,
-#     #                       slices=[0,1]#nslices=10
-# )
-# viewer.add_points(
-#     model.rescale(
-#         model.data[model.data["feature_name"] == "strati"][["X", "Y", "Z"]],
-#         inplace=False,
-#     ),
-#     name="prefault",
-# )
-# viewer.show()
+model = GeologicalModel(bb[0, :], bb[1, :])
+model.set_model_data(data)
+fault = model.create_and_add_fault(
+    "fault", displacement, nelements=2000, steps=4, interpolatortype="PLI", buffer=2
+)
+strati = model.create_and_add_foliation("strati", nelements=30000, interpolatortype="PLI", cgw=0.03)
+model.update()
+viewer = Loop3DView(model)
+viewer.plot_surface(strati, 0.0)
+# viewer.add_data(model.features[0][0])
+viewer.plot_data(strati)
+viewer.plot_surface(
+    fault,
+    value=0.0,
+    #                       slices=[0,1]#nslices=10
+)
+viewer.add_points(
+    model.rescale(
+        model.data[model.data["feature_name"] == "strati"][["X", "Y", "Z"]].values,
+        inplace=False,
+    ),
+    name="prefault",
+)
+viewer.show()

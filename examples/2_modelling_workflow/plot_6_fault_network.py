@@ -1,8 +1,4 @@
 """
-Fault network
-"""
-
-"""
 Modelling a fault network in LoopStructural
 ===============================================
 Uses GeologicalModel, ProcessInputData and Loop3DView from LoopStructural library. 

@@ -1,5 +1,5 @@
 """
-2b. Refolded folds
+Refolded folds
 ===================
 
 

@@ -1,5 +1,5 @@
 """
-3c. Defining the fault displacement function
+Defining the fault displacement function
 ============================================
 
 """
