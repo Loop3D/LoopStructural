@@ -34,24 +34,48 @@ class LoopProjectfileProcessor(ProcessInputData):
                 projectfile["stratigraphicLog"].ThicknessMedian,
             )
         )
-        fault_properties = self.projectfile.faultLog
-        fault_properties.rename(
-            columns={
-                "avgDisplacement": "displacement",
-                "influenceDistance": "minor_axis",
-                "verticalRadius": "intermediate_axis",
-                "horizontalRadius": "major_axis",
-                "name": "fault_name",
-            },
-            inplace=True,
-        )
-        fault_locations = fault_properties.reset_index()[["fault_name", "eventId"]].merge(
-            fault_locations, on="eventId"
-        )
-        fault_orientations = fault_properties.reset_index()[["fault_name", "eventId"]].merge(
-            fault_orientations, on="eventId"
-        )
-        fault_properties.set_index("fault_name", inplace=True)
+        fault_properties = None
+        fault_edges = None
+        fault_edge_properties = None
+        if self.projectfile.faultLog.shape[0] > 0:
+
+            fault_properties = self.projectfile.faultLog
+            fault_properties.rename(
+                columns={
+                    "avgDisplacement": "displacement",
+                    "influenceDistance": "minor_axis",
+                    "verticalRadius": "intermediate_axis",
+                    "horizontalRadius": "major_axis",
+                    "name": "fault_name",
+                },
+                inplace=True,
+            )
+            fault_locations = fault_properties.reset_index()[["fault_name", "eventId"]].merge(
+                fault_locations, on="eventId"
+            )
+            fault_orientations = fault_properties.reset_index()[["fault_name", "eventId"]].merge(
+                fault_orientations, on="eventId"
+            )
+            fault_properties.set_index("fault_name", inplace=True)
+            for i in fault_relationships.index:
+                fault_relationships.loc[i, "Fault1"] = faultLog.loc[
+                    fault_relationships.loc[i, "eventId1"], "name"
+                ]
+                fault_relationships.loc[i, "Fault2"] = faultLog.loc[
+                    fault_relationships.loc[i, "eventId2"], "name"
+                ]
+            fault_edges = []
+            fault_edge_properties = []
+            for i in fault_relationships.index:
+                fault_edges.append(
+                    (fault_relationships.loc[i, "Fault1"], fault_relationships.loc[i, "Fault2"])
+                )
+                fault_edge_properties.append(
+                    {
+                        "type": fault_relationships.loc[i, "type"],
+                        "angle": fault_relationships.loc[i, "angle"],
+                    }
+                )
         colours = dict(
             zip(
                 self.projectfile.stratigraphicLog.name,
@@ -65,25 +89,6 @@ class LoopProjectfileProcessor(ProcessInputData):
             )
         )
 
-        for i in fault_relationships.index:
-            fault_relationships.loc[i, "Fault1"] = faultLog.loc[
-                fault_relationships.loc[i, "eventId1"], "name"
-            ]
-            fault_relationships.loc[i, "Fault2"] = faultLog.loc[
-                fault_relationships.loc[i, "eventId2"], "name"
-            ]
-        fault_edges = []
-        fault_edge_properties = []
-        for i in fault_relationships.index:
-            fault_edges.append(
-                (fault_relationships.loc[i, "Fault1"], fault_relationships.loc[i, "Fault2"])
-            )
-            fault_edge_properties.append(
-                {
-                    "type": fault_relationships.loc[i, "type"],
-                    "angle": fault_relationships.loc[i, "angle"],
-                }
-            )
         super().__init__(
             contacts=contacts,
             contact_orientations=orientations,
@@ -91,8 +96,8 @@ class LoopProjectfileProcessor(ProcessInputData):
                 ("sg", list(self.projectfile.stratigraphicLog.name))
             ],  # needs to be updated,
             thicknesses=thicknesses,
-            fault_orientations=fault_orientations,
-            fault_locations=fault_locations,
+            fault_orientations=fault_orientations if fault_orientations.shape[0] > 0 else None,
+            fault_locations=fault_locations if fault_locations.shape[0] > 0 else None,
             fault_properties=fault_properties,
             fault_edges=fault_edges,  # list(fault_graph.edges),
             colours=colours,
