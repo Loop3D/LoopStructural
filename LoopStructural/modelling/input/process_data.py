@@ -165,8 +165,19 @@ class ProcessInputData:
             unit_id = 1
             val = self._stratigraphic_value()
             for name, sg in self._stratigraphic_order:
+                # set the oldest unit to be the basement.
+                # this has no observed basal contact and then
+                # top of the unit is the 0 isovalue.
+                # this is the minimum of the next unit
                 stratigraphic_column[name] = {}
-                for i, g in enumerate(reversed(sg)):
+                stratigraphic_column[name][sg[-1]] = {
+                    "max": 0,
+                    "min": -np.inf,
+                    "id": unit_id,
+                    "colour": self.colours[sg[-1]],
+                }
+                # iterate through the remaining units (in reverse)
+                for g in reversed(sg[:-1]):
                     if g in self.thicknesses:
                         stratigraphic_column[name][g] = {
                             "max": val[g] + self.thicknesses[g],
@@ -174,10 +185,6 @@ class ProcessInputData:
                             "id": unit_id,
                             "colour": self.colours[g],
                         }
-                        if i == 0:
-                            stratigraphic_column[name][g]["min"] = 0
-                        if i == len(sg) - 1:
-                            stratigraphic_column[name][g]["max"] = np.inf
 
                     unit_id += 1
             # add faults into the column
@@ -438,7 +445,14 @@ class ProcessInputData:
         stratigraphic_value = {}
         for _name, sg in self.stratigraphic_order:
             value = 0.0  # reset for each supergroup
-            for g in reversed(sg):
+            if sg[0] not in self.thicknesses or self.thicknesses[sg[0]] <= 0:
+                self.thicknesses[sg[0]] = (
+                    np.inf
+                )  # make the top unit infinite as it should extend to the top of the model
+            for g in reversed(
+                sg[:-1]
+            ):  # don't add the last unit as we never see the base of this unit.
+                # It should be "basement"
                 if g not in self.thicknesses:
                     logger.warning(f"No thicknesses for {g}")
                     stratigraphic_value[g] = np.nan
