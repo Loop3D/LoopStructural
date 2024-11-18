@@ -114,6 +114,26 @@ class FaultSegment(StructuralFrame):
     def displacementfeature(self):
         return FaultDisplacementFeature(self, self.faultfunction, name=self.name, model=self.model)
 
+    def fault_ellipsoid(self, **kwargs):
+        try:
+            import pyvista as pv
+
+            fault_ellipsoid = pv.PolyData(
+                self.model.rescale(self.fault_centre[None, :], inplace=False)
+            )
+            fault_ellipsoid["norm"] = self.builder.fault_normal_vector[None, :]
+
+            geom = pv.ParametricEllipsoid(
+                self.fault_minor_axis,
+                self.fault_major_axis,
+                self.fault_intermediate_axis,
+            )
+            ellipsoid = fault_ellipsoid.glyph(geom=geom, **kwargs)
+            return ellipsoid
+        except ImportError:
+            logger.error("pyvista not installed")
+            return None
+
     def set_fault_offset(self, offset: float):
         self.fault_offset = offset
 
@@ -203,6 +223,9 @@ class FaultSegment(StructuralFrame):
         #         logger.error("nan slicing")
         # v[mask] = self.__getitem__(0).evaluate_value(locations[mask, :])
         return self.__getitem__(0).evaluate_value(locations)
+
+    def ellipsoid(self):
+        pass
 
     def mean(self):
         return self.__getitem__(0).mean()
