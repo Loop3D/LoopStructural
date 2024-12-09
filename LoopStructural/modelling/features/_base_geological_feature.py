@@ -131,7 +131,7 @@ class BaseFeature(metaclass=ABCMeta):
         logger.warning(f"Toggling faults for feature {self.name}")
         self.faults_enabled = not self.faults_enabled
 
-    def add_region(self, region):
+    def add_region(self, region ):
         """
         Adds a region where the geological feature is active to the model.
 
@@ -291,11 +291,22 @@ class BaseFeature(metaclass=ABCMeta):
             if self.model is None:
                 raise ValueError("Must specify bounding box")
             bounding_box = self.model.bounding_box
-        callable = lambda xyz: self.evaluate_value(self.model.scale(xyz))
-        isosurfacer = LoopIsosurfacer(bounding_box, callable=callable)
-        if name is None and self.name is not None:
-            name = self.name
-        return isosurfacer.fit(value, name)
+        regions = self.regions
+        try:
+            self.regions = [r for r in self.regions if r.name != self.name and r.parent.name != self.name]
+            callable = lambda xyz: self.evaluate_value(self.model.scale(xyz))
+            isosurfacer = LoopIsosurfacer(bounding_box, callable=callable)
+            if name is None and self.name is not None:
+                name = self.name
+            surfaces = isosurfacer.fit(value, name)
+        except Exception as e:
+            logger.error(f"Failed to create surface for {self.name} at value {value}")
+            logger.error(e)
+            surfaces = []
+        finally:
+            self.regions = regions
+
+        return surfaces
 
     def scalar_field(self, bounding_box=None):
         """Create a scalar field for the feature

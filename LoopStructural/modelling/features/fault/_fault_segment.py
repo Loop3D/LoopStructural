@@ -197,7 +197,7 @@ class FaultSegment(StructuralFrame):
         return np.abs(v) > threshold
         # return np.all(np.logical_and(v > -1,v<1),axis=1)
 
-    def evaluate_value(self, locations):
+    def evaluate_value(self, locations, ignore_regions=False):
         """
         Return the value of the fault surface scalar field
 
@@ -222,7 +222,7 @@ class FaultSegment(StructuralFrame):
         #     except:
         #         logger.error("nan slicing")
         # v[mask] = self.__getitem__(0).evaluate_value(locations[mask, :])
-        return self.__getitem__(0).evaluate_value(locations)
+        return self.__getitem__(0).evaluate_value(locations, ignore_regions=ignore_regions)
 
     def ellipsoid(self):
         pass
