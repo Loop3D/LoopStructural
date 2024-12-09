@@ -131,7 +131,7 @@ class BaseFeature(metaclass=ABCMeta):
         logger.warning(f"Toggling faults for feature {self.name}")
         self.faults_enabled = not self.faults_enabled
 
-    def add_region(self, region ):
+    def add_region(self, region):
         """
         Adds a region where the geological feature is active to the model.
 
@@ -293,7 +293,9 @@ class BaseFeature(metaclass=ABCMeta):
             bounding_box = self.model.bounding_box
         regions = self.regions
         try:
-            self.regions = [r for r in self.regions if r.name != self.name and r.parent.name != self.name]
+            self.regions = [
+                r for r in self.regions if r.name != self.name and r.parent.name != self.name
+            ]
             callable = lambda xyz: self.evaluate_value(self.model.scale(xyz))
             isosurfacer = LoopIsosurfacer(bounding_box, callable=callable)
             if name is None and self.name is not None:
