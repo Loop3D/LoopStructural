@@ -1,0 +1,50 @@
+name: "✅ Linter"
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - '**.py'
+
+  pull_request:
+    branches:
+      - main
+    paths:
+      - '**.py'
+
+env:
+  PROJECT_FOLDER: "LoopStructural"
+  PYTHON_VERSION: 3.9
+
+
+jobs:
+  lint-py:
+    name: Python 🐍
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Get source code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          cache: "pip"
+          python-version: ${{ env.PYTHON_VERSION }}
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install black ruff
+      - name: Autoformat with black
+        run: |
+          black .
+      - name: Lint with ruff
+        run: |
+          ruff check ${{env.PROJECT_FOLDER}} --fix
+      - uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: "style: style fixes by ruff and autoformatting by black"
+
