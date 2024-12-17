@@ -4,6 +4,9 @@ on:
       - master
 env:
     PACKAGE_NAME: LoopStructural
+permissions:
+  contents: write
+  pull-requests: write
 
 name: release-please
 jobs:
@@ -13,9 +16,8 @@ jobs:
       - uses: GoogleCloudPlatform/release-please-action@v4
         id: release
         with:
-          release-type: python
-          package-name: LoopStructural
-          version-file: LoopStructural/version.py
+          path: LoopStructural
+          
     outputs:
       release_created: ${{ steps.release.outputs.release_created }}
   package:
