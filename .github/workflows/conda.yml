@@ -1,58 +1,54 @@
-name: publish_conda
-
+name: "🐍 Build and upload Conda packages"
 on:
-  release:
-    types: [edited, created]
+  workflow_dispatch:
 jobs:
   conda-deploy:
-    name: Uploading to Loop3d for python ${{ matrix.os }})
-    runs-on: ${{ matrix.os }}
+    name: Building conda package for python ${{ matrix.os }})
+    runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
-        os: ["ubuntu-latest",  "windows-latest","macos-latest"]
-        python-version: ["3.9","3.8","3.7"]
+        python-version: ${{ fromJSON(vars.PYTHON_VERSIONS)}}
     steps:
-      - uses: conda-incubator/setup-miniconda@v2
+      - uses: conda-incubator/setup-miniconda@v3
         with:
           auto-update-conda: true
           python-version: ${{ matrix.python-version }}
-    
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
       - name: update submodules
-#       shell: bash -l {0}
         run: |
-            git submodule update --init --recursive
-      - name: Add msbuild to PATH
-        if: matrix.os == 'windows-latest'
-        uses: microsoft/setup-msbuild@v1.0.2  
-      - name: Conda build'
+          git submodule update --init --recursive
+      - name: Conda build
         env:
           ANACONDA_API_TOKEN: ${{ secrets.ANACONDA_TOKEN  }}
         shell: bash -l {0}
         run: |
-           conda install -c conda-forge conda-build scikit-build numpy=1.20 cython anaconda-client -y
-           conda build -c anaconda -c conda-forge -c loop3d --output-folder conda conda
-           conda install anaconda-client -y
-      - name: upload windows
+          conda install -c conda-forge conda-build scikit-build numpy cython anaconda-client conda-libmamba-solver -y
+          conda build -c conda-forge -c loop3d --output-folder conda conda  --python ${{matrix.python-version}}
+          conda convert -p all conda/linux-64/*.tar.bz2 -f -o conda
+      - name: upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: conda-build-${{ matrix.python-version }}
+          path: conda
+  upload_to_conda:
+    runs-on: ubuntu-latest
+    needs: conda-deploy
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ${{ fromJSON(vars.PYTHON_VERSIONS)}}
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: conda-build-${{ matrix.python-version }}
+          path: conda
+      - uses: conda-incubator/setup-miniconda@v3
+      - name: upload all files to conda-forge
+        shell: bash -l {0}
         env:
           ANACONDA_API_TOKEN: ${{ secrets.ANACONDA_TOKEN  }}
-        if: matrix.os == 'windows-latest'
-        shell: bash -l {0}
         run: |
-           anaconda upload --label main conda/win-64/*.tar.bz2 
-      - name: upload linux
-        env:
-          ANACONDA_API_TOKEN: ${{ secrets.ANACONDA_TOKEN  }}
-        if: matrix.os == 'ubuntu-latest'
-        shell: bash -l {0}
-        run: |
-           anaconda upload --label main conda/linux-64/*.tar.bz2 
-      - name: upload macosx
-        env:
-          ANACONDA_API_TOKEN: ${{ secrets.ANACONDA_TOKEN  }}
-        if: matrix.os == 'macos-latest'
-        shell: bash -l {0}
-        run: |
-            anaconda upload --label main conda/osx-64/*.tar.bz2
-
+          conda install -c anaconda anaconda-client -y
+          anaconda upload --label main conda/*/*.tar.bz2
+  
