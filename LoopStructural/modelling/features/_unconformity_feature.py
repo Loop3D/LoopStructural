@@ -19,7 +19,7 @@ class UnconformityFeature(GeologicalFeature):
         # just don't link the regions
         GeologicalFeature.__init__(
             self,
-            name=f"{feature.name}_unconformity",
+            name=f"__{feature.name}_unconformity",
             faults=feature.faults,
             regions=[],  # feature.regions.copy(),  # don't want to share regionsbetween unconformity and # feature.regions,
             builder=feature.builder,
@@ -75,9 +75,9 @@ class UnconformityFeature(GeologicalFeature):
             true if above the unconformity, false if below
         """
         if self.sign:
-            return self.evaluate_value(pos) < self.value
+            return self.evaluate_value(pos) <= self.value
         if not self.sign:
-            return self.evaluate_value(pos) > self.value
+            return self.evaluate_value(pos) >= self.value
 
     def __call__(self, pos) -> np.ndarray:
         return self.evaluate(pos)
