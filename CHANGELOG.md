@@ -1,5 +1,21 @@
 # Changelog
 
+## [1.6.4](https://github.com/Loop3D/LoopStructural/compare/v1.6.3...v1.6.4) (2024-12-17)
+
+
+### Bug Fixes
+
+* add fault ellipsoid vtk output ([c00a65e](https://github.com/Loop3D/LoopStructural/commit/c00a65e46b00ebc5f87c8b136dc95f2976173528))
+* allow iterable to be passed to isosurfacer ([e4cd13c](https://github.com/Loop3D/LoopStructural/commit/e4cd13c895c49ce223ac71e9fc5311ddd8f70624))
+* default random colour number generate one colour ([e153355](https://github.com/Loop3D/LoopStructural/commit/e15335544d5abda4128dbe926eba9ba7ece1fc14))
+* increment random colour for stratigraphic colour cmap ([35cd5e6](https://github.com/Loop3D/LoopStructural/commit/35cd5e6df1e0aada80b71e90849e9b8884c038c1))
+* isosurfacing of unconformity surfaces will now appear ([c003b6b](https://github.com/Loop3D/LoopStructural/commit/c003b6b096a60a08b6704e91b2eb9d6b70040d04))
+* normalise vectors before plotting ([9d77f9e](https://github.com/Loop3D/LoopStructural/commit/9d77f9ea61f7ed3440facd40f70eefce8c5d2fdb))
+* projectfile updaters ([699a701](https://github.com/Loop3D/LoopStructural/commit/699a7015c8c6fd13301f0be3e460663669e4e355))
+* update stratigraphic column from projectfile ([e508d2d](https://github.com/Loop3D/LoopStructural/commit/e508d2de29985ca07938fdb6392a630f170cb565))
+* updating thicknesses will update value constraints value ([b960dd9](https://github.com/Loop3D/LoopStructural/commit/b960dd95c99606658a798200d46ad7e51e9af698))
+* use cell centres for vector field and rescale points into model bb ([29175b4](https://github.com/Loop3D/LoopStructural/commit/29175b42094d2b38caa1e31b0775ab9959d0e1fa))
+
 ## [1.6.3](https://github.com/Loop3D/LoopStructural/compare/v1.6.2...v1.6.3) (2024-10-22)
 
 
