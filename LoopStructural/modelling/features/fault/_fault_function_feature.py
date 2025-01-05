@@ -80,3 +80,6 @@ class FaultDisplacementFeature(BaseFeature):
 
     def get_data(self, value_map: Optional[dict] = None):
         pass
+
+    def copy(self, name: Optional[str] = None):
+        raise NotImplementedError("Not implemented yet")

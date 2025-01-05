@@ -98,3 +98,7 @@ class CrossProductGeologicalFeature(BaseFeature):
 
     def get_data(self, value_map: Optional[dict] = None):
         return
+    def copy(self,name:Optional[str]=None):
+        if name is None:
+            name = f'{self.name}_copy'
+        return CrossProductGeologicalFeature(name,self.geological_feature_a,self.geological_feature_b)
