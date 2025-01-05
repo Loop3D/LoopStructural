@@ -435,3 +435,46 @@ class BoundingBox:
             properties=_vertex_data,
             name=name,
         )
+
+    def project(self, xyz):
+        """Project a point into the bounding box
+
+        Parameters
+        ----------
+        xyz : np.ndarray
+            point to project
+
+        Returns
+        -------
+        np.ndarray
+            projected point
+        """
+    
+        return (xyz - self.global_origin) / np.max((self.global_maximum-self.global_origin))#np.clip(xyz, self.origin, self.maximum) 
+
+    def reproject(self, xyz):
+        """Reproject a point from the bounding box to the global space
+
+        Parameters
+        ----------
+        xyz : np.ndarray
+            point to reproject
+
+        Returns
+        -------
+        np.ndarray
+            reprojected point
+        """ 
+        
+        return xyz * np.max((self.global_maximum - self.global_origin)) + self.global_origin
+
+    def __repr__(self):
+        return f"BoundingBox({self.origin}, {self.maximum}, {self.nsteps})"
+
+    def __str__(self):
+        return f"BoundingBox({self.origin}, {self.maximum}, {self.nsteps})"
+
+    def __eq__(self, other):
+        if not isinstance(other, BoundingBox):
+            return False
+        return np.allclose(self.origin, other.origin) and np.allclose(self.maximum, other.maximum) and np.allclose(self.nsteps, other.nsteps)
