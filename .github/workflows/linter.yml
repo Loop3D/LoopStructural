@@ -3,15 +3,16 @@ name: "✅ Linter"
 on:
   push:
     branches:
-      - main
+      - master
     paths:
       - '**.py'
 
   pull_request:
     branches:
-      - main
+      - master
     paths:
       - '**.py'
+  workflow_dispatch:
 
 env:
   PROJECT_FOLDER: "LoopStructural"

@@ -10,10 +10,11 @@ on:
 
   pull_request:
     branches:
-      - main
+      - master
     paths:
       - '**.py'
       - .github/workflows/tester.yml
+  workflow_dispatch:
 jobs:
   continuous-integration:
     name: Continuous integration ${{ matrix.os }} python ${{ matrix.python-version }}
