@@ -1417,7 +1417,7 @@ class GeologicalModel:
         return fault
 
     # TODO move rescale to bounding box/transformer
-    def rescale(self, points: np.ndarray, inplace: bool = True) -> np.ndarray:
+    def rescale(self, points: np.ndarray, inplace: bool = False) -> np.ndarray:
         """
         Convert from model scale to real world scale - in the future this
         should also do transformations?
@@ -1440,7 +1440,7 @@ class GeologicalModel:
         return points
 
     # TODO move scale to bounding box/transformer
-    def scale(self, points: np.ndarray, inplace: bool = True) -> np.ndarray:
+    def scale(self, points: np.ndarray, inplace: bool = False) -> np.ndarray:
         """Take points in UTM coordinates and reproject
         into scaled model space
 
