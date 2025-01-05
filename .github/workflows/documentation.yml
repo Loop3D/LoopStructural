@@ -1,4 +1,4 @@
-name: Build documentation and deploy
+name: "📚 Build documentation and deploy "
 
 on:
   workflow_dispatch:
