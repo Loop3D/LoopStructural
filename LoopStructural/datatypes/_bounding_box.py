@@ -449,8 +449,10 @@ class BoundingBox:
         np.ndarray
             projected point
         """
-    
-        return (xyz - self.global_origin) / np.max((self.global_maximum-self.global_origin))#np.clip(xyz, self.origin, self.maximum) 
+
+        return (xyz - self.global_origin) / np.max(
+            (self.global_maximum - self.global_origin)
+        )  # np.clip(xyz, self.origin, self.maximum)
 
     def reproject(self, xyz):
         """Reproject a point from the bounding box to the global space
@@ -464,8 +466,8 @@ class BoundingBox:
         -------
         np.ndarray
             reprojected point
-        """ 
-        
+        """
+
         return xyz * np.max((self.global_maximum - self.global_origin)) + self.global_origin
 
     def __repr__(self):
@@ -477,4 +479,8 @@ class BoundingBox:
     def __eq__(self, other):
         if not isinstance(other, BoundingBox):
             return False
-        return np.allclose(self.origin, other.origin) and np.allclose(self.maximum, other.maximum) and np.allclose(self.nsteps, other.nsteps)
+        return (
+            np.allclose(self.origin, other.origin)
+            and np.allclose(self.maximum, other.maximum)
+            and np.allclose(self.nsteps, other.nsteps)
+        )
