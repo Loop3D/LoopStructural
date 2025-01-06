@@ -126,9 +126,19 @@ class VectorPoints:
     def from_dict(self, d):
         return VectorPoints(d['locations'], d['vectors'], d['name'], d.get('properties', None))
 
-    def vtk(self, geom='arrow', scale=.10, scale_function=None, normalise=True, tolerance=0.05, bb=None, scalars=None):
+    def vtk(
+        self,
+        geom='arrow',
+        scale=0.10,
+        scale_function=None,
+        normalise=True,
+        tolerance=0.05,
+        bb=None,
+        scalars=None,
+    ):
         import pyvista as pv
-        _projected=False
+
+        _projected = False
         vectors = np.copy(self.vectors)
         if normalise:
             norm = np.linalg.norm(vectors, axis=1)
@@ -140,7 +150,7 @@ class VectorPoints:
         if bb is not None:
             try:
                 locations = bb.project(locations)
-                _projected=True
+                _projected = True
             except Exception as e:
                 logger.error(f'Failed to project points to bounding box: {e}')
                 logger.error('Using unprojected points, this may cause issues with the glyphing')
@@ -154,7 +164,7 @@ class VectorPoints:
             geom = pv.Disc(inner=0, outer=scale).rotate_y(90)
 
         # Perform the glyph
-        glyphed = points.glyph(orient="vectors", geom=geom, tolerance=tolerance,scale=False)
+        glyphed = points.glyph(orient="vectors", geom=geom, tolerance=tolerance, scale=False)
         if _projected:
             glyphed.points = bb.reproject(glyphed.points)
         return glyphed

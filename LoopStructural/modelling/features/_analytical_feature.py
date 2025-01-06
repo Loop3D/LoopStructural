@@ -94,7 +94,16 @@ class AnalyticalGeologicalFeature(BaseFeature):
 
     def get_data(self, value_map: Optional[dict] = None):
         return
-    def copy(self,name:Optional[str]=None):
+
+    def copy(self, name: Optional[str] = None):
         if name is None:
             name = self.name
-        return AnalyticalGeologicalFeature(name,self.vector.copy(),self.origin.copy(),list(self.regions),list(self.faults),self.model,self.builder)
+        return AnalyticalGeologicalFeature(
+            name,
+            self.vector.copy(),
+            self.origin.copy(),
+            list(self.regions),
+            list(self.faults),
+            self.model,
+            self.builder,
+        )

@@ -37,7 +37,7 @@ class FaultSegment(StructuralFrame):
             how many integration steps for faults
         kwargs
         """
-        StructuralFrame.__init__(self, name=name, features=features, fold=fold,model= model)
+        StructuralFrame.__init__(self, name=name, features=features, fold=fold, model=model)
         self.type = FeatureType.FAULT
         self.displacement = displacement
         self._faultfunction = BaseFault().fault_displacement
@@ -261,7 +261,7 @@ class FaultSegment(StructuralFrame):
                 logger.error("nan slicing ")
         # need to scale with fault displacement
         v[mask, :] = self.__getitem__(1).evaluate_gradient(locations[mask, :])
-        v[mask,:]/=np.linalg.norm(v[mask,:],axis=1)[:,None]
+        v[mask, :] /= np.linalg.norm(v[mask, :], axis=1)[:, None]
         scale = self.displacementfeature.evaluate_value(locations[mask, :])
         v[mask, :] *= scale[:, None]
         return v

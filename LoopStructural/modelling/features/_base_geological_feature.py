@@ -296,8 +296,12 @@ class BaseFeature(metaclass=ABCMeta):
             self.regions = [
                 r for r in self.regions if r.name != self.name and r.parent.name != self.name
             ]
-            
-            callable = lambda xyz: self.evaluate_value(self.model.scale(xyz)) if self.model is not None else self.evaluate_value(xyz)
+
+            callable = lambda xyz: (
+                self.evaluate_value(self.model.scale(xyz))
+                if self.model is not None
+                else self.evaluate_value(xyz)
+            )
             isosurfacer = LoopIsosurfacer(bounding_box, callable=callable)
             if name is None and self.name is not None:
                 name = self.name
@@ -376,8 +380,9 @@ class BaseFeature(metaclass=ABCMeta):
             dictionary of data
         """
         raise NotImplementedError
+
     @abstractmethod
-    def copy(self,name:Optional[str]=None):
+    def copy(self, name: Optional[str] = None):
         """Copy the feature
 
         Returns
