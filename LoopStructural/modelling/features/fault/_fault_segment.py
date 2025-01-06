@@ -22,7 +22,14 @@ class FaultSegment(StructuralFrame):
     """
 
     def __init__(
-        self, features, name, faultfunction=None, steps=10, displacement=1.0, fold=None, model=None
+        self,
+        name: str,
+        features: list,
+        faultfunction=None,
+        steps=10,
+        displacement=1.0,
+        fold=None,
+        model=None,
     ):
         """
         A slip event of a fault

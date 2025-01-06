@@ -110,8 +110,8 @@ class StructuralFrameBuilder:
         )  # ,region=self.region))
 
         self._frame = frame(
-            self.name,
-            [
+            name=self.name,
+            features=[
                 self.builders[0].feature,
                 self.builders[1].feature,
                 self.builders[2].feature,
