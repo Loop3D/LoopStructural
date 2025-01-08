@@ -97,7 +97,7 @@ class FiniteDifferenceInterpolator(DiscreteInterpolator):
         self.add_interface_constraints(self.interpolation_weights["ipw"])
         self.add_value_inequality_constraints()
         self.add_inequality_pairs_constraints(
-            kwargs.get('inequality_pairs', None),
+            pairs=kwargs.get('inequality_pairs', None),
             upper_bound=kwargs.get('inequality_pair_upper_bound', np.finfo(float).eps),
             lower_bound=kwargs.get('inequality_pair_lower_bound', -np.inf),
         )
