@@ -172,19 +172,9 @@ class FiniteDifferenceInterpolator(DiscreteInterpolator):
         # get elements for points
         points = self.get_interface_constraints()
         if points.shape[0] > 1:
-            # vertices, c, tetras, inside = self.support.get_element_for_location(
-            #     points[:, : self.support.dimension]
-            # )
-            # # calculate volume of tetras
-            # # vecs = vertices[inside, 1:, :] - vertices[inside, 0, None, :]
-            # # vol = np.abs(np.linalg.det(vecs)) / 6
-            # A = c[inside, :]
-            # # A *= vol[:,None]
-            # idc = tetras[inside, :]
             node_idx, inside = self.support.position_to_cell_corners(
                 points[:, : self.support.dimension]
             )
-            # print(points[inside,:].shape)
             gi = np.zeros(self.support.n_nodes, dtype=int)
             gi[:] = -1
             gi[self.region] = np.arange(0, self.nx, dtype=int)
@@ -240,7 +230,6 @@ class FiniteDifferenceInterpolator(DiscreteInterpolator):
         points = self.get_gradient_constraints()
         if points.shape[0] > 0:
             # calculate unit vector for orientation data
-            # points[:,3:]/=np.linalg.norm(points[:,3:],axis=1)[:,None]
 
             node_idx, inside = self.support.position_to_cell_corners(
                 points[:, : self.support.dimension]
