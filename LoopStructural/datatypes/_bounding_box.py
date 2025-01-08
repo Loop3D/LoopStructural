@@ -410,9 +410,15 @@ class BoundingBox:
             import pyvista as pv
         except ImportError:
             raise ImportError("pyvista is required for vtk support")
-        x = np.linspace(self.global_origin[0]+self.origin[0], self.global_maximum[0], self.nsteps[0])
-        y = np.linspace(self.global_origin[1]+self.origin[1], self.global_maximum[1], self.nsteps[1])
-        z = np.linspace(self.global_origin[2]+self.origin[2], self.global_maximum[2], self.nsteps[2])
+        x = np.linspace(
+            self.global_origin[0] + self.origin[0], self.global_maximum[0], self.nsteps[0]
+        )
+        y = np.linspace(
+            self.global_origin[1] + self.origin[1], self.global_maximum[1], self.nsteps[1]
+        )
+        z = np.linspace(
+            self.global_origin[2] + self.origin[2], self.global_maximum[2], self.nsteps[2]
+        )
         return pv.RectilinearGrid(
             x,
             y,
