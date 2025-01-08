@@ -42,7 +42,9 @@ class BaseStructuredSupport(BaseSupport):
         if np.any(nsteps < 0):
             raise LoopException("nsteps cannot be negative")
         if np.any(nsteps < 3):
-            raise LoopException("step vector cannot be less than 3. Try increasing the resolution of the interpolator")
+            raise LoopException(
+                "step vector cannot be less than 3. Try increasing the resolution of the interpolator"
+            )
         self._nsteps = np.array(nsteps, dtype=int) + 1
         self._step_vector = np.array(step_vector)
         self._origin = np.array(origin)
