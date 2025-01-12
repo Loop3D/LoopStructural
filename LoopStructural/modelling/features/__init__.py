@@ -30,3 +30,4 @@ from ._cross_product_geological_feature import CrossProductGeologicalFeature
 
 from ._unconformity_feature import UnconformityFeature
 from ._analytical_feature import AnalyticalGeologicalFeature
+from ._projected_vector_feature import ProjectedVectorFeature
