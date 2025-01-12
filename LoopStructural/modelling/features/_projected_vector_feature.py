@@ -22,7 +22,7 @@ class ProjectedVectorFeature(BaseFeature):
 
         Create a geological feature by projecting a vector onto a feature representing a plane
         E.g. project a thickness vector onto an axial surface
-        
+
         Parameters
         ----------
         name: feature name
@@ -42,7 +42,7 @@ class ProjectedVectorFeature(BaseFeature):
         super().__init__(name)
         self.plane_feature = plane_feature
         self.vector = vector
-        
+
         self.value_feature = None
 
     def evaluate_gradient(self, locations: np.ndarray, ignore_regions=False) -> np.ndarray:
@@ -60,10 +60,10 @@ class ProjectedVectorFeature(BaseFeature):
         -------
 
         """
-        
+
         # project s0 onto axis plane B X A X B
         plane_normal = self.plane_feature.evaluate_gradient(locations, ignore_regions)
-        vector = np.tile(self.vector,(locations.shape[0],1))
+        vector = np.tile(self.vector, (locations.shape[0], 1))
 
         projected_vector = np.cross(
             plane_normal, np.cross(vector, plane_normal, axisa=1, axisb=1), axisa=1, axisb=1
@@ -108,5 +108,5 @@ class ProjectedVectorFeature(BaseFeature):
         if name is None:
             name = f'{self.name}_copy'
         return ProjectedVectorFeature(
-            name=name, vector = self.vector, plane_feature=self.plane_feature
+            name=name, vector=self.vector, plane_feature=self.plane_feature
         )
