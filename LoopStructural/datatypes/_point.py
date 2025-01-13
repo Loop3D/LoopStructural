@@ -25,11 +25,14 @@ class ValuePoints:
             ),
         }
 
-    def vtk(self):
+    def vtk(self, scalars=None):
         import pyvista as pv
 
         points = pv.PolyData(self.locations)
-        points["values"] = self.values
+        if scalars is not None and len(scalars) == len(self.locations):
+            points.point_data['scalars'] = scalars
+        else:
+            points["values"] = self.values
         return points
 
     def plot(self, pyvista_kwargs={}):
@@ -123,9 +126,19 @@ class VectorPoints:
     def from_dict(self, d):
         return VectorPoints(d['locations'], d['vectors'], d['name'], d.get('properties', None))
 
-    def vtk(self, geom='arrow', scale=1.0, scale_function=None, normalise=True, tolerance=0.05):
+    def vtk(
+        self,
+        geom='arrow',
+        scale=0.10,
+        scale_function=None,
+        normalise=True,
+        tolerance=0.05,
+        bb=None,
+        scalars=None,
+    ):
         import pyvista as pv
 
+        _projected = False
         vectors = np.copy(self.vectors)
         if normalise:
             norm = np.linalg.norm(vectors, axis=1)
@@ -133,15 +146,28 @@ class VectorPoints:
         if scale_function is not None:
             # vectors /= np.linalg.norm(vectors, axis=1)[:, None]
             vectors *= scale_function(self.locations)[:, None]
-        points = pv.PolyData(self.locations)
+        locations = self.locations
+        if bb is not None:
+            try:
+                locations = bb.project(locations)
+                _projected = True
+            except Exception as e:
+                logger.error(f'Failed to project points to bounding box: {e}')
+                logger.error('Using unprojected points, this may cause issues with the glyphing')
+        points = pv.PolyData(locations)
+        if scalars is not None and len(scalars) == len(self.locations):
+            points['scalars'] = scalars
         points.point_data.set_vectors(vectors, 'vectors')
         if geom == 'arrow':
             geom = pv.Arrow(scale=scale)
         elif geom == 'disc':
-            geom = pv.Disc(inner=0, outer=scale)
+            geom = pv.Disc(inner=0, outer=scale).rotate_y(90)
 
         # Perform the glyph
-        return points.glyph(orient="vectors", geom=geom, tolerance=tolerance)
+        glyphed = points.glyph(orient="vectors", geom=geom, tolerance=tolerance, scale=False)
+        if _projected:
+            glyphed.points = bb.reproject(glyphed.points)
+        return glyphed
 
     def plot(self, pyvista_kwargs={}):
         """Calls pyvista plot on the vtk object

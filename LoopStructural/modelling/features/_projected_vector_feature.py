@@ -11,23 +11,23 @@ from ...utils import getLogger
 logger = getLogger(__name__)
 
 
-class CrossProductGeologicalFeature(BaseFeature):
+class ProjectedVectorFeature(BaseFeature):
     def __init__(
         self,
         name: str,
-        geological_feature_a: BaseFeature,
-        geological_feature_b: BaseFeature,
+        vector: np.ndarray,
+        plane_feature: BaseFeature,
     ):
         """
 
-        Create a geological feature for a vector field using the cross
-        product between
-        two existing features
+        Create a geological feature by projecting a vector onto a feature representing a plane
+        E.g. project a thickness vector onto an axial surface
+
         Parameters
         ----------
         name: feature name
-        geological_feature_a: first feature
-        geological_feature_b: second feature
+        vector: the vector to project
+        plane_feature: the plane
 
 
         Parameters
@@ -40,8 +40,9 @@ class CrossProductGeologicalFeature(BaseFeature):
             Right hand side of cross product
         """
         super().__init__(name)
-        self.geological_feature_a = geological_feature_a
-        self.geological_feature_b = geological_feature_b
+        self.plane_feature = plane_feature
+        self.vector = vector
+
         self.value_feature = None
 
     def evaluate_gradient(self, locations: np.ndarray, ignore_regions=False) -> np.ndarray:
@@ -59,11 +60,15 @@ class CrossProductGeologicalFeature(BaseFeature):
         -------
 
         """
-        v1 = self.geological_feature_a.evaluate_gradient(locations, ignore_regions)
-        # v1 /= np.linalg.norm(v1,axis=1)[:,None]
-        v2 = self.geological_feature_b.evaluate_gradient(locations, ignore_regions)
-        # v2 /= np.linalg.norm(v2,axis=1)[:,None]
-        return np.cross(v1, v2, axisa=1, axisb=1)
+
+        # project s0 onto axis plane B X A X B
+        plane_normal = self.plane_feature.evaluate_gradient(locations, ignore_regions)
+        vector = np.tile(self.vector, (locations.shape[0], 1))
+
+        projected_vector = np.cross(
+            plane_normal, np.cross(vector, plane_normal, axisa=1, axisb=1), axisa=1, axisb=1
+        )
+        return projected_vector
 
     def evaluate_value(self, evaluation_points: np.ndarray, ignore_regions=False) -> np.ndarray:
         """
@@ -102,6 +107,6 @@ class CrossProductGeologicalFeature(BaseFeature):
     def copy(self, name: Optional[str] = None):
         if name is None:
             name = f'{self.name}_copy'
-        return CrossProductGeologicalFeature(
-            name, self.geological_feature_a, self.geological_feature_b
+        return ProjectedVectorFeature(
+            name=name, vector=self.vector, plane_feature=self.plane_feature
         )

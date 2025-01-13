@@ -65,25 +65,14 @@ class InterpolatorFactory:
         gradient_norm_constraints: Optional[np.ndarray] = None,
         gradient_constraints: Optional[np.ndarray] = None,
     ):
-        if interpolatortype is None:
-            raise ValueError("No interpolator type specified")
-        if boundingbox is None:
-            raise ValueError("No bounding box specified")
-        if nelements is None:
-            raise ValueError("No number of elements specified")
-        if isinstance(interpolatortype, str):
-            interpolatortype = InterpolatorType._member_map_[interpolatortype].numerator
-        if support is None:
-            raise Exception("Support must be specified")
-            # supporttype = support_interpolator_map[interpolatortype]
-            # support = SupportFactory.create_support(
-            #     supporttype, boundingbox, nelements, element_volume
-            # )
-        interpolator = interpolator_map[interpolatortype](support)
+        interpolator = InterpolatorFactory.create_interpolator(
+            interpolatortype, boundingbox, nelements, element_volume, support
+        )
         if value_constraints is not None:
-            interpolator.add_value_constraints(value_constraints)
+            interpolator.set_value_constraints(value_constraints)
         if gradient_norm_constraints is not None:
-            interpolator.add_gradient_constraints(gradient_norm_constraints)
+            interpolator.set_normal_constraints(gradient_norm_constraints)
         if gradient_constraints is not None:
-            interpolator.add_gradient_constraints(gradient_constraints)
+            interpolator.set_gradient_constraints(gradient_constraints)
+        interpolator.setup()
         return interpolator

@@ -113,7 +113,9 @@ class GeologicalFeature(BaseFeature):
         # if evaluation_points is not a numpy array try and convert
         # otherwise error
         evaluation_points = np.asarray(pos)
-        self.builder.up_to_date()
+        # if there is a builder lets make sure that the feature is up to date
+        if self.builder is not None:
+            self.builder.up_to_date()
         # check if the points are within the display region
         v = np.zeros(evaluation_points.shape[0])
         v[:] = np.nan

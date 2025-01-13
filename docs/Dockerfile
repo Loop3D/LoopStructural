@@ -15,6 +15,7 @@ RUN apt-get update -qq && \
     libgl1-mesa-glx\
     xvfb
 RUN conda install -c conda-forge\
+    -c loop3d\
     # python"<=3.8"\
     cython\
     numpy\ 
@@ -32,9 +33,11 @@ RUN conda install -c conda-forge\
     meshio\
     python=3.10\
     pydata-sphinx-theme\
+    pyvista\
+    loopstructuralvisualisation\
     -y
 RUN pip install git+https://github.com/geopandas/geopandas.git@v0.10.2
-RUN pip install loopstructuralvisualisation[all] geoh5py
+RUN pip install geoh5py
 RUN pip install sphinxcontrib-bibtex
 ENV TINI_VERSION v0.19.0
 ADD https://github.com/krallin/tini/releases/download/${TINI_VERSION}/tini /tini

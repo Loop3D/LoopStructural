@@ -39,8 +39,16 @@ class AnalyticalGeologicalFeature(BaseFeature):
         builder=None,
     ):
         BaseFeature.__init__(self, name, model, faults, regions, builder)
-        self.vector = np.array(vector, dtype=float)
-        self.origin = np.array(origin, dtype=float)
+        try:
+            self.vector = np.array(vector, dtype=float).reshape(3)
+        except ValueError:
+            logger.error("AnalyticalGeologicalFeature: vector must be a 3 element array")
+            raise ValueError("vector must be a 3 element array")
+        try:
+            self.origin = np.array(origin, dtype=float).reshape(3)
+        except ValueError:
+            logger.error("AnalyticalGeologicalFeature: origin must be a 3 element array")
+            raise ValueError("origin must be a 3 element array")
         self.type = FeatureType.ANALYTICAL
 
     def to_json(self):
@@ -86,3 +94,16 @@ class AnalyticalGeologicalFeature(BaseFeature):
 
     def get_data(self, value_map: Optional[dict] = None):
         return
+
+    def copy(self, name: Optional[str] = None):
+        if name is None:
+            name = self.name
+        return AnalyticalGeologicalFeature(
+            name,
+            self.vector.copy(),
+            self.origin.copy(),
+            list(self.regions),
+            list(self.faults),
+            self.model,
+            self.builder,
+        )

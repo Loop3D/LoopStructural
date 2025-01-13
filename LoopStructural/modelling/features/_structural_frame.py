@@ -176,3 +176,9 @@ class StructuralFrame(BaseFeature):
         for f in self.features:
             data.extend(f.get_data(value_map))
         return data
+
+    def copy(self, name: Optional[str] = None):
+        if name is None:
+            name = f'{self.name}_copy'
+        # !TODO check if this needs to be a deep copy
+        return StructuralFrame(name, self.features, self.fold, self.model)

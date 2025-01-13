@@ -408,3 +408,6 @@ class IntrusionFeature(BaseFeature):
 
     def get_data(self, value_map: Optional[dict] = None):
         pass
+
+    def copy(self):
+        pass

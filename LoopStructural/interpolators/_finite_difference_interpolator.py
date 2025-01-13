@@ -97,7 +97,7 @@ class FiniteDifferenceInterpolator(DiscreteInterpolator):
         self.add_interface_constraints(self.interpolation_weights["ipw"])
         self.add_value_inequality_constraints()
         self.add_inequality_pairs_constraints(
-            kwargs.get('inequality_pairs', None),
+            pairs=kwargs.get('inequality_pairs', None),
             upper_bound=kwargs.get('inequality_pair_upper_bound', np.finfo(float).eps),
             lower_bound=kwargs.get('inequality_pair_lower_bound', -np.inf),
         )
@@ -172,16 +172,18 @@ class FiniteDifferenceInterpolator(DiscreteInterpolator):
         # get elements for points
         points = self.get_interface_constraints()
         if points.shape[0] > 1:
-            vertices, c, tetras, inside = self.support.get_element_for_location(
+            node_idx, inside = self.support.position_to_cell_corners(
                 points[:, : self.support.dimension]
             )
-            # calculate volume of tetras
-            # vecs = vertices[inside, 1:, :] - vertices[inside, 0, None, :]
-            # vol = np.abs(np.linalg.det(vecs)) / 6
-            A = c[inside, :]
-            # A *= vol[:,None]
-            idc = tetras[inside, :]
-
+            gi = np.zeros(self.support.n_nodes, dtype=int)
+            gi[:] = -1
+            gi[self.region] = np.arange(0, self.nx, dtype=int)
+            idc = np.zeros(node_idx.shape).astype(int)
+            idc[:] = -1
+            idc[inside, :] = gi[node_idx[inside, :]]
+            inside = np.logical_and(~np.any(idc == -1, axis=1), inside)
+            idc = idc[inside, :]
+            A = self.support.position_to_dof_coefs(points[inside, : self.support.dimension])
             for unique_id in np.unique(
                 points[
                     np.logical_and(~np.isnan(points[:, self.support.dimension]), inside),
@@ -197,7 +199,6 @@ class FiniteDifferenceInterpolator(DiscreteInterpolator):
                 ).T.reshape(-1, 2)
                 interface_A = np.hstack([A[mask, :][ij[:, 0], :], -A[mask, :][ij[:, 1], :]])
                 interface_idc = np.hstack([idc[mask, :][ij[:, 0], :], idc[mask, :][ij[:, 1], :]])
-
                 # now map the index from global to region create array size of mesh
                 # initialise as np.nan, then map points inside region to 0->nx
                 gi = np.zeros(self.support.n_nodes).astype(int)
@@ -229,7 +230,6 @@ class FiniteDifferenceInterpolator(DiscreteInterpolator):
         points = self.get_gradient_constraints()
         if points.shape[0] > 0:
             # calculate unit vector for orientation data
-            # points[:,3:]/=np.linalg.norm(points[:,3:],axis=1)[:,None]
 
             node_idx, inside = self.support.position_to_cell_corners(
                 points[:, : self.support.dimension]
