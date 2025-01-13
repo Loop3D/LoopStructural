@@ -2,8 +2,12 @@ import numpy as np
 from . import getLogger
 
 logger = getLogger(__name__)
+
+
 class EuclideanTransformation:
-    def __init__(self, dimensions: int=2, angle: float=0, translation: np.ndarray=np.zeros(3)):
+    def __init__(
+        self, dimensions: int = 2, angle: float = 0, translation: np.ndarray = np.zeros(3)
+    ):
         """Transforms points into a new coordinate
         system where the main eigenvector is aligned with x
 
@@ -19,7 +23,7 @@ class EuclideanTransformation:
         self.translation = translation[:dimensions]
         self.dimensions = dimensions
         self.angle = angle
-    
+
     def fit(self, points: np.ndarray):
         """Fit the transformation to a point cloud
         This function will find the main eigenvector of the point cloud
@@ -53,6 +57,7 @@ class EuclideanTransformation:
     @property
     def rotation(self):
         return self._rotation(self.angle)
+
     @property
     def inverse_rotation(self):
         return self._rotation(-self.angle)
@@ -95,6 +100,7 @@ class EuclideanTransformation:
             centred,
             self.rotation[: self.dimensions, : self.dimensions],
         )
+
     def inverse_transform(self, points: np.ndarray) -> np.ndarray:
         """
         Transform points back to the original coordinate system
@@ -103,18 +109,21 @@ class EuclideanTransformation:
         ----------
         points : np.ndarray
             xyz points as as numpy array
-        
+
         Returns
         -------
         np.ndarray
             xyz points in the original coordinate system
         """
 
-        return np.einsum(
-            'ik,jk->ij',
-            points,
-            self.inverse_rotation[: self.dimensions, : self.dimensions],
-        )+self.translation
+        return (
+            np.einsum(
+                'ik,jk->ij',
+                points,
+                self.inverse_rotation[: self.dimensions, : self.dimensions],
+            )
+            + self.translation
+        )
 
     def __call__(self, points: np.ndarray) -> np.ndarray:
         """
@@ -134,7 +143,6 @@ class EuclideanTransformation:
         return self.transform(points)
 
     def _repr_html_(self):
-
         """
         Provides an HTML representation of the TransRotator.
         """
@@ -146,5 +154,7 @@ class EuclideanTransformation:
             <p>Rotation Angle: {self.angle} degrees</p>
           </div>
         </div>
-        """.format(self=self)
+        """.format(
+            self=self
+        )
         return html_str
