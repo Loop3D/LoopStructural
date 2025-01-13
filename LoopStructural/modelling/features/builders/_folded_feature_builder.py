@@ -89,7 +89,7 @@ class FoldedFeatureBuilder(GeologicalFeatureBuilder):
             fold_axis_rotation = get_fold_rotation_profile(self.axis_profile_type, far, fad)
             if "axis_function" in kwargs:
                 # allow predefined function to be used
-                fold_axis_rotation.set_function(kwargs["axis_function"])
+                logger.error("axis_function is deprecated, use a specific fold rotation angle profile type")
             else:
                 fold_axis_rotation.fit(params={'wavelength': kwargs.get("axis_wl", None)})
             self.fold.fold_axis_rotation = fold_axis_rotation
@@ -107,7 +107,7 @@ class FoldedFeatureBuilder(GeologicalFeatureBuilder):
         fold_limb_rotation = get_fold_rotation_profile(self.limb_profile_type, flr, fld)
         if "limb_function" in kwargs:
             # allow for predefined functions to be used
-            fold_limb_rotation.set_function(kwargs["limb_function"])
+            logger.error("limb_function is deprecated, use a specific fold rotation angle profile type")
         else:
             fold_limb_rotation.fit(params={'wavelength': kwargs.get("limb_wl", None)})
 
