@@ -114,5 +114,5 @@ support_interpolator_map = {
 }
 
 from ._interpolator_factory import InterpolatorFactory
-
+from ._interpolator_builder import InterpolatorBuilder
 # from ._api import LoopInterpolator
