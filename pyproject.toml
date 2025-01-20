@@ -58,6 +58,7 @@ jupyter = [
     ]
 inequalities = [
 "loopsolver"]
+docs = ["pyvista[all]", "pydata-sphinx-theme","meshio","loopstructuralvisualisation[all]","networkx","scikit-learn","scikit-image","sphinx","sphinx-gallery","geoh5py","geopandas","sphinxcontrib-bibtex","myst-parser"]
 [project.urls]
 Documentation = 'https://Loop3d.org/LoopStructural/'
 "Bug Tracker" = 'https://github.com/loop3d/loopstructural/issues'
