@@ -1,25 +1,92 @@
 name: "📚 Build documentation and deploy "
-
 on:
-  workflow_dispatch:
+  workflow_dispatch: # Able to not use cache by user demand
+    inputs:
+      cache:
+        description: "Use build cache"
+        required: false
+        default: "true"
+  
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  USE_CACHE: ${{ (github.event_name == 'workflow_dispatch' && github.event.inputs.cache == 'true')  }}
+  PYDEVD_DISABLE_FILE_VALIDATION: "1"
+  PYTEST_ADDOPTS: "--color=yes"
+  FORCE_COLOR: "True"
 
 jobs:
-  documentation:
-    runs-on: ubuntu-latest
+  doc:
+    name: Build Documentation
+    runs-on: ubuntu-20.04
+    env:
+      PYVISTA_OFF_SCREEN: "True"
+      ALLOW_PLOTTING: true
+      SHELLOPTS: "errexit:pipefail"
     steps:
       - uses: actions/checkout@v4
-      - run: |
-          cp CHANGELOG.md docs/source/getting_started/CHANGELOG.md
-          docker build . -t=lsdocs -f docs/Dockerfile 
-          docker run -v $(pwd):/LoopStructural lsdocs bash LoopStructural/docs/build_docs.sh
-      # - name: upload artifacts
-      #   uses: actions/upload-artifact@v3
-      #   with:
-      #     path: docs/build/html
-      # - name: Deploy 🚀
-      #   uses: JamesIves/github-pages-deploy-action@4.1.3
-      #   with:
-      #     branch: gh-pages # The branch the action should deploy to.
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: "pip"
+
+      - uses: awalsh128/cache-apt-pkgs-action@v1.1.3
+        with:
+          packages: libosmesa6-dev libgl1-mesa-dev python3-tk pandoc git-restore-mtime 
+          version: 3.0
+
+      - name: Install PyVista and dependencies
+        run: |
+          pip install -e .[docs]
+
+      - name: Install custom OSMesa VTK variant
+        run: |
+          pip uninstall vtk -y
+          pip install vtk-osmesa==9.3.0 --index-url https://gitlab.kitware.com/api/v4/projects/13/packages/pypi/simple
+
+      
+
+      - name: Build Documentation
+        run: make -C doc html
+
+      - name: Dump Sphinx Warnings and Errors
+        if: always()
+        run: if [ -e doc/sphinx_warnings.txt ]; then cat doc/sphinx_warnings.txt; fi
+
+      - name: Dump VTK Warnings and Errors
+        if: always()
+        run: if [ -e doc/errors.txt ]; then cat doc/errors.txt; fi
+
+      
+
+
+
+      - name: Upload HTML documentation
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: docs-build
+          path: doc/_build/html/
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: examples
+          path: doc/source/auto_examples/
+
+      - name: Get Notebooks
+        run: |
+          mkdir _notebooks
+          find doc/source/_auto_examples -type f -name '*.ipynb' | cpio -p -d -v _notebooks/
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: loopstructural-notebooks
+          path: _notebooks
+
       #     folder: docs/build/html # The folder the action should deploy.
 
   
