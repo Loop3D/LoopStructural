@@ -51,7 +51,7 @@ jobs:
       
 
       - name: Build Documentation
-        run: make -C doc html
+        run: make -C docs html
 
       - name: Dump Sphinx Warnings and Errors
         if: always()
