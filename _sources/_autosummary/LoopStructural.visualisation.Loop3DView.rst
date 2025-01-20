@@ -153,6 +153,7 @@ LoopStructural.visualisation.Loop3DView
       ~Loop3DView.import_gltf
       ~Loop3DView.import_obj
       ~Loop3DView.import_vrml
+      ~Loop3DView.increment_name
       ~Loop3DView.increment_point_size_and_line_width
       ~Loop3DView.isometric_view
       ~Loop3DView.isometric_view_interactive
@@ -168,6 +169,7 @@ LoopStructural.visualisation.Loop3DView
       ~Loop3DView.plot_data
       ~Loop3DView.plot_fault
       ~Loop3DView.plot_fault_displacements
+      ~Loop3DView.plot_fault_ellipsoid
       ~Loop3DView.plot_fold
       ~Loop3DView.plot_model_surfaces
       ~Loop3DView.plot_scalar_field

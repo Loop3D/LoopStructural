@@ -187,7 +187,7 @@ Where the optional kwargs can be:
 
  .. code-block:: none
 
-    ['#1f77b4', '#1f77b4', '#1f77b4', '#1f77b4']
+    <matplotlib.colors.ListedColormap object at 0x7f8968b66150>
 
 
 
@@ -195,7 +195,7 @@ Where the optional kwargs can be:
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 1.255 seconds)
+   **Total running time of the script:** (0 minutes 1.295 seconds)
 
 
 .. _sphx_glr_download__auto_examples_1_basic_plot_3_model_visualisation.py:

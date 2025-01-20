@@ -21,7 +21,9 @@ LoopStructural.datatypes.BoundingBox
       ~BoundingBox.fit
       ~BoundingBox.get_value
       ~BoundingBox.is_inside
+      ~BoundingBox.project
       ~BoundingBox.regular_grid
+      ~BoundingBox.reproject
       ~BoundingBox.structured_grid
       ~BoundingBox.to_dict
       ~BoundingBox.vtk

@@ -22,6 +22,8 @@ LoopStructural.interpolators.InterpolatorType
       ~InterpolatorType.to_bytes
       ~InterpolatorType.from_bytes
       ~InterpolatorType.as_integer_ratio
+      ~InterpolatorType.is_integer
+      ~InterpolatorType.__init__
    
    
 

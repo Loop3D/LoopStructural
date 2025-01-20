@@ -6,7 +6,7 @@
 
 Computation times
 =================
-**00:50.665** total execution time for 13 files **from all galleries**:
+**00:50.200** total execution time for 13 files **from all galleries**:
 
 .. container::
 
@@ -33,31 +33,31 @@ Computation times
      - Time
      - Mem (MB)
    * - :ref:`sphx_glr__auto_examples_1_basic_plot_6_fault_parameters.py` (``../../examples/1_basic/plot_6_fault_parameters.py``)
-     - 00:25.907
+     - 00:25.649
      - 0.0
    * - :ref:`sphx_glr__auto_examples_2_fold_plot_1_adding_folds_to_surfaces.py` (``../../examples/2_fold/plot_1_adding_folds_to_surfaces.py``)
-     - 00:07.091
+     - 00:06.988
      - 0.0
    * - :ref:`sphx_glr__auto_examples_1_basic_plot_5_unconformities.py` (``../../examples/1_basic/plot_5_unconformities.py``)
-     - 00:06.163
+     - 00:06.061
      - 0.0
    * - :ref:`sphx_glr__auto_examples_1_basic_plot_3_multiple_groups.py` (``../../examples/1_basic/plot_3_multiple_groups.py``)
-     - 00:03.462
+     - 00:03.786
      - 0.0
    * - :ref:`sphx_glr__auto_examples_1_basic_plot_4_using_stratigraphic_column.py` (``../../examples/1_basic/plot_4_using_stratigraphic_column.py``)
-     - 00:03.395
+     - 00:03.384
      - 0.0
    * - :ref:`sphx_glr__auto_examples_1_basic_plot_2_surface_modelling.py` (``../../examples/1_basic/plot_2_surface_modelling.py``)
-     - 00:03.008
+     - 00:02.583
      - 0.0
    * - :ref:`sphx_glr__auto_examples_1_basic_plot_3_model_visualisation.py` (``../../examples/1_basic/plot_3_model_visualisation.py``)
-     - 00:01.255
+     - 00:01.295
      - 0.0
    * - :ref:`sphx_glr__auto_examples_1_basic_plot_1_data_prepration.py` (``../../examples/1_basic/plot_1_data_prepration.py``)
-     - 00:00.245
+     - 00:00.307
      - 0.0
    * - :ref:`sphx_glr__auto_examples_1_basic_plot_7_exporting.py` (``../../examples/1_basic/plot_7_exporting.py``)
-     - 00:00.139
+     - 00:00.146
      - 0.0
    * - :ref:`sphx_glr__auto_examples_2_fold__refolded_folds.py` (``../../examples/2_fold/_refolded_folds.py``)
      - 00:00.000
