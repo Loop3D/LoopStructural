@@ -36,4 +36,4 @@ import numpy as np
 rng = np.random.default_rng()
 
 from ._surface import LoopIsosurfacer, surface_list
-from .colours import random_colour
+from .colours import random_colour, random_hex_colour
