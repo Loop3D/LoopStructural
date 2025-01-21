@@ -1824,6 +1824,7 @@ class GeologicalModel:
     ):
         path = pathlib.Path(filename)
         extension = path.suffix
+        parent = path.parent
         name = path.stem
         stratigraphic_surfaces = self.get_stratigraphic_surfaces()
         if fault_surfaces:
@@ -1832,19 +1833,19 @@ class GeologicalModel:
                 if extension == ".geoh5" or extension == '.omf':
                     s.save(filename)
                 else:
-                    s.save(f'{name}_{s.name}.{extension}')
+                    s.save(f'{parent}/{name}_{s.name}{extension}')
         if stratigraphic_surfaces:
             for s in self.get_stratigraphic_surfaces():
                 if extension == ".geoh5" or extension == '.omf':
                     s.save(filename)
                 else:
-                    s.save(f'{name}_{s.name}.{extension}')
+                    s.save(f'{parent}/{name}_{s.name}{extension}')
         if block_model:
             grid, ids = self.get_block_model()
             if extension == ".geoh5" or extension == '.omf':
                 grid.save(filename)
             else:
-                grid.save(f'{name}_block_model.{extension}')
+                grid.save(f'{parent}/{name}_block_model{extension}')
         if stratigraphic_data:
             if self.stratigraphic_column is not None:
                 for group in self.stratigraphic_column.keys():
@@ -1854,7 +1855,7 @@ class GeologicalModel:
                         if extension == ".geoh5" or extension == '.omf':
                             data.save(filename)
                         else:
-                            data.save(f'{name}_{group}_data.{extension}')
+                            data.save(f'{parent}/{name}_{group}_data{extension}')
         if fault_data:
             for f in self.fault_names():
                 for d in self.__getitem__(f).get_data():
@@ -1862,4 +1863,4 @@ class GeologicalModel:
 
                         d.save(filename)
                     else:
-                        d.save(f'{name}_{group}.{extension}')
+                        d.save(f'{parent}/{name}_{group}{extension}')
