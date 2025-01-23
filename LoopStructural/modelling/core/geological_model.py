@@ -1182,7 +1182,7 @@ class GeologicalModel:
                 logger.debug(f"Reached unconformity {f.name}")
                 break
             logger.debug(f"Adding {uc_feature.name} as unconformity to {f.name}")
-            if f.type == FeatureType.FAULT:
+            if f.type == FeatureType.FAULT or f.type == FeatureType.INACTIVEFAULT:
                 continue
             if f == feature:
                 continue
