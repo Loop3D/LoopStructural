@@ -1,4 +1,4 @@
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 import numpy as np
 
 from typing import Optional, Union
@@ -10,10 +10,10 @@ logger = getLogger(__name__)
 
 @dataclass
 class ValuePoints:
-    locations: np.ndarray
-    values: np.ndarray
-    name: str
-    properties: Optional[dict] = None
+    locations:np.ndarray= field(default_factory=lambda: np.array([[0, 0, 0]]))
+    values: np.ndarray = field(default_factory=lambda: np.array([0]))
+    name: str = "unnamed"
+    properties: Optional[dict] = None 
 
     def to_dict(self):
         return {
@@ -108,9 +108,9 @@ class ValuePoints:
 
 @dataclass
 class VectorPoints:
-    locations: np.ndarray
-    vectors: np.ndarray
-    name: str
+    locations: np.ndarray = field(default_factory=lambda: np.array([[0, 0, 0]]))
+    vectors: np.ndarray = field(default_factory=lambda: np.array([[0, 0, 0]]))
+    name: str = "unnamed"
     properties: Optional[dict] = None
 
     def to_dict(self):

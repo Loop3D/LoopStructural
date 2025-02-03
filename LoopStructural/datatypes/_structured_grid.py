@@ -1,6 +1,6 @@
 from typing import Dict
 import numpy as np
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from LoopStructural.utils import getLogger
 
 logger = getLogger(__name__)
@@ -8,12 +8,12 @@ logger = getLogger(__name__)
 
 @dataclass
 class StructuredGrid:
-    origin: np.ndarray
-    step_vector: np.ndarray
-    nsteps: np.ndarray
-    cell_properties: Dict[str, np.ndarray]
-    properties: Dict[str, np.ndarray]
-    name: str
+    origin: np.ndarray = field(default_factory=lambda: np.array([0, 0, 0]))
+    step_vector: np.ndarray = field(default_factory=lambda: np.array([1, 1, 1]))
+    nsteps: np.ndarray = field(default_factory=lambda: np.array([10, 10, 10]))
+    cell_properties: Dict[str, np.ndarray] = field(default_factory=dict)
+    properties: Dict[str, np.ndarray] = field(default_factory=dict)
+    name: str = "default_grid"
 
     def to_dict(self):
         return {
