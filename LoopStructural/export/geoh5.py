@@ -78,8 +78,10 @@ def add_structured_grid_to_geoh5(filename, structured_grid, overwrite=True, grou
         if structured_grid.cell_properties is not None:
             for k, v in structured_grid.cell_properties.items():
                 data[k] = {
-                    'association': "CELL",
-                    "values": np.rot90(v.reshape(structured_grid.nsteps - 1, order="F")).flatten(),
+                    "association": "CELL",
+                    "values": np.flipud(
+                        np.rot90(v.reshape(structured_grid.nsteps - 1, order="F"), 1)
+                    ).flatten(),
                 }
         block = geoh5py.objects.BlockModel.create(
             workspace,
