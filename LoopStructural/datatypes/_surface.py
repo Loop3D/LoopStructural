@@ -11,7 +11,7 @@ logger = getLogger(__name__)
 class Surface:
     vertices: np.ndarray = field(default_factory=lambda: np.array([[0, 0, 0]]))
     triangles: np.ndarray = field(default_factory=lambda: np.array([[0, 0, 0]]))
-    normals: Optional[np.ndarray] = None 
+    normals: Optional[np.ndarray] = None
     name: str = 'surface'
     values: Optional[np.ndarray] = None
     properties: Optional[dict] = None

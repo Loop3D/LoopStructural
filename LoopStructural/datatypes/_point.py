@@ -10,10 +10,10 @@ logger = getLogger(__name__)
 
 @dataclass
 class ValuePoints:
-    locations:np.ndarray= field(default_factory=lambda: np.array([[0, 0, 0]]))
+    locations: np.ndarray = field(default_factory=lambda: np.array([[0, 0, 0]]))
     values: np.ndarray = field(default_factory=lambda: np.array([0]))
     name: str = "unnamed"
-    properties: Optional[dict] = None 
+    properties: Optional[dict] = None
 
     def to_dict(self):
         return {

@@ -18,11 +18,13 @@ def random_colour(n: int = 1, cmap='tab20'):
         List of colours in the form of (r,g,b,a) tuples
     """
     from matplotlib import colormaps as cm
+
     colours = []
     for _i in range(n):
         colours.append(cm.get_cmap(cmap)(rng.random()))
 
     return colours
+
 
 def random_hex_colour(n: int = 1, cmap='tab20'):
     """

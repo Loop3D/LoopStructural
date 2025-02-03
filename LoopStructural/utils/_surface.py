@@ -63,7 +63,7 @@ class LoopIsosurfacer:
         self,
         values: Optional[Union[list, int, float]],
         name: Optional[Union[List[str], str]] = None,
-        local=False
+        local=False,
     ) -> surface_list:
         """Extract isosurfaces from the interpolator
 
