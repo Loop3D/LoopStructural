@@ -17,8 +17,7 @@ def random_colour(n: int = 1, cmap='tab20'):
     list
         List of colours in the form of (r,g,b,a) tuples
     """
-    import matplotlib.cm as cm
-
+    from matplotlib import colormaps as cm
     colours = []
     for _i in range(n):
         colours.append(cm.get_cmap(cmap)(rng.random()))
@@ -41,7 +40,7 @@ def random_hex_colour(n: int = 1, cmap='tab20'):
     list
         List of colours in the form of hex strings
     """
-    import matplotlib.cm as cm
+    from matplotlib import colormaps as cm
 
     colours = []
     for _i in range(n):
