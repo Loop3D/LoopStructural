@@ -1,4 +1,4 @@
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from typing import Optional
 import numpy as np
 import io
@@ -9,8 +9,8 @@ logger = getLogger(__name__)
 
 @dataclass
 class Surface:
-    vertices: np.ndarray
-    triangles: np.ndarray
+    vertices: np.ndarray = field(default_factory=lambda: np.array([[0, 0, 0]]))
+    triangles: np.ndarray = field(default_factory=lambda: np.array([[0, 0, 0]]))
     normals: Optional[np.ndarray] = None
     name: str = 'surface'
     values: Optional[np.ndarray] = None
