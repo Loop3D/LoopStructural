@@ -338,7 +338,7 @@ class BaseFeature(metaclass=ABCMeta):
         )
         grid.properties[self.name] = value
 
-        value = self.evaluate_value(bounding_box.cell_centers(order='F'))
+        value = self.evaluate_value(bounding_box.cell_centres(order='F'))
         grid.cell_properties[self.name] = value
         return grid
 
@@ -359,7 +359,7 @@ class BaseFeature(metaclass=ABCMeta):
             if self.model is None:
                 raise ValueError("Must specify bounding box")
             bounding_box = self.model.bounding_box
-        points = bounding_box.cell_centers()
+        points = bounding_box.cell_centres()
         value = self.evaluate_gradient(points)
         if self.model is not None:
             points = self.model.rescale(points)

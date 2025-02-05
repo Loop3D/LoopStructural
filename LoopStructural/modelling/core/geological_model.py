@@ -1809,7 +1809,7 @@ class GeologicalModel:
         grid = self.bounding_box.structured_grid(name=name)
 
         grid.cell_properties['stratigraphy'] = self.evaluate_model(
-            self.rescale(self.bounding_box.cell_centers())
+            self.rescale(self.bounding_box.cell_centres())
         )
         return grid, self.stratigraphic_ids()
 

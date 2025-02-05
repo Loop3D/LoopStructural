@@ -43,7 +43,7 @@ class BoundingBox:
         if maximum is None and nsteps is not None and step_vector is not None:
             maximum = origin + nsteps * step_vector
         if origin is not None and global_origin is None:
-            global_origin = origin
+            global_origin = np.zeros(3)
         self._origin = np.array(origin)
         self._maximum = np.array(maximum)
         self.dimensions = dimensions
@@ -242,6 +242,8 @@ class BoundingBox:
             )
         origin = locations.min(axis=0)
         maximum = locations.max(axis=0)
+        origin = np.array(origin)
+        maximum = np.array(maximum)
         if local_coordinate:
             self.global_origin = origin
             self.origin = np.zeros(3)
@@ -319,7 +321,7 @@ class BoundingBox:
         self,
         nsteps: Optional[Union[list, np.ndarray]] = None,
         shuffle: bool = False,
-        order: str = "C",
+        order: str = "F",
         local: bool = True,
     ) -> np.ndarray:
         """Get the grid of points from the bounding box
@@ -361,8 +363,8 @@ class BoundingBox:
             rng.shuffle(locs)
         return locs
 
-    def cell_centers(self, order: str = "F") -> np.ndarray:
-        """Get the cell centers of a regular grid
+    def cell_centres(self, order: str = "F") -> np.ndarray:
+        """Get the cell centres of a regular grid
 
         Parameters
         ----------
@@ -372,7 +374,7 @@ class BoundingBox:
         Returns
         -------
         np.ndarray
-            array of cell centers
+            array of cell centres
         """
         locs = self.regular_grid(order=order, nsteps=self.nsteps - 1)
 
@@ -434,7 +436,7 @@ class BoundingBox:
         _cell_data = copy.deepcopy(cell_data)
         _vertex_data = copy.deepcopy(vertex_data)
         return StructuredGrid(
-            origin=self.global_origin,
+            origin=self.global_origin+self.origin,
             step_vector=self.step_vector,
             nsteps=self.nsteps,
             cell_properties=_cell_data,

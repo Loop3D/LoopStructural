@@ -1,6 +1,6 @@
 Background
 ==========
-LoopStructural is an opensource Python 3.6+ library for 3D geological modelling where geological objects are represented by an implicit function. 
+LoopStructural is an opensource Python 3.9+ library for 3D geological modelling where geological objects are represented by an implicit function. 
 Where the implicit function represents the distance or pseudodistance to a reference horizion. 
 There is no analytical function that can be used to represent the geometry of geological objects, so the implicit function has to be approximated. 
 The implicit function is approximated from the observations of the surface

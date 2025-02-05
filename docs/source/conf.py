@@ -59,6 +59,9 @@ extensions = [
     # citations
     "myst_parser",
     "sphinxcontrib.bibtex",
+    "pyvista.ext.plot_directive",
+    "pyvista.ext.viewer_directive",
+    "sphinx_design",
 ]
 bibtex_bibfiles = ["docs_references.bib"]
 bibtex_default_style = "plain"

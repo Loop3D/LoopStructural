@@ -20,6 +20,7 @@ ch.setLevel(logging.WARNING)
 loggers = {}
 from .modelling.core.geological_model import GeologicalModel
 from .interpolators._api import LoopInterpolator
+from .interpolators import InterpolatorBuilder
 from .datatypes import BoundingBox
 from .utils import log_to_console, log_to_file, getLogger, rng, get_levels
 
