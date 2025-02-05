@@ -3,29 +3,11 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-Loop Structural
+LoopStructural
 ===============
 .. image:: ./images/image823.png
 
-.. important:: **Upgrading from 1.5.x to 1.6.x**
 
-   Version 1.6.x of LoopStructural has been released and there are a number of changes to how the library is used. The main changes are:
-   
-   - The `LavaVuModelViewer` class has been removed and the model visualisation has been ported to `pyvista` using a LoopStructural 
-     wrapped `loopstructuralvisualisation`. Many of the functions have been re-named and can be combined with the `pyvista.Plotter` methods for advanced
-     visualisation. pyvista does not currently allow for interactive plots while using colab notebooks, so `jupyter_backend='static'` is needed.
-   - Datastructures for representing model input/output have been introduced including the `LoopStructural.datatypes.StructuredGrid`,
-     :class:`LoopStructural.datatypes.ValuePoints`, :class:`LoopStructural.datatypes.VectorPoints` and :class:`LoopStructural.datatypes.Surface`. These Datastructures
-     are intended to improve the accessibility of the modelling and allow for easier export into other software packages.
-     All data objects have a `.save` method that allows the user to save the points into various formats including `json`, `csv`, `vtk` and `geoh5`.
-     In the future exporters for gocad and other formats will be added. All objects also have a `.vtk()` method to return a `pyvista.PolyData` object.
-   - The solver options for the interpolators have been removed and only :meth:`scipy.sparse.linalg.cg` and :meth:`scipy.sparse.linalg.lsmr` are supported. 
-     To use an external solver the `external_solver` argument can be provided to the `interpolator.solve` method, usually passed through
-     the `model.create_and_add*` methods. To specify specific arguments to the solver these can be passed through `solver_kwargs` dict.
-   - Improvements have been made to how unconformities are handled and their interaction with faults
-   - A framework for including inequalities into the interpolation has been added but there is no solver that can be used for solving this problem.
-   - A convenience class :class:`LoopStructural.LoopInterpolator` was added for building an implicit function without requiring the :class:`LoopStructural.GeologicalModel`
-   **Please report any bugs or issues on the github repository.**
  
 Overview
 ========
@@ -38,9 +20,115 @@ Loop is an open source 3D probabilistic geological and geophysical modelling pla
 initiated by Geoscience Australia and the OneGeology consortium. The project is funded by Australian territory,
 State and Federal Geological Surveys, the Australian Research Council and the MinEx Collaborative Research Centre.
 
+Examples
+==========
+
+LoopStructural can be used to build a 3D geological model using geological relationships between geological objects
+e.g. faults, folds, unconformities and stratigraphic contacts. The library also provides a high level API to access
+the fast interpolation schemes that are used by LoopStructural.
+
+Using GeologicalModel
+----------------------
+
+The following example shows how to use the geological model interface to create a geological model from a dataset and 
+evaluate the scalar field and gradient of the interpolator at some random locations.
+
+.. pyvista-plot::
+   :context:
+   :include-source: true
+   :force_static:
+
+    from LoopStructural import GeologicalModel
+    from LoopStructural.datatypes import BoundingBox
+    from LoopStructural.visualisation import Loop3DView
+    from LoopStructural.datasets import load_claudius
+    
+    import numpy as np
+    data, bb = load_claudius()
+    
+    #bb constaints origin and maximum of axis aligned bounding box
+    #data is a pandas dataframe with X,Y,Z,val,nx,ny,nz, feature_name
+    
+    model = GeologicalModel(bb[0,:],bb[1,:])
+    model.data = data
+    # nelements specifies the number of discrete interpolation elements
+    # 'stratí' is the feature name in the data dataframe
+    model.create_and_add_foliation('strati',nelements=1e5)
+    model.update()
+    # get the value of the interpolator at some random locations
+    locations = np.array(
+        [
+            np.random.uniform(bb[0, 0], bb[1, 0],5),
+            np.random.uniform(bb[0, 1], bb[1, 1],5),
+            np.random.uniform(bb[0, 2], bb[1, 2],5),
+        ]
+    ).T
+    val = model.evaluate_feature_value('strati', locations)
+    # get the gradient of the interpolator
+    gradient = model.evaluate_feature_gradient('strati',locations)
+    
+    #Plot the scalar field of the model
+    model['strati'].scalar_field().plot()
 
 
-   
+Using InterpolatorBuilder
+-------------------------
+
+To access the interpolators directly the `InterpolatorBuilder` can be used
+to help assemble an interpolator from a combination of value, gradient and inequality 
+constraints.
+
+.. pyvista-plot::
+   :context:
+   :include-source: true
+   :force_static:
+
+    from LoopStructural import BoundingBox, InterpolatorBuilder
+    from LoopStructural.utils import EuclideanTransformation
+    from LoopStructural.datasets import load_claudius
+
+    # load in a dataframe with x,y,z,val,nx,ny,nz to constrain the value and
+    # gradient normal of the interpolator
+    data, bb = load_claudius()
+    # create a transformer to move the data to the centre of mass of the dataset
+    # this avoid any numerical issues caused by large coordinates. This dataset
+    # is already axis aligned so we don't need to rotate the data but we can rotate it
+    # so that the main anisotropy of the dataset is aligned with the x axis.
+    transformer = EuclideanTransformation(dimensions=3, fit_rotation=False).fit(
+        data[["X", "Y", "Z"]]
+    )
+    data[["X", "Y", "Z"]] = transformer.transform(data[["X", "Y", "Z"]])
+    # Find the bounding box of the data by finding the extent
+    bounding_box = BoundingBox().fit(data[["X", "Y", "Z"]])
+    # assemble an interpolator using the bounding box and the data
+    builder = (
+        InterpolatorBuilder(interpolatortype="FDI", bounding_box=bounding_box)
+        .create_interpolator()
+        .set_value_constraints(data.loc[data["val"].notna(), ["X", "Y", "Z", "val"]].values)
+        .set_normal_constraints(
+            data.loc[data["nx"].notna(), ["X", "Y", "Z", "nx", "ny", "nz"]].values
+        )
+    )
+    interpolator = builder.build_interpolator()
+    # Set the number of elements in the bounding box to 10000 and create a structured grid
+    bounding_box.nelements = 10000
+    mesh = bounding_box.structured_grid()
+    # add the interpolated values to the mesh at the nodes
+    # mesh.properties["v"] = interpolator.evaluate_value(bounding_box.regular_grid(order='F'))
+    mesh.properties["v"] = interpolator.evaluate_value(mesh.nodes)
+
+    # or the cell centres
+    # mesh.cell_properties["v"] = interpolator.evaluate_value(mesh.cell_centres)
+
+
+    # visualise the scalar value
+
+    mesh.plot()
+
+    # We can also add gradient properties and visualise these
+    mesh.properties["grad"] = interpolator.evaluate_gradient(mesh.nodes)
+    mesh.vtk().glyph(orient="grad").plot()
+
 .. toctree::
    :hidden:
 
