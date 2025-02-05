@@ -56,10 +56,9 @@ The interpolator can be evaluated on a grid to visualise the geometry of the geo
     interpolator = (
         InterpolatorBuilder(
             interpolatortype="FDI", nelements=1e4, bounding_box=bounding_box
-        ).create_interpolator()
-        .set_value_constraints(data.values)
-        .set_normal_constraints(vector.values).setup_interpolator()
-        .build_interpolator()
+        ).add_value_constraints(data.values)
+        .add_normal_constraints(vector.values).setup_interpolator()
+        .build()
     )
     mesh = bounding_box.structured_grid()
     mesh.properties['val'] = interpolator.evaluate_value(mesh.nodes)
@@ -115,10 +114,9 @@ If we were to change the length of the vector we would change the distance betwe
     interpolator = (
         InterpolatorBuilder(
             interpolatortype="FDI", nelements=1e4, bounding_box=bounding_box
-        ).create_interpolator()
-        .set_value_constraints(data.values)
-        .set_normal_constraints(vector.values).setup_interpolator()
-        .build_interpolator()
+        ).add_value_constraints(data.values)
+        .add_normal_constraints(vector.values).setup_interpolator()
+        .build()
     )
     mesh2 = bounding_box.structured_grid()
     mesh2.properties['val'] = interpolator.evaluate_value(mesh2.nodes)
@@ -173,10 +171,9 @@ Following the example above we will use two lines of points with a value of 0 an
         InterpolatorBuilder(
             interpolatortype="FDI", nelements=1e4, bounding_box=bounding_box
         )
-        .create_interpolator()
-        .set_value_constraints(data.values)
+        .add_value_constraints(data.values)
         .setup_interpolator()
-        .build_interpolator()
+        .build()
     )
     mesh = bounding_box.structured_grid()
     mesh.properties["val"] = interpolator.evaluate_value(mesh.nodes)

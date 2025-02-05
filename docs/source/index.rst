@@ -101,15 +101,13 @@ constraints.
     # Find the bounding box of the data by finding the extent
     bounding_box = BoundingBox().fit(data[["X", "Y", "Z"]])
     # assemble an interpolator using the bounding box and the data
-    builder = (
+    interpolator = (
         InterpolatorBuilder(interpolatortype="FDI", bounding_box=bounding_box)
-        .create_interpolator()
-        .set_value_constraints(data.loc[data["val"].notna(), ["X", "Y", "Z", "val"]].values)
-        .set_normal_constraints(
+        .add_value_constraints(data.loc[data["val"].notna(), ["X", "Y", "Z", "val"]].values)
+        .add_normal_constraints(
             data.loc[data["nx"].notna(), ["X", "Y", "Z", "nx", "ny", "nz"]].values
-        )
+        ).build()
     )
-    interpolator = builder.build_interpolator()
     # Set the number of elements in the bounding box to 10000 and create a structured grid
     bounding_box.nelements = 10000
     mesh = bounding_box.structured_grid()
