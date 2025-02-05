@@ -3,7 +3,7 @@ from LoopStructural.interpolators import (
     InterpolatorType,
 )
 from LoopStructural.datatypes import BoundingBox
-from typing import  Union
+from typing import Optional, Union
 import numpy as np
 
 from LoopStructural.interpolators._geological_interpolator import GeologicalInterpolator
