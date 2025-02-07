@@ -3,7 +3,7 @@ from LoopStructural.interpolators import (
     InterpolatorType,
 )
 from LoopStructural.datatypes import BoundingBox
-from typing import  Union
+from typing import  Union, Optional
 import numpy as np
 
 from LoopStructural.interpolators._geological_interpolator import GeologicalInterpolator
@@ -14,8 +14,8 @@ class InterpolatorBuilder:
         self,
         interpolatortype: Union[str, InterpolatorType],
         bounding_box: BoundingBox,
-        nelements: int = 1000,
-        buffer: float = 0.2,
+        nelements: Optional[int] = None,
+        buffer: Optional[float] = None,
         **kwargs,
     ):
         """This class helps initialise and setup a geological interpolator.

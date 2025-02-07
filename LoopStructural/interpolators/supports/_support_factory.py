@@ -1,6 +1,6 @@
 from LoopStructural.interpolators.supports import support_map, SupportType
-
-
+import numpy as np
+from typing import Optional
 class SupportFactory:
     @staticmethod
     def create_support(support_type, **kwargs):
@@ -20,13 +20,19 @@ class SupportFactory:
 
     @staticmethod
     def create_support_from_bbox(
-        support_type, bounding_box, nelements, element_volume=None, buffer: float = 0.2
+        support_type, bounding_box, nelements, element_volume=None, buffer: Optional[float] =None
     ):
         if isinstance(support_type, str):
             support_type = SupportType._member_map_[support_type].numerator
-        bbox = bounding_box.with_buffer(buffer=buffer)
-        bbox.nelements = nelements
+        if buffer is not None:
+            bounding_box = bounding_box.with_buffer(buffer=buffer)
+        if element_volume is not None:
+            nelements = int(np.prod(bounding_box.length) / element_volume)
+        if nelements is not None:
+            bounding_box.nelements = nelements
 
         return support_map[support_type](
-            origin=bbox.origin, step_vector=bbox.step_vector, nsteps=bbox.nsteps
+            origin=bounding_box.origin,
+            step_vector=bounding_box.step_vector,
+            nsteps=bounding_box.nsteps,
         )

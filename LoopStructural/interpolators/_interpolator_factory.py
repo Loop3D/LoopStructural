@@ -18,14 +18,13 @@ class InterpolatorFactory:
         nelements: Optional[int] = None,
         element_volume: Optional[float] = None,
         support=None,
-        buffer: float = 0.2,
+        buffer: Optional[float] = None,
     ):
         if interpolatortype is None:
             raise ValueError("No interpolator type specified")
         if boundingbox is None:
             raise ValueError("No bounding box specified")
-        if nelements is None:
-            raise ValueError("No number of elements specified")
+        
         if isinstance(interpolatortype, str):
             interpolatortype = interpolator_string_map[interpolatortype]
         if support is None:

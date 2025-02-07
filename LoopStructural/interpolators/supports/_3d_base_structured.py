@@ -3,6 +3,7 @@ from abc import abstractmethod
 import numpy as np
 from LoopStructural.utils import getLogger
 from . import SupportType
+from typing import Tuple
 
 logger = getLogger(__name__)
 
@@ -229,7 +230,7 @@ class BaseStructuredSupport(BaseSupport):
         """ """
         return np.einsum("ijk,ik->ij", self.rotation_xy[None, :, :], pos)
 
-    def position_to_cell_index(self, pos: np.ndarray) -> np.ndarray:
+    def position_to_cell_index(self, pos: np.ndarray) -> Tuple[np.ndarray,np.ndarray]:
         """Get the indexes (i,j,k) of a cell
         that a point is inside
 
@@ -256,7 +257,7 @@ class BaseStructuredSupport(BaseSupport):
         cell_indexes[inside, 2] = z[inside] // self.step_vector[None, 2]
 
         return cell_indexes, inside
-
+    
     def position_to_cell_global_index(self, pos):
         ix, iy, iz = self.position_to_cell_index(pos)
 
