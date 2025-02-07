@@ -161,6 +161,7 @@ class DiscreteInterpolator(GeologicalInterpolator):
         """
         self.constraints = {}
         self.c_ = 0
+        self.regularisation_scale = np.ones(self.nx)
         logger.info("Resetting interpolation constraints")
 
     def add_constraints_to_least_squares(self, A, B, idc, w=1.0, name="undefined"):

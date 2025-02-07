@@ -7,11 +7,33 @@ import numpy as np
 from ..utils import get_vectors
 from ._discrete_interpolator import DiscreteInterpolator
 from ..interpolators import InterpolatorType
-
+from scipy.spatial import KDTree
 from LoopStructural.utils import getLogger
 
 logger = getLogger(__name__)
+def compute_weighting(grid_points, gradient_constraint_points, alpha=10.0, sigma=1.0):
+    """
+    Compute weights for second derivative regularization based on proximity to gradient constraints.
 
+    Parameters:
+        grid_points (ndarray): (N, 3) array of 3D coordinates for grid cells.
+        gradient_constraint_points (ndarray): (M, 3) array of 3D coordinates for gradient constraints.
+        alpha (float): Strength of weighting increase.
+        sigma (float): Decay parameter for Gaussian-like influence.
+
+    Returns:
+        weights (ndarray): (N,) array of weights for each grid point.
+    """
+    # Build a KDTree with the gradient constraint locations
+    tree = KDTree(gradient_constraint_points)
+
+    # Find the distance from each grid point to the nearest gradient constraint
+    distances, _ = tree.query(grid_points, k=1)
+    
+    # Compute weighting function (higher weight for nearby points)
+    weights = 1 + alpha * np.exp(-(distances**2) / (2 * sigma**2))
+
+    return weights
 
 class FiniteDifferenceInterpolator(DiscreteInterpolator):
     def __init__(self, grid, data={}):
@@ -44,7 +66,7 @@ class FiniteDifferenceInterpolator(DiscreteInterpolator):
         )
 
         self.type = InterpolatorType.FINITE_DIFFERENCE
-
+        self.use_regularisation_weight_scale = False
     def setup_interpolator(self, **kwargs):
         """
 
@@ -87,9 +109,8 @@ class FiniteDifferenceInterpolator(DiscreteInterpolator):
         operators = kwargs.get(
             "operators", self.support.get_operators(weights=self.interpolation_weights)
         )
-        for k, o in operators.items():
-            self.assemble_inner(o[0], o[1], name=k)
 
+        self.use_regularisation_weight_scale = kwargs.get('use_regularisation_weight_scale', True)
         self.add_norm_constraints(self.interpolation_weights["npw"])
         self.add_gradient_constraints(self.interpolation_weights["gpw"])
         self.add_value_constraints(self.interpolation_weights["cpw"])
@@ -101,6 +122,8 @@ class FiniteDifferenceInterpolator(DiscreteInterpolator):
             upper_bound=kwargs.get('inequality_pair_upper_bound', np.finfo(float).eps),
             lower_bound=kwargs.get('inequality_pair_lower_bound', -np.inf),
         )
+        for k, o in operators.items():
+            self.assemble_inner(o[0], o[1], name=k)
 
     def copy(self):
         """
@@ -271,6 +294,11 @@ class FiniteDifferenceInterpolator(DiscreteInterpolator):
             self.add_constraints_to_least_squares(A, B, idc[inside, :], w=w, name="gradient")
             A = np.einsum("ij,ijk->ik", dip_vector.T, T)
             self.add_constraints_to_least_squares(A, B, idc[inside, :], w=w, name="gradient")
+            self.regularisation_scale +=  compute_weighting(
+                            self.support.nodes,
+                            points[inside, : self.support.dimension],
+                            sigma=self.support.nsteps[0] * 10,
+                        )
             if np.sum(inside) <= 0:
                 logger.warning(
                     f" {np.sum(~inside)} \
@@ -318,7 +346,24 @@ class FiniteDifferenceInterpolator(DiscreteInterpolator):
             )
             # T*=np.product(self.support.step_vector)
             # T/=self.support.step_vector[0]
+            # indexes, inside2 = self.support.position_to_nearby_cell_indexes(
+            # points[inside, : self.support.dimension]
+            # )
+            # indexes = indexes[inside2, :]
 
+            # corners = self.support.cell_corner_indexes(indexes)
+            # node_indexes = corners.reshape(-1, 3)
+            # indexes = self.support.global_node_indices(indexes)
+            # self.regularisation_scale[indexes]  =10
+
+            self.regularisation_scale +=  compute_weighting(
+                self.support.nodes,
+                points[inside, : self.support.dimension],
+                sigma=self.support.nsteps[0] * 10,
+            )
+            # global_indexes = self.support.neighbour_global_indexes().T.astype(int)
+            # close_indexes =
+            # self.regularisation_scale[global_indexes[idc[inside,:].astype(int),]]=10
             w /= 3
             for d in range(self.support.dimension):
 
@@ -454,7 +499,7 @@ class FiniteDifferenceInterpolator(DiscreteInterpolator):
             a[inside, :],
             B[inside],
             idc[inside, :],
-            w=w,
+            w=self.regularisation_scale[idc[inside, 13].astype(int)] * w if self.use_regularisation_weight_scale else w,
             name=name,
         )
         return
