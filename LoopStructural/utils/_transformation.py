@@ -104,9 +104,9 @@ class EuclideanTransformation:
             centred,
             self.rotation[: self.dimensions, : self.dimensions],
         )
-        points[:,:self.dimensions] = rotated
-        return points
-
+        transformed_points = np.copy(points)
+        transformed_points[:, :self.dimensions] = rotated
+        return transformed_points
     def inverse_transform(self, points: np.ndarray) -> np.ndarray:
         """
         Transform points back to the original coordinate system
