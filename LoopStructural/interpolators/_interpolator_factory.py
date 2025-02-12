@@ -24,7 +24,7 @@ class InterpolatorFactory:
             raise ValueError("No interpolator type specified")
         if boundingbox is None:
             raise ValueError("No bounding box specified")
-        
+
         if isinstance(interpolatortype, str):
             interpolatortype = interpolator_string_map[interpolatortype]
         if support is None:

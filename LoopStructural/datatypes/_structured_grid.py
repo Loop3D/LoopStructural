@@ -44,9 +44,9 @@ class StructuredGrid:
             z,
         )
         for name, data in self.properties.items():
-            grid[name] = data.reshape((grid.n_points,-1),order="F")
+            grid[name] = data.reshape((grid.n_points, -1), order="F")
         for name, data in self.cell_properties.items():
-            grid.cell_data[name] = data.reshape((grid.n_cells,-1),order="F")
+            grid.cell_data[name] = data.reshape((grid.n_cells, -1), order="F")
         return grid
 
     def plot(self, pyvista_kwargs={}):
@@ -88,8 +88,9 @@ class StructuredGrid:
         x = np.linspace(self.origin[0], self.maximum[0], self.nsteps[0])
         y = np.linspace(self.origin[1], self.maximum[1], self.nsteps[1])
         z = np.linspace(self.origin[2], self.maximum[2], self.nsteps[2])
-        x, y, z = np.meshgrid(x, y, z,indexing="ij")
+        x, y, z = np.meshgrid(x, y, z, indexing="ij")
         return np.vstack([x.flatten(order='f'), y.flatten(order='f'), z.flatten(order='f')]).T
+
     def merge(self, other):
         if not np.all(np.isclose(self.origin, other.origin)):
             raise ValueError("Origin of grids must be the same")

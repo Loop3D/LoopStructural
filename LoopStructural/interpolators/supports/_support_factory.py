@@ -1,6 +1,8 @@
 from LoopStructural.interpolators.supports import support_map, SupportType
 import numpy as np
 from typing import Optional
+
+
 class SupportFactory:
     @staticmethod
     def create_support(support_type, **kwargs):
@@ -20,7 +22,7 @@ class SupportFactory:
 
     @staticmethod
     def create_support_from_bbox(
-        support_type, bounding_box, nelements, element_volume=None, buffer: Optional[float] =None
+        support_type, bounding_box, nelements, element_volume=None, buffer: Optional[float] = None
     ):
         if isinstance(support_type, str):
             support_type = SupportType._member_map_[support_type].numerator
