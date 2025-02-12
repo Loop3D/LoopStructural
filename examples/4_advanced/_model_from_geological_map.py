@@ -1,17 +1,17 @@
 """
 4.a Building a model using the ProcessInputData
 ===============================================
-There is a disconnect between the input data required by 3D modelling software and a geological map. 
-In LoopStructural the geological model is a collection of implicit functions that can be mapped to 
-the distribution of stratigraphic units and the location of fault surfaces. Each implicit function 
-is approximated from the observations of the stratigraphy, this requires grouping conformable geological 
-units together as a singla implicit function, mapping the different stratigraphic horizons to a value of 
-the implicit function and determining the relationship with geological structures such as faults. 
-In this tutorial the **ProcessInputData** class will be used to convert geologically meaningful datasets to input for LoopStructural. 
+There is a disconnect between the input data required by 3D modelling software and a geological map.
+In LoopStructural the geological model is a collection of implicit functions that can be mapped to
+the distribution of stratigraphic units and the location of fault surfaces. Each implicit function
+is approximated from the observations of the stratigraphy, this requires grouping conformable geological
+units together as a singla implicit function, mapping the different stratigraphic horizons to a value of
+the implicit function and determining the relationship with geological structures such as faults.
+In this tutorial the **ProcessInputData** class will be used to convert geologically meaningful datasets to input for LoopStructural.
 The **ProcessInputData** class uses:
-* stratigraphic contacts* stratigraphic orientations* stratigraphic thickness* stratigraphic order 
-To build a model of stratigraphic horizons and:* fault locations* fault orientations * fault properties* fault edges 
-To use incorporate faults into the geological model. """
+* stratigraphic contacts* stratigraphic orientations* stratigraphic thickness* stratigraphic order
+To build a model of stratigraphic horizons and:* fault locations* fault orientations * fault properties* fault edges
+To use incorporate faults into the geological model."""
 
 ##############################
 # Imports

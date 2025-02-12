@@ -78,7 +78,9 @@ class ProcessInputData:
         self.contacts = contacts
         self._contact_orientations = None
         self.contact_orientations = contact_orientations
-        self._fault_orientations = pd.DataFrame(columns=["X", "Y", "Z", "gx", "gy", "gz", "coord", "feature_name"])
+        self._fault_orientations = pd.DataFrame(
+            columns=["X", "Y", "Z", "gx", "gy", "gz", "coord", "feature_name"]
+        )
         self.fault_orientations = fault_orientations
         self._fault_locations = None
         self.fault_locations = fault_locations
@@ -313,7 +315,7 @@ class ProcessInputData:
                 pts = self.fault_orientations.loc[
                     self.fault_orientations["feature_name"] == fname, ["gx", "gy", "gz"]
                 ]
-                if len(pts)>0:
+                if len(pts) > 0:
                     fault_properties.loc[
                         fname,
                         ["avgNormalEasting", "avgNormalNorthing", "avgNormalAltitude"],

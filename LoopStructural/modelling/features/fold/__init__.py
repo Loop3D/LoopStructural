@@ -1,6 +1,4 @@
-"""
-
-"""
+""" """
 
 from ._fold import FoldEvent
 from ._svariogram import SVariogram

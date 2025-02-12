@@ -1,7 +1,7 @@
 """
 1e. Using logging
 ===============================
-LoopStructural has a number of levels of logging incorporated in the code to allow 
+LoopStructural has a number of levels of logging incorporated in the code to allow
 for recording and debugging the models.
 The python logging module allows for 5 levels of messages to be returned to the user:
 1. Debug messages
@@ -11,14 +11,14 @@ The python logging module allows for 5 levels of messages to be returned to the 
 5. Critical messages
 
 LoopStructural uses all of these logging levels to report the various aspects of the model
-building process. 
-Generally, the user only needs to be aware of the warning and error messages. 
+building process.
+Generally, the user only needs to be aware of the warning and error messages.
 
 By default the warning, error and critical messages are returned to the console and will appear to
-the user. 
+the user.
 All messages except for debug are recorded to a file :code:`default-loop-structural-logfile.log`.
 
-Lets have a look at the logging from the Claudius model. 
+Lets have a look at the logging from the Claudius model.
 """
 
 from LoopStructural import GeologicalModel

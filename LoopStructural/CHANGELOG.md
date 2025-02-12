@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.6.7](https://github.com/Loop3D/LoopStructural/compare/v1.6.6...v1.6.7) (2025-02-03)
+
+
+### Bug Fixes
+
+* fault orientation init as empty df rather than nan ([c004d9f](https://github.com/Loop3D/LoopStructural/commit/c004d9f84e65a636faa0566c26797749a42da577))
+* update matplotlib cmap for deprecation ([#215](https://github.com/Loop3D/LoopStructural/issues/215)) ([8d7e9f9](https://github.com/Loop3D/LoopStructural/commit/8d7e9f9e6f873befd705473dcacbec0492f85187))
+
 ## [1.6.6](https://github.com/Loop3D/LoopStructural/compare/v1.6.5...v1.6.6) (2025-01-23)
 
 
