@@ -87,6 +87,8 @@ class UnStructuredTetMesh(BaseSupport):
         self._init_face_table()
         self._initialise_aabb()
 
+    def set_nelements(self, nelements):
+        raise NotImplementedError("Cannot set number of elements for unstructured mesh")
     @property
     def nodes(self):
         return self._nodes

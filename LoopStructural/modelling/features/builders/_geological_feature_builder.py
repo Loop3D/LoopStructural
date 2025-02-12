@@ -39,7 +39,6 @@ class GeologicalFeatureBuilder(BaseBuilder):
         bounding_box,
         nelements: int = 1000,
         name="Feature",
-        interpolation_region=None,
         model=None,
         **kwargs,
     ):
@@ -78,14 +77,9 @@ class GeologicalFeatureBuilder(BaseBuilder):
         )
         self.data = pd.DataFrame(columns=header)
         self.data_added = False
-        self._interpolation_region = None
-        self.interpolation_region = interpolation_region
-        if self.interpolation_region is not None:
-            self._interpolator.set_region(region=self.interpolation_region)
 
         self._feature = GeologicalFeature(
             self._name,
-            self._interpolator,
             builder=self,
             regions=[],
             faults=self.faults,
@@ -104,20 +98,12 @@ class GeologicalFeatureBuilder(BaseBuilder):
     def interpolator(self):
         return self._interpolator
 
-    @property
-    def interpolation_region(self):
-        return self._interpolation_region
-
-    @interpolation_region.setter
-    def interpolation_region(self, interpolation_region):
-        if interpolation_region is not None:
-            self._interpolation_region = interpolation_region
-            self._interpolator.set_region(region=self._interpolation_region)
-        else:
-            self._interpolation_region = RegionEverywhere()
-            self._interpolator.set_region(region=self._interpolation_region)
-        logger.info(f'Setting interpolation region {self.name}')
-        self._up_to_date = False
+    @interpolator.setter
+    def interpolator(self, interpolator):
+        if not issubclass(type(interpolator), GeologicalInterpolator):
+            raise TypeError(
+                "interpolator is {} and must be a GeologicalInterpolator".format(type(interpolator))
+            )
 
     def add_data_from_data_frame(self, data_frame, overwrite=False):
         """
@@ -511,6 +497,13 @@ class GeologicalFeatureBuilder(BaseBuilder):
         for f in self.faults:
             f.builder.update()
         domain = kwargs.get("domain", None)
+        if 'nelements' in kwargs:
+            # if the number of elements has changed then update the interpolator
+            if self.interpolator.n_elements != kwargs['nelements']:
+                logger.info('Setting nelements to {} for {}'.format(kwargs['nelements'], self.name))
+                self.build_arguments['nelements'] = self.interpolator.set_nelements(kwargs['nelements'])
+                logger.info(f'Interpolator nelements {self.interpolator.n_elements}')
+                self._up_to_date = False
         if domain:
             self.check_interpolation_geometry(None)
         self.add_data_to_interpolator(**kwargs)

@@ -45,6 +45,15 @@ class GeologicalInterpolator(metaclass=ABCMeta):
         self.valid = True
         self.dimensions = 3  # default to 3d
         self.support = None
+    
+    @abstractmethod
+    def set_nelements(self, nelements:int) -> int:
+        pass
+
+    @property
+    @abstractmethod
+    def n_elements(self)-> int:
+        pass
 
     @property
     def data(self):

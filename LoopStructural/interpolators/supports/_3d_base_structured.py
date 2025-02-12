@@ -55,7 +55,23 @@ class BaseStructuredSupport(BaseSupport):
         self._rotation_xy[2, 2] = 1
         self.rotation_xy = rotation_xy
         self.interpolator = None
+    @property
+    def volume(self):
+        return np.prod(self.maximum - self.origin)
+    def set_nelements(self, nelements)->int:
+        box_vol = self.volume
+        ele_vol = box_vol / nelements
+        # calculate the step vector of a regular cube
+        step_vector = np.zeros(3)
+        
+        step_vector[:] = ele_vol ** (1.0 / 3.0)
+       
+        # number of steps is the length of the box / step vector
+        nsteps = np.ceil((self.maximum - self.origin) / step_vector).astype(int)
+        self.nsteps = nsteps
+        return self.n_elements
 
+        
     def to_dict(self):
         return {
             "origin": self.origin,

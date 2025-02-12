@@ -50,7 +50,10 @@ class BaseBuilder:
     @build_arguments.setter
     def build_arguments(self, build_arguments):
         # self._build_arguments = {}
+        logger.info(f"Setting build arguments for {self.name}")
         for k, i in build_arguments.items():
+            logger.info(f"Setting {k} to {i} for {self.name}")
+            logger.info(f"{k} is currrently {self._build_arguments.get(k, None)}")
             if i != self._build_arguments.get(k, None):
                 logger.info(f"Setting {k} to {i} for {self.name}")
                 self._build_arguments[k] = i

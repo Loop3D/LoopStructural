@@ -40,8 +40,7 @@ class GeologicalFeature(BaseFeature):
     def __init__(
         self,
         name: str,
-        interpolator: GeologicalInterpolator,
-        builder=None,
+        builder,
         regions: list = [],
         faults: list = [],
         model=None,
@@ -61,8 +60,8 @@ class GeologicalFeature(BaseFeature):
         """
         BaseFeature.__init__(self, name, model, faults, regions, builder)
         self.name = name
-        self.interpolator = interpolator
         self.builder = builder
+        self.interpolator = self.builder.interpolator
         self.type = FeatureType.INTERPOLATED
 
     def to_json(self):
