@@ -47,8 +47,7 @@ class BaseBuilder:
     def build_arguments(self):
         return self._build_arguments
 
-    @build_arguments.setter
-    def build_arguments(self, build_arguments):
+    def update_build_arguments(self, build_arguments):
         # self._build_arguments = {}
         logger.info(f"Setting build arguments for {self.name}")
         for k, i in build_arguments.items():

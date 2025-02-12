@@ -72,7 +72,7 @@ class BaseSupport(metaclass=ABCMeta):
         Return the number of elements
         """
         pass
-    
+
     @property
     @abstractmethod
     def n_nodes(self):
@@ -119,7 +119,7 @@ class BaseSupport(metaclass=ABCMeta):
         Return a vtk object
         """
         pass
-    
+
     @abstractmethod
     def set_nelements(self, nelements) -> int:
         pass

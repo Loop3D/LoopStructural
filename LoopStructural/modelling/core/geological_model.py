@@ -598,10 +598,12 @@ class GeologicalModel:
                 * self._data.loc[mask, "polarity"].to_numpy()[:, None]
             )
             self._data.drop(["strike", "dip"], axis=1, inplace=True)
-        self._data[['X', 'Y', 'Z', 'val', 'nx', 'ny', 'nz', 'gx', 'gy', 'gz', 'tx', 'ty', 'tz']] = (
-            self._data[
-                ['X', 'Y', 'Z', 'val', 'nx', 'ny', 'nz', 'gx', 'gy', 'gz', 'tx', 'ty', 'tz']
-            ].astype(float)
+        self._data[
+            ['X', 'Y', 'Z', 'val', 'nx', 'ny', 'nz', 'gx', 'gy', 'gz', 'tx', 'ty', 'tz']
+        ] = self._data[
+            ['X', 'Y', 'Z', 'val', 'nx', 'ny', 'nz', 'gx', 'gy', 'gz', 'tx', 'ty', 'tz']
+        ].astype(
+            float
         )
 
     def set_model_data(self, data):
@@ -711,11 +713,10 @@ class GeologicalModel:
         # build feature
         # series_feature = series_builder.build(**kwargs)
         series_feature = series_builder.feature
-        series_builder.build_arguments = kwargs
+        series_builder.update_build_arguments(kwargs | {"domain": True, 'tol': tol})
         # this support is built for the entire model domain? Possibly would
         # could just pass a regular grid of points - mask by any above unconformities??
-        series_builder.build_arguments['domain'] = True
-        series_builder.build_arguments["tol"] = tol
+
         series_feature.type = FeatureType.INTERPOLATED
         self._add_feature(series_feature)
         return series_feature
@@ -850,7 +851,7 @@ class GeologicalModel:
 
         # series_feature = series_builder.build(**kwargs)
         series_feature = series_builder.feature
-        series_builder.build_arguments = kwargs
+        series_builder.update_build_arguments(kwargs)
         series_feature.type = FeatureType.INTERPOLATED
         series_feature.fold = fold
 
@@ -1264,7 +1265,7 @@ class GeologicalModel:
         # build feature
         # domain_fault = domain_fault_feature_builder.build(**kwargs)
         domain_fault = domain_fault_feature_builder.feature
-        domain_fault_feature_builder.build_arguments = kwargs
+        domain_fault_feature_builder.update_build_arguments(kwargs)
         domain_fault.type = FeatureType.DOMAINFAULT
         self._add_feature(domain_fault)
         self._add_domain_fault_below(domain_fault)

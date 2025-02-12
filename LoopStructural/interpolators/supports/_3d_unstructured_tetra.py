@@ -89,6 +89,7 @@ class UnStructuredTetMesh(BaseSupport):
 
     def set_nelements(self, nelements):
         raise NotImplementedError("Cannot set number of elements for unstructured mesh")
+
     @property
     def nodes(self):
         return self._nodes
@@ -167,9 +168,9 @@ class UnStructuredTetMesh(BaseSupport):
         shared_face_index[:] = -1
         shared_face_index[row.reshape(-1, 3)[:, 0], :] = col.reshape(-1, 3)
 
-        self.shared_elements[np.arange(self.shared_element_relationships.shape[0]), :] = (
-            shared_face_index
-        )
+        self.shared_elements[
+            np.arange(self.shared_element_relationships.shape[0]), :
+        ] = shared_face_index
         # resize
         self.shared_elements = self.shared_elements[: len(self.shared_element_relationships), :]
         # flag = np.zeros(self.elements.shape[0])

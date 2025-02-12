@@ -60,7 +60,7 @@ class GeologicalFeatureBuilder(BaseBuilder):
             nelements=nelements,
             buffer=kwargs.get("buffer", 0.2),
         )
-
+        
         if not issubclass(type(interpolator), GeologicalInterpolator):
             raise TypeError(
                 "interpolator is {} and must be a GeologicalInterpolator".format(type(interpolator))

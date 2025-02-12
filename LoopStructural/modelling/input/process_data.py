@@ -299,9 +299,9 @@ class ProcessInputData:
             pts = self.fault_locations.loc[
                 self.fault_locations["feature_name"] == fname, ["X", "Y", "Z"]
             ]
-            fault_properties.loc[fname, ["centreEasting", "centreNorthing", "centreAltitude"]] = (
-                np.nanmean(pts, axis=0)
-            )
+            fault_properties.loc[
+                fname, ["centreEasting", "centreNorthing", "centreAltitude"]
+            ] = np.nanmean(pts, axis=0)
         if (
             "avgNormalEasting" not in fault_properties.columns
             or "avgNormalNorthing" not in fault_properties.columns
@@ -449,9 +449,9 @@ class ProcessInputData:
         for _name, sg in self.stratigraphic_order:
             value = 0.0  # reset for each supergroup
             if sg[0] not in self.thicknesses or self.thicknesses[sg[0]] <= 0:
-                self.thicknesses[sg[0]] = (
-                    np.inf
-                )  # make the top unit infinite as it should extend to the top of the model
+                self.thicknesses[
+                    sg[0]
+                ] = np.inf  # make the top unit infinite as it should extend to the top of the model
             for g in reversed(
                 sg[:-1]
             ):  # don't add the last unit as we never see the base of this unit.

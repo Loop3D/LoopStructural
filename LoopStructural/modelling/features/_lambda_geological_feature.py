@@ -12,7 +12,6 @@ logger = getLogger(__name__)
 
 
 class LambdaGeologicalFeature(BaseFeature):
-
     def __init__(
         self,
         function: Optional[Callable[[np.ndarray], np.ndarray]] = None,

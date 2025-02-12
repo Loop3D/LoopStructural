@@ -55,23 +55,24 @@ class BaseStructuredSupport(BaseSupport):
         self._rotation_xy[2, 2] = 1
         self.rotation_xy = rotation_xy
         self.interpolator = None
+
     @property
     def volume(self):
         return np.prod(self.maximum - self.origin)
-    def set_nelements(self, nelements)->int:
+
+    def set_nelements(self, nelements) -> int:
         box_vol = self.volume
         ele_vol = box_vol / nelements
         # calculate the step vector of a regular cube
         step_vector = np.zeros(3)
-        
+
         step_vector[:] = ele_vol ** (1.0 / 3.0)
-       
+
         # number of steps is the length of the box / step vector
         nsteps = np.ceil((self.maximum - self.origin) / step_vector).astype(int)
         self.nsteps = nsteps
         return self.n_elements
 
-        
     def to_dict(self):
         return {
             "origin": self.origin,
@@ -155,9 +156,9 @@ class BaseStructuredSupport(BaseSupport):
         length = self.maximum - origin
         length /= self.step_vector
         self._nsteps = np.ceil(length).astype(np.int64)
-        self._nsteps[self._nsteps == 0] = (
-            3  # need to have a minimum of 3 elements to apply the finite difference mask
-        )
+        self._nsteps[
+            self._nsteps == 0
+        ] = 3  # need to have a minimum of 3 elements to apply the finite difference mask
         if np.any(~(self._nsteps > 0)):
             logger.error(
                 f"Cannot resize the interpolation support. The proposed number of steps is {self._nsteps}, these must be all > 0"
