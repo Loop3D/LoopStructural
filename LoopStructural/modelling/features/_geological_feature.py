@@ -6,7 +6,6 @@ from LoopStructural.utils.maths import regular_tetraherdron_for_points, gradient
 from ...modelling.features import BaseFeature
 from ...utils import getLogger
 from ...modelling.features import FeatureType
-from ...interpolators import GeologicalInterpolator
 import numpy as np
 from typing import Optional, List, Union
 from ...datatypes import ValuePoints, VectorPoints

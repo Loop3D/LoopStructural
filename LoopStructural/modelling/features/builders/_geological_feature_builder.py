@@ -25,7 +25,6 @@ from ....modelling.features.builders import BaseBuilder
 from ....utils.helper import (
     get_data_bounding_box_map as get_data_bounding_box,
 )
-from ....utils import RegionEverywhere
 from ....interpolators import DiscreteInterpolator
 from ....interpolators import InterpolatorFactory
 
