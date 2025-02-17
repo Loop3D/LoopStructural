@@ -325,7 +325,9 @@ class BoundingBox:
         if iy == -1:
             return self.origin[ix]
 
-        return self.bb[ix,]
+        return self.bb[
+            ix,
+        ]
 
     def __getitem__(self, name):
         if isinstance(name, str):

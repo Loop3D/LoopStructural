@@ -40,6 +40,8 @@ class StructuredGrid(BaseStructuredSupport):
         self.regions["everywhere"] = np.ones(self.n_nodes).astype(bool)
 
     def onGeometryChange(self):
+        if self.interpolator is not None:
+            self.interpolator.reset()
         pass
 
     @property

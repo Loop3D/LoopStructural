@@ -119,3 +119,7 @@ class BaseSupport(metaclass=ABCMeta):
         Return a vtk object
         """
         pass
+
+    @abstractmethod
+    def set_nelements(self, nelements) -> int:
+        pass

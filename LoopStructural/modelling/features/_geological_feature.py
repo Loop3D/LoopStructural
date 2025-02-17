@@ -6,7 +6,6 @@ from LoopStructural.utils.maths import regular_tetraherdron_for_points, gradient
 from ...modelling.features import BaseFeature
 from ...utils import getLogger
 from ...modelling.features import FeatureType
-from ...interpolators import GeologicalInterpolator
 import numpy as np
 from typing import Optional, List, Union
 from ...datatypes import ValuePoints, VectorPoints
@@ -40,8 +39,7 @@ class GeologicalFeature(BaseFeature):
     def __init__(
         self,
         name: str,
-        interpolator: GeologicalInterpolator,
-        builder=None,
+        builder,
         regions: list = [],
         faults: list = [],
         model=None,
@@ -61,8 +59,8 @@ class GeologicalFeature(BaseFeature):
         """
         BaseFeature.__init__(self, name, model, faults, regions, builder)
         self.name = name
-        self.interpolator = interpolator
         self.builder = builder
+        self.interpolator = self.builder.interpolator if self.builder is not None else None
         self.type = FeatureType.INTERPOLATED
 
     def to_json(self):

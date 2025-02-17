@@ -65,7 +65,9 @@ class StructuredGrid2D(BaseSupport):
     @property
     def n_nodes(self):
         return self.nsteps[0] * self.nsteps[1]
-
+    def set_nelements(self, nelements) -> int:
+        raise NotImplementedError("Cannot set number of elements for 2D structured grid")
+    
     @property
     def n_elements(self):
         return self.nsteps_cells[0] * self.nsteps_cells[1]

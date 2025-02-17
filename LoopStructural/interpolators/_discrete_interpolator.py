@@ -63,6 +63,20 @@ class DiscreteInterpolator(GeologicalInterpolator):
         logger.info("Creating discrete interpolator with {} degrees of freedom".format(self.nx))
         self.type = InterpolatorType.BASE_DISCRETE
 
+    def set_nelements(self, nelements: int) -> int:
+        return self.support.set_nelements(nelements)
+
+    @property
+    def n_elements(self) -> int:
+        """Number of elements in the interpolator
+
+        Returns
+        -------
+        int
+            number of elements, positive
+        """
+        return self.support.n_elements
+
     @property
     def nx(self) -> int:
         """Number of degrees of freedom for the interpolator
