@@ -76,7 +76,9 @@ class UnStructuredTetMesh(BaseSupport):
                 aabb_nsteps[aabb_nsteps < 2] = 2
             aabb_nsteps = np.array(aabb_nsteps, dtype=int)
             step_vector = (self.maximum - self.minimum) / (aabb_nsteps - 1)
-            self.aabb_grid = StructuredGrid(self.minimum, nsteps=aabb_nsteps, step_vector=step_vector)
+            self.aabb_grid = StructuredGrid(
+                self.minimum, nsteps=aabb_nsteps, step_vector=step_vector
+            )
         # make a big table to store which tetra are in which element.
         # if this takes up too much memory it could be simplified by using sparse matrices or dict but
         # at the expense of speed
