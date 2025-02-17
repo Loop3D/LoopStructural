@@ -470,7 +470,7 @@ class BoundingBox:
         _cell_data = copy.deepcopy(cell_data)
         _vertex_data = copy.deepcopy(vertex_data)
         return StructuredGrid(
-            origin=self.global_origin+self.origin,
+            origin=self.global_origin + self.origin,
             step_vector=self.step_vector,
             nsteps=self.nsteps,
             cell_properties=_cell_data,

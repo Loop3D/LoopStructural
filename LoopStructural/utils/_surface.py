@@ -63,7 +63,7 @@ class LoopIsosurfacer:
         self,
         values: Optional[Union[list, int, float]],
         name: Optional[Union[List[str], str]] = None,
-        local=False
+        local=False,
     ) -> surface_list:
         """Extract isosurfaces from the interpolator
 
@@ -89,7 +89,7 @@ class LoopIsosurfacer:
             raise ValueError("No interpolator of callable function set")
 
         surfaces = []
-        all_values = self.callable(self.bounding_box.regular_grid(local=local,order='C'))
+        all_values = self.callable(self.bounding_box.regular_grid(local=local, order='C'))
         ## set value to mean value if its not specified
         if values is None:
             values = [((np.nanmax(all_values) - np.nanmin(all_values)) / 2) + np.nanmin(all_values)]
