@@ -35,6 +35,11 @@ class BaseStructuredSupport(BaseSupport):
         # we use property decorators to update these when different parts of
         # the geometry need to change
         # inisialise the private attributes
+        # cast to numpy array, to allow list like input
+        origin = np.array(origin)
+        nsteps = np.array(nsteps)
+        step_vector = np.array(step_vector)
+
         self.type = SupportType.BaseStructured
         if np.any(step_vector == 0):
             logger.warning(f"Step vector {step_vector} has zero values")
@@ -42,10 +47,10 @@ class BaseStructuredSupport(BaseSupport):
             raise LoopException("nsteps cannot be zero")
         if np.any(nsteps < 0):
             raise LoopException("nsteps cannot be negative")
-        if np.any(nsteps < 3):
-            raise LoopException(
-                "step vector cannot be less than 3. Try increasing the resolution of the interpolator"
-            )
+        # if np.any(nsteps < 3):
+        #     raise LoopException(
+        #         "step vector cannot be less than 3. Try increasing the resolution of the interpolator"
+        #     )
         self._nsteps = np.array(nsteps, dtype=int) + 1
         self._step_vector = np.array(step_vector)
         self._origin = np.array(origin)
