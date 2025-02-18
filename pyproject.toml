@@ -37,28 +37,31 @@ dependencies = [
     "scipy",
     "scikit-image",
     "scikit-learn",
-    "tqdm",
 ]
 dynamic = ['version']
 
 [project.optional-dependencies]
-all = ['loopstructural[visualisation,inequalities,export]']
-visualisation = [
-    "matplotlib",
-    "pyvista",
-    "loopstructuralviusualisation>0.1.4"
-    ]
-export = [
-    "geoh5py", 
-    "pyevtk", 
-    "dill"]
-jupyter = [
+all = ['loopstructural[visualisation,inequalities,export]', 'tqdm']
+visualisation = ["matplotlib", "pyvista", "loopstructuralviusualisation>0.1.4"]
+export = ["geoh5py", "pyevtk", "dill"]
+jupyter = ["pyvista[all]"]
+inequalities = ["loopsolver"]
+docs = [
     "pyvista[all]",
-    "tqdm"
-    ]
-inequalities = [
-"loopsolver"]
-docs = ["pyvista[all]", "pydata-sphinx-theme","meshio","loopstructuralvisualisation[all]","networkx","scikit-learn","scikit-image","sphinx","sphinx-gallery","geoh5py","geopandas","sphinxcontrib-bibtex","myst-parser"]
+    "pydata-sphinx-theme",
+    "meshio",
+    "loopstructuralvisualisation[all]",
+    "networkx",
+    "scikit-learn",
+    "scikit-image",
+    "sphinx",
+    "sphinx-gallery",
+    "geoh5py",
+    "geopandas",
+    "sphinxcontrib-bibtex",
+    "myst-parser",
+    "sphinx-design",
+]
 [project.urls]
 Documentation = 'https://Loop3d.org/LoopStructural/'
 "Bug Tracker" = 'https://github.com/loop3d/loopstructural/issues'

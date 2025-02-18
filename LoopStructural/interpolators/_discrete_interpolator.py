@@ -63,6 +63,20 @@ class DiscreteInterpolator(GeologicalInterpolator):
         logger.info("Creating discrete interpolator with {} degrees of freedom".format(self.nx))
         self.type = InterpolatorType.BASE_DISCRETE
 
+    def set_nelements(self, nelements: int) -> int:
+        return self.support.set_nelements(nelements)
+
+    @property
+    def n_elements(self) -> int:
+        """Number of elements in the interpolator
+
+        Returns
+        -------
+        int
+            number of elements, positive
+        """
+        return self.support.n_elements
+
     @property
     def nx(self) -> int:
         """Number of degrees of freedom for the interpolator
@@ -161,6 +175,7 @@ class DiscreteInterpolator(GeologicalInterpolator):
         """
         self.constraints = {}
         self.c_ = 0
+        self.regularisation_scale = np.ones(self.nx)
         logger.info("Resetting interpolation constraints")
 
     def add_constraints_to_least_squares(self, A, B, idc, w=1.0, name="undefined"):
@@ -737,3 +752,6 @@ class DiscreteInterpolator(GeologicalInterpolator):
             **super().to_dict(),
             # 'region_function':self.region_function,
         }
+
+    def vtk(self):
+        return self.support.vtk({'c': self.c})

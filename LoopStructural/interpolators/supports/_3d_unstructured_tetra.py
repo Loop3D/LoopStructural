@@ -61,19 +61,24 @@ class UnStructuredTetMesh(BaseSupport):
         length = self.maximum - self.minimum
         self.minimum -= length * 0.1
         self.maximum += length * 0.1
-        if aabb_nsteps is None:
-            box_vol = np.prod(self.maximum - self.minimum)
-            element_volume = box_vol / (len(self.elements) / 20)
-            # calculate the step vector of a regular cube
-            step_vector = np.zeros(3)
-            step_vector[:] = element_volume ** (1.0 / 3.0)
-            # number of steps is the length of the box / step vector
-            aabb_nsteps = np.ceil((self.maximum - self.minimum) / step_vector).astype(int)
-            # make sure there is at least one cell in every dimension
-            aabb_nsteps[aabb_nsteps < 2] = 2
-        aabb_nsteps = np.array(aabb_nsteps, dtype=int)
-        step_vector = (self.maximum - self.minimum) / (aabb_nsteps - 1)
-        self.aabb_grid = StructuredGrid(self.minimum, nsteps=aabb_nsteps, step_vector=step_vector)
+        if self.elements.shape[0] < 2000:
+            self.aabb_grid = StructuredGrid(self.minimum, nsteps=[2, 2, 2], step_vector=[1, 1, 1])
+        else:
+            if aabb_nsteps is None:
+                box_vol = np.prod(self.maximum - self.minimum)
+                element_volume = box_vol / (len(self.elements) / 20)
+                # calculate the step vector of a regular cube
+                step_vector = np.zeros(3)
+                step_vector[:] = element_volume ** (1.0 / 3.0)
+                # number of steps is the length of the box / step vector
+                aabb_nsteps = np.ceil((self.maximum - self.minimum) / step_vector).astype(int)
+                # make sure there is at least one cell in every dimension
+                aabb_nsteps[aabb_nsteps < 2] = 2
+            aabb_nsteps = np.array(aabb_nsteps, dtype=int)
+            step_vector = (self.maximum - self.minimum) / (aabb_nsteps - 1)
+            self.aabb_grid = StructuredGrid(
+                self.minimum, nsteps=aabb_nsteps, step_vector=step_vector
+            )
         # make a big table to store which tetra are in which element.
         # if this takes up too much memory it could be simplified by using sparse matrices or dict but
         # at the expense of speed
@@ -86,6 +91,9 @@ class UnStructuredTetMesh(BaseSupport):
         )
         self._init_face_table()
         self._initialise_aabb()
+
+    def set_nelements(self, nelements):
+        raise NotImplementedError("Cannot set number of elements for unstructured mesh")
 
     @property
     def nodes(self):

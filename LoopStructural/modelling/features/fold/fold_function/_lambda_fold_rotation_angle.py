@@ -8,7 +8,6 @@ logger = getLogger(__name__)
 
 
 class LambdaFoldRotationAngleProfile(BaseFoldRotationAngleProfile):
-
     def __init__(
         self,
         fn: Callable[[np.ndarray], np.ndarray],

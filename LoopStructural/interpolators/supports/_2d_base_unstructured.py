@@ -68,6 +68,9 @@ class BaseUnstructured2d(BaseSupport):
             _initialise_aabb(self)
         return self._aabb_table
 
+    def set_nelements(self, nelements) -> int:
+        raise NotImplementedError
+
     @property
     def shared_elements(self):
         if np.sum(self._shared_elements) == 0:

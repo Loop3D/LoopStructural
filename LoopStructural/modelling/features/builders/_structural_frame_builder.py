@@ -197,7 +197,7 @@ class StructuralFrameBuilder:
         if len(self.builders[0].data) > 0:
             logger.info(f"Building {self.name} coordinate 0")
             kwargs["regularisation"] = regularisation[0]
-            self.builders[0].build_arguments = kwargs
+            self.builders[0].update_build_arguments(kwargs)
             kwargs.pop("fold", None)
 
         # make sure that all of the coordinates are using the same region
@@ -206,7 +206,7 @@ class StructuralFrameBuilder:
             if w2 > 0:
                 self.builders[2].add_orthogonal_feature(self.builders[0].feature, w2, step=step)
             kwargs["regularisation"] = regularisation[2]
-            self.builders[2].build_arguments = kwargs
+            self.builders[2].update_build_arguments(kwargs)
 
         if len(self.builders[1].data) > 0:
             logger.info(f"Building {self.name} coordinate 1")
@@ -215,7 +215,7 @@ class StructuralFrameBuilder:
             if w3 > 0 and len(self.builders[2].data) > 0:
                 self.builders[1].add_orthogonal_feature(self.builders[2].feature, w2, step=step)
             kwargs["regularisation"] = regularisation[1]
-            self.builders[1].build_arguments = kwargs
+            self.builders[1].update_build_arguments(kwargs)
 
         if len(self.builders[2].data) == 0:
             from LoopStructural.modelling.features import (

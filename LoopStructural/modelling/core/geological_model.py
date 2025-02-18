@@ -711,11 +711,10 @@ class GeologicalModel:
         # build feature
         # series_feature = series_builder.build(**kwargs)
         series_feature = series_builder.feature
-        series_builder.build_arguments = kwargs
+        series_builder.update_build_arguments(kwargs | {"domain": True, 'tol': tol})
         # this support is built for the entire model domain? Possibly would
         # could just pass a regular grid of points - mask by any above unconformities??
-        series_builder.build_arguments['domain'] = True
-        series_builder.build_arguments["tol"] = tol
+
         series_feature.type = FeatureType.INTERPOLATED
         self._add_feature(series_feature)
         return series_feature
@@ -850,7 +849,7 @@ class GeologicalModel:
 
         # series_feature = series_builder.build(**kwargs)
         series_feature = series_builder.feature
-        series_builder.build_arguments = kwargs
+        series_builder.update_build_arguments(kwargs)
         series_feature.type = FeatureType.INTERPOLATED
         series_feature.fold = fold
 
@@ -1264,7 +1263,7 @@ class GeologicalModel:
         # build feature
         # domain_fault = domain_fault_feature_builder.build(**kwargs)
         domain_fault = domain_fault_feature_builder.feature
-        domain_fault_feature_builder.build_arguments = kwargs
+        domain_fault_feature_builder.update_build_arguments(kwargs)
         domain_fault.type = FeatureType.DOMAINFAULT
         self._add_feature(domain_fault)
         self._add_domain_fault_below(domain_fault)
@@ -1809,7 +1808,7 @@ class GeologicalModel:
         grid = self.bounding_box.structured_grid(name=name)
 
         grid.cell_properties['stratigraphy'] = self.evaluate_model(
-            self.rescale(self.bounding_box.cell_centers())
+            self.rescale(self.bounding_box.cell_centres())
         )
         return grid, self.stratigraphic_ids()
 

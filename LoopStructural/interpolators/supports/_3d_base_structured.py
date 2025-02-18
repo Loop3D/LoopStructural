@@ -3,6 +3,7 @@ from abc import abstractmethod
 import numpy as np
 from LoopStructural.utils import getLogger
 from . import SupportType
+from typing import Tuple
 
 logger = getLogger(__name__)
 
@@ -34,6 +35,11 @@ class BaseStructuredSupport(BaseSupport):
         # we use property decorators to update these when different parts of
         # the geometry need to change
         # inisialise the private attributes
+        # cast to numpy array, to allow list like input
+        origin = np.array(origin)
+        nsteps = np.array(nsteps)
+        step_vector = np.array(step_vector)
+
         self.type = SupportType.BaseStructured
         if np.any(step_vector == 0):
             logger.warning(f"Step vector {step_vector} has zero values")
@@ -41,10 +47,10 @@ class BaseStructuredSupport(BaseSupport):
             raise LoopException("nsteps cannot be zero")
         if np.any(nsteps < 0):
             raise LoopException("nsteps cannot be negative")
-        if np.any(nsteps < 3):
-            raise LoopException(
-                "step vector cannot be less than 3. Try increasing the resolution of the interpolator"
-            )
+        # if np.any(nsteps < 3):
+        #     raise LoopException(
+        #         "step vector cannot be less than 3. Try increasing the resolution of the interpolator"
+        #     )
         self._nsteps = np.array(nsteps, dtype=int) + 1
         self._step_vector = np.array(step_vector)
         self._origin = np.array(origin)
@@ -55,6 +61,23 @@ class BaseStructuredSupport(BaseSupport):
         self._rotation_xy[2, 2] = 1
         self.rotation_xy = rotation_xy
         self.interpolator = None
+
+    @property
+    def volume(self):
+        return np.prod(self.maximum - self.origin)
+
+    def set_nelements(self, nelements) -> int:
+        box_vol = self.volume
+        ele_vol = box_vol / nelements
+        # calculate the step vector of a regular cube
+        step_vector = np.zeros(3)
+
+        step_vector[:] = ele_vol ** (1.0 / 3.0)
+
+        # number of steps is the length of the box / step vector
+        nsteps = np.ceil((self.maximum - self.origin) / step_vector).astype(int)
+        self.nsteps = nsteps
+        return self.n_elements
 
     def to_dict(self):
         return {
@@ -229,7 +252,7 @@ class BaseStructuredSupport(BaseSupport):
         """ """
         return np.einsum("ijk,ik->ij", self.rotation_xy[None, :, :], pos)
 
-    def position_to_cell_index(self, pos: np.ndarray) -> np.ndarray:
+    def position_to_cell_index(self, pos: np.ndarray) -> Tuple[np.ndarray, np.ndarray]:
         """Get the indexes (i,j,k) of a cell
         that a point is inside
 

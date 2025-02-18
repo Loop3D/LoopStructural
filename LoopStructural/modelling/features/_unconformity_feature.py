@@ -24,7 +24,6 @@ class UnconformityFeature(GeologicalFeature):
             regions=[],  # feature.regions.copy(),  # don't want to share regionsbetween unconformity and # feature.regions,
             builder=feature.builder,
             model=feature.model,
-            interpolator=feature.interpolator,
         )
         self.value = value
         self.type = FeatureType.UNCONFORMITY if onlap is False else FeatureType.ONLAPUNCONFORMITY

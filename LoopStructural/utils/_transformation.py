@@ -6,7 +6,11 @@ logger = getLogger(__name__)
 
 class EuclideanTransformation:
     def __init__(
-        self, dimensions: int = 2, angle: float = 0, translation: np.ndarray = np.zeros(3)
+        self,
+        dimensions: int = 2,
+        angle: float = 0,
+        translation: np.ndarray = np.zeros(3),
+        fit_rotation: bool = True,
     ):
         """Transforms points into a new coordinate
         system where the main eigenvector is aligned with x
@@ -23,6 +27,7 @@ class EuclideanTransformation:
         self.translation = translation[:dimensions]
         self.dimensions = dimensions
         self.angle = angle
+        self.fit_rotation = fit_rotation
 
     def fit(self, points: np.ndarray):
         """Fit the transformation to a point cloud
@@ -45,13 +50,16 @@ class EuclideanTransformation:
             raise ValueError("Points must have at least {} dimensions".format(self.dimensions))
         # standardise the points so that centre is 0
         # self.translation = np.zeros(3)
-        self.translation = np.mean(points, axis=0)
+        self.translation = np.mean(points[:, : self.dimensions], axis=0)
         # find main eigenvector and and calculate the angle of this with x
-        pca = decomposition.PCA(n_components=self.dimensions).fit(
-            points[:, : self.dimensions] - self.translation[None, : self.dimensions]
-        )
-        coeffs = pca.components_
-        self.angle = -np.arccos(np.dot(coeffs[0, :], [1, 0]))
+        if self.fit_rotation:
+            pca = decomposition.PCA(n_components=self.dimensions).fit(
+                points[:, : self.dimensions] - self.translation[None, : self.dimensions]
+            )
+            coeffs = pca.components_
+            self.angle = -np.arccos(np.dot(coeffs[0, :], [1, 0]))
+        else:
+            self.angle = 0
         return self
 
     @property
@@ -93,13 +101,15 @@ class EuclideanTransformation:
         points = np.array(points)
         if points.shape[1] < self.dimensions:
             raise ValueError("Points must have at least {} dimensions".format(self.dimensions))
-        centred = points - self.translation
-
-        return np.einsum(
+        centred = points[:, : self.dimensions] - self.translation[None, :]
+        rotated = np.einsum(
             'ik,jk->ij',
             centred,
             self.rotation[: self.dimensions, : self.dimensions],
         )
+        transformed_points = np.copy(points)
+        transformed_points[:, : self.dimensions] = rotated
+        return transformed_points
 
     def inverse_transform(self, points: np.ndarray) -> np.ndarray:
         """
@@ -115,15 +125,20 @@ class EuclideanTransformation:
         np.ndarray
             xyz points in the original coordinate system
         """
-
-        return (
+        inversed = (
             np.einsum(
                 'ik,jk->ij',
-                points,
+                points[: self.dimensions],
                 self.inverse_rotation[: self.dimensions, : self.dimensions],
             )
             + self.translation
         )
+        inversed = (
+            np.vstack([inversed, points[self.dimensions :]])
+            if points.shape[1] > self.dimensions
+            else inversed
+        )
+        return inversed
 
     def __call__(self, points: np.ndarray) -> np.ndarray:
         """

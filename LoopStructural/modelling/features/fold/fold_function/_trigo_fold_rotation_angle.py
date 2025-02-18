@@ -8,7 +8,6 @@ logger = getLogger(__name__)
 
 
 class TrigoFoldRotationAngleProfile(BaseFoldRotationAngleProfile):
-
     def __init__(
         self,
         rotation_angle: Optional[npt.NDArray[np.float64]] = None,

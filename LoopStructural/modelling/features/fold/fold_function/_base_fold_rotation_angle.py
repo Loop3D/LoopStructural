@@ -12,7 +12,6 @@ logger = getLogger(__name__)
 
 
 class BaseFoldRotationAngleProfile(metaclass=ABCMeta):
-
     def __init__(
         self,
         rotation_angle: Optional[npt.NDArray[np.float64]] = None,

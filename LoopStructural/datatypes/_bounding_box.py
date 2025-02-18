@@ -43,7 +43,7 @@ class BoundingBox:
         if maximum is None and nsteps is not None and step_vector is not None:
             maximum = origin + nsteps * step_vector
         if origin is not None and global_origin is None:
-            global_origin = origin
+            global_origin = np.zeros(3)
         self._origin = np.array(origin)
         self._maximum = np.array(maximum)
         self.dimensions = dimensions
@@ -90,7 +90,7 @@ class BoundingBox:
 
     @property
     def global_maximum(self):
-        return self.maximum - self.origin + self._global_origin
+        return self.maximum + self.global_origin
 
     @property
     def valid(self):
@@ -242,6 +242,8 @@ class BoundingBox:
             )
         origin = locations.min(axis=0)
         maximum = locations.max(axis=0)
+        origin = np.array(origin)
+        maximum = np.array(maximum)
         if local_coordinate:
             self.global_origin = origin
             self.origin = np.zeros(3)
@@ -273,14 +275,49 @@ class BoundingBox:
         if self.origin is None or self.maximum is None:
             raise LoopValueError("Cannot create bounding box with buffer, no origin or maximum")
         # local coordinates, rescale into the original bounding boxes global coordinates
-        origin = self.origin - buffer * (self.maximum - self.origin)
-        maximum = self.maximum + buffer * (self.maximum - self.origin)
+        origin = self.origin - buffer * np.max(self.maximum - self.origin)
+        maximum = self.maximum + buffer * np.max(self.maximum - self.origin)
         return BoundingBox(
             origin=origin,
             maximum=maximum,
-            global_origin=self.global_origin + origin,
+            global_origin=self.global_origin,
             dimensions=self.dimensions,
         )
+
+    # def __call__(self, xyz):
+    #     xyz = np.array(xyz)
+    #     if len(xyz.shape) == 1:
+    #         xyz = xyz.reshape((1, -1))
+
+    #     distances = np.maximum(0,
+    #                         np.maximum(self.global_origin+self.origin - xyz,
+    #                                 xyz - self.global_maximum))
+    #     distance = np.linalg.norm(distances, axis=1)
+    #     distance[self.is_inside(xyz)] = -1
+    #     return distance
+
+    def __call__(self, xyz):
+        # Calculate center and half-extents of the box
+        center = (self.maximum + self.global_origin + self.origin) / 2
+        half_extents = (self.maximum - self.global_origin + self.origin) / 2
+
+        # Calculate the distance from point to center
+        offset = np.abs(xyz - center) - half_extents
+
+        # Inside distance: negative value based on the smallest penetration
+        inside_distance = np.min(half_extents - np.abs(xyz - center), axis=1)
+
+        # Outside distance: length of the positive components of offset
+        outside_distance = np.linalg.norm(np.maximum(offset, 0))
+
+        # If any component of offset is positive, we're outside
+        # Otherwise, we're inside and return the negative penetration distance
+        distance = np.zeros(xyz.shape[0])
+        mask = np.any(offset > 0, axis=1)
+        distance[mask] = outside_distance
+        distance[~mask] = -inside_distance[~mask]
+        return distance
+        # return outside_distance if np.any(offset > 0) else -inside_distance
 
     def get_value(self, name):
         ix, iy = self.name_map.get(name, (-1, -1))
@@ -319,7 +356,7 @@ class BoundingBox:
         self,
         nsteps: Optional[Union[list, np.ndarray]] = None,
         shuffle: bool = False,
-        order: str = "C",
+        order: str = "F",
         local: bool = True,
     ) -> np.ndarray:
         """Get the grid of points from the bounding box
@@ -361,8 +398,8 @@ class BoundingBox:
             rng.shuffle(locs)
         return locs
 
-    def cell_centers(self, order: str = "F") -> np.ndarray:
-        """Get the cell centers of a regular grid
+    def cell_centres(self, order: str = "F") -> np.ndarray:
+        """Get the cell centres of a regular grid
 
         Parameters
         ----------
@@ -372,7 +409,7 @@ class BoundingBox:
         Returns
         -------
         np.ndarray
-            array of cell centers
+            array of cell centres
         """
         locs = self.regular_grid(order=order, nsteps=self.nsteps - 1)
 
@@ -434,7 +471,7 @@ class BoundingBox:
         _cell_data = copy.deepcopy(cell_data)
         _vertex_data = copy.deepcopy(vertex_data)
         return StructuredGrid(
-            origin=self.global_origin,
+            origin=self.global_origin + self.origin,
             step_vector=self.step_vector,
             nsteps=self.nsteps,
             cell_properties=_cell_data,

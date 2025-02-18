@@ -35,6 +35,9 @@ class SurfeRBFInterpolator(GeologicalInterpolator):
     def set_region(self, **kwargs):
         pass
 
+    def set_nelements(self, nelements) -> int:
+        return 0
+
     def add_gradient_constraints(self, w=1):
         points = self.get_gradient_constraints()
         if points.shape[0] > 0:
