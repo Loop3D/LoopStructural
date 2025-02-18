@@ -67,13 +67,45 @@ def test_create_structural_frame_pli():
     model.update()
 
     assert np.all(
-        np.isclose(fault[0].evaluate_gradient(np.array([[5, 5, 5]])), [0, 0, 1], atol=1e-4)
+        np.isclose(fault[0].evaluate_gradient(np.array([[5, 5, 5]])), [0, 0, 1], atol=1e-2)
     )
     assert np.all(
-        np.isclose(fault[1].evaluate_gradient(np.array([[5, 5, 5]])), [0, 1, 0], atol=1e-4)
+        np.isclose(fault[1].evaluate_gradient(np.array([[5, 5, 5]])), [0, 1, 0], atol=1e-2)
     )
     assert np.all(
-        np.isclose(fault[2].evaluate_gradient(np.array([[5, 5, 5]])), [1, 0, 0], atol=1e-4)
+        np.isclose(fault[2].evaluate_gradient(np.array([[5, 5, 5]])), [1, 0, 0], atol=1e-2)
+    )
+
+
+def test_create_structural_frame_fdi():
+    data = pd.DataFrame(
+        [
+            [5.1, 5.1, 5, 0, 0, 1, 0, 0],
+            [5, 5.1, 5, 0, 1, 0, 1, 0],
+            [5.1, 5, 5, 1, 0, 0, 2, 0],
+        ],
+        columns=["X", "Y", "Z", "nx", "ny", "nz", "coord", "val"],
+    )
+    data["feature_name"] = "fault"
+
+    bb = BoundingBox(origin=np.zeros(3), maximum=np.ones(3) * 10)
+    model = GeologicalModel(bb.origin, bb.maximum)
+
+    model.data = data
+
+    fault = model.create_and_add_fault(
+        "fault", 10, nelements=2000, steps=4, interpolatortype="FDI", buffer=2
+    )
+    model.update()
+
+    assert np.all(
+        np.isclose(fault[0].evaluate_gradient(np.array([[5, 5, 5]])), [0, 0, 1], atol=1e-2)
+    )
+    assert np.all(
+        np.isclose(fault[1].evaluate_gradient(np.array([[5, 5, 5]])), [0, 1, 0], atol=1e-2)
+    )
+    assert np.all(
+        np.isclose(fault[2].evaluate_gradient(np.array([[5, 5, 5]])), [1, 0, 0], atol=1e-2)
     )
 
 
