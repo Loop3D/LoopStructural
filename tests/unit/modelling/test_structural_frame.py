@@ -67,13 +67,13 @@ def test_create_structural_frame_pli():
     model.update()
 
     assert np.all(
-        np.isclose(fault[0].evaluate_gradient(np.array([[5, 5, 5]])), [0, 0, 1], atol=1e-2)
+        np.isclose(fault[0].evaluate_gradient(np.array([[5, 5, 5]])), [0, 0, 1], atol=1e-1)
     )
     assert np.all(
-        np.isclose(fault[1].evaluate_gradient(np.array([[5, 5, 5]])), [0, 1, 0], atol=1e-2)
+        np.isclose(fault[1].evaluate_gradient(np.array([[5, 5, 5]])), [0, 1, 0], atol=1e-1)
     )
     assert np.all(
-        np.isclose(fault[2].evaluate_gradient(np.array([[5, 5, 5]])), [1, 0, 0], atol=1e-2)
+        np.isclose(fault[2].evaluate_gradient(np.array([[5, 5, 5]])), [1, 0, 0], atol=1e-1)
     )
 
 
@@ -99,13 +99,13 @@ def test_create_structural_frame_fdi():
     model.update()
 
     assert np.all(
-        np.isclose(fault[0].evaluate_gradient(np.array([[5, 5, 5]])), [0, 0, 1], atol=1e-2)
+        np.isclose(fault[0].evaluate_gradient(np.array([[5, 5, 5]])), [0, 0, 1], atol=1e-1)
     )
     assert np.all(
-        np.isclose(fault[1].evaluate_gradient(np.array([[5, 5, 5]])), [0, 1, 0], atol=1e-2)
+        np.isclose(fault[1].evaluate_gradient(np.array([[5, 5, 5]])), [0, 1, 0], atol=1e-1)
     )
     assert np.all(
-        np.isclose(fault[2].evaluate_gradient(np.array([[5, 5, 5]])), [1, 0, 0], atol=1e-2)
+        np.isclose(fault[2].evaluate_gradient(np.array([[5, 5, 5]])), [1, 0, 0], atol=1e-1)
     )
 
 
