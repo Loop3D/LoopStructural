@@ -102,19 +102,19 @@ class FiniteDifferenceInterpolator(DiscreteInterpolator):
         for key in kwargs:
             self.up_to_date = False
             if "regularisation" in kwargs:
-                self.interpolation_weights["dxy"] = 0.1 * kwargs["regularisation"]
-                self.interpolation_weights["dyz"] = 0.1 * kwargs["regularisation"]
-                self.interpolation_weights["dxz"] = 0.1 * kwargs["regularisation"]
-                self.interpolation_weights["dxx"] = 0.1 * kwargs["regularisation"]
-                self.interpolation_weights["dyy"] = 0.1 * kwargs["regularisation"]
-                self.interpolation_weights["dzz"] = 0.1 * kwargs["regularisation"]
+                self.interpolation_weights["dxy"] =  kwargs["regularisation"]
+                self.interpolation_weights["dyz"] =  kwargs["regularisation"]
+                self.interpolation_weights["dxz"] =  kwargs["regularisation"]
+                self.interpolation_weights["dxx"] =  kwargs["regularisation"]
+                self.interpolation_weights["dyy"] =  kwargs["regularisation"]
+                self.interpolation_weights["dzz"] =  kwargs["regularisation"]
             self.interpolation_weights[key] = kwargs[key]
         # either use the default operators or the ones passed to the function
         operators = kwargs.get(
             "operators", self.support.get_operators(weights=self.interpolation_weights)
         )
 
-        self.use_regularisation_weight_scale = kwargs.get('use_regularisation_weight_scale', True)
+        self.use_regularisation_weight_scale = kwargs.get('use_regularisation_weight_scale', False)
         self.add_norm_constraints(self.interpolation_weights["npw"])
         self.add_gradient_constraints(self.interpolation_weights["gpw"])
         self.add_value_constraints(self.interpolation_weights["cpw"])
@@ -293,11 +293,11 @@ class FiniteDifferenceInterpolator(DiscreteInterpolator):
             self.add_constraints_to_least_squares(A, B, idc[inside, :], w=w, name="gradient")
             A = np.einsum("ij,ijk->ik", dip_vector.T, T)
             self.add_constraints_to_least_squares(A, B, idc[inside, :], w=w, name="gradient")
-            self.regularisation_scale += compute_weighting(
-                self.support.nodes,
-                points[inside, : self.support.dimension],
-                sigma=self.support.nsteps[0] * 10,
-            )
+            # self.regularisation_scale += compute_weighting(
+            #     self.support.nodes,
+            #     points[inside, : self.support.dimension],
+            #     sigma=self.support.nsteps[0] * 10,
+            # )
             if np.sum(inside) <= 0:
                 logger.warning(
                     f" {np.sum(~inside)} \
