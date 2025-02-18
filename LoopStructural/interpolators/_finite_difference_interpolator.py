@@ -102,12 +102,12 @@ class FiniteDifferenceInterpolator(DiscreteInterpolator):
         for key in kwargs:
             self.up_to_date = False
             if "regularisation" in kwargs:
-                self.interpolation_weights["dxy"] =  kwargs["regularisation"]
-                self.interpolation_weights["dyz"] =  kwargs["regularisation"]
-                self.interpolation_weights["dxz"] =  kwargs["regularisation"]
-                self.interpolation_weights["dxx"] =  kwargs["regularisation"]
-                self.interpolation_weights["dyy"] =  kwargs["regularisation"]
-                self.interpolation_weights["dzz"] =  kwargs["regularisation"]
+                self.interpolation_weights["dxy"] = kwargs["regularisation"]
+                self.interpolation_weights["dyz"] = kwargs["regularisation"]
+                self.interpolation_weights["dxz"] = kwargs["regularisation"]
+                self.interpolation_weights["dxx"] = kwargs["regularisation"]
+                self.interpolation_weights["dyy"] = kwargs["regularisation"]
+                self.interpolation_weights["dzz"] = kwargs["regularisation"]
             self.interpolation_weights[key] = kwargs[key]
         # either use the default operators or the ones passed to the function
         operators = kwargs.get(
@@ -272,12 +272,7 @@ class FiniteDifferenceInterpolator(DiscreteInterpolator):
             idc[inside, :] = gi[node_idx[inside, :]]
             inside = np.logical_and(~np.any(idc == -1, axis=1), inside)
 
-            (
-                vertices,
-                T,
-                elements,
-                inside_,
-            ) = self.support.get_element_gradient_for_location(
+            (vertices, T, elements, inside_,) = self.support.get_element_gradient_for_location(
                 points[inside, : self.support.dimension]
             )
             # normalise constraint vector and scale element matrix by this
@@ -340,12 +335,7 @@ class FiniteDifferenceInterpolator(DiscreteInterpolator):
             # calculate unit vector for node gradients
             # this means we are only constraining direction of grad not the
             # magnitude
-            (
-                vertices,
-                T,
-                elements,
-                inside_,
-            ) = self.support.get_element_gradient_for_location(
+            (vertices, T, elements, inside_,) = self.support.get_element_gradient_for_location(
                 points[inside, : self.support.dimension]
             )
             # T*=np.product(self.support.step_vector)
@@ -432,12 +422,7 @@ class FiniteDifferenceInterpolator(DiscreteInterpolator):
             vectors[norm > 0, :] /= norm[norm > 0, None]
 
             # normalise element vector to unit vector for dot product
-            (
-                vertices,
-                T,
-                elements,
-                inside_,
-            ) = self.support.get_element_gradient_for_location(
+            (vertices, T, elements, inside_,) = self.support.get_element_gradient_for_location(
                 points[inside, : self.support.dimension]
             )
             T[norm > 0, :, :] /= norm[norm > 0, None, None]

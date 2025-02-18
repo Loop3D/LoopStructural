@@ -752,5 +752,6 @@ class DiscreteInterpolator(GeologicalInterpolator):
             **super().to_dict(),
             # 'region_function':self.region_function,
         }
+
     def vtk(self):
-        return self.support.vtk({'c':self.c})
+        return self.support.vtk({'c': self.c})
