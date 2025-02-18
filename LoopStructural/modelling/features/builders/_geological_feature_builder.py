@@ -169,6 +169,7 @@ class GeologicalFeatureBuilder(BaseBuilder):
 
         """
         if self.data_added:
+            logger.info("Data already added to interpolator")
             return
         # first move the data for the fault
         logger.info(f"Adding {len(self.faults)} faults to {self.name}")
@@ -461,7 +462,7 @@ class GeologicalFeatureBuilder(BaseBuilder):
         is big enough to capture the faulted feature.
         """
         if self.interpolator.support is not None:
-
+            logger.info(f"Checking interpolation geometry for {self.name}")
             origin = self.interpolator.support.origin
             maximum = self.interpolator.support.maximum
             pts = self.model.bounding_box.with_buffer(buffer).regular_grid(local=True)
@@ -474,7 +475,7 @@ class GeologicalFeatureBuilder(BaseBuilder):
             ]
             self.interpolator.support.origin = origin
             self.interpolator.support.maximum = maximum
-
+            self.update_build_arguments({'nelements':self.interpolator.n_elements})
     def build(self, data_region=None, **kwargs):
         """
         Runs the interpolation and builds the geological feature
@@ -499,6 +500,8 @@ class GeologicalFeatureBuilder(BaseBuilder):
         domain = kwargs.get("domain", None)
         if 'nelements' in kwargs:
             # if the number of elements has changed then update the interpolator
+            logger.info(f'Interpolator has {self.interpolator.n_elements} elements')
+            logger.info(f'Kwargs has {kwargs["nelements"]} elements')
             if self.interpolator.n_elements != kwargs['nelements']:
                 logger.info('Setting nelements to {} for {}'.format(kwargs['nelements'], self.name))
                 self.build_arguments['nelements'] = self.interpolator.set_nelements(kwargs['nelements'])
