@@ -598,12 +598,10 @@ class GeologicalModel:
                 * self._data.loc[mask, "polarity"].to_numpy()[:, None]
             )
             self._data.drop(["strike", "dip"], axis=1, inplace=True)
-        self._data[
-            ['X', 'Y', 'Z', 'val', 'nx', 'ny', 'nz', 'gx', 'gy', 'gz', 'tx', 'ty', 'tz']
-        ] = self._data[
-            ['X', 'Y', 'Z', 'val', 'nx', 'ny', 'nz', 'gx', 'gy', 'gz', 'tx', 'ty', 'tz']
-        ].astype(
-            float
+        self._data[['X', 'Y', 'Z', 'val', 'nx', 'ny', 'nz', 'gx', 'gy', 'gz', 'tx', 'ty', 'tz']] = (
+            self._data[
+                ['X', 'Y', 'Z', 'val', 'nx', 'ny', 'nz', 'gx', 'gy', 'gz', 'tx', 'ty', 'tz']
+            ].astype(float)
         )
 
     def set_model_data(self, data):

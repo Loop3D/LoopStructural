@@ -115,9 +115,11 @@ def test_intrusion_builder():
 
     intrusion_builder.set_data_for_extent_calculation(intrusion_data)
 
-    intrusion_builder.update_build_arguments({
-        "geometric_scaling_parameters": {},
-    })
+    intrusion_builder.update_build_arguments(
+        {
+            "geometric_scaling_parameters": {},
+        }
+    )
 
     intrusion_builder.update()
 
