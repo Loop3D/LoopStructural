@@ -120,7 +120,12 @@ class StructuralFrameBuilder:
             model=self.model,
         )
         self._frame.builder = self
-
+    @property
+    def build_arguments(self):
+        return self.builders[0].build_arguments
+    def update_build_arguments(self, kwargs):
+        for i in range(3):
+            self.builders[i].update_build_arguments(kwargs)
     @property
     def frame(self):
         return self._frame
