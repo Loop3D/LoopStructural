@@ -496,8 +496,10 @@ class BoundingBox:
         return (xyz - self.global_origin) / np.max(
             (self.global_maximum - self.global_origin)
         )  # np.clip(xyz, self.origin, self.maximum)
-    def scale_by_projection_factor(self,value):
-        return value/np.max((self.global_maximum - self.global_origin)) 
+
+    def scale_by_projection_factor(self, value):
+        return value / np.max((self.global_maximum - self.global_origin))
+
     def reproject(self, xyz):
         """Reproject a point from the bounding box to the global space
 
