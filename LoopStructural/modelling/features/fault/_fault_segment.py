@@ -270,7 +270,7 @@ class FaultSegment(StructuralFrame):
         v[mask, :] = self.__getitem__(1).evaluate_gradient(locations[mask, :])
         v[mask, :] /= np.linalg.norm(v[mask, :], axis=1)[:, None]
         scale = self.displacementfeature.evaluate_value(locations[mask, :])
-        v[mask, :] *= scale[:, None]
+        v[mask, :] *= scale[:, None]*self.displacement
         return v
 
     def evaluate_displacement(self, points):
