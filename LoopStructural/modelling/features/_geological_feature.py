@@ -260,7 +260,6 @@ class GeologicalFeature(BaseFeature):
             regions=[],  # feature.regions.copy(),  # don't want to share regionsbetween unconformity and # feature.regions,
             builder=self.builder,
             model=self.model,
-            interpolator=self.interpolator,
         )
         return feature
 
