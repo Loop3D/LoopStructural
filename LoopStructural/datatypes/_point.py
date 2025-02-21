@@ -129,7 +129,7 @@ class VectorPoints:
     def vtk(
         self,
         geom='arrow',
-        scale=1.,
+        scale=1.0,
         scale_function=None,
         normalise=False,
         tolerance=0.05,
@@ -157,7 +157,7 @@ class VectorPoints:
             try:
                 locations = bb.project(locations)
                 _projected = True
-                scale=bb.scale_by_projection_factor(scale)
+                scale = bb.scale_by_projection_factor(scale)
             except Exception as e:
                 logger.error(f'Failed to project points to bounding box: {e}')
                 logger.error('Using unprojected points, this may cause issues with the glyphing')
@@ -168,7 +168,7 @@ class VectorPoints:
         if geom == 'arrow':
             geom = pv.Arrow(scale=scale)
         elif geom == 'disc':
-            geom = pv.Disc(inner=0, outer=scale*.5,c_res=50).rotate_y(90)
+            geom = pv.Disc(inner=0, outer=scale * 0.5, c_res=50).rotate_y(90)
 
         # Perform the glyph
         glyphed = points.glyph(orient="vectors", geom=geom, tolerance=tolerance)
