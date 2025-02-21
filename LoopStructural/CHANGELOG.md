@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.6.8](https://github.com/Loop3D/LoopStructural/compare/v1.6.7...v1.6.8) (2025-02-20)
+
+
+### Bug Fixes
+
+* updating scaling for plotting ([#219](https://github.com/Loop3D/LoopStructural/issues/219)) ([78ccbd3](https://github.com/Loop3D/LoopStructural/commit/78ccbd3edbb67d49b4c21222bc066fbdd82c4dac))
+
 ## [1.6.7](https://github.com/Loop3D/LoopStructural/compare/v1.6.6...v1.6.7) (2025-02-03)
 
 
