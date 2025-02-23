@@ -293,11 +293,15 @@ class GeologicalModel:
         model.data = processor.data
         if processor.fault_properties is not None:
             for i in processor.fault_network.faults:
-                model.create_and_add_fault(
-                    i,
-                    **processor.fault_properties.to_dict("index")[i],
-                    faultfunction="BaseFault",
-                )
+                try:
+
+                    model.create_and_add_fault(
+                        i,
+                        **processor.fault_properties.to_dict("index")[i],
+                        faultfunction="BaseFault",
+                    )
+                except Exception as e:
+                    logger.error(f"Error adding fault {i}\n {e}")
             for (
                 edge,
                 properties,
@@ -340,9 +344,13 @@ class GeologicalModel:
                 if processor.fault_stratigraphy is not None:
                     faults = processor.fault_stratigraphy[s]
                 logger.info(f"Adding foliation {s}")
-                f = model.create_and_add_foliation(
-                    s, **processor.foliation_properties[s], faults=faults
-                )
+                try:
+                    f = model.create_and_add_foliation(
+                        s, **processor.foliation_properties[s], faults=faults
+                    )
+                except Exception as e:
+                    logger.error(f"Error adding foliation {s}\n {e}")
+                    f = None
                 if not f:
                     logger.warning(f"Foliation {s} not added")
                 # check feature was built, and is an interpolated feature.
@@ -1326,7 +1334,6 @@ class GeologicalModel:
             minor_axis = kwargs["fault_influence"]
         if "fault_vectical_radius" in kwargs and intermediate_axis is None:
             intermediate_axis = kwargs["fault_vectical_radius"]
-
         logger.info(f'Creating fault "{fault_surface_data}"')
         logger.info(f"Displacement: {displacement}")
         logger.info(f"Tolerance: {tol}")
@@ -1370,7 +1377,7 @@ class GeologicalModel:
         self._add_faults(fault_frame_builder, features=faults)
         # add data
         fault_frame_data = self.data.loc[self.data["feature_name"] == fault_surface_data].copy()
-
+        print(fault_surface_data, fault_center)
         if fault_center is not None and ~np.isnan(fault_center).any():
             fault_center = self.scale(fault_center, inplace=False)
         if minor_axis:
