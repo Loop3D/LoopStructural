@@ -42,6 +42,7 @@ class GeologicalFeature(BaseFeature):
         builder,
         regions: list = [],
         faults: list = [],
+        interpolator=None,
         model=None,
     ):
         """Default constructor for geological feature
@@ -60,7 +61,7 @@ class GeologicalFeature(BaseFeature):
         BaseFeature.__init__(self, name, model, faults, regions, builder)
         self.name = name
         self.builder = builder
-        self.interpolator = self.builder.interpolator if self.builder is not None else None
+        self.interpolator = self.builder.interpolator if self.builder is not None else interpolator
         self.type = FeatureType.INTERPOLATED
 
     def to_json(self):
