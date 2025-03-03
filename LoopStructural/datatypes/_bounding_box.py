@@ -429,6 +429,25 @@ class BoundingBox:
             "maximum": self.maximum.tolist(),
             "nsteps": self.nsteps.tolist(),
         }
+    @classmethod
+    def from_dict(cls, data: dict) -> 'BoundingBox':
+        """Create a bounding box from a dictionary
+
+        Parameters
+        ----------
+        data : dict
+            dictionary with origin, maximum and nsteps
+
+        Returns
+        -------
+        BoundingBox
+            bounding box object
+        """
+        return cls(
+            origin=np.array(data["origin"]),
+            maximum=np.array(data["maximum"]),
+            nsteps=np.array(data["nsteps"]),
+        )
 
     def vtk(self):
         """Export the model as a pyvista RectilinearGrid
