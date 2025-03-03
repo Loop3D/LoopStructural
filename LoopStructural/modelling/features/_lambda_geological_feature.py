@@ -90,3 +90,14 @@ class LambdaGeologicalFeature(BaseFeature):
 
     def get_data(self, value_map: Optional[dict] = None):
         return
+
+    def copy(self, name: Optional[str] = None):
+        return LambdaGeologicalFeature(
+            self.function,
+            name if name is not None else f'{self.name}_copy',
+            self.gradient_function,
+            self.model,
+            self.regions,
+            self.faults,
+            self.builder,
+        )
