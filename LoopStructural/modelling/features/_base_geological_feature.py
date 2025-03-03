@@ -334,8 +334,14 @@ class BaseFeature(metaclass=ABCMeta):
             bounding_box = self.model.bounding_box
         grid = bounding_box.structured_grid(name=self.name)
         value = self.evaluate_value(
-            self.model.scale(bounding_box.regular_grid(local=False, order='F'))
+            bounding_box.regular_grid(local=False, order='F')
         )
+        if self.model is not None:
+
+            value = self.evaluate_value(
+                self.model.scale(bounding_box.regular_grid(local=False, order='F'))
+            )
+
         grid.properties[self.name] = value
 
         value = self.evaluate_value(bounding_box.cell_centres(order='F'))
