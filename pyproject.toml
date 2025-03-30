@@ -41,8 +41,8 @@ dependencies = [
 dynamic = ['version']
 
 [project.optional-dependencies]
-all = ['loopstructural[visualisation,inequalities,export]', 'tqdm']
-visualisation = ["matplotlib", "pyvista", "loopstructuralviusualisation>0.1.14"]
+all = ['loopstructural[visualisation,inequalities,export,jupyter]', 'tqdm']
+visualisation = ["matplotlib", "pyvista", "loopstructuralviusualisation>=0.1.14"]
 export = ["geoh5py", "pyevtk", "dill"]
 jupyter = ["pyvista[all]"]
 inequalities = ["loopsolver"]
