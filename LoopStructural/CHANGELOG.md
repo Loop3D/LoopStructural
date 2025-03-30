@@ -1,5 +1,14 @@
 # Changelog
 
+## [1.6.9](https://github.com/Loop3D/LoopStructural/compare/v1.6.8...v1.6.9) (2025-03-30)
+
+
+### Bug Fixes
+
+* adding copy method for lambda ([6a8d940](https://github.com/Loop3D/LoopStructural/commit/6a8d940a0989a046663dcd3dd4ced6f443d895a6))
+* adding from dict method for bb ([71c2dcc](https://github.com/Loop3D/LoopStructural/commit/71c2dccc60855478e04e3fc2f8aa45c969f402a2))
+* allow scalar field of feature without a model ([2e36743](https://github.com/Loop3D/LoopStructural/commit/2e36743f1c090bb63efaa6468f2b5388e59fda4a))
+
 ## [1.6.8](https://github.com/Loop3D/LoopStructural/compare/v1.6.7...v1.6.8) (2025-02-20)
 
 
