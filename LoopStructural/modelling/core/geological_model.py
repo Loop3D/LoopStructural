@@ -1798,7 +1798,7 @@ class GeologicalModel:
             values = values.loc[~np.logical_or(values == np.inf, values == -np.inf)]
             surfaces.extend(
                 self.get_feature_by_name(u).surfaces(
-                    values.to_list(), self.bounding_box, name=names.loc[values.index].to_list()
+                    values.to_list(), self.bounding_box, name=names.loc[values.index].to_list(), colours=unit_table.loc[unit_table['feature_name'] == u, 'colour'].tolist()
                 )
             )
 

@@ -274,6 +274,7 @@ class BaseFeature(metaclass=ABCMeta):
         value: Union[float, int, List[Union[float, int]]],
         bounding_box=None,
         name: Optional[Union[List[str], str]] = None,
+        colours:Optional[Union[str,np.ndarray]]=None,
     ) -> surface_list:
         """Find the surfaces of the geological feature at a given value
 
@@ -305,14 +306,14 @@ class BaseFeature(metaclass=ABCMeta):
             isosurfacer = LoopIsosurfacer(bounding_box, callable=callable)
             if name is None and self.name is not None:
                 name = self.name
-            surfaces = isosurfacer.fit(value, name)
+            surfaces = isosurfacer.fit(value, name,colours=colours)
         except Exception as e:
             logger.error(f"Failed to create surface for {self.name} at value {value}")
             logger.error(e)
             surfaces = []
         finally:
             self.regions = regions
-
+        
         return surfaces
 
     def scalar_field(self, bounding_box=None):
