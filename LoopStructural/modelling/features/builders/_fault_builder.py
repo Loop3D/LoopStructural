@@ -91,6 +91,7 @@ class FaultBuilder(StructuralFrameBuilder):
         fault_trace_anisotropy=1.0,
         fault_dip=90,
         fault_dip_anisotropy=1.0,
+        fault_pitch=None,
     ):
         """Generate the required data for building a fault frame for a fault with the
         specified parameters
@@ -204,6 +205,7 @@ class FaultBuilder(StructuralFrameBuilder):
                 fault_frame_data["coord"] == 1, ~np.isnan(fault_frame_data["gz"])
             )
             fault_slip_data = fault_frame_data.loc[slip_mask, ["gx", "gy", "gz"]]
+
             if len(fault_slip_data) == 0:
                 logger.warning(
                     "There is no slip vector data for the fault, using vertical slip vector\n\
@@ -211,6 +213,11 @@ class FaultBuilder(StructuralFrameBuilder):
                 )
                 strike_vector, dip_vector = get_vectors(fault_normal_vector[None, :])
                 fault_slip_vector = dip_vector[:, 0]
+                if fault_pitch is not None:
+                    print('using pitch')
+                    rotm = rotation(fault_normal_vector[None,:],[fault_pitch])
+                    print(rotm.shape,fault_slip_vector.shape)
+                    fault_slip_vector = np.einsum("ijk,k->ij", rotm, fault_slip_vector)[0,:]
                 logger.info(f"Estimated fault slip vector: {fault_slip_vector}")
             else:
                 fault_slip_vector = fault_slip_data.mean(axis=0).to_numpy()

@@ -1293,6 +1293,7 @@ class GeologicalModel:
         fault_trace_anisotropy=0.0,
         fault_dip=90,
         fault_dip_anisotropy=0.0,
+        fault_pitch=None,
         **kwargs,
     ):
         """
@@ -1393,6 +1394,7 @@ class GeologicalModel:
             fault_trace_anisotropy=fault_trace_anisotropy,
             fault_dip=fault_dip,
             fault_dip_anisotropy=fault_dip_anisotropy,
+            fault_pitch=fault_pitch,
         )
         if "force_mesh_geometry" not in kwargs:
             fault_frame_builder.set_mesh_geometry(kwargs.get("fault_buffer", 0.2), 0)
