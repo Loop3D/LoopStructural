@@ -64,7 +64,7 @@ class LoopIsosurfacer:
         values: Optional[Union[list, int, float]],
         name: Optional[Union[List[str], str]] = None,
         local=False,
-        colours: Optional[List]=None,
+        colours: Optional[List] = None,
     ) -> surface_list:
         """Extract isosurfaces from the interpolator
 
@@ -122,8 +122,8 @@ class LoopIsosurfacer:
         if isinstance(name, list):
             names = name
         if colours is None:
-            colours = [None]*len(isovalues)
-        for name, isovalue,colour in zip(names, isovalues,colours):
+            colours = [None] * len(isovalues)
+        for name, isovalue, colour in zip(names, isovalues, colours):
             try:
                 step_vector = (self.bounding_box.maximum - self.bounding_box.origin) / (
                     np.array(self.bounding_box.nsteps) - 1

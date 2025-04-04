@@ -326,7 +326,9 @@ class BoundingBox:
         if iy == -1:
             return self.origin[ix]
 
-        return self.bb[ix,]
+        return self.bb[
+            ix,
+        ]
 
     def __getitem__(self, name):
         if isinstance(name, str):
@@ -429,6 +431,7 @@ class BoundingBox:
             "maximum": self.maximum.tolist(),
             "nsteps": self.nsteps.tolist(),
         }
+
     @classmethod
     def from_dict(cls, data: dict) -> 'BoundingBox':
         """Create a bounding box from a dictionary

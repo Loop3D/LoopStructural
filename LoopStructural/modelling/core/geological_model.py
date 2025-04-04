@@ -598,10 +598,12 @@ class GeologicalModel:
                 * self._data.loc[mask, "polarity"].to_numpy()[:, None]
             )
             self._data.drop(["strike", "dip"], axis=1, inplace=True)
-        self._data[['X', 'Y', 'Z', 'val', 'nx', 'ny', 'nz', 'gx', 'gy', 'gz', 'tx', 'ty', 'tz']] = (
-            self._data[
-                ['X', 'Y', 'Z', 'val', 'nx', 'ny', 'nz', 'gx', 'gy', 'gz', 'tx', 'ty', 'tz']
-            ].astype(float)
+        self._data[
+            ['X', 'Y', 'Z', 'val', 'nx', 'ny', 'nz', 'gx', 'gy', 'gz', 'tx', 'ty', 'tz']
+        ] = self._data[
+            ['X', 'Y', 'Z', 'val', 'nx', 'ny', 'nz', 'gx', 'gy', 'gz', 'tx', 'ty', 'tz']
+        ].astype(
+            float
         )
 
     def set_model_data(self, data):
@@ -1380,6 +1382,7 @@ class GeologicalModel:
             major_axis = major_axis / self.scale_factor
         if intermediate_axis:
             intermediate_axis = intermediate_axis / self.scale_factor
+        print(fault_dip, fault_normal_vector)
         fault_frame_builder.create_data_from_geometry(
             fault_frame_data=fault_frame_data,
             fault_center=fault_center,
@@ -1800,7 +1803,10 @@ class GeologicalModel:
             values = values.loc[~np.logical_or(values == np.inf, values == -np.inf)]
             surfaces.extend(
                 self.get_feature_by_name(u).surfaces(
-                    values.to_list(), self.bounding_box, name=names.loc[values.index].to_list(), colours=unit_table.loc[unit_table['feature_name'] == u, 'colour'].tolist()
+                    values.to_list(),
+                    self.bounding_box,
+                    name=names.loc[values.index].to_list(),
+                    colours=unit_table.loc[unit_table['feature_name'] == u, 'colour'].tolist(),
                 )
             )
 

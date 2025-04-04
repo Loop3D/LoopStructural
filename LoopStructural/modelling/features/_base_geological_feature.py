@@ -274,7 +274,7 @@ class BaseFeature(metaclass=ABCMeta):
         value: Union[float, int, List[Union[float, int]]],
         bounding_box=None,
         name: Optional[Union[List[str], str]] = None,
-        colours:Optional[Union[str,np.ndarray]]=None,
+        colours: Optional[Union[str, np.ndarray]] = None,
     ) -> surface_list:
         """Find the surfaces of the geological feature at a given value
 
@@ -306,14 +306,14 @@ class BaseFeature(metaclass=ABCMeta):
             isosurfacer = LoopIsosurfacer(bounding_box, callable=callable)
             if name is None and self.name is not None:
                 name = self.name
-            surfaces = isosurfacer.fit(value, name,colours=colours)
+            surfaces = isosurfacer.fit(value, name, colours=colours)
         except Exception as e:
             logger.error(f"Failed to create surface for {self.name} at value {value}")
             logger.error(e)
             surfaces = []
         finally:
             self.regions = regions
-        
+
         return surfaces
 
     def scalar_field(self, bounding_box=None):
@@ -334,9 +334,7 @@ class BaseFeature(metaclass=ABCMeta):
                 raise ValueError("Must specify bounding box")
             bounding_box = self.model.bounding_box
         grid = bounding_box.structured_grid(name=self.name)
-        value = self.evaluate_value(
-            bounding_box.regular_grid(local=False, order='F')
-        )
+        value = self.evaluate_value(bounding_box.regular_grid(local=False, order='F'))
         if self.model is not None:
 
             value = self.evaluate_value(

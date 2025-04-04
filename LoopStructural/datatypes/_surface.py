@@ -1,5 +1,5 @@
 from dataclasses import dataclass, field
-from typing import Optional,Union
+from typing import Optional, Union
 import numpy as np
 import io
 from LoopStructural.utils import getLogger
@@ -11,13 +11,14 @@ logger = getLogger(__name__)
 class Surface:
     vertices: np.ndarray = field(default_factory=lambda: np.array([[0, 0, 0]]))
     triangles: np.ndarray = field(default_factory=lambda: np.array([[0, 0, 0]]))
-    colour: Optional[Union[str,np.ndarray]] = field(default_factory=lambda: None)
+    colour: Optional[Union[str, np.ndarray]] = field(default_factory=lambda: None)
 
     normals: Optional[np.ndarray] = None
     name: str = 'surface'
     values: Optional[np.ndarray] = None
     properties: Optional[dict] = None
     cell_properties: Optional[dict] = None
+
     @property
     def triangle_area(self):
         """_summary_
