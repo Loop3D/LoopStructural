@@ -10,7 +10,7 @@ def test_surface_creation():
     name = "surface1"
     values = np.array([1, 2, 3])
 
-    surface = Surface(vertices, triangles, normals, name, values)
+    surface = Surface(vertices=vertices, triangles=triangles, normals=normals, name=name, values=values)
 
     assert np.array_equal(surface.vertices, vertices)
     assert np.array_equal(surface.triangles, triangles)
@@ -30,7 +30,9 @@ def test_surface_vtk():
     name = "surface1"
     values = np.array([1, 2, 3])
 
-    surface = Surface(vertices, triangles, normals, name, values)
+    surface = Surface(
+        vertices=vertices, triangles=triangles, normals=normals, name=name, values=values
+    )
     vtk_surface = surface.vtk()
 
     assert vtk_surface.n_points == len(vertices)
@@ -45,7 +47,9 @@ def test_surface_to_dict():
     name = "surface1"
     values = np.array([1, 2, 3])
 
-    surface = Surface(vertices, triangles, normals, name, values)
+    surface = Surface(
+        vertices=vertices, triangles=triangles, normals=normals, name=name, values=values
+    )
     surface_dict = surface.to_dict()
 
     assert np.array_equal(surface_dict["vertices"], vertices)
