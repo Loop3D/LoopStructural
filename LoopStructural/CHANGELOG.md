@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.6.10](https://github.com/Loop3D/LoopStructural/compare/v1.6.9...v1.6.10) (2025-04-04)
+
+
+### Bug Fixes
+
+* add fault pitch ([a05d277](https://github.com/Loop3D/LoopStructural/commit/a05d2773663cd6c826fde90ff2465e79de17aa6f))
+* Adding colours to surfaces ([2d40563](https://github.com/Loop3D/LoopStructural/commit/2d40563364dfb229fcd3a22b1c5e6e6bc841de6d))
+
 ## [1.6.9](https://github.com/Loop3D/LoopStructural/compare/v1.6.8...v1.6.9) (2025-03-30)
 
 
