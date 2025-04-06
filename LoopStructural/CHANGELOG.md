@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.6.11](https://github.com/Loop3D/LoopStructural/compare/v1.6.10...v1.6.11) (2025-04-06)
+
+
+### Bug Fixes
+
+* colours correct for surfaces ([ea3709a](https://github.com/Loop3D/LoopStructural/commit/ea3709a25c87f4b4f1fbddee77d7a66526298a66))
+
 ## [1.6.10](https://github.com/Loop3D/LoopStructural/compare/v1.6.9...v1.6.10) (2025-04-04)
 
 
