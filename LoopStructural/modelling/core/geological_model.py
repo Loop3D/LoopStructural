@@ -1382,7 +1382,6 @@ class GeologicalModel:
             major_axis = major_axis / self.scale_factor
         if intermediate_axis:
             intermediate_axis = intermediate_axis / self.scale_factor
-        print(fault_dip, fault_normal_vector)
         fault_frame_builder.create_data_from_geometry(
             fault_frame_data=fault_frame_data,
             fault_center=fault_center,
@@ -1806,7 +1805,7 @@ class GeologicalModel:
                     values.to_list(),
                     self.bounding_box,
                     name=names.loc[values.index].to_list(),
-                    colours=unit_table.loc[unit_table['feature_name'] == u, 'colour'].tolist(),
+                    colours=unit_table.loc[unit_table['feature_name'] == u, 'colour'].tolist()[1:], #we don't isosurface basement, no value
                 )
             )
 
