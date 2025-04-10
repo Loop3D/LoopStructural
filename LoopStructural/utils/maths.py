@@ -30,18 +30,18 @@ def strikedip2vector(strike: NumericInput, dip: NumericInput) -> np.ndarray:
 
 
 def azimuthplunge2vector(
-    plunge: NumericInput,
     plunge_dir: NumericInput,
+    plunge: NumericInput,
     degrees: bool = True,
 ) -> np.ndarray:
     """Convert plunge and plunge direction to a vector
 
     Parameters
     ----------
-    plunge : Union[np.ndarray, list]
-        array or array like of plunge values
     plunge_dir : Union[np.ndarray, list]
         array or array like of plunge direction values
+    plunge : Union[np.ndarray, list]
+        array or array like of plunge values
 
     Returns
     -------
@@ -204,19 +204,21 @@ def get_vectors(normal: NumericInput) -> Tuple[np.ndarray, np.ndarray]:
 
 
 def get_strike_vector(strike: NumericInput, degrees: bool = True) -> np.ndarray:
-    """Return the vector aligned with the strike direction
+    """Return strike direction vector(s) from strike angle(s).
 
     Parameters
     ----------
-    strike : np.ndarray
-        strike direction
+    strike : NumericInput
+        Single strike angle or array-like of strike angles, measured clockwise from North.
     degrees : bool, optional
-        whether to return in degrees or radians, by default True
+        Whether the input angles are in degrees. If False, angles are assumed to be in radians.
+        Default is True.
 
     Returns
     -------
     np.ndarray
-        vector aligned with strike direction
+        Array of shape (3, n) where each column is a 3D unit vector (x, y, z) representing
+        the horizontal strike direction. The z-component is always 0.
 
     """
     if isinstance(strike, numbers.Number):
@@ -236,6 +238,21 @@ def get_strike_vector(strike: NumericInput, degrees: bool = True) -> np.ndarray:
 
 
 def get_dip_vector(strike, dip):
+    """Return the dip vector based on strike and dip angles.
+
+    Parameters
+    ----------
+    strike : float
+        Strike angle in degrees, measured clockwise from North.
+    dip : float
+        Dip angle in degrees, measured from the horizontal plane.
+
+    Returns
+    -------
+    np.ndarray
+        Unit vector (length 3) representing the dip direction in 3D space.
+
+    """
     v = np.array(
         [
             -np.cos(np.deg2rad(-strike)) * np.cos(-np.deg2rad(dip)),
@@ -247,6 +264,23 @@ def get_dip_vector(strike, dip):
 
 
 def regular_tetraherdron_for_points(xyz, scale_parameter):
+    """Generate regular tetrahedrons centered at given 3D points.
+
+    Parameters
+    ----------
+    xyz : np.ndarray
+        Array of shape (n, 3) representing the coordinates of n points in 3D space,
+        which will serve as the centers of the generated tetrahedrons.
+    scale_parameter : float
+        Scaling factor controlling the size of the regular tetrahedrons.
+
+    Returns
+    -------
+    np.ndarray
+        Array of shape (n, 4, 3) representing n regular tetrahedrons, where each
+        tetrahedron has 4 vertices in 3D space, positioned relative to the corresponding center point.
+
+    """
     regular_tetrahedron = np.array(
         [
             [np.sqrt(8 / 9), 0, -1 / 3],
@@ -264,8 +298,23 @@ def regular_tetraherdron_for_points(xyz, scale_parameter):
 
 
 def gradient_from_tetrahedron(tetrahedron, value):
-    """
-    Calculate the gradient from a tetrahedron
+    """Compute the gradient of values within tetrahedral elements
+
+    Parameters
+    ----------
+    tetrahedron : np.ndarray
+        Array of shape (n, 4, 3) representing the coordinates of tetrahedral elements,
+        where each tetrahedron is defined by 4 vertices in 3D space.
+    value : np.ndarray
+        Array of shape (n, 4) representing the scalar values at the 4 vertices
+        of each tetrahedron.
+
+    Returns
+    -------
+    np.ndarray
+        Array of shape (n, 3) representing the gradient vector of the scalar field
+        inside each tetrahedral element.
+
     """
     tetrahedron = tetrahedron.reshape(-1, 4, 3)
     m = np.array(
