@@ -63,8 +63,8 @@ def _init_face_table(grid):
     shared_face_index = np.zeros((shared_faces.shape[0], grid.dimension), dtype=int)
     shared_face_index[:] = -1
     shared_face_index[row.reshape(-1, grid.dimension)[:, 0], :] = col.reshape(-1, grid.dimension)
-    grid._shared_elements[
-        np.arange(grid.shared_element_relationships.shape[0]), :
-    ] = shared_face_index
+    grid._shared_elements[np.arange(grid.shared_element_relationships.shape[0]), :] = (
+        shared_face_index
+    )
     # resize
     grid._shared_elements = grid.shared_elements[: len(grid.shared_element_relationships), :]
