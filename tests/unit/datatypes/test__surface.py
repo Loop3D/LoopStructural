@@ -10,7 +10,9 @@ def test_surface_creation():
     name = "surface1"
     values = np.array([1, 2, 3])
 
-    surface = Surface(vertices=vertices, triangles=triangles, normals=normals, name=name, values=values)
+    surface = Surface(
+        vertices=vertices, triangles=triangles, normals=normals, name=name, values=values
+    )
 
     assert np.array_equal(surface.vertices, vertices)
     assert np.array_equal(surface.triangles, triangles)
