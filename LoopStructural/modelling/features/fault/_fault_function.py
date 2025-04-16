@@ -438,7 +438,7 @@ class BaseFault3D(object):
     fw.add_cstr(-1, 0)
     fw.add_grad(-1, 0)
     fw.add_min(-1)
-    
+
     gyf = smooth_peak
     # CubicFunction()
     # gyf.add_cstr(-1, 0)
