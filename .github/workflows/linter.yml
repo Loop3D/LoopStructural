@@ -46,6 +46,14 @@ jobs:
           ruff check ${{env.PROJECT_FOLDER}} --fix
       - uses: stefanzweifel/git-auto-commit-action@v5
         with:
-          push_options: 
           commit_message: "style: style fixes by ruff and autoformatting by black"
-
+          branch: lint/style-fixes-${{ github.run_id }}
+          create_branch: true
+      - name: Create Pull Request
+        uses: peter-evans/create-pull-request@v6
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          title: "style: auto format fixes"
+          body: "This PR applies style fixes by black and ruff."
+          base: master
+          branch: lint/style-fixes-${{ github.run_id }}
