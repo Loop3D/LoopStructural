@@ -124,12 +124,17 @@ class FaultSegment(StructuralFrame):
     def fault_ellipsoid(self, **kwargs):
         try:
             import pyvista as pv
-
-            fault_ellipsoid = pv.PolyData(
-                self.model.rescale(self.fault_centre[None, :], inplace=False)
-            )
-            fault_ellipsoid["norm"] = self.builder.fault_normal_vector[None, :]
-
+            if self.model is None:
+                pts = self.fault_centre[None, :]
+            else:
+                pts = self.model.rescale(self.fault_centre[None, :], inplace=False)
+            # pts = self.fault_centre[None, :]
+            fault_ellipsoid = pv.PolyData(pts)
+            # fault_ellipsoid = pv.PolyData(
+            #     self.model.rescale(self.fault_centre[None, :], inplace=False)
+            # )
+            fault_ellipsoid["norm"] = self.fault_normal_vector[None, :]
+            fault_ellipsoid['norm'] /= np.linalg.norm(fault_ellipsoid['norm'], axis=1)[:, None]
             geom = pv.ParametricEllipsoid(
                 self.fault_minor_axis,
                 self.fault_major_axis,
