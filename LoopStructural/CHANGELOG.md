@@ -1,5 +1,14 @@
 # Changelog
 
+## [1.6.12](https://github.com/Loop3D/LoopStructural/compare/v1.6.11...v1.6.12) (2025-04-16)
+
+
+### Bug Fixes
+
+* add fault function with 0 gradient ([6bd359f](https://github.com/Loop3D/LoopStructural/commit/6bd359f00e921ad5340242af4c02725d46118b2d))
+* refactor fault ellipsoid plotter to not use fault builder ([025e286](https://github.com/Loop3D/LoopStructural/commit/025e28635847ae8a5796160ac6784d1b72ddd968))
+* vector point visualisation bug where nan values exist ([9c70825](https://github.com/Loop3D/LoopStructural/commit/9c7082535fb5561f79258038e369d53903fa66d2))
+
 ## [1.6.11](https://github.com/Loop3D/LoopStructural/compare/v1.6.10...v1.6.11) (2025-04-06)
 
 
