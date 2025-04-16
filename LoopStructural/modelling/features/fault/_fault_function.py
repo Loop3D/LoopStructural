@@ -9,6 +9,10 @@ from ....utils import getLogger
 logger = getLogger(__name__)
 
 
+def smooth_peak(x):
+    return 0.25 * x**6 + 0.5 * x**4 - 1.75 * x**2 + 1
+
+
 class FaultProfileFunction(metaclass=ABCMeta):
     def __init__(self):
         self.lim = [-1, 1]
@@ -412,14 +416,7 @@ class BaseFault(object):
     # gyf.add_min(-1)
     # gyf.add_max(1)
     gyf = Ones()
-    gzf = CubicFunction()
-    gzf.add_cstr(-1, 0)
-    gzf.add_cstr(1, 0)
-    gzf.add_cstr(-0.2, 1)
-    gzf.add_cstr(0.2, 1)
-    gzf.add_grad(0, 0)
-    gzf.add_min(-1)
-    gzf.add_max(1)
+    gzf = smooth_peak
     gxf = Composite(hw, fw)
     fault_displacement = FaultDisplacement(gx=gxf, gy=gyf, gz=gzf)
 
@@ -441,22 +438,17 @@ class BaseFault3D(object):
     fw.add_cstr(-1, 0)
     fw.add_grad(-1, 0)
     fw.add_min(-1)
-    gyf = CubicFunction()
-    gyf.add_cstr(-1, 0)
-    gyf.add_cstr(1, 0)
-    gyf.add_cstr(-0.2, 1)
-    gyf.add_cstr(0.2, 1)
-    gyf.add_grad(0, 0)
-    gyf.add_min(-1)
-    gyf.add_max(1)
+    
+    gyf = smooth_peak
+    # CubicFunction()
+    # gyf.add_cstr(-1, 0)
+    # gyf.add_cstr(1, 0)
+    # gyf.add_cstr(-0.2, 1)
+    # gyf.add_cstr(0.2, 1)
+    # gyf.add_grad(0, 0)
+    # gyf.add_min(-1)
+    # gyf.add_max(1)
     # gyf = Ones()
-    gzf = CubicFunction()
-    gzf.add_cstr(-1, 0)
-    gzf.add_cstr(1, 0)
-    gzf.add_cstr(-0.2, 1)
-    gzf.add_cstr(0.2, 1)
-    gzf.add_grad(0, 0)
-    gzf.add_min(-1)
-    gzf.add_max(1)
+    gzf = smooth_peak
     gxf = Composite(hw, fw)
     fault_displacement = FaultDisplacement(gx=gxf, gy=gyf, gz=gzf)

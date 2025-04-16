@@ -147,8 +147,8 @@ class VectorPoints:
         else:
             norm = np.linalg.norm(vectors, axis=1)
             vectors[norm > 0, :] /= norm[norm > 0][:, None]
-            norm = norm[norm > 0] / norm[norm > 0].max()
-            vectors[norm > 0, :] *= norm[:, None]
+            norm[norm > 0] = norm[norm > 0] / norm[norm > 0].max()
+            vectors[norm > 0, :] *= norm[norm > 0, None]
         if scale_function is not None:
             # vectors /= np.linalg.norm(vectors, axis=1)[:, None]
             vectors *= scale_function(self.locations)[:, None]
