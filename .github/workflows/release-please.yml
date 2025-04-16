@@ -20,7 +20,7 @@ jobs:
           path: LoopStructural
           
     outputs:
-      release_created: ${{ steps.release.outputs.release_created }}
+      release_created: ${{ steps.release.outputs.releases_created }}
   package:
     needs: release-please
     if: ${{ needs.release-please.outputs.release_created }}
@@ -29,14 +29,14 @@ jobs:
       - name: Trigger build for pypi and upload
         run: |
           curl -X POST \
-          -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+          -H "Authorization: token ${{ secrets.GH_PAT }}" \
           -H "Accept: application/vnd.github.v3+json" \
           https://api.github.com/repos/Loop3d/${{env.PACKAGE_NAME}}/actions/workflows/pypi.yml/dispatches \
           -d '{"ref":"master"}'
       - name: Trigger build for conda and upload
         run: |
           curl -X POST \
-          -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+          -H "Authorization: token ${{ secrets.GH_PAT }}" \
           -H "Accept: application/vnd.github.v3+json" \
           https://api.github.com/repos/Loop3d/${{env.PACKAGE_NAME}}/actions/workflows/conda.yml/dispatches \
           -d '{"ref":"master"}'
