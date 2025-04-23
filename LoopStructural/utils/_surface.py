@@ -1,9 +1,11 @@
 from __future__ import annotations
 
-from typing import Optional, Union, Callable, List
 from collections.abc import Iterable
+from typing import Callable, List, Optional, Union
+
 import numpy as np
 import numpy.typing as npt
+
 from LoopStructural.utils.logging import getLogger
 
 logger = getLogger(__name__)
@@ -14,7 +16,7 @@ except ImportError:
     from skimage.measure import marching_cubes_lewiner as marching_cubes
 
 # from LoopStructural.interpolators._geological_interpolator import GeologicalInterpolator
-from LoopStructural.datatypes import Surface, BoundingBox
+from LoopStructural.datatypes import BoundingBox, Surface
 
 surface_list = List[Surface]
 

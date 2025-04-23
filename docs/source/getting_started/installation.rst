@@ -57,5 +57,3 @@ Optional dependencies:
 * dill, serialisation of python objects
 * loopsolver, solving of inequalities
 * tqdm, progress bar
-
-

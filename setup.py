@@ -1,7 +1,8 @@
 """See pyproject.toml for project metadata."""
 
-from setuptools import setup
 import os
+
+from setuptools import setup
 
 package_root = os.path.abspath(os.path.dirname(__file__))
 

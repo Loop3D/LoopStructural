@@ -5,10 +5,11 @@
 
 """
 
-from LoopStructural import GeologicalModel
-from LoopStructural.visualisation import Loop3DView, RotationAnglePlotter
-from LoopStructural.datasets import load_laurent2016
 import pandas as pd
+
+from LoopStructural import GeologicalModel
+from LoopStructural.datasets import load_laurent2016
+from LoopStructural.visualisation import Loop3DView, RotationAnglePlotter
 
 # logging.getLogger().setLevel(logging.INFO)
 

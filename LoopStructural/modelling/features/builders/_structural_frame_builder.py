@@ -4,19 +4,18 @@ structural frame builder
 
 from typing import Union
 
-from LoopStructural.utils.exceptions import LoopException
-
 import numpy as np
 
-from ....utils import getLogger
+from LoopStructural.utils.exceptions import LoopException
+
 from ....datatypes import BoundingBox
+from ....utils import getLogger
 
 logger = getLogger(__name__)
 
 
-from ....modelling.features.builders import GeologicalFeatureBuilder
-from ....modelling.features.builders import FoldedFeatureBuilder
 from ....modelling.features import StructuralFrame
+from ....modelling.features.builders import FoldedFeatureBuilder, GeologicalFeatureBuilder
 
 
 class StructuralFrameBuilder:
@@ -120,12 +119,15 @@ class StructuralFrameBuilder:
             model=self.model,
         )
         self._frame.builder = self
+
     @property
     def build_arguments(self):
         return self.builders[0].build_arguments
+
     def update_build_arguments(self, kwargs):
         for i in range(3):
             self.builders[i].update_build_arguments(kwargs)
+
     @property
     def frame(self):
         return self._frame

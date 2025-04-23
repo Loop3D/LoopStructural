@@ -92,7 +92,3 @@ No displacement
     view.add_vector_field(model['fault'][1],locations=model.regular_grid()[::200]) #random 200 locations
     view.add_isosurface(model['fault'][0],0)
     view.interactive()
-
-
-
-

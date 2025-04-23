@@ -1,8 +1,4 @@
-
-
-def test_geological_feature_builder_constructor(
-    interpolatortype, bounding_box, nelements
-):
+def test_geological_feature_builder_constructor(interpolatortype, bounding_box, nelements):
     # builder = GeologicalFeatureBuilder(interpolatortype, bounding_box, nelements)
     # assert builder.interpolator == interpolator
     pass

@@ -1,11 +1,13 @@
 from __future__ import annotations
-from typing import Optional, Union, Dict
-from LoopStructural.utils.exceptions import LoopValueError
-from LoopStructural.utils import rng
-from LoopStructural.datatypes._structured_grid import StructuredGrid
-import numpy as np
-import copy
 
+import copy
+from typing import Dict, Optional, Union
+
+import numpy as np
+
+from LoopStructural.datatypes._structured_grid import StructuredGrid
+from LoopStructural.utils import rng
+from LoopStructural.utils.exceptions import LoopValueError
 from LoopStructural.utils.logging import getLogger
 
 logger = getLogger(__name__)

@@ -144,5 +144,3 @@ following style:
 License
 ~~~~~~~
 LoopStructural is licensed unded an MIT license and all contributions MUST conform to this license. 
-
-

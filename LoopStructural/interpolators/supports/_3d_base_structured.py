@@ -1,9 +1,12 @@
-from LoopStructural.utils.exceptions import LoopException
 from abc import abstractmethod
-import numpy as np
-from LoopStructural.utils import getLogger
-from . import SupportType
 from typing import Tuple
+
+import numpy as np
+
+from LoopStructural.utils import getLogger
+from LoopStructural.utils.exceptions import LoopException
+
+from . import SupportType
 
 logger = getLogger(__name__)
 

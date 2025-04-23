@@ -1,12 +1,13 @@
 from abc import ABCMeta, abstractmethod
 from ast import List
-from typing import Union, Optional
+from typing import Optional, Union
+
 import numpy as np
 import numpy.typing as npt
-from .._svariogram import SVariogram
 from scipy.optimize import curve_fit
 
 from .....utils import getLogger
+from .._svariogram import SVariogram
 
 logger = getLogger(__name__)
 

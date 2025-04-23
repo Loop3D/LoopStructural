@@ -1,6 +1,7 @@
+import pandas as pd
+
 from LoopStructural import GeologicalModel
 from LoopStructural.modelling.features.fault import FaultSegment
-import pandas as pd
 
 
 def test_create_and_add_fault():

@@ -1,11 +1,12 @@
+from typing import Optional, Union
+
+import numpy as np
+
+from LoopStructural.datatypes import BoundingBox
 from LoopStructural.interpolators import (
     InterpolatorFactory,
     InterpolatorType,
 )
-from LoopStructural.datatypes import BoundingBox
-from typing import  Union, Optional
-import numpy as np
-
 from LoopStructural.interpolators._geological_interpolator import GeologicalInterpolator
 
 
@@ -37,12 +38,12 @@ class InterpolatorBuilder:
         self.buffer = buffer
         self.kwargs = kwargs
         self.interpolator = InterpolatorFactory.create_interpolator(
-                    interpolatortype=self.interpolatortype,
-                    boundingbox=self.bounding_box,
-                    nelements=self.nelements,
-                    buffer=self.buffer,
-                    **self.kwargs,
-                )
+            interpolatortype=self.interpolatortype,
+            boundingbox=self.bounding_box,
+            nelements=self.nelements,
+            buffer=self.buffer,
+            **self.kwargs,
+        )
 
     def add_value_constraints(self, value_constraints: np.ndarray) -> 'InterpolatorBuilder':
         """Add value constraints to the interpolator
@@ -55,7 +56,7 @@ class InterpolatorBuilder:
         Returns
         -------
         InterpolatorBuilder
-            reference to the builder 
+            reference to the builder
         """
         if self.interpolator:
             self.interpolator.set_value_constraints(value_constraints)
@@ -100,7 +101,8 @@ class InterpolatorBuilder:
         if self.interpolator:
             self.interpolator.set_normal_constraints(normal_constraints)
         return self
-    #TODO implement/check inequalities
+
+    # TODO implement/check inequalities
     # def add_inequality_constraints(self, inequality_constraints: np.ndarray) -> 'InterpolatorBuilder':
     #     if self.interpolator:
     #         self.interpolator.set_value_inequality_constraints(inequality_constraints)
@@ -123,7 +125,7 @@ class InterpolatorBuilder:
             self.interpolator.setup(**kwargs)
         return self
 
-    def build(self)->GeologicalInterpolator:
+    def build(self) -> GeologicalInterpolator:
         """Builds the interpolator and returns it
 
         Returns

@@ -1,8 +1,7 @@
 # import scipy as sc
-import scipy.stats as sct
-
 import numpy as np
 import pandas as pd
+import scipy.stats as sct
 
 from ...utils import getLogger, rng
 

@@ -2,15 +2,15 @@
 Geological features
 """
 
-from LoopStructural.utils.maths import regular_tetraherdron_for_points, gradient_from_tetrahedron
-from ...modelling.features import BaseFeature
-from ...utils import getLogger
-from ...modelling.features import FeatureType
-import numpy as np
-from typing import Optional, List, Union
-from ...datatypes import ValuePoints, VectorPoints
+from typing import List, Optional, Union
 
-from ...utils import LoopValueError
+import numpy as np
+
+from LoopStructural.utils.maths import gradient_from_tetrahedron, regular_tetraherdron_for_points
+
+from ...datatypes import ValuePoints, VectorPoints
+from ...modelling.features import BaseFeature, FeatureType
+from ...utils import LoopValueError, getLogger
 
 logger = getLogger(__name__)
 

@@ -3,7 +3,7 @@ Piecewise linear interpolator
 """
 
 import logging
-from typing import Optional, Callable
+from typing import Callable, Optional
 
 import numpy as np
 

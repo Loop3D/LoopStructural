@@ -2,14 +2,14 @@
 Wrapper for using surfepy
 """
 
-from ..utils.maths import get_vectors
-from ..interpolators import GeologicalInterpolator
+from typing import Optional
 
 import numpy as np
-
-from ..utils import getLogger
 import surfepy
-from typing import Optional
+
+from ..interpolators import GeologicalInterpolator
+from ..utils import getLogger
+from ..utils.maths import get_vectors
 
 logger = getLogger(__name__)
 

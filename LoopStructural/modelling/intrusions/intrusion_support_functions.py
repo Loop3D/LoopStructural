@@ -1,5 +1,6 @@
 ## Support Functions for intrusion network simulated as the shortest path, and for simulations in general
 import numpy as np
+
 from ...utils import getLogger
 
 logger = getLogger(__name__)

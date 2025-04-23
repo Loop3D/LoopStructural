@@ -1,9 +1,11 @@
-from ._trigo_fold_rotation_angle import TrigoFoldRotationAngleProfile
-from ._fourier_series_fold_rotation_angle import FourierSeriesFoldRotationAngleProfile
 from enum import Enum
 from typing import Optional
-import numpy.typing as npt
+
 import numpy as np
+import numpy.typing as npt
+
+from ._fourier_series_fold_rotation_angle import FourierSeriesFoldRotationAngleProfile
+from ._trigo_fold_rotation_angle import TrigoFoldRotationAngleProfile
 
 
 class FoldRotationType(Enum):

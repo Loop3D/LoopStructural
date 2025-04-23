@@ -3,35 +3,36 @@ Utils
 =====
 """
 
-from .logging import getLogger, log_to_file, log_to_console, get_levels
+import numpy as np
+
+from ._transformation import EuclideanTransformation
 from .exceptions import (
+    InterpolatorError,
     LoopException,
     LoopImportError,
-    InterpolatorError,
     LoopTypeError,
     LoopValueError,
 )
-from ._transformation import EuclideanTransformation
 from .helper import (
+    create_box,
+    create_surface,
     get_data_bounding_box,
     get_data_bounding_box_map,
 )
+from .json_encoder import LoopJSONEncoder
+from .logging import get_levels, getLogger, log_to_console, log_to_file
 
 # from ..datatypes._bounding_box import BoundingBox
 from .maths import (
+    azimuthplunge2vector,
     get_dip_vector,
     get_strike_vector,
     get_vectors,
-    strikedip2vector,
-    azimuthplunge2vector,
     normal_vector_to_strike_and_dip,
     rotate,
+    strikedip2vector,
 )
-from .helper import create_surface, create_box
-from .regions import RegionEverywhere, RegionFunction, NegativeRegion, PositiveRegion
-
-from .json_encoder import LoopJSONEncoder
-import numpy as np
+from .regions import NegativeRegion, PositiveRegion, RegionEverywhere, RegionFunction
 
 rng = np.random.default_rng()
 

@@ -9,14 +9,13 @@ __all__ = [
     "Map2LoopProcessor",
     "LoopProjectfileProcessor",
 ]
-from ..utils import getLogger
-from ..utils import LoopImportError
+from ..utils import LoopImportError, getLogger
 from .core.geological_model import GeologicalModel
 
 logger = getLogger(__name__)
 from ..modelling.input import (
-    ProcessInputData,
     Map2LoopProcessor,
+    ProcessInputData,
 )
 
 try:

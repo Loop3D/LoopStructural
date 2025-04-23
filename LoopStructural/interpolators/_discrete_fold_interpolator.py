@@ -2,11 +2,11 @@
 Piecewise linear interpolator using folds
 """
 
-from typing import Optional, Callable
+from typing import Callable, Optional
 
 import numpy as np
 
-from ..interpolators import PiecewiseLinearInterpolator, InterpolatorType
+from ..interpolators import InterpolatorType, PiecewiseLinearInterpolator
 from ..modelling.features.fold import FoldEvent
 from ..utils import getLogger, rng
 

@@ -1,8 +1,9 @@
-import numpy as np
-from ...modelling.features import BaseFeature
-from ...utils import getLogger
-from ...modelling.features import FeatureType
 from typing import Optional
+
+import numpy as np
+
+from ...modelling.features import BaseFeature, FeatureType
+from ...utils import getLogger
 
 logger = getLogger(__name__)
 

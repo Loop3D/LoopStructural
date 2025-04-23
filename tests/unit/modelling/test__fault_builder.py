@@ -1,9 +1,10 @@
 import numpy as np
 import pandas as pd
 import pytest
-from LoopStructural.modelling.features.builders._fault_builder import FaultBuilder
-from LoopStructural.datatypes import BoundingBox
+
 from LoopStructural import GeologicalModel
+from LoopStructural.datatypes import BoundingBox
+from LoopStructural.modelling.features.builders._fault_builder import FaultBuilder
 
 
 def test_fault_builder_update_geometry(interpolatortype):

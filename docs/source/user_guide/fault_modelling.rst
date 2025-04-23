@@ -76,4 +76,3 @@ Before interpolating a geological feature the associated faults, stored in the :
 The geological feature can be built using the restored data. 
 When the feature is evaluated, the locations being evaluated are first past through the list of faults using the :meth:`LoopStructural.modelling.features.BaseFeature._apply_faults`.
 The `apply_faults` method should be called whenever :meth:`LoopStructural.modelling.features.BaseFeature.evaluate_value` or :meth:`LoopStructural.modelling.features.BaseFeature.evaluate_gradient` are overriden.
-

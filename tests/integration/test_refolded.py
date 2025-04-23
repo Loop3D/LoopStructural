@@ -1,6 +1,6 @@
 from LoopStructural import GeologicalModel
-from LoopStructural.modelling.features import StructuralFrame
 from LoopStructural.datasets import load_laurent2016
+from LoopStructural.modelling.features import StructuralFrame
 
 
 def average_axis():

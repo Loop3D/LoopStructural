@@ -1,5 +1,6 @@
-from LoopStructural.datatypes import BoundingBox
 import numpy as np
+
+from LoopStructural.datatypes import BoundingBox
 
 
 def test_create_bounding_box():

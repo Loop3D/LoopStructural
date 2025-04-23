@@ -5,28 +5,22 @@ Feature builder
 import numpy as np
 import pandas as pd
 
-from ....utils import getLogger
-
-
-from ....interpolators import GeologicalInterpolator
-from ....utils.helper import (
-    xyz_names,
-    val_name,
-    normal_vec_names,
-    weight_name,
-    gradient_vec_names,
-    tangent_vec_names,
-    interface_name,
-    inequality_name,
-    pairs_name,
-)
+from ....interpolators import DiscreteInterpolator, GeologicalInterpolator, InterpolatorFactory
 from ....modelling.features import GeologicalFeature
 from ....modelling.features.builders import BaseBuilder
+from ....utils import getLogger
 from ....utils.helper import (
     get_data_bounding_box_map as get_data_bounding_box,
+    gradient_vec_names,
+    inequality_name,
+    interface_name,
+    normal_vec_names,
+    pairs_name,
+    tangent_vec_names,
+    val_name,
+    weight_name,
+    xyz_names,
 )
-from ....interpolators import DiscreteInterpolator
-from ....interpolators import InterpolatorFactory
 
 logger = getLogger(__name__)
 
@@ -59,7 +53,7 @@ class GeologicalFeatureBuilder(BaseBuilder):
             nelements=nelements,
             buffer=kwargs.get("buffer", 0.2),
         )
-        
+
         if not issubclass(type(interpolator), GeologicalInterpolator):
             raise TypeError(
                 "interpolator is {} and must be a GeologicalInterpolator".format(type(interpolator))
@@ -86,7 +80,15 @@ class GeologicalFeatureBuilder(BaseBuilder):
         self._orthogonal_features = {}
         self._equality_constraints = {}
         # add default parameters
-        self.update_build_arguments({'cpw':1.0,'npw':1.0,'regularisation':1.0,'nelements':self.interpolator.n_elements})
+        self.update_build_arguments(
+            {
+                'cpw': 1.0,
+                'npw': 1.0,
+                'regularisation': 1.0,
+                'nelements': self.interpolator.n_elements,
+            }
+        )
+
     def set_not_up_to_date(self, caller):
         logger.info(
             f"Setting {self.name} to not up to date from an instance of {caller.__class__.__name__}"
@@ -475,7 +477,8 @@ class GeologicalFeatureBuilder(BaseBuilder):
             ]
             self.interpolator.support.origin = origin
             self.interpolator.support.maximum = maximum
-            self.update_build_arguments({'nelements':self.interpolator.n_elements})
+            self.update_build_arguments({'nelements': self.interpolator.n_elements})
+
     def build(self, data_region=None, **kwargs):
         """
         Runs the interpolation and builds the geological feature
@@ -504,7 +507,9 @@ class GeologicalFeatureBuilder(BaseBuilder):
             logger.info(f'Kwargs has {kwargs["nelements"]} elements')
             if self.interpolator.n_elements != kwargs['nelements']:
                 logger.info('Setting nelements to {} for {}'.format(kwargs['nelements'], self.name))
-                self.build_arguments['nelements'] = self.interpolator.set_nelements(kwargs['nelements'])
+                self.build_arguments['nelements'] = self.interpolator.set_nelements(
+                    kwargs['nelements']
+                )
                 logger.info(f'Interpolator nelements {self.interpolator.n_elements}')
                 self._up_to_date = False
         if domain:

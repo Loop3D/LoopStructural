@@ -56,6 +56,7 @@ This tutorial will demonstrate how to setup a basic geological model for using w
 # add some noise to make it interesting!
 #
 import numpy as np
+
 from LoopStructural.utils import rng
 
 extent = np.zeros((3, 2))

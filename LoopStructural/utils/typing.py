@@ -1,5 +1,5 @@
-from typing import TypeVar, Union, List
 import numbers
+from typing import List, TypeVar, Union
 
 T = TypeVar("T")
 Array = Union[List[T]]

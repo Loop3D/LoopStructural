@@ -3,14 +3,15 @@ Routines to export geological model data to file in a variety of formats
 """
 
 import os
-from pyevtk.hl import unstructuredGridToVTK, pointsToVTK
-from pyevtk.vtk import VtkTriangle
+
 import numpy as np
+from pyevtk.hl import pointsToVTK, unstructuredGridToVTK
+from pyevtk.vtk import VtkTriangle
 from skimage.measure import marching_cubes
 
-from LoopStructural.utils.helper import create_box
-from LoopStructural.export.file_formats import FileFormat
 from LoopStructural.datatypes import Surface
+from LoopStructural.export.file_formats import FileFormat
+from LoopStructural.utils.helper import create_box
 
 from ..utils import getLogger
 

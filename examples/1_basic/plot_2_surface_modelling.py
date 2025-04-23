@@ -35,12 +35,11 @@ Visualization of the scalar field.
 # Import the required objects from LoopStructural for visualisation and
 # model building
 
-from LoopStructural import GeologicalModel
-from LoopStructural.visualisation import Loop3DView
-from LoopStructural.datasets import load_claudius  # demo data
-
 import numpy as np
 
+from LoopStructural import GeologicalModel
+from LoopStructural.datasets import load_claudius  # demo data
+from LoopStructural.visualisation import Loop3DView
 
 ######################################################################
 # The data for this example can be imported from the example datasets

@@ -18,4 +18,3 @@ Windows using conda
         This is best done using anaconda 
 
      
-

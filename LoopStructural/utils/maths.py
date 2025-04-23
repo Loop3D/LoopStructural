@@ -1,7 +1,9 @@
-from LoopStructural.utils.typing import NumericInput
-import numpy as np
 import numbers
 from typing import Tuple
+
+import numpy as np
+
+from LoopStructural.utils.typing import NumericInput
 
 
 def strikedip2vector(strike: NumericInput, dip: NumericInput) -> np.ndarray:

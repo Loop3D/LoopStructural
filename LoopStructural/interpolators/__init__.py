@@ -54,31 +54,29 @@ interpolator_string_map = {
     "DFI": InterpolatorType.DISCRETE_FOLD,
     'surfe': InterpolatorType.SURFE,
 }
-from ..interpolators._geological_interpolator import GeologicalInterpolator
-from ..interpolators._discrete_interpolator import DiscreteInterpolator
-from ..interpolators.supports import (
-    TetMesh,
-    StructuredGrid,
-    UnStructuredTetMesh,
-    P1Unstructured2d,
-    P2Unstructured2d,
-    StructuredGrid2D,
-    P2UnstructuredTetMesh,
-    SupportType,
-)
-
-
-from ..interpolators._finite_difference_interpolator import (
-    FiniteDifferenceInterpolator,
-)
-from ..interpolators._p1interpolator import (
-    P1Interpolator as PiecewiseLinearInterpolator,
-)
 from ..interpolators._discrete_fold_interpolator import (
     DiscreteFoldInterpolator,
 )
+from ..interpolators._discrete_interpolator import DiscreteInterpolator
+from ..interpolators._finite_difference_interpolator import (
+    FiniteDifferenceInterpolator,
+)
+from ..interpolators._geological_interpolator import GeologicalInterpolator
+from ..interpolators._p1interpolator import (
+    P1Interpolator,
+    P1Interpolator as PiecewiseLinearInterpolator,
+)
 from ..interpolators._p2interpolator import P2Interpolator
-from ..interpolators._p1interpolator import P1Interpolator
+from ..interpolators.supports import (
+    P1Unstructured2d,
+    P2Unstructured2d,
+    P2UnstructuredTetMesh,
+    StructuredGrid,
+    StructuredGrid2D,
+    SupportType,
+    TetMesh,
+    UnStructuredTetMesh,
+)
 
 try:
     from ..interpolators._surfe_wrapper import SurfeRBFInterpolator
@@ -113,7 +111,7 @@ support_interpolator_map = {
     },
 }
 
-from ._interpolator_factory import InterpolatorFactory
 from ._interpolator_builder import InterpolatorBuilder
+from ._interpolator_factory import InterpolatorFactory
 
 # from ._api import LoopInterpolator

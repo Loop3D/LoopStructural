@@ -4,12 +4,13 @@ Cartesian grid for fold interpolator
 """
 
 import logging
+from typing import Dict, Tuple
 
 import numpy as np
+
 from . import SupportType
-from ._base_support import BaseSupport
-from typing import Dict, Tuple
 from .._operator import Operator
+from ._base_support import BaseSupport
 
 logger = logging.getLogger(__name__)
 

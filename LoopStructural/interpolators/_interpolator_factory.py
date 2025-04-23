@@ -1,13 +1,16 @@
 from typing import Optional, Union
-from .supports import SupportFactory
-from . import (
-    interpolator_map,
-    InterpolatorType,
-    support_interpolator_map,
-    interpolator_string_map,
-)
-from LoopStructural.datatypes import BoundingBox
+
 import numpy as np
+
+from LoopStructural.datatypes import BoundingBox
+
+from . import (
+    InterpolatorType,
+    interpolator_map,
+    interpolator_string_map,
+    support_interpolator_map,
+)
+from .supports import SupportFactory
 
 
 class InterpolatorFactory:

@@ -3,12 +3,13 @@ FiniteDifference interpolator
 """
 
 import numpy as np
+from scipy.spatial import KDTree
 
+from LoopStructural.utils import getLogger
+
+from ..interpolators import InterpolatorType
 from ..utils import get_vectors
 from ._discrete_interpolator import DiscreteInterpolator
-from ..interpolators import InterpolatorType
-from scipy.spatial import KDTree
-from LoopStructural.utils import getLogger
 
 logger = getLogger(__name__)
 

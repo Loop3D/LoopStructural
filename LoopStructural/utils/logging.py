@@ -1,6 +1,7 @@
 import logging
-import LoopStructural
 import os
+
+import LoopStructural
 
 
 def get_levels():

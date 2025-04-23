@@ -18,12 +18,12 @@ To use incorporate faults into the geological model."""
 # ~~~~~~~
 
 
-from LoopStructural.modelling import ProcessInputData
-from LoopStructural import GeologicalModel
-from LoopStructural.visualisation import Loop3DView
-from LoopStructural.datasets import load_geological_map_data
-
 import matplotlib.pyplot as plt
+
+from LoopStructural import GeologicalModel
+from LoopStructural.datasets import load_geological_map_data
+from LoopStructural.modelling import ProcessInputData
+from LoopStructural.visualisation import Loop3DView
 
 ##############################
 # Read stratigraphy from csv

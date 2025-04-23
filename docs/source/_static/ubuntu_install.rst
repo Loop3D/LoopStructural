@@ -62,5 +62,3 @@ Linux
 
     If you want to use a jupyter notebook then you can launch a server by running :code:`make notebook`, alternatively you can
     run :code:`make notebookbuild` if you want to build the library before launching the server.
-
-

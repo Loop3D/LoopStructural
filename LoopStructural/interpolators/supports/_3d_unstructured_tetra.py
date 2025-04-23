@@ -4,13 +4,12 @@ Tetmesh based on cartesian grid for piecewise linear interpolation
 
 from ast import Tuple
 
-
 import numpy as np
-from scipy.sparse import csr_matrix, coo_matrix, tril
+from scipy.sparse import coo_matrix, csr_matrix, tril
 
-from . import StructuredGrid
 from LoopStructural.utils import getLogger
-from . import SupportType
+
+from . import StructuredGrid, SupportType
 from ._base_support import BaseSupport
 
 logger = getLogger(__name__)

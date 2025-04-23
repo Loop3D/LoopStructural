@@ -1,6 +1,8 @@
-from LoopStructural.interpolators.supports import support_map, SupportType
-import numpy as np
 from typing import Optional
+
+import numpy as np
+
+from LoopStructural.interpolators.supports import SupportType, support_map
 
 
 class SupportFactory:

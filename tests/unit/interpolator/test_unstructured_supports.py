@@ -1,7 +1,9 @@
+from os.path import dirname
+
 import numpy as np
+
 from LoopStructural.interpolators import UnStructuredTetMesh
 from LoopStructural.utils import rng
-from os.path import dirname
 
 file_path = dirname(__file__)
 

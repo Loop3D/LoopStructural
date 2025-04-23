@@ -1,7 +1,8 @@
 from __future__ import annotations
 
-from abc import abstractmethod, ABCMeta
-from typing import Optional, List
+from abc import ABCMeta, abstractmethod
+from typing import List, Optional
+
 import numpy as np
 
 from ....utils import getLogger

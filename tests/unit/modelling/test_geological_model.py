@@ -1,6 +1,7 @@
+import numpy as np
+
 from LoopStructural import GeologicalModel
 from LoopStructural.datasets import load_claudius
-import numpy as np
 
 
 def test_create_geological_model():

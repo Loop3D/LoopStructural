@@ -6,6 +6,3 @@ setuptools
 pandas
 pyevtk
 dill
-
-
-

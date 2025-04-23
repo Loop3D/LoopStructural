@@ -1,7 +1,9 @@
 from dataclasses import dataclass, field
-from typing import Optional, Union
-import numpy as np
 import io
+from typing import Optional, Union
+
+import numpy as np
+
 from LoopStructural.utils import getLogger
 
 logger = getLogger(__name__)

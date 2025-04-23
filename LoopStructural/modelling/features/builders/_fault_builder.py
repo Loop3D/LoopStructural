@@ -1,13 +1,15 @@
 from typing import Union
 
-from LoopStructural.utils.maths import rotation
-from ._structural_frame_builder import StructuralFrameBuilder
-from .. import AnalyticalGeologicalFeature
-from LoopStructural.utils import get_vectors
 import numpy as np
 import pandas as pd
-from ....utils import getLogger
+
+from LoopStructural.utils import get_vectors
+from LoopStructural.utils.maths import rotation
+
+from .. import AnalyticalGeologicalFeature
 from ....datatypes import BoundingBox
+from ....utils import getLogger
+from ._structural_frame_builder import StructuralFrameBuilder
 
 logger = getLogger(__name__)
 
@@ -36,9 +38,9 @@ class FaultBuilder(StructuralFrameBuilder):
             the maximum area around the model domain that a fault is modelled. For high displacement faults this
             may need to be large, smaller values will be result in fewer degrees of freedom = quicker interpolation
         """
-        from LoopStructural.modelling.features.fault import (
+        from LoopStructural.modelling.features.fault import (  # defer import until needed
             FaultSegment,
-        )  # defer import until needed
+        )
 
         StructuralFrameBuilder.__init__(
             self,
@@ -215,9 +217,9 @@ class FaultBuilder(StructuralFrameBuilder):
                 fault_slip_vector = dip_vector[:, 0]
                 if fault_pitch is not None:
                     print('using pitch')
-                    rotm = rotation(fault_normal_vector[None,:],[fault_pitch])
-                    print(rotm.shape,fault_slip_vector.shape)
-                    fault_slip_vector = np.einsum("ijk,k->ij", rotm, fault_slip_vector)[0,:]
+                    rotm = rotation(fault_normal_vector[None, :], [fault_pitch])
+                    print(rotm.shape, fault_slip_vector.shape)
+                    fault_slip_vector = np.einsum("ijk,k->ij", rotm, fault_slip_vector)[0, :]
                 logger.info(f"Estimated fault slip vector: {fault_slip_vector}")
             else:
                 fault_slip_vector = fault_slip_data.mean(axis=0).to_numpy()

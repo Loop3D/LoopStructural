@@ -1,8 +1,12 @@
 import cython
 import numpy as np
 import numpy.linalg as la
+
 cimport numpy as np
+
 from math import *
+
+
 @cython.boundscheck(False)
 @cython.wraparound(False)
 #cython: language_level=3

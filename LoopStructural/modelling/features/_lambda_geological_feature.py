@@ -2,11 +2,12 @@
 Geological features
 """
 
-from ...modelling.features import BaseFeature
-from ...utils import getLogger
-from ...modelling.features import FeatureType
-import numpy as np
 from typing import Callable, Optional
+
+import numpy as np
+
+from ...modelling.features import BaseFeature, FeatureType
+from ...utils import getLogger
 
 logger = getLogger(__name__)
 

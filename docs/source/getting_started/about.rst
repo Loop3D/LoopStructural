@@ -26,4 +26,3 @@ Grose, L., Laurent, G., Aillères, L., Armit, R., Jessell, M. and Caumon, G.: St
 Hillier, M. J., Schetselaar, E. M., de Kemp, E. A. and Perron, G.: Three-Dimensional Modelling of Geological Surfaces Using Generalized Interpolation with Radial Basis Functions, Math. Geosci., 46(8), 931–953, doi:10.1007/s11004-014-9540-3, 2014.
 Laurent, G., Ailleres, L., Grose, L., Caumon, G., Jessell, M. and Armit, R.: Implicit modeling of folds and overprinting deformation, Earth Planet. Sci. Lett., 456, 26–38, doi:10.1016/j.epsl.2016.09.040, 2016.
 Mallet, J.-L.: Elements of Mathematical Sedimentary Geology: the GeoChron Model, , 1–4, doi:10.3997/9789073834811, 2014.
-

@@ -6,6 +6,7 @@
 
 import numpy as np
 import pandas as pd
+
 import LoopStructural as LS
 
 # Define a dataset for a fault
@@ -77,8 +78,8 @@ model['fault'].faultfunction.gy.plot()
 # We will modify this profile so that the hanging wall is displaced by a constant value
 
 from LoopStructural.modelling.features.fault._fault_function import (
-    FaultDisplacement,
     CubicFunction,
+    FaultDisplacement,
     Ones,
 )
 

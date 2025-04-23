@@ -1,7 +1,6 @@
 import numpy as np
 
 from ....modelling.features._structural_frame import StructuralFrame
-
 from ....utils import getLogger
 
 logger = getLogger(__name__)

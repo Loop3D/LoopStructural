@@ -1,13 +1,10 @@
 import numpy as np
 import pandas as pd
 
-from ...utils import getLogger
-from .intrusion_feature import IntrusionFeature
-
-
+from ...utils import getLogger, rng
 from ..features.builders import BaseBuilder
-from ...utils import rng
 from .geometric_scaling_functions import *
+from .intrusion_feature import IntrusionFeature
 
 logger = getLogger(__name__)
 

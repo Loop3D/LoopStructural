@@ -59,4 +59,3 @@ Constrains a vector to be orthogonal to the scalar field by adding the following
 
 This constraint does not control the vaue of the scalar field and is quite weak. 
 It is not recommended for use, however it could be used for integrating form lines, instead of using interface constraints.
-

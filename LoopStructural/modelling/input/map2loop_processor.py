@@ -1,9 +1,9 @@
-from .process_data import ProcessInputData
+import networkx
 import numpy as np
 import pandas as pd
-import networkx
 
 from ...utils import getLogger
+from .process_data import ProcessInputData
 
 logger = getLogger(__name__)
 

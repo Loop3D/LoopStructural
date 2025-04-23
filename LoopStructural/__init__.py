@@ -8,8 +8,9 @@ import logging
 from logging.config import dictConfig
 
 __all__ = ["GeologicalModel"]
-import tempfile
 from pathlib import Path
+import tempfile
+
 from .version import __version__
 
 experimental = False
@@ -18,11 +19,11 @@ formatter = logging.Formatter("%(levelname)s: %(asctime)s: %(filename)s:%(lineno
 ch.setFormatter(formatter)
 ch.setLevel(logging.WARNING)
 loggers = {}
-from .modelling.core.geological_model import GeologicalModel
-from .interpolators._api import LoopInterpolator
-from .interpolators import InterpolatorBuilder
 from .datatypes import BoundingBox
-from .utils import log_to_console, log_to_file, getLogger, rng, get_levels
+from .interpolators import InterpolatorBuilder
+from .interpolators._api import LoopInterpolator
+from .modelling.core.geological_model import GeologicalModel
+from .utils import get_levels, getLogger, log_to_console, log_to_file, rng
 
 logger = getLogger(__name__)
 logger.info("Imported LoopStructural")

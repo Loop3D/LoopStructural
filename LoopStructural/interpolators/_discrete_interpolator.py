@@ -3,14 +3,13 @@ Discrete interpolator base for least squares
 """
 
 from abc import abstractmethod
-from typing import Callable, Optional, Union
 import logging
+from typing import Callable, Optional, Union
 
 import numpy as np
 from scipy import sparse  # import sparse.coo_matrix, sparse.bmat, sparse.eye
-from ..interpolators import InterpolatorType
 
-from ..interpolators import GeologicalInterpolator
+from ..interpolators import GeologicalInterpolator, InterpolatorType
 from ..utils import getLogger
 
 logger = getLogger(__name__)

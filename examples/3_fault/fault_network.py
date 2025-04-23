@@ -8,14 +8,15 @@ import LoopStructural
 
 LoopStructural.__version__
 
-from LoopStructural import GeologicalModel
-from LoopStructural.modelling import ProcessInputData
-from LoopStructural.visualisation import Loop3DView
-from LoopStructural.datasets import load_fault_trace
-from LoopStructural.utils import rng
-import pandas as pd
 import matplotlib.pyplot as plt
 import numpy as np
+import pandas as pd
+
+from LoopStructural import GeologicalModel
+from LoopStructural.datasets import load_fault_trace
+from LoopStructural.modelling import ProcessInputData
+from LoopStructural.utils import rng
+from LoopStructural.visualisation import Loop3DView
 
 ##############################
 # Read shapefile

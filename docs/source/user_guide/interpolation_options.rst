@@ -278,4 +278,3 @@ Additional parameters can be specified to the interpolator including:
       * - anisotropy
         - boolean, whether to use global anisotropy
       
-

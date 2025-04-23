@@ -9,7 +9,6 @@ from LoopStructural import GeologicalModel
 from LoopStructural.datasets import load_claudius
 from LoopStructural.visualisation import Loop3DView
 
-
 data, bb = load_claudius()
 data = data.reset_index()
 

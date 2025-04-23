@@ -1,6 +1,7 @@
 from abc import ABCMeta, abstractmethod
-import numpy as np
 from typing import Tuple
+
+import numpy as np
 
 
 class BaseSupport(metaclass=ABCMeta):

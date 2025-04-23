@@ -1,7 +1,7 @@
-from ._3d_unstructured_tetra import UnStructuredTetMesh
-
 import numpy as np
+
 from . import SupportType
+from ._3d_unstructured_tetra import UnStructuredTetMesh
 
 
 class P2UnstructuredTetMesh(UnStructuredTetMesh):

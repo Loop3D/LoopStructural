@@ -3,15 +3,15 @@ Cartesian grid for fold interpolator
 
 """
 
+from typing import Dict, Tuple
+
 import numpy as np
 
 from LoopStructural.interpolators._operator import Operator
-
-from ._3d_base_structured import BaseStructuredSupport
-from typing import Dict, Tuple
-from . import SupportType
-
 from LoopStructural.utils import getLogger
+
+from . import SupportType
+from ._3d_base_structured import BaseStructuredSupport
 
 logger = getLogger(__name__)
 

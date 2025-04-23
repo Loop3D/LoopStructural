@@ -1,6 +1,7 @@
 # Geometrical conceptual models for lateral and vertical extent of intrusions
 import numpy as np
 import pandas as pd
+
 from ...utils import getLogger
 
 logger = getLogger(__name__)

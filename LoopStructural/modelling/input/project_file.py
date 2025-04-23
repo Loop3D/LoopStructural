@@ -5,9 +5,10 @@ try:
 except ImportError:
     raise LoopImportError("LoopProjectFile cannot be imported")
 
-from .process_data import ProcessInputData
 from matplotlib.colors import to_hex
+
 from ...utils import getLogger
+from .process_data import ProcessInputData
 
 logger = getLogger(__name__)
 

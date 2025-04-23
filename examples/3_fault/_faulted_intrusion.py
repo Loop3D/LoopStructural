@@ -4,11 +4,12 @@
 
 """
 
-from LoopStructural import GeologicalModel
-from LoopStructural.visualisation import Loop3DView
-from LoopStructural.datasets import load_intrusion
-import numpy as np
 import matplotlib.pyplot as plt
+import numpy as np
+
+from LoopStructural import GeologicalModel
+from LoopStructural.datasets import load_intrusion
+from LoopStructural.visualisation import Loop3DView
 
 data, bb = load_intrusion()
 

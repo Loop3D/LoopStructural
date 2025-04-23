@@ -1,5 +1,6 @@
-from ....modelling.features import BaseFeature, StructuralFrame
 from typing import Optional
+
+from ....modelling.features import BaseFeature, StructuralFrame
 from ....utils import getLogger
 
 logger = getLogger(__name__)

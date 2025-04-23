@@ -1,10 +1,9 @@
+from typing import Union
+
+from ...datatypes import BoundingBox
 from ...modelling.features.builders import StructuralFrameBuilder
 from ...modelling.features.fault import FaultSegment
 from ...utils import getLogger, rng
-from ...datatypes import BoundingBox
-
-from typing import Union
-
 
 logger = getLogger(__name__)
 

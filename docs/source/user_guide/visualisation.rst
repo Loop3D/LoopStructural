@@ -129,7 +129,3 @@ The LambdaGeologicalFeature is a class allowing for a function describing the va
 The function passed to the LambdaGeologicalFeature can be as simple or complicated as required. 
 It will be evaluated for the locations within the model that the visualisation requires, usually between the origin and maximum of the geoloical model.
 By default the min and max values are 0, however these can be overwritten by setting the attribute min and max to the required values.
-
-
-
-

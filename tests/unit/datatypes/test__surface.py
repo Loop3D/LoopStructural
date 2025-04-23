@@ -1,5 +1,6 @@
 import numpy as np
 import pytest
+
 from LoopStructural.datatypes._surface import Surface
 
 

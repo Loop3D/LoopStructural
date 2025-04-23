@@ -240,5 +240,3 @@ Windows using linux subsystem
         jupyter-notebook --no-browser
 
     You can then navigate to localhost:8888 or the port specified.
-
-

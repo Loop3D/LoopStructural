@@ -1,5 +1,7 @@
-import numpy as np
 import re
+
+import numpy as np
+
 from ..utils import getLogger
 
 logger = getLogger(__name__)

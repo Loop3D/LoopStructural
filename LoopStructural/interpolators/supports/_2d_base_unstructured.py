@@ -5,13 +5,14 @@ Tetmesh based on cartesian grid for piecewise linear interpolation
 from abc import abstractmethod
 import logging
 from typing import Tuple
+
 import numpy as np
 from scipy import sparse
 
 from . import SupportType
 from ._2d_structured_grid import StructuredGrid2D
-from ._base_support import BaseSupport
 from ._aabb import _initialise_aabb
+from ._base_support import BaseSupport
 from ._face_table import _init_face_table
 
 logger = logging.getLogger(__name__)

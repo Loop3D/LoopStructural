@@ -20,6 +20,3 @@ To build a geological model the user needs to convert their observations into th
 Automatic intepretation into a model using map2loop
 ----------------------------------------------------
  
-
-
-

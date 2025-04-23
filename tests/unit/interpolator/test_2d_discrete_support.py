@@ -1,5 +1,6 @@
-from LoopStructural.interpolators import StructuredGrid2D
 import numpy as np
+
+from LoopStructural.interpolators import StructuredGrid2D
 
 
 ## structured grid 2d tests

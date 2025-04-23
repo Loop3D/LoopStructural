@@ -140,5 +140,3 @@ constraints.
    :hidden:
 
    API
-
-

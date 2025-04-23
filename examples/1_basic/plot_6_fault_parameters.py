@@ -6,10 +6,11 @@ This tutorial will demonstrate how to add unconformities to a mode using LoopStr
 
 """
 
+import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
+
 from LoopStructural import GeologicalModel
-import matplotlib.pyplot as plt
 
 data = pd.DataFrame(
     [

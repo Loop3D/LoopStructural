@@ -1,12 +1,12 @@
-from LoopStructural.modelling.features import (
-    StructuralFrame,
-    GeologicalFeature,
-)
-from LoopStructural.datatypes import BoundingBox
-
-from LoopStructural import GeologicalModel
 import numpy as np
 import pandas as pd
+
+from LoopStructural import GeologicalModel
+from LoopStructural.datatypes import BoundingBox
+from LoopStructural.modelling.features import (
+    GeologicalFeature,
+    StructuralFrame,
+)
 
 
 def test_structural_frame():

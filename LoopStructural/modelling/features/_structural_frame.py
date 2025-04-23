@@ -2,11 +2,13 @@
 Structural frames
 """
 
-from ..features import BaseFeature, FeatureType
+from typing import List, Optional, Union
+
 import numpy as np
-from ...utils import getLogger
-from typing import Optional, List, Union
+
 from ...datatypes import ValuePoints, VectorPoints
+from ...utils import getLogger
+from ..features import BaseFeature, FeatureType
 
 logger = getLogger(__name__)
 

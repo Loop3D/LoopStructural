@@ -1,8 +1,8 @@
 try:
     from loopstructuralvisualisation import (
+        Loop2DView,
         Loop3DView,
         RotationAnglePlotter,
-        Loop2DView,
         StratigraphicColumnView,
     )
 except ImportError as e:

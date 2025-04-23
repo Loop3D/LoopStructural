@@ -1,9 +1,9 @@
-from LoopStructural import GeologicalModel
-from LoopStructural.modelling.features import GeologicalFeature
-from LoopStructural.datasets import load_noddy_single_fold
-
-import pandas as pd
 import numpy as np
+import pandas as pd
+
+from LoopStructural import GeologicalModel
+from LoopStructural.datasets import load_noddy_single_fold
+from LoopStructural.modelling.features import GeologicalFeature
 
 data, boundary_points = load_noddy_single_fold()
 data.head()

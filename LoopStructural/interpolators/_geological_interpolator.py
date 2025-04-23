@@ -3,11 +3,13 @@ Base geological interpolator
 """
 
 from abc import ABCMeta, abstractmethod
-from LoopStructural.utils.exceptions import LoopTypeError
-from ..interpolators import InterpolatorType
+from typing import Optional
+
 import numpy as np
 
-from typing import Optional
+from LoopStructural.utils.exceptions import LoopTypeError
+
+from ..interpolators import InterpolatorType
 from ..utils import getLogger
 
 logger = getLogger(__name__)

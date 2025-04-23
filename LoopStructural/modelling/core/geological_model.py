@@ -2,42 +2,36 @@
 Main entry point for creating a geological model
 """
 
-from ...utils import getLogger, log_to_file
+import pathlib
+from typing import List
 
 import numpy as np
 import pandas as pd
-from typing import List
-import pathlib
-from ...modelling.features.fault import FaultSegment
 
+from ...datatypes import BoundingBox
+from ...modelling.features import (
+    FeatureType,
+    GeologicalFeature,
+    StructuralFrame,
+    UnconformityFeature,
+)
 from ...modelling.features.builders import (
     FaultBuilder,
+    FoldedFeatureBuilder,
     GeologicalFeatureBuilder,
     StructuralFrameBuilder,
-    FoldedFeatureBuilder,
 )
-from ...modelling.features import (
-    UnconformityFeature,
-    StructuralFrame,
-    GeologicalFeature,
-    FeatureType,
-)
+from ...modelling.features.fault import FaultSegment
 from ...modelling.features.fold import (
     FoldEvent,
     FoldFrame,
 )
-
+from ...modelling.intrusions import IntrusionBuilder, IntrusionFrameBuilder
+from ...utils import getLogger, log_to_file, strikedip2vector
 from ...utils.helper import (
     all_heading,
     gradient_vec_names,
 )
-from ...utils import strikedip2vector
-from ...datatypes import BoundingBox
-
-from ...modelling.intrusions import IntrusionBuilder
-
-from ...modelling.intrusions import IntrusionFrameBuilder
-
 
 logger = getLogger(__name__)
 

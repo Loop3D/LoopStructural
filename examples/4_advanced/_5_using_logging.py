@@ -21,10 +21,9 @@ All messages except for debug are recorded to a file :code:`default-loop-structu
 Lets have a look at the logging from the Claudius model.
 """
 
-from LoopStructural import GeologicalModel
-from LoopStructural.visualisation import Loop3DView
+from LoopStructural import GeologicalModel, log_to_file
 from LoopStructural.datasets import load_claudius  # demo data
-from LoopStructural import log_to_file
+from LoopStructural.visualisation import Loop3DView
 
 ##################################################################################################
 # Specify a log file
@@ -83,9 +82,8 @@ log_to_console("info")
 
 
 from LoopStructural import GeologicalModel
-from LoopStructural.visualisation import Loop3DView
 from LoopStructural.datasets import load_claudius  # demo data
-
+from LoopStructural.visualisation import Loop3DView
 
 data, bb = load_claudius()
 model = GeologicalModel(bb[0, :], bb[1, :])

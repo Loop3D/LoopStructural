@@ -1,5 +1,7 @@
+from typing import List, Optional, Tuple
+
 import numpy as np
-from typing import List, Tuple, Optional
+
 from ....utils import getLogger
 
 logger = getLogger(__name__)

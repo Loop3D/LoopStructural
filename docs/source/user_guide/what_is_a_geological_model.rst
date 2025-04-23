@@ -190,8 +190,3 @@ We can see that the scalar field fits the value constraints and interpolates bet
 The scalar field value constraints can have a significant impact on the geometry of the implicit function, especially
 where the the geometry of the contacts outlies a structure (e.g. folded layers). Larger differences between the scalar field
 value effectively increase the magnitude of the implicit functions gradient norm. 
-
-
-
-
-
