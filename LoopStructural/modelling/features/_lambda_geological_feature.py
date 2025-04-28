@@ -18,8 +18,8 @@ class LambdaGeologicalFeature(BaseFeature):
         name: str = "unnamed_lambda",
         gradient_function: Optional[Callable[[np.ndarray], np.ndarray]] = None,
         model=None,
-        regions: list = [],
-        faults: list = [],
+        regions: Optional[list] = None,
+        faults: Optional[list] = None,
         builder=None,
     ):
         """A lambda geological feature is a wrapper for a geological
@@ -43,10 +43,11 @@ class LambdaGeologicalFeature(BaseFeature):
         builder : _type_, optional
             _description_, by default None
         """
-        BaseFeature.__init__(self, name, model, faults, regions, builder)
+        BaseFeature.__init__(self, name, model, faults if faults is not None else [], regions if regions is not None else [], builder)
         self.type = FeatureType.LAMBDA
         self.function = function
         self.gradient_function = gradient_function
+        self.regions = regions if regions is not None else []
 
     def evaluate_value(self, pos: np.ndarray, ignore_regions=False) -> np.ndarray:
         """_summary_
@@ -64,11 +65,11 @@ class LambdaGeologicalFeature(BaseFeature):
         v = np.zeros((pos.shape[0]))
         v[:] = np.nan
 
-        # mask = self._calculate_mask(pos, ignore_regions=ignore_regions)
+        mask = self._calculate_mask(pos, ignore_regions=ignore_regions)
         pos = self._apply_faults(pos)
         if self.function is not None:
             
-            v = self.function(pos)
+            v[mask] = self.function(pos[mask,:])
         return v
 
     def evaluate_gradient(self, pos: np.ndarray, ignore_regions=False) -> np.ndarray:
