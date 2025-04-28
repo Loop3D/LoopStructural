@@ -467,7 +467,7 @@ class FaultSegment(StructuralFrame):
             )
         self.abut[abutting_fault_feature.name] = abutting_region
         self.__getitem__(0).add_region(abutting_region)
-
+        return abutting_region
     def save(self, filename, scalar_field=True, slip_vector=True, surface=True):
         """
         Save the fault to a file
