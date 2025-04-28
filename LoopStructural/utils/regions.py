@@ -1,9 +1,20 @@
 import numpy as np
+from abc import ABC, abstractmethod
 
 
-class BaseRegion:
-    def __init__(self):
-        self.type = "BaseRegion"
+class BaseRegion(ABC):
+    @abstractmethod
+    def __init__(self, feature, vector=None, point=None):
+        self.feature = feature
+        self.vector = vector
+        self.point = point
+        self.name = None
+        self.parent = None
+
+    @abstractmethod
+    def __call__(self, xyz) -> np.ndarray:
+        """Evaluate the region based on the input coordinates."""
+        pass
 
 
 class RegionEverywhere(BaseRegion):
@@ -24,18 +35,18 @@ class RegionFunction(BaseRegion):
         return self.function(xyz)
 
 
-class PositiveRegion:
+class PositiveRegion(BaseRegion):
     """Helper class for evaluating whether you are in the positive  region of a scalar field.
     If its outside of the support it will interpolate the average gradient at a point on the 0 isovalue
     and calculate the distance from this. Alternatively, a point and vector can be used to save computational time
     """
 
     def __init__(self, feature, vector=None, point=None):
-        self.feature = feature
-        self.vector = vector
-        self.point = point
+        super().__init__(feature, vector, point)
+        self.name = 'PositiveRegion'
+        self.parent = feature
 
-    def __call__(self, xyz):
+    def __call__(self, xyz) -> np.ndarray:
         val = self.feature.evaluate_value(xyz)
         # find a point on/near 0 isosurface
         if self.point is None:
@@ -62,18 +73,18 @@ class PositiveRegion:
         )
 
 
-class NegativeRegion:
+class NegativeRegion(BaseRegion):
     """Helper class for evaluating whether you are in the positive  region of a scalar field.
     If its outside of the support it will interpolate the average gradient at a point on the 0 isovalue
     and calculate the distance from this. Alternatively, a point and vector can be used to save computational time
     """
 
     def __init__(self, feature, vector=None, point=None):
-        self.feature = feature
-        self.vector = vector
-        self.point = point
+        super().__init__(feature, vector, point)
+        self.name = 'NegativeRegion'
+        self.parent = feature
 
-    def __call__(self, xyz):
+    def __call__(self, xyz) -> np.ndarray:
         val = self.feature.evaluate_value(xyz)
         # find a point on/near 0 isosurface
         if self.point is None:
