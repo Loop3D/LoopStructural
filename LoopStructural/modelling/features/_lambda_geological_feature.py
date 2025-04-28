@@ -62,10 +62,13 @@ class LambdaGeologicalFeature(BaseFeature):
             _description_
         """
         v = np.zeros((pos.shape[0]))
-        if self.function is None:
-            v[:] = np.nan
-        else:
-            v[:] = self.function(pos)
+        v[:] = np.nan
+
+        # mask = self._calculate_mask(pos, ignore_regions=ignore_regions)
+        pos = self._apply_faults(pos)
+        if self.function is not None:
+            
+            v = self.function(pos)
         return v
 
     def evaluate_gradient(self, pos: np.ndarray, ignore_regions=False) -> np.ndarray:
