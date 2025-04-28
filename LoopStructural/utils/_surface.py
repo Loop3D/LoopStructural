@@ -145,7 +145,7 @@ class LoopIsosurfacer:
             values = np.zeros(verts.shape[0]) + isovalue
             # need to add both global and local origin. If the bb is a buffer the local
             # origin may not be 0
-            verts += self.bounding_box.global_origin
+            verts += self.bounding_box.global_origin+self.bounding_box.origin
             surfaces.append(
                 Surface(
                     vertices=verts,
