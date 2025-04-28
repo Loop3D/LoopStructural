@@ -151,16 +151,30 @@ class FaultBuilder(StructuralFrameBuilder):
             ["X", "Y"],
         ].to_numpy()
         if fault_normal_vector is None:
-            # Calculate fault strike using least squares fit
-            X = fault_trace[:, 0].reshape(-1, 1)
-            Y = fault_trace[:, 1]
-            # Fit line Y = mX + b
-            A = np.hstack([X, np.ones_like(X)])
-            m, _ = np.linalg.lstsq(A, Y, rcond=None)[0]
-            # Convert slope to strike vector
-            strike_vector = np.array([1, m, 0])
-            strike_vector /= np.linalg.norm(strike_vector)
-            fault_normal_vector = np.cross(strike_vector, [0, 0, 1])
+            if fault_frame_data.loc[
+            np.logical_and(fault_frame_data["coord"] == 0, fault_frame_data["nx"].notna())].shape[0]>0:
+                fault_normal_vector = fault_frame_data.loc[
+                    np.logical_and(fault_frame_data["coord"] == 0, fault_frame_data["nx"].notna()),
+                    ["nx", "ny", "nz"],
+                ].to_numpy().mean(axis=0)
+
+            else:
+
+                # Calculate fault strike using eigenvectors
+                pts = fault_trace - fault_trace.mean(axis=0)
+                # Calculate covariance matrix
+                cov_matrix = pts.T @ pts
+                # Get eigenvectors and eigenvalues
+                eigenvalues, eigenvectors = np.linalg.eigh(cov_matrix)
+                # Use eigenvector with largest eigenvalue as strike direction
+                strike_vector = eigenvectors[:, np.argmax(eigenvalues)]
+                strike_vector = np.append(strike_vector, 0)  # Add z component
+                strike_vector /= np.linalg.norm(strike_vector)
+
+                fault_normal_vector = np.cross(strike_vector, [0, 0, 1])
+                # Rotate the fault normal vector according to the fault dip
+                rotation_matrix = rotation(strike_vector[None, :], np.array([90 - fault_dip]))
+                fault_normal_vector = np.einsum("ijk,ik->ij", rotation_matrix, fault_normal_vector[None, :])[0]
 
         if not isinstance(fault_normal_vector, np.ndarray):
             fault_normal_vector = np.array(fault_normal_vector)
@@ -170,10 +184,18 @@ class FaultBuilder(StructuralFrameBuilder):
             fault_slip_vector = np.einsum("ijk,ik->ij", rotation_matrix, fault_normal_vector[None, :])[0]
 
         if fault_slip_vector is None:
-            fault_slip_vector = np.cross(fault_normal_vector, [1., 0., 0.])
-            if np.linalg.norm(fault_slip_vector) == 0:
-                fault_slip_vector = np.cross(fault_normal_vector, [0., 1., 0.])
-            fault_slip_vector /= np.linalg.norm(fault_slip_vector)
+            if fault_frame_data.loc[
+            np.logical_and(fault_frame_data["coord"] == 1, fault_frame_data["nx"].notna())].shape[0]>0:
+                fault_slip_vector = fault_frame_data.loc[
+                    np.logical_and(fault_frame_data["coord"] == 1, fault_frame_data["nx"].notna()),
+                    ["nx", "ny", "nz"],
+                ].to_numpy().mean(axis=0)
+
+            else:
+                fault_slip_vector = np.cross(fault_normal_vector, [1., 0., 0.])
+                if np.linalg.norm(fault_slip_vector) == 0:
+                    fault_slip_vector = np.cross(fault_normal_vector, [0., 1., 0.])
+                fault_slip_vector /= np.linalg.norm(fault_slip_vector)
         if fault_center is None:
             fault_trace = fault_frame_data.loc[
                 np.logical_and(fault_frame_data["coord"] == 0, fault_frame_data["val"] == 0),
