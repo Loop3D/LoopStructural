@@ -387,7 +387,7 @@ class BoundingBox:
 
         if not local:
             coordinates = [
-                np.linspace(self.global_origin[i], self.global_maximum[i], nsteps[i])
+                np.linspace(self.global_origin[i]+self.origin[i], self.global_maximum[i], nsteps[i])
                 for i in range(self.dimensions)
             ]
         coordinate_grid = np.meshgrid(*coordinates, indexing="ij")
