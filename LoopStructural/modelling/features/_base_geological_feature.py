@@ -229,7 +229,7 @@ class BaseFeature(metaclass=ABCMeta):
         """
         Evaluate the gradient of the feature at a given position.
         """
-
+    
         raise NotImplementedError
 
     def min(self):
