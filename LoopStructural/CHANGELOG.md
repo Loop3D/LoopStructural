@@ -1,5 +1,14 @@
 # Changelog
 
+## [1.6.13](https://github.com/Loop3D/LoopStructural/compare/v1.6.12...v1.6.13) (2025-04-29)
+
+
+### Bug Fixes
+
+* add faulted vector calc to lambda feature ([300b575](https://github.com/Loop3D/LoopStructural/commit/300b575181f727b419c6d4e5bf755d4c909a101f))
+* remove default initialisation with mutable. ([bda68a7](https://github.com/Loop3D/LoopStructural/commit/bda68a71d22db2fa921f1534e7491dd6995a59a5))
+* use fault normals/slip vectors from data if available. ([7264222](https://github.com/Loop3D/LoopStructural/commit/726422220c2e6c0aba49bf0ad7c57b8713e7f585))
+
 ## [1.6.12](https://github.com/Loop3D/LoopStructural/compare/v1.6.11...v1.6.12) (2025-04-16)
 
 
