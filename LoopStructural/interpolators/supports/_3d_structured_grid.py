@@ -437,7 +437,9 @@ class StructuredGrid(BaseStructuredSupport):
         T[:, 2, 6] = (1 - local_coords[:, 0]) * local_coords[:, 1]
         T[:, 2, 3] = -local_coords[:, 0] * local_coords[:, 1]
         T[:, 2, 7] = local_coords[:, 0] * local_coords[:, 1]
-
+        T[:, 0, :] /= self.step_vector[None, 0]
+        T[:, 1, :] /= self.step_vector[None, 1]
+        T[:, 2, :] /= self.step_vector[None, 2]
         return vertices, T, elements, inside
 
     def get_element_for_location(self, pos: np.ndarray):
