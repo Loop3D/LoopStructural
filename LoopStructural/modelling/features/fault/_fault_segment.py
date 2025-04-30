@@ -7,7 +7,6 @@ from ....modelling.features.fault._fault_function import BaseFault, BaseFault3D,
 from ....utils import getLogger, NegativeRegion, PositiveRegion
 from ....modelling.features import StructuralFrame
 
-from concurrent.futures import ThreadPoolExecutor
 import numpy as np
 
 logger = getLogger(__name__)
@@ -299,7 +298,7 @@ class FaultSegment(StructuralFrame):
         if self.faultfunction is not None:
             d[mask] = self.faultfunction(gx[mask] + self.fault_offset, gy[mask], gz[mask])
         return d * self.displacement
-        
+
     def apply_to_points(self, points, reverse=False):
         """
         Unfault the array of points
@@ -333,13 +332,13 @@ class FaultSegment(StructuralFrame):
 
         d *= self.displacement
         if reverse:
-            d *= -1.0  
+            d *= -1.0
         # calculate the fault frame for the evaluation points
         for _i in range(steps):
             # calculate the fault slip vector scaled by displacement and displacment function
             g = self.evaluate_gradient(newp[mask, :])
             # apply to points 1/steps of the fault slip vector
-            g *= (1.0 / steps)           
+            g *= 1.0 / steps
             newp[mask, :] += g
 
         return newp
