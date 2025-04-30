@@ -285,20 +285,9 @@ class FaultSegment(StructuralFrame):
         gx = None
         gy = None
         gz = None
-        if use_threads:
-            with ThreadPoolExecutor(max_workers=8) as executor:
-                # all of these operations should be independent so
-                # just run as different threads
-                gx_future = executor.submit(self.__getitem__(0).evaluate_value, newp)
-                gy_future = executor.submit(self.__getitem__(1).evaluate_value, newp)
-                gz_future = executor.submit(self.__getitem__(2).evaluate_value, newp)
-                gx = gx_future.result()
-                gy = gy_future.result()
-                gz = gz_future.result()
-        else:
-            gx = self.__getitem__(0).evaluate_value(newp)
-            gy = self.__getitem__(1).evaluate_value(newp)
-            gz = self.__getitem__(2).evaluate_value(newp)
+        gx = self.__getitem__(0).evaluate_value(newp)
+        gy = self.__getitem__(1).evaluate_value(newp)
+        gz = self.__getitem__(2).evaluate_value(newp)
         d = np.zeros(gx.shape)
         mask = np.logical_and(~np.isnan(gx), ~np.isnan(gy))
         mask = np.logical_and(mask, ~np.isnan(gz))
@@ -309,7 +298,7 @@ class FaultSegment(StructuralFrame):
         if self.faultfunction is not None:
             d[mask] = self.faultfunction(gx[mask] + self.fault_offset, gy[mask], gz[mask])
         return d * self.displacement
-
+        
     def apply_to_points(self, points, reverse=False):
         """
         Unfault the array of points
@@ -327,23 +316,9 @@ class FaultSegment(StructuralFrame):
         newp = np.copy(points).astype(float)
         # evaluate fault function for all points
         # then define mask for only points affected by fault
-        gx = None
-        gy = None
-        gz = None
-        if use_threads:
-            with ThreadPoolExecutor(max_workers=8) as executor:
-                # all of these operations should be
-                # independent so just run as different threads
-                gx_future = executor.submit(self.__getitem__(0).evaluate_value, newp)
-                gy_future = executor.submit(self.__getitem__(1).evaluate_value, newp)
-                gz_future = executor.submit(self.__getitem__(2).evaluate_value, newp)
-                gx = gx_future.result()
-                gy = gy_future.result()
-                gz = gz_future.result()
-        else:
-            gx = self.__getitem__(0).evaluate_value(newp)
-            gy = self.__getitem__(1).evaluate_value(newp)
-            gz = self.__getitem__(2).evaluate_value(newp)
+        gx = self.__getitem__(0).evaluate_value(newp)
+        gy = self.__getitem__(1).evaluate_value(newp)
+        gz = self.__getitem__(2).evaluate_value(newp)
         d = np.zeros(gx.shape)
         mask = np.logical_and(~np.isnan(gx), ~np.isnan(gy))
         mask = np.logical_and(mask, ~np.isnan(gz))
@@ -357,57 +332,13 @@ class FaultSegment(StructuralFrame):
 
         d *= self.displacement
         if reverse:
-            d *= -1.0
+            d *= -1.0  
         # calculate the fault frame for the evaluation points
         for _i in range(steps):
-            gx = None
-            gy = None
-            gz = None
-            g = None
-            if use_threads:
-                with ThreadPoolExecutor(max_workers=8) as executor:
-                    # all of these operations should be
-                    # independent so just run as different threads
-                    gx_future = executor.submit(self.__getitem__(0).evaluate_value, newp[mask, :])
-                    g_future = executor.submit(self.__getitem__(1).evaluate_gradient, newp[mask, :])
-                    gy_future = executor.submit(self.__getitem__(1).evaluate_value, newp[mask, :])
-                    gz_future = executor.submit(self.__getitem__(2).evaluate_value, newp[mask, :])
-                    gx = gx_future.result()
-                    g = g_future.result()
-                    gy = gy_future.result()
-                    gz = gz_future.result()
-            else:
-                gx = self.__getitem__(0).evaluate_value(newp[mask, :])
-                gy = self.__getitem__(1).evaluate_value(newp[mask, :])
-                gz = self.__getitem__(2).evaluate_value(newp[mask, :])
-                g = self.__getitem__(1).evaluate_gradient(newp[mask, :], ignore_regions=True)
-            # # get the fault frame val/grad for the points
-            # determine displacement magnitude, for constant displacement
-            # hanging wall should be > 0
-            d = np.zeros(gx.shape)
-            mask2 = np.logical_and(~np.isnan(gx), ~np.isnan(gy))
-            mask2 = np.logical_and(mask2, ~np.isnan(gz))
-            d[~mask2] = 0
-            gx_mask2 = np.zeros_like(mask2, dtype=bool)
-            gx_mask2[mask2] = gx[mask2] > 0
-            # d[~np.isnan(gx)][gx[~np.isnan(gx)]>0] = 1
-            d[gx_mask2] = 1.0
-            # d[mask2][gx[mask2] < 0] = 0.
-            # d[gx < 0] = 0.
-            if self.faultfunction is not None:
-                d[mask2] = self.faultfunction(gx[mask2], gy[mask2], gz[mask2])
-            d *= self.displacement
-            # normalise when length is >0
-            g_mag = np.zeros(g.shape[0])
-            g_mag[mask2] = np.linalg.norm(g[mask2], axis=1)
-            # g_mag = np.linalg.norm(g[mask2], axis=1)
-            g[g_mag > 0.0] /= g_mag[g_mag > 0, None]
-            # multiply displacement vector by the displacement magnitude for
-            # step
-
-            g *= (1.0 / steps) * d[:, None]
-            # newp[mask, :].copy()
-            # apply displacement
+            # calculate the fault slip vector scaled by displacement and displacment function
+            g = self.evaluate_gradient(newp[mask, :])
+            # apply to points 1/steps of the fault slip vector
+            g *= (1.0 / steps)           
             newp[mask, :] += g
 
         return newp
