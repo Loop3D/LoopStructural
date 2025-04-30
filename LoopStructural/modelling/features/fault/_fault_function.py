@@ -12,7 +12,7 @@ logger = getLogger(__name__)
 def smooth_peak(x):
     v = np.zeros(x.shape)
     mask = np.logical_and(x >= -1, x <= 1)
-    v[mask] = 0.25 * x[mask] ** 2 + 0.5 * x[mask] ** 4 - 1.75 * x[mask] ** 2 + 1
+    v[mask] = x[mask] ** 4 - 2 * x[mask] ** 2 + 1
     return v
 
 class FaultProfileFunction(metaclass=ABCMeta):
