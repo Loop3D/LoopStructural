@@ -124,6 +124,7 @@ class FaultSegment(StructuralFrame):
     def fault_ellipsoid(self, **kwargs):
         try:
             import pyvista as pv
+
             if self.model is None:
                 pts = self.fault_centre[None, :]
             else:
