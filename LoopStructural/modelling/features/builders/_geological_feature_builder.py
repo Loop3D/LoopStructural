@@ -86,7 +86,7 @@ class GeologicalFeatureBuilder(BaseBuilder):
         self._orthogonal_features = {}
         self._equality_constraints = {}
         # add default parameters
-        self.update_build_arguments({'cpw':1.0,'npw':1.0,'regularisation':1.0,'nelements':self.interpolator.n_elements})
+        self.update_build_arguments({'cpw':1.0,'npw':1.0,'regularisation':.10,'nelements':self.interpolator.n_elements})
     def set_not_up_to_date(self, caller):
         logger.info(
             f"Setting {self.name} to not up to date from an instance of {caller.__class__.__name__}"
