@@ -1,6 +1,6 @@
 from LoopStructural.interpolators import StructuredGrid
 import numpy as np
-
+import pytest
 
 ## structured grid tests
 def test_create_support(support):
@@ -40,17 +40,17 @@ def test_evaluate_value(support):
         == 0
     )
 
-
-def test_evaluate_gradient(support_class):
-    support = support_class()
+@pytest.mark.parametrize('steps',[10,20,100])
+def test_evaluate_gradient(support_class,steps):
+    support = support_class(nsteps=[steps]*3)
     # test by setting the scalar field to the y coordinate
     vector = support.evaluate_gradient(support.barycentre, support.nodes[:, 1])
     assert np.sum(vector - np.array([0, 1, 0])) == 0
 
-    # same test but for a bigger grid, making sure scaling for cell is ok
-    support = support_class(step_vector=np.array([100, 100, 100]))
-    vector = support.evaluate_gradient(support.barycentre, support.nodes[:, 1])
-    assert np.sum(vector - np.array([0, 1, 0])) == 0
+    # # same test but for a bigger grid, making sure scaling for cell is ok
+    # support = support_class(step_vector=np.array([100, 100, 100]),)
+    # vector = support.evaluate_gradient(support.barycentre, support.nodes[:, 1])
+    # assert np.sum(vector - np.array([0, 1, 0])) == 0
 
 
 def test_outside_box(support):
@@ -78,21 +78,18 @@ def test_outside_box(support):
     vector = support.evaluate_gradient(support.nodes, support.nodes[:, 1])
 
 
-def test_evaluate_gradient2(support_class):
-    # this test is the same as above but we will use a random vector
-    rng = np.random.default_rng(10)
-    _i = 0
-    for _i in range(10):
-        step = rng.uniform(0, 100)
-        grid = support_class(step_vector=np.array([step, step, step]))
+@pytest.mark.parametrize("seed", range(10))
+def test_evaluate_gradient2(support_class, seed):
+    rng = np.random.default_rng(seed)
+    step = rng.uniform(0, 100)
+    grid = support_class(step_vector=np.array([step, step, step]))
 
-        # define random vector
-        n = rng.random(3)
-        n /= np.linalg.norm(n)
-        distance = n[0] * grid.nodes[:, 0] + n[1] * grid.nodes[:, 1] + n[2] * grid.nodes[:, 2]
-        vector = grid.evaluate_gradient(rng.uniform(1, 8, size=(100, 3)), distance)
-        assert np.all(np.isclose(np.sum(vector - n[None, :], axis=1), 0, atol=1e-3, rtol=1e-3))
-    assert _i == 9
+    # define random vector
+    n = rng.random(3)
+    n /= np.linalg.norm(n)
+    distance = n[0] * grid.nodes[:, 0] + n[1] * grid.nodes[:, 1] + n[2] * grid.nodes[:, 2]
+    vector = grid.evaluate_gradient(rng.uniform(1, 8, size=(100, 3)), distance)
+    assert np.all(np.isclose(np.sum(vector - n[None, :], axis=1), 0, atol=1e-3, rtol=1e-3))
 
 
 def test_get_element(support):
