@@ -456,26 +456,26 @@ class FiniteDifferenceInterpolator(DiscreteInterpolator):
 
 
 
-    def assemble_borders(self, operator, w, name='regularisation'):
-        """
-        Adds a constraint to the border of the model to force the value to be equal to the value at the border
+    # def assemble_borders(self, operator, w, name='regularisation'):
+    #     """
+    #     Adds a constraint to the border of the model to force the value to be equal to the value at the border
 
-        Parameters
-        ----------
-        operator : Operator
-            operator to use for the regularisation
-        w : double
-            weight of the regularisation
+    #     Parameters
+    #     ----------
+    #     operator : Operator
+    #         operator to use for the regularisation
+    #     w : double
+    #         weight of the regularisation
 
-        Returns
-        -------
+    #     Returns
+    #     -------
 
-        """
-        # First get the global indicies of the pairs of neighbours this should be an
-        # Nx27 array for 3d and an Nx9 array for 2d
+    #     """
+    #     # First get the global indicies of the pairs of neighbours this should be an
+    #     # Nx27 array for 3d and an Nx9 array for 2d
 
-        global_indexes = self.support.neighbour_global_indexes()
-        
+    #     global_indexes = self.support.neighbour_global_indexes()
+
 
     def assemble_inner(self, operator, w, name='regularisation'):
         """
