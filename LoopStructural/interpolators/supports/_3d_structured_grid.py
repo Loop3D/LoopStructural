@@ -437,7 +437,6 @@ class StructuredGrid(BaseStructuredSupport):
         T[:, 2, 6] = (1 - local_coords[:, 0]) * local_coords[:, 1]
         T[:, 2, 3] = -local_coords[:, 0] * local_coords[:, 1]
         T[:, 2, 7] = local_coords[:, 0] * local_coords[:, 1]
-        T /= self.step_vector[0]
 
         return vertices, T, elements, inside
 
