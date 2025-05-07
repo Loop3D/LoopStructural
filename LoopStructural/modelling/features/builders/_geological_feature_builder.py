@@ -395,7 +395,34 @@ class GeologicalFeatureBuilder(BaseBuilder):
             )
         else:
             return np.zeros((0, 7))
+    def get_inequality_constraints(self):
+        """
+        Get the inequality constraints
 
+        Returns
+        -------
+        numpy array
+        """
+        mask = np.all(~np.isnan(self.data.loc[:, inequality_name()].to_numpy(float)), axis=1)
+        if mask.shape[0] > 0:
+            return self.data.loc[mask, xyz_names() + inequality_name()].to_numpy(float)
+        else:
+            return np.zeros((0, 4))
+        
+    def get_inequality_pairs_constraints(self):
+        """
+        Get the inequality pairs constraints
+
+        Returns
+        -------
+        numpy array
+        """
+        mask = np.all(~np.isnan(self.data.loc[:, pairs_name()].to_numpy(float)), axis=1)
+        if mask.shape[0] > 0:
+            return self.data.loc[mask, xyz_names() + pairs_name()].to_numpy(float)
+        else:
+            return np.zeros((0, 4))
+        
     def get_orientation_constraints(self):
         """
         Get the orientation constraints
