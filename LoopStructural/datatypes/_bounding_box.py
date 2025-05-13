@@ -281,6 +281,7 @@ class BoundingBox:
             origin=origin,
             maximum=maximum,
             global_origin=self.global_origin,
+            nsteps=self.nsteps,
             dimensions=self.dimensions,
         )
 
