@@ -29,16 +29,16 @@ def strikedip2vector(strike: NumericInput, dip: NumericInput) -> np.ndarray:
     return vec
 
 
-def azimuthplunge2vector(
-    plunge_dir: NumericInput,
+def plungeazimuth2vector(
     plunge: NumericInput,
+    azimuth: NumericInput,
     degrees: bool = True,
 ) -> np.ndarray:
     """Convert plunge and plunge direction to a vector
 
     Parameters
     ----------
-    plunge_dir : Union[np.ndarray, list]
+    azimuth : Union[np.ndarray, list]
         array or array like of plunge direction values
     plunge : Union[np.ndarray, list]
         array or array like of plunge values
@@ -52,16 +52,16 @@ def azimuthplunge2vector(
         plunge = np.array([plunge], dtype=float)
     else:
         plunge = np.array(plunge, dtype=float)
-    if isinstance(plunge_dir, numbers.Number):
-        plunge_dir = np.array([plunge_dir], dtype=float)
+    if isinstance(azimuth, numbers.Number):
+        azimuth = np.array([azimuth], dtype=float)
     else:
-        plunge_dir = np.array(plunge_dir, dtype=float)
+        azimuth = np.array(azimuth, dtype=float)
     if degrees:
         plunge = np.deg2rad(plunge)
-        plunge_dir = np.deg2rad(plunge_dir)
+        azimuth = np.deg2rad(azimuth)
     vec = np.zeros((len(plunge), 3))
-    vec[:, 0] = np.sin(plunge_dir) * np.cos(plunge)
-    vec[:, 1] = np.cos(plunge_dir) * np.cos(plunge)
+    vec[:, 0] = np.sin(azimuth) * np.cos(plunge)
+    vec[:, 1] = np.cos(azimuth) * np.cos(plunge)
     vec[:, 2] = -np.sin(plunge)
     return vec
 
