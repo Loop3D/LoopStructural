@@ -23,6 +23,7 @@ from .maths import (
     get_strike_vector,
     get_vectors,
     strikedip2vector,
+    plungeazimuth2vector,
     azimuthplunge2vector,
     normal_vector_to_strike_and_dip,
     rotate,

@@ -28,6 +28,14 @@ def strikedip2vector(strike: NumericInput, dip: NumericInput) -> np.ndarray:
     vec /= np.linalg.norm(vec, axis=1)[:, None]
     return vec
 
+def azimuthplunge2vector(
+        plunge: NumericInput,
+        azimuth: NumericInput,
+        degrees: bool = True,
+) -> np.ndarray:
+    raise DeprecationWarning(
+        "azimuthplunge2vector is deprecated, use plungeazimuth2vector instead"
+    )
 
 def plungeazimuth2vector(
     plunge: NumericInput,
