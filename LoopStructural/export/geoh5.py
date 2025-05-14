@@ -1,10 +1,23 @@
 import geoh5py
 import geoh5py.workspace
 import numpy as np
-from LoopStructural.datatypes import ValuePoints, VectorPoints
+from LoopStructural.datatypes import ValuePoints, VectorPoints, Surface, StructuredGrid
+from typing import Union
 
+def add_surface_to_geoh5(filename:str, surface:Surface, overwrite:bool=True, groupname:str="Loop"):
+    """Add a surface to a geoh5 file.
 
-def add_surface_to_geoh5(filename, surface, overwrite=True, groupname="Loop"):
+    Parameters
+    ----------
+    filename : _type_
+        path to the geoh5 file
+    surface : Surface
+        the surface to add to the geoh5 file
+    overwrite : bool, optional
+        whether to overwrite the object, by default True
+    groupname : str, optional
+        Geoscience analyst group name, by default "Loop"
+    """
     with geoh5py.workspace.Workspace(filename) as workspace:
         group = workspace.get_entity(groupname)[0]
         if not group:
@@ -30,7 +43,19 @@ def add_surface_to_geoh5(filename, surface, overwrite=True, groupname="Loop"):
         surface.add_data(data)
 
 
-def add_points_to_geoh5(filename, point, overwrite=True, groupname="Loop"):
+def add_points_to_geoh5(filename:str, point:Union[ValuePoints, VectorPoints], overwrite:bool=True, groupname:str="Loop") -> None:
+    """Add points to a geoh5 file.
+    Parameters
+    ----------
+    filename : str
+        path to the geoh5 file
+    point : ValuePoints or VectorPoints
+        the points to add to the geoh5 file
+    overwrite : bool, optional
+        whether to overwrite the object, by default True
+    groupname : str, optional
+        Geoscience analyst group name, by default "Loop"
+    """
     with geoh5py.workspace.Workspace(filename) as workspace:
         group = workspace.get_entity(groupname)[0]
         if not group:
@@ -45,8 +70,37 @@ def add_points_to_geoh5(filename, point, overwrite=True, groupname="Loop"):
         data = {}
         if point.properties is not None:
             for k, v in point.properties.items():
+                try:
+                    v = np.array(v)
+                except ValueError:
+                    raise ValueError(
+                        f"Cannot convert {k} to numpy array. Please check the data type."
+                    )
+                if isinstance(v, np.ndarray):
+                    v = v.flatten()
+                
                 data[k] = {'association': "VERTEX", "values": v}
         if isinstance(point, VectorPoints):
+            if point.vectors is None:
+                raise ValueError("Vectors cannot be None for VectorPoints.")
+            point.vectors = np.array(point.vectors)
+            if point.vectors.shape[1] != 3:
+                raise ValueError(
+                    f"Vectors should have shape (n_points, 3), but got {point.vectors.shape}."
+                )
+            if point.vectors.shape[0] != point.locations.shape[0]:
+                raise ValueError(
+                    f"Vectors and locations should have the same number of points, but got {point.vectors.shape[0]} and {point.locations.shape[0]}."
+                )
+            
+            if isinstance(point.vectors, np.ndarray):
+                point.vectors = point.vectors.astype(np.float64)
+
+            if point.vectors.dtype != np.float64:
+                raise ValueError(
+                    f"Vectors should be of type float64, but got {point.vectors.dtype}."
+                )
+            
             data['vx'] = {'association': "VERTEX", "values": point.vectors[:, 0]}
             data['vy'] = {'association': "VERTEX", "values": point.vectors[:, 1]}
             data['vz'] = {'association': "VERTEX", "values": point.vectors[:, 2]}
@@ -62,7 +116,19 @@ def add_points_to_geoh5(filename, point, overwrite=True, groupname="Loop"):
         point.add_data(data)
 
 
-def add_structured_grid_to_geoh5(filename, structured_grid, overwrite=True, groupname="Loop"):
+def add_structured_grid_to_geoh5(filename:str, structured_grid:StructuredGrid, overwrite:bool=True, groupname:str="Loop"):
+    """Add a structured grid to a geoh5 file.
+    Parameters
+    ----------
+    filename : str
+        path to the geoh5 file
+    structured_grid : StructuredGrid
+        the structured grid to add to the geoh5 file
+    overwrite : bool, optional
+        whether to overwrite the object, by default True
+    groupname : str, optional
+        Geoscience analyst group name, by default "Loop"
+    """
     with geoh5py.workspace.Workspace(filename) as workspace:
         group = workspace.get_entity(groupname)[0]
         if not group:
