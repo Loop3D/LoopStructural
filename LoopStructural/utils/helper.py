@@ -107,30 +107,7 @@ def get_data_bounding_box(xyz, buffer):
     return bb, region
 
 
-# def azimuthplunge2vector(
-#     plunge: Union[np.ndarray, list], plunge_dir: Union[np.ndarray, list]
-# ) -> np.ndarray:
-#     """Convert plunge and plunge direction to a vector
 
-#     Parameters
-#     ----------
-#     plunge : Union[np.ndarray, list]
-#         array or array like of plunge values
-#     plunge_dir : Union[np.ndarray, list]
-#         array or array like of plunge direction values
-
-#     Returns
-#     -------
-#     np.array
-#         nx3 vector
-#     """
-#     plunge = np.deg2rad(plunge)
-#     plunge_dir = np.deg2rad(plunge_dir)
-#     vec = np.zeros(3)
-#     vec[0] = np.sin(plunge_dir) * np.cos(plunge)
-#     vec[1] = np.cos(plunge_dir) * np.cos(plunge)
-#     vec[2] = -np.sin(plunge)
-#     return vec
 
 
 def create_surface(bounding_box, nstep):
