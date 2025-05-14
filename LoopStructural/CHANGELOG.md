@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.6.14](https://github.com/Loop3D/LoopStructural/compare/v1.6.13...v1.6.14) (2025-05-14)
+
+
+### Bug Fixes
+
+* adjust fault function so that gradient is 0 at the edges ([6fdec1a](https://github.com/Loop3D/LoopStructural/commit/6fdec1a5c1bd0f0ef8a47bfcd3b2ee7623595ab1))
+* default regularisation should be 0.1 for both FDI and PLI. ([7c20b88](https://github.com/Loop3D/LoopStructural/commit/7c20b885550569217c6882dc0bd206f38c1d4f00))
+* include nsteps in bounding box initialization when creating buffer ([9f859c9](https://github.com/Loop3D/LoopStructural/commit/9f859c984c32cbf266a65a3ae9c6fc56514734a9))
+* norm constraint magnitude will be honoured by interpolator ([171f78a](https://github.com/Loop3D/LoopStructural/commit/171f78a98381be5e801ca6d4994e5e57cbc75a60))
+* rename azimuthplunge to plungeazimuth ([4605a15](https://github.com/Loop3D/LoopStructural/commit/4605a151f27c3d8071e9e8e206ec34a26d9f373f))
+* update tests ([7ca8810](https://github.com/Loop3D/LoopStructural/commit/7ca88101a70155a815ab843e51d1497cd5105467))
+
 ## [1.6.13](https://github.com/Loop3D/LoopStructural/compare/v1.6.12...v1.6.13) (2025-04-29)
 
 
