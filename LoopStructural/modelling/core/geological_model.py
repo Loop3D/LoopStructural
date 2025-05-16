@@ -2,7 +2,7 @@
 Main entry point for creating a geological model
 """
 
-from ...utils import getLogger, log_to_file
+from ...utils import getLogger
 
 import numpy as np
 import pandas as pd
@@ -61,33 +61,24 @@ class GeologicalModel:
         the origin of the model box
     parameters : dict
         a dictionary tracking the parameters used to build the model
-    scale_factor : double
-        the scale factor used to rescale the model
-
+    
 
     """
 
     def __init__(
         self,
-        origin: np.ndarray,
-        maximum: np.ndarray,
-        data=None,
-        nsteps=(50, 50, 25),
-        reuse_supports=False,
-        logfile=None,
-        loglevel="info",
+        *args
     ):
         """
         Parameters
         ----------
-        origin : numpy array
-            specifying the origin of the model
-        maximum : numpy array
-            specifying the maximum extent of the model
-        rescale : bool
-            whether to rescale the model to between 0/1
-        epsion : float
-            a fudge factor for isosurfacing, used to make sure surfaces appear
+        bounding_box : BoundingBox
+            the bounding box of the model
+        origin : np.array(3,dtype=doubles)
+            the origin of the model
+        maximum : np.array(3,dtype=doubles)
+            the maximum of the model
+        
         Examples
         --------
         Demo data
@@ -111,38 +102,32 @@ class GeologicalModel:
 
 
         """
-        if logfile:
-            self.logfile = logfile
-            log_to_file(logfile, level=loglevel)
-
+        args = list(args)
+        if len(args) == 0:
+            raise ValueError("Must provide either bounding_box or origin and maximum")
+        if len(args) == 1:
+            bounding_box = args[0]
+            if not isinstance(bounding_box, BoundingBox):
+                raise ValueError("Must provide a bounding box")
+            self.bounding_box = bounding_box
+        if len(args) == 2:
+            origin = args[0]
+            maximum = args[1]
+            if not isinstance(origin, np.ndarray) or not isinstance(maximum, np.ndarray):
+                raise ValueError("Must provide origin and maximum as numpy arrays")
+            self.bounding_box = BoundingBox(
+                dimensions=3,
+                origin=np.zeros(3),
+                maximum=maximum - origin,
+                global_origin=origin,
+            )
         logger.info("Initialising geological model")
         self.features = []
         self.feature_name_index = {}
         self._data = pd.DataFrame()  # None
-        if data is not None:
-            self.data = data
-        self.nsteps = nsteps
+        
 
-        # we want to rescale the model area so that the maximum length is
-        # 1
-        self.origin = np.array(origin).astype(float)
-        originstr = f"Model origin: {self.origin[0]} {self.origin[1]} {self.origin[2]}"
-        logger.info(originstr)
-        self.maximum = np.array(maximum).astype(float)
-        maximumstr = "Model maximum: {} {} {}".format(
-            self.maximum[0], self.maximum[1], self.maximum[2]
-        )
-        logger.info(maximumstr)
-
-        self.scale_factor = 1.0
-
-        self.bounding_box = BoundingBox(
-            dimensions=3,
-            origin=np.zeros(3),
-            maximum=self.maximum - self.origin,
-            global_origin=self.origin,
-        )
-
+        
         self.stratigraphic_column = None
 
         self.tol = 1e-10 * np.max(self.bounding_box.maximum - self.bounding_box.origin)
@@ -160,10 +145,7 @@ class GeologicalModel:
         json = {}
         json["model"] = {}
         json["model"]["features"] = [f.name for f in self.features]
-        # json["model"]["data"] = self.data.to_json()
-        # json["model"]["origin"] = self.origin.tolist()
-        # json["model"]["maximum"] = self.maximum.tolist()
-        # json["model"]["nsteps"] = self.nsteps
+        json['model']['bounding_box'] = self.bounding_box.to_dict()
         json["model"]["stratigraphic_column"] = self.stratigraphic_column
         # json["features"] = [f.to_json() for f in self.features]
         return json
@@ -192,86 +174,12 @@ class GeologicalModel:
     #         model.features.append(GeologicalFeature.from_json(feature,model))
     #     return model
     def __str__(self):
-        lengths = self.maximum - self.origin
-        _str = "GeologicalModel - {} x {} x {}\n".format(*lengths)
-        _str += "------------------------------------------ \n"
-        _str += "The model contains {} GeologicalFeatures \n".format(len(self.features))
-        _str += ""
-        _str += "------------------------------------------ \n"
-        _str += ""
-        _str += "Model origin: {} {} {}\n".format(self.origin[0], self.origin[1], self.origin[2])
-        _str += "Model maximum: {} {} {}\n".format(
-            self.maximum[0], self.maximum[1], self.maximum[2]
-        )
-        _str += "Model rescale factor: {} \n".format(self.scale_factor)
-        _str += "------------------------------------------ \n"
-        _str += "Feature list: \n"
-        for feature in self.features:
-            _str += "  {} \n".format(feature.name)
-        return _str
+        return f"GeologicalModel with {len(self.features)} features"
 
     def _ipython_key_completions_(self):
         return self.feature_name_index.keys()
 
-    @classmethod
-    def from_map2loop_directory(
-        cls,
-        m2l_directory,
-        foliation_params={},
-        fault_params={},
-        use_thickness=True,
-        vector_scale=1,
-        gradient=False,
-        **kwargs,
-    ):
-        """Alternate constructor for a geological model using m2l output
-
-        Uses the information saved in the map2loop files to build a geological model.
-        You can specify kwargs for building foliation using foliation_params and for
-        faults using fault_params.  faults is a flag that allows for the faults to be
-        skipped.
-
-        Parameters
-        ----------
-        m2l_directory : string
-            path to map2loop directory
-
-        Returns
-        -------
-        (GeologicalModel, dict)
-            the created geological model and a dictionary of the map2loop data
-
-        Notes
-        ------
-        For additional information see :class:`LoopStructural.modelling.input.Map2LoopProcessor`
-        and :meth:`LoopStructural.GeologicalModel.from_processor`
-        """
-        from LoopStructural.modelling.input.map2loop_processor import Map2LoopProcessor
-
-        log_to_file(f"{m2l_directory}/loopstructural_log.txt")
-        logger.info("Creating model from m2l directory")
-        processor = Map2LoopProcessor(m2l_directory, use_thickness)
-        processor._gradient = gradient
-        processor.vector_scale = vector_scale
-        for foliation_name in processor.stratigraphic_column.keys():
-            if foliation_name != "faults":
-                if foliation_name in foliation_params.keys():
-                    processor.foliation_properties[foliation_name] = foliation_params[
-                        foliation_name
-                    ]
-                else:
-                    processor.foliation_properties[foliation_name] = foliation_params
-
-        for fault_name in processor.fault_names:
-            if fault_name in fault_params.keys():
-                for param_name, value in fault_params[fault_name].items():
-                    processor.fault_properties.loc[fault_name, param_name] = value
-            else:
-                for param_name, value in fault_params.items():
-                    processor.fault_properties.loc[fault_name, param_name] = value
-
-        model = GeologicalModel.from_processor(processor)
-        return model, processor
+    
 
     @classmethod
     def from_processor(cls, processor):
@@ -565,13 +473,9 @@ class GeologicalModel:
                 raise BaseException("Cannot load data")
         logger.info(f"Adding data to GeologicalModel with {len(data)} data points")
         self._data = data.copy()
-
-        self._data["X"] -= self.origin[0]
-        self._data["Y"] -= self.origin[1]
-        self._data["Z"] -= self.origin[2]
-        self._data["X"] /= self.scale_factor
-        self._data["Y"] /= self.scale_factor
-        self._data["Z"] /= self.scale_factor
+        self._data[['X','Y','Z']] = self.bounding_box.project(self._data[['X','Y','Z']].to_numpy())
+        
+        
         if "type" in self._data:
             logger.warning("'type' is deprecated replace with 'feature_name' \n")
             self._data.rename(columns={"type": "feature_name"}, inplace=True)
@@ -1413,7 +1317,7 @@ foliation_data        )
         if "data_region" in kwargs:
             kwargs.pop("data_region")
             logger.error("kwarg data_region currently not supported, disabling")
-        displacement_scaled = displacement / self.scale_factor
+        displacement_scaled = displacement 
         fault_frame_builder = FaultBuilder(
             interpolatortype,
             bounding_box=self.bounding_box,
@@ -1434,11 +1338,11 @@ foliation_data        )
         if fault_center is not None and ~np.isnan(fault_center).any():
             fault_center = self.scale(fault_center, inplace=False)
         if minor_axis:
-            minor_axis = minor_axis / self.scale_factor
+            minor_axis = minor_axis 
         if major_axis:
-            major_axis = major_axis / self.scale_factor
+            major_axis = major_axis 
         if intermediate_axis:
-            intermediate_axis = intermediate_axis / self.scale_factor
+            intermediate_axis = intermediate_axis 
         fault_frame_builder.create_data_from_geometry(
             fault_frame_data=fault_data,
             fault_center=fault_center,
@@ -1493,11 +1397,9 @@ foliation_data        )
         points : np.array((N,3),dtype=double)
 
         """
-        if not inplace:
-            points = points.copy()
-        points *= self.scale_factor
-        points += self.origin
-        return points
+      
+        return self.bounding_box.reproject(points,inplace=inplace)
+        
 
     # TODO move scale to bounding box/transformer
     def scale(self, points: np.ndarray, *, inplace: bool = False) -> np.ndarray:
@@ -1515,16 +1417,8 @@ foliation_data        )
         points : np.a::rray((N,3),dtype=double)
 
         """
-        points = np.array(points).astype(float)
-        if not inplace:
-            points = points.copy()
-        # if len(points.shape) == 1:
-        #     points = points[None,:]
-        # if len(points.shape) != 2:
-        #     logger.error("cannot scale array of dimensions".format(len(points.shape)))
-        points -= self.origin
-        points /= self.scale_factor
-        return points
+        return self.bounding_box.project(np.array(points).astype(float),inplace=inplace)    
+        
 
     def regular_grid(self, *, nsteps=None, shuffle=True, rescale=False, order="C"):
         """
@@ -1673,7 +1567,7 @@ foliation_data        )
             if f.type == FeatureType.FAULT:
                 disp = f.displacementfeature.evaluate_value(points)
                 vals[~np.isnan(disp)] += disp[~np.isnan(disp)]
-        return vals * -self.scale_factor  # convert from restoration magnutude to displacement
+        return vals   # convert from restoration magnutude to displacement
 
     def get_feature_by_name(self, feature_name) -> GeologicalFeature:
         """Returns a feature from the mode given a name
