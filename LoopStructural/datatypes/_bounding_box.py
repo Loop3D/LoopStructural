@@ -500,20 +500,25 @@ class BoundingBox:
             name=name,
         )
 
-    def project(self, xyz):
+    def project(self, xyz, inplace=False):
         """Project a point into the bounding box
 
         Parameters
         ----------
         xyz : np.ndarray
             point to project
+        inplace : bool, optional
+            Whether to modify the input array in place, by default False
 
         Returns
         -------
         np.ndarray
             projected point
         """
-
+        if inplace:
+            xyz -= self.global_origin
+            xyz = np.clip(xyz, self.origin, self.maximum)
+            return xyz
         return (xyz - self.global_origin) / np.max(
             (self.global_maximum - self.global_origin)
         )  # np.clip(xyz, self.origin, self.maximum)
@@ -521,20 +526,24 @@ class BoundingBox:
     def scale_by_projection_factor(self, value):
         return value / np.max((self.global_maximum - self.global_origin))
 
-    def reproject(self, xyz):
+    def reproject(self, xyz, inplace=False):
         """Reproject a point from the bounding box to the global space
 
         Parameters
         ----------
         xyz : np.ndarray
             point to reproject
-
+        inplace : bool, optional
+            Whether to modify the input array in place, by default False
         Returns
         -------
         np.ndarray
             reprojected point
         """
-
+        if inplace:
+            xyz -= self.global_origin
+            xyz /= np.max((self.global_maximum - self.global_origin))
+            return xyz
         return xyz * np.max((self.global_maximum - self.global_origin)) + self.global_origin
 
     def __repr__(self):
