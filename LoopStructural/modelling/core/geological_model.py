@@ -111,8 +111,8 @@ class GeologicalModel:
                 raise ValueError("Must provide a bounding box")
             self.bounding_box = bounding_box
         if len(args) == 2:
-            origin = args[0]
-            maximum = args[1]
+            origin = np.array(args[0])
+            maximum = np.array(args[1])
             if not isinstance(origin, np.ndarray) or not isinstance(maximum, np.ndarray):
                 raise ValueError("Must provide origin and maximum as numpy arrays")
             self.bounding_box = BoundingBox(
@@ -510,7 +510,7 @@ class GeologicalModel:
 
     def set_model_data(self, data):
         logger.warning("deprecated method. Model data can now be set using the data attribute")
-        self.data = data
+        self.data = data.copy()
 
     def set_stratigraphic_column(self, stratigraphic_column, cmap="tab20"):
         """
