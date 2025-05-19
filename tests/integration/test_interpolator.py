@@ -14,8 +14,8 @@ def model_fit(model, data):
 def test_create_model():
     data, bb = load_claudius()
     model = GeologicalModel(bb[0, :], bb[1, :])
-    assert np.all(np.isclose(model.origin, bb[0, :]))
-    assert np.all(np.isclose(model.maximum, bb[1, :]))
+    assert np.all(np.isclose(model.bounding_box.global_origin, bb[0, :]))
+    assert np.all(np.isclose(model.bounding_box.global_maximum, bb[1, :]))
 
 
 def test_add_data():
