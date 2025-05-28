@@ -22,6 +22,14 @@ from ..modelling.input import (
 try:
     from ..modelling.input.project_file import LoopProjectfileProcessor
 except (LoopImportError, ImportError):
-    logger.warning(
-        "Cannot use LoopProjectfileProcessor: Loop project file cannot be imported, try installing LoopProjectFile"
-    )
+    class LoopProjectfileProcessor(ProcessInputData):
+        """
+        Dummy class to handle the case where LoopProjectFile is not installed.
+        This will raise a warning when used.
+        """
+
+        def __init__(self, *args, **kwargs):
+            raise LoopImportError(
+                "LoopProjectFile cannot be imported. Please install LoopProjectFile."
+            )
+    
