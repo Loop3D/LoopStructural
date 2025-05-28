@@ -83,7 +83,16 @@ from ..interpolators._p1interpolator import P1Interpolator
 try:
     from ..interpolators._surfe_wrapper import SurfeRBFInterpolator
 except ImportError:
-    SurfeRBFInterpolator = None
+    class SurfeRBFInterpolator(GeologicalInterpolator):
+        """
+        Dummy class to handle the case where Surfe is not installed.
+        This will raise a warning when used.
+        """
+
+        def __init__(self, *args, **kwargs):
+            raise ImportError(
+                "Surfe cannot be imported. Please install Surfe. pip install surfe/ conda install -c loop3d surfe"
+            ) 
 interpolator_map = {
     InterpolatorType.BASE: GeologicalInterpolator,
     InterpolatorType.BASE_DISCRETE: DiscreteInterpolator,
