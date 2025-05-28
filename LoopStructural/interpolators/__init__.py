@@ -83,7 +83,6 @@ from ..interpolators._p1interpolator import P1Interpolator
 try:
     from ..interpolators._surfe_wrapper import SurfeRBFInterpolator
 except ImportError:
-    logger.warning("Surfe is not installed, SurfeRBFInterpolator will not be available")
     SurfeRBFInterpolator = None
 interpolator_map = {
     InterpolatorType.BASE: GeologicalInterpolator,

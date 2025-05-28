@@ -39,6 +39,8 @@ class InterpolatorFactory:
                 element_volume=element_volume,
                 buffer=buffer,
             )
+        if interpolator_map.get(interpolatortype) is None:
+            raise ValueError(f"Interpolator type {interpolatortype} is not supported or available, please choose another interpolator type.")
         return interpolator_map[interpolatortype](support)
 
     @staticmethod
