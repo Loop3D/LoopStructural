@@ -205,3 +205,6 @@ class SurfeRBFInterpolator(GeologicalInterpolator):
     @property
     def nx(self):
         return self.get_data_locations().shape[0]
+    @property
+    def n_elements(self)->int:
+        return self.get_data_locations().shape[0]
