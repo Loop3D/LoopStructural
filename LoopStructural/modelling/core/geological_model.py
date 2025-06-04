@@ -655,6 +655,7 @@ class GeologicalModel:
     def create_and_add_foliation(
         self,
         series_surface_data: str,
+        *,
         interpolatortype: str = "FDI",
         nelements: int = 1000,
         tol=None,
@@ -722,6 +723,7 @@ class GeologicalModel:
     def create_and_add_fold_frame(
         self,
         foldframe_data,
+        *,
         interpolatortype="FDI",
         nelements=1000,
         tol=None,
@@ -776,6 +778,8 @@ class GeologicalModel:
     def create_and_add_folded_foliation(
         self,
         foliation_data,
+        *,
+
         interpolatortype="DFI",
         nelements=10000,
         buffer=0.1,
@@ -859,6 +863,7 @@ class GeologicalModel:
     def create_and_add_folded_fold_frame(
         self,
         fold_frame_data,
+        *,
         interpolatortype="FDI",
         nelements=10000,
         fold_frame=None,
@@ -947,6 +952,7 @@ class GeologicalModel:
         self,
         intrusion_name,
         intrusion_frame_name,
+        *,
         intrusion_frame_parameters={},
         intrusion_lateral_extent_model=None,
         intrusion_vertical_extent_model=None,
@@ -1224,7 +1230,7 @@ class GeologicalModel:
         return uc_feature
 
     def create_and_add_domain_fault(
-        self, fault_surface_data, nelements=10000, interpolatortype="FDI", **kwargs
+        self, fault_surface_data,*, nelements=10000, interpolatortype="FDI", **kwargs
     ):
         """
         Parameters
@@ -1277,6 +1283,7 @@ class GeologicalModel:
         self,
         fault_surface_data,
         displacement,
+        *,
         interpolatortype="FDI",
         tol=None,
         fault_slip_vector=None,
@@ -1418,7 +1425,7 @@ class GeologicalModel:
         return fault
 
     # TODO move rescale to bounding box/transformer
-    def rescale(self, points: np.ndarray, inplace: bool = False) -> np.ndarray:
+    def rescale(self, points: np.ndarray, *, inplace: bool = False) -> np.ndarray:
         """
         Convert from model scale to real world scale - in the future this
         should also do transformations?
@@ -1441,7 +1448,7 @@ class GeologicalModel:
         return points
 
     # TODO move scale to bounding box/transformer
-    def scale(self, points: np.ndarray, inplace: bool = False) -> np.ndarray:
+    def scale(self, points: np.ndarray, *, inplace: bool = False) -> np.ndarray:
         """Take points in UTM coordinates and reproject
         into scaled model space
 
@@ -1467,7 +1474,7 @@ class GeologicalModel:
         points /= self.scale_factor
         return points
 
-    def regular_grid(self, nsteps=None, shuffle=True, rescale=False, order="C"):
+    def regular_grid(self, *, nsteps=None, shuffle=True, rescale=False, order="C"):
         """
         Return a regular grid within the model bounding box
 
@@ -1483,7 +1490,7 @@ class GeologicalModel:
         """
         return self.bounding_box.regular_grid(nsteps=nsteps, shuffle=shuffle, order=order)
 
-    def evaluate_model(self, xyz: np.ndarray, scale: bool = True) -> np.ndarray:
+    def evaluate_model(self, xyz: np.ndarray, *, scale: bool = True) -> np.ndarray:
         """Evaluate the stratigraphic id at each location
 
         Parameters
@@ -1559,7 +1566,7 @@ class GeologicalModel:
                 logger.error(f"Model does not contain {group}")
         return strat_id
 
-    def evaluate_model_gradient(self, points: np.ndarray, scale: bool = True) -> np.ndarray:
+    def evaluate_model_gradient(self, points: np.ndarray, *, scale: bool = True) -> np.ndarray:
         """Evaluate the gradient of the stratigraphic column at each location
 
         Parameters
