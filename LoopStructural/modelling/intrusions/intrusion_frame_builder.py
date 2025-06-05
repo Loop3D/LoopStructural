@@ -168,7 +168,7 @@ class IntrusionFrameBuilder(StructuralFrameBuilder):
         if spacing is None:
             spacing = self.model.nsteps
 
-        grid_points = self.model.regular_grid(spacing, shuffle=False)
+        grid_points = self.model.regular_grid(nsteps=spacing, shuffle=False)
 
         self.grid_to_evaluate_ifx = grid_points
 

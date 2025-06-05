@@ -82,7 +82,7 @@ class IntrusionBuilder(BaseBuilder):
         if spacing is None:
             spacing = self.model.nsteps
 
-        grid_points = self.model.regular_grid(spacing, shuffle=False)
+        grid_points = self.model.regular_grid(nsteps=spacing, shuffle=False)
 
         grid_points_coord0 = self.intrusion_frame[0].evaluate_value(grid_points)
 

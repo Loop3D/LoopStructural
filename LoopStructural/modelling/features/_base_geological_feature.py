@@ -244,7 +244,7 @@ class BaseFeature(metaclass=ABCMeta):
         if self.model is None:
             return 0
 
-        return np.nanmin(self.evaluate_value(self.model.regular_grid((10, 10, 10))))
+        return np.nanmin(self.evaluate_value(self.model.regular_grid(nsteps=(10, 10, 10))))
 
     def max(self):
         """Calculate the maximum value of the geological feature
@@ -257,7 +257,7 @@ class BaseFeature(metaclass=ABCMeta):
         """
         if self.model is None:
             return 0
-        return np.nanmax(self.evaluate_value(self.model.regular_grid((10, 10, 10))))
+        return np.nanmax(self.evaluate_value(self.model.regular_grid(nsteps=(10, 10, 10))))
 
     def __tojson__(self):
         regions = [r.name for r in self.regions]
