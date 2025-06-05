@@ -16,7 +16,7 @@ def test_average_fold_axis():
     fold_frame = model.create_and_add_fold_frame("s1", nelements=10000)
     stratigraphy = model.create_and_add_folded_foliation(
         "s0",
-        fold_frame,
+        fold_frame=fold_frame,
         nelements=10000,
         av_fold_axis=True,
         # fold_axis=[-6.51626577e-06, -5.00013645e-01, -8.66017526e-01],
@@ -39,7 +39,7 @@ def test_fixed_fold_axis():
     fold_frame = model.create_and_add_fold_frame("s1", nelements=10000)
     stratigraphy = model.create_and_add_folded_foliation(
         "s0",
-        fold_frame,
+        fold_frame=fold_frame,
         nelements=10000,
         # av_fold_axis=True
         fold_axis=[-6.51626577e-06, -5.00013645e-01, -8.66017526e-01],
@@ -58,7 +58,7 @@ def test_fixed_wavelength():
     fold_frame = model.create_and_add_fold_frame("s1", nelements=10000)
     stratigraphy = model.create_and_add_folded_foliation(
         "s0",
-        fold_frame,
+        fold_frame=fold_frame,
         nelements=10000,
         # av_fold_axis=True
         fold_axis=[-6.51626577e-06, -5.00013645e-01, -8.66017526e-01],

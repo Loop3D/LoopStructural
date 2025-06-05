@@ -714,7 +714,7 @@ class GeologicalModel:
         )
         # add data
         if series_surface_data is None:
-            series_surface_data = self.data[self.data["feature_name"] == series_surface_name]
+            series_surface_data = self.data.loc[self.data["feature_name"] == series_surface_name]
 
         if series_surface_data.shape[0] == 0:
             logger.warning("No data for {series_surface_data}, skipping")
@@ -789,7 +789,7 @@ class GeologicalModel:
         )
         # add data
         if fold_frame_data is None:
-            fold_frame_data = self.data[self.data["feature_name"] == fold_frame_name]
+            fold_frame_data = self.data.loc[self.data["feature_name"] == fold_frame_name]
         if fold_frame_data.shape[0] == 0:
             logger.warning(f"No data for {fold_frame_name}, skipping")
             return
@@ -874,13 +874,12 @@ class GeologicalModel:
             **kwargs,
         )
         if foliation_data is None:
-            foliation_data = self.data[self.data["feature_name"] == foliation_name]
+            foliation_data = self.data.loc[self.data["feature_name"] == foliation_name]
         if foliation_data.shape[0] == 0:
             logger.warning(f"No data for {foliation_name}, skipping")
             return
         series_builder.add_data_from_data_frame(
-            self.data[self.data["feature_name"] == foliation_data]
-        )
+foliation_data        )
         self._add_faults(series_builder)
         # series_builder.add_data_to_interpolator(True)
         # build feature
@@ -1303,7 +1302,7 @@ class GeologicalModel:
         )
 
         # add data
-        unconformity_data = self.data[self.data["feature_name"] == fault_surface_data]
+        unconformity_data = self.data.loc[self.data["feature_name"] == fault_surface_data]
 
         domain_fault_feature_builder.add_data_from_data_frame(unconformity_data)
         # look through existing features if there is a fault before an
@@ -1424,7 +1423,7 @@ class GeologicalModel:
             **kwargs,
         )
         if fault_data is None:
-            fault_data = self.data[self.data["feature_name"] == fault_name]
+            fault_data = self.data.loc[self.data["feature_name"] == fault_name]
         if fault_data.shape[0] == 0:
             logger.warning(f"No data for {fault_name}, skipping")
             return

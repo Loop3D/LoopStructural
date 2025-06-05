@@ -423,7 +423,7 @@ def _write_vol_evtk(model, file_name, data_label, nsteps, real_coords=True):
 
     """
     # Define grid spacing
-    xyz = model.bounding_box.regular_grid(nsteps)
+    xyz = model.bounding_box.regular_grid(nsteps=nsteps)
     vals = model.evaluate_model(xyz, scale=False)
     if real_coords:
         model.rescale(xyz)
@@ -465,7 +465,7 @@ def _write_vol_gocad(model, file_name, data_label, nsteps, real_coords=True):
 
     """
     # Define grid spacing in model scale coords
-    xyz = model.bounding_box.regular_grid(nsteps)
+    xyz = model.bounding_box.regular_grid(nsteps=nsteps)
 
     vals = model.evaluate_model(xyz, scale=False)
     # Use FORTRAN style indexing for GOCAD VOXET
