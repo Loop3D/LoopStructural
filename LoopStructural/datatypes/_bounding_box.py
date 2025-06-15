@@ -547,10 +547,10 @@ class BoundingBox:
         return xyz + self.global_origin
 
     def __repr__(self):
-        return f"BoundingBox({self.origin}, {self.maximum}, {self.nsteps})"
+        return f"BoundingBox(origin:{self.origin}, maximum:{self.maximum}, nsteps:{self.nsteps})"
 
     def __str__(self):
-        return f"BoundingBox({self.origin}, {self.maximum}, {self.nsteps})"
+        return f"BoundingBox(origin:{self.origin}, maximum:{self.maximum}, nsteps:{self.nsteps})"
 
     def __eq__(self, other):
         if not isinstance(other, BoundingBox):
