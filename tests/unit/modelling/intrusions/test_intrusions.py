@@ -65,9 +65,9 @@ def test_intrusion_builder():
     model.data = data
     model.nsteps = [10, 10, 10]
 
-    intrusion_data = data[data["feature_name"] == "tabular_intrusion"]
-    intrusion_frame_data = model.data[model.data["feature_name"] == "tabular_intrusion_frame"]
-
+    intrusion_data = model.prepare_data(data[data["feature_name"] == "tabular_intrusion"])
+    intrusion_frame_data = model.prepare_data(model.data[model.data["feature_name"] == "tabular_intrusion_frame"])
+    
     conformable_feature = model.create_and_add_foliation("stratigraphy")
 
     intrusion_frame_parameters = {
