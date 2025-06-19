@@ -160,7 +160,7 @@ class FiniteDifferenceInterpolator(DiscreteInterpolator):
             # print(points[inside,:].shape)
             gi = np.zeros(self.support.n_nodes, dtype=int)
             gi[:] = -1
-            gi[self.region] = np.arange(0, self.nx, dtype=int)
+            gi[self.region] = np.arange(0, self.dof, dtype=int)
             idc = np.zeros(node_idx.shape)
             idc[:] = -1
             idc[inside, :] = gi[node_idx[inside, :]]
@@ -204,7 +204,7 @@ class FiniteDifferenceInterpolator(DiscreteInterpolator):
             )
             gi = np.zeros(self.support.n_nodes, dtype=int)
             gi[:] = -1
-            gi[self.region] = np.arange(0, self.nx, dtype=int)
+            gi[self.region] = np.arange(0, self.dof, dtype=int)
             idc = np.zeros(node_idx.shape).astype(int)
             idc[:] = -1
             idc[inside, :] = gi[node_idx[inside, :]]
@@ -227,11 +227,11 @@ class FiniteDifferenceInterpolator(DiscreteInterpolator):
                 interface_A = np.hstack([A[mask, :][ij[:, 0], :], -A[mask, :][ij[:, 1], :]])
                 interface_idc = np.hstack([idc[mask, :][ij[:, 0], :], idc[mask, :][ij[:, 1], :]])
                 # now map the index from global to region create array size of mesh
-                # initialise as np.nan, then map points inside region to 0->nx
+                # initialise as np.nan, then map points inside region to 0->dof
                 gi = np.zeros(self.support.n_nodes).astype(int)
                 gi[:] = -1
 
-                gi[self.region] = np.arange(0, self.nx)
+                gi[self.region] = np.arange(0, self.dof)
                 interface_idc = gi[interface_idc]
                 outside = ~np.any(interface_idc == -1, axis=1)
                 self.add_constraints_to_least_squares(
@@ -266,7 +266,7 @@ class FiniteDifferenceInterpolator(DiscreteInterpolator):
             # magnitude
             gi = np.zeros(self.support.n_nodes)
             gi[:] = -1
-            gi[self.region] = np.arange(0, self.nx)
+            gi[self.region] = np.arange(0, self.dof)
             idc = np.zeros(node_idx.shape)
             idc[:] = -1
             idc[inside, :] = gi[node_idx[inside, :]]
@@ -331,7 +331,7 @@ class FiniteDifferenceInterpolator(DiscreteInterpolator):
             )
             gi = np.zeros(self.support.n_nodes)
             gi[:] = -1
-            gi[self.region] = np.arange(0, self.nx)
+            gi[self.region] = np.arange(0, self.dof)
             idc = np.zeros(node_idx.shape)
             idc[:] = -1
             idc[inside, :] = gi[node_idx[inside, :]]
@@ -421,7 +421,7 @@ class FiniteDifferenceInterpolator(DiscreteInterpolator):
             # magnitude
             gi = np.zeros(self.support.n_nodes)
             gi[:] = -1
-            gi[self.region] = np.arange(0, self.nx)
+            gi[self.region] = np.arange(0, self.dof)
             idc = np.zeros(node_idx.shape)
             idc[:] = -1
 
@@ -472,7 +472,7 @@ class FiniteDifferenceInterpolator(DiscreteInterpolator):
 
     #     """
     #     # First get the global indicies of the pairs of neighbours this should be an
-    #     # Nx27 array for 3d and an Nx9 array for 2d
+    #     # N*27 array for 3d and an N*9 array for 2d
 
     #     global_indexes = self.support.neighbour_global_indexes()
 
@@ -490,7 +490,7 @@ class FiniteDifferenceInterpolator(DiscreteInterpolator):
 
         """
         # First get the global indicies of the pairs of neighbours this should be an
-        # Nx27 array for 3d and an Nx9 array for 2d
+        # N*27 array for 3d and an N*9 array for 2d
 
         global_indexes = self.support.neighbour_global_indexes()  # np.array([ii,jj]))
 
@@ -499,7 +499,7 @@ class FiniteDifferenceInterpolator(DiscreteInterpolator):
 
         gi = np.zeros(self.support.n_nodes)
         gi[:] = -1
-        gi[self.region] = np.arange(0, self.nx)
+        gi[self.region] = np.arange(0, self.dof)
         idc = gi[idc]
         inside = ~np.any(idc == -1, axis=1)  # np.ones(a.shape[0],dtype=bool)#
         # a[idc==-1] = 0

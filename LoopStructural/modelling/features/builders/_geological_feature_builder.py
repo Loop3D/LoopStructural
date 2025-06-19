@@ -452,7 +452,7 @@ class GeologicalFeatureBuilder(BaseBuilder):
         self.interpolator.support.rotation_xy = rotation
         self._up_to_date = False
 
-        while self.interpolator.nx < 100:
+        while self.interpolator.dof < 100:
             self.interpolator.support.step_vector = self.interpolator.support.step_vector * 0.9
 
     def check_interpolation_geometry(self, data, buffer=0.3):
