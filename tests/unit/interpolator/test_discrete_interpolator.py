@@ -1,5 +1,5 @@
 def test_nx(interpolator, data):
-    assert interpolator.nx == 21 * 21 * 21
+    assert interpolator.dof == 21 * 21 * 21
 
 
 def test_region(interpolator, data, region_func):

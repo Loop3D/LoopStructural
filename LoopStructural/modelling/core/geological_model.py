@@ -1670,15 +1670,15 @@ foliation_data        )
         for f in self.features:
             if f.type == FeatureType.FAULT:
                 nfeatures += 3
-                total_dof += f[0].interpolator.nx * 3
+                total_dof += f[0].interpolator.dof * 3
                 continue
             if isinstance(f, StructuralFrame):
                 nfeatures += 3
-                total_dof += f[0].interpolator.nx * 3
+                total_dof += f[0].interpolator.dof * 3
                 continue
             if f.type == FeatureType.INTERPOLATED:
                 nfeatures += 1
-                total_dof += f.interpolator.nx
+                total_dof += f.interpolator.dof
                 continue
         if verbose:
             print(
