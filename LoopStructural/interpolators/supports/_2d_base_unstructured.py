@@ -30,7 +30,7 @@ class BaseUnstructured2d(BaseSupport):
             self.order = 1
         elif self.elements.shape[1] == 6:
             self.order = 2
-        self.nx = self.vertices.shape[0]
+        self.dof = self.vertices.shape[0]
         self.neighbours = neighbours
         self.minimum = np.min(self.nodes, axis=0)
         self.maximum = np.max(self.nodes, axis=0)
