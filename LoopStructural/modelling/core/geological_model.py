@@ -125,9 +125,7 @@ class GeologicalModel:
         self.features = []
         self.feature_name_index = {}
         self._data = pd.DataFrame()  # None
-        
 
-        
         self.stratigraphic_column = None
 
         self.tol = 1e-10 * np.max(self.bounding_box.maximum - self.bounding_box.origin)
@@ -179,8 +177,40 @@ class GeologicalModel:
     def _ipython_key_completions_(self):
         return self.feature_name_index.keys()
 
-    
+    def prepare_data(self, data: pd.DataFrame) -> pd.DataFrame:
+        data = data.copy()
+        data[['X', 'Y', 'Z']] = self.bounding_box.project(data[['X', 'Y', 'Z']].to_numpy())
 
+        if "type" in data:
+            logger.warning("'type' is deprecated replace with 'feature_name' \n")
+            data.rename(columns={"type": "feature_name"}, inplace=True)
+        if "feature_name" not in data:
+            logger.error("Data does not contain 'feature_name' column")
+            raise BaseException("Cannot load data")
+        for h in all_heading():
+            if h not in data:
+                data[h] = np.nan
+                if h == "w":
+                    data[h] = 1.0
+                if h == "coord":
+                    data[h] = 0
+                if h == "polarity":
+                    data[h] = 1.0
+        # LS wants polarity as -1 or 1, change 0  to -1
+        data.loc[data["polarity"] == 0, "polarity"] = -1.0
+        data.loc[np.isnan(data["w"]), "w"] = 1.0
+        if "strike" in data and "dip" in data:
+            logger.info("Converting strike and dip to vectors")
+            mask = np.all(~np.isnan(data.loc[:, ["strike", "dip"]]), axis=1)
+            data.loc[mask, gradient_vec_names()] = (
+                strikedip2vector(data.loc[mask, "strike"], data.loc[mask, "dip"])
+                * data.loc[mask, "polarity"].to_numpy()[:, None]
+            )
+            data.drop(["strike", "dip"], axis=1, inplace=True)
+        data[['X', 'Y', 'Z', 'val', 'nx', 'ny', 'nz', 'gx', 'gy', 'gz', 'tx', 'ty', 'tz']] = data[
+            ['X', 'Y', 'Z', 'val', 'nx', 'ny', 'nz', 'gx', 'gy', 'gz', 'tx', 'ty', 'tz']
+        ].astype(float)
+        return data
     @classmethod
     def from_processor(cls, processor):
         """Builds a model from a :class:`LoopStructural.modelling.input.ProcessInputData` object
@@ -473,40 +503,9 @@ class GeologicalModel:
                 raise BaseException("Cannot load data")
         logger.info(f"Adding data to GeologicalModel with {len(data)} data points")
         self._data = data.copy()
-        self._data[['X','Y','Z']] = self.bounding_box.project(self._data[['X','Y','Z']].to_numpy())
-        
-        
-        if "type" in self._data:
-            logger.warning("'type' is deprecated replace with 'feature_name' \n")
-            self._data.rename(columns={"type": "feature_name"}, inplace=True)
-        if "feature_name" not in self._data:
-            logger.error("Data does not contain 'feature_name' column")
-            raise BaseException("Cannot load data")
-        for h in all_heading():
-            if h not in self._data:
-                self._data[h] = np.nan
-                if h == "w":
-                    self._data[h] = 1.0
-                if h == "coord":
-                    self._data[h] = 0
-                if h == "polarity":
-                    self._data[h] = 1.0
-        # LS wants polarity as -1 or 1, change 0  to -1
-        self._data.loc[self._data["polarity"] == 0, "polarity"] = -1.0
-        self._data.loc[np.isnan(self._data["w"]), "w"] = 1.0
-        if "strike" in self._data and "dip" in self._data:
-            logger.info("Converting strike and dip to vectors")
-            mask = np.all(~np.isnan(self._data.loc[:, ["strike", "dip"]]), axis=1)
-            self._data.loc[mask, gradient_vec_names()] = (
-                strikedip2vector(self._data.loc[mask, "strike"], self._data.loc[mask, "dip"])
-                * self._data.loc[mask, "polarity"].to_numpy()[:, None]
-            )
-            self._data.drop(["strike", "dip"], axis=1, inplace=True)
-        self._data[['X', 'Y', 'Z', 'val', 'nx', 'ny', 'nz', 'gx', 'gy', 'gz', 'tx', 'ty', 'tz']] = (
-            self._data[
-                ['X', 'Y', 'Z', 'val', 'nx', 'ny', 'nz', 'gx', 'gy', 'gz', 'tx', 'ty', 'tz']
-            ].astype(float)
-        )
+        # self._data[['X','Y','Z']] = self.bounding_box.project(self._data[['X','Y','Z']].to_numpy())
+
+
 
     def set_model_data(self, data):
         logger.warning("deprecated method. Model data can now be set using the data attribute")
@@ -623,7 +622,7 @@ class GeologicalModel:
         if series_surface_data.shape[0] == 0:
             logger.warning("No data for {series_surface_data}, skipping")
             return
-        series_builder.add_data_from_data_frame(series_surface_data)
+        series_builder.add_data_from_data_frame(self.prepare_data(series_surface_data))
         self._add_faults(series_builder, features=faults)
 
         # build feature
@@ -697,7 +696,7 @@ class GeologicalModel:
         if fold_frame_data.shape[0] == 0:
             logger.warning(f"No data for {fold_frame_name}, skipping")
             return
-        fold_frame_builder.add_data_from_data_frame(fold_frame_data)
+        fold_frame_builder.add_data_from_data_frame(self.prepare_data(fold_frame_data))
         self._add_faults(fold_frame_builder[0])
         self._add_faults(fold_frame_builder[1])
         self._add_faults(fold_frame_builder[2])
@@ -783,7 +782,10 @@ class GeologicalModel:
             logger.warning(f"No data for {foliation_name}, skipping")
             return
         series_builder.add_data_from_data_frame(
-foliation_data        )
+            self.prepare_data(
+                foliation_data
+            )
+        )
         self._add_faults(series_builder)
         # series_builder.add_data_to_interpolator(True)
         # build feature
@@ -878,7 +880,7 @@ foliation_data        )
         )
         if fold_frame_data is None:
             fold_frame_data = self.data[self.data["feature_name"] == fold_frame_name]
-        fold_frame_builder.add_data_from_data_frame(fold_frame_data)
+        fold_frame_builder.add_data_from_data_frame(self.prepare_data(fold_frame_data))
 
         for i in range(3):
             self._add_faults(fold_frame_builder[i])
@@ -1331,7 +1333,7 @@ foliation_data        )
         if fault_data.shape[0] == 0:
             logger.warning(f"No data for {fault_name}, skipping")
             return
-        
+
         self._add_faults(fault_frame_builder, features=faults)
         # add data
 
@@ -1344,7 +1346,7 @@ foliation_data        )
         if intermediate_axis:
             intermediate_axis = intermediate_axis 
         fault_frame_builder.create_data_from_geometry(
-            fault_frame_data=fault_data,
+            fault_frame_data=self.prepare_data(fault_data),
             fault_center=fault_center,
             fault_normal_vector=fault_normal_vector,
             fault_slip_vector=fault_slip_vector,
@@ -1397,9 +1399,8 @@ foliation_data        )
         points : np.array((N,3),dtype=double)
 
         """
-      
+
         return self.bounding_box.reproject(points,inplace=inplace)
-        
 
     # TODO move scale to bounding box/transformer
     def scale(self, points: np.ndarray, *, inplace: bool = False) -> np.ndarray:
@@ -1418,7 +1419,6 @@ foliation_data        )
 
         """
         return self.bounding_box.project(np.array(points).astype(float),inplace=inplace)    
-        
 
     def regular_grid(self, *, nsteps=None, shuffle=True, rescale=False, order="C"):
         """

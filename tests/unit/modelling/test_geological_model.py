@@ -17,7 +17,7 @@ def test_rescale_model_data():
     model.set_model_data(data)
     # Check that the model data is rescaled to local coordinates
     expected = data[['X', 'Y', 'Z']].values - bb[None, 0, :]
-    actual = model.data[['X', 'Y', 'Z']].values
+    actual = model.prepare_data(model.data)[['X', 'Y', 'Z']].values
     assert np.allclose(actual, expected, atol=1e-6)
 def test_access_feature_model():
     data, bb = load_claudius()
