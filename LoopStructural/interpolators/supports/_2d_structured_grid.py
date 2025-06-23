@@ -372,6 +372,22 @@ class StructuredGrid2D(BaseSupport):
         return xy
 
     def position_to_cell_corners(self, pos):
+        """Get the global indices of the vertices (corner) nodes of the cell containing each point.
+
+        Parameters
+        ----------
+        pos : np.array
+            (N, 2) array of xy coordinates representing the positions of N points.
+    
+        Returns
+        -------
+        globalidx : np.array
+            (N, 4) array of global indices corresponding to the 4 corner nodes of the cell 
+            each point lies in. If a point lies outside the support, its corresponding entry 
+            will be set to -1.
+        inside : np.array
+            (N,) boolean array indicating whether each point is inside the support domain.
+        """
         corner_index, inside = self.position_to_cell_index(pos)
         corners = self.cell_corner_indexes(corner_index)
         globalidx = self.global_node_indices(corners)

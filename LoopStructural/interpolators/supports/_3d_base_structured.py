@@ -373,6 +373,22 @@ class BaseStructuredSupport(BaseSupport):
         return corner_indexes
 
     def position_to_cell_corners(self, pos):
+        """Get the global indices of the vertices (corners) of the cell containing each point.
+
+        Parameters
+        ----------
+        pos : np.array
+            (N, 3) array of xyz coordinates representing the positions of N points.
+    
+        Returns
+        -------
+        globalidx : np.array
+            (N, 8) array of global indices corresponding to the 8 corner nodes of the cell 
+            each point lies in. If a point lies outside the support, its corresponding entry 
+            will be set to -1.
+        inside : np.array
+            (N,) boolean array indicating whether each point is inside the support domain.
+        """
         cell_indexes, inside = self.position_to_cell_index(pos)
         corner_indexes = self.cell_corner_indexes(cell_indexes)
         globalidx = self.global_node_indices(corner_indexes)
