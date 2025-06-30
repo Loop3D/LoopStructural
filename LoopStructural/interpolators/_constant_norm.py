@@ -16,7 +16,7 @@ class ConstantNormInterpolator:
     _type_
         _description_
     """
-    def __init__(self, interpolator: DiscreteInterpolator):
+    def __init__(self, interpolator: DiscreteInterpolator,basetype):
         """Initialise the constant norm inteprolator
         with a discrete interpolator.
 
@@ -25,10 +25,12 @@ class ConstantNormInterpolator:
         interpolator : DiscreteInterpolator
             The discrete interpolator to add constant norm to.
         """
+        self.basetype = basetype
         self.interpolator = interpolator
         self.support = interpolator.support
         self.random_subset = False
         self.norm_length = 1.0
+        self.n_iterations = 20
     def add_constant_norm(self, w:float):
         """Add a constraint to the interpolator to constrain the norm of the gradient
         to be a set value
@@ -74,27 +76,33 @@ class ConstantNormInterpolator:
         tol: Optional[float] = None,
         solver_kwargs: dict = {},
     ) -> bool:
-        """
+        """Solve the system of equations iteratively for the constant norm interpolator.
 
         Parameters
         ----------
         solver : Optional[Union[Callable[[sparse.csr_matrix, np.ndarray], np.ndarray], str]], optional
-            _description_, by default None
+            Solver function or name, by default None
         tol : Optional[float], optional
-            _description_, by default None
+            Tolerance for the solver, by default None
         solver_kwargs : dict, optional
-            _description_, by default {}
+            Additional arguments for the solver, by default {}
 
         Returns
         -------
         bool
-            _description_
+            Success status of the solver
         """
         success = True
-        for i in range(20):
+        for i in range(self.n_iterations):
             if i > 0:
                 self.add_constant_norm(w=(0.1 * i) ** 2 + 0.01)
-            success = self.interpolator.solve_system(solver=solver, tol=tol, solver_kwargs=solver_kwargs)
+            # Ensure the interpolator is cast to P1Interpolator before calling solve_system
+            if isinstance(self.interpolator, self.basetype):
+                success = self.basetype.solve_system(self.interpolator, solver=solver, tol=tol, solver_kwargs=solver_kwargs)
+            else:
+                raise TypeError("self.interpolator is not an instance of P1Interpolator")
+            if not success:
+                break
         return success
 
 class ConstantNormP1Interpolator(P1Interpolator, ConstantNormInterpolator):
@@ -116,7 +124,7 @@ class ConstantNormP1Interpolator(P1Interpolator, ConstantNormInterpolator):
             _description_
         """
         P1Interpolator.__init__(self, support)
-        ConstantNormInterpolator.__init__(self, self)
+        ConstantNormInterpolator.__init__(self, self, P1Interpolator)
 
     def solve_system(
         self,
@@ -129,24 +137,19 @@ class ConstantNormP1Interpolator(P1Interpolator, ConstantNormInterpolator):
         Parameters
         ----------
         solver : Optional[Union[Callable[[sparse.csr_matrix, np.ndarray], np.ndarray], str]], optional
-            _description_, by default None
+            Solver function or name, by default None
         tol : Optional[float], optional
-            _description_, by default None
+            Tolerance for the solver, by default None
         solver_kwargs : dict, optional
-            _description_, by default {}
+            Additional arguments for the solver, by default {}
 
         Returns
         -------
         bool
-            _description_
+            Success status of the solver
         """
-        success = True
-        for i in range(20):
+        return ConstantNormInterpolator.solve_system(self, solver=solver, tol=tol, solver_kwargs=solver_kwargs)
 
-            if i > 0:
-                self.add_constant_norm(w=(0.1 * i) ** 2 + 0.01)
-            success = P1Interpolator.solve_system(self, solver, tol, solver_kwargs)
-        return success
 class ConstantNormFDIInterpolator(FiniteDifferenceInterpolator, ConstantNormInterpolator):
     """Constant norm interpolator using finite difference base interpolator
 
@@ -166,7 +169,7 @@ class ConstantNormFDIInterpolator(FiniteDifferenceInterpolator, ConstantNormInte
             _description_
         """
         FiniteDifferenceInterpolator.__init__(self, support)
-        ConstantNormInterpolator.__init__(self, self)
+        ConstantNormInterpolator.__init__(self, self, FiniteDifferenceInterpolator)
     def solve_system(
         self,
         solver: Optional[Union[Callable[[sparse.csr_matrix, np.ndarray], np.ndarray], str]] = None,
@@ -178,20 +181,15 @@ class ConstantNormFDIInterpolator(FiniteDifferenceInterpolator, ConstantNormInte
         Parameters
         ----------
         solver : Optional[Union[Callable[[sparse.csr_matrix, np.ndarray], np.ndarray], str]], optional
-            _description_, by default None
+            Solver function or name, by default None
         tol : Optional[float], optional
-            _description_, by default None
+            Tolerance for the solver, by default None
         solver_kwargs : dict, optional
-            _description_, by default {}
+            Additional arguments for the solver, by default {}
 
         Returns
         -------
         bool
-            _description_
+            Success status of the solver
         """
-        success=True
-        for i in range(20):
-            if i > 0:
-                self.add_constant_norm(w=(0.1 * i) ** 2 + 0.01)
-            success = FiniteDifferenceInterpolator.solve_system(self, solver, tol, solver_kwargs)
-        return success
+        return ConstantNormInterpolator.solve_system(self, solver=solver, tol=tol, solver_kwargs=solver_kwargs)
