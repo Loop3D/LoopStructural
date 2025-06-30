@@ -90,11 +90,12 @@ class ConstantNormInterpolator:
         bool
             _description_
         """
+        success = True
         for i in range(20):
             if i > 0:
                 self.add_constant_norm(w=(0.1 * i) ** 2 + 0.01)
             success = self.interpolator.solve_system(solver=solver, tol=tol, solver_kwargs=solver_kwargs)
-        return True
+        return success
 
 class ConstantNormP1Interpolator(P1Interpolator, ConstantNormInterpolator):
     """Constant norm interpolator using P1 base interpolator
