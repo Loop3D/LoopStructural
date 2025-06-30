@@ -402,12 +402,7 @@ class GeologicalModel:
         """
         return [f.name for f in self.faults]
 
-    def check_inialisation(self):
-        if self.data is None:
-            logger.error("Data not associated with GeologicalModel. Run set_data")
-            return False
-        if self.data.shape[0] > 0:
-            return True
+
 
     def to_file(self, file):
         """Save a model to a pickle file requires dill
@@ -600,9 +595,7 @@ class GeologicalModel:
         An interpolator will be chosen by calling :meth:`LoopStructural.GeologicalModel.get_interpolator`
 
         """
-        if not self.check_inialisation():
-            logger.warning(f"{series_surface_data} not added, model not initialised")
-            return
+        
         # if tol is not specified use the model default
         if tol is None:
             tol = self.tol
@@ -674,8 +667,7 @@ class GeologicalModel:
         fold_frame : FoldFrame
             the created fold frame
         """
-        if not self.check_inialisation():
-            return False
+        
         if tol is None:
             tol = self.tol
 
@@ -751,8 +743,7 @@ class GeologicalModel:
         :class:`LoopStructural.modelling.features.builders.FoldedFeatureBuilder`
 
         """
-        if not self.check_inialisation():
-            return False
+        
         if tol is None:
             tol = self.tol
 
@@ -852,8 +843,7 @@ class GeologicalModel:
         see :class:`LoopStructural.modelling.features.fold.FoldEvent`,
         :class:`LoopStructural.modelling.features.builders.FoldedFeatureBuilder`
         """
-        if not self.check_inialisation():
-            return False
+       
         if tol is None:
             tol = self.tol
 

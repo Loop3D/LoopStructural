@@ -150,6 +150,7 @@ class FaultBuilder(StructuralFrameBuilder):
             np.logical_and(fault_frame_data["coord"] == 0, fault_frame_data["val"] == 0),
             ["X", "Y"],
         ].to_numpy()
+        self.fault_dip = fault_dip
         if fault_normal_vector is None:
             if fault_frame_data.loc[
             np.logical_and(fault_frame_data["coord"] == 0, fault_frame_data["nx"].notna())].shape[0]>0:
