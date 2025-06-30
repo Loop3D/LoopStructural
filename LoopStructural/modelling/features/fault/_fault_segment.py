@@ -104,7 +104,7 @@ class FaultSegment(StructuralFrame):
         if self.builder is None:
             raise ValueError("Fault builder not set")
         return self.builder.fault_major_axis
-
+    
     @property
     def fault_intermediate_axis(self):
         if self.builder is None:
