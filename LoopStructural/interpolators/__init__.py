@@ -22,8 +22,7 @@ __all__ = [
     "StructuredGrid2D",
     "P2UnstructuredTetMesh",
 ]
-from ._interpolatortype import InterpolatorType, add_interpolator_type
-
+from ._interpolatortype import InterpolatorType
 
 from ..utils import getLogger
 
