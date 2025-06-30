@@ -157,7 +157,6 @@ class VectorPoints:
             try:
                 locations = bb.project(locations)
                 _projected = True
-                scale = bb.scale_by_projection_factor(scale)
             except Exception as e:
                 logger.error(f'Failed to project points to bounding box: {e}')
                 logger.error('Using unprojected points, this may cause issues with the glyphing')
