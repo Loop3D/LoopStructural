@@ -1,5 +1,15 @@
 # Changelog
 
+## [1.6.15](https://github.com/Loop3D/LoopStructural/compare/v1.6.14...v1.6.15) (2025-07-01)
+
+
+### Bug Fixes
+
+* add option to pass a dataframe directly to the create and add methods ([f756054](https://github.com/Loop3D/LoopStructural/commit/f7560545048331137f35172ebd1324895f12faf6))
+* add parameter separator to clean up api ([7d8b0b1](https://github.com/Loop3D/LoopStructural/commit/7d8b0b1c2f0c30b4d9119d9438de3ded44b04bd8))
+* allow data to be specified in create and add function. ([f6db4a5](https://github.com/Loop3D/LoopStructural/commit/f6db4a5b6aabc75b7a061014b93288ec91791c57))
+* updating bounding box project/reproject to just translate to origin ([7606864](https://github.com/Loop3D/LoopStructural/commit/760686432710c92ec2653cafe226012c64c24551))
+
 ## [1.6.14](https://github.com/Loop3D/LoopStructural/compare/v1.6.13...v1.6.14) (2025-05-28)
 
 
