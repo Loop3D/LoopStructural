@@ -481,14 +481,14 @@ class GeologicalModel:
         ----------
         data : pandas data frame
             with column headers corresponding to the
-         type, X, Y, Z, nx, ny, nz, val, strike, dip, dip_dir, plunge,
+         feature_name, X, Y, Z, nx, ny, nz, val, strike, dip, dip_dir, plunge,
          plunge_dir, azimuth
 
         Returns
         -------
         Note
         ----
-        Type can be any unique identifier for the feature the data point
+        feature_name can be any unique identifier for the feature the data point
         'eg' 'S0', 'S2', 'F1_axis'
         it is then used by the create functions to get the correct data
         """
