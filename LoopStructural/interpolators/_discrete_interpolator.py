@@ -219,6 +219,7 @@ class DiscreteInterpolator(GeologicalInterpolator):
         # normalise by rows of A
         # Should this be done? It should make the solution more stable
         length = np.linalg.norm(A, axis=1)
+        # length[length>0] = 1.
         B[length > 0] /= length[length > 0]
         # going to assume if any are nan they are all nan
         mask = np.any(np.isnan(A), axis=1)

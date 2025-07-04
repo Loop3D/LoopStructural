@@ -45,7 +45,7 @@ class P1Interpolator(DiscreteInterpolator):
         points = self.get_norm_constraints()
         if points.shape[0] > 0:
             grad, elements, inside = self.support.evaluate_shape_derivatives(points[:, :3])
-            size = self.support.element_size[elements[inside]]
+            size = self.support.element_scale[elements[inside]]
             wt = np.ones(size.shape[0])
             wt *= w  # s* size
             elements = np.tile(self.support.elements[elements[inside]], (3, 1, 1))
@@ -70,6 +70,7 @@ class P1Interpolator(DiscreteInterpolator):
         if points.shape[0] > 1:
             N, elements, inside = self.support.evaluate_shape(points[:, :3])
             size = self.support.element_size[elements[inside]]
+
             wt = np.ones(size.shape[0])
             wt *= w  # * size
             self.add_constraints_to_least_squares(
@@ -110,13 +111,16 @@ class P1Interpolator(DiscreteInterpolator):
         const_n = -np.einsum("ij,ijk->ik", norm, Dn)
         # const_t_cp2 = np.einsum('ij,ikj->ik',normal,cp2_Dt)
         # const_n_cp2 = -np.einsum('ij,ikj->ik',normal,cp2_Dn)
-
+        # shared_element_size = self.support.shared_element_size
+        # const_t /= shared_element_size[:, None]  # normalise by element size
+        # const_n /= shared_element_size[:, None]  # normalise by element size
         const = np.hstack([const_t, const_n])
 
         # get vertex indexes
         tri_cp1 = np.hstack([self.support.elements[tri1], self.support.elements[tri2]])
         # tri_cp2 = np.hstack([self.support.elements[cp2_tri1],self.support.elements[tri2]])
         # add cp1 and cp2 to the least squares system
+
         self.add_constraints_to_least_squares(
             const,
             np.zeros(const.shape[0]),
