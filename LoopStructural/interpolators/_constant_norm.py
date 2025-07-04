@@ -31,6 +31,9 @@ class ConstantNormInterpolator:
         self.random_subset = False
         self.norm_length = 1.0
         self.n_iterations = 20
+        self.store_solution_history = False
+        self.solution_history = []#np.zeros((self.n_iterations, self.support.n_nodes))
+        self.gradient_constraint_store = []
     def add_constant_norm(self, w:float):
         """Add a constraint to the interpolator to constrain the norm of the gradient
         to be a set value
@@ -60,9 +63,13 @@ class ConstantNormInterpolator:
         )
 
         v_t = v_t / np.linalg.norm(v_t, axis=1)[:, np.newaxis]
+        self.gradient_constraint_store.append(np.hstack([self.support.barycentre[element_indices],v_t]))
         A1 = np.einsum("ij,ijk->ik", v_t, t_g)
-
+        volume = self.support.element_size[element_indices]
+        A1 = A1 / volume[:, np.newaxis]  # normalise by element size
+        
         b = np.zeros(A1.shape[0]) + self.norm_length
+        b = b / volume  # normalise by element size
         idc = np.hstack(
             [
                 self.support.elements[elements],
@@ -99,6 +106,9 @@ class ConstantNormInterpolator:
             # Ensure the interpolator is cast to P1Interpolator before calling solve_system
             if isinstance(self.interpolator, self.basetype):
                 success = self.basetype.solve_system(self.interpolator, solver=solver, tol=tol, solver_kwargs=solver_kwargs)
+                if self.store_solution_history:
+
+                    self.solution_history.append(self.interpolator.c)
             else:
                 raise TypeError("self.interpolator is not an instance of P1Interpolator")
             if not success:
