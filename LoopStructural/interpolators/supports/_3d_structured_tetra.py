@@ -85,10 +85,14 @@ class TetMesh(BaseStructuredSupport):
         )
 
         return np.abs(np.linalg.det(vecs)) / 6
-
+    
     @property
     def element_scale(self):
-        return self.element_size / np.mean(self.element_size)
+        size = self.element_size
+        size-= np.min(size)
+        size/= np.max(size)
+        size+=1.
+        return size
 
     @property
     def barycentre(self) -> np.ndarray:
@@ -189,7 +193,7 @@ class TetMesh(BaseStructuredSupport):
         """
         norm = self.shared_element_norm
         return 0.5 * np.linalg.norm(norm, axis=1)
-
+    
     @property
     def shared_element_scale(self):
         return self.shared_element_size / np.mean(self.shared_element_size)
