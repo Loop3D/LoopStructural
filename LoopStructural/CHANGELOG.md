@@ -1,5 +1,18 @@
 # Changelog
 
+## [1.6.15](https://github.com/Loop3D/LoopStructural/compare/v1.6.14...v1.6.15) (2025-07-08)
+
+
+### Bug Fixes
+
+* add option to pass a dataframe directly to the create and add methods ([f756054](https://github.com/Loop3D/LoopStructural/commit/f7560545048331137f35172ebd1324895f12faf6))
+* add parameter separator to clean up api ([7d8b0b1](https://github.com/Loop3D/LoopStructural/commit/7d8b0b1c2f0c30b4d9119d9438de3ded44b04bd8))
+* add visualisation to plot gradient norm ([e774f95](https://github.com/Loop3D/LoopStructural/commit/e774f95934b8fbec84ff37e73a098d36c6620f23))
+* adding constant norm interpolators ([29570f1](https://github.com/Loop3D/LoopStructural/commit/29570f1543f2a4aa04efda2fb4d894a7dc1ed9bf))
+* allow data to be specified in create and add function. ([f6db4a5](https://github.com/Loop3D/LoopStructural/commit/f6db4a5b6aabc75b7a061014b93288ec91791c57))
+* update vector scaling ([0a1e18e](https://github.com/Loop3D/LoopStructural/commit/0a1e18e9740ab8fc72fe2a27231bf6dc8fe2fece))
+* updating bounding box project/reproject to just translate to origin ([7606864](https://github.com/Loop3D/LoopStructural/commit/760686432710c92ec2653cafe226012c64c24551))
+
 ## [1.6.14](https://github.com/Loop3D/LoopStructural/compare/v1.6.13...v1.6.14) (2025-05-28)
 
 
