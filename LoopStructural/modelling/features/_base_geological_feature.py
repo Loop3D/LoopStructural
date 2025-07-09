@@ -347,6 +347,42 @@ class BaseFeature(metaclass=ABCMeta):
         grid.cell_properties[self.name] = value
         return grid
 
+    def gradient_norm_scalar_field(self, bounding_box=None):
+        """Create a scalar field for the gradient norm of the feature
+
+        Parameters
+        ----------
+        bounding_box : Optional[BoundingBox], optional
+            bounding box to evaluate the scalar field in, by default None
+
+        Returns
+        -------
+        np.ndarray
+            scalar field of the gradient norm
+        """
+        if bounding_box is None:
+            if self.model is None:
+                raise ValueError("Must specify bounding box")
+            bounding_box = self.model.bounding_box
+        grid = bounding_box.structured_grid(name=self.name)
+        value = np.linalg.norm(
+            self.evaluate_gradient(bounding_box.regular_grid(local=False, order='F')),
+            axis=1,
+        )
+        if self.model is not None:
+            value = np.linalg.norm(
+                self.evaluate_gradient(
+                    self.model.scale(bounding_box.regular_grid(local=False, order='F'))
+                ),
+                axis=1,
+            )
+        grid.properties[self.name] = value
+
+        value = np.linalg.norm(
+            self.evaluate_gradient(bounding_box.cell_centres(order='F')), axis=1
+        )
+        grid.cell_properties[self.name] = value
+        return grid
     def vector_field(self, bounding_box=None, tolerance=0.05, scale=1.0):
         """Create a vector field for the feature
 
