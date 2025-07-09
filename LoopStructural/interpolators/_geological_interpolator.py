@@ -154,16 +154,20 @@ class GeologicalInterpolator(metaclass=ABCMeta):
         ----------
         points : np.ndarray
             array containing the value constraints usually 7-8 columns.
-            X,Y,Z,nx,ny,nz,weight
+            X,Y,Z,nx,ny,nz,(weight)
 
         Returns
         -------
+
+        Notes
+        -------
+        If no weights are provided, w = 1 is assigned to each normal constraint.
 
         """
         if points.shape[1] == self.dimensions * 2:
             points = np.hstack([points, np.ones((points.shape[0], 1))])
         if points.shape[1] < self.dimensions * 2 + 1:
-            raise ValueError("Nonrmal constraints must at least have X,Y,Z,nx,ny,nz")
+            raise ValueError("Normal constraints must at least have X,Y,Z,nx,ny,nz")
         self.n_n = points.shape[0]
         self.data["normal"] = points
         self.up_to_date = False
