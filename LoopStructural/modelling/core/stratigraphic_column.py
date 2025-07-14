@@ -53,6 +53,8 @@ class StratigraphicUnit(StratigraphicColumnElement):
         """
         super().__init__(uuid)
         self.name = name
+        if colour is None:
+            colour = rng.random(3)
         self.colour = colour
         self.thickness = thickness
         self.element_type = StratigraphicColumnElementType.UNIT
@@ -146,6 +148,11 @@ class StratigraphicColumn:
     def __init__(self):
         """
         Initializes the StratigraphicColumn with a name and a list of layers.
+        """
+        self.order = [StratigraphicUnit(name='Basement', colour='grey', thickness=np.inf),StratigraphicUnconformity(name='Base Unconformity', unconformity_type=UnconformityType.ERODE)]
+    def clear(self):
+        """
+        Clears the stratigraphic column, removing all elements.
         """
         self.order = [StratigraphicUnit(name='Basement', colour='grey', thickness=np.inf),StratigraphicUnconformity(name='Base Unconformity', unconformity_type=UnconformityType.ERODE)]
 
@@ -282,11 +289,6 @@ class StratigraphicColumn:
                 unit_data.get('unconformity_type', element.unconformity_type.value)
             )
 
-    def clear(self):
-        """
-        Clears the stratigraphic column, removing all elements.
-        """
-        self.order.clear()
 
     def __str__(self):
         """
