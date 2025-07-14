@@ -19,6 +19,7 @@ ch.setFormatter(formatter)
 ch.setLevel(logging.WARNING)
 loggers = {}
 from .modelling.core.geological_model import GeologicalModel
+from .modelling.core.stratigraphic_column import StratigraphicColumn
 from .interpolators._api import LoopInterpolator
 from .interpolators import InterpolatorBuilder
 from .datatypes import BoundingBox
