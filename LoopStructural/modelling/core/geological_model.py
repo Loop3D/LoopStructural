@@ -37,7 +37,7 @@ from ...datatypes import BoundingBox
 from ...modelling.intrusions import IntrusionBuilder
 
 from ...modelling.intrusions import IntrusionFrameBuilder
-
+from .stratigraphic_column import StratigraphicColumn
 
 logger = getLogger(__name__)
 
@@ -126,7 +126,7 @@ class GeologicalModel:
         self.feature_name_index = {}
         self._data = pd.DataFrame()  # None
 
-        self.stratigraphic_column = None
+        self.stratigraphic_column = StratigraphicColumn()
 
         self.tol = 1e-10 * np.max(self.bounding_box.maximum - self.bounding_box.origin)
         self._dtm = None
@@ -148,29 +148,7 @@ class GeologicalModel:
         # json["features"] = [f.to_json() for f in self.features]
         return json
 
-    # @classmethod
-    # def from_json(cls,json):
-    #     """
-    #     Create a geological model from a json string
-
-    #     Parameters
-    #     ----------
-    #     json : str
-    #         json string of the geological model
-
-    #     Returns
-    #     -------
-    #     model : GeologicalModel
-    #         a geological model
-    #     """
-    #     model = cls(json["model"]["origin"],json["model"]["maximum"],data=None)
-    #     model.stratigraphic_column = json["model"]["stratigraphic_column"]
-    #     model.nsteps = json["model"]["nsteps"]
-    #     model.data = pd.read_json(json["model"]["data"])
-    #     model.features = []
-    #     for feature in json["features"]:
-    #         model.features.append(GeologicalFeature.from_json(feature,model))
-    #     return model
+    
     def __str__(self):
         return f"GeologicalModel with {len(self.features)} features"
 
@@ -527,28 +505,28 @@ class GeologicalModel:
         }
 
         """
+        self.stratigraphic_column.clear()
         # if the colour for a unit hasn't been specified we can just sample from
         # a colour map e.g. tab20
         logger.info("Adding stratigraphic column to model")
-        random_colour = True
-        n_units = 0
+        DeprecationWarning("set_stratigraphic_column is deprecated, use model.stratigraphic_column.add_units instead")
         for g in stratigraphic_column.keys():
             for u in stratigraphic_column[g].keys():
-                if "colour" in stratigraphic_column[g][u]:
-                    random_colour = False
-                    break
-                n_units += 1
-        if random_colour:
-            import matplotlib.cm as cm
-
-            cmap = cm.get_cmap(cmap, n_units)
-            cmap_colours = cmap.colors
-            ci = 0
-            for g in stratigraphic_column.keys():
-                for u in stratigraphic_column[g].keys():
-                    stratigraphic_column[g][u]["colour"] = cmap_colours[ci, :]
-                    ci += 1
-        self.stratigraphic_column = stratigraphic_column
+                thickness = 0
+                if "min" in stratigraphic_column[g][u] and "max" in stratigraphic_column[g][u]:
+                    min_val = stratigraphic_column[g][u]["min"]
+                    max_val = stratigraphic_column[g][u].get("max", None)
+                    thickness = max_val - min_val if max_val is not None else None
+                logger.warning(f"""
+                               model.stratigraphic_column.add_unit({u},
+                               colour={stratigraphic_column[g][u].get("colour", None)},
+                                 thickness={thickness})""")
+                self.stratigraphic_column.add_unit(
+                    u,
+                    colour=stratigraphic_column[g][u].get("colour", None),
+                    thickness=thickness,
+                )
+        
 
     def create_and_add_foliation(
         self,
