@@ -47,7 +47,7 @@ class StratigraphicUnit(StratigraphicColumnElement):
     A class to represent a stratigraphic unit.
     """
 
-    def __init__(self, *, uuid=None, name=None, colour=None, thickness=None):
+    def __init__(self, *, uuid=None, name=None, colour=None, thickness=None, data=None):
         """
         Initializes the StratigraphicUnit with a name and an optional description.
         """
@@ -57,6 +57,7 @@ class StratigraphicUnit(StratigraphicColumnElement):
             colour = rng.random(3)
         self.colour = colour
         self.thickness = thickness
+        self.data = data
         self.element_type = StratigraphicColumnElementType.UNIT
 
     def to_dict(self):
@@ -137,6 +138,18 @@ class StratigraphicUnconformity(StratigraphicColumnElement):
         )
         uuid = data.get("uuid", None)
         return cls(uuid=uuid, name=name, unconformity_type=unconformity_type)
+class StratigraphicGroup:
+    """
+    A class to represent a group of stratigraphic units.
+    This class is not fully implemented and serves as a placeholder for future development.
+    """
+
+    def __init__(self, name=None, units=None):
+        """
+        Initializes the StratigraphicGroup with a name and an optional list of units.
+        """
+        self.name = name
+        self.units = units if units is not None else []
 
 
 class StratigraphicColumn:
@@ -150,13 +163,15 @@ class StratigraphicColumn:
         Initializes the StratigraphicColumn with a name and a list of layers.
         """
         self.order = [StratigraphicUnit(name='Basement', colour='grey', thickness=np.inf),StratigraphicUnconformity(name='Base Unconformity', unconformity_type=UnconformityType.ERODE)]
+        self.group_mapping = {}
     def clear(self):
         """
         Clears the stratigraphic column, removing all elements.
         """
         self.order = [StratigraphicUnit(name='Basement', colour='grey', thickness=np.inf),StratigraphicUnconformity(name='Base Unconformity', unconformity_type=UnconformityType.ERODE)]
+        self.group_mapping = {}
 
-    def add_unit(self, name, colour, thickness=None, where='top'):
+    def add_unit(self, name,*, colour=None, thickness=None, where='top'):
         unit = StratigraphicUnit(name=name, colour=colour, thickness=thickness)
 
         if where == 'top':
@@ -178,7 +193,7 @@ class StratigraphicColumn:
                 return True
         return False
 
-    def add_unconformity(self, name, unconformity_type=UnconformityType.ERODE, where='top' ):
+    def add_unconformity(self, name, *, unconformity_type=UnconformityType.ERODE, where='top' ):
         unconformity = StratigraphicUnconformity(
             uuid=None, name=name, unconformity_type=unconformity_type
         )
@@ -226,31 +241,41 @@ class StratigraphicColumn:
 
     def get_groups(self):
         groups = []
-        group = []
+        i=0
+        group = StratigraphicGroup(
+            name=(
+                f'Group_{i}'
+                if f'Group_{i}' not in self.group_mapping
+                else self.group_mapping[f'Group_{i}']
+            )
+        )
         for e in self.order:
             if isinstance(e, StratigraphicUnit):
-                group.append(e)
+                group.units.append(e)
             else:
-                if group:
+                if group.units:
                     groups.append(group)
-                    group = []
+                    i+=1
+                    group = StratigraphicGroup(
+                        name=(
+                            f'Group_{i}'
+                            if f'Group_{i}' not in self.group_mapping
+                            else self.group_mapping[f'Group_{i}']
+                        )
+                    )
         if group:
             groups.append(group)
         return groups
 
     def get_unitname_groups(self):
-        groups = []
+        groups = self.get_groups()
+        groups_list = []
         group = []
-        for e in self.order:
-            if isinstance(e, StratigraphicUnit):
-                group.append(e.name)
-            else:
-                if group:
-                    groups.append(group)
-                    group = []
-        if group:
-            groups.append(group)
-        return groups
+        for g in groups:
+            group = [u.name for u in g.units if isinstance(u, StratigraphicUnit)]
+            groups_list.append(group)
+        return groups_list
+        
 
     def __getitem__(self, uuid):
         """
@@ -289,7 +314,6 @@ class StratigraphicColumn:
                 unit_data.get('unconformity_type', element.unconformity_type.value)
             )
 
-
     def __str__(self):
         """
         Returns a string representation of the stratigraphic column, listing all elements.
@@ -320,7 +344,7 @@ class StratigraphicColumn:
                 element = StratigraphicUnit.from_dict(element_data)
             column.add_element(element)
         return column
-    
+
     def get_isovalues(self) -> Dict[str, float]:
         """
         Returns a dictionary of isovalues for the stratigraphic units in the column.
@@ -328,12 +352,12 @@ class StratigraphicColumn:
         surface_values = {}
         for g in reversed(self.get_groups()):
             v = 0
-            for u in g:
-                surface_values[u.name] = v
+            for u in g.units:
+                surface_values[u.name] = {'value':v,'group':g.name,'colour':u.colour}
                 v += u.thickness
         return surface_values
-    
-    def plot(self, ax=None, **kwargs):
+
+    def plot(self,*, ax=None, **kwargs):
         import matplotlib.pyplot as plt
         from matplotlib import cm
         from matplotlib.patches import Polygon

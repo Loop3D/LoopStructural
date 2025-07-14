@@ -526,6 +526,9 @@ class GeologicalModel:
                     colour=stratigraphic_column[g][u].get("colour", None),
                     thickness=thickness,
                 )
+            self.stratigraphic_column.add_unconformity(
+                name=''.join([g, 'unconformity']),
+            )
         
 
     def create_and_add_foliation(
@@ -1704,31 +1707,20 @@ class GeologicalModel:
         units = []
         if self.stratigraphic_column is None:
             return []
-        for group in self.stratigraphic_column.keys():
-            if group == "faults":
+        units = self.stratigraphic_column.get_isovalues()
+        for name, u in units.items():
+            if u['group'] not in self:
+                logger.warning(f"Group {u['group']} not found in model")
                 continue
-            for series in self.stratigraphic_column[group].values():
-                series['feature_name'] = group
-                units.append(series)
-        unit_table = pd.DataFrame(units)
-        for u in unit_table['feature_name'].unique():
+            feature = self.get_feature_by_name(u['group'])
+            
+            surfaces.extend(feature.surfaces([u['value']],
+                                                                            self.bounding_box,
+                                                                            name=name,
+                                                                            colours=[u['colour']]
+                                                                            ))
 
-            values = unit_table.loc[unit_table['feature_name'] == u, 'min' if bottoms else 'max']
-            if 'name' not in unit_table.columns:
-                unit_table['name'] = unit_table['feature_name']
-
-            names = unit_table[unit_table['feature_name'] == u]['name']
-            values = values.loc[~np.logical_or(values == np.inf, values == -np.inf)]
-            surfaces.extend(
-                self.get_feature_by_name(u).surfaces(
-                    values.to_list(),
-                    self.bounding_box,
-                    name=names.loc[values.index].to_list(),
-                    colours=unit_table.loc[unit_table['feature_name'] == u, 'colour'].tolist()[
-                        1:
-                    ],  # we don't isosurface basement, no value
-                )
-            )
+      
 
         return surfaces
 
