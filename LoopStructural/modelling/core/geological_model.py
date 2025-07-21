@@ -61,14 +61,11 @@ class GeologicalModel:
         the origin of the model box
     parameters : dict
         a dictionary tracking the parameters used to build the model
-    
+
 
     """
 
-    def __init__(
-        self,
-        *args
-    ):
+    def __init__(self, *args):
         """
         Parameters
         ----------
@@ -78,7 +75,7 @@ class GeologicalModel:
             the origin of the model
         maximum : np.array(3,dtype=doubles)
             the maximum of the model
-        
+
         Examples
         --------
         Demo data
@@ -148,7 +145,6 @@ class GeologicalModel:
         # json["features"] = [f.to_json() for f in self.features]
         return json
 
-    
     def __str__(self):
         return f"GeologicalModel with {len(self.features)} features"
 
@@ -189,6 +185,7 @@ class GeologicalModel:
             ['X', 'Y', 'Z', 'val', 'nx', 'ny', 'nz', 'gx', 'gy', 'gz', 'tx', 'ty', 'tz']
         ].astype(float)
         return data
+
     @classmethod
     def from_processor(cls, processor):
         """Builds a model from a :class:`LoopStructural.modelling.input.ProcessInputData` object
@@ -380,8 +377,6 @@ class GeologicalModel:
         """
         return [f.name for f in self.faults]
 
-
-
     def to_file(self, file):
         """Save a model to a pickle file requires dill
 
@@ -478,8 +473,6 @@ class GeologicalModel:
         self._data = data.copy()
         # self._data[['X','Y','Z']] = self.bounding_box.project(self._data[['X','Y','Z']].to_numpy())
 
-
-
     def set_model_data(self, data):
         logger.warning("deprecated method. Model data can now be set using the data attribute")
         self.data = data.copy()
@@ -509,7 +502,9 @@ class GeologicalModel:
         # if the colour for a unit hasn't been specified we can just sample from
         # a colour map e.g. tab20
         logger.info("Adding stratigraphic column to model")
-        DeprecationWarning("set_stratigraphic_column is deprecated, use model.stratigraphic_column.add_units instead")
+        DeprecationWarning(
+            "set_stratigraphic_column is deprecated, use model.stratigraphic_column.add_units instead"
+        )
         for g in stratigraphic_column.keys():
             for u in stratigraphic_column[g].keys():
                 thickness = 0
@@ -517,10 +512,12 @@ class GeologicalModel:
                     min_val = stratigraphic_column[g][u]["min"]
                     max_val = stratigraphic_column[g][u].get("max", None)
                     thickness = max_val - min_val if max_val is not None else None
-                logger.warning(f"""
+                logger.warning(
+                    f"""
                                model.stratigraphic_column.add_unit({u},
                                colour={stratigraphic_column[g][u].get("colour", None)},
-                                 thickness={thickness})""")
+                                 thickness={thickness})"""
+                )
                 self.stratigraphic_column.add_unit(
                     u,
                     colour=stratigraphic_column[g][u].get("colour", None),
@@ -529,7 +526,6 @@ class GeologicalModel:
             self.stratigraphic_column.add_unconformity(
                 name=''.join([g, 'unconformity']),
             )
-        
 
     def create_and_add_foliation(
         self,
@@ -576,7 +572,7 @@ class GeologicalModel:
         An interpolator will be chosen by calling :meth:`LoopStructural.GeologicalModel.get_interpolator`
 
         """
-        
+
         # if tol is not specified use the model default
         if tol is None:
             tol = self.tol
@@ -612,7 +608,7 @@ class GeologicalModel:
 
     def create_and_add_fold_frame(
         self,
-        fold_frame_name:str,
+        fold_frame_name: str,
         *,
         fold_frame_data=None,
         interpolatortype="FDI",
@@ -641,14 +637,14 @@ class GeologicalModel:
             :class:`LoopStructural.modelling.features.builders.StructuralFrameBuilder`
             and :meth:`LoopStructural.modelling.features.builders.StructuralFrameBuilder.setup`
             and the interpolator, such as `domain` or `tol`
-        
+
 
         Returns
         -------
         fold_frame : FoldFrame
             the created fold frame
         """
-        
+
         if tol is None:
             tol = self.tol
 
@@ -724,7 +720,7 @@ class GeologicalModel:
         :class:`LoopStructural.modelling.features.builders.FoldedFeatureBuilder`
 
         """
-        
+
         if tol is None:
             tol = self.tol
 
@@ -753,11 +749,7 @@ class GeologicalModel:
         if foliation_data.shape[0] == 0:
             logger.warning(f"No data for {foliation_name}, skipping")
             return
-        series_builder.add_data_from_data_frame(
-            self.prepare_data(
-                foliation_data
-            )
-        )
+        series_builder.add_data_from_data_frame(self.prepare_data(foliation_data))
         self._add_faults(series_builder)
         # series_builder.add_data_to_interpolator(True)
         # build feature
@@ -824,7 +816,7 @@ class GeologicalModel:
         see :class:`LoopStructural.modelling.features.fold.FoldEvent`,
         :class:`LoopStructural.modelling.features.builders.FoldedFeatureBuilder`
         """
-       
+
         if tol is None:
             tol = self.tol
 
@@ -1151,7 +1143,7 @@ class GeologicalModel:
         return uc_feature
 
     def create_and_add_domain_fault(
-        self, fault_surface_data,*, nelements=10000, interpolatortype="FDI", **kwargs
+        self, fault_surface_data, *, nelements=10000, interpolatortype="FDI", **kwargs
     ):
         """
         Parameters
@@ -1205,7 +1197,7 @@ class GeologicalModel:
         fault_name: str,
         displacement: float,
         *,
-        fault_data:Optional[pd.DataFrame] = None,
+        fault_data: Optional[pd.DataFrame] = None,
         interpolatortype="FDI",
         tol=None,
         fault_slip_vector=None,
@@ -1290,7 +1282,7 @@ class GeologicalModel:
         if "data_region" in kwargs:
             kwargs.pop("data_region")
             logger.error("kwarg data_region currently not supported, disabling")
-        displacement_scaled = displacement 
+        displacement_scaled = displacement
         fault_frame_builder = FaultBuilder(
             interpolatortype,
             bounding_box=self.bounding_box,
@@ -1311,11 +1303,11 @@ class GeologicalModel:
         if fault_center is not None and ~np.isnan(fault_center).any():
             fault_center = self.scale(fault_center, inplace=False)
         if minor_axis:
-            minor_axis = minor_axis 
+            minor_axis = minor_axis
         if major_axis:
-            major_axis = major_axis 
+            major_axis = major_axis
         if intermediate_axis:
-            intermediate_axis = intermediate_axis 
+            intermediate_axis = intermediate_axis
         fault_frame_builder.create_data_from_geometry(
             fault_frame_data=self.prepare_data(fault_data),
             fault_center=fault_center,
@@ -1371,7 +1363,7 @@ class GeologicalModel:
 
         """
 
-        return self.bounding_box.reproject(points,inplace=inplace)
+        return self.bounding_box.reproject(points, inplace=inplace)
 
     # TODO move scale to bounding box/transformer
     def scale(self, points: np.ndarray, *, inplace: bool = False) -> np.ndarray:
@@ -1389,7 +1381,7 @@ class GeologicalModel:
         points : np.a::rray((N,3),dtype=double)
 
         """
-        return self.bounding_box.project(np.array(points).astype(float),inplace=inplace)    
+        return self.bounding_box.project(np.array(points).astype(float), inplace=inplace)
 
     def regular_grid(self, *, nsteps=None, shuffle=True, rescale=False, order="C"):
         """
@@ -1538,7 +1530,7 @@ class GeologicalModel:
             if f.type == FeatureType.FAULT:
                 disp = f.displacementfeature.evaluate_value(points)
                 vals[~np.isnan(disp)] += disp[~np.isnan(disp)]
-        return vals   # convert from restoration magnutude to displacement
+        return vals  # convert from restoration magnutude to displacement
 
     def get_feature_by_name(self, feature_name) -> GeologicalFeature:
         """Returns a feature from the mode given a name
@@ -1713,14 +1705,10 @@ class GeologicalModel:
                 logger.warning(f"Group {u['group']} not found in model")
                 continue
             feature = self.get_feature_by_name(u['group'])
-            
-            surfaces.extend(feature.surfaces([u['value']],
-                                                                            self.bounding_box,
-                                                                            name=name,
-                                                                            colours=[u['colour']]
-                                                                            ))
 
-      
+            surfaces.extend(
+                feature.surfaces([u['value']], self.bounding_box, name=name, colours=[u['colour']])
+            )
 
         return surfaces
 
