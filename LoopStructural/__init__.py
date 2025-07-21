@@ -19,6 +19,7 @@ ch.setFormatter(formatter)
 ch.setLevel(logging.WARNING)
 loggers = {}
 from .modelling.core.geological_model import GeologicalModel
+from .modelling.core.stratigraphic_column import StratigraphicColumn
 from .interpolators._api import LoopInterpolator
 from .interpolators import InterpolatorBuilder
 from .datatypes import BoundingBox
@@ -28,26 +29,43 @@ logger = getLogger(__name__)
 logger.info("Imported LoopStructural")
 
 
-def setLogging(level="info"):
+def setLogging(level="info", handler=None):
     """
-    Set the logging parameters for log file
+    Set the logging parameters for log file or custom handler
 
     Parameters
     ----------
-    filename : string
-        name of file or path to file
-    level : str, optional
-        'info', 'warning', 'error', 'debug' mapped to logging levels, by default 'info'
+    level : str
+        'info', 'warning', 'error', 'debug'
+    handler : logging.Handler, optional
+        A logging handler to use instead of the default StreamHandler
     """
     import LoopStructural
 
-    logger = getLogger(__name__)
-
     levels = get_levels()
-    level = levels.get(level, logging.WARNING)
-    LoopStructural.ch.setLevel(level)
+    level_value = levels.get(level, logging.WARNING)
 
+    # Create default handler if none provided
+    if handler is None:
+        handler = logging.StreamHandler()
+
+    formatter = logging.Formatter(
+        "%(levelname)s: %(asctime)s: %(filename)s:%(lineno)d -- %(message)s"
+    )
+    handler.setFormatter(formatter)
+    handler.setLevel(level_value)
+
+    # Replace handlers in all known loggers
     for name in LoopStructural.loggers:
         logger = logging.getLogger(name)
-        logger.setLevel(level)
-    logger.info(f'Set logging to {level}')
+        logger.handlers = []
+        logger.addHandler(handler)
+        logger.setLevel(level_value)
+
+    # Also apply to main module logger
+    main_logger = logging.getLogger(__name__)
+    main_logger.handlers = []
+    main_logger.addHandler(handler)
+    main_logger.setLevel(level_value)
+
+    main_logger.info(f"Set logging to {level}")

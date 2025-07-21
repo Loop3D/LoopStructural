@@ -37,7 +37,7 @@ from ...datatypes import BoundingBox
 from ...modelling.intrusions import IntrusionBuilder
 
 from ...modelling.intrusions import IntrusionFrameBuilder
-
+from .stratigraphic_column import StratigraphicColumn
 
 logger = getLogger(__name__)
 
@@ -61,14 +61,11 @@ class GeologicalModel:
         the origin of the model box
     parameters : dict
         a dictionary tracking the parameters used to build the model
-    
+
 
     """
 
-    def __init__(
-        self,
-        *args
-    ):
+    def __init__(self, *args):
         """
         Parameters
         ----------
@@ -78,7 +75,7 @@ class GeologicalModel:
             the origin of the model
         maximum : np.array(3,dtype=doubles)
             the maximum of the model
-        
+
         Examples
         --------
         Demo data
@@ -126,7 +123,8 @@ class GeologicalModel:
         self.feature_name_index = {}
         self._data = pd.DataFrame()  # None
 
-        self.stratigraphic_column = None
+        self.stratigraphic_column = StratigraphicColumn()
+
 
         self.tol = 1e-10 * np.max(self.bounding_box.maximum - self.bounding_box.origin)
         self._dtm = None
@@ -148,29 +146,6 @@ class GeologicalModel:
         # json["features"] = [f.to_json() for f in self.features]
         return json
 
-    # @classmethod
-    # def from_json(cls,json):
-    #     """
-    #     Create a geological model from a json string
-
-    #     Parameters
-    #     ----------
-    #     json : str
-    #         json string of the geological model
-
-    #     Returns
-    #     -------
-    #     model : GeologicalModel
-    #         a geological model
-    #     """
-    #     model = cls(json["model"]["origin"],json["model"]["maximum"],data=None)
-    #     model.stratigraphic_column = json["model"]["stratigraphic_column"]
-    #     model.nsteps = json["model"]["nsteps"]
-    #     model.data = pd.read_json(json["model"]["data"])
-    #     model.features = []
-    #     for feature in json["features"]:
-    #         model.features.append(GeologicalFeature.from_json(feature,model))
-    #     return model
     def __str__(self):
         return f"GeologicalModel with {len(self.features)} features"
 
@@ -180,6 +155,38 @@ class GeologicalModel:
     def prepare_data(self, data: pd.DataFrame) -> pd.DataFrame:
         data = data.copy()
         data[['X', 'Y', 'Z']] = self.bounding_box.project(data[['X', 'Y', 'Z']].to_numpy())
+
+        if "type" in data:
+            logger.warning("'type' is deprecated replace with 'feature_name' \n")
+            data.rename(columns={"type": "feature_name"}, inplace=True)
+        if "feature_name" not in data:
+            logger.error("Data does not contain 'feature_name' column")
+            raise BaseException("Cannot load data")
+        for h in all_heading():
+            if h not in data:
+                data[h] = np.nan
+                if h == "w":
+                    data[h] = 1.0
+                if h == "coord":
+                    data[h] = 0
+                if h == "polarity":
+                    data[h] = 1.0
+        # LS wants polarity as -1 or 1, change 0  to -1
+        data.loc[data["polarity"] == 0, "polarity"] = -1.0
+        data.loc[np.isnan(data["w"]), "w"] = 1.0
+        if "strike" in data and "dip" in data:
+            logger.info("Converting strike and dip to vectors")
+            mask = np.all(~np.isnan(data.loc[:, ["strike", "dip"]]), axis=1)
+            data.loc[mask, gradient_vec_names()] = (
+                strikedip2vector(data.loc[mask, "strike"], data.loc[mask, "dip"])
+                * data.loc[mask, "polarity"].to_numpy()[:, None]
+            )
+            data.drop(["strike", "dip"], axis=1, inplace=True)
+        data[['X', 'Y', 'Z', 'val', 'nx', 'ny', 'nz', 'gx', 'gy', 'gz', 'tx', 'ty', 'tz']] = data[
+            ['X', 'Y', 'Z', 'val', 'nx', 'ny', 'nz', 'gx', 'gy', 'gz', 'tx', 'ty', 'tz']
+        ].astype(float)
+        return data
+
 
         if "type" in data:
             logger.warning("'type' is deprecated replace with 'feature_name' \n")
@@ -403,7 +410,6 @@ class GeologicalModel:
         return [f.name for f in self.faults]
 
 
-
     def to_file(self, file):
         """Save a model to a pickle file requires dill
 
@@ -501,7 +507,6 @@ class GeologicalModel:
         # self._data[['X','Y','Z']] = self.bounding_box.project(self._data[['X','Y','Z']].to_numpy())
 
 
-
     def set_model_data(self, data):
         logger.warning("deprecated method. Model data can now be set using the data attribute")
         self.data = data.copy()
@@ -527,28 +532,34 @@ class GeologicalModel:
         }
 
         """
+        self.stratigraphic_column.clear()
         # if the colour for a unit hasn't been specified we can just sample from
         # a colour map e.g. tab20
         logger.info("Adding stratigraphic column to model")
-        random_colour = True
-        n_units = 0
+        DeprecationWarning(
+            "set_stratigraphic_column is deprecated, use model.stratigraphic_column.add_units instead"
+        )
         for g in stratigraphic_column.keys():
             for u in stratigraphic_column[g].keys():
-                if "colour" in stratigraphic_column[g][u]:
-                    random_colour = False
-                    break
-                n_units += 1
-        if random_colour:
-            import matplotlib.cm as cm
-
-            cmap = cm.get_cmap(cmap, n_units)
-            cmap_colours = cmap.colors
-            ci = 0
-            for g in stratigraphic_column.keys():
-                for u in stratigraphic_column[g].keys():
-                    stratigraphic_column[g][u]["colour"] = cmap_colours[ci, :]
-                    ci += 1
-        self.stratigraphic_column = stratigraphic_column
+                thickness = 0
+                if "min" in stratigraphic_column[g][u] and "max" in stratigraphic_column[g][u]:
+                    min_val = stratigraphic_column[g][u]["min"]
+                    max_val = stratigraphic_column[g][u].get("max", None)
+                    thickness = max_val - min_val if max_val is not None else None
+                logger.warning(
+                    f"""
+                               model.stratigraphic_column.add_unit({u},
+                               colour={stratigraphic_column[g][u].get("colour", None)},
+                                 thickness={thickness})"""
+                )
+                self.stratigraphic_column.add_unit(
+                    u,
+                    colour=stratigraphic_column[g][u].get("colour", None),
+                    thickness=thickness,
+                )
+            self.stratigraphic_column.add_unconformity(
+                name=''.join([g, 'unconformity']),
+            )
 
     def create_and_add_foliation(
         self,
@@ -595,7 +606,7 @@ class GeologicalModel:
         An interpolator will be chosen by calling :meth:`LoopStructural.GeologicalModel.get_interpolator`
 
         """
-        
+
         # if tol is not specified use the model default
         if tol is None:
             tol = self.tol
@@ -631,7 +642,7 @@ class GeologicalModel:
 
     def create_and_add_fold_frame(
         self,
-        fold_frame_name:str,
+        fold_frame_name: str,
         *,
         fold_frame_data=None,
         interpolatortype="FDI",
@@ -660,14 +671,14 @@ class GeologicalModel:
             :class:`LoopStructural.modelling.features.builders.StructuralFrameBuilder`
             and :meth:`LoopStructural.modelling.features.builders.StructuralFrameBuilder.setup`
             and the interpolator, such as `domain` or `tol`
-        
+
 
         Returns
         -------
         fold_frame : FoldFrame
             the created fold frame
         """
-        
+
         if tol is None:
             tol = self.tol
 
@@ -743,7 +754,7 @@ class GeologicalModel:
         :class:`LoopStructural.modelling.features.builders.FoldedFeatureBuilder`
 
         """
-        
+
         if tol is None:
             tol = self.tol
 
@@ -772,11 +783,8 @@ class GeologicalModel:
         if foliation_data.shape[0] == 0:
             logger.warning(f"No data for {foliation_name}, skipping")
             return
-        series_builder.add_data_from_data_frame(
-            self.prepare_data(
-                foliation_data
-            )
-        )
+        series_builder.add_data_from_data_frame(self.prepare_data(foliation_data))
+
         self._add_faults(series_builder)
         # series_builder.add_data_to_interpolator(True)
         # build feature
@@ -843,7 +851,7 @@ class GeologicalModel:
         see :class:`LoopStructural.modelling.features.fold.FoldEvent`,
         :class:`LoopStructural.modelling.features.builders.FoldedFeatureBuilder`
         """
-       
+
         if tol is None:
             tol = self.tol
 
@@ -1170,7 +1178,7 @@ class GeologicalModel:
         return uc_feature
 
     def create_and_add_domain_fault(
-        self, fault_surface_data,*, nelements=10000, interpolatortype="FDI", **kwargs
+        self, fault_surface_data, *, nelements=10000, interpolatortype="FDI", **kwargs
     ):
         """
         Parameters
@@ -1224,7 +1232,7 @@ class GeologicalModel:
         fault_name: str,
         displacement: float,
         *,
-        fault_data:Optional[pd.DataFrame] = None,
+        fault_data: Optional[pd.DataFrame] = None,
         interpolatortype="FDI",
         tol=None,
         fault_slip_vector=None,
@@ -1309,7 +1317,7 @@ class GeologicalModel:
         if "data_region" in kwargs:
             kwargs.pop("data_region")
             logger.error("kwarg data_region currently not supported, disabling")
-        displacement_scaled = displacement 
+        displacement_scaled = displacement
         fault_frame_builder = FaultBuilder(
             interpolatortype,
             bounding_box=self.bounding_box,
@@ -1330,11 +1338,11 @@ class GeologicalModel:
         if fault_center is not None and ~np.isnan(fault_center).any():
             fault_center = self.scale(fault_center, inplace=False)
         if minor_axis:
-            minor_axis = minor_axis 
+            minor_axis = minor_axis
         if major_axis:
-            major_axis = major_axis 
+            major_axis = major_axis
         if intermediate_axis:
-            intermediate_axis = intermediate_axis 
+            intermediate_axis = intermediate_axis
         fault_frame_builder.create_data_from_geometry(
             fault_frame_data=self.prepare_data(fault_data),
             fault_center=fault_center,
@@ -1390,7 +1398,8 @@ class GeologicalModel:
 
         """
 
-        return self.bounding_box.reproject(points,inplace=inplace)
+        return self.bounding_box.reproject(points, inplace=inplace)
+
 
     # TODO move scale to bounding box/transformer
     def scale(self, points: np.ndarray, *, inplace: bool = False) -> np.ndarray:
@@ -1408,7 +1417,8 @@ class GeologicalModel:
         points : np.a::rray((N,3),dtype=double)
 
         """
-        return self.bounding_box.project(np.array(points).astype(float),inplace=inplace)    
+        return self.bounding_box.project(np.array(points).astype(float), inplace=inplace)
+
 
     def regular_grid(self, *, nsteps=None, shuffle=True, rescale=False, order="C"):
         """
@@ -1557,7 +1567,7 @@ class GeologicalModel:
             if f.type == FeatureType.FAULT:
                 disp = f.displacementfeature.evaluate_value(points)
                 vals[~np.isnan(disp)] += disp[~np.isnan(disp)]
-        return vals   # convert from restoration magnutude to displacement
+        return vals  # convert from restoration magnutude to displacement
 
     def get_feature_by_name(self, feature_name) -> GeologicalFeature:
         """Returns a feature from the mode given a name
@@ -1726,30 +1736,15 @@ class GeologicalModel:
         units = []
         if self.stratigraphic_column is None:
             return []
-        for group in self.stratigraphic_column.keys():
-            if group == "faults":
+        units = self.stratigraphic_column.get_isovalues()
+        for name, u in units.items():
+            if u['group'] not in self:
+                logger.warning(f"Group {u['group']} not found in model")
                 continue
-            for series in self.stratigraphic_column[group].values():
-                series['feature_name'] = group
-                units.append(series)
-        unit_table = pd.DataFrame(units)
-        for u in unit_table['feature_name'].unique():
+            feature = self.get_feature_by_name(u['group'])
 
-            values = unit_table.loc[unit_table['feature_name'] == u, 'min' if bottoms else 'max']
-            if 'name' not in unit_table.columns:
-                unit_table['name'] = unit_table['feature_name']
-
-            names = unit_table[unit_table['feature_name'] == u]['name']
-            values = values.loc[~np.logical_or(values == np.inf, values == -np.inf)]
             surfaces.extend(
-                self.get_feature_by_name(u).surfaces(
-                    values.to_list(),
-                    self.bounding_box,
-                    name=names.loc[values.index].to_list(),
-                    colours=unit_table.loc[unit_table['feature_name'] == u, 'colour'].tolist()[
-                        1:
-                    ],  # we don't isosurface basement, no value
-                )
+                feature.surfaces([u['value']], self.bounding_box, name=name, colours=[u['colour']])
             )
 
         return surfaces
