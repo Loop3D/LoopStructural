@@ -1,5 +1,15 @@
 # Changelog
 
+## [1.6.16](https://github.com/Loop3D/LoopStructural/compare/v1.6.15...v1.6.16) (2025-07-21)
+
+
+### Bug Fixes
+
+* add ability to pass handler to loopstructural logger ([dfebd48](https://github.com/Loop3D/LoopStructural/commit/dfebd487c72830b5e5899660663db93b33e05e0b))
+* add new stratigraphic column implementation ([a495bb1](https://github.com/Loop3D/LoopStructural/commit/a495bb16102916b7d53b15b1ab60b939ee2e3440))
+* remove initialisation ([66a6f1d](https://github.com/Loop3D/LoopStructural/commit/66a6f1d965c59bc0058e272ae671f4ba1aa90756))
+* update stratigraphic column from dictionary ([2f6e0ed](https://github.com/Loop3D/LoopStructural/commit/2f6e0edd2950f497595bfbcfc264d38922a6be0b))
+
 ## [1.6.15](https://github.com/Loop3D/LoopStructural/compare/v1.6.14...v1.6.15) (2025-07-08)
 
 
