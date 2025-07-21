@@ -64,7 +64,10 @@ class StratigraphicUnit(StratigraphicColumnElement):
         """
         Converts the stratigraphic unit to a dictionary representation.
         """
-        return {"name": self.name, "colour": self.colour, "thickness": self.thickness}
+        colour = self.colour
+        if isinstance(colour, np.ndarray):
+            colour = colour.astype(float).tolist()
+        return {"name": self.name, "colour": colour, "thickness": self.thickness, 'uuid': self.uuid}
 
     @classmethod
     def from_dict(cls, data):
@@ -100,6 +103,7 @@ class StratigraphicUnconformity(StratigraphicColumnElement):
         Initializes the StratigraphicUnconformity with a name and an optional description.
         """
         super().__init__(uuid)
+
         self.name = name
         if unconformity_type not in [UnconformityType.ERODE, UnconformityType.ONLAP]:
             raise ValueError("Invalid unconformity type")
@@ -164,11 +168,14 @@ class StratigraphicColumn:
         """
         self.order = [StratigraphicUnit(name='Basement', colour='grey', thickness=np.inf),StratigraphicUnconformity(name='Base Unconformity', unconformity_type=UnconformityType.ERODE)]
         self.group_mapping = {}
-    def clear(self):
+    def clear(self,basement=True):
         """
         Clears the stratigraphic column, removing all elements.
         """
-        self.order = [StratigraphicUnit(name='Basement', colour='grey', thickness=np.inf),StratigraphicUnconformity(name='Base Unconformity', unconformity_type=UnconformityType.ERODE)]
+        if basement:
+            self.order = [StratigraphicUnit(name='Basement', colour='grey', thickness=np.inf),StratigraphicUnconformity(name='Base Unconformity', unconformity_type=UnconformityType.ERODE)]
+        else:
+            self.order = []
         self.group_mapping = {}
 
     def add_unit(self, name,*, colour=None, thickness=None, where='top'):
@@ -223,7 +230,23 @@ class StratigraphicColumn:
                 return unit
 
         return None
+    def get_unconformity_by_name(self, name):
+        """
+        Retrieves an unconformity by its name from the stratigraphic column.
+        """
+        for unconformity in self.order:
+            if isinstance(unconformity, StratigraphicUnconformity) and unconformity.name == name:
+                return unconformity
 
+        return None
+    def get_element_by_uuid(self, uuid):
+        """
+        Retrieves an element by its uuid from the stratigraphic column.
+        """
+        for element in self.order:
+            if element.uuid == uuid:
+                return element
+        raise KeyError(f"No element found with uuid: {uuid}")
     def add_element(self, element):
         """
         Adds a StratigraphicColumnElement to the stratigraphic column.
@@ -249,7 +272,7 @@ class StratigraphicColumn:
                 else self.group_mapping[f'Group_{i}']
             )
         )
-        for e in self.order:
+        for e in reversed(self.order):
             if isinstance(e, StratigraphicUnit):
                 group.units.append(e)
             else:
@@ -327,7 +350,20 @@ class StratigraphicColumn:
         return {
             "elements": [element.to_dict() for element in self.order],
         }
-
+    def update_from_dict(self, data):
+        """
+        Updates the stratigraphic column from a dictionary representation.
+        """
+        if not isinstance(data, dict):
+            raise TypeError("Data must be a dictionary")
+        self.clear(basement=False)
+        elements_data = data.get("elements", [])
+        for element_data in elements_data:
+            if "unconformity_type" in element_data:
+                element = StratigraphicUnconformity.from_dict(element_data)
+            else:
+                element = StratigraphicUnit.from_dict(element_data)
+            self.add_element(element)
     @classmethod
     def from_dict(cls, data):
         """
@@ -336,6 +372,7 @@ class StratigraphicColumn:
         if not isinstance(data, dict):
             raise TypeError("Data must be a dictionary")
         column = cls()
+        column.clear(basement=False)
         elements_data = data.get("elements", [])
         for element_data in elements_data:
             if "unconformity_type" in element_data:
