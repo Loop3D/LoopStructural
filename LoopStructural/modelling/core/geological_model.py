@@ -125,6 +125,7 @@ class GeologicalModel:
 
         self.stratigraphic_column = StratigraphicColumn()
 
+
         self.tol = 1e-10 * np.max(self.bounding_box.maximum - self.bounding_box.origin)
         self._dtm = None
 
@@ -186,6 +187,37 @@ class GeologicalModel:
         ].astype(float)
         return data
 
+
+        if "type" in data:
+            logger.warning("'type' is deprecated replace with 'feature_name' \n")
+            data.rename(columns={"type": "feature_name"}, inplace=True)
+        if "feature_name" not in data:
+            logger.error("Data does not contain 'feature_name' column")
+            raise BaseException("Cannot load data")
+        for h in all_heading():
+            if h not in data:
+                data[h] = np.nan
+                if h == "w":
+                    data[h] = 1.0
+                if h == "coord":
+                    data[h] = 0
+                if h == "polarity":
+                    data[h] = 1.0
+        # LS wants polarity as -1 or 1, change 0  to -1
+        data.loc[data["polarity"] == 0, "polarity"] = -1.0
+        data.loc[np.isnan(data["w"]), "w"] = 1.0
+        if "strike" in data and "dip" in data:
+            logger.info("Converting strike and dip to vectors")
+            mask = np.all(~np.isnan(data.loc[:, ["strike", "dip"]]), axis=1)
+            data.loc[mask, gradient_vec_names()] = (
+                strikedip2vector(data.loc[mask, "strike"], data.loc[mask, "dip"])
+                * data.loc[mask, "polarity"].to_numpy()[:, None]
+            )
+            data.drop(["strike", "dip"], axis=1, inplace=True)
+        data[['X', 'Y', 'Z', 'val', 'nx', 'ny', 'nz', 'gx', 'gy', 'gz', 'tx', 'ty', 'tz']] = data[
+            ['X', 'Y', 'Z', 'val', 'nx', 'ny', 'nz', 'gx', 'gy', 'gz', 'tx', 'ty', 'tz']
+        ].astype(float)
+        return data
     @classmethod
     def from_processor(cls, processor):
         """Builds a model from a :class:`LoopStructural.modelling.input.ProcessInputData` object
@@ -377,6 +409,7 @@ class GeologicalModel:
         """
         return [f.name for f in self.faults]
 
+
     def to_file(self, file):
         """Save a model to a pickle file requires dill
 
@@ -449,14 +482,14 @@ class GeologicalModel:
         ----------
         data : pandas data frame
             with column headers corresponding to the
-         type, X, Y, Z, nx, ny, nz, val, strike, dip, dip_dir, plunge,
+         feature_name, X, Y, Z, nx, ny, nz, val, strike, dip, dip_dir, plunge,
          plunge_dir, azimuth
 
         Returns
         -------
         Note
         ----
-        Type can be any unique identifier for the feature the data point
+        feature_name can be any unique identifier for the feature the data point
         'eg' 'S0', 'S2', 'F1_axis'
         it is then used by the create functions to get the correct data
         """
@@ -472,6 +505,7 @@ class GeologicalModel:
         logger.info(f"Adding data to GeologicalModel with {len(data)} data points")
         self._data = data.copy()
         # self._data[['X','Y','Z']] = self.bounding_box.project(self._data[['X','Y','Z']].to_numpy())
+
 
     def set_model_data(self, data):
         logger.warning("deprecated method. Model data can now be set using the data attribute")
@@ -750,6 +784,7 @@ class GeologicalModel:
             logger.warning(f"No data for {foliation_name}, skipping")
             return
         series_builder.add_data_from_data_frame(self.prepare_data(foliation_data))
+
         self._add_faults(series_builder)
         # series_builder.add_data_to_interpolator(True)
         # build feature
@@ -1365,6 +1400,7 @@ class GeologicalModel:
 
         return self.bounding_box.reproject(points, inplace=inplace)
 
+
     # TODO move scale to bounding box/transformer
     def scale(self, points: np.ndarray, *, inplace: bool = False) -> np.ndarray:
         """Take points in UTM coordinates and reproject
@@ -1382,6 +1418,7 @@ class GeologicalModel:
 
         """
         return self.bounding_box.project(np.array(points).astype(float), inplace=inplace)
+
 
     def regular_grid(self, *, nsteps=None, shuffle=True, rescale=False, order="C"):
         """
@@ -1633,15 +1670,15 @@ class GeologicalModel:
         for f in self.features:
             if f.type == FeatureType.FAULT:
                 nfeatures += 3
-                total_dof += f[0].interpolator.nx * 3
+                total_dof += f[0].interpolator.dof * 3
                 continue
             if isinstance(f, StructuralFrame):
                 nfeatures += 3
-                total_dof += f[0].interpolator.nx * 3
+                total_dof += f[0].interpolator.dof * 3
                 continue
             if f.type == FeatureType.INTERPOLATED:
                 nfeatures += 1
-                total_dof += f.interpolator.nx
+                total_dof += f.interpolator.dof
                 continue
         if verbose:
             print(

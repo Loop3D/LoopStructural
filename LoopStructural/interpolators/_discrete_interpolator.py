@@ -42,7 +42,7 @@ class DiscreteInterpolator(GeologicalInterpolator):
 
         self.shape = "rectangular"
         if self.shape == "square":
-            self.B = np.zeros(self.nx)
+            self.B = np.zeros(self.dof)
         self.c_ = 0
 
         self.solver = "cg"
@@ -60,7 +60,7 @@ class DiscreteInterpolator(GeologicalInterpolator):
         self.non_linear_constraints = []
         self.constraints = {}
         self.interpolation_weights = {}
-        logger.info("Creating discrete interpolator with {} degrees of freedom".format(self.nx))
+        logger.info("Creating discrete interpolator with {} degrees of freedom".format(self.dof))
         self.type = InterpolatorType.BASE_DISCRETE
 
     def set_nelements(self, nelements: int) -> int:
@@ -78,7 +78,7 @@ class DiscreteInterpolator(GeologicalInterpolator):
         return self.support.n_elements
 
     @property
-    def nx(self) -> int:
+    def dof(self) -> int:
         """Number of degrees of freedom for the interpolator
 
         Returns
@@ -125,7 +125,7 @@ class DiscreteInterpolator(GeologicalInterpolator):
         # self.region_function = region
         logger.info(
             "Cannot use region at the moment. Interpolation now uses region and has {} degrees of freedom".format(
-                self.nx
+                self.dof
             )
         )
 
@@ -175,7 +175,7 @@ class DiscreteInterpolator(GeologicalInterpolator):
         """
         self.constraints = {}
         self.c_ = 0
-        self.regularisation_scale = np.ones(self.nx)
+        self.regularisation_scale = np.ones(self.dof)
         logger.info("Resetting interpolation constraints")
 
     def add_constraints_to_least_squares(self, A, B, idc, w=1.0, name="undefined"):
@@ -219,6 +219,7 @@ class DiscreteInterpolator(GeologicalInterpolator):
         # normalise by rows of A
         # Should this be done? It should make the solution more stable
         length = np.linalg.norm(A, axis=1)
+        # length[length>0] = 1.
         B[length > 0] /= length[length > 0]
         # going to assume if any are nan they are all nan
         mask = np.any(np.isnan(A), axis=1)
@@ -245,7 +246,7 @@ class DiscreteInterpolator(GeologicalInterpolator):
         rows = np.tile(rows, (A.shape[-1], 1)).T
         self.constraints[name] = {
             'matrix': sparse.coo_matrix(
-                (A.flatten(), (rows.flatten(), idc.flatten())), shape=(n_rows, self.nx)
+                (A.flatten(), (rows.flatten(), idc.flatten())), shape=(n_rows, self.dof)
             ).tocsc(),
             'b': B.flatten(),
             'w': w,
@@ -286,7 +287,7 @@ class DiscreteInterpolator(GeologicalInterpolator):
         A : numpy array
             matrix of coefficients
         bounds : numpy array
-            nx3 lower, upper, 1
+            n*3 lower, upper, 1
         idc : numpy array
             index of constraints in the matrix
         Returns
@@ -296,14 +297,14 @@ class DiscreteInterpolator(GeologicalInterpolator):
         # map from mesh node index to region node index
         gi = np.zeros(self.support.n_nodes, dtype=int)
         gi[:] = -1
-        gi[self.region] = np.arange(0, self.nx, dtype=int)
+        gi[self.region] = np.arange(0, self.dof, dtype=int)
         idc = gi[idc]
         rows = np.arange(0, idc.shape[0])
         rows = np.tile(rows, (A.shape[-1], 1)).T
 
         self.ineq_constraints[name] = {
             'matrix': sparse.coo_matrix(
-                (A.flatten(), (rows.flatten(), idc.flatten())), shape=(rows.shape[0], self.nx)
+                (A.flatten(), (rows.flatten(), idc.flatten())), shape=(rows.shape[0], self.dof)
             ).tocsc(),
             "bounds": bounds,
         }
@@ -431,7 +432,7 @@ class DiscreteInterpolator(GeologicalInterpolator):
             np.ones((value.shape[0], 1)),
             l,
             u,
-            np.arange(0, self.nx, dtype=int),
+            np.arange(0, self.dof, dtype=int),
         )
 
     def add_equality_constraints(self, node_idx, values, name="undefined"):
@@ -454,7 +455,7 @@ class DiscreteInterpolator(GeologicalInterpolator):
         # map from mesh node index to region node index
         gi = np.zeros(self.support.n_nodes)
         gi[:] = -1
-        gi[self.region] = np.arange(0, self.nx)
+        gi[self.region] = np.arange(0, self.dof)
         idc = gi[node_idx]
         outside = ~(idc == -1)
 
@@ -515,7 +516,7 @@ class DiscreteInterpolator(GeologicalInterpolator):
         if len(self.equal_constraints) > 0:
             ATA = A.T.dot(A)
             ATB = A.T.dot(B)
-            logger.info(f"Equality block is {self.eq_const_c} x {self.nx}")
+            logger.info(f"Equality block is {self.eq_const_c} x {self.dof}")
             # solving constrained least squares using
             # | ATA CT | |c| = b
             # | C   0  | |y|   d
@@ -540,7 +541,7 @@ class DiscreteInterpolator(GeologicalInterpolator):
 
             C = sparse.coo_matrix(
                 (np.array(a), (np.array(rows), cols)),
-                shape=(self.eq_const_c, self.nx),
+                shape=(self.eq_const_c, self.dof),
                 dtype=float,
             ).tocsr()
 
@@ -557,7 +558,7 @@ class DiscreteInterpolator(GeologicalInterpolator):
             mats.append(c['matrix'])
             bounds.append(c['bounds'])
         if len(mats) == 0:
-            return sparse.csr_matrix((0, self.nx), dtype=float), np.zeros((0, 3))
+            return sparse.csr_matrix((0, self.dof), dtype=float), np.zeros((0, 3))
         Q = sparse.vstack(mats)
         bounds = np.vstack(bounds)
         return Q, bounds

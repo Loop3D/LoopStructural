@@ -3,6 +3,7 @@ Interpolators and interpolation supports
 
 """
 
+
 __all__ = [
     "InterpolatorType",
     "GeologicalInterpolator",
@@ -21,39 +22,12 @@ __all__ = [
     "StructuredGrid2D",
     "P2UnstructuredTetMesh",
 ]
-from enum import IntEnum
+from ._interpolatortype import InterpolatorType
 
 from ..utils import getLogger
 
 logger = getLogger(__name__)
 
-
-class InterpolatorType(IntEnum):
-    """
-    Enum for the different interpolator types
-
-    1-9 should cover interpolators with supports
-    9+ are data supported
-    """
-
-    BASE = 0
-    BASE_DISCRETE = 1
-    FINITE_DIFFERENCE = 2
-    DISCRETE_FOLD = 3
-    PIECEWISE_LINEAR = 4
-    PIECEWISE_QUADRATIC = 5
-    BASE_DATA_SUPPORTED = 10
-    SURFE = 11
-
-
-interpolator_string_map = {
-    "FDI": InterpolatorType.FINITE_DIFFERENCE,
-    "PLI": InterpolatorType.PIECEWISE_LINEAR,
-    "P2": InterpolatorType.PIECEWISE_QUADRATIC,
-    "P1": InterpolatorType.PIECEWISE_LINEAR,
-    "DFI": InterpolatorType.DISCRETE_FOLD,
-    'surfe': InterpolatorType.SURFE,
-}
 from ..interpolators._geological_interpolator import GeologicalInterpolator
 from ..interpolators._discrete_interpolator import DiscreteInterpolator
 from ..interpolators.supports import (
@@ -79,7 +53,7 @@ from ..interpolators._discrete_fold_interpolator import (
 )
 from ..interpolators._p2interpolator import P2Interpolator
 from ..interpolators._p1interpolator import P1Interpolator
-
+from ..interpolators._constant_norm import ConstantNormP1Interpolator, ConstantNormFDIInterpolator
 try:
     from ..interpolators._surfe_wrapper import SurfeRBFInterpolator
 except ImportError:
@@ -93,6 +67,24 @@ except ImportError:
             raise ImportError(
                 "Surfe cannot be imported. Please install Surfe. pip install surfe/ conda install -c loop3d surfe"
             ) 
+
+# Ensure compatibility between the fallback and imported class
+SurfeRBFInterpolator = SurfeRBFInterpolator
+
+
+interpolator_string_map = {
+    "FDI": InterpolatorType.FINITE_DIFFERENCE,
+    "PLI": InterpolatorType.PIECEWISE_LINEAR,
+    "P2": InterpolatorType.PIECEWISE_QUADRATIC,
+    "P1": InterpolatorType.PIECEWISE_LINEAR,
+    "DFI": InterpolatorType.DISCRETE_FOLD,
+    'surfe': InterpolatorType.SURFE,
+    "FDI_CN": InterpolatorType.FINITE_DIFFERENCE_CONSTANT_NORM,
+    "P1_CN": InterpolatorType.PIECEWISE_LINEAR_CONSTANT_NORM,
+
+}
+
+# Define the mapping after all imports
 interpolator_map = {
     InterpolatorType.BASE: GeologicalInterpolator,
     InterpolatorType.BASE_DISCRETE: DiscreteInterpolator,
@@ -102,6 +94,8 @@ interpolator_map = {
     InterpolatorType.PIECEWISE_QUADRATIC: P2Interpolator,
     InterpolatorType.BASE_DATA_SUPPORTED: GeologicalInterpolator,
     InterpolatorType.SURFE: SurfeRBFInterpolator,
+    InterpolatorType.PIECEWISE_LINEAR_CONSTANT_NORM: ConstantNormP1Interpolator,
+    InterpolatorType.FINITE_DIFFERENCE_CONSTANT_NORM: ConstantNormFDIInterpolator,
 }
 
 support_interpolator_map = {
@@ -119,9 +113,18 @@ support_interpolator_map = {
         3: SupportType.DataSupported,
         2: SupportType.DataSupported,
     },
+    InterpolatorType.PIECEWISE_LINEAR_CONSTANT_NORM:{
+        3: SupportType.TetMesh,
+        2: SupportType.P1Unstructured2d,
+    },
+    InterpolatorType.FINITE_DIFFERENCE_CONSTANT_NORM: {
+        3: SupportType.StructuredGrid,
+        2: SupportType.StructuredGrid2D,
+    }
 }
 
 from ._interpolator_factory import InterpolatorFactory
 from ._interpolator_builder import InterpolatorBuilder
 
-# from ._api import LoopInterpolator
+
+
