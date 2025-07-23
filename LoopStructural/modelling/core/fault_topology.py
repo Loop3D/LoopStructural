@@ -1,5 +1,3 @@
-
-
 from xmlrpc.client import Fault
 from ..features.fault import FaultSegment
 from ...utils import Observable
@@ -26,7 +24,7 @@ class FaultTopology(Observable['FaultTopology']):
         """
         if not isinstance(fault, str):
             raise TypeError("Expected a fault name.")
-        
+
         self.faults.append(fault)
         self.notify('fault_added', fault=fault)
     def add_abutting_relationship(self, fault_name: str, abutting_fault: str):
@@ -48,10 +46,9 @@ class FaultTopology(Observable['FaultTopology']):
         if fault_name not in self.faults:
             raise ValueError("Fault must be part of the fault topology.")
 
-        group = self.stratigraphic_column.get_group_for_unit_name(unit_name)
-        if group is None:
+        if unit_name is None:
             raise ValueError(f"No stratigraphic group found for unit name: {unit_name}")
-        self.stratigraphy_fault_relationships[(group,fault_name)] = True
+        self.stratigraphy_fault_relationships[(unit_name,fault_name)] = True
 
         self.notify('stratigraphy_fault_relationship_added', {'unit': unit_name, 'fault': fault_name})
     def add_faulted_relationship(self, fault_name: str, faulted_fault_name: str):
@@ -89,7 +86,7 @@ class FaultTopology(Observable['FaultTopology']):
         """
         if (fault_name, related_fault_name) in self.adjacency:
             self.adjacency[(fault_name, related_fault_name)] = new_relationship_type
-        
+
         else:
             raise ValueError(f"No relationship found between {fault_name} and {related_fault_name}.")
         self.notify('relationship_type_changed', {'fault': fault_name, 'related_fault': related_fault_name, 'new_relationship_type': new_relationship_type})
@@ -112,7 +109,7 @@ class FaultTopology(Observable['FaultTopology']):
         Returns a list of all faults in the topology.
         """
         return self.faults
-    
+
     def get_stratigraphy_fault_relationships(self):
         """
         Returns a dictionary of stratigraphic unit to fault relationships.
@@ -122,46 +119,42 @@ class FaultTopology(Observable['FaultTopology']):
         units_group_pairs = self.stratigraphic_column.get_group_unit_pairs() 
         matrix = np.zeros((len(self.faults), len(units_group_pairs)), dtype=int)
         for i, fault in enumerate(self.faults):
-            for j, (_unit_name, group) in enumerate(units_group_pairs):
-                if (group, fault) in self.stratigraphy_fault_relationships:
+            for j, (unit_name, _group) in enumerate(units_group_pairs):
+                if (unit_name, fault) in self.stratigraphy_fault_relationships:
                     matrix[i, j] = 1
-                
+
         return matrix
     def get_fault_stratigraphic_relationship(self, unit_name: str, fault:str) -> bool:
         """
         Returns a dictionary of fault to stratigraphic unit relationships.
         """
-        group = self.stratigraphic_column.get_group_for_unit_name(unit_name)
-        if group is None:
+        if unit_name is None:
             raise ValueError(f"No stratigraphic group found for unit name: {unit_name}")
-        if (group, fault) not in self.stratigraphy_fault_relationships:
+        if (unit_name, fault) not in self.stratigraphy_fault_relationships:
             return False
-        return self.stratigraphy_fault_relationships[(group, fault)]
-    
-        
+        return self.stratigraphy_fault_relationships[(unit_name, fault)]
+
     def update_fault_stratigraphy_relationship(self, unit_name: str, fault_name: str, flag: bool = True):
         """
         Updates the relationship between a stratigraphic unit and a fault.
         """
-        group = self.stratigraphic_column.get_group_for_unit_name(unit_name)
         if not flag:
-            if (group, fault_name) in self.stratigraphy_fault_relationships:
-                del self.stratigraphy_fault_relationships[(group.name, fault_name)]
+            if (unit_name, fault_name) in self.stratigraphy_fault_relationships:
+                del self.stratigraphy_fault_relationships[(unit_name, fault_name)]
         else:
-            self.stratigraphy_fault_relationships[(group.name, fault_name)] = flag
-        
+            self.stratigraphy_fault_relationships[(unit_name, fault_name)] = flag
+
         self.notify('stratigraphy_fault_relationship_updated', {'unit': unit_name, 'fault': fault_name})
 
     def remove_fault_stratigraphy_relationship(self, unit_name: str, fault_name: str):
         """
         Removes a relationship between a stratigraphic unit and a fault.
         """
-        group = self.stratigraphic_column.get_group_for_unit_name(unit_name)
-        if (group, fault_name) not in self.stratigraphy_fault_relationships:
+        if (unit_name, fault_name) not in self.stratigraphy_fault_relationships:
             raise ValueError(f"No relationship found between unit {unit_name} and fault {fault_name}.")
         else:
-            self.stratigraphy_fault_relationships.pop((group, fault_name), None)
-        
+            self.stratigraphy_fault_relationships.pop((unit_name, fault_name), None)
+
         self.notify('stratigraphy_fault_relationship_removed', {'unit': unit_name, 'fault': fault_name})
     def get_matrix(self):
         """
@@ -186,7 +179,7 @@ class FaultTopology(Observable['FaultTopology']):
             "adjacency": self.adjacency,
             "stratigraphy_fault_relationships": self.stratigraphy_fault_relationships,
         }
-    
+
     def update_from_dict(self, data):
         """
         Updates the fault topology from a dictionary representation.
@@ -206,7 +199,7 @@ class FaultTopology(Observable['FaultTopology']):
                     if fault_name not in self.faults:
                         self.add_fault(fault_name)
                     self.add_stratigraphy_fault_relationship(unit_name, fault_name)
-    
+
     @classmethod
     def from_dict(cls, data):
         """
@@ -219,7 +212,7 @@ class FaultTopology(Observable['FaultTopology']):
                 stratigraphic_column = StratigraphicColumn.from_dict(stratigraphic_column)
         elif not isinstance(stratigraphic_column, StratigraphicColumn):
             raise TypeError("Expected 'stratigraphic_column' to be a StratigraphicColumn instance or dict.")
-        
+
         topology = cls(stratigraphic_column)
         topology.update_from_dict(data)
         return topology
