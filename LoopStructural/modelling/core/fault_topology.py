@@ -1,19 +1,21 @@
-from click import group
-from matplotlib.pyplot import cla
 
-from LoopStructural.modelling.core import stratigraphic_column
+
+from xmlrpc.client import Fault
 from ..features.fault import FaultSegment
+from ...utils import Observable
 import enum
 import numpy as np
 class FaultRelationshipType(enum.Enum):
     ABUTTING = "abutting"
     FAULTED = "faulted"
+    NONE = "none"
 
-class FaultTopology:
+class FaultTopology(Observable['FaultTopology']):
     """A graph representation of the relationships between faults and the
      relationship with stratigraphic units.
     """
     def __init__(self, stratigraphic_column: 'StratigraphicColumn'):
+        super().__init__()
         self.faults = []
         self.stratigraphic_column = stratigraphic_column
         self.adjacency = {}
@@ -22,10 +24,11 @@ class FaultTopology:
         """
         Adds a fault to the fault topology.
         """
-        if not isinstance(fault, FaultSegment):
-            raise TypeError("Expected a Fault instance.")
+        if not isinstance(fault, str):
+            raise TypeError("Expected a fault name.")
+        
         self.faults.append(fault)
-
+        self.notify('fault_added', fault=fault)
     def add_abutting_relationship(self, fault_name: str, abutting_fault: str):
         """
         Adds an abutting relationship between two faults.
@@ -37,6 +40,7 @@ class FaultTopology:
             self.adjacency[fault_name] = []
 
         self.adjacency[(fault_name, abutting_fault)] = FaultRelationshipType.ABUTTING
+        self.notify('abutting_relationship_added', {'fault': fault_name, 'abutting_fault': abutting_fault})
     def add_stratigraphy_fault_relationship(self, unit_name:str, fault_name: str):
         """
         Adds a relationship between a stratigraphic unit and a fault.
@@ -51,7 +55,7 @@ class FaultTopology:
             self.stratigraphy_fault_relationships[unit_name] = []
         if fault_name not in self.stratigraphy_fault_relationships[unit_name]:
             self.stratigraphy_fault_relationships[unit_name].append(fault_name)
-
+        self.notify('stratigraphy_fault_relationship_added', {'unit': unit_name, 'fault': fault_name})
     def add_faulted_relationship(self, fault_name: str, faulted_fault_name: str):
         """
         Adds a faulted relationship between two faults.
@@ -63,6 +67,7 @@ class FaultTopology:
             self.adjacency[fault_name] = []
 
         self.adjacency[(fault_name, faulted_fault_name)] = FaultRelationshipType.FAULTED
+        self.notify('faulted_relationship_added', {'fault': fault_name, 'faulted_fault': faulted_fault_name})
     def remove_fault_relationship(self, fault_name: str, related_fault_name: str):
         """
         Removes a relationship between two faults.
@@ -73,17 +78,23 @@ class FaultTopology:
             del self.adjacency[(related_fault_name, fault_name)]
         else:
             raise ValueError(f"No relationship found between {fault_name} and {related_fault_name}.")
+        self.notify('fault_relationship_removed', {'fault': fault_name, 'related_fault': related_fault_name})
+    def update_fault_relationship(self, fault_name: str, related_fault_name: str, new_relationship_type: FaultRelationshipType):
+        if new_relationship_type == FaultRelationshipType.NONE:
+            self.adjacency.pop((fault_name, related_fault_name), None)
+        else:
+            self.adjacency[(fault_name, related_fault_name)] = new_relationship_type
+        self.notify('fault_relationship_updated', {'fault': fault_name, 'related_fault': related_fault_name, 'new_relationship_type': new_relationship_type})
     def change_relationship_type(self, fault_name: str, related_fault_name: str, new_relationship_type: FaultRelationshipType):
         """
         Changes the relationship type between two faults.
         """
         if (fault_name, related_fault_name) in self.adjacency:
             self.adjacency[(fault_name, related_fault_name)] = new_relationship_type
-        elif (related_fault_name, fault_name) in self.adjacency:
-            self.adjacency[(related_fault_name, fault_name)] = new_relationship_type
+        
         else:
             raise ValueError(f"No relationship found between {fault_name} and {related_fault_name}.")
-    
+        self.notify('relationship_type_changed', {'fault': fault_name, 'related_fault': related_fault_name, 'new_relationship_type': new_relationship_type})
     def get_fault_relationships(self, fault_name: str):
         """
         Returns a list of relationships for a given fault.
@@ -105,13 +116,29 @@ class FaultTopology:
         """
         return self.stratigraphy_fault_relationships
     def get_fault_stratigraphic_unit_relationships(self):
-        units_group_pairs = self.stratigraphic_column.get_units_group_pairs()
+        units_group_pairs = self.stratigraphic_column.get_group_unit_pairs() 
         matrix = np.zeros((len(self.faults), len(units_group_pairs)), dtype=int)
         for i, fault in enumerate(self.faults):
             for j, (unit_name, group) in enumerate(units_group_pairs):
                 if unit_name in self.stratigraphy_fault_relationships and fault.name in self.stratigraphy_fault_relationships[group]:
                     matrix[i, j] = 1
         return matrix
+    def update_fault_stratigraphy_relationship(self, unit_name: str, fault_name: str, flag: bool = True):
+        """
+        Updates the relationship between a stratigraphic unit and a fault.
+        """
+        group = self.stratigraphic_column.get_group_for_unit_name(unit_name)
+        if group is None:
+            raise ValueError(f"No stratigraphic group found for unit name: {unit_name}")
+        
+        if group not in self.stratigraphy_fault_relationships:
+            self.stratigraphy_fault_relationships[group] = []
+        
+        if fault_name not in self.stratigraphy_fault_relationships[group]:
+            self.stratigraphy_fault_relationships[group].append(fault_name)
+        
+        self.notify('stratigraphy_fault_relationship_updated', {'unit': unit_name, 'fault': fault_name})
+
     def remove_fault_stratigraphy_relationship(self, unit_name: str, fault_name: str):
         """
         Removes a relationship between a stratigraphic unit and a fault.
@@ -129,6 +156,7 @@ class FaultTopology:
                 raise ValueError(f"Fault {fault_name} not found in relationships for unit {unit_name}.")
         else:
             raise ValueError(f"Unit {unit_name} not found in stratigraphy fault relationships.")
+        self.notify('stratigraphy_fault_relationship_removed', {'unit': unit_name, 'fault': fault_name})
     def get_matrix(self):
         """
         Returns a matrix representation of the fault relationships.
@@ -157,20 +185,21 @@ class FaultTopology:
         """
         Updates the fault topology from a dictionary representation.
         """
-        self.faults.extend(data.get("faults", []))
-        adjacency = data.get("adjacency", {})
-        stratigraphy_fault_relationships = data.get("stratigraphy_fault_relationships", {})
-        for (fault,abutting_fault) in adjacency.values():
-            if fault not in self.faults:
-                self.add_fault(fault)
-            if abutting_fault not in self.faults:
-                self.add_fault(abutting_fault)
-            self.add_abutting_relationship(fault, abutting_fault)
-        for unit_name, fault_names in stratigraphy_fault_relationships.items():
-            for fault_name in fault_names:
-                if fault_name not in self.faults:
-                    self.add_fault(fault_name)
-                self.add_stratigraphy_fault_relationship(unit_name, fault_name)
+        with self.freeze_notifications():
+            self.faults.extend(data.get("faults", []))
+            adjacency = data.get("adjacency", {})
+            stratigraphy_fault_relationships = data.get("stratigraphy_fault_relationships", {})
+            for (fault,abutting_fault) in adjacency.values():
+                if fault not in self.faults:
+                    self.add_fault(fault)
+                if abutting_fault not in self.faults:
+                    self.add_fault(abutting_fault)
+                self.add_abutting_relationship(fault, abutting_fault)
+            for unit_name, fault_names in stratigraphy_fault_relationships.items():
+                for fault_name in fault_names:
+                    if fault_name not in self.faults:
+                        self.add_fault(fault_name)
+                    self.add_stratigraphy_fault_relationship(unit_name, fault_name)
     
     @classmethod
     def from_dict(cls, data):
