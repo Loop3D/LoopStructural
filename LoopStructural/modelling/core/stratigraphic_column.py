@@ -1,5 +1,5 @@
 import enum
-from typing import Dict
+from typing import Dict, Optional, List, Tuple
 import numpy as np
 from LoopStructural.utils import rng, getLogger
 
@@ -228,6 +228,7 @@ class StratigraphicColumn:
                 return unit
 
         return None
+
     def get_unconformity_by_name(self, name):
         """
         Retrieves an unconformity by its name from the stratigraphic column.
@@ -245,6 +246,15 @@ class StratigraphicColumn:
             if element.uuid == uuid:
                 return element
         raise KeyError(f"No element found with uuid: {uuid}")
+    
+    def get_group_for_unit_name(self, unit_name:str) -> Optional[StratigraphicGroup]:
+        """
+        Retrieves the group for a given unit name.
+        """
+        for group in self.get_groups():
+            if any(unit.name == unit_name for unit in group.units):
+                return group
+        return None
     def add_element(self, element):
         """
         Adds a StratigraphicColumnElement to the stratigraphic column.
@@ -296,7 +306,18 @@ class StratigraphicColumn:
             group = [u.name for u in g.units if isinstance(u, StratigraphicUnit)]
             groups_list.append(group)
         return groups_list
-        
+    
+    def get_group_unit_pairs(self) -> List[Tuple[str,str]]:
+        """
+        Returns a list of tuples containing group names and unit names.
+        """
+        groups = self.get_groups()
+        group_unit_pairs = []
+        for g in groups:
+            for u in g.units:
+                if isinstance(u, StratigraphicUnit):
+                    group_unit_pairs.append((g.name, u.name))
+        return group_unit_pairs
 
     def __getitem__(self, uuid):
         """
