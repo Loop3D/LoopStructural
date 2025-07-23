@@ -102,6 +102,11 @@ class FaultTopology(Observable['FaultTopology']):
             if f1 == fault_name or f2 == fault_name:
                 relationships.append((f1, f2, relationship_type))
         return relationships
+    def get_fault_relationship(self, fault_name: str, related_fault_name: str):
+        """
+        Returns the relationship type between two faults.
+        """
+        return self.adjacency.get((fault_name, related_fault_name), FaultRelationshipType.NONE)
     def get_faults(self):
         """
         Returns a list of all faults in the topology.
@@ -122,6 +127,18 @@ class FaultTopology(Observable['FaultTopology']):
                     matrix[i, j] = 1
                 
         return matrix
+    def get_fault_stratigraphic_relationship(self, unit_name: str, fault:str) -> bool:
+        """
+        Returns a dictionary of fault to stratigraphic unit relationships.
+        """
+        group = self.stratigraphic_column.get_group_for_unit_name(unit_name)
+        if group is None:
+            raise ValueError(f"No stratigraphic group found for unit name: {unit_name}")
+        if (group, fault) not in self.stratigraphy_fault_relationships:
+            return False
+        return self.stratigraphy_fault_relationships[(group, fault)]
+    
+        
     def update_fault_stratigraphy_relationship(self, unit_name: str, fault_name: str, flag: bool = True):
         """
         Updates the relationship between a stratigraphic unit and a fault.

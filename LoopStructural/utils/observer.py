@@ -63,7 +63,6 @@ class Observable(Generic[T]):
 
         Returns a :class:`Disposable` so the caller can easily detach again.
         """
-        print('attaching a listener')
         callback: Callback = (
             listener.update  # type: ignore[attr‑defined]
             if isinstance(listener, Observer)  # type: ignore[misc]
