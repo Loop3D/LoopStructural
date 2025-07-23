@@ -166,7 +166,7 @@ class GeologicalInterpolator(metaclass=ABCMeta):
         """
         if points.shape[1] == self.dimensions * 2:
             points = np.hstack([points, np.ones((points.shape[0], 1))])
-            logger.warning(f"No weight provided for normal constraints, all weights are set to 1")
+            logger.warning("No weight provided for normal constraints, all weights are set to 1")
             raise Warning
         if points.shape[1] < self.dimensions * 2 + 1:
             raise ValueError("Normal constraints must at least have X,Y,Z,nx,ny,nz")

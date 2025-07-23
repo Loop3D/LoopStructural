@@ -13,7 +13,7 @@ __all__ = ["Observer", "Observable", "Disposable"]
 class Observer(Protocol):
     """Objects implementing an *update* method can subscribe."""
 
-    def update(self, observable: "Observable", event: str, *args: Any, **kwargs: Any) -> None:  # noqa: D401,E501
+    def update(self, observable: "Observable", event: str, *args: Any, **kwargs: Any) -> None:
         """Receive a notification."""
 
 
@@ -29,7 +29,7 @@ class Disposable:
     def __init__(self, detach: Callable[[], None]):
         self._detach = detach
 
-    def dispose(self) -> None:  # noqa: D401
+    def dispose(self) -> None:  
         """Detach the associated observer immediately."""
 
         self._detach()
@@ -38,7 +38,7 @@ class Disposable:
     def __enter__(self) -> "Disposable":
         return self
 
-    def __exit__(self, exc_type, exc, tb):  # noqa: D401
+    def __exit__(self, exc_type, exc, tb):  
         self.dispose()
         return False  # do not swallow exceptions
 
@@ -58,7 +58,7 @@ class Observable(Generic[T]):
         self._pending: list[tuple[str, tuple[Any, ...], dict[str, Any]]] = []
 
     # ‑‑‑ subscription api --------------------------------------------------
-    def attach(self, listener: Observer | Callback, event: str | None = None) -> Disposable:  # noqa: D401,E501
+    def attach(self, listener: Observer | Callback, event: str | None = None) -> Disposable:  
         """Register *listener* for *event* (all events if *event* is None).
 
         Returns a :class:`Disposable` so the caller can easily detach again.
@@ -77,7 +77,7 @@ class Observable(Generic[T]):
 
         return Disposable(lambda: self.detach(listener, event))
 
-    def detach(self, listener: Observer | Callback, event: str | None = None) -> None:  # noqa: D401,E501
+    def detach(self, listener: Observer | Callback, event: str | None = None) -> None:  
         """Unregister a previously attached *listener*."""
 
         callback: Callback = (
@@ -95,7 +95,7 @@ class Observable(Generic[T]):
                 self._observers.get(event, weakref.WeakSet()).discard(callback)
 
     # ‑‑‑ notification api --------------------------------------------------
-    def notify(self: T, event: str, *args: Any, **kwargs: Any) -> None:  # noqa: D401,E501
+    def notify(self: T, event: str, *args: Any, **kwargs: Any) -> None:  
         """Notify observers that *event* happened."""
 
         with self._lock:
@@ -122,7 +122,7 @@ class Observable(Generic[T]):
 
     # ‑‑‑ batching ----------------------------------------------------------
     @contextmanager
-    def freeze_notifications(self):  # noqa: D401
+    def freeze_notifications(self):  
         """Context manager that batches notifications until exit."""
 
         with self._lock:

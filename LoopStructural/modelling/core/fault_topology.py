@@ -1,6 +1,6 @@
-from xmlrpc.client import Fault
 from ..features.fault import FaultSegment
 from ...utils import Observable
+from .stratigraphic_column import StratigraphicColumn
 import enum
 import numpy as np
 class FaultRelationshipType(enum.Enum):
