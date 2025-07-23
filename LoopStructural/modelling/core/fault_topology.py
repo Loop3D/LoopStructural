@@ -51,10 +51,8 @@ class FaultTopology(Observable['FaultTopology']):
         group = self.stratigraphic_column.get_group_for_unit_name(unit_name)
         if group is None:
             raise ValueError(f"No stratigraphic group found for unit name: {unit_name}")
-        if unit_name not in self.stratigraphy_fault_relationships:
-            self.stratigraphy_fault_relationships[unit_name] = []
-        if fault_name not in self.stratigraphy_fault_relationships[unit_name]:
-            self.stratigraphy_fault_relationships[unit_name].append(fault_name)
+        self.stratigraphy_fault_relationships[(group,fault_name)] = True
+
         self.notify('stratigraphy_fault_relationship_added', {'unit': unit_name, 'fault': fault_name})
     def add_faulted_relationship(self, fault_name: str, faulted_fault_name: str):
         """
@@ -119,23 +117,21 @@ class FaultTopology(Observable['FaultTopology']):
         units_group_pairs = self.stratigraphic_column.get_group_unit_pairs() 
         matrix = np.zeros((len(self.faults), len(units_group_pairs)), dtype=int)
         for i, fault in enumerate(self.faults):
-            for j, (unit_name, group) in enumerate(units_group_pairs):
-                if unit_name in self.stratigraphy_fault_relationships and fault.name in self.stratigraphy_fault_relationships[group]:
+            for j, (_unit_name, group) in enumerate(units_group_pairs):
+                if (group, fault) in self.stratigraphy_fault_relationships:
                     matrix[i, j] = 1
+                
         return matrix
     def update_fault_stratigraphy_relationship(self, unit_name: str, fault_name: str, flag: bool = True):
         """
         Updates the relationship between a stratigraphic unit and a fault.
         """
         group = self.stratigraphic_column.get_group_for_unit_name(unit_name)
-        if group is None:
-            raise ValueError(f"No stratigraphic group found for unit name: {unit_name}")
-        
-        if group not in self.stratigraphy_fault_relationships:
-            self.stratigraphy_fault_relationships[group] = []
-        
-        if fault_name not in self.stratigraphy_fault_relationships[group]:
-            self.stratigraphy_fault_relationships[group].append(fault_name)
+        if not flag:
+            if (group, fault_name) in self.stratigraphy_fault_relationships:
+                del self.stratigraphy_fault_relationships[(group, fault_name)]
+        else:
+            self.stratigraphy_fault_relationships[(group, fault_name)] = flag
         
         self.notify('stratigraphy_fault_relationship_updated', {'unit': unit_name, 'fault': fault_name})
 
@@ -144,18 +140,11 @@ class FaultTopology(Observable['FaultTopology']):
         Removes a relationship between a stratigraphic unit and a fault.
         """
         group = self.stratigraphic_column.get_group_for_unit_name(unit_name)
-        if group is None: 
-            raise ValueError(f"No stratigraphic group found for unit name: {unit_name}")
-        
-        if group in self.stratigraphy_fault_relationships:
-            if fault_name in self.stratigraphy_fault_relationships[group]:
-                self.stratigraphy_fault_relationships[group].remove(fault_name)
-                if not self.stratigraphy_fault_relationships[group]:
-                    del self.stratigraphy_fault_relationships[group]
-            else:
-                raise ValueError(f"Fault {fault_name} not found in relationships for unit {unit_name}.")
+        if (group, fault_name) not in self.stratigraphy_fault_relationships:
+            raise ValueError(f"No relationship found between unit {unit_name} and fault {fault_name}.")
         else:
-            raise ValueError(f"Unit {unit_name} not found in stratigraphy fault relationships.")
+            self.stratigraphy_fault_relationships.pop((group, fault_name), None)
+        
         self.notify('stratigraphy_fault_relationship_removed', {'unit': unit_name, 'fault': fault_name})
     def get_matrix(self):
         """
