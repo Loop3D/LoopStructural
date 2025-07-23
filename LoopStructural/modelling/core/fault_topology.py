@@ -129,9 +129,9 @@ class FaultTopology(Observable['FaultTopology']):
         group = self.stratigraphic_column.get_group_for_unit_name(unit_name)
         if not flag:
             if (group, fault_name) in self.stratigraphy_fault_relationships:
-                del self.stratigraphy_fault_relationships[(group, fault_name)]
+                del self.stratigraphy_fault_relationships[(group.name, fault_name)]
         else:
-            self.stratigraphy_fault_relationships[(group, fault_name)] = flag
+            self.stratigraphy_fault_relationships[(group.name, fault_name)] = flag
         
         self.notify('stratigraphy_fault_relationship_updated', {'unit': unit_name, 'fault': fault_name})
 
