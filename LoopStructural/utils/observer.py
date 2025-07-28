@@ -93,7 +93,18 @@ class Observable(Generic[T]):
                     s.discard(callback)
             else:
                 self._observers.get(event, weakref.WeakSet()).discard(callback)
-
+    def __getstate__(self):
+        state = self.__dict__.copy()
+        state.pop('_lock', None)  # RLock cannot be pickled
+        state.pop('_observers', None)  # WeakSet cannot be pickled
+        state.pop('_any_observers', None)
+        return state
+    def __setstate__(self, state):
+        self.__dict__.update(state)
+        self._lock = threading.RLock()
+        self._observers = {}
+        self._any_observers = weakref.WeakSet()
+        self._frozen = 0
     # ‑‑‑ notification api --------------------------------------------------
     def notify(self: T, event: str, *args: Any, **kwargs: Any) -> None:  
         """Notify observers that *event* happened."""
