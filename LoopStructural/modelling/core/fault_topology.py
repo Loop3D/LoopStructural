@@ -27,6 +27,22 @@ class FaultTopology(Observable['FaultTopology']):
 
         self.faults.append(fault)
         self.notify('fault_added', fault=fault)
+
+    def remove_fault(self, fault: str):
+        """
+        Removes a fault from the fault topology.
+        """
+        if fault not in self.faults:
+            raise ValueError(f"Fault {fault} not found in the topology.")
+        
+        self.faults.remove(fault)
+        # Remove any relationships involving this fault
+        self.adjacency = {k: v for k, v in self.adjacency.items() if fault not in k}
+        self.stratigraphy_fault_relationships = {
+            k: v for k, v in self.stratigraphy_fault_relationships.items() if k[1] != fault
+        }
+        self.notify('fault_removed', fault=fault)
+        
     def add_abutting_relationship(self, fault_name: str, abutting_fault: str):
         """
         Adds an abutting relationship between two faults.
