@@ -115,12 +115,18 @@ class LoopIsosurfacer:
                 values,
             )
         logger.info(f'Isosurfacing at values: {isovalues}')
+        individual_names = False
         if name is None:
             names = ["surface"] * len(isovalues)
         if isinstance(name, str):
             names = [name] * len(isovalues)
+            if len(isovalues) == 1:
+                individual_names = True
         if isinstance(name, list):
             names = name
+            print(len(names), len(isovalues))
+            if len(names) == len(isovalues):
+                individual_names = True
         if colours is None:
             colours = [None] * len(isovalues)
         for name, isovalue, colour in zip(names, isovalues, colours):
@@ -146,12 +152,13 @@ class LoopIsosurfacer:
             # need to add both global and local origin. If the bb is a buffer the local
             # origin may not be 0
             verts += self.bounding_box.global_origin+self.bounding_box.origin
+            print(name, individual_names)
             surfaces.append(
                 Surface(
                     vertices=verts,
                     triangles=faces,
                     normals=normals,
-                    name=f"{name}_{isovalue}",
+                    name=name if individual_names else f"{name}_{isovalue}",
                     values=values,
                     colour=colour,
                 )
