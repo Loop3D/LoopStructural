@@ -1,8 +1,7 @@
 import enum
-from typing import Dict
+from typing import Dict, Optional, List, Tuple
 import numpy as np
-from LoopStructural.utils import rng, getLogger
-
+from LoopStructural.utils import rng, getLogger, Observable
 logger = getLogger(__name__)
 logger.info("Imported LoopStructural Stratigraphic Column module")
 class UnconformityType(enum.Enum):
@@ -154,7 +153,7 @@ class StratigraphicGroup:
         self.units = units if units is not None else []
 
 
-class StratigraphicColumn:
+class StratigraphicColumn(Observable['StratigraphicColumn']):
     """
     A class to represent a stratigraphic column, which is a vertical section of the Earth's crust
     showing the sequence of rock layers and their relationships.
@@ -164,6 +163,7 @@ class StratigraphicColumn:
         """
         Initializes the StratigraphicColumn with a name and a list of layers.
         """
+        super().__init__()
         self.order = [StratigraphicUnit(name='Basement', colour='grey', thickness=np.inf),StratigraphicUnconformity(name='Base Unconformity', unconformity_type=UnconformityType.ERODE)]
         self.group_mapping = {}
     def clear(self,basement=True):
@@ -175,7 +175,7 @@ class StratigraphicColumn:
         else:
             self.order = []
         self.group_mapping = {}
-
+        self.notify('column_cleared')
     def add_unit(self, name,*, colour=None, thickness=None, where='top'):
         unit = StratigraphicUnit(name=name, colour=colour, thickness=thickness)
 
@@ -185,7 +185,7 @@ class StratigraphicColumn:
             self.order.insert(0, unit)
         else:
             raise ValueError("Invalid 'where' argument. Use 'top' or 'bottom'.")
-
+        self.notify('unit_added', unit=unit)
         return unit
 
     def remove_unit(self, uuid):
@@ -195,7 +195,9 @@ class StratigraphicColumn:
         for i, element in enumerate(self.order):
             if element.uuid == uuid:
                 del self.order[i]
+                self.notify('unit_removed', uuid=uuid)
                 return True
+        
         return False
 
     def add_unconformity(self, name, *, unconformity_type=UnconformityType.ERODE, where='top' ):
@@ -209,6 +211,7 @@ class StratigraphicColumn:
             self.order.insert(0, unconformity)
         else:
             raise ValueError("Invalid 'where' argument. Use 'top' or 'bottom'.")
+        self.notify('unconformity_added', unconformity=unconformity)
         return unconformity
 
     def get_element_by_index(self, index):
@@ -228,6 +231,7 @@ class StratigraphicColumn:
                 return unit
 
         return None
+
     def get_unconformity_by_name(self, name):
         """
         Retrieves an unconformity by its name from the stratigraphic column.
@@ -245,6 +249,15 @@ class StratigraphicColumn:
             if element.uuid == uuid:
                 return element
         raise KeyError(f"No element found with uuid: {uuid}")
+    
+    def get_group_for_unit_name(self, unit_name:str) -> Optional[StratigraphicGroup]:
+        """
+        Retrieves the group for a given unit name.
+        """
+        for group in self.get_groups():
+            if any(unit.name == unit_name for unit in group.units):
+                return group
+        return None
     def add_element(self, element):
         """
         Adds a StratigraphicColumnElement to the stratigraphic column.
@@ -296,7 +309,18 @@ class StratigraphicColumn:
             group = [u.name for u in g.units if isinstance(u, StratigraphicUnit)]
             groups_list.append(group)
         return groups_list
-        
+    
+    def get_group_unit_pairs(self) -> List[Tuple[str,str]]:
+        """
+        Returns a list of tuples containing group names and unit names.
+        """
+        groups = self.get_groups()
+        group_unit_pairs = []
+        for g in groups:
+            for u in g.units:
+                if isinstance(u, StratigraphicUnit):
+                    group_unit_pairs.append((g.name, u.name))
+        return group_unit_pairs
 
     def __getitem__(self, uuid):
         """
@@ -316,6 +340,7 @@ class StratigraphicColumn:
         self.order = [
             self.__getitem__(uuid) for uuid in new_order if self.__getitem__(uuid) is not None
         ]
+        self.notify('order_updated', new_order=self.order)
 
     def update_element(self, unit_data: Dict):
         """
@@ -334,6 +359,7 @@ class StratigraphicColumn:
             element.unconformity_type = UnconformityType(
                 unit_data.get('unconformity_type', element.unconformity_type.value)
             )
+        self.notify('element_updated', element=element)
 
     def __str__(self):
         """
@@ -354,14 +380,15 @@ class StratigraphicColumn:
         """
         if not isinstance(data, dict):
             raise TypeError("Data must be a dictionary")
-        self.clear(basement=False)
-        elements_data = data.get("elements", [])
-        for element_data in elements_data:
-            if "unconformity_type" in element_data:
-                element = StratigraphicUnconformity.from_dict(element_data)
-            else:
-                element = StratigraphicUnit.from_dict(element_data)
-            self.add_element(element)
+        with self.freeze_notifications():
+            self.clear(basement=False)
+            elements_data = data.get("elements", [])
+            for element_data in elements_data:
+                if "unconformity_type" in element_data:
+                    element = StratigraphicUnconformity.from_dict(element_data)
+                else:
+                    element = StratigraphicUnit.from_dict(element_data)
+                self.add_element(element)
     @classmethod
     def from_dict(cls, data):
         """

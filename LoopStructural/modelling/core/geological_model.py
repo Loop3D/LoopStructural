@@ -6,7 +6,7 @@ from ...utils import getLogger
 
 import numpy as np
 import pandas as pd
-from typing import List, Optional
+from typing import List, Optional, Union, Dict
 import pathlib
 from ...modelling.features.fault import FaultSegment
 
@@ -123,8 +123,7 @@ class GeologicalModel:
         self.feature_name_index = {}
         self._data = pd.DataFrame()  # None
 
-        self.stratigraphic_column = StratigraphicColumn()
-
+        self._stratigraphic_column = StratigraphicColumn()
 
         self.tol = 1e-10 * np.max(self.bounding_box.maximum - self.bounding_box.origin)
         self._dtm = None
@@ -186,7 +185,6 @@ class GeologicalModel:
             ['X', 'Y', 'Z', 'val', 'nx', 'ny', 'nz', 'gx', 'gy', 'gz', 'tx', 'ty', 'tz']
         ].astype(float)
         return data
-
 
         if "type" in data:
             logger.warning("'type' is deprecated replace with 'feature_name' \n")
@@ -409,7 +407,6 @@ class GeologicalModel:
         """
         return [f.name for f in self.faults]
 
-
     def to_file(self, file):
         """Save a model to a pickle file requires dill
 
@@ -506,10 +503,34 @@ class GeologicalModel:
         self._data = data.copy()
         # self._data[['X','Y','Z']] = self.bounding_box.project(self._data[['X','Y','Z']].to_numpy())
 
-
     def set_model_data(self, data):
         logger.warning("deprecated method. Model data can now be set using the data attribute")
         self.data = data.copy()
+    @property
+    def stratigraphic_column(self):
+        """Get the stratigraphic column of the model
+
+        Returns
+        -------
+        StratigraphicColumn
+            the stratigraphic column of the model
+        """
+        return self._stratigraphic_column
+    @stratigraphic_column.setter
+    def stratigraphic_column(self, stratigraphic_column: Union[StratigraphicColumn,Dict]):
+        """Set the stratigraphic column of the model
+
+        Parameters
+        ----------
+        stratigraphic_column : StratigraphicColumn
+            the stratigraphic column to set
+        """
+        if isinstance(stratigraphic_column, dict):
+            self.set_stratigraphic_column(stratigraphic_column)
+            return
+        elif not isinstance(stratigraphic_column, StratigraphicColumn):
+            raise ValueError("stratigraphic_column must be a StratigraphicColumn object")
+        self._stratigraphic_column = stratigraphic_column
 
     def set_stratigraphic_column(self, stratigraphic_column, cmap="tab20"):
         """
@@ -1400,7 +1421,6 @@ class GeologicalModel:
 
         return self.bounding_box.reproject(points, inplace=inplace)
 
-
     # TODO move scale to bounding box/transformer
     def scale(self, points: np.ndarray, *, inplace: bool = False) -> np.ndarray:
         """Take points in UTM coordinates and reproject
@@ -1418,7 +1438,6 @@ class GeologicalModel:
 
         """
         return self.bounding_box.project(np.array(points).astype(float), inplace=inplace)
-
 
     def regular_grid(self, *, nsteps=None, shuffle=True, rescale=False, order="C"):
         """
@@ -1494,22 +1513,18 @@ class GeologicalModel:
         if self.stratigraphic_column is None:
             logger.warning("No stratigraphic column defined")
             return strat_id
-        for group in reversed(self.stratigraphic_column.keys()):
-            if group == "faults":
-                continue
-            feature_id = self.feature_name_index.get(group, -1)
+        
+        s_id = 0
+        for g in reversed(self.stratigraphic_column.get_groups()):
+            feature_id = self.feature_name_index.get(g.name, -1)
             if feature_id >= 0:
-                feature = self.features[feature_id]
-                vals = feature.evaluate_value(xyz)
-                for series in self.stratigraphic_column[group].values():
-                    strat_id[
-                        np.logical_and(
-                            vals < series.get("max", feature.max()),
-                            vals > series.get("min", feature.min()),
-                        )
-                    ] = series["id"]
+                vals = self.features[feature_id].evaluate_value(xyz)
+                for u in g.units:
+                    strat_id[np.logical_and(vals < u.max, vals > u.min)] = s_id 
+                    s_id += 1
             if feature_id == -1:
-                logger.error(f"Model does not contain {group}")
+                logger.error(f"Model does not contain {g.name}")
+        
         return strat_id
 
     def evaluate_model_gradient(self, points: np.ndarray, *, scale: bool = True) -> np.ndarray:
