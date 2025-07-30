@@ -124,7 +124,6 @@ class LoopIsosurfacer:
                 individual_names = True
         if isinstance(name, list):
             names = name
-            print(len(names), len(isovalues))
             if len(names) == len(isovalues):
                 individual_names = True
         if colours is None:
@@ -152,7 +151,6 @@ class LoopIsosurfacer:
             # need to add both global and local origin. If the bb is a buffer the local
             # origin may not be 0
             verts += self.bounding_box.global_origin+self.bounding_box.origin
-            print(name, individual_names)
             surfaces.append(
                 Surface(
                     vertices=verts,
