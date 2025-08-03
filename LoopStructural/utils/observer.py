@@ -2,11 +2,7 @@ from __future__ import annotations
 
 from collections.abc import Callable
 from contextlib import contextmanager
-<<<<<<< HEAD
 from typing import Any, Generic, Protocol, TypeVar, runtime_checkable
-=======
-from typing import Any, Generic, Protocol, TypeAlias, TypeVar, runtime_checkable
->>>>>>> 113799aed0a05a8a3181a6b3d9ff93ebdc04b97a
 import threading
 import weakref
 
