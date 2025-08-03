@@ -1,5 +1,26 @@
 # Changelog
 
+## [1.6.17](https://github.com/Loop3D/LoopStructural/compare/v1.6.16...v1.6.17) (2025-07-30)
+
+
+### Bug Fixes
+
+* add an observer/notify datastructure ([ea4b9f0](https://github.com/Loop3D/LoopStructural/commit/ea4b9f000e4ef43cf349bbb152a4452dc40a4351))
+* add get methods for getting specific relationships ([30f01c8](https://github.com/Loop3D/LoopStructural/commit/30f01c837ff776d919d728877a3e4aa4aecd80e3))
+* add observer pattern imports for enhanced notification capabilities ([f237d27](https://github.com/Loop3D/LoopStructural/commit/f237d2729073a5c56f2a73d45436f758259c757a))
+* add remove fault ([bc4ca17](https://github.com/Loop3D/LoopStructural/commit/bc4ca179ccaeeb59f85c44b5339e50ad7f21cd8a))
+* add setter/getter for stratigraphic column ([f771cdd](https://github.com/Loop3D/LoopStructural/commit/f771cdd12d101622d1e1130c94f7726d84fd96bd))
+* adding a fault topology datastructure and link with stratigraphic column ([57f362d](https://github.com/Loop3D/LoopStructural/commit/57f362d33bf0fb07a04bae655b4fdbd26ad66a50))
+* change strat/fault relationship datastructure to a dictionary with tuple keys ([2a4503b](https://github.com/Loop3D/LoopStructural/commit/2a4503b4973d7e28bf38253741fcae8b75300dbf))
+* clarify naming for individual isosurfaces based on input name, don't add isovalue when not needed ([447fb17](https://github.com/Loop3D/LoopStructural/commit/447fb17e64bc42e5154aef36d94c62ad91ac6f78))
+* enhance FaultTopology class with notification support for relationship changes ([330c662](https://github.com/Loop3D/LoopStructural/commit/330c6624e8c2f1cfabf4c5391b4c375bf9d23d2d))
+* implement Observer pattern with Observable and Disposable classes ([3942920](https://github.com/Loop3D/LoopStructural/commit/394292036bd70aaa9294da5c285f232c1b8bae3e))
+* integrate Observable pattern into StratigraphicColumn for enhanced notification support ([6619b80](https://github.com/Loop3D/LoopStructural/commit/6619b80191f3055d656c63f3256ee1e56e034442))
+* remove observers before pickle ([c50afdb](https://github.com/Loop3D/LoopStructural/commit/c50afdb0a5ed4b50b4d015e651a3db7b0cbb5162))
+* remove raise warning when no weights provided to set_normal_constraints ([33146d5](https://github.com/Loop3D/LoopStructural/commit/33146d570a2733acf51b3841579e72a2b79a1ddd))
+* store unitname fault topology instead of group fault ([5a8c0c5](https://github.com/Loop3D/LoopStructural/commit/5a8c0c546f82458cae57b7c30e64f2857efa621a))
+* use groupname not group for stratigraphy/fault relationship ([94a563c](https://github.com/Loop3D/LoopStructural/commit/94a563cc7bc88722dc4131f89e2874d109ae586c))
+
 ## [1.6.16](https://github.com/Loop3D/LoopStructural/compare/v1.6.15...v1.6.16) (2025-07-21)
 
 
