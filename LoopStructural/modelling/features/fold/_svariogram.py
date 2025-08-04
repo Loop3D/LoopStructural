@@ -189,6 +189,9 @@ class SVariogram:
         # find the extrema of the average curve
         res = find_peaks_and_troughs(np.array(averagex), np.array(averagey))
         px2, py2 = res
+        logger.info(f"Found {len(px2)} peaks and troughs in the s-variogram")
+        for i in range(len(px2)):
+            logger.info(f"Peak {i}: {px2[i]} {py2[i]}")
         wl1 = 0.0
         wl1py = 0.0
         for i in range(len(px)):
