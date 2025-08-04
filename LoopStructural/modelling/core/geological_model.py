@@ -560,14 +560,14 @@ class GeologicalModel:
         DeprecationWarning(
             "set_stratigraphic_column is deprecated, use model.stratigraphic_column.add_units instead"
         )
-        for g in stratigraphic_column.keys():
+        for i, g in enumerate(stratigraphic_column.keys()):
             for u in stratigraphic_column[g].keys():
                 thickness = 0
                 if "min" in stratigraphic_column[g][u] and "max" in stratigraphic_column[g][u]:
                     min_val = stratigraphic_column[g][u]["min"]
                     max_val = stratigraphic_column[g][u].get("max", None)
                     thickness = max_val - min_val if max_val is not None else None
-                logger.warning(
+                logger.info(
                     f"""
                                model.stratigraphic_column.add_unit({u},
                                colour={stratigraphic_column[g][u].get("colour", None)},
@@ -578,9 +578,11 @@ class GeologicalModel:
                     colour=stratigraphic_column[g][u].get("colour", None),
                     thickness=thickness,
                 )
+
             self.stratigraphic_column.add_unconformity(
                 name=''.join([g, 'unconformity']),
             )
+            self.stratigraphic_column.group_mapping[f'Group_{i+1}'] = g
 
     def create_and_add_foliation(
         self,
@@ -1520,7 +1522,7 @@ class GeologicalModel:
             if feature_id >= 0:
                 vals = self.features[feature_id].evaluate_value(xyz)
                 for u in g.units:
-                    strat_id[np.logical_and(vals < u.max, vals > u.min)] = s_id 
+                    strat_id[np.logical_and(vals < u.max(), vals > u.min())] = s_id
                     s_id += 1
             if feature_id == -1:
                 logger.error(f"Model does not contain {g.name}")
@@ -1725,16 +1727,8 @@ class GeologicalModel:
         ids : list
             list of unique stratigraphic ids, featurename, unit name and min and max scalar values
         """
-        ids = []
-        if self.stratigraphic_column is None:
-            logger.warning('No stratigraphic column defined')
-            return ids
-        for group in self.stratigraphic_column.keys():
-            if group == "faults":
-                continue
-            for name, series in self.stratigraphic_column[group].items():
-                ids.append([series["id"], group, name, series['min'], series['max']])
-        return ids
+        return self.stratigraphic_column.get_stratigraphic_ids()
+        
 
     def get_fault_surfaces(self, faults: List[str] = []):
         surfaces = []
