@@ -90,29 +90,24 @@ constraints.
     # load in a dataframe with x,y,z,val,nx,ny,nz to constrain the value and
     # gradient normal of the interpolator
     data, bb = load_claudius()
-    # create a transformer to move the data to the centre of mass of the dataset
-    # this avoid any numerical issues caused by large coordinates. This dataset
-    # is already axis aligned so we don't need to rotate the data but we can rotate it
-    # so that the main anisotropy of the dataset is aligned with the x axis.
-    transformer = EuclideanTransformation(dimensions=3, fit_rotation=False).fit(
-        data[["X", "Y", "Z"]]
-    )
-    data[["X", "Y", "Z"]] = transformer.transform(data[["X", "Y", "Z"]])
+
     # Find the bounding box of the data by finding the extent
     bounding_box = BoundingBox().fit(data[["X", "Y", "Z"]])
     # assemble an interpolator using the bounding box and the data
     interpolator = (
-        InterpolatorBuilder(interpolatortype="FDI", bounding_box=bounding_box)
+        InterpolatorBuilder(
+            interpolatortype="FDI", bounding_box=bounding_box.with_buffer(0.1)
+        )
         .add_value_constraints(data.loc[data["val"].notna(), ["X", "Y", "Z", "val"]].values)
         .add_normal_constraints(
             data.loc[data["nx"].notna(), ["X", "Y", "Z", "nx", "ny", "nz"]].values
-        ).build()
+        )
+        .build()
     )
     # Set the number of elements in the bounding box to 10000 and create a structured grid
     bounding_box.nelements = 10000
     mesh = bounding_box.structured_grid()
     # add the interpolated values to the mesh at the nodes
-    # mesh.properties["v"] = interpolator.evaluate_value(bounding_box.regular_grid(order='F'))
     mesh.properties["v"] = interpolator.evaluate_value(mesh.nodes)
 
     # or the cell centres

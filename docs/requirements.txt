@@ -1,5 +1,6 @@
-sphinx==3.5.4
+sphinx
 sphinx_gallery
 sphinxcontrib-bibtex
 pydata_sphinx_theme
 myst-parser
+sphinx-design

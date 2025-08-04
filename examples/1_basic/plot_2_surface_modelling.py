@@ -123,7 +123,7 @@ strati = model.create_and_add_foliation(
 # Visualize Model Surfaces
 # ~~~~~~~~~~~~~~~~~~~~~~~~
 # Plot the surfaces of the geological model using a 3D viewer.
-
+print(model.stratigraphic_column.to_dict())
 viewer = Loop3DView(model)
 viewer.plot_model_surfaces(cmap="tab20")
 viewer.display()

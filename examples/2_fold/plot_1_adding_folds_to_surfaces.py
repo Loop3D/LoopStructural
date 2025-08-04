@@ -147,7 +147,7 @@ viewer = Loop3DView(model, background="white")
 #                       'box',
 #                      paint_with=stratigraphy,
 #                      cmap='prism')
-viewer.plot_data(stratigraphy, scale=200)
+viewer.plot_data(stratigraphy)
 viewer.plot_surface(stratigraphy, value=10)
 viewer.show()
 
@@ -190,6 +190,8 @@ viewer.show()
 # fold limb rotation angle is found by finding the the angle to rotate the
 # folded foliation to be parallel to the plane of the axial foliation
 # shown in B and C.
+# The wavelength can be specified by the user or in some cases estimated
+# from the s-variogram of the fold frame coordinate system.
 #
 mdata = pd.concat([data[:npoints], data[data["feature_name"] == "s1"]])
 model = GeologicalModel(boundary_points[0, :], boundary_points[1, :])
@@ -202,10 +204,10 @@ fold_frame = model.create_and_add_fold_frame(
 )
 stratigraphy = model.create_and_add_folded_foliation(
     "s0",
-    fold_frame,
+    fold_frame=fold_frame,
     nelements=10000,
     fold_axis=[-6.51626577e-06, -5.00013645e-01, -8.66017526e-01],
-    #                                                    limb_wl=1
+    limb_wl=12000,
     buffer=0.5,
 )
 viewer = Loop3DView(model, background="white")
@@ -220,7 +222,7 @@ viewer.plot_surface(
     #                       isovalue=0.4,
     opacity=0.5,
 )
-viewer.plot_data(stratigraphy, scale=200)
+viewer.plot_data(stratigraphy)
 # viewer.add_isosurface(fold_frame[1],colour='green',alpha=0.5)
 # viewer.add_vector_field(fold_frame[0],locations=fold_frame[0].get_interpolator().support.barycentre)
 # viewer.add_data(fold_frame[1])
@@ -234,6 +236,7 @@ viewer.show()
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 rotation_plots = RotationAnglePlotter(stratigraphy)
 rotation_plots.add_fold_limb_data()
+rotation_plots.add_limb_svariogram()
 # plt.plot(stratigraphy.builder.fold.fold_limb_rotation.fold_frame_coordinate,stratigraphy['limb_rotation'],'bo')
 # x = np.linspace(fold_frame[0].min(),fold_frame[0].max(),100)
 # plt.plot(x,stratigraphy['fold'].fold_limb_rotation(x),'r--')
