@@ -41,4 +41,10 @@ jobs:
           https://api.github.com/repos/Loop3d/${{env.PACKAGE_NAME}}/actions/workflows/conda.yml/dispatches \
           -d '{"ref":"master"}'
 
-  
+      - name: Trigger build documentation
+        run: |
+          curl -X POST \
+          -H "Authorization: token ${{ secrets.GH_PAT }}" \
+          -H "Accept: application/vnd.github.v3+json" \
+          https://api.github.com/repos/Loop3d/${{env.PACKAGE_NAME}}/actions/workflows/documentation.yml/dispatches \
+          -d '{"ref":"master"}'  
