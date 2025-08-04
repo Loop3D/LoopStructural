@@ -39,24 +39,59 @@ class StratigraphicColumnElement:
         self.uuid = uuid
 
 
-class StratigraphicUnit(StratigraphicColumnElement):
+class StratigraphicUnit(StratigraphicColumnElement, Observable['StratigraphicUnit']):
     """
     A class to represent a stratigraphic unit.
     """
 
-    def __init__(self, *, uuid=None, name=None, colour=None, thickness=None, data=None):
+    def __init__(self, *, uuid=None, name=None, colour=None, thickness=None, data=None, id=None):
         """
         Initializes the StratigraphicUnit with a name and an optional description.
         """
-        super().__init__(uuid)
+        StratigraphicColumnElement.__init__(self, uuid)
+        Observable.__init__(self)
         self.name = name
         if colour is None:
             colour = rng.random(3)
         self.colour = colour
-        self.thickness = thickness
+        self._thickness = thickness
         self.data = data
         self.element_type = StratigraphicColumnElementType.UNIT
-
+        self._id = id
+        self.min_value = None  # Minimum scalar field value for the unit
+        self.max_value = None  # Maximum scalar field value for the unit
+    @property
+    def id(self):
+        return self._id
+    @property
+    def thickness(self):
+        return self._thickness
+    @thickness.setter
+    def thickness(self, value):
+        """
+        Sets the thickness of the unit.
+        """
+        self._thickness = value
+        self.notify('unit/thickness_updated', unit=self)
+    @id.setter
+    def id(self, value):
+        """
+        Sets the ID of the unit.
+        """
+        if not isinstance(value, int):
+            raise TypeError("ID must be an integer")
+        self._id = value
+        self.notify('unit/id_updated', unit=self)
+    def min(self):
+        """
+        Returns the minimum value of the unit.
+        """
+        return self.min_value if self.min_value is not None else 0
+    def max(self):
+        """
+        Returns the maximum value of the unit.
+        """
+        return self.max_value if self.max_value is not None else np.inf
     def to_dict(self):
         """
         Converts the stratigraphic unit to a dictionary representation.
@@ -164,20 +199,37 @@ class StratigraphicColumn(Observable['StratigraphicColumn']):
         Initializes the StratigraphicColumn with a name and a list of layers.
         """
         super().__init__()
-        self.order = [StratigraphicUnit(name='Basement', colour='grey', thickness=np.inf),StratigraphicUnconformity(name='Base Unconformity', unconformity_type=UnconformityType.ERODE)]
+        self.order = []
+        self.add_basement()
         self.group_mapping = {}
-    def clear(self,basement=True):
+
+    def get_new_id(self):
+        """
+        Generates a new unique ID for a stratigraphic unit.
+        """
+        if not self.order:
+            return 0
+        return max([u.id for u in self.order if isinstance(u, StratigraphicUnit)], default=0) + 1
+    def add_basement(self):
+        self.add_unit(name='Basement', colour='grey', thickness=np.inf)
+        self.add_unconformity(
+            name='Base Unconformity', unconformity_type=UnconformityType.ERODE
+        )
+    def clear(self, basement=True):
         """
         Clears the stratigraphic column, removing all elements.
         """
         if basement:
-            self.order = [StratigraphicUnit(name='Basement', colour='grey', thickness=np.inf),StratigraphicUnconformity(name='Base Unconformity', unconformity_type=UnconformityType.ERODE)]
+            self.add_basement()
+            
         else:
             self.order = []
         self.group_mapping = {}
         self.notify('column_cleared')
-    def add_unit(self, name,*, colour=None, thickness=None, where='top'):
-        unit = StratigraphicUnit(name=name, colour=colour, thickness=thickness)
+    def add_unit(self, name,*, colour=None, thickness=None, where='top',id=None):
+        if id is None:
+            id = self.get_new_id()
+        unit = StratigraphicUnit(name=name, colour=colour, thickness=thickness, id=id)
 
         if where == 'top':
             self.order.append(unit)
@@ -185,7 +237,9 @@ class StratigraphicColumn(Observable['StratigraphicColumn']):
             self.order.insert(0, unit)
         else:
             raise ValueError("Invalid 'where' argument. Use 'top' or 'bottom'.")
+        unit.attach(self.update_unit_values,'unit/*')
         self.notify('unit_added', unit=unit)
+        self.update_unit_values()  # Update min and max values after adding a unit
         return unit
 
     def remove_unit(self, uuid):
@@ -197,7 +251,7 @@ class StratigraphicColumn(Observable['StratigraphicColumn']):
                 del self.order[i]
                 self.notify('unit_removed', uuid=uuid)
                 return True
-        
+
         return False
 
     def add_unconformity(self, name, *, unconformity_type=UnconformityType.ERODE, where='top' ):
@@ -249,7 +303,7 @@ class StratigraphicColumn(Observable['StratigraphicColumn']):
             if element.uuid == uuid:
                 return element
         raise KeyError(f"No element found with uuid: {uuid}")
-    
+
     def get_group_for_unit_name(self, unit_name:str) -> Optional[StratigraphicGroup]:
         """
         Retrieves the group for a given unit name.
@@ -300,7 +354,15 @@ class StratigraphicColumn(Observable['StratigraphicColumn']):
         if group:
             groups.append(group)
         return groups
+    def get_stratigraphic_ids(self) -> List[List[str]]:
+        ids = []
+        for group in self.get_groups():
+            if group == "faults":
+                continue
 
+            for unit in group.units:
+                ids.append([unit.id, group, unit.name, unit.min(), unit.max()])
+        return ids
     def get_unitname_groups(self):
         groups = self.get_groups()
         groups_list = []
@@ -309,7 +371,7 @@ class StratigraphicColumn(Observable['StratigraphicColumn']):
             group = [u.name for u in g.units if isinstance(u, StratigraphicUnit)]
             groups_list.append(group)
         return groups_list
-    
+
     def get_group_unit_pairs(self) -> List[Tuple[str,str]]:
         """
         Returns a list of tuples containing group names and unit names.
@@ -341,6 +403,20 @@ class StratigraphicColumn(Observable['StratigraphicColumn']):
             self.__getitem__(uuid) for uuid in new_order if self.__getitem__(uuid) is not None
         ]
         self.notify('order_updated', new_order=self.order)
+        self.update_unit_values()  # Update min and max values after updating the order
+    def update_unit_values(self, *, observable: Optional["Observable"] = None, event: Optional[str]= None):
+        """
+        Updates the min and max values for each unit based on their position in the column.
+        """
+        # If the event is not 'unit/*', skip the update
+        if event is not None and event != 'unit/*':
+            return
+        cumulative_thickness = 0
+        for element in self.order:
+            if isinstance(element, StratigraphicUnit):
+                element.min_value = cumulative_thickness
+                element.max_value = cumulative_thickness + (element.thickness or 0)
+                cumulative_thickness = element.max_value
 
     def update_element(self, unit_data: Dict):
         """
@@ -360,6 +436,7 @@ class StratigraphicColumn(Observable['StratigraphicColumn']):
                 unit_data.get('unconformity_type', element.unconformity_type.value)
             )
         self.notify('element_updated', element=element)
+        self.update_unit_values()  # Update min and max values after updating an element
 
     def __str__(self):
         """
