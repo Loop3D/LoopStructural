@@ -21,7 +21,7 @@ env:
 jobs:
   doc:
     name: Build Documentation
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
     env:
       PYVISTA_OFF_SCREEN: "True"
       ALLOW_PLOTTING: true
