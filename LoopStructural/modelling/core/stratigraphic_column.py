@@ -57,7 +57,7 @@ class StratigraphicUnit(StratigraphicColumnElement, Observable['StratigraphicUni
         self._thickness = thickness
         self.data = data
         self.element_type = StratigraphicColumnElementType.UNIT
-        self._id = id
+        self.id = id
         self.min_value = None  # Minimum scalar field value for the unit
         self.max_value = None  # Maximum scalar field value for the unit
     @property
@@ -99,7 +99,7 @@ class StratigraphicUnit(StratigraphicColumnElement, Observable['StratigraphicUni
         colour = self.colour
         if isinstance(colour, np.ndarray):
             colour = colour.astype(float).tolist()
-        return {"name": self.name, "colour": colour, "thickness": self.thickness, 'uuid': self.uuid}
+        return {"name": self.name, "colour": colour, "thickness": self.thickness, 'uuid': self.uuid, 'id': self.id}
 
     @classmethod
     def from_dict(cls, data):
@@ -112,7 +112,7 @@ class StratigraphicUnit(StratigraphicColumnElement, Observable['StratigraphicUni
         colour = data.get("colour")
         thickness = data.get("thickness", None)
         uuid = data.get("uuid", None)
-        return cls(uuid=uuid, name=name, colour=colour, thickness=thickness)
+        return cls(uuid=uuid, name=name, colour=colour, thickness=thickness, id=data.get("id", None))
 
     def __str__(self):
         """
