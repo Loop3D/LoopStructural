@@ -1,5 +1,15 @@
 # Changelog
 
+## [1.6.18](https://github.com/Loop3D/LoopStructural/compare/v1.6.17...v1.6.18) (2025-08-04)
+
+
+### Bug Fixes
+
+* add logging for wavelength guess ([67bebb1](https://github.com/Loop3D/LoopStructural/commit/67bebb1052a2948fb84e95364c06c1de99167667))
+* removing typealias ([d1626f5](https://github.com/Loop3D/LoopStructural/commit/d1626f5e75e7edfe582feb2a464450dfd23cc4b2))
+* store min/max unit value in unit and keep this up to date ([5af3815](https://github.com/Loop3D/LoopStructural/commit/5af3815c566c8db88dbd0c63b5fc2e00d0d4303d))
+* update strartigraphic column/stratigraphic id for new column ([55c303b](https://github.com/Loop3D/LoopStructural/commit/55c303bd3aabdac2a9d51beb143b44f13c67beaa))
+
 ## [1.6.17](https://github.com/Loop3D/LoopStructural/compare/v1.6.16...v1.6.17) (2025-07-30)
 
 
