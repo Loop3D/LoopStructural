@@ -108,7 +108,7 @@ If we were to change the length of the vector we would change the distance betwe
 .. pyvista-plot::
    :context:
 
-   vector[["nx", "ny", "nz"]] = vector[["nx", "ny", "nz"]]*2
+    vector[["nx", "ny", "nz"]] = vector[["nx", "ny", "nz"]]*2
     bounding_box = BoundingBox(np.array([-2, -2, -2]), np.array([2, 2, 2]))
 
     interpolator = (
