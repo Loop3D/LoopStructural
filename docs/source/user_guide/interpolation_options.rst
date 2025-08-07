@@ -169,6 +169,7 @@ Iterative solvers:
 * lsqr - this solver uses the rectangular matrix directly, therefore does not require computing A.T A and A.T B. Uses scipy
 
 .. code-block:
+
   model.create_and_add_foliation('my_foliation',solver='lu')
   model.create_and_add_foliation('my_foliation',solver='chol')
   model.create_and_add_foliation('my_foliation',solver='cg')
@@ -185,6 +186,7 @@ You can also pass a function that solves
 to LoopStructural if you want to use another solver by using the `external` keyword . 
 
 .. code-block:
+
   def mysolver(A,B):
     from scipy.sparse.linalg import gmres
     x = gmres(A,B)
@@ -194,6 +196,7 @@ to LoopStructural if you want to use another solver by using the `external` keyw
  The solution to the least squares problem will be stored in the interpolator object and can be easily accessed:
 
 .. code-block:
+
   model.create_and_add_foliation('my_foliation',solver='pyamg')
   pyamg_solution = model['my_foliation'].interpolator.c[model['my_foliation'].interpolator.region]
 
@@ -211,6 +214,7 @@ In the following example the Claudius test dataset is used to test the solver ti
 The same dataset is used for varying number of elements from 1,000 to 100,000 at intervals of 5,000 on a computer running ubuntu with 32gb of ram and a 4 core i7 cpu.
 
 .. code-block::
+
     from LoopStructural import GeologicalModel
     from LoopStructural.datasets import load_claudius
     import time
@@ -255,6 +259,7 @@ Data Supported Interpolation
 LoopStructural provides a wrapper to the SurfE c++ library developed  Natural Resources Canada (Geological Survey of Canada) by Michael Hillier, Eric de Kemp, and Ernst Schetselaar for the purposes of 3D structural geological modelling particularly in sparse data environments.
 SurfE can be used for interpolating a GeologicalFeature in a GeologicalModel by specifying the parameter
 .. code-block::
+  
     interpolatortype = 'surfe'
     
 Additional parameters can be specified to the interpolator including:
