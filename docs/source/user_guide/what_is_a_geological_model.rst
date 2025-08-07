@@ -121,8 +121,8 @@ If we were to change the length of the vector we would change the distance betwe
     mesh2 = bounding_box.structured_grid()
     mesh2.properties['val'] = interpolator.evaluate_value(mesh2.nodes)
     view = Loop3DView()
-    view.add_mesh(mesh2.vtk().contour([-1, 0, 1]),colour='red')
-    view.add_mesh(mesh.vtk().contour([-1, 0, 1]),colour='blue')
+    view.add_mesh(mesh2.vtk().contour([-1, 0, 1]),color='red')
+    view.add_mesh(mesh.vtk().contour([-1, 0, 1]),color='blue')
     view.add_points(data[["X", "Y", "Z"]].values)
     view.add_arrows(
         vector[["X", "Y", "Z"]].values,
