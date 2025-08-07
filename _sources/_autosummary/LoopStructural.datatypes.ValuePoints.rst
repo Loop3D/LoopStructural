@@ -31,9 +31,9 @@ LoopStructural.datatypes.ValuePoints
 
    .. autosummary::
    
+      ~ValuePoints.name
       ~ValuePoints.properties
       ~ValuePoints.locations
       ~ValuePoints.values
-      ~ValuePoints.name
    
    

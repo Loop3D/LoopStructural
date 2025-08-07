@@ -20,12 +20,12 @@
 
 1c. Visualising models
 ===============================
-The following tutorial will demonstrate how to use the Loop structural visualisation module. 
+The following tutorial will demonstrate how to use the Loop structural visualisation module.
 This module provides a wrapper for the lavavu model that is written by
-Owen Kaluza. 
+Owen Kaluza.
 
 Lavavu allows for interactive visualisation of 3D models within a jupyter
-notebook environment. 
+notebook environment.
 
 .. GENERATED FROM PYTHON SOURCE LINES 15-19
 
@@ -169,8 +169,8 @@ Where the optional kwargs can be:
 
 
     viewer.plot_scalar_field(strati, cmap="prism")
-    print(viewer._build_stratigraphic_cmap(model))
-    viewer.plot_block_model()
+    # print(viewer._build_stratigraphic_cmap(model))
+    viewer.plot_block_model(cmap='tab20')
     # Add the data addgrad/addvalue arguments are optional
     viewer.plot_data(strati, vector=True, value=True)
     viewer.display()  # to add an interactive display
@@ -183,19 +183,13 @@ Where the optional kwargs can be:
    :class: sphx-glr-single-img
 
 
-.. rst-class:: sphx-glr-script-out
-
- .. code-block:: none
-
-    <matplotlib.colors.ListedColormap object at 0x7f8968b66150>
-
 
 
 
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 1.295 seconds)
+   **Total running time of the script:** (0 minutes 1.472 seconds)
 
 
 .. _sphx_glr_download__auto_examples_1_basic_plot_3_model_visualisation.py:

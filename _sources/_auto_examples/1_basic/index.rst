@@ -65,7 +65,7 @@
 
 .. raw:: html
 
-    <div class="sphx-glr-thumbcontainer" tooltip="Lavavu allows for interactive visualisation of 3D models within a jupyter notebook environment. ">
+    <div class="sphx-glr-thumbcontainer" tooltip="Lavavu allows for interactive visualisation of 3D models within a jupyter notebook environment.">
 
 .. only:: html
 

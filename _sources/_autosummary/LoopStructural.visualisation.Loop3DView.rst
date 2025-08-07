@@ -57,6 +57,7 @@ LoopStructural.visualisation.Loop3DView
       ~Loop3DView.add_point_labels
       ~Loop3DView.add_point_scalar_labels
       ~Loop3DView.add_points
+      ~Loop3DView.add_radio_button_widget
       ~Loop3DView.add_ruler
       ~Loop3DView.add_scalar_bar
       ~Loop3DView.add_silhouette
@@ -81,10 +82,12 @@ LoopStructural.visualisation.Loop3DView
       ~Loop3DView.clear_measure_widgets
       ~Loop3DView.clear_on_render_callbacks
       ~Loop3DView.clear_plane_widgets
+      ~Loop3DView.clear_radio_button_widgets
       ~Loop3DView.clear_slider_widgets
       ~Loop3DView.clear_sphere_widgets
       ~Loop3DView.clear_spline_widgets
       ~Loop3DView.close
+      ~Loop3DView.compute_bounds
       ~Loop3DView.deep_clean
       ~Loop3DView.disable
       ~Loop3DView.disable_3_lights
@@ -216,7 +219,6 @@ LoopStructural.visualisation.Loop3DView
       ~Loop3DView.untrack_mouse_position
       ~Loop3DView.update
       ~Loop3DView.update_bounds_axes
-      ~Loop3DView.update_coordinates
       ~Loop3DView.update_scalar_bar_range
       ~Loop3DView.update_scalars
       ~Loop3DView.view_isometric
@@ -243,6 +245,7 @@ LoopStructural.visualisation.Loop3DView
       ~Loop3DView.actors
       ~Loop3DView.background_color
       ~Loop3DView.bounds
+      ~Loop3DView.bounds_size
       ~Loop3DView.camera
       ~Loop3DView.camera_position
       ~Loop3DView.camera_set

@@ -17,13 +17,15 @@ LoopStructural.datatypes.BoundingBox
    .. autosummary::
    
       ~BoundingBox.__init__
-      ~BoundingBox.cell_centers
+      ~BoundingBox.cell_centres
       ~BoundingBox.fit
+      ~BoundingBox.from_dict
       ~BoundingBox.get_value
       ~BoundingBox.is_inside
       ~BoundingBox.project
       ~BoundingBox.regular_grid
       ~BoundingBox.reproject
+      ~BoundingBox.scale_by_projection_factor
       ~BoundingBox.structured_grid
       ~BoundingBox.to_dict
       ~BoundingBox.vtk

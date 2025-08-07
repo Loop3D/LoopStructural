@@ -79,7 +79,7 @@ Examples
 
 .. raw:: html
 
-    <div class="sphx-glr-thumbcontainer" tooltip="Lavavu allows for interactive visualisation of 3D models within a jupyter notebook environment. ">
+    <div class="sphx-glr-thumbcontainer" tooltip="Lavavu allows for interactive visualisation of 3D models within a jupyter notebook environment.">
 
 .. only:: html
 
@@ -201,10 +201,10 @@ Examples
 
 .. only:: html
 
-  .. image:: /_auto_examples/2_fold/images/thumb/sphx_glr__refolded_folds_thumb.png
+  .. image:: /_auto_examples/2_fold/images/thumb/sphx_glr_plot_2__refolded_folds_thumb.png
     :alt:
 
-  :ref:`sphx_glr__auto_examples_2_fold__refolded_folds.py`
+  :ref:`sphx_glr__auto_examples_2_fold_plot_2__refolded_folds.py`
 
 .. raw:: html
 

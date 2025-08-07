@@ -54,6 +54,7 @@ LoopStructural.interpolators.DiscreteFoldInterpolator
       ~DiscreteFoldInterpolator.set_inequality_pairs_constraints
       ~DiscreteFoldInterpolator.set_interface_constraints
       ~DiscreteFoldInterpolator.set_interpolation_weights
+      ~DiscreteFoldInterpolator.set_nelements
       ~DiscreteFoldInterpolator.set_normal_constraints
       ~DiscreteFoldInterpolator.set_region
       ~DiscreteFoldInterpolator.set_tangent_constraints
@@ -66,6 +67,7 @@ LoopStructural.interpolators.DiscreteFoldInterpolator
       ~DiscreteFoldInterpolator.to_json
       ~DiscreteFoldInterpolator.update
       ~DiscreteFoldInterpolator.update_fold
+      ~DiscreteFoldInterpolator.vtk
    
    
 
@@ -76,7 +78,8 @@ LoopStructural.interpolators.DiscreteFoldInterpolator
    .. autosummary::
    
       ~DiscreteFoldInterpolator.data
-      ~DiscreteFoldInterpolator.nx
+      ~DiscreteFoldInterpolator.dof
+      ~DiscreteFoldInterpolator.n_elements
       ~DiscreteFoldInterpolator.region
       ~DiscreteFoldInterpolator.region_map
    

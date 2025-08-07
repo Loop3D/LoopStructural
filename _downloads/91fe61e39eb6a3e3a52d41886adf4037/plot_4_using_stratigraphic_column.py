@@ -60,5 +60,5 @@ stratigraphic_column["strati"]["unit5"] = {"min": -np.inf, "max": -330, "id": 4}
 model.set_stratigraphic_column(stratigraphic_column)
 
 viewer = Loop3DView(model)
-viewer.plot_block_model()
+viewer.plot_block_model(cmap='tab20')
 viewer.display()

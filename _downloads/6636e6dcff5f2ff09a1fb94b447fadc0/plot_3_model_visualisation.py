@@ -2,12 +2,12 @@
 
 1c. Visualising models
 ===============================
-The following tutorial will demonstrate how to use the Loop structural visualisation module. 
+The following tutorial will demonstrate how to use the Loop structural visualisation module.
 This module provides a wrapper for the lavavu model that is written by
-Owen Kaluza. 
+Owen Kaluza.
 
 Lavavu allows for interactive visualisation of 3D models within a jupyter
-notebook environment. 
+notebook environment.
 
 """
 
@@ -121,8 +121,8 @@ viewer.plot_surface(strati, value=vals, cmap="prism", paint_with=strati)
 
 
 viewer.plot_scalar_field(strati, cmap="prism")
-print(viewer._build_stratigraphic_cmap(model))
-viewer.plot_block_model()
+# print(viewer._build_stratigraphic_cmap(model))
+viewer.plot_block_model(cmap='tab20')
 # Add the data addgrad/addvalue arguments are optional
 viewer.plot_data(strati, vector=True, value=True)
 viewer.display()  # to add an interactive display

@@ -1,7 +1,7 @@
 """
 3b. Modelling a fault network in LoopStructural
 ===============================================
-Uses GeologicalModel, ProcessInputData and Loop3DView from LoopStructural library. 
+Uses GeologicalModel, ProcessInputData and Loop3DView from LoopStructural library.
 Also using geopandas to read a shapefile, pandas, matplotlib and numpy."""
 
 import LoopStructural

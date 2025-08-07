@@ -42,6 +42,7 @@ LoopStructural.interpolators.StructuredGrid
       ~StructuredGrid.position_to_dof_coefs
       ~StructuredGrid.position_to_local_coordinates
       ~StructuredGrid.rotate
+      ~StructuredGrid.set_nelements
       ~StructuredGrid.to_dict
       ~StructuredGrid.trilinear
       ~StructuredGrid.vtk
@@ -68,5 +69,6 @@ LoopStructural.interpolators.StructuredGrid
       ~StructuredGrid.origin
       ~StructuredGrid.rotation_xy
       ~StructuredGrid.step_vector
+      ~StructuredGrid.volume
    
    

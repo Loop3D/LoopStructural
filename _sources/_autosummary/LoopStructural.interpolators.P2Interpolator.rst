@@ -56,6 +56,7 @@ LoopStructural.interpolators.P2Interpolator
       ~P2Interpolator.set_inequality_pairs_constraints
       ~P2Interpolator.set_interface_constraints
       ~P2Interpolator.set_interpolation_weights
+      ~P2Interpolator.set_nelements
       ~P2Interpolator.set_normal_constraints
       ~P2Interpolator.set_region
       ~P2Interpolator.set_tangent_constraints
@@ -67,6 +68,7 @@ LoopStructural.interpolators.P2Interpolator
       ~P2Interpolator.to_dict
       ~P2Interpolator.to_json
       ~P2Interpolator.update
+      ~P2Interpolator.vtk
    
    
 
@@ -77,7 +79,8 @@ LoopStructural.interpolators.P2Interpolator
    .. autosummary::
    
       ~P2Interpolator.data
-      ~P2Interpolator.nx
+      ~P2Interpolator.dof
+      ~P2Interpolator.n_elements
       ~P2Interpolator.region
       ~P2Interpolator.region_map
    

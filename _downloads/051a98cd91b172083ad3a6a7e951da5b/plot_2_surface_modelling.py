@@ -41,53 +41,41 @@ from LoopStructural.datasets import load_claudius  # demo data
 
 import numpy as np
 
-
 ######################################################################
+# Load Example Data
+# ~~~~~~~~~~~~~~~~~
 # The data for this example can be imported from the example datasets
-# module in loopstructural.
-#
+# module in LoopStructural. The `load_claudius` function provides both
+# the data and the bounding box (bb) for the model.
 
 data, bb = load_claudius()
 
-data["val"].unique()
-
+# Display unique scalar field values in the dataset
+print(data["val"].unique())
 
 ######################################################################
-# GeologicalModel
-# ~~~~~~~~~~~~~~~
-#
-# To create a ``GeologicalModel`` the origin (lower left) and max extent
-# (upper right) of the model area need to be specified. In this example
-# these are provided in the bb array.
-#
+# Create Geological Model
+# ~~~~~~~~~~~~~~~~~~~~~~~~
+# Define the model area using the bounding box (bb) and create a
+# GeologicalModel instance.
 
 model = GeologicalModel(bb[0, :], bb[1, :])
 
-
 ######################################################################
-# A pandas dataframe with appropriate columns can be used to link the data
-# to the geological model.
-#
-# * ``X`` is the x coordinate
-# * ``Y`` is the y # coordinate
-# * ``Z`` is the z coordinate
-# * ``feature_name`` is a name to link the data to a model object
-# * ``val`` is the value of the scalar field which represents the
-# distance from a reference horizon. It is comparable
-# to the relative thickness
-#
-# * ``nx`` is the x component of the normal vector to the surface gradient
-# * ``ny`` is the y component of the normal vector to the surface gradient
-# * ``nz`` is the z component of the normal vector to the surface gradeint
-# * ``strike`` is the strike angle
-# * ``dip`` is the dip angle
-#
-# Having a look at the data for this example by looking at the top of the
-# dataframe and then using a 3D plot
-#
+# Link Data to Geological Model
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# A pandas dataframe with appropriate columns is used to link the data
+# to the geological model. Key columns include:
+# * `X`, `Y`, `Z`: Coordinates of the observation
+# * `feature_name`: Name linking the data to a model object
+# * `val`: Scalar field value representing distance from a reference horizon
+# * `nx`, `ny`, `nz`: Components of the normal vector to the surface gradient
+# * `strike`, `dip`: Strike and dip angles
 
-data["feature_name"].unique()
+# Display unique feature names in the dataset
+print(data["feature_name"].unique())
 
+# Visualize the data points and orientation vectors in 3D
 viewer = Loop3DView(background="white")
 viewer.add_points(
     data[~np.isnan(data["val"])][["X", "Y", "Z"]].values,
@@ -99,50 +87,18 @@ viewer.add_arrows(
 )
 viewer.display()
 
-
-######################################################################
-# The pandas dataframe can be linked to the ``GeologicalModel`` using
-# ``.set_model_data(dataframe``
-#
-
+# Link the data to the geological model
 model.set_model_data(data)
 
-
 ######################################################################
-# The ``GeologicalModel`` contains an ordered list of the different
-# geological features within a model and how these features interact. This
-# controls the topology of the different geological features in the model.
-# Different geological features can be added to the geological model such
-# as:
-# * Foliations
-# * Faults
-# * Unconformities
-# * Folded foliations
-# *  Structural Frames
-#
-# In this example we will only add a foliation using the function
-#
-# .. code:: python
-#
-#    model.create_and_add_foliation(name)
-#
-# where name is the name in the ``feature_name`` field, other parameters we
-# specified are the:
-# * ``interpolatortype`` - we can either use a
-# PiecewiseLinearInterpolator ``PLI``, a FiniteDifferenceInterpolator
-# ``FDI`` or a radial basis interpolator ``surfe``
-# * ``nelements - int`` is the how many elements are used to discretize the resulting solution
-# * ``buffer - float`` buffer percentage around the model area
-# * ``solver`` - the algorithm to solve the least squares problem e.g.
-# ``lu`` for lower upper decomposition, ``cg`` for conjugate gradient,
-# ``pyamg`` for an algorithmic multigrid solver
-# * ``damp - bool`` - whether to add a small number to the diagonal of the interpolation
-# matrix for discrete interpolators - this can help speed up the solver
-# and makes the solution more stable for some interpolators
-#
+# Add Geological Features
+# ~~~~~~~~~~~~~~~~~~~~~~~~
+# The GeologicalModel can include various geological features such as
+# foliations, faults, unconformities, and folds. In this example, we
+# add a foliation using the `create_and_add_foliation` method.
 
+# Define stratigraphic column with scalar field ranges for each unit
 vals = [0, 60, 250, 330, 600]
-
 strat_column = {"strati": {}}
 for i in range(len(vals) - 1):
     strat_column["strati"]["unit_{}".format(i)] = {
@@ -151,27 +107,32 @@ for i in range(len(vals) - 1):
         "id": i,
     }
 
-
+# Set the stratigraphic column in the model
 model.set_stratigraphic_column(strat_column)
 
+# Add a foliation to the model
 strati = model.create_and_add_foliation(
     "strati",
-    interpolatortype="FDI",  # try changing this to 'PLI'
-    nelements=1e4,  # try changing between 1e3 and 5e4
-    buffer=0.3,
-    damp=True,
+    interpolatortype="FDI",  # Finite Difference Interpolator
+    nelements=int(1e4),  # Number of elements for discretization
+    buffer=0.3,  # Buffer percentage around the model area
+    damp=True,  # Add damping for stability
 )
-######################################################################
-# Plot the surfaces
-# ------------------------------------
 
+######################################################################
+# Visualize Model Surfaces
+# ~~~~~~~~~~~~~~~~~~~~~~~~
+# Plot the surfaces of the geological model using a 3D viewer.
+print(model.stratigraphic_column.to_dict())
 viewer = Loop3DView(model)
 viewer.plot_model_surfaces(cmap="tab20")
 viewer.display()
 
 ######################################################################
-# Plot block diagram
-# -------------------
+# Visualize Block Diagram
+# ~~~~~~~~~~~~~~~~~~~~~~~
+# Plot a block diagram of the geological model to visualize the
+# stratigraphic units in 3D.
 
 viewer = Loop3DView(model)
 viewer.plot_block_model(cmap="tab20")

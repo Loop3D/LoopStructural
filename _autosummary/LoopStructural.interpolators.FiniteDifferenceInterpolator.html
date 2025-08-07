@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>LoopStructural.interpolators.FiniteDifferenceInterpolator &#8212; LoopStructural 1.6.5 documentation</title>
+    <title>LoopStructural.interpolators.FiniteDifferenceInterpolator &#8212; LoopStructural 1.6.18 documentation</title>
   
   
   
@@ -35,6 +35,7 @@
     <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-binder.css?v=f4aeca0c" />
     <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-dataframe.css?v=2082cf3c" />
     <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-rendered-html.css?v=1277b6f3" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
     <link rel="stylesheet" type="text/css" href="../_static/custom.css" />
   
   <!-- So that users can add custom icons -->
@@ -43,9 +44,10 @@
   <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../_static/documentation_options.js?v=a713f8ff"></script>
+    <script src="../_static/documentation_options.js?v=6e5aca9b"></script>
     <script src="../_static/doctools.js?v=9bcbadda"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/design-tabs.js?v=f930bc37"></script>
     <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = '_autosummary/LoopStructural.interpolators.FiniteDifferenceInterpolator';</script>
     <script src="../_static/custom-icon.js?v=40bda21d"></script>
@@ -56,7 +58,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="" />
-    <meta name="docbuild:last-update" content="Jan 20, 2025"/>
+    <meta name="docbuild:last-update" content="Aug 07, 2025"/>
   </head>
   
   
@@ -126,7 +128,7 @@
     <img src="../_static/infinity_loop_icon.svg" class="logo__image only-dark pst-js-only" alt=""/>
   
   
-    <p class="title logo__title">LoopStructural - 1.6.5</p>
+    <p class="title logo__title">LoopStructural - 1.6.18</p>
   
 </a></div>
     
@@ -409,6 +411,7 @@
 <li class="toctree-l2 current active"><a class="current reference internal" href="#">LoopStructural.interpolators.FiniteDifferenceInterpolator</a></li>
 <li class="toctree-l2"><a class="reference internal" href="LoopStructural.interpolators.PiecewiseLinearInterpolator.html">LoopStructural.interpolators.PiecewiseLinearInterpolator</a></li>
 <li class="toctree-l2"><a class="reference internal" href="LoopStructural.interpolators.DiscreteFoldInterpolator.html">LoopStructural.interpolators.DiscreteFoldInterpolator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="LoopStructural.interpolators.SurfeRBFInterpolator.html">LoopStructural.interpolators.SurfeRBFInterpolator</a></li>
 <li class="toctree-l2"><a class="reference internal" href="LoopStructural.interpolators.P1Interpolator.html">LoopStructural.interpolators.P1Interpolator</a></li>
 <li class="toctree-l2"><a class="reference internal" href="LoopStructural.interpolators.P2Interpolator.html">LoopStructural.interpolators.P2Interpolator</a></li>
 <li class="toctree-l2"><a class="reference internal" href="LoopStructural.interpolators.TetMesh.html">LoopStructural.interpolators.TetMesh</a></li>
@@ -489,7 +492,7 @@
 <h1>LoopStructural.interpolators.FiniteDifferenceInterpolator<a class="headerlink" href="#loopstructural-interpolators-finitedifferenceinterpolator" title="Link to this heading">#</a></h1>
 <dl class="py class">
 <dt class="sig sig-object py" id="LoopStructural.interpolators.FiniteDifferenceInterpolator">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">LoopStructural.interpolators.</span></span><span class="sig-name descname"><span class="pre">FiniteDifferenceInterpolator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">grid</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{}</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.interpolators.FiniteDifferenceInterpolator" title="Link to this definition">#</a></dt>
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">LoopStructural.interpolators.</span></span><span class="sig-name descname"><span class="pre">FiniteDifferenceInterpolator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">grid</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{}</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.interpolators.FiniteDifferenceInterpolator" title="Link to this definition">#</a></dt>
 <dd><p>Bases: <a class="reference internal" href="LoopStructural.interpolators.DiscreteInterpolator.html#LoopStructural.interpolators.DiscreteInterpolator" title="LoopStructural.interpolators._discrete_interpolator.DiscreteInterpolator"><code class="xref py py-class docutils literal notranslate"><span class="pre">DiscreteInterpolator</span></code></a></p>
 <p>Finite difference interpolation on a regular cartesian grid</p>
 <dl class="field-list simple">
@@ -509,7 +512,7 @@
 </dd></dl>
 
 <p class="rubric">Methods</p>
-<div class="pst-scrollable-table-container"><table class="autosummary longtable table autosummary">
+<div class="pst-scrollable-table-container"><table class="autosummary longtable table">
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.interpolators.FiniteDifferenceInterpolator.__init__" title="LoopStructural.interpolators.FiniteDifferenceInterpolator.__init__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">__init__</span></code></a>(grid[, data])</p></td>
 <td><p>Finite difference interpolation on a regular cartesian grid</p></td>
@@ -544,89 +547,89 @@
 <tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.interpolators.FiniteDifferenceInterpolator.add_norm_constraints" title="LoopStructural.interpolators.FiniteDifferenceInterpolator.add_norm_constraints"><code class="xref py py-obj docutils literal notranslate"><span class="pre">add_norm_constraints</span></code></a>([w])</p></td>
 <td><p>Add constraints to control the norm of the gradient of the scalar field</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.interpolators.FiniteDifferenceInterpolator.add_regularisation" title="LoopStructural.interpolators.FiniteDifferenceInterpolator.add_regularisation"><code class="xref py py-obj docutils literal notranslate"><span class="pre">add_regularisation</span></code></a>(operator[, w])</p></td>
-<td><p></p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.interpolators.FiniteDifferenceInterpolator.add_tangent_constraints" title="LoopStructural.interpolators.FiniteDifferenceInterpolator.add_tangent_constraints"><code class="xref py py-obj docutils literal notranslate"><span class="pre">add_tangent_constraints</span></code></a>([w])</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.interpolators.FiniteDifferenceInterpolator.add_tangent_constraints" title="LoopStructural.interpolators.FiniteDifferenceInterpolator.add_tangent_constraints"><code class="xref py py-obj docutils literal notranslate"><span class="pre">add_tangent_constraints</span></code></a>([w])</p></td>
 <td><p>Adds the constraints <span class="math notranslate nohighlight">\(f(X)\cdotT=0\)</span></p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.interpolators.FiniteDifferenceInterpolator.add_value_constraints" title="LoopStructural.interpolators.FiniteDifferenceInterpolator.add_value_constraints"><code class="xref py py-obj docutils literal notranslate"><span class="pre">add_value_constraints</span></code></a>([w])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.interpolators.FiniteDifferenceInterpolator.add_value_constraints" title="LoopStructural.interpolators.FiniteDifferenceInterpolator.add_value_constraints"><code class="xref py py-obj docutils literal notranslate"><span class="pre">add_value_constraints</span></code></a>([w])</p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">add_value_inequality_constraints</span></code>([w])</p></td>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">add_value_inequality_constraints</span></code>([w])</p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.interpolators.FiniteDifferenceInterpolator.assemble_inner" title="LoopStructural.interpolators.FiniteDifferenceInterpolator.assemble_inner"><code class="xref py py-obj docutils literal notranslate"><span class="pre">assemble_inner</span></code></a>(operator, w[, name])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.interpolators.FiniteDifferenceInterpolator.assemble_inner" title="LoopStructural.interpolators.FiniteDifferenceInterpolator.assemble_inner"><code class="xref py py-obj docutils literal notranslate"><span class="pre">assemble_inner</span></code></a>(operator, w[, name])</p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">build_inequality_matrix</span></code>()</p></td>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">build_inequality_matrix</span></code>()</p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.interpolators.FiniteDifferenceInterpolator.build_matrix" title="LoopStructural.interpolators.FiniteDifferenceInterpolator.build_matrix"><code class="xref py py-obj docutils literal notranslate"><span class="pre">build_matrix</span></code></a>()</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.interpolators.FiniteDifferenceInterpolator.build_matrix" title="LoopStructural.interpolators.FiniteDifferenceInterpolator.build_matrix"><code class="xref py py-obj docutils literal notranslate"><span class="pre">build_matrix</span></code></a>()</p></td>
 <td><p>Assemble constraints into interpolation matrix.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.interpolators.FiniteDifferenceInterpolator.calculate_residual_for_constraints" title="LoopStructural.interpolators.FiniteDifferenceInterpolator.calculate_residual_for_constraints"><code class="xref py py-obj docutils literal notranslate"><span class="pre">calculate_residual_for_constraints</span></code></a>()</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.interpolators.FiniteDifferenceInterpolator.calculate_residual_for_constraints" title="LoopStructural.interpolators.FiniteDifferenceInterpolator.calculate_residual_for_constraints"><code class="xref py py-obj docutils literal notranslate"><span class="pre">calculate_residual_for_constraints</span></code></a>()</p></td>
 <td><p>Calculates Ax-B for all constraints added to the interpolator This could be a proxy to identify which constraints are controlling the model</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">check_array</span></code>(array)</p></td>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">check_array</span></code>(array)</p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.interpolators.FiniteDifferenceInterpolator.clean" title="LoopStructural.interpolators.FiniteDifferenceInterpolator.clean"><code class="xref py py-obj docutils literal notranslate"><span class="pre">clean</span></code></a>()</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.interpolators.FiniteDifferenceInterpolator.clean" title="LoopStructural.interpolators.FiniteDifferenceInterpolator.clean"><code class="xref py py-obj docutils literal notranslate"><span class="pre">clean</span></code></a>()</p></td>
 <td><p>Removes all of the data from an interpolator</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.interpolators.FiniteDifferenceInterpolator.clear_constraints" title="LoopStructural.interpolators.FiniteDifferenceInterpolator.clear_constraints"><code class="xref py py-obj docutils literal notranslate"><span class="pre">clear_constraints</span></code></a>()</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.interpolators.FiniteDifferenceInterpolator.clear_constraints" title="LoopStructural.interpolators.FiniteDifferenceInterpolator.clear_constraints"><code class="xref py py-obj docutils literal notranslate"><span class="pre">clear_constraints</span></code></a>()</p></td>
 <td><p>Clear the constraints from the interpolator, this makes sure we are not storing the constraints after the solver has been run</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.interpolators.FiniteDifferenceInterpolator.copy" title="LoopStructural.interpolators.FiniteDifferenceInterpolator.copy"><code class="xref py py-obj docutils literal notranslate"><span class="pre">copy</span></code></a>()</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.interpolators.FiniteDifferenceInterpolator.copy" title="LoopStructural.interpolators.FiniteDifferenceInterpolator.copy"><code class="xref py py-obj docutils literal notranslate"><span class="pre">copy</span></code></a>()</p></td>
 <td><p>Create a new identical interpolator</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.interpolators.FiniteDifferenceInterpolator.debug" title="LoopStructural.interpolators.FiniteDifferenceInterpolator.debug"><code class="xref py py-obj docutils literal notranslate"><span class="pre">debug</span></code></a>()</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.interpolators.FiniteDifferenceInterpolator.debug" title="LoopStructural.interpolators.FiniteDifferenceInterpolator.debug"><code class="xref py py-obj docutils literal notranslate"><span class="pre">debug</span></code></a>()</p></td>
 <td><p>Helper function for debugging when the interpolator isn't working</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.interpolators.FiniteDifferenceInterpolator.evaluate_gradient" title="LoopStructural.interpolators.FiniteDifferenceInterpolator.evaluate_gradient"><code class="xref py py-obj docutils literal notranslate"><span class="pre">evaluate_gradient</span></code></a>(locations)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.interpolators.FiniteDifferenceInterpolator.evaluate_gradient" title="LoopStructural.interpolators.FiniteDifferenceInterpolator.evaluate_gradient"><code class="xref py py-obj docutils literal notranslate"><span class="pre">evaluate_gradient</span></code></a>(locations)</p></td>
 <td><p>Evaluate the gradient of the scalar field at the evaluation points :param evaluation_points: xyz locations to evaluate the gradient :type evaluation_points: np.array</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.interpolators.FiniteDifferenceInterpolator.evaluate_value" title="LoopStructural.interpolators.FiniteDifferenceInterpolator.evaluate_value"><code class="xref py py-obj docutils literal notranslate"><span class="pre">evaluate_value</span></code></a>(locations)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.interpolators.FiniteDifferenceInterpolator.evaluate_value" title="LoopStructural.interpolators.FiniteDifferenceInterpolator.evaluate_value"><code class="xref py py-obj docutils literal notranslate"><span class="pre">evaluate_value</span></code></a>(locations)</p></td>
 <td><p>Evaluate the value of the interpolator at location</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.interpolators.FiniteDifferenceInterpolator.get_data_locations" title="LoopStructural.interpolators.FiniteDifferenceInterpolator.get_data_locations"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_data_locations</span></code></a>()</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.interpolators.FiniteDifferenceInterpolator.get_data_locations" title="LoopStructural.interpolators.FiniteDifferenceInterpolator.get_data_locations"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_data_locations</span></code></a>()</p></td>
 <td><p>Get the location of all data points</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.interpolators.FiniteDifferenceInterpolator.get_gradient_constraints" title="LoopStructural.interpolators.FiniteDifferenceInterpolator.get_gradient_constraints"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_gradient_constraints</span></code></a>()</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.interpolators.FiniteDifferenceInterpolator.get_gradient_constraints" title="LoopStructural.interpolators.FiniteDifferenceInterpolator.get_gradient_constraints"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_gradient_constraints</span></code></a>()</p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_inequality_pairs_constraints</span></code>()</p></td>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_inequality_pairs_constraints</span></code>()</p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_inequality_value_constraints</span></code>()</p></td>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_inequality_value_constraints</span></code>()</p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.interpolators.FiniteDifferenceInterpolator.get_interface_constraints" title="LoopStructural.interpolators.FiniteDifferenceInterpolator.get_interface_constraints"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_interface_constraints</span></code></a>()</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.interpolators.FiniteDifferenceInterpolator.get_interface_constraints" title="LoopStructural.interpolators.FiniteDifferenceInterpolator.get_interface_constraints"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_interface_constraints</span></code></a>()</p></td>
 <td><p>Get the location of interface constraints</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.interpolators.FiniteDifferenceInterpolator.get_norm_constraints" title="LoopStructural.interpolators.FiniteDifferenceInterpolator.get_norm_constraints"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_norm_constraints</span></code></a>()</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.interpolators.FiniteDifferenceInterpolator.get_norm_constraints" title="LoopStructural.interpolators.FiniteDifferenceInterpolator.get_norm_constraints"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_norm_constraints</span></code></a>()</p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.interpolators.FiniteDifferenceInterpolator.get_tangent_constraints" title="LoopStructural.interpolators.FiniteDifferenceInterpolator.get_tangent_constraints"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_tangent_constraints</span></code></a>()</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.interpolators.FiniteDifferenceInterpolator.get_tangent_constraints" title="LoopStructural.interpolators.FiniteDifferenceInterpolator.get_tangent_constraints"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_tangent_constraints</span></code></a>()</p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.interpolators.FiniteDifferenceInterpolator.get_value_constraints" title="LoopStructural.interpolators.FiniteDifferenceInterpolator.get_value_constraints"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_value_constraints</span></code></a>()</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.interpolators.FiniteDifferenceInterpolator.get_value_constraints" title="LoopStructural.interpolators.FiniteDifferenceInterpolator.get_value_constraints"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_value_constraints</span></code></a>()</p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.interpolators.FiniteDifferenceInterpolator.reset" title="LoopStructural.interpolators.FiniteDifferenceInterpolator.reset"><code class="xref py py-obj docutils literal notranslate"><span class="pre">reset</span></code></a>()</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.interpolators.FiniteDifferenceInterpolator.reset" title="LoopStructural.interpolators.FiniteDifferenceInterpolator.reset"><code class="xref py py-obj docutils literal notranslate"><span class="pre">reset</span></code></a>()</p></td>
 <td><p>Reset the interpolation constraints</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.interpolators.FiniteDifferenceInterpolator.set_gradient_constraints" title="LoopStructural.interpolators.FiniteDifferenceInterpolator.set_gradient_constraints"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_gradient_constraints</span></code></a>(points)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.interpolators.FiniteDifferenceInterpolator.set_gradient_constraints" title="LoopStructural.interpolators.FiniteDifferenceInterpolator.set_gradient_constraints"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_gradient_constraints</span></code></a>(points)</p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_inequality_pairs_constraints</span></code>(points)</p></td>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_inequality_pairs_constraints</span></code>(points)</p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_interface_constraints</span></code>(points)</p></td>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_interface_constraints</span></code>(points)</p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.interpolators.FiniteDifferenceInterpolator.set_interpolation_weights" title="LoopStructural.interpolators.FiniteDifferenceInterpolator.set_interpolation_weights"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_interpolation_weights</span></code></a>(weights)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.interpolators.FiniteDifferenceInterpolator.set_interpolation_weights" title="LoopStructural.interpolators.FiniteDifferenceInterpolator.set_interpolation_weights"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_interpolation_weights</span></code></a>(weights)</p></td>
 <td><p>Set the interpolation weights dictionary</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_nelements</span></code>(nelements)</p></td>
+<td><p></p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.interpolators.FiniteDifferenceInterpolator.set_normal_constraints" title="LoopStructural.interpolators.FiniteDifferenceInterpolator.set_normal_constraints"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_normal_constraints</span></code></a>(points)</p></td>
 <td><p></p></td>
@@ -661,22 +664,28 @@
 <tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.interpolators.FiniteDifferenceInterpolator.update" title="LoopStructural.interpolators.FiniteDifferenceInterpolator.update"><code class="xref py py-obj docutils literal notranslate"><span class="pre">update</span></code></a>()</p></td>
 <td><p>Check if the solver is up to date, if not rerun interpolation using the previously used solver.</p></td>
 </tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">vtk</span></code>()</p></td>
+<td><p></p></td>
+</tr>
 </tbody>
 </table>
 </div>
 <p class="rubric">Attributes</p>
-<div class="pst-scrollable-table-container"><table class="autosummary longtable table autosummary">
+<div class="pst-scrollable-table-container"><table class="autosummary longtable table">
 <tbody>
 <tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">data</span></code></p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.interpolators.FiniteDifferenceInterpolator.nx" title="LoopStructural.interpolators.FiniteDifferenceInterpolator.nx"><code class="xref py py-obj docutils literal notranslate"><span class="pre">nx</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.interpolators.FiniteDifferenceInterpolator.dof" title="LoopStructural.interpolators.FiniteDifferenceInterpolator.dof"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dof</span></code></a></p></td>
 <td><p>Number of degrees of freedom for the interpolator</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.interpolators.FiniteDifferenceInterpolator.region" title="LoopStructural.interpolators.FiniteDifferenceInterpolator.region"><code class="xref py py-obj docutils literal notranslate"><span class="pre">region</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.interpolators.FiniteDifferenceInterpolator.n_elements" title="LoopStructural.interpolators.FiniteDifferenceInterpolator.n_elements"><code class="xref py py-obj docutils literal notranslate"><span class="pre">n_elements</span></code></a></p></td>
+<td><p>Number of elements in the interpolator</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.interpolators.FiniteDifferenceInterpolator.region" title="LoopStructural.interpolators.FiniteDifferenceInterpolator.region"><code class="xref py py-obj docutils literal notranslate"><span class="pre">region</span></code></a></p></td>
 <td><p>The active region of the interpolator.</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">region_map</span></code></p></td>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">region_map</span></code></p></td>
 <td><p></p></td>
 </tr>
 </tbody>
@@ -753,7 +762,7 @@ l &lt; Ax &gt; u constrains the objective function</p>
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>A</strong> (<em>numpy array</em>) – matrix of coefficients</p></li>
-<li><p><strong>bounds</strong> (<em>numpy array</em>) – nx3 lower, upper, 1</p></li>
+<li><p><strong>bounds</strong> (<em>numpy array</em>) – n*3 lower, upper, 1</p></li>
 <li><p><strong>idc</strong> (<em>numpy array</em>) – index of constraints in the matrix</p></li>
 </ul>
 </dd>
@@ -798,19 +807,6 @@ Sets all P1-P2 = 0 for all pairs of points</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>w</strong> (<em>double</em>) – weighting of this constraint (double)</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="LoopStructural.interpolators.FiniteDifferenceInterpolator.add_regularisation">
-<span class="sig-name descname"><span class="pre">add_regularisation</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">operator</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">w</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.1</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.interpolators.FiniteDifferenceInterpolator.add_regularisation" title="Link to this definition">#</a></dt>
-<dd><dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>operator</strong></p></li>
-<li><p><strong>w</strong></p></li>
-</ul>
 </dd>
 </dl>
 </dd></dl>
@@ -907,6 +903,17 @@ the constraints after the solver has been run</p>
 <dd><p>Helper function for debugging when the interpolator isn’t working</p>
 </dd></dl>
 
+<dl class="py property">
+<dt class="sig sig-object py" id="LoopStructural.interpolators.FiniteDifferenceInterpolator.dof">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">dof</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><a class="headerlink" href="#LoopStructural.interpolators.FiniteDifferenceInterpolator.dof" title="Link to this definition">#</a></dt>
+<dd><p>Number of degrees of freedom for the interpolator</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p><em>int</em> – number of degrees of freedom, positve</p>
+</dd>
+</dl>
+</dd></dl>
+
 <dl class="py method">
 <dt class="sig sig-object py" id="LoopStructural.interpolators.FiniteDifferenceInterpolator.evaluate_gradient">
 <span class="sig-name descname"><span class="pre">evaluate_gradient</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">locations</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ndarray</span></span></span><a class="headerlink" href="#LoopStructural.interpolators.FiniteDifferenceInterpolator.evaluate_gradient" title="Link to this definition">#</a></dt>
@@ -992,19 +999,19 @@ the constraints after the solver has been run</p>
 </dd></dl>
 
 <dl class="py property">
-<dt class="sig sig-object py" id="LoopStructural.interpolators.FiniteDifferenceInterpolator.nx">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">nx</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><a class="headerlink" href="#LoopStructural.interpolators.FiniteDifferenceInterpolator.nx" title="Link to this definition">#</a></dt>
-<dd><p>Number of degrees of freedom for the interpolator</p>
+<dt class="sig sig-object py" id="LoopStructural.interpolators.FiniteDifferenceInterpolator.n_elements">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">n_elements</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><a class="headerlink" href="#LoopStructural.interpolators.FiniteDifferenceInterpolator.n_elements" title="Link to this definition">#</a></dt>
+<dd><p>Number of elements in the interpolator</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p><em>int</em> – number of degrees of freedom, positve</p>
+<dd class="field-odd"><p><em>int</em> – number of elements, positive</p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="LoopStructural.interpolators.FiniteDifferenceInterpolator.region">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">region</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ndarray</span></em><a class="headerlink" href="#LoopStructural.interpolators.FiniteDifferenceInterpolator.region" title="Link to this definition">#</a></dt>
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">region</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ndarray</span></em><a class="headerlink" href="#LoopStructural.interpolators.FiniteDifferenceInterpolator.region" title="Link to this definition">#</a></dt>
 <dd><p>The active region of the interpolator. A boolean
 mask for all elements that are interpolated</p>
 <dl class="field-list simple">
@@ -1048,9 +1055,11 @@ X,Y,Z,gx,gy,gz,weight</p>
 <dd><dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>points</strong> (<em>np.ndarray</em>) – array containing the value constraints usually 7-8 columns.
-X,Y,Z,nx,ny,nz,weight</p>
+X,Y,Z,nx,ny,nz,(weight, default : 1 for each row)</p>
 </dd>
 </dl>
+<p class="rubric">Notes</p>
+<p>If no weights are provided, w = 1 is assigned to each normal constraint.</p>
 </dd></dl>
 
 <dl class="py method">
@@ -1222,7 +1231,6 @@ return False</p>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#LoopStructural.interpolators.FiniteDifferenceInterpolator.add_inequality_feature"><code class="docutils literal notranslate"><span class="pre">FiniteDifferenceInterpolator.add_inequality_feature()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#LoopStructural.interpolators.FiniteDifferenceInterpolator.add_interface_constraints"><code class="docutils literal notranslate"><span class="pre">FiniteDifferenceInterpolator.add_interface_constraints()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#LoopStructural.interpolators.FiniteDifferenceInterpolator.add_norm_constraints"><code class="docutils literal notranslate"><span class="pre">FiniteDifferenceInterpolator.add_norm_constraints()</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#LoopStructural.interpolators.FiniteDifferenceInterpolator.add_regularisation"><code class="docutils literal notranslate"><span class="pre">FiniteDifferenceInterpolator.add_regularisation()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#LoopStructural.interpolators.FiniteDifferenceInterpolator.add_tangent_constraints"><code class="docutils literal notranslate"><span class="pre">FiniteDifferenceInterpolator.add_tangent_constraints()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#LoopStructural.interpolators.FiniteDifferenceInterpolator.add_value_constraints"><code class="docutils literal notranslate"><span class="pre">FiniteDifferenceInterpolator.add_value_constraints()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#LoopStructural.interpolators.FiniteDifferenceInterpolator.assemble_inner"><code class="docutils literal notranslate"><span class="pre">FiniteDifferenceInterpolator.assemble_inner()</span></code></a></li>
@@ -1232,6 +1240,7 @@ return False</p>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#LoopStructural.interpolators.FiniteDifferenceInterpolator.clear_constraints"><code class="docutils literal notranslate"><span class="pre">FiniteDifferenceInterpolator.clear_constraints()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#LoopStructural.interpolators.FiniteDifferenceInterpolator.copy"><code class="docutils literal notranslate"><span class="pre">FiniteDifferenceInterpolator.copy()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#LoopStructural.interpolators.FiniteDifferenceInterpolator.debug"><code class="docutils literal notranslate"><span class="pre">FiniteDifferenceInterpolator.debug()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#LoopStructural.interpolators.FiniteDifferenceInterpolator.dof"><code class="docutils literal notranslate"><span class="pre">FiniteDifferenceInterpolator.dof</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#LoopStructural.interpolators.FiniteDifferenceInterpolator.evaluate_gradient"><code class="docutils literal notranslate"><span class="pre">FiniteDifferenceInterpolator.evaluate_gradient()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#LoopStructural.interpolators.FiniteDifferenceInterpolator.evaluate_value"><code class="docutils literal notranslate"><span class="pre">FiniteDifferenceInterpolator.evaluate_value()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#LoopStructural.interpolators.FiniteDifferenceInterpolator.get_data_locations"><code class="docutils literal notranslate"><span class="pre">FiniteDifferenceInterpolator.get_data_locations()</span></code></a></li>
@@ -1240,7 +1249,7 @@ return False</p>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#LoopStructural.interpolators.FiniteDifferenceInterpolator.get_norm_constraints"><code class="docutils literal notranslate"><span class="pre">FiniteDifferenceInterpolator.get_norm_constraints()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#LoopStructural.interpolators.FiniteDifferenceInterpolator.get_tangent_constraints"><code class="docutils literal notranslate"><span class="pre">FiniteDifferenceInterpolator.get_tangent_constraints()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#LoopStructural.interpolators.FiniteDifferenceInterpolator.get_value_constraints"><code class="docutils literal notranslate"><span class="pre">FiniteDifferenceInterpolator.get_value_constraints()</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#LoopStructural.interpolators.FiniteDifferenceInterpolator.nx"><code class="docutils literal notranslate"><span class="pre">FiniteDifferenceInterpolator.nx</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#LoopStructural.interpolators.FiniteDifferenceInterpolator.n_elements"><code class="docutils literal notranslate"><span class="pre">FiniteDifferenceInterpolator.n_elements</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#LoopStructural.interpolators.FiniteDifferenceInterpolator.region"><code class="docutils literal notranslate"><span class="pre">FiniteDifferenceInterpolator.region</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#LoopStructural.interpolators.FiniteDifferenceInterpolator.reset"><code class="docutils literal notranslate"><span class="pre">FiniteDifferenceInterpolator.reset()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#LoopStructural.interpolators.FiniteDifferenceInterpolator.set_gradient_constraints"><code class="docutils literal notranslate"><span class="pre">FiniteDifferenceInterpolator.set_gradient_constraints()</span></code></a></li>

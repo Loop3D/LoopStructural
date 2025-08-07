@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>1j. Exporting models &#8212; LoopStructural 1.6.5 documentation</title>
+    <title>1j. Exporting models &#8212; LoopStructural 1.6.18 documentation</title>
   
   
   
@@ -35,6 +35,7 @@
     <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-binder.css?v=f4aeca0c" />
     <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-dataframe.css?v=2082cf3c" />
     <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-rendered-html.css?v=1277b6f3" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=95c83b7e" />
     <link rel="stylesheet" type="text/css" href="../../_static/custom.css" />
   
   <!-- So that users can add custom icons -->
@@ -43,9 +44,10 @@
   <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../../_static/documentation_options.js?v=a713f8ff"></script>
+    <script src="../../_static/documentation_options.js?v=6e5aca9b"></script>
     <script src="../../_static/doctools.js?v=9bcbadda"></script>
     <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/design-tabs.js?v=f930bc37"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = '_auto_examples/1_basic/plot_7_exporting';</script>
     <script src="../../_static/custom-icon.js?v=40bda21d"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
@@ -55,7 +57,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="" />
-    <meta name="docbuild:last-update" content="Jan 20, 2025"/>
+    <meta name="docbuild:last-update" content="Aug 07, 2025"/>
   </head>
   
   
@@ -125,7 +127,7 @@
     <img src="../../_static/infinity_loop_icon.svg" class="logo__image only-dark pst-js-only" alt=""/>
   
   
-    <p class="title logo__title">LoopStructural - 1.6.5</p>
+    <p class="title logo__title">LoopStructural - 1.6.18</p>
   
 </a></div>
     
@@ -518,44 +520,44 @@ method. The supported file formats are <cite>vtk</cite>, <cite>ts</cite> and <ci
 <span class="c1"># surfaces[0].save(&#39;text.geoh5&#39;)</span>
 </pre></div>
 </div>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>[Surface(vertices=array([[ 548800.        , 7816600.        ,   -8891.08479738],
-       [ 548875.51020408, 7816600.        ,   -8884.92554426],
-       [ 548800.        , 7816710.20408163,   -8890.58760166],
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>[Surface(vertices=array([[ 548800.        , 7816600.        ,   -8854.15956259],
+       [ 548875.51020408, 7816600.        ,   -8856.92141533],
+       [ 548800.        , 7816710.20408163,   -8862.07943201],
        ...,
-       [ 552500.        , 7821779.59183673,   -8828.03220749],
-       [ 552500.        , 7821889.79591837,   -8817.74023533],
-       [ 552500.        , 7822000.        ,   -8808.09210777]]), triangles=array([[   2,    1,    0],
+       [ 552500.        , 7821779.59183673,   -8820.80223083],
+       [ 552500.        , 7821889.79591837,   -8819.17312145],
+       [ 552500.        , 7822000.        ,   -8820.37535191]]), triangles=array([[   2,    1,    0],
        [   2,    3,    1],
        [   4,    3,    2],
        ...,
-       [2682, 2740, 2739],
-       [2683, 2740, 2682],
-       [2683, 2741, 2740]], dtype=int32), normals=array([[-0.05608582, -0.00458441,  0.9984154 ],
-       [-0.05699767, -0.01842402,  0.9982043 ],
-       [-0.0700128 , -0.00447449,  0.99753606],
+       [3203, 3289, 3288],
+       [3204, 3289, 3203],
+       [3204, 3290, 3289]], dtype=int32), colour=None, normals=array([[ 0.0267667 ,  0.07496826,  0.9968266 ],
+       [ 0.02015799,  0.06407178,  0.9977417 ],
+       [-0.00476231,  0.05439705,  0.99850804],
        ...,
-       [-0.02240791, -0.08773828,  0.9958915 ],
-       [-0.02971784, -0.08390339,  0.9960306 ],
-       [-0.04093808, -0.06991643,  0.9967125 ]], dtype=float32), name=&#39;strati_0.0&#39;, values=array([0., 0., 0., ..., 0., 0., 0.]), properties=None, cell_properties=None)]
-&lt;bound method Surface.vtk of Surface(vertices=array([[ 548800.        , 7816600.        ,   -8891.08479738],
-       [ 548875.51020408, 7816600.        ,   -8884.92554426],
-       [ 548800.        , 7816710.20408163,   -8890.58760166],
+       [-0.06205146,  0.03954966,  0.99728906],
+       [-0.0559882 ,  0.04907602,  0.99722457],
+       [-0.06876638,  0.07556988,  0.9947665 ]], dtype=float32), name=&#39;strati&#39;, values=array([0., 0., 0., ..., 0., 0., 0.]), properties=None, cell_properties=None)]
+&lt;bound method Surface.vtk of Surface(vertices=array([[ 548800.        , 7816600.        ,   -8854.15956259],
+       [ 548875.51020408, 7816600.        ,   -8856.92141533],
+       [ 548800.        , 7816710.20408163,   -8862.07943201],
        ...,
-       [ 552500.        , 7821779.59183673,   -8828.03220749],
-       [ 552500.        , 7821889.79591837,   -8817.74023533],
-       [ 552500.        , 7822000.        ,   -8808.09210777]]), triangles=array([[   2,    1,    0],
+       [ 552500.        , 7821779.59183673,   -8820.80223083],
+       [ 552500.        , 7821889.79591837,   -8819.17312145],
+       [ 552500.        , 7822000.        ,   -8820.37535191]]), triangles=array([[   2,    1,    0],
        [   2,    3,    1],
        [   4,    3,    2],
        ...,
-       [2682, 2740, 2739],
-       [2683, 2740, 2682],
-       [2683, 2741, 2740]], dtype=int32), normals=array([[-0.05608582, -0.00458441,  0.9984154 ],
-       [-0.05699767, -0.01842402,  0.9982043 ],
-       [-0.0700128 , -0.00447449,  0.99753606],
+       [3203, 3289, 3288],
+       [3204, 3289, 3203],
+       [3204, 3290, 3289]], dtype=int32), colour=None, normals=array([[ 0.0267667 ,  0.07496826,  0.9968266 ],
+       [ 0.02015799,  0.06407178,  0.9977417 ],
+       [-0.00476231,  0.05439705,  0.99850804],
        ...,
-       [-0.02240791, -0.08773828,  0.9958915 ],
-       [-0.02971784, -0.08390339,  0.9960306 ],
-       [-0.04093808, -0.06991643,  0.9967125 ]], dtype=float32), name=&#39;strati_0.0&#39;, values=array([0., 0., 0., ..., 0., 0., 0.]), properties=None, cell_properties=None)&gt;
+       [-0.06205146,  0.03954966,  0.99728906],
+       [-0.0559882 ,  0.04907602,  0.99722457],
+       [-0.06876638,  0.07556988,  0.9947665 ]], dtype=float32), name=&#39;strati&#39;, values=array([0., 0., 0., ..., 0., 0., 0.]), properties=None, cell_properties=None)&gt;
 </pre></div>
 </div>
 </section>
@@ -567,7 +569,7 @@ in the model to a geoh5 file. This file can be loaded into LoopStructural</p>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="c1"># model.save(&#39;model.geoh5&#39;)</span>
 </pre></div>
 </div>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 0.146 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 0.180 seconds)</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-1-basic-plot-7-exporting-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
 <p><a class="reference download internal" download="" href="../../_downloads/ce16e3f827e9b04d689112b9a35b3aac/plot_7_exporting.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">plot_7_exporting.ipynb</span></code></a></p>

@@ -28,6 +28,7 @@ LoopStructural.interpolators.UnStructuredTetMesh
       ~UnStructuredTetMesh.get_neighbours
       ~UnStructuredTetMesh.inside
       ~UnStructuredTetMesh.onGeometryChange
+      ~UnStructuredTetMesh.set_nelements
       ~UnStructuredTetMesh.vtk
    
    

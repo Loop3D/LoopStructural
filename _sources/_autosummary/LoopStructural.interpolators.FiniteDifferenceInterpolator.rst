@@ -27,7 +27,6 @@ LoopStructural.interpolators.FiniteDifferenceInterpolator
       ~FiniteDifferenceInterpolator.add_inequality_pairs_constraints
       ~FiniteDifferenceInterpolator.add_interface_constraints
       ~FiniteDifferenceInterpolator.add_norm_constraints
-      ~FiniteDifferenceInterpolator.add_regularisation
       ~FiniteDifferenceInterpolator.add_tangent_constraints
       ~FiniteDifferenceInterpolator.add_value_constraints
       ~FiniteDifferenceInterpolator.add_value_inequality_constraints
@@ -55,6 +54,7 @@ LoopStructural.interpolators.FiniteDifferenceInterpolator
       ~FiniteDifferenceInterpolator.set_inequality_pairs_constraints
       ~FiniteDifferenceInterpolator.set_interface_constraints
       ~FiniteDifferenceInterpolator.set_interpolation_weights
+      ~FiniteDifferenceInterpolator.set_nelements
       ~FiniteDifferenceInterpolator.set_normal_constraints
       ~FiniteDifferenceInterpolator.set_region
       ~FiniteDifferenceInterpolator.set_tangent_constraints
@@ -66,6 +66,7 @@ LoopStructural.interpolators.FiniteDifferenceInterpolator
       ~FiniteDifferenceInterpolator.to_dict
       ~FiniteDifferenceInterpolator.to_json
       ~FiniteDifferenceInterpolator.update
+      ~FiniteDifferenceInterpolator.vtk
    
    
 
@@ -76,7 +77,8 @@ LoopStructural.interpolators.FiniteDifferenceInterpolator
    .. autosummary::
    
       ~FiniteDifferenceInterpolator.data
-      ~FiniteDifferenceInterpolator.nx
+      ~FiniteDifferenceInterpolator.dof
+      ~FiniteDifferenceInterpolator.n_elements
       ~FiniteDifferenceInterpolator.region
       ~FiniteDifferenceInterpolator.region_map
    

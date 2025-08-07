@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>LoopStructural.interpolators.StructuredGrid2D &#8212; LoopStructural 1.6.5 documentation</title>
+    <title>LoopStructural.interpolators.StructuredGrid2D &#8212; LoopStructural 1.6.18 documentation</title>
   
   
   
@@ -35,6 +35,7 @@
     <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-binder.css?v=f4aeca0c" />
     <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-dataframe.css?v=2082cf3c" />
     <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-rendered-html.css?v=1277b6f3" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
     <link rel="stylesheet" type="text/css" href="../_static/custom.css" />
   
   <!-- So that users can add custom icons -->
@@ -43,9 +44,10 @@
   <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../_static/documentation_options.js?v=a713f8ff"></script>
+    <script src="../_static/documentation_options.js?v=6e5aca9b"></script>
     <script src="../_static/doctools.js?v=9bcbadda"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/design-tabs.js?v=f930bc37"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = '_autosummary/LoopStructural.interpolators.StructuredGrid2D';</script>
     <script src="../_static/custom-icon.js?v=40bda21d"></script>
     <link rel="index" title="Index" href="../genindex.html" />
@@ -55,7 +57,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="" />
-    <meta name="docbuild:last-update" content="Jan 20, 2025"/>
+    <meta name="docbuild:last-update" content="Aug 07, 2025"/>
   </head>
   
   
@@ -125,7 +127,7 @@
     <img src="../_static/infinity_loop_icon.svg" class="logo__image only-dark pst-js-only" alt=""/>
   
   
-    <p class="title logo__title">LoopStructural - 1.6.5</p>
+    <p class="title logo__title">LoopStructural - 1.6.18</p>
   
 </a></div>
     
@@ -408,6 +410,7 @@
 <li class="toctree-l2"><a class="reference internal" href="LoopStructural.interpolators.FiniteDifferenceInterpolator.html">LoopStructural.interpolators.FiniteDifferenceInterpolator</a></li>
 <li class="toctree-l2"><a class="reference internal" href="LoopStructural.interpolators.PiecewiseLinearInterpolator.html">LoopStructural.interpolators.PiecewiseLinearInterpolator</a></li>
 <li class="toctree-l2"><a class="reference internal" href="LoopStructural.interpolators.DiscreteFoldInterpolator.html">LoopStructural.interpolators.DiscreteFoldInterpolator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="LoopStructural.interpolators.SurfeRBFInterpolator.html">LoopStructural.interpolators.SurfeRBFInterpolator</a></li>
 <li class="toctree-l2"><a class="reference internal" href="LoopStructural.interpolators.P1Interpolator.html">LoopStructural.interpolators.P1Interpolator</a></li>
 <li class="toctree-l2"><a class="reference internal" href="LoopStructural.interpolators.P2Interpolator.html">LoopStructural.interpolators.P2Interpolator</a></li>
 <li class="toctree-l2"><a class="reference internal" href="LoopStructural.interpolators.TetMesh.html">LoopStructural.interpolators.TetMesh</a></li>
@@ -488,7 +491,7 @@
 <h1>LoopStructural.interpolators.StructuredGrid2D<a class="headerlink" href="#loopstructural-interpolators-structuredgrid2d" title="Link to this heading">#</a></h1>
 <dl class="py class">
 <dt class="sig sig-object py" id="LoopStructural.interpolators.StructuredGrid2D">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">LoopStructural.interpolators.</span></span><span class="sig-name descname"><span class="pre">StructuredGrid2D</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">origin</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">array([0.,</span> <span class="pre">0.])</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nsteps</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">array([10,</span> <span class="pre">10])</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">step_vector</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">array([1.,</span> <span class="pre">1.])</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.interpolators.StructuredGrid2D" title="Link to this definition">#</a></dt>
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">LoopStructural.interpolators.</span></span><span class="sig-name descname"><span class="pre">StructuredGrid2D</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">origin</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">array([0.,</span> <span class="pre">0.])</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nsteps</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">array([10,</span> <span class="pre">10])</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">step_vector</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">array([1.,</span> <span class="pre">1.])</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.interpolators.StructuredGrid2D" title="Link to this definition">#</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">BaseSupport</span></code></p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -514,7 +517,7 @@
 </dd></dl>
 
 <p class="rubric">Methods</p>
-<div class="pst-scrollable-table-container"><table class="autosummary longtable table autosummary">
+<div class="pst-scrollable-table-container"><table class="autosummary longtable table">
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.interpolators.StructuredGrid2D.__init__" title="LoopStructural.interpolators.StructuredGrid2D.__init__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">__init__</span></code></a>([origin, nsteps, step_vector])</p></td>
 <td><p></p></td>
@@ -570,8 +573,8 @@
 <tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.interpolators.StructuredGrid2D.onGeometryChange" title="LoopStructural.interpolators.StructuredGrid2D.onGeometryChange"><code class="xref py py-obj docutils literal notranslate"><span class="pre">onGeometryChange</span></code></a>()</p></td>
 <td><p>Called when the geometry changes</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">position_to_cell_corners</span></code>(pos)</p></td>
-<td><p></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.interpolators.StructuredGrid2D.position_to_cell_corners" title="LoopStructural.interpolators.StructuredGrid2D.position_to_cell_corners"><code class="xref py py-obj docutils literal notranslate"><span class="pre">position_to_cell_corners</span></code></a>(pos)</p></td>
+<td><p>Get the global indices of the vertices (corner) nodes of the cell containing each point.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.interpolators.StructuredGrid2D.position_to_cell_index" title="LoopStructural.interpolators.StructuredGrid2D.position_to_cell_index"><code class="xref py py-obj docutils literal notranslate"><span class="pre">position_to_cell_index</span></code></a>(pos)</p></td>
 <td><p>[summary]</p></td>
@@ -588,14 +591,17 @@
 <tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">print_geometry</span></code>()</p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.interpolators.StructuredGrid2D.vtk" title="LoopStructural.interpolators.StructuredGrid2D.vtk"><code class="xref py py-obj docutils literal notranslate"><span class="pre">vtk</span></code></a>([node_properties, cell_properties])</p></td>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_nelements</span></code>(nelements)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.interpolators.StructuredGrid2D.vtk" title="LoopStructural.interpolators.StructuredGrid2D.vtk"><code class="xref py py-obj docutils literal notranslate"><span class="pre">vtk</span></code></a>([node_properties, cell_properties])</p></td>
 <td><p>Return a vtk object</p></td>
 </tr>
 </tbody>
 </table>
 </div>
 <p class="rubric">Attributes</p>
-<div class="pst-scrollable-table-container"><table class="autosummary longtable table autosummary">
+<div class="pst-scrollable-table-container"><table class="autosummary longtable table">
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.interpolators.StructuredGrid2D.barycentre" title="LoopStructural.interpolators.StructuredGrid2D.barycentre"><code class="xref py py-obj docutils literal notranslate"><span class="pre">barycentre</span></code></a></p></td>
 <td><p>Return the number of dimensions</p></td>
@@ -623,7 +629,7 @@
 </div>
 <dl class="py property">
 <dt class="sig sig-object py" id="LoopStructural.interpolators.StructuredGrid2D.barycentre">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">barycentre</span></span><a class="headerlink" href="#LoopStructural.interpolators.StructuredGrid2D.barycentre" title="Link to this definition">#</a></dt>
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">barycentre</span></span><a class="headerlink" href="#LoopStructural.interpolators.StructuredGrid2D.barycentre" title="Link to this definition">#</a></dt>
 <dd><p>Return the number of dimensions</p>
 </dd></dl>
 
@@ -692,13 +698,13 @@ yi, zi</p>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="LoopStructural.interpolators.StructuredGrid2D.element_size">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">element_size</span></span><a class="headerlink" href="#LoopStructural.interpolators.StructuredGrid2D.element_size" title="Link to this definition">#</a></dt>
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">element_size</span></span><a class="headerlink" href="#LoopStructural.interpolators.StructuredGrid2D.element_size" title="Link to this definition">#</a></dt>
 <dd><p>Return the element size</p>
 </dd></dl>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="LoopStructural.interpolators.StructuredGrid2D.elements">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">elements</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ndarray</span></em><a class="headerlink" href="#LoopStructural.interpolators.StructuredGrid2D.elements" title="Link to this definition">#</a></dt>
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">elements</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ndarray</span></em><a class="headerlink" href="#LoopStructural.interpolators.StructuredGrid2D.elements" title="Link to this definition">#</a></dt>
 <dd><p>Return the elements</p>
 </dd></dl>
 
@@ -770,13 +776,13 @@ Trilinear interpolation dot corner values</p>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="LoopStructural.interpolators.StructuredGrid2D.n_elements">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">n_elements</span></span><a class="headerlink" href="#LoopStructural.interpolators.StructuredGrid2D.n_elements" title="Link to this definition">#</a></dt>
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">n_elements</span></span><a class="headerlink" href="#LoopStructural.interpolators.StructuredGrid2D.n_elements" title="Link to this definition">#</a></dt>
 <dd><p>Return the number of elements</p>
 </dd></dl>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="LoopStructural.interpolators.StructuredGrid2D.n_nodes">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">n_nodes</span></span><a class="headerlink" href="#LoopStructural.interpolators.StructuredGrid2D.n_nodes" title="Link to this definition">#</a></dt>
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">n_nodes</span></span><a class="headerlink" href="#LoopStructural.interpolators.StructuredGrid2D.n_nodes" title="Link to this definition">#</a></dt>
 <dd><p>Return the number of points</p>
 </dd></dl>
 
@@ -793,7 +799,7 @@ Trilinear interpolation dot corner values</p>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="LoopStructural.interpolators.StructuredGrid2D.nodes">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">nodes</span></span><a class="headerlink" href="#LoopStructural.interpolators.StructuredGrid2D.nodes" title="Link to this definition">#</a></dt>
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">nodes</span></span><a class="headerlink" href="#LoopStructural.interpolators.StructuredGrid2D.nodes" title="Link to this definition">#</a></dt>
 <dd><p>Return the nodes</p>
 </dd></dl>
 
@@ -801,6 +807,26 @@ Trilinear interpolation dot corner values</p>
 <dt class="sig sig-object py" id="LoopStructural.interpolators.StructuredGrid2D.onGeometryChange">
 <span class="sig-name descname"><span class="pre">onGeometryChange</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.interpolators.StructuredGrid2D.onGeometryChange" title="Link to this definition">#</a></dt>
 <dd><p>Called when the geometry changes</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="LoopStructural.interpolators.StructuredGrid2D.position_to_cell_corners">
+<span class="sig-name descname"><span class="pre">position_to_cell_corners</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pos</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.interpolators.StructuredGrid2D.position_to_cell_corners" title="Link to this definition">#</a></dt>
+<dd><p>Get the global indices of the vertices (corner) nodes of the cell containing each point.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>pos</strong> (<em>np.array</em>) – (N, 2) array of xy coordinates representing the positions of N points.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><strong>globalidx</strong> (<em>np.array</em>) – (N, 4) array of global indices corresponding to the 4 corner nodes of the cell
+each point lies in. If a point lies outside the support, its corresponding entry
+will be set to -1.</p></li>
+<li><p><strong>inside</strong> (<em>np.array</em>) – (N,) boolean array indicating whether each point is inside the support domain.</p></li>
+</ul>
+</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
@@ -929,6 +955,7 @@ Trilinear interpolation dot corner values</p>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#LoopStructural.interpolators.StructuredGrid2D.neighbour_global_indexes"><code class="docutils literal notranslate"><span class="pre">StructuredGrid2D.neighbour_global_indexes()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#LoopStructural.interpolators.StructuredGrid2D.nodes"><code class="docutils literal notranslate"><span class="pre">StructuredGrid2D.nodes</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#LoopStructural.interpolators.StructuredGrid2D.onGeometryChange"><code class="docutils literal notranslate"><span class="pre">StructuredGrid2D.onGeometryChange()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#LoopStructural.interpolators.StructuredGrid2D.position_to_cell_corners"><code class="docutils literal notranslate"><span class="pre">StructuredGrid2D.position_to_cell_corners()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#LoopStructural.interpolators.StructuredGrid2D.position_to_cell_index"><code class="docutils literal notranslate"><span class="pre">StructuredGrid2D.position_to_cell_index()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#LoopStructural.interpolators.StructuredGrid2D.position_to_cell_vertices"><code class="docutils literal notranslate"><span class="pre">StructuredGrid2D.position_to_cell_vertices()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#LoopStructural.interpolators.StructuredGrid2D.position_to_dof_coefs"><code class="docutils literal notranslate"><span class="pre">StructuredGrid2D.position_to_dof_coefs()</span></code></a></li>

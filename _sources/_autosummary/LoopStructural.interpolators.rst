@@ -26,6 +26,7 @@
       FiniteDifferenceInterpolator
       PiecewiseLinearInterpolator
       DiscreteFoldInterpolator
+      SurfeRBFInterpolator
       P1Interpolator
       P2Interpolator
       TetMesh

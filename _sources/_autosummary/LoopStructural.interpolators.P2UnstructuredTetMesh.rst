@@ -31,6 +31,7 @@ LoopStructural.interpolators.P2UnstructuredTetMesh
       ~P2UnstructuredTetMesh.get_quadrature_points
       ~P2UnstructuredTetMesh.inside
       ~P2UnstructuredTetMesh.onGeometryChange
+      ~P2UnstructuredTetMesh.set_nelements
       ~P2UnstructuredTetMesh.vtk
    
    

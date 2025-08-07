@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>LoopStructural.modelling.Map2LoopProcessor &#8212; LoopStructural 1.6.5 documentation</title>
+    <title>LoopStructural.modelling.Map2LoopProcessor &#8212; LoopStructural 1.6.18 documentation</title>
   
   
   
@@ -35,6 +35,7 @@
     <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-binder.css?v=f4aeca0c" />
     <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-dataframe.css?v=2082cf3c" />
     <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-rendered-html.css?v=1277b6f3" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
     <link rel="stylesheet" type="text/css" href="../_static/custom.css" />
   
   <!-- So that users can add custom icons -->
@@ -43,19 +44,20 @@
   <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../_static/documentation_options.js?v=a713f8ff"></script>
+    <script src="../_static/documentation_options.js?v=6e5aca9b"></script>
     <script src="../_static/doctools.js?v=9bcbadda"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/design-tabs.js?v=f930bc37"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = '_autosummary/LoopStructural.modelling.Map2LoopProcessor';</script>
     <script src="../_static/custom-icon.js?v=40bda21d"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="LoopStructural.interpolators" href="LoopStructural.interpolators.html" />
+    <link rel="next" title="LoopStructural.modelling.LoopProjectfileProcessor" href="LoopStructural.modelling.LoopProjectfileProcessor.html" />
     <link rel="prev" title="LoopStructural.modelling.ProcessInputData" href="LoopStructural.modelling.ProcessInputData.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="" />
-    <meta name="docbuild:last-update" content="Jan 20, 2025"/>
+    <meta name="docbuild:last-update" content="Aug 07, 2025"/>
   </head>
   
   
@@ -125,7 +127,7 @@
     <img src="../_static/infinity_loop_icon.svg" class="logo__image only-dark pst-js-only" alt=""/>
   
   
-    <p class="title logo__title">LoopStructural - 1.6.5</p>
+    <p class="title logo__title">LoopStructural - 1.6.18</p>
   
 </a></div>
     
@@ -404,6 +406,7 @@
 <li class="toctree-l2"><a class="reference internal" href="LoopStructural.modelling.GeologicalModel.html">LoopStructural.modelling.GeologicalModel</a></li>
 <li class="toctree-l2"><a class="reference internal" href="LoopStructural.modelling.ProcessInputData.html">LoopStructural.modelling.ProcessInputData</a></li>
 <li class="toctree-l2 current active"><a class="current reference internal" href="#">LoopStructural.modelling.Map2LoopProcessor</a></li>
+<li class="toctree-l2"><a class="reference internal" href="LoopStructural.modelling.LoopProjectfileProcessor.html">LoopStructural.modelling.LoopProjectfileProcessor</a></li>
 </ul>
 </details></li>
 <li class="toctree-l1"><a class="reference internal" href="LoopStructural.interpolators.html">LoopStructural.interpolators</a></li>
@@ -476,7 +479,7 @@
 <h1>LoopStructural.modelling.Map2LoopProcessor<a class="headerlink" href="#loopstructural-modelling-map2loopprocessor" title="Link to this heading">#</a></h1>
 <dl class="py class">
 <dt class="sig sig-object py" id="LoopStructural.modelling.Map2LoopProcessor">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">LoopStructural.modelling.</span></span><span class="sig-name descname"><span class="pre">Map2LoopProcessor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">m2l_directory</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_thickness</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.modelling.Map2LoopProcessor" title="Link to this definition">#</a></dt>
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">LoopStructural.modelling.</span></span><span class="sig-name descname"><span class="pre">Map2LoopProcessor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">m2l_directory</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_thickness</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.modelling.Map2LoopProcessor" title="Link to this definition">#</a></dt>
 <dd><p>Bases: <a class="reference internal" href="LoopStructural.modelling.ProcessInputData.html#LoopStructural.modelling.ProcessInputData" title="LoopStructural.modelling.input.process_data.ProcessInputData"><code class="xref py py-class docutils literal notranslate"><span class="pre">ProcessInputData</span></code></a></p>
 <p>Function to build a ProcessInputData object for using m2l data</p>
 <dl class="field-list simple">
@@ -496,7 +499,7 @@
 </dd></dl>
 
 <p class="rubric">Methods</p>
-<div class="pst-scrollable-table-container"><table class="autosummary longtable table autosummary">
+<div class="pst-scrollable-table-container"><table class="autosummary longtable table">
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.modelling.Map2LoopProcessor.__init__" title="LoopStructural.modelling.Map2LoopProcessor.__init__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">__init__</span></code></a>(m2l_directory[, use_thickness])</p></td>
 <td><p>Function to build a ProcessInputData object for using m2l data</p></td>
@@ -517,7 +520,7 @@
 </table>
 </div>
 <p class="rubric">Attributes</p>
-<div class="pst-scrollable-table-container"><table class="autosummary longtable table autosummary">
+<div class="pst-scrollable-table-container"><table class="autosummary longtable table">
 <tbody>
 <tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">colours</span></code></p></td>
 <td><p></p></td>
@@ -578,7 +581,7 @@
 </div>
 <dl class="py property">
 <dt class="sig sig-object py" id="LoopStructural.modelling.Map2LoopProcessor.data">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">data</span></span><a class="headerlink" href="#LoopStructural.modelling.Map2LoopProcessor.data" title="Link to this definition">#</a></dt>
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">data</span></span><a class="headerlink" href="#LoopStructural.modelling.Map2LoopProcessor.data" title="Link to this definition">#</a></dt>
 <dd><p>This is the main function that does all the work, should be called
 before any of the calculated attributes are accessed</p>
 </dd></dl>
@@ -654,11 +657,11 @@ this is stretched to account for unit thicknesses</p>
       </div>
     </a>
     <a class="right-next"
-       href="LoopStructural.interpolators.html"
+       href="LoopStructural.modelling.LoopProjectfileProcessor.html"
        title="next page">
       <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">LoopStructural.interpolators</p>
+        <p class="prev-next-title">LoopStructural.modelling.LoopProjectfileProcessor</p>
       </div>
       <i class="fa-solid fa-angle-right"></i>
     </a>

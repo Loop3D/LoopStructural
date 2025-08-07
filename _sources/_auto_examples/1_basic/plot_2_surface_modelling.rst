@@ -52,7 +52,7 @@ Imports
 Import the required objects from LoopStructural for visualisation and
 model building
 
-.. GENERATED FROM PYTHON SOURCE LINES 37-45
+.. GENERATED FROM PYTHON SOURCE LINES 37-44
 
 .. code-block:: Python
 
@@ -70,22 +70,23 @@ model building
 
 
 
+.. GENERATED FROM PYTHON SOURCE LINES 45-50
 
-.. GENERATED FROM PYTHON SOURCE LINES 46-49
-
+Load Example Data
+~~~~~~~~~~~~~~~~~
 The data for this example can be imported from the example datasets
-module in loopstructural.
+module in LoopStructural. The `load_claudius` function provides both
+the data and the bounding box (bb) for the model.
 
-
-.. GENERATED FROM PYTHON SOURCE LINES 49-55
+.. GENERATED FROM PYTHON SOURCE LINES 50-56
 
 .. code-block:: Python
 
 
     data, bb = load_claudius()
 
-    data["val"].unique()
-
+    # Display unique scalar field values in the dataset
+    print(data["val"].unique())
 
 
 
@@ -95,22 +96,19 @@ module in loopstructural.
 
  .. code-block:: none
 
-
-    array([250., 330.,   0.,  60.,  nan])
-
+    [250. 330.   0.  60.  nan]
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 56-63
-
-GeologicalModel
-~~~~~~~~~~~~~~~
-
-To create a ``GeologicalModel`` the origin (lower left) and max extent
-(upper right) of the model area need to be specified. In this example
-these are provided in the bb array.
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 63-67
+.. GENERATED FROM PYTHON SOURCE LINES 57-61
+
+Create Geological Model
+~~~~~~~~~~~~~~~~~~~~~~~~
+Define the model area using the bounding box (bb) and create a
+GeologicalModel instance.
+
+.. GENERATED FROM PYTHON SOURCE LINES 61-64
 
 .. code-block:: Python
 
@@ -124,37 +122,27 @@ these are provided in the bb array.
 
 
 
+.. GENERATED FROM PYTHON SOURCE LINES 65-74
 
-.. GENERATED FROM PYTHON SOURCE LINES 68-88
+Link Data to Geological Model
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+A pandas dataframe with appropriate columns is used to link the data
+to the geological model. Key columns include:
+* `X`, `Y`, `Z`: Coordinates of the observation
+* `feature_name`: Name linking the data to a model object
+* `val`: Scalar field value representing distance from a reference horizon
+* `nx`, `ny`, `nz`: Components of the normal vector to the surface gradient
+* `strike`, `dip`: Strike and dip angles
 
-A pandas dataframe with appropriate columns can be used to link the data
-to the geological model.
-
-* ``X`` is the x coordinate
-* ``Y`` is the y # coordinate
-* ``Z`` is the z coordinate
-* ``feature_name`` is a name to link the data to a model object
-* ``val`` is the value of the scalar field which represents the
-distance from a reference horizon. It is comparable
-to the relative thickness
-
-* ``nx`` is the x component of the normal vector to the surface gradient
-* ``ny`` is the y component of the normal vector to the surface gradient
-* ``nz`` is the z component of the normal vector to the surface gradeint
-* ``strike`` is the strike angle
-* ``dip`` is the dip angle
-
-Having a look at the data for this example by looking at the top of the
-dataframe and then using a 3D plot
-
-
-.. GENERATED FROM PYTHON SOURCE LINES 88-103
+.. GENERATED FROM PYTHON SOURCE LINES 74-93
 
 .. code-block:: Python
 
 
-    data["feature_name"].unique()
+    # Display unique feature names in the dataset
+    print(data["feature_name"].unique())
 
+    # Visualize the data points and orientation vectors in 3D
     viewer = Loop3DView(background="white")
     viewer.add_points(
         data[~np.isnan(data["val"])][["X", "Y", "Z"]].values,
@@ -166,6 +154,8 @@ dataframe and then using a 3D plot
     )
     viewer.display()
 
+    # Link the data to the geological model
+    model.set_model_data(data)
 
 
 
@@ -176,71 +166,30 @@ dataframe and then using a 3D plot
    :class: sphx-glr-single-img
 
 
+.. rst-class:: sphx-glr-script-out
 
+ .. code-block:: none
 
-
-.. GENERATED FROM PYTHON SOURCE LINES 104-107
-
-The pandas dataframe can be linked to the ``GeologicalModel`` using
-``.set_model_data(dataframe``
-
-
-.. GENERATED FROM PYTHON SOURCE LINES 107-111
-
-.. code-block:: Python
-
-
-    model.set_model_data(data)
+    ['strati']
 
 
 
 
+.. GENERATED FROM PYTHON SOURCE LINES 94-99
 
+Add Geological Features
+~~~~~~~~~~~~~~~~~~~~~~~~
+The GeologicalModel can include various geological features such as
+foliations, faults, unconformities, and folds. In this example, we
+add a foliation using the `create_and_add_foliation` method.
 
-
-
-
-.. GENERATED FROM PYTHON SOURCE LINES 112-143
-
-The ``GeologicalModel`` contains an ordered list of the different
-geological features within a model and how these features interact. This
-controls the topology of the different geological features in the model.
-Different geological features can be added to the geological model such
-as:
-* Foliations
-* Faults
-* Unconformities
-* Folded foliations
-*  Structural Frames
-
-In this example we will only add a foliation using the function
-
-.. code:: python
-
-   model.create_and_add_foliation(name)
-
-where name is the name in the ``feature_name`` field, other parameters we
-specified are the:
-* ``interpolatortype`` - we can either use a
-PiecewiseLinearInterpolator ``PLI``, a FiniteDifferenceInterpolator
-``FDI`` or a radial basis interpolator ``surfe``
-* ``nelements - int`` is the how many elements are used to discretize the resulting solution
-* ``buffer - float`` buffer percentage around the model area
-* ``solver`` - the algorithm to solve the least squares problem e.g.
-``lu`` for lower upper decomposition, ``cg`` for conjugate gradient,
-``pyamg`` for an algorithmic multigrid solver
-* ``damp - bool`` - whether to add a small number to the diagonal of the interpolation
-matrix for discrete interpolators - this can help speed up the solver
-and makes the solution more stable for some interpolators
-
-
-.. GENERATED FROM PYTHON SOURCE LINES 143-164
+.. GENERATED FROM PYTHON SOURCE LINES 99-122
 
 .. code-block:: Python
 
 
+    # Define stratigraphic column with scalar field ranges for each unit
     vals = [0, 60, 250, 330, 600]
-
     strat_column = {"strati": {}}
     for i in range(len(vals) - 1):
         strat_column["strati"]["unit_{}".format(i)] = {
@@ -249,15 +198,16 @@ and makes the solution more stable for some interpolators
             "id": i,
         }
 
-
+    # Set the stratigraphic column in the model
     model.set_stratigraphic_column(strat_column)
 
+    # Add a foliation to the model
     strati = model.create_and_add_foliation(
         "strati",
-        interpolatortype="FDI",  # try changing this to 'PLI'
-        nelements=1e4,  # try changing between 1e3 and 5e4
-        buffer=0.3,
-        damp=True,
+        interpolatortype="FDI",  # Finite Difference Interpolator
+        nelements=int(1e4),  # Number of elements for discretization
+        buffer=0.3,  # Buffer percentage around the model area
+        damp=True,  # Add damping for stability
     )
 
 
@@ -266,16 +216,18 @@ and makes the solution more stable for some interpolators
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 165-167
 
-Plot the surfaces
-------------------------------------
+.. GENERATED FROM PYTHON SOURCE LINES 123-126
 
-.. GENERATED FROM PYTHON SOURCE LINES 167-172
+Visualize Model Surfaces
+~~~~~~~~~~~~~~~~~~~~~~~~
+Plot the surfaces of the geological model using a 3D viewer.
+
+.. GENERATED FROM PYTHON SOURCE LINES 126-131
 
 .. code-block:: Python
 
-
+    print(model.stratigraphic_column.to_dict())
     viewer = Loop3DView(model)
     viewer.plot_model_surfaces(cmap="tab20")
     viewer.display()
@@ -289,15 +241,23 @@ Plot the surfaces
    :class: sphx-glr-single-img
 
 
+.. rst-class:: sphx-glr-script-out
+
+ .. code-block:: none
+
+    {'elements': [{'name': 'Basement', 'colour': 'grey', 'thickness': inf, 'uuid': 'ff775f6a-43bc-4d88-9ee7-bc593886d40b', 'id': 0}, {'uuid': '6a038684-d9b8-468b-b717-5b4e38449e3f', 'name': 'Base Unconformity', 'unconformity_type': 'erode'}, {'name': 'Basement', 'colour': 'grey', 'thickness': inf, 'uuid': 'e2ad68e5-cb0b-4dd5-9a15-e9c07ce3080b', 'id': 1}, {'uuid': '33885860-e638-4d2e-99e2-0457f0e2b764', 'name': 'Base Unconformity', 'unconformity_type': 'erode'}, {'name': 'unit_0', 'colour': [0.5533612487413869, 0.4085212463020087, 0.1456926068266835], 'thickness': 60, 'uuid': 'ffb08303-fcd6-46b1-9edb-b03c46623f10', 'id': 2}, {'name': 'unit_1', 'colour': [0.43276802613334087, 0.7184937550895265, 0.09245407710991571], 'thickness': 190, 'uuid': '905e9d51-91ef-4850-ab15-dd17a499880e', 'id': 3}, {'name': 'unit_2', 'colour': [0.5345311883953344, 0.13992637896814641, 0.37448325806124017], 'thickness': 80, 'uuid': '04809369-e7d1-4195-b4ad-bdd1e76b6d54', 'id': 4}, {'name': 'unit_3', 'colour': [0.5375750687846683, 0.049827761127233305, 0.5386750980520866], 'thickness': 270, 'uuid': '30dfea56-e454-4100-811f-a0c2a117c63e', 'id': 5}, {'uuid': 'a8ad4d02-00bd-4a48-bcbb-929fc05d9f69', 'name': 'stratiunconformity', 'unconformity_type': 'erode'}]}
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 173-175
 
-Plot block diagram
--------------------
+.. GENERATED FROM PYTHON SOURCE LINES 132-136
 
-.. GENERATED FROM PYTHON SOURCE LINES 175-179
+Visualize Block Diagram
+~~~~~~~~~~~~~~~~~~~~~~~
+Plot a block diagram of the geological model to visualize the
+stratigraphic units in 3D.
+
+.. GENERATED FROM PYTHON SOURCE LINES 136-140
 
 .. code-block:: Python
 
@@ -320,7 +280,7 @@ Plot block diagram
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 2.583 seconds)
+   **Total running time of the script:** (0 minutes 2.811 seconds)
 
 
 .. _sphx_glr_download__auto_examples_1_basic_plot_2_surface_modelling.py:

@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Loop Structural &#8212; LoopStructural 1.6.5 documentation</title>
+    <title>LoopStructural &#8212; LoopStructural 1.6.18 documentation</title>
   
   
   
@@ -35,6 +35,7 @@
     <link rel="stylesheet" type="text/css" href="_static/sg_gallery-binder.css?v=f4aeca0c" />
     <link rel="stylesheet" type="text/css" href="_static/sg_gallery-dataframe.css?v=2082cf3c" />
     <link rel="stylesheet" type="text/css" href="_static/sg_gallery-rendered-html.css?v=1277b6f3" />
+    <link rel="stylesheet" type="text/css" href="_static/sphinx-design.min.css?v=95c83b7e" />
     <link rel="stylesheet" type="text/css" href="_static/custom.css" />
   
   <!-- So that users can add custom icons -->
@@ -43,10 +44,10 @@
   <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="_static/documentation_options.js?v=a713f8ff"></script>
+    <script src="_static/documentation_options.js?v=6e5aca9b"></script>
     <script src="_static/doctools.js?v=9bcbadda"></script>
     <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
-    <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="_static/design-tabs.js?v=f930bc37"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'index';</script>
     <script src="_static/custom-icon.js?v=40bda21d"></script>
     <link rel="index" title="Index" href="genindex.html" />
@@ -55,7 +56,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="" />
-    <meta name="docbuild:last-update" content="Jan 20, 2025"/>
+    <meta name="docbuild:last-update" content="Aug 07, 2025"/>
   </head>
   
   
@@ -125,7 +126,7 @@
     <img src="_static/infinity_loop_icon.svg" class="logo__image only-dark pst-js-only" alt=""/>
   
   
-    <p class="title logo__title">LoopStructural - 1.6.5</p>
+    <p class="title logo__title">LoopStructural - 1.6.18</p>
   
 </a></div>
     
@@ -422,31 +423,9 @@
 <div id="searchbox"></div>
                 <article class="bd-article">
                   
-  <section id="loop-structural">
-<h1>Loop Structural<a class="headerlink" href="#loop-structural" title="Link to this heading">#</a></h1>
+  <section id="loopstructural">
+<h1>LoopStructural<a class="headerlink" href="#loopstructural" title="Link to this heading">#</a></h1>
 <img alt="_images/image823.png" src="_images/image823.png" />
-<div class="admonition important">
-<p class="admonition-title">Important</p>
-<p><strong>Upgrading from 1.5.x to 1.6.x</strong></p>
-<p>Version 1.6.x of LoopStructural has been released and there are a number of changes to how the library is used. The main changes are:</p>
-<ul class="simple">
-<li><p>The <cite>LavaVuModelViewer</cite> class has been removed and the model visualisation has been ported to <cite>pyvista</cite> using a LoopStructural
-wrapped <cite>loopstructuralvisualisation</cite>. Many of the functions have been re-named and can be combined with the <cite>pyvista.Plotter</cite> methods for advanced
-visualisation. pyvista does not currently allow for interactive plots while using colab notebooks, so <cite>jupyter_backend=’static’</cite> is needed.</p></li>
-<li><p>Datastructures for representing model input/output have been introduced including the <cite>LoopStructural.datatypes.StructuredGrid</cite>,
-<a class="reference internal" href="_autosummary/LoopStructural.datatypes.ValuePoints.html#LoopStructural.datatypes.ValuePoints" title="LoopStructural.datatypes.ValuePoints"><code class="xref py py-class docutils literal notranslate"><span class="pre">LoopStructural.datatypes.ValuePoints</span></code></a>, <a class="reference internal" href="_autosummary/LoopStructural.datatypes.VectorPoints.html#LoopStructural.datatypes.VectorPoints" title="LoopStructural.datatypes.VectorPoints"><code class="xref py py-class docutils literal notranslate"><span class="pre">LoopStructural.datatypes.VectorPoints</span></code></a> and <a class="reference internal" href="_autosummary/LoopStructural.datatypes.Surface.html#LoopStructural.datatypes.Surface" title="LoopStructural.datatypes.Surface"><code class="xref py py-class docutils literal notranslate"><span class="pre">LoopStructural.datatypes.Surface</span></code></a>. These Datastructures
-are intended to improve the accessibility of the modelling and allow for easier export into other software packages.
-All data objects have a <cite>.save</cite> method that allows the user to save the points into various formats including <cite>json</cite>, <cite>csv</cite>, <cite>vtk</cite> and <cite>geoh5</cite>.
-In the future exporters for gocad and other formats will be added. All objects also have a <cite>.vtk()</cite> method to return a <cite>pyvista.PolyData</cite> object.</p></li>
-<li><p>The solver options for the interpolators have been removed and only <code class="xref py py-meth docutils literal notranslate"><span class="pre">scipy.sparse.linalg.cg()</span></code> and <code class="xref py py-meth docutils literal notranslate"><span class="pre">scipy.sparse.linalg.lsmr()</span></code> are supported.
-To use an external solver the <cite>external_solver</cite> argument can be provided to the <cite>interpolator.solve</cite> method, usually passed through
-the <cite>model.create_and_add*</cite> methods. To specify specific arguments to the solver these can be passed through <cite>solver_kwargs</cite> dict.</p></li>
-<li><p>Improvements have been made to how unconformities are handled and their interaction with faults</p></li>
-<li><p>A framework for including inequalities into the interpolation has been added but there is no solver that can be used for solving this problem.</p></li>
-<li><p>A convenience class <code class="xref py py-class docutils literal notranslate"><span class="pre">LoopStructural.LoopInterpolator</span></code> was added for building an implicit function without requiring the <a class="reference internal" href="_autosummary/LoopStructural.GeologicalModel.html#LoopStructural.GeologicalModel" title="LoopStructural.GeologicalModel"><code class="xref py py-class docutils literal notranslate"><span class="pre">LoopStructural.GeologicalModel</span></code></a></p></li>
-</ul>
-<p><strong>Please report any bugs or issues on the github repository.</strong></p>
-</div>
 </section>
 <section id="overview">
 <h1>Overview<a class="headerlink" href="#overview" title="Link to this heading">#</a></h1>
@@ -456,8 +435,108 @@ Lachlan Grose at Monash University.</p>
 <p>Loop is an open source 3D probabilistic geological and geophysical modelling platform,
 initiated by Geoscience Australia and the OneGeology consortium. The project is funded by Australian territory,
 State and Federal Geological Surveys, the Australian Research Council and the MinEx Collaborative Research Centre.</p>
+</section>
+<section id="examples">
+<h1>Examples<a class="headerlink" href="#examples" title="Link to this heading">#</a></h1>
+<p>LoopStructural can be used to build a 3D geological model using geological relationships between geological objects
+e.g. faults, folds, unconformities and stratigraphic contacts. The library also provides a high level API to access
+the fast interpolation schemes that are used by LoopStructural.</p>
+<section id="using-geologicalmodel">
+<h2>Using GeologicalModel<a class="headerlink" href="#using-geologicalmodel" title="Link to this heading">#</a></h2>
+<p>The following example shows how to use the geological model interface to create a geological model from a dataset and
+evaluate the scalar field and gradient of the interpolator at some random locations.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">LoopStructural</span><span class="w"> </span><span class="kn">import</span> <span class="n">GeologicalModel</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">LoopStructural.datatypes</span><span class="w"> </span><span class="kn">import</span> <span class="n">BoundingBox</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">LoopStructural.visualisation</span><span class="w"> </span><span class="kn">import</span> <span class="n">Loop3DView</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">LoopStructural.datasets</span><span class="w"> </span><span class="kn">import</span> <span class="n">load_claudius</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="n">data</span><span class="p">,</span> <span class="n">bb</span> <span class="o">=</span> <span class="n">load_claudius</span><span class="p">()</span>
+
+<span class="c1">#bb constaints origin and maximum of axis aligned bounding box</span>
+<span class="c1">#data is a pandas dataframe with X,Y,Z,val,nx,ny,nz, feature_name</span>
+
+<span class="n">model</span> <span class="o">=</span> <span class="n">GeologicalModel</span><span class="p">(</span><span class="n">bb</span><span class="p">[</span><span class="mi">0</span><span class="p">,:],</span><span class="n">bb</span><span class="p">[</span><span class="mi">1</span><span class="p">,:])</span>
+<span class="n">model</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">data</span>
+<span class="c1"># nelements specifies the number of discrete interpolation elements</span>
+<span class="c1"># &#39;stratí&#39; is the feature name in the data dataframe</span>
+<span class="n">model</span><span class="o">.</span><span class="n">create_and_add_foliation</span><span class="p">(</span><span class="s1">&#39;strati&#39;</span><span class="p">,</span><span class="n">nelements</span><span class="o">=</span><span class="mf">1e5</span><span class="p">)</span>
+<span class="n">model</span><span class="o">.</span><span class="n">update</span><span class="p">()</span>
+<span class="c1"># get the value of the interpolator at some random locations</span>
+<span class="n">locations</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span>
+    <span class="p">[</span>
+        <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="n">bb</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">bb</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span><span class="mi">5</span><span class="p">),</span>
+        <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="n">bb</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">bb</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span><span class="mi">5</span><span class="p">),</span>
+        <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="n">bb</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span> <span class="n">bb</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span><span class="mi">5</span><span class="p">),</span>
+    <span class="p">]</span>
+<span class="p">)</span><span class="o">.</span><span class="n">T</span>
+<span class="n">val</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">evaluate_feature_value</span><span class="p">(</span><span class="s1">&#39;strati&#39;</span><span class="p">,</span> <span class="n">locations</span><span class="p">)</span>
+<span class="c1"># get the gradient of the interpolator</span>
+<span class="n">gradient</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">evaluate_feature_gradient</span><span class="p">(</span><span class="s1">&#39;strati&#39;</span><span class="p">,</span><span class="n">locations</span><span class="p">)</span>
+
+<span class="c1">#Plot the scalar field of the model</span>
+<span class="n">model</span><span class="p">[</span><span class="s1">&#39;strati&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">scalar_field</span><span class="p">()</span><span class="o">.</span><span class="n">plot</span><span class="p">()</span>
+</pre></div>
+</div>
+<figure class="align-default">
+<img alt="_images/index-1_00_00.png" src="_images/index-1_00_00.png" />
+</figure>
+</section>
+<section id="using-interpolatorbuilder">
+<h2>Using InterpolatorBuilder<a class="headerlink" href="#using-interpolatorbuilder" title="Link to this heading">#</a></h2>
+<p>To access the interpolators directly the <cite>InterpolatorBuilder</cite> can be used
+to help assemble an interpolator from a combination of value, gradient and inequality
+constraints.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">LoopStructural</span><span class="w"> </span><span class="kn">import</span> <span class="n">BoundingBox</span><span class="p">,</span> <span class="n">InterpolatorBuilder</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">LoopStructural.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">EuclideanTransformation</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">LoopStructural.datasets</span><span class="w"> </span><span class="kn">import</span> <span class="n">load_claudius</span>
+
+<span class="c1"># load in a dataframe with x,y,z,val,nx,ny,nz to constrain the value and</span>
+<span class="c1"># gradient normal of the interpolator</span>
+<span class="n">data</span><span class="p">,</span> <span class="n">bb</span> <span class="o">=</span> <span class="n">load_claudius</span><span class="p">()</span>
+
+<span class="c1"># Find the bounding box of the data by finding the extent</span>
+<span class="n">bounding_box</span> <span class="o">=</span> <span class="n">BoundingBox</span><span class="p">()</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">data</span><span class="p">[[</span><span class="s2">&quot;X&quot;</span><span class="p">,</span> <span class="s2">&quot;Y&quot;</span><span class="p">,</span> <span class="s2">&quot;Z&quot;</span><span class="p">]])</span>
+<span class="c1"># assemble an interpolator using the bounding box and the data</span>
+<span class="n">interpolator</span> <span class="o">=</span> <span class="p">(</span>
+    <span class="n">InterpolatorBuilder</span><span class="p">(</span>
+        <span class="n">interpolatortype</span><span class="o">=</span><span class="s2">&quot;FDI&quot;</span><span class="p">,</span> <span class="n">bounding_box</span><span class="o">=</span><span class="n">bounding_box</span><span class="o">.</span><span class="n">with_buffer</span><span class="p">(</span><span class="mf">0.1</span><span class="p">)</span>
+    <span class="p">)</span>
+    <span class="o">.</span><span class="n">add_value_constraints</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;val&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">notna</span><span class="p">(),</span> <span class="p">[</span><span class="s2">&quot;X&quot;</span><span class="p">,</span> <span class="s2">&quot;Y&quot;</span><span class="p">,</span> <span class="s2">&quot;Z&quot;</span><span class="p">,</span> <span class="s2">&quot;val&quot;</span><span class="p">]]</span><span class="o">.</span><span class="n">values</span><span class="p">)</span>
+    <span class="o">.</span><span class="n">add_normal_constraints</span><span class="p">(</span>
+        <span class="n">data</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;nx&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">notna</span><span class="p">(),</span> <span class="p">[</span><span class="s2">&quot;X&quot;</span><span class="p">,</span> <span class="s2">&quot;Y&quot;</span><span class="p">,</span> <span class="s2">&quot;Z&quot;</span><span class="p">,</span> <span class="s2">&quot;nx&quot;</span><span class="p">,</span> <span class="s2">&quot;ny&quot;</span><span class="p">,</span> <span class="s2">&quot;nz&quot;</span><span class="p">]]</span><span class="o">.</span><span class="n">values</span>
+    <span class="p">)</span>
+    <span class="o">.</span><span class="n">build</span><span class="p">()</span>
+<span class="p">)</span>
+<span class="c1"># Set the number of elements in the bounding box to 10000 and create a structured grid</span>
+<span class="n">bounding_box</span><span class="o">.</span><span class="n">nelements</span> <span class="o">=</span> <span class="mi">10000</span>
+<span class="n">mesh</span> <span class="o">=</span> <span class="n">bounding_box</span><span class="o">.</span><span class="n">structured_grid</span><span class="p">()</span>
+<span class="c1"># add the interpolated values to the mesh at the nodes</span>
+<span class="n">mesh</span><span class="o">.</span><span class="n">properties</span><span class="p">[</span><span class="s2">&quot;v&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">interpolator</span><span class="o">.</span><span class="n">evaluate_value</span><span class="p">(</span><span class="n">mesh</span><span class="o">.</span><span class="n">nodes</span><span class="p">)</span>
+
+<span class="c1"># or the cell centres</span>
+<span class="c1"># mesh.cell_properties[&quot;v&quot;] = interpolator.evaluate_value(mesh.cell_centres)</span>
+
+
+<span class="c1"># visualise the scalar value</span>
+
+<span class="n">mesh</span><span class="o">.</span><span class="n">plot</span><span class="p">()</span>
+</pre></div>
+</div>
+<figure class="align-default">
+<img alt="_images/index-2_00_00.png" src="_images/index-2_00_00.png" />
+</figure>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># We can also add gradient properties and visualise these</span>
+<span class="n">mesh</span><span class="o">.</span><span class="n">properties</span><span class="p">[</span><span class="s2">&quot;grad&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">interpolator</span><span class="o">.</span><span class="n">evaluate_gradient</span><span class="p">(</span><span class="n">mesh</span><span class="o">.</span><span class="n">nodes</span><span class="p">)</span>
+<span class="n">mesh</span><span class="o">.</span><span class="n">vtk</span><span class="p">()</span><span class="o">.</span><span class="n">glyph</span><span class="p">(</span><span class="n">orient</span><span class="o">=</span><span class="s2">&quot;grad&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">plot</span><span class="p">()</span>
+</pre></div>
+</div>
+<figure class="align-default">
+<img alt="_images/index-2_01_00.png" src="_images/index-2_01_00.png" />
+</figure>
 <div class="toctree-wrapper compound">
 </div>
+</section>
 </section>
 
 
@@ -498,8 +577,13 @@ State and Federal Geological Surveys, the Australian Research Council and the Mi
   </div>
   <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
     <ul class="visible nav section-nav flex-column">
-<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#">Loop Structural</a></li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#">LoopStructural</a></li>
 <li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#overview">Overview</a></li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#examples">Examples</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#using-geologicalmodel">Using GeologicalModel</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#using-interpolatorbuilder">Using InterpolatorBuilder</a></li>
+</ul>
+</li>
 </ul>
 
   </nav></div>

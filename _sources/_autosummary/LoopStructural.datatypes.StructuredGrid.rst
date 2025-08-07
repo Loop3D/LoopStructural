@@ -31,12 +31,14 @@ LoopStructural.datatypes.StructuredGrid
 
    .. autosummary::
    
+      ~StructuredGrid.cell_centres
       ~StructuredGrid.maximum
+      ~StructuredGrid.name
+      ~StructuredGrid.nodes
       ~StructuredGrid.origin
       ~StructuredGrid.step_vector
       ~StructuredGrid.nsteps
       ~StructuredGrid.cell_properties
       ~StructuredGrid.properties
-      ~StructuredGrid.name
    
    

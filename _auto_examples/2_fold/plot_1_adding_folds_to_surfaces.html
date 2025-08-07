@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>2a. Modelling folds &#8212; LoopStructural 1.6.5 documentation</title>
+    <title>2a. Modelling folds &#8212; LoopStructural 1.6.18 documentation</title>
   
   
   
@@ -35,6 +35,7 @@
     <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-binder.css?v=f4aeca0c" />
     <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-dataframe.css?v=2082cf3c" />
     <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-rendered-html.css?v=1277b6f3" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=95c83b7e" />
     <link rel="stylesheet" type="text/css" href="../../_static/custom.css" />
   
   <!-- So that users can add custom icons -->
@@ -43,20 +44,21 @@
   <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../../_static/documentation_options.js?v=a713f8ff"></script>
+    <script src="../../_static/documentation_options.js?v=6e5aca9b"></script>
     <script src="../../_static/doctools.js?v=9bcbadda"></script>
     <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/design-tabs.js?v=f930bc37"></script>
     <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = '_auto_examples/2_fold/plot_1_adding_folds_to_surfaces';</script>
     <script src="../../_static/custom-icon.js?v=40bda21d"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
-    <link rel="next" title="2b. Refolded folds" href="_refolded_folds.html" />
+    <link rel="next" title="2b. Refolded folds" href="plot_2__refolded_folds.html" />
     <link rel="prev" title="2. Modelling Folds" href="index.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="" />
-    <meta name="docbuild:last-update" content="Jan 20, 2025"/>
+    <meta name="docbuild:last-update" content="Aug 07, 2025"/>
   </head>
   
   
@@ -126,7 +128,7 @@
     <img src="../../_static/infinity_loop_icon.svg" class="logo__image only-dark pst-js-only" alt=""/>
   
   
-    <p class="title logo__title">LoopStructural - 1.6.5</p>
+    <p class="title logo__title">LoopStructural - 1.6.18</p>
   
 </a></div>
     
@@ -402,7 +404,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../1_basic/index.html">1. Basics</a></li>
 <li class="toctree-l1 current active has-children"><a class="reference internal" href="index.html">2. Modelling Folds</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
 <li class="toctree-l2 current active"><a class="current reference internal" href="#">2a. Modelling folds</a></li>
-<li class="toctree-l2"><a class="reference internal" href="_refolded_folds.html">2b. Refolded folds</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plot_2__refolded_folds.html">2b. Refolded folds</a></li>
 </ul>
 </details></li>
 <li class="toctree-l1"><a class="reference internal" href="../3_fault/index.html">3. Modelling Faults</a></li>
@@ -776,7 +778,7 @@ field box.</p>
 <span class="c1">#                       &#39;box&#39;,</span>
 <span class="c1">#                      paint_with=stratigraphy,</span>
 <span class="c1">#                      cmap=&#39;prism&#39;)</span>
-<span class="n">viewer</span><span class="o">.</span><span class="n">plot_data</span><span class="p">(</span><span class="n">stratigraphy</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="mi">200</span><span class="p">)</span>
+<span class="n">viewer</span><span class="o">.</span><span class="n">plot_data</span><span class="p">(</span><span class="n">stratigraphy</span><span class="p">)</span>
 <span class="n">viewer</span><span class="o">.</span><span class="n">plot_surface</span><span class="p">(</span><span class="n">stratigraphy</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
 <span class="n">viewer</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 </pre></div>
@@ -813,7 +815,9 @@ angle is found by calculating the angle between the gradient of the fold
 axis direction field and the intersection lineations shown in A). The
 fold limb rotation angle is found by finding the the angle to rotate the
 folded foliation to be parallel to the plane of the axial foliation
-shown in B and C.</p>
+shown in B and C.
+The wavelength can be specified by the user or in some cases estimated
+from the s-variogram of the fold frame coordinate system.</p>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">mdata</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">([</span><span class="n">data</span><span class="p">[:</span><span class="n">npoints</span><span class="p">],</span> <span class="n">data</span><span class="p">[</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;feature_name&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;s1&quot;</span><span class="p">]])</span>
 <a href="../../_autosummary/LoopStructural.GeologicalModel.html#LoopStructural.GeologicalModel" title="LoopStructural.GeologicalModel" class="sphx-glr-backref-module-LoopStructural sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">model</span></a> <span class="o">=</span> <a href="../../_autosummary/LoopStructural.GeologicalModel.html#LoopStructural.GeologicalModel" title="LoopStructural.GeologicalModel" class="sphx-glr-backref-module-LoopStructural sphx-glr-backref-type-py-class"><span class="n">GeologicalModel</span></a><span class="p">(</span><span class="n">boundary_points</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="p">:],</span> <span class="n">boundary_points</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="p">:])</span>
 <a href="../../_autosummary/LoopStructural.GeologicalModel.html#LoopStructural.GeologicalModel" title="LoopStructural.GeologicalModel" class="sphx-glr-backref-module-LoopStructural sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">model</span></a><span class="o">.</span><span class="n">set_model_data</span><span class="p">(</span><span class="n">mdata</span><span class="p">)</span>
@@ -825,10 +829,10 @@ shown in B and C.</p>
 <span class="p">)</span>
 <span class="n">stratigraphy</span> <span class="o">=</span> <a href="../../_autosummary/LoopStructural.GeologicalModel.html#LoopStructural.GeologicalModel.create_and_add_folded_foliation" title="LoopStructural.GeologicalModel.create_and_add_folded_foliation" class="sphx-glr-backref-module-LoopStructural sphx-glr-backref-type-py-method"><span class="n">model</span><span class="o">.</span><span class="n">create_and_add_folded_foliation</span></a><span class="p">(</span>
     <span class="s2">&quot;s0&quot;</span><span class="p">,</span>
-    <span class="n">fold_frame</span><span class="p">,</span>
+    <span class="n">fold_frame</span><span class="o">=</span><span class="n">fold_frame</span><span class="p">,</span>
     <span class="n">nelements</span><span class="o">=</span><span class="mi">10000</span><span class="p">,</span>
     <span class="n">fold_axis</span><span class="o">=</span><span class="p">[</span><span class="o">-</span><span class="mf">6.51626577e-06</span><span class="p">,</span> <span class="o">-</span><span class="mf">5.00013645e-01</span><span class="p">,</span> <span class="o">-</span><span class="mf">8.66017526e-01</span><span class="p">],</span>
-    <span class="c1">#                                                    limb_wl=1</span>
+    <span class="n">limb_wl</span><span class="o">=</span><span class="mi">12000</span><span class="p">,</span>
     <span class="n">buffer</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span>
 <span class="p">)</span>
 <span class="n">viewer</span> <span class="o">=</span> <a href="../../_autosummary/LoopStructural.visualisation.Loop3DView.html#LoopStructural.visualisation.Loop3DView" title="LoopStructural.visualisation.Loop3DView" class="sphx-glr-backref-module-LoopStructural-visualisation sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">Loop3DView</span></a><span class="p">(</span><a href="../../_autosummary/LoopStructural.GeologicalModel.html#LoopStructural.GeologicalModel" title="LoopStructural.GeologicalModel" class="sphx-glr-backref-module-LoopStructural sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">model</span></a><span class="p">,</span> <span class="n">background</span><span class="o">=</span><span class="s2">&quot;white&quot;</span><span class="p">)</span>
@@ -843,7 +847,7 @@ shown in B and C.</p>
     <span class="c1">#                       isovalue=0.4,</span>
     <span class="n">opacity</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span>
 <span class="p">)</span>
-<span class="n">viewer</span><span class="o">.</span><span class="n">plot_data</span><span class="p">(</span><span class="n">stratigraphy</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="mi">200</span><span class="p">)</span>
+<span class="n">viewer</span><span class="o">.</span><span class="n">plot_data</span><span class="p">(</span><span class="n">stratigraphy</span><span class="p">)</span>
 <span class="c1"># viewer.add_isosurface(fold_frame[1],colour=&#39;green&#39;,alpha=0.5)</span>
 <span class="c1"># viewer.add_vector_field(fold_frame[0],locations=fold_frame[0].get_interpolator().support.barycentre)</span>
 <span class="c1"># viewer.add_data(fold_frame[1])</span>
@@ -858,13 +862,14 @@ shown in B and C.</p>
 <h3>Plotting the fold rotation angles<a class="headerlink" href="#plotting-the-fold-rotation-angles" title="Link to this heading">#</a></h3>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">rotation_plots</span> <span class="o">=</span> <a href="../../_autosummary/LoopStructural.visualisation.RotationAnglePlotter.html#LoopStructural.visualisation.RotationAnglePlotter" title="LoopStructural.visualisation.RotationAnglePlotter" class="sphx-glr-backref-module-LoopStructural-visualisation sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">RotationAnglePlotter</span></a><span class="p">(</span><span class="n">stratigraphy</span><span class="p">)</span>
 <span class="n">rotation_plots</span><span class="o">.</span><span class="n">add_fold_limb_data</span><span class="p">()</span>
+<span class="n">rotation_plots</span><span class="o">.</span><span class="n">add_limb_svariogram</span><span class="p">()</span>
 <span class="c1"># plt.plot(stratigraphy.builder.fold.fold_limb_rotation.fold_frame_coordinate,stratigraphy[&#39;limb_rotation&#39;],&#39;bo&#39;)</span>
 <span class="c1"># x = np.linspace(fold_frame[0].min(),fold_frame[0].max(),100)</span>
 <span class="c1"># plt.plot(x,stratigraphy[&#39;fold&#39;].fold_limb_rotation(x),&#39;r--&#39;)</span>
 <span class="n">rotation_plots</span><span class="o">.</span><span class="n">fig</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 </pre></div>
 </div>
-<img src="../../_images/sphx_glr_plot_1_adding_folds_to_surfaces_003.png" srcset="../../_images/sphx_glr_plot_1_adding_folds_to_surfaces_003.png" alt="plot 1 adding folds to surfaces" class = "sphx-glr-single-img"/><p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 6.988 seconds)</p>
+<img src="../../_images/sphx_glr_plot_1_adding_folds_to_surfaces_003.png" srcset="../../_images/sphx_glr_plot_1_adding_folds_to_surfaces_003.png" alt="plot 1 adding folds to surfaces" class = "sphx-glr-single-img"/><p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 7.752 seconds)</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-2-fold-plot-1-adding-folds-to-surfaces-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
 <p><a class="reference download internal" download="" href="../../_downloads/995c0132d1a953ca87345573a5332419/plot_1_adding_folds_to_surfaces.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">plot_1_adding_folds_to_surfaces.ipynb</span></code></a></p>
@@ -901,7 +906,7 @@ shown in B and C.</p>
       </div>
     </a>
     <a class="right-next"
-       href="_refolded_folds.html"
+       href="plot_2__refolded_folds.html"
        title="next page">
       <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>

@@ -53,6 +53,7 @@ LoopStructural.interpolators.PiecewiseLinearInterpolator
       ~PiecewiseLinearInterpolator.set_inequality_pairs_constraints
       ~PiecewiseLinearInterpolator.set_interface_constraints
       ~PiecewiseLinearInterpolator.set_interpolation_weights
+      ~PiecewiseLinearInterpolator.set_nelements
       ~PiecewiseLinearInterpolator.set_normal_constraints
       ~PiecewiseLinearInterpolator.set_region
       ~PiecewiseLinearInterpolator.set_tangent_constraints
@@ -64,6 +65,7 @@ LoopStructural.interpolators.PiecewiseLinearInterpolator
       ~PiecewiseLinearInterpolator.to_dict
       ~PiecewiseLinearInterpolator.to_json
       ~PiecewiseLinearInterpolator.update
+      ~PiecewiseLinearInterpolator.vtk
    
    
 
@@ -74,7 +76,8 @@ LoopStructural.interpolators.PiecewiseLinearInterpolator
    .. autosummary::
    
       ~PiecewiseLinearInterpolator.data
-      ~PiecewiseLinearInterpolator.nx
+      ~PiecewiseLinearInterpolator.dof
+      ~PiecewiseLinearInterpolator.n_elements
       ~PiecewiseLinearInterpolator.region
       ~PiecewiseLinearInterpolator.region_map
    

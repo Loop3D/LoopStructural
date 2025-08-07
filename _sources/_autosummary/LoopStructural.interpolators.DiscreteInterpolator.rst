@@ -52,6 +52,7 @@ LoopStructural.interpolators.DiscreteInterpolator
       ~DiscreteInterpolator.set_inequality_pairs_constraints
       ~DiscreteInterpolator.set_interface_constraints
       ~DiscreteInterpolator.set_interpolation_weights
+      ~DiscreteInterpolator.set_nelements
       ~DiscreteInterpolator.set_normal_constraints
       ~DiscreteInterpolator.set_region
       ~DiscreteInterpolator.set_tangent_constraints
@@ -63,6 +64,7 @@ LoopStructural.interpolators.DiscreteInterpolator
       ~DiscreteInterpolator.to_dict
       ~DiscreteInterpolator.to_json
       ~DiscreteInterpolator.update
+      ~DiscreteInterpolator.vtk
    
    
 
@@ -73,7 +75,8 @@ LoopStructural.interpolators.DiscreteInterpolator
    .. autosummary::
    
       ~DiscreteInterpolator.data
-      ~DiscreteInterpolator.nx
+      ~DiscreteInterpolator.dof
+      ~DiscreteInterpolator.n_elements
       ~DiscreteInterpolator.region
       ~DiscreteInterpolator.region_map
    

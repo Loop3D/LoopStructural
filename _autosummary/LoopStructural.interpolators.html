@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>LoopStructural.interpolators &#8212; LoopStructural 1.6.5 documentation</title>
+    <title>LoopStructural.interpolators &#8212; LoopStructural 1.6.18 documentation</title>
   
   
   
@@ -35,6 +35,7 @@
     <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-binder.css?v=f4aeca0c" />
     <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-dataframe.css?v=2082cf3c" />
     <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-rendered-html.css?v=1277b6f3" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
     <link rel="stylesheet" type="text/css" href="../_static/custom.css" />
   
   <!-- So that users can add custom icons -->
@@ -43,20 +44,20 @@
   <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../_static/documentation_options.js?v=a713f8ff"></script>
+    <script src="../_static/documentation_options.js?v=6e5aca9b"></script>
     <script src="../_static/doctools.js?v=9bcbadda"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
-    <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="../_static/design-tabs.js?v=f930bc37"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = '_autosummary/LoopStructural.interpolators';</script>
     <script src="../_static/custom-icon.js?v=40bda21d"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="LoopStructural.interpolators.InterpolatorType" href="LoopStructural.interpolators.InterpolatorType.html" />
-    <link rel="prev" title="LoopStructural.modelling.Map2LoopProcessor" href="LoopStructural.modelling.Map2LoopProcessor.html" />
+    <link rel="prev" title="LoopStructural.modelling.LoopProjectfileProcessor" href="LoopStructural.modelling.LoopProjectfileProcessor.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="" />
-    <meta name="docbuild:last-update" content="Jan 20, 2025"/>
+    <meta name="docbuild:last-update" content="Aug 07, 2025"/>
   </head>
   
   
@@ -126,7 +127,7 @@
     <img src="../_static/infinity_loop_icon.svg" class="logo__image only-dark pst-js-only" alt=""/>
   
   
-    <p class="title logo__title">LoopStructural - 1.6.5</p>
+    <p class="title logo__title">LoopStructural - 1.6.18</p>
   
 </a></div>
     
@@ -409,6 +410,7 @@
 <li class="toctree-l2"><a class="reference internal" href="LoopStructural.interpolators.FiniteDifferenceInterpolator.html">LoopStructural.interpolators.FiniteDifferenceInterpolator</a></li>
 <li class="toctree-l2"><a class="reference internal" href="LoopStructural.interpolators.PiecewiseLinearInterpolator.html">LoopStructural.interpolators.PiecewiseLinearInterpolator</a></li>
 <li class="toctree-l2"><a class="reference internal" href="LoopStructural.interpolators.DiscreteFoldInterpolator.html">LoopStructural.interpolators.DiscreteFoldInterpolator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="LoopStructural.interpolators.SurfeRBFInterpolator.html">LoopStructural.interpolators.SurfeRBFInterpolator</a></li>
 <li class="toctree-l2"><a class="reference internal" href="LoopStructural.interpolators.P1Interpolator.html">LoopStructural.interpolators.P1Interpolator</a></li>
 <li class="toctree-l2"><a class="reference internal" href="LoopStructural.interpolators.P2Interpolator.html">LoopStructural.interpolators.P2Interpolator</a></li>
 <li class="toctree-l2"><a class="reference internal" href="LoopStructural.interpolators.TetMesh.html">LoopStructural.interpolators.TetMesh</a></li>
@@ -486,9 +488,9 @@
 <span id="loopstructural-interpolators"></span><h1>LoopStructural.interpolators<a class="headerlink" href="#module-LoopStructural.interpolators" title="Link to this heading">#</a></h1>
 <p>Interpolators and interpolation supports</p>
 <p class="rubric">Classes</p>
-<div class="pst-scrollable-table-container"><table class="autosummary longtable table autosummary">
+<div class="pst-scrollable-table-container"><table class="autosummary longtable table">
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="LoopStructural.interpolators.InterpolatorType.html#LoopStructural.interpolators.InterpolatorType" title="LoopStructural.interpolators.InterpolatorType"><code class="xref py py-obj docutils literal notranslate"><span class="pre">InterpolatorType</span></code></a>(value[, names, module, ...])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="LoopStructural.interpolators.InterpolatorType.html#LoopStructural.interpolators.InterpolatorType" title="LoopStructural.interpolators.InterpolatorType"><code class="xref py py-obj docutils literal notranslate"><span class="pre">InterpolatorType</span></code></a>(*values)</p></td>
 <td><p>Enum for the different interpolator types</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="LoopStructural.interpolators.GeologicalInterpolator.html#LoopStructural.interpolators.GeologicalInterpolator" title="LoopStructural.interpolators.GeologicalInterpolator"><code class="xref py py-obj docutils literal notranslate"><span class="pre">GeologicalInterpolator</span></code></a>([data, up_to_date])</p></td>
@@ -506,31 +508,34 @@
 <tr class="row-even"><td><p><a class="reference internal" href="LoopStructural.interpolators.DiscreteFoldInterpolator.html#LoopStructural.interpolators.DiscreteFoldInterpolator" title="LoopStructural.interpolators.DiscreteFoldInterpolator"><code class="xref py py-obj docutils literal notranslate"><span class="pre">DiscreteFoldInterpolator</span></code></a>(support[, fold])</p></td>
 <td><p>A piecewise linear interpolator that can also use fold constraints defined in Laurent et al., 2016</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="LoopStructural.interpolators.P1Interpolator.html#LoopStructural.interpolators.P1Interpolator" title="LoopStructural.interpolators.P1Interpolator"><code class="xref py py-obj docutils literal notranslate"><span class="pre">P1Interpolator</span></code></a>(mesh)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="LoopStructural.interpolators.SurfeRBFInterpolator.html#LoopStructural.interpolators.SurfeRBFInterpolator" title="LoopStructural.interpolators.SurfeRBFInterpolator"><code class="xref py py-obj docutils literal notranslate"><span class="pre">SurfeRBFInterpolator</span></code></a>(*args, **kwargs)</p></td>
+<td><p>Dummy class to handle the case where Surfe is not installed.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="LoopStructural.interpolators.P1Interpolator.html#LoopStructural.interpolators.P1Interpolator" title="LoopStructural.interpolators.P1Interpolator"><code class="xref py py-obj docutils literal notranslate"><span class="pre">P1Interpolator</span></code></a>(mesh)</p></td>
 <td><p>Piecewise Linear Interpolator Approximates scalar field by finding coefficients to a piecewise linear equation on a tetrahedral mesh.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="LoopStructural.interpolators.P2Interpolator.html#LoopStructural.interpolators.P2Interpolator" title="LoopStructural.interpolators.P2Interpolator"><code class="xref py py-obj docutils literal notranslate"><span class="pre">P2Interpolator</span></code></a>(mesh)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="LoopStructural.interpolators.P2Interpolator.html#LoopStructural.interpolators.P2Interpolator" title="LoopStructural.interpolators.P2Interpolator"><code class="xref py py-obj docutils literal notranslate"><span class="pre">P2Interpolator</span></code></a>(mesh)</p></td>
 <td><p>Piecewise Linear Interpolator Approximates scalar field by finding coefficients to a piecewise linear equation on a tetrahedral mesh.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="LoopStructural.interpolators.TetMesh.html#LoopStructural.interpolators.TetMesh" title="LoopStructural.interpolators.TetMesh"><code class="xref py py-obj docutils literal notranslate"><span class="pre">TetMesh</span></code></a>([origin, nsteps, step_vector])</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="LoopStructural.interpolators.TetMesh.html#LoopStructural.interpolators.TetMesh" title="LoopStructural.interpolators.TetMesh"><code class="xref py py-obj docutils literal notranslate"><span class="pre">TetMesh</span></code></a>([origin, nsteps, step_vector])</p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="LoopStructural.interpolators.StructuredGrid.html#LoopStructural.interpolators.StructuredGrid" title="LoopStructural.interpolators.StructuredGrid"><code class="xref py py-obj docutils literal notranslate"><span class="pre">StructuredGrid</span></code></a>([origin, nsteps, ...])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="LoopStructural.interpolators.StructuredGrid.html#LoopStructural.interpolators.StructuredGrid" title="LoopStructural.interpolators.StructuredGrid"><code class="xref py py-obj docutils literal notranslate"><span class="pre">StructuredGrid</span></code></a>([origin, nsteps, ...])</p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="LoopStructural.interpolators.UnStructuredTetMesh.html#LoopStructural.interpolators.UnStructuredTetMesh" title="LoopStructural.interpolators.UnStructuredTetMesh"><code class="xref py py-obj docutils literal notranslate"><span class="pre">UnStructuredTetMesh</span></code></a>(nodes, elements, neighbours)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="LoopStructural.interpolators.UnStructuredTetMesh.html#LoopStructural.interpolators.UnStructuredTetMesh" title="LoopStructural.interpolators.UnStructuredTetMesh"><code class="xref py py-obj docutils literal notranslate"><span class="pre">UnStructuredTetMesh</span></code></a>(nodes, elements, neighbours)</p></td>
 <td><p>An unstructured mesh defined by nodes, elements and neighbours An axis aligned bounding box (AABB) is used to speed up finding which tetra a point is in.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="LoopStructural.interpolators.P1Unstructured2d.html#LoopStructural.interpolators.P1Unstructured2d" title="LoopStructural.interpolators.P1Unstructured2d"><code class="xref py py-obj docutils literal notranslate"><span class="pre">P1Unstructured2d</span></code></a>(elements, vertices, neighbours)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="LoopStructural.interpolators.P1Unstructured2d.html#LoopStructural.interpolators.P1Unstructured2d" title="LoopStructural.interpolators.P1Unstructured2d"><code class="xref py py-obj docutils literal notranslate"><span class="pre">P1Unstructured2d</span></code></a>(elements, vertices, neighbours)</p></td>
 <td><p>This class is the base</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="LoopStructural.interpolators.P2Unstructured2d.html#LoopStructural.interpolators.P2Unstructured2d" title="LoopStructural.interpolators.P2Unstructured2d"><code class="xref py py-obj docutils literal notranslate"><span class="pre">P2Unstructured2d</span></code></a>(elements, vertices, neighbours)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="LoopStructural.interpolators.P2Unstructured2d.html#LoopStructural.interpolators.P2Unstructured2d" title="LoopStructural.interpolators.P2Unstructured2d"><code class="xref py py-obj docutils literal notranslate"><span class="pre">P2Unstructured2d</span></code></a>(elements, vertices, neighbours)</p></td>
 <td><p>This class is the base</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="LoopStructural.interpolators.StructuredGrid2D.html#LoopStructural.interpolators.StructuredGrid2D" title="LoopStructural.interpolators.StructuredGrid2D"><code class="xref py py-obj docutils literal notranslate"><span class="pre">StructuredGrid2D</span></code></a>([origin, nsteps, step_vector])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="LoopStructural.interpolators.StructuredGrid2D.html#LoopStructural.interpolators.StructuredGrid2D" title="LoopStructural.interpolators.StructuredGrid2D"><code class="xref py py-obj docutils literal notranslate"><span class="pre">StructuredGrid2D</span></code></a>([origin, nsteps, step_vector])</p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="LoopStructural.interpolators.P2UnstructuredTetMesh.html#LoopStructural.interpolators.P2UnstructuredTetMesh" title="LoopStructural.interpolators.P2UnstructuredTetMesh"><code class="xref py py-obj docutils literal notranslate"><span class="pre">P2UnstructuredTetMesh</span></code></a>(nodes, elements, ...)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="LoopStructural.interpolators.P2UnstructuredTetMesh.html#LoopStructural.interpolators.P2UnstructuredTetMesh" title="LoopStructural.interpolators.P2UnstructuredTetMesh"><code class="xref py py-obj docutils literal notranslate"><span class="pre">P2UnstructuredTetMesh</span></code></a>(nodes, elements, ...)</p></td>
 <td><p>An unstructured mesh defined by nodes, elements and neighbours An axis aligned bounding box (AABB) is used to speed up finding which tetra a point is in.</p></td>
 </tr>
 </tbody>
@@ -549,12 +554,12 @@
                   
 <div class="prev-next-area">
     <a class="left-prev"
-       href="LoopStructural.modelling.Map2LoopProcessor.html"
+       href="LoopStructural.modelling.LoopProjectfileProcessor.html"
        title="previous page">
       <i class="fa-solid fa-angle-left"></i>
       <div class="prev-next-info">
         <p class="prev-next-subtitle">previous</p>
-        <p class="prev-next-title">LoopStructural.modelling.Map2LoopProcessor</p>
+        <p class="prev-next-title">LoopStructural.modelling.LoopProjectfileProcessor</p>
       </div>
     </a>
     <a class="right-next"

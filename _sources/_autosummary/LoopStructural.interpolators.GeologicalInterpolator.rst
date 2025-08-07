@@ -41,6 +41,7 @@ LoopStructural.interpolators.GeologicalInterpolator
       ~GeologicalInterpolator.set_gradient_constraints
       ~GeologicalInterpolator.set_inequality_pairs_constraints
       ~GeologicalInterpolator.set_interface_constraints
+      ~GeologicalInterpolator.set_nelements
       ~GeologicalInterpolator.set_normal_constraints
       ~GeologicalInterpolator.set_region
       ~GeologicalInterpolator.set_tangent_constraints
@@ -62,5 +63,6 @@ LoopStructural.interpolators.GeologicalInterpolator
    .. autosummary::
    
       ~GeologicalInterpolator.data
+      ~GeologicalInterpolator.n_elements
    
    

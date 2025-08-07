@@ -40,6 +40,7 @@ LoopStructural.interpolators.StructuredGrid2D
       ~StructuredGrid2D.position_to_dof_coefs
       ~StructuredGrid2D.position_to_local_coordinates
       ~StructuredGrid2D.print_geometry
+      ~StructuredGrid2D.set_nelements
       ~StructuredGrid2D.vtk
    
    

@@ -56,6 +56,7 @@ The default behaviour of the viewer can also be modified.
 To change the resolution of the scalar field or isosurfacing, either set the number of steps in x,y,z or the total number of elements of tht bounding box
 
 .. code-block::
+    
     model.bounding_box.nsteps = np.array([nx,ny,nz])
     print(model.bounding_box.nsteps)
     model.bounding_box.nelements = 1e6

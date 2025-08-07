@@ -23,6 +23,7 @@
       GeologicalModel
       ProcessInputData
       Map2LoopProcessor
+      LoopProjectfileProcessor
    
    
 

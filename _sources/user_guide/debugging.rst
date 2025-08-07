@@ -44,6 +44,7 @@ Interpolator is taking a long time
 - How many faults are associated with the feature? :code:`len(feature.faults)`, you can remove the faults by setting this to an empty list
 
 .. code-block:
+
     faults = feature.faults 
     feature.faults = []
     feature.update()
@@ -74,6 +75,7 @@ No displacement
 - Has the fault frame interpolated correctly? Coordinates 0 and 1 should both have values.
 
 .. code-block:
+
     view.add_scalar_field(fault[0])
     view.add_scalar_field(fault[1])
     view.add_scalar_field(fault[2])
@@ -83,11 +85,13 @@ No displacement
 - Has the fault been added to the feature being faulted?
 
 .. code-block:
+
     print([f.name for f in faulted_feature.faults])
 
 - Is the fault displacement vector correct? Add the vector field to the visualisation
 
 .. code-block:
+
     view = LavaVuModelViewer(model)
     view.add_vector_field(model['fault'][1],locations=model.regular_grid()[::200]) #random 200 locations
     view.add_isosurface(model['fault'][0],0)

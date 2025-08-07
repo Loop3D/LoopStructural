@@ -31,9 +31,9 @@ LoopStructural.datatypes.VectorPoints
 
    .. autosummary::
    
+      ~VectorPoints.name
       ~VectorPoints.properties
       ~VectorPoints.locations
       ~VectorPoints.vectors
-      ~VectorPoints.name
    
    

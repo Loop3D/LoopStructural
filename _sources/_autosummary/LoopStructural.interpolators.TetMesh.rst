@@ -43,6 +43,7 @@ LoopStructural.interpolators.TetMesh
       ~TetMesh.position_to_cell_index
       ~TetMesh.position_to_cell_vertices
       ~TetMesh.rotate
+      ~TetMesh.set_nelements
       ~TetMesh.tetra_global_index
       ~TetMesh.to_dict
       ~TetMesh.vtk
@@ -75,5 +76,6 @@ LoopStructural.interpolators.TetMesh
       ~TetMesh.shared_element_scale
       ~TetMesh.shared_element_size
       ~TetMesh.step_vector
+      ~TetMesh.volume
    
    

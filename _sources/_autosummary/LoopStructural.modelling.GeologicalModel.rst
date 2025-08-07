@@ -19,7 +19,6 @@ LoopStructural.modelling.GeologicalModel
       ~GeologicalModel.__init__
       ~GeologicalModel.add_onlap_unconformity
       ~GeologicalModel.add_unconformity
-      ~GeologicalModel.check_inialisation
       ~GeologicalModel.create_and_add_domain_fault
       ~GeologicalModel.create_and_add_fault
       ~GeologicalModel.create_and_add_fold_frame
@@ -36,12 +35,12 @@ LoopStructural.modelling.GeologicalModel
       ~GeologicalModel.fault_names
       ~GeologicalModel.feature_names
       ~GeologicalModel.from_file
-      ~GeologicalModel.from_map2loop_directory
       ~GeologicalModel.from_processor
       ~GeologicalModel.get_block_model
       ~GeologicalModel.get_fault_surfaces
       ~GeologicalModel.get_feature_by_name
       ~GeologicalModel.get_stratigraphic_surfaces
+      ~GeologicalModel.prepare_data
       ~GeologicalModel.regular_grid
       ~GeologicalModel.rescale
       ~GeologicalModel.save
@@ -67,5 +66,6 @@ LoopStructural.modelling.GeologicalModel
       ~GeologicalModel.faults_displacement_magnitude
       ~GeologicalModel.intrusions
       ~GeologicalModel.series
+      ~GeologicalModel.stratigraphic_column
    
    

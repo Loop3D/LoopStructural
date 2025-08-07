@@ -40,5 +40,6 @@ LoopStructural.datatypes.Surface
       ~Surface.values
       ~Surface.vertices
       ~Surface.triangles
+      ~Surface.colour
    
    

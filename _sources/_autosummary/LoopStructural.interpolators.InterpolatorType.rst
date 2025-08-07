@@ -12,19 +12,6 @@ LoopStructural.interpolators.InterpolatorType
    .. automethod:: __init__
 
    
-   .. rubric:: Methods
-
-   .. autosummary::
-   
-      ~InterpolatorType.conjugate
-      ~InterpolatorType.bit_length
-      ~InterpolatorType.bit_count
-      ~InterpolatorType.to_bytes
-      ~InterpolatorType.from_bytes
-      ~InterpolatorType.as_integer_ratio
-      ~InterpolatorType.is_integer
-      ~InterpolatorType.__init__
-   
    
 
    
@@ -33,10 +20,6 @@ LoopStructural.interpolators.InterpolatorType
 
    .. autosummary::
    
-      ~InterpolatorType.real
-      ~InterpolatorType.imag
-      ~InterpolatorType.numerator
-      ~InterpolatorType.denominator
       ~InterpolatorType.BASE
       ~InterpolatorType.BASE_DISCRETE
       ~InterpolatorType.FINITE_DIFFERENCE
@@ -45,5 +28,7 @@ LoopStructural.interpolators.InterpolatorType
       ~InterpolatorType.PIECEWISE_QUADRATIC
       ~InterpolatorType.BASE_DATA_SUPPORTED
       ~InterpolatorType.SURFE
+      ~InterpolatorType.PIECEWISE_LINEAR_CONSTANT_NORM
+      ~InterpolatorType.FINITE_DIFFERENCE_CONSTANT_NORM
    
    
