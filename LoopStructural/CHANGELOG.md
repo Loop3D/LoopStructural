@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.6.19](https://github.com/Loop3D/LoopStructural/compare/v1.6.18...v1.6.19) (2025-08-07)
+
+
+### Bug Fixes
+
+* check id type when creating and use add id to/from dict ([eef12b4](https://github.com/Loop3D/LoopStructural/commit/eef12b4c2569b2957688d385da434270513ccb95))
+
 ## [1.6.18](https://github.com/Loop3D/LoopStructural/compare/v1.6.17...v1.6.18) (2025-08-04)
 
 
