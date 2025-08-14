@@ -486,6 +486,8 @@ class ProcessInputData:
 
     @property
     def contacts(self):
+        if self._contacts is None:
+            return None
         contacts = self._contacts.copy()
         if self._use_thickness:
             contacts["val"] = np.nan
