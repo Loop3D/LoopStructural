@@ -117,7 +117,7 @@ processor = ProcessInputData(
     origin=origin,
     maximum=maximum,
 )
-
+processor.foliation_properties["supergroup_0"] = {"regularisation": 1.0}
 ##############################
 # The process input data can be used to directly build a geological model
 
@@ -138,8 +138,7 @@ model2.update()
 
 
 view = Loop3DView(model)
-view.add_model_surfaces()
-view.rotation = [-37.965614318847656, 13.706363677978516, 3.110347032546997]
+view.plot_model_surfaces()
 view.display()
 
 ##############################
@@ -167,11 +166,18 @@ processor = ProcessInputData(
     fault_locations=fault_locations,
     fault_properties=fault_properties,
 )
-
+processor.foliation_properties['supergroup_0']['regularisation'] = 1.0
 model = GeologicalModel.from_processor(processor)
 model.update()
 
 view = Loop3DView(model)
-view.add_model_surfaces()
-view.rotation = [-37.965614318847656, 13.706363677978516, 3.110347032546997]
+view.plot_model_surfaces()
 view.display()
+
+##############################
+# Visualise stratigraphic column
+### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+from LoopStructural.visualisation import StratigraphicColumnView
+
+scv = StratigraphicColumnView(model)
+scv.plot()
