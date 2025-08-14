@@ -7,6 +7,9 @@ LoopStructural
 import logging
 from logging.config import dictConfig
 
+from dataclasses import dataclass
+
+
 __all__ = ["GeologicalModel"]
 import tempfile
 from pathlib import Path
@@ -18,6 +21,14 @@ formatter = logging.Formatter("%(levelname)s: %(asctime)s: %(filename)s:%(lineno
 ch.setFormatter(formatter)
 ch.setLevel(logging.WARNING)
 loggers = {}
+@dataclass
+class LoopStructuralConfig:
+    """
+    Configuration for LoopStructural 
+    """
+   
+    nelements: int = 10_000
+
 from .modelling.core.geological_model import GeologicalModel
 from .modelling.core.stratigraphic_column import StratigraphicColumn
 from .modelling.core.fault_topology import FaultTopology
