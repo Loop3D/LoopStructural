@@ -56,7 +56,22 @@ class FoldedFeatureBuilder(GeologicalFeatureBuilder):
         self.svario = svario
         self.axis_profile_type = axis_profile_type
         self.limb_profile_type = limb_profile_type
-
+    @classmethod
+    def from_feature_builder(cls, feature_builder, fold, **kwargs):
+        """Create a FoldedFeatureBuilder from an existing feature builder"""
+        if not isinstance(feature_builder, GeologicalFeatureBuilder):
+            logger.error(f'Feature builder is {type(feature_builder)} not GeologicalFeatureBuilder')
+            raise TypeError("feature_builder must be an instance of GeologicalFeatureBuilder")
+        builder = cls(
+            interpolatortype='DFI',
+            bounding_box=feature_builder.model.bounding_box,
+            fold=fold,
+            nelements=feature_builder.interpolator.n_elements,
+            name=feature_builder.name,
+            **kwargs
+        )
+        builder.data = feature_builder.data
+        return builder
     @property
     def fold_axis_rotation(self):
         if self.fold.fold_axis_rotation is None:

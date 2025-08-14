@@ -168,6 +168,9 @@ class GeologicalFeatureBuilder(BaseBuilder):
         -------
 
         """
+        logger.info('Adding data to interpolator for {}'.format(self.name))
+        logger.info(f"Data shape: {self.data.shape}")
+        logger.info(f'Constrained: {constrained}, force_constrained: {force_constrained}')
         if self.data_added:
             logger.info("Data already added to interpolator")
             return
