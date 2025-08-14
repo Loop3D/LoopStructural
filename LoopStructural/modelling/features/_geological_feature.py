@@ -77,7 +77,7 @@ class GeologicalFeature(BaseFeature):
         print(self.name, json)
         json["interpolator"] = self.interpolator.to_json()
         return json
-
+    
     def is_valid(self):
         return self.interpolator.valid
 
