@@ -577,7 +577,7 @@ class GeologicalModel:
         }
 
         """
-        self.stratigraphic_column.clear()
+        self.stratigraphic_column.clear(basement=False)
         # if the colour for a unit hasn't been specified we can just sample from
         # a colour map e.g. tab20
         logger.info("Adding stratigraphic column to model")
@@ -585,6 +585,9 @@ class GeologicalModel:
             "set_stratigraphic_column is deprecated, use model.stratigraphic_column.add_units instead"
         )
         for i, g in enumerate(stratigraphic_column.keys()):
+            if g == 'faults':
+                logger.info('Not adding faults to stratigraphic column')
+                continue
             for u in stratigraphic_column[g].keys():
                 thickness = 0
                 if "min" in stratigraphic_column[g][u] and "max" in stratigraphic_column[g][u]:
@@ -606,7 +609,7 @@ class GeologicalModel:
             self.stratigraphic_column.add_unconformity(
                 name=''.join([g, 'unconformity']),
             )
-            self.stratigraphic_column.group_mapping[f'Group_{i+1}'] = g
+            self.stratigraphic_column.group_mapping[f'Group_{i}'] = g
 
     def create_and_add_foliation(
         self,
