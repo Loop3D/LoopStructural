@@ -67,43 +67,7 @@ z *= 0.2
 origin = [df["X"].min() - z, df["Y"].min() - z, -z]
 maximum = [df["X"].max() + z, df["Y"].max() + z, z]
 
-##############################
-# Setting up the data
-# ~~~~~~~~~~~~~~~~~~~
-# The `ProcessInputData` class is used to convert common geological map components to the datastructures required by LoopStructural.#
-# To build a fault network we need to provide:# * fault locations - a table of x,y,z, and the fault name
-# 1. fault orientations - a table recording the orientation observations of the fault, e.g. strike, dip or normal vector and x,y,z, fault_name
-# 2. origin - the origin of the model bounding box
-# 3. maximum - the maximum extend of the model bounding box
-# 4. fault_edges - list of intersection relationships between faults e.g. [('fault1','fault2')] indicates that there is a intersection between fault1 and fault2
-# 5. fault_edge_properties - list of properties for the fault edges - this can be the type of intersection e.g. 'splay' or 'abut' or just the angle between the faults
-# 6. fault_properties (*optional*)  - a pandas dataframe with any kwargs for the interpolator where the index is the fault name #
-#
-#  Below is an example of setting the number of interpolation elements for each fault
 
-##############################
-# Modelling splay faults
-# ~~~~~~~~~~~~~~~~~~~~~~
-# A splay fault relationship is defined for any fault where the angle between the faults is less than :math:`30^\circ`.
-# In this example we specify the angle between the faults as :math:`10^\circ`.
-
-processor = ProcessInputData(
-    fault_orientations=ori,
-    fault_locations=df,
-    origin=origin,
-    maximum=maximum,
-    fault_edges=[("fault_2", "fault_1")],
-    fault_edge_properties=[{"angle": 10}],
-)
-
-model = GeologicalModel.from_processor(processor)
-model.update()
-
-view = Loop3DView(model)
-for f in model.faults:
-    view.plot_surface(f, value=[0])  #
-view.rotation = [-50.92916488647461, -30.319700241088867, -20.521053314208984]
-view.display()
 
 ##############################
 # Modelling abutting faults
