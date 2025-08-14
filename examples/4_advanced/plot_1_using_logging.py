@@ -56,8 +56,7 @@ strati = model.create_and_add_foliation(
     damp=True,
 )
 viewer = Loop3DView(model, background="white")
-viewer.add_model_surfaces()
-viewer.rotate([-85.18760681152344, 42.93233871459961, 0.8641873002052307])
+viewer.plot_model_surfaces()
 viewer.display()
 #################################################################################################
 # Looking at the log file
@@ -108,6 +107,5 @@ strati = model.create_and_add_foliation(
     damp=True,
 )
 viewer = Loop3DView(model, background="white")
-viewer.add_model_surfaces()
-viewer.rotate([-85.18760681152344, 42.93233871459961, 0.8641873002052307])
+viewer.plot_model_surfaces()
 viewer.display()

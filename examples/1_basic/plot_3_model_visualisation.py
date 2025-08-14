@@ -29,17 +29,15 @@ from LoopStructural.datasets import load_claudius  # demo data
 data, bb = load_claudius()
 model = GeologicalModel(bb[0, :], bb[1, :])
 model.set_model_data(data)
-strati = model.create_and_add_foliation("strati")
-strat_column = {"strati": {}}
+strati = model.create_and_add_foliation("strati",nelements=1e4)
 vals = [0, 60, 250, 330, 600]
 for i in range(len(vals) - 1):
-    strat_column["strati"]["unit_{}".format(i)] = {
-        "min": vals[i],
-        "max": vals[i + 1],
-        "id": i,
-    }
-model.set_stratigraphic_column(strat_column)
-
+    model.stratigraphic_column.add_unit(
+        f"unit_{i}",
+        thickness=vals[i + 1] - vals[i],
+        id=i,
+    )
+model.stratigraphic_column.group_mapping['Group_0'] = 'strati'
 ######################################################################
 # Visualising results
 # ~~~~~~~~~~~~~~~~~~~
@@ -118,11 +116,17 @@ viewer = Loop3DView(model, background="white")
 # the input data and then calculate isosurfaces for this
 
 viewer.plot_surface(strati, value=vals, cmap="prism", paint_with=strati)
-
+viewer.display()
+viewer = Loop3DView(model, background="white")
 
 viewer.plot_scalar_field(strati, cmap="prism")
+viewer.display()
+viewer = Loop3DView(model, background="white")
 # print(viewer._build_stratigraphic_cmap(model))
 viewer.plot_block_model(cmap='tab20')
+viewer.display()
+viewer = Loop3DView(model, background="white")
+
 # Add the data addgrad/addvalue arguments are optional
 viewer.plot_data(strati, vector=True, value=True)
 viewer.display()  # to add an interactive display

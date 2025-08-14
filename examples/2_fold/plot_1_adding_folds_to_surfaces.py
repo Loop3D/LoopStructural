@@ -236,6 +236,7 @@ viewer.show()
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 rotation_plots = RotationAnglePlotter(stratigraphy)
 rotation_plots.add_fold_limb_data()
+rotation_plots.add_fold_limb_curve()
 rotation_plots.add_limb_svariogram()
 # plt.plot(stratigraphy.builder.fold.fold_limb_rotation.fold_frame_coordinate,stratigraphy['limb_rotation'],'bo')
 # x = np.linspace(fold_frame[0].min(),fold_frame[0].max(),100)

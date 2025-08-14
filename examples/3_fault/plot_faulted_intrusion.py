@@ -54,26 +54,25 @@ plt.contourf(val)
 model = GeologicalModel(bb[0, :], bb[1, :])
 model.set_model_data(data)
 fault = model.create_and_add_fault(
-    "fault", 500, nelements=10000, steps=4, interpolatortype="FDI", buffer=0.3
+    "fault", 500
 )
 
 viewer = Loop3DView(model)
-viewer.add_isosurface(
+viewer.plot_surface(
     fault,
-    isovalue=0,
+    value=0,
     #                       slices=[0,1]#nslices=10
 )
 xyz = model.data[model.data["feature_name"] == "strati"][["X", "Y", "Z"]].to_numpy()
 xyz = xyz[fault.evaluate(xyz).astype(bool), :]
-viewer.add_vector_field(fault, locations=xyz)
+viewer.plot_vector_field(fault)
 viewer.add_points(
     model.rescale(
-        model.data[model.data["feature_name"] == "strati"][["X", "Y", "Z"]],
+        model.data[model.data["feature_name"] == "strati"][["X", "Y", "Z"]].values,
         inplace=False,
     ),
     name="prefault",
 )
-viewer.rotation = [-73.24819946289062, -86.82220458984375, -13.912878036499023]
 viewer.display()
 
 
@@ -82,25 +81,24 @@ displacement = 400  # INSERT YOUR DISPLACEMENT NUMBER HERE BEFORE #
 model = GeologicalModel(bb[0, :], bb[1, :])
 model.set_model_data(data)
 fault = model.create_and_add_fault(
-    "fault", displacement, nelements=2000, steps=4, interpolatortype="PLI", buffer=2
+    "fault", displacement, nelements=2000, 
 )
-strati = model.create_and_add_foliation("strati", nelements=30000, interpolatortype="PLI", cgw=0.03)
+strati = model.create_and_add_foliation("strati")
 model.update()
 viewer = Loop3DView(model)
-viewer.add_isosurface(strati, isovalue=0)
+viewer.plot_surface(strati, value=0.)
 # viewer.add_data(model.features[0][0])
-viewer.add_data(strati)
-viewer.add_isosurface(
+viewer.plot_data(strati)
+viewer.plot_surface(
     fault,
-    isovalue=0,
+    value=0.,
     #                       slices=[0,1]#nslices=10
 )
 viewer.add_points(
     model.rescale(
-        model.data[model.data["feature_name"] == "strati"][["X", "Y", "Z"]],
+        model.data[model.data["feature_name"] == "strati"][["X", "Y", "Z"]].values,
         inplace=False,
     ),
     name="prefault",
 )
-viewer.rotation = [-73.24819946289062, -86.82220458984375, -13.912878036499023]
 viewer.display()
