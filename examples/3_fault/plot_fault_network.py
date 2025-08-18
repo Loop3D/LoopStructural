@@ -91,5 +91,4 @@ for f in model.faults:
     view.plot_surface(f, value=[0])  #
     view.plot_data(f[0])
 
-view.rotation = [-50.92916488647461, -30.319700241088867, -20.521053314208984]
 view.display()
