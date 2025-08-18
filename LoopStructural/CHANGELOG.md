@@ -1,5 +1,18 @@
 # Changelog
 
+## [1.6.19](https://github.com/Loop3D/LoopStructural/compare/v1.6.18...v1.6.19) (2025-08-14)
+
+
+### Bug Fixes
+
+* add default parameters datastructure ([b71c2f8](https://github.com/Loop3D/LoopStructural/commit/b71c2f8d90c240bf2ecc99c70b021c5045f4b5e4))
+* add get stratigraphic column cmap to stratigraphic column class ([a03e716](https://github.com/Loop3D/LoopStructural/commit/a03e71646430db6958149b2e3c23be2b5a59e33e))
+* allow adding object into model at different indexes ([e1f5cde](https://github.com/Loop3D/LoopStructural/commit/e1f5cde19e033e301db5206ddeb658270bbc5886))
+* check id type when creating and use add id to/from dict ([eef12b4](https://github.com/Loop3D/LoopStructural/commit/eef12b4c2569b2957688d385da434270513ccb95))
+* convert feature builder to folded feature builder ([fcf4f76](https://github.com/Loop3D/LoopStructural/commit/fcf4f7637245f31487413beb9c1b593efb587a5d))
+* don't add basement to the stratigraphic column made from dictionary ([7c98c95](https://github.com/Loop3D/LoopStructural/commit/7c98c95195daedbf4eb33703cd30918d9c7e07a4))
+* don't try to access contacts if they are none ([37792a3](https://github.com/Loop3D/LoopStructural/commit/37792a3098ad1574698982d5bd8cee519097e665))
+
 ## [1.6.18](https://github.com/Loop3D/LoopStructural/compare/v1.6.17...v1.6.18) (2025-08-04)
 
 
