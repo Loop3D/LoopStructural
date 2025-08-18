@@ -57,23 +57,22 @@ model building
 Build the model
 ~~~~~~~~~~~~~~~~~
 
-.. GENERATED FROM PYTHON SOURCE LINES 29-43
+.. GENERATED FROM PYTHON SOURCE LINES 29-41
 
 .. code-block:: Python
 
     data, bb = load_claudius()
     model = GeologicalModel(bb[0, :], bb[1, :])
     model.set_model_data(data)
-    strati = model.create_and_add_foliation("strati")
-    strat_column = {"strati": {}}
+    strati = model.create_and_add_foliation("strati",nelements=1e4)
     vals = [0, 60, 250, 330, 600]
     for i in range(len(vals) - 1):
-        strat_column["strati"]["unit_{}".format(i)] = {
-            "min": vals[i],
-            "max": vals[i + 1],
-            "id": i,
-        }
-    model.set_stratigraphic_column(strat_column)
+        model.stratigraphic_column.add_unit(
+            f"unit_{i}",
+            thickness=vals[i + 1] - vals[i],
+            id=i,
+        )
+    model.stratigraphic_column.group_mapping['Group_0'] = 'strati'
 
 
 
@@ -81,8 +80,7 @@ Build the model
 
 
 
-
-.. GENERATED FROM PYTHON SOURCE LINES 44-114
+.. GENERATED FROM PYTHON SOURCE LINES 42-112
 
 Visualising results
 ~~~~~~~~~~~~~~~~~~~
@@ -155,7 +153,7 @@ Where the optional kwargs can be:
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 114-129
+.. GENERATED FROM PYTHON SOURCE LINES 112-133
 
 .. code-block:: Python
 
@@ -166,21 +164,53 @@ Where the optional kwargs can be:
     # the input data and then calculate isosurfaces for this
 
     viewer.plot_surface(strati, value=vals, cmap="prism", paint_with=strati)
-
+    viewer.display()
+    viewer = Loop3DView(model, background="white")
 
     viewer.plot_scalar_field(strati, cmap="prism")
+    viewer.display()
+    viewer = Loop3DView(model, background="white")
     # print(viewer._build_stratigraphic_cmap(model))
     viewer.plot_block_model(cmap='tab20')
+    viewer.display()
+    viewer = Loop3DView(model, background="white")
+
     # Add the data addgrad/addvalue arguments are optional
     viewer.plot_data(strati, vector=True, value=True)
     viewer.display()  # to add an interactive display
 
 
 
-.. image-sg:: /_auto_examples/1_basic/images/sphx_glr_plot_3_model_visualisation_001.png
-   :alt: plot 3 model visualisation
-   :srcset: /_auto_examples/1_basic/images/sphx_glr_plot_3_model_visualisation_001.png
-   :class: sphx-glr-single-img
+.. rst-class:: sphx-glr-horizontal
+
+
+    *
+
+      .. image-sg:: /_auto_examples/1_basic/images/sphx_glr_plot_3_model_visualisation_001.png
+          :alt: plot 3 model visualisation
+          :srcset: /_auto_examples/1_basic/images/sphx_glr_plot_3_model_visualisation_001.png
+          :class: sphx-glr-multi-img
+
+    *
+
+      .. image-sg:: /_auto_examples/1_basic/images/sphx_glr_plot_3_model_visualisation_002.png
+          :alt: plot 3 model visualisation
+          :srcset: /_auto_examples/1_basic/images/sphx_glr_plot_3_model_visualisation_002.png
+          :class: sphx-glr-multi-img
+
+    *
+
+      .. image-sg:: /_auto_examples/1_basic/images/sphx_glr_plot_3_model_visualisation_003.png
+          :alt: plot 3 model visualisation
+          :srcset: /_auto_examples/1_basic/images/sphx_glr_plot_3_model_visualisation_003.png
+          :class: sphx-glr-multi-img
+
+    *
+
+      .. image-sg:: /_auto_examples/1_basic/images/sphx_glr_plot_3_model_visualisation_004.png
+          :alt: plot 3 model visualisation
+          :srcset: /_auto_examples/1_basic/images/sphx_glr_plot_3_model_visualisation_004.png
+          :class: sphx-glr-multi-img
 
 
 
@@ -189,7 +219,7 @@ Where the optional kwargs can be:
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 1.472 seconds)
+   **Total running time of the script:** (0 minutes 4.015 seconds)
 
 
 .. _sphx_glr_download__auto_examples_1_basic_plot_3_model_visualisation.py:

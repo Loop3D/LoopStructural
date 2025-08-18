@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>1b. Implicit surface modelling &#8212; LoopStructural 1.6.18 documentation</title>
+    <title>1b. Implicit surface modelling &#8212; LoopStructural 1.6.19 documentation</title>
   
   
   
@@ -44,7 +44,7 @@
   <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../../_static/documentation_options.js?v=6e5aca9b"></script>
+    <script src="../../_static/documentation_options.js?v=d5a64886"></script>
     <script src="../../_static/doctools.js?v=9bcbadda"></script>
     <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/design-tabs.js?v=f930bc37"></script>
@@ -58,7 +58,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="" />
-    <meta name="docbuild:last-update" content="Aug 07, 2025"/>
+    <meta name="docbuild:last-update" content="Aug 18, 2025"/>
   </head>
   
   
@@ -128,7 +128,7 @@
     <img src="../../_static/infinity_loop_icon.svg" class="logo__image only-dark pst-js-only" alt=""/>
   
   
-    <p class="title logo__title">LoopStructural - 1.6.18</p>
+    <p class="title logo__title">LoopStructural - 1.6.19</p>
   
 </a></div>
     
@@ -414,6 +414,7 @@
 </details></li>
 <li class="toctree-l1"><a class="reference internal" href="../2_fold/index.html">2. Modelling Folds</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../3_fault/index.html">3. Modelling Faults</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../4_advanced/index.html">4. Advanced use</a></li>
 </ul>
 </div>
 </nav></div>
@@ -512,6 +513,7 @@ Visualization of the scalar field.</p>
 <p>Import the required objects from LoopStructural for visualisation and
 model building</p>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">LoopStructural</span><span class="w"> </span><span class="kn">import</span> <a href="../../_autosummary/LoopStructural.GeologicalModel.html#LoopStructural.GeologicalModel" title="LoopStructural.GeologicalModel" class="sphx-glr-backref-module-LoopStructural sphx-glr-backref-type-py-class"><span class="n">GeologicalModel</span></a>
+<span class="kn">from</span><span class="w"> </span><span class="nn">LoopStructural.modelling.core.stratigraphic_column</span><span class="w"> </span><span class="kn">import</span> <span class="n">StratigraphicColumn</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">LoopStructural.visualisation</span><span class="w"> </span><span class="kn">import</span> <a href="../../_autosummary/LoopStructural.visualisation.Loop3DView.html#LoopStructural.visualisation.Loop3DView" title="LoopStructural.visualisation.Loop3DView" class="sphx-glr-backref-module-LoopStructural-visualisation sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">Loop3DView</span></a>
 <span class="kn">from</span><span class="w"> </span><span class="nn">LoopStructural.datasets</span><span class="w"> </span><span class="kn">import</span> <span class="n">load_claudius</span>  <span class="c1"># demo data</span>
 
@@ -581,17 +583,13 @@ foliations, faults, unconformities, and folds. In this example, we
 add a foliation using the <cite>create_and_add_foliation</cite> method.</p>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Define stratigraphic column with scalar field ranges for each unit</span>
 <span class="n">vals</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">60</span><span class="p">,</span> <span class="mi">250</span><span class="p">,</span> <span class="mi">330</span><span class="p">,</span> <span class="mi">600</span><span class="p">]</span>
-<span class="n">strat_column</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;strati&quot;</span><span class="p">:</span> <span class="p">{}}</span>
 <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">vals</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">):</span>
-    <span class="n">strat_column</span><span class="p">[</span><span class="s2">&quot;strati&quot;</span><span class="p">][</span><span class="s2">&quot;unit_</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">i</span><span class="p">)]</span> <span class="o">=</span> <span class="p">{</span>
-        <span class="s2">&quot;min&quot;</span><span class="p">:</span> <span class="n">vals</span><span class="p">[</span><span class="n">i</span><span class="p">],</span>
-        <span class="s2">&quot;max&quot;</span><span class="p">:</span> <span class="n">vals</span><span class="p">[</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">],</span>
-        <span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="n">i</span><span class="p">,</span>
-    <span class="p">}</span>
-
-<span class="c1"># Set the stratigraphic column in the model</span>
-<a href="../../_autosummary/LoopStructural.GeologicalModel.html#LoopStructural.GeologicalModel.set_stratigraphic_column" title="LoopStructural.GeologicalModel.set_stratigraphic_column" class="sphx-glr-backref-module-LoopStructural sphx-glr-backref-type-py-method"><span class="n">model</span><span class="o">.</span><span class="n">set_stratigraphic_column</span></a><span class="p">(</span><span class="n">strat_column</span><span class="p">)</span>
-
+    <a href="../../_autosummary/LoopStructural.GeologicalModel.html#LoopStructural.GeologicalModel.stratigraphic_column" title="LoopStructural.GeologicalModel.stratigraphic_column" class="sphx-glr-backref-module-LoopStructural sphx-glr-backref-type-py-property"><span class="n">model</span><span class="o">.</span><span class="n">stratigraphic_column</span><span class="o">.</span><span class="n">add_unit</span></a><span class="p">(</span>
+        <span class="sa">f</span><span class="s2">&quot;unit_</span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+        <span class="n">thickness</span><span class="o">=</span> <span class="n">vals</span><span class="p">[</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">vals</span><span class="p">[</span><span class="n">i</span><span class="p">],</span>
+        <span class="nb">id</span><span class="o">=</span><span class="n">i</span><span class="p">,</span>
+    <span class="p">)</span>
+<a href="../../_autosummary/LoopStructural.GeologicalModel.html#LoopStructural.GeologicalModel.stratigraphic_column" title="LoopStructural.GeologicalModel.stratigraphic_column" class="sphx-glr-backref-module-LoopStructural sphx-glr-backref-type-py-property"><span class="n">model</span><span class="o">.</span><span class="n">stratigraphic_column</span><span class="o">.</span><span class="n">group_mapping</span></a><span class="p">[</span><span class="s1">&#39;Group_0&#39;</span><span class="p">]</span> <span class="o">=</span><span class="s1">&#39;strati&#39;</span>
 <span class="c1"># Add a foliation to the model</span>
 <span class="n">strati</span> <span class="o">=</span> <a href="../../_autosummary/LoopStructural.GeologicalModel.html#LoopStructural.GeologicalModel.create_and_add_foliation" title="LoopStructural.GeologicalModel.create_and_add_foliation" class="sphx-glr-backref-module-LoopStructural sphx-glr-backref-type-py-method"><span class="n">model</span><span class="o">.</span><span class="n">create_and_add_foliation</span></a><span class="p">(</span>
     <span class="s2">&quot;strati&quot;</span><span class="p">,</span>
@@ -606,16 +604,12 @@ add a foliation using the <cite>create_and_add_foliation</cite> method.</p>
 <section id="visualize-model-surfaces">
 <h2>Visualize Model Surfaces<a class="headerlink" href="#visualize-model-surfaces" title="Link to this heading">#</a></h2>
 <p>Plot the surfaces of the geological model using a 3D viewer.</p>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><a href="../../_autosummary/LoopStructural.GeologicalModel.html#LoopStructural.GeologicalModel.stratigraphic_column" title="LoopStructural.GeologicalModel.stratigraphic_column" class="sphx-glr-backref-module-LoopStructural sphx-glr-backref-type-py-property"><span class="n">model</span><span class="o">.</span><span class="n">stratigraphic_column</span><span class="o">.</span><span class="n">to_dict</span></a><span class="p">())</span>
-<span class="n">viewer</span> <span class="o">=</span> <a href="../../_autosummary/LoopStructural.visualisation.Loop3DView.html#LoopStructural.visualisation.Loop3DView" title="LoopStructural.visualisation.Loop3DView" class="sphx-glr-backref-module-LoopStructural-visualisation sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">Loop3DView</span></a><span class="p">(</span><a href="../../_autosummary/LoopStructural.GeologicalModel.html#LoopStructural.GeologicalModel" title="LoopStructural.GeologicalModel" class="sphx-glr-backref-module-LoopStructural sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">model</span></a><span class="p">)</span>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">viewer</span> <span class="o">=</span> <a href="../../_autosummary/LoopStructural.visualisation.Loop3DView.html#LoopStructural.visualisation.Loop3DView" title="LoopStructural.visualisation.Loop3DView" class="sphx-glr-backref-module-LoopStructural-visualisation sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">Loop3DView</span></a><span class="p">(</span><a href="../../_autosummary/LoopStructural.GeologicalModel.html#LoopStructural.GeologicalModel" title="LoopStructural.GeologicalModel" class="sphx-glr-backref-module-LoopStructural sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">model</span></a><span class="p">)</span>
 <span class="n">viewer</span><span class="o">.</span><span class="n">plot_model_surfaces</span><span class="p">(</span><span class="n">cmap</span><span class="o">=</span><span class="s2">&quot;tab20&quot;</span><span class="p">)</span>
 <span class="n">viewer</span><span class="o">.</span><span class="n">display</span><span class="p">()</span>
 </pre></div>
 </div>
-<img src="../../_images/sphx_glr_plot_2_surface_modelling_002.png" srcset="../../_images/sphx_glr_plot_2_surface_modelling_002.png" alt="plot 2 surface modelling" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>{&#39;elements&#39;: [{&#39;name&#39;: &#39;Basement&#39;, &#39;colour&#39;: &#39;grey&#39;, &#39;thickness&#39;: inf, &#39;uuid&#39;: &#39;ff775f6a-43bc-4d88-9ee7-bc593886d40b&#39;, &#39;id&#39;: 0}, {&#39;uuid&#39;: &#39;6a038684-d9b8-468b-b717-5b4e38449e3f&#39;, &#39;name&#39;: &#39;Base Unconformity&#39;, &#39;unconformity_type&#39;: &#39;erode&#39;}, {&#39;name&#39;: &#39;Basement&#39;, &#39;colour&#39;: &#39;grey&#39;, &#39;thickness&#39;: inf, &#39;uuid&#39;: &#39;e2ad68e5-cb0b-4dd5-9a15-e9c07ce3080b&#39;, &#39;id&#39;: 1}, {&#39;uuid&#39;: &#39;33885860-e638-4d2e-99e2-0457f0e2b764&#39;, &#39;name&#39;: &#39;Base Unconformity&#39;, &#39;unconformity_type&#39;: &#39;erode&#39;}, {&#39;name&#39;: &#39;unit_0&#39;, &#39;colour&#39;: [0.5533612487413869, 0.4085212463020087, 0.1456926068266835], &#39;thickness&#39;: 60, &#39;uuid&#39;: &#39;ffb08303-fcd6-46b1-9edb-b03c46623f10&#39;, &#39;id&#39;: 2}, {&#39;name&#39;: &#39;unit_1&#39;, &#39;colour&#39;: [0.43276802613334087, 0.7184937550895265, 0.09245407710991571], &#39;thickness&#39;: 190, &#39;uuid&#39;: &#39;905e9d51-91ef-4850-ab15-dd17a499880e&#39;, &#39;id&#39;: 3}, {&#39;name&#39;: &#39;unit_2&#39;, &#39;colour&#39;: [0.5345311883953344, 0.13992637896814641, 0.37448325806124017], &#39;thickness&#39;: 80, &#39;uuid&#39;: &#39;04809369-e7d1-4195-b4ad-bdd1e76b6d54&#39;, &#39;id&#39;: 4}, {&#39;name&#39;: &#39;unit_3&#39;, &#39;colour&#39;: [0.5375750687846683, 0.049827761127233305, 0.5386750980520866], &#39;thickness&#39;: 270, &#39;uuid&#39;: &#39;30dfea56-e454-4100-811f-a0c2a117c63e&#39;, &#39;id&#39;: 5}, {&#39;uuid&#39;: &#39;a8ad4d02-00bd-4a48-bcbb-929fc05d9f69&#39;, &#39;name&#39;: &#39;stratiunconformity&#39;, &#39;unconformity_type&#39;: &#39;erode&#39;}]}
-</pre></div>
-</div>
-</section>
+<img src="../../_images/sphx_glr_plot_2_surface_modelling_002.png" srcset="../../_images/sphx_glr_plot_2_surface_modelling_002.png" alt="plot 2 surface modelling" class = "sphx-glr-single-img"/></section>
 <section id="visualize-block-diagram">
 <h2>Visualize Block Diagram<a class="headerlink" href="#visualize-block-diagram" title="Link to this heading">#</a></h2>
 <p>Plot a block diagram of the geological model to visualize the
@@ -625,7 +619,7 @@ stratigraphic units in 3D.</p>
 <span class="n">viewer</span><span class="o">.</span><span class="n">display</span><span class="p">()</span>
 </pre></div>
 </div>
-<img src="../../_images/sphx_glr_plot_2_surface_modelling_003.png" srcset="../../_images/sphx_glr_plot_2_surface_modelling_003.png" alt="plot 2 surface modelling" class = "sphx-glr-single-img"/><p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 2.811 seconds)</p>
+<img src="../../_images/sphx_glr_plot_2_surface_modelling_003.png" srcset="../../_images/sphx_glr_plot_2_surface_modelling_003.png" alt="plot 2 surface modelling" class = "sphx-glr-single-img"/><p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 3.023 seconds)</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-1-basic-plot-2-surface-modelling-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
 <p><a class="reference download internal" download="" href="../../_downloads/7ea42dba2efb4de1e4b813fa0a06f4d9/plot_2_surface_modelling.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">plot_2_surface_modelling.ipynb</span></code></a></p>

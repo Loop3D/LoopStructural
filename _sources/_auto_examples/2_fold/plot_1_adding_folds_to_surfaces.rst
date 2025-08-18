@@ -519,12 +519,13 @@ from the s-variogram of the fold frame coordinate system.
 Plotting the fold rotation angles
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-.. GENERATED FROM PYTHON SOURCE LINES 237-244
+.. GENERATED FROM PYTHON SOURCE LINES 237-245
 
 .. code-block:: Python
 
     rotation_plots = RotationAnglePlotter(stratigraphy)
     rotation_plots.add_fold_limb_data()
+    rotation_plots.add_fold_limb_curve()
     rotation_plots.add_limb_svariogram()
     # plt.plot(stratigraphy.builder.fold.fold_limb_rotation.fold_frame_coordinate,stratigraphy['limb_rotation'],'bo')
     # x = np.linspace(fold_frame[0].min(),fold_frame[0].max(),100)
@@ -545,7 +546,7 @@ Plotting the fold rotation angles
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 7.752 seconds)
+   **Total running time of the script:** (0 minutes 7.315 seconds)
 
 
 .. _sphx_glr_download__auto_examples_2_fold_plot_1_adding_folds_to_surfaces.py:

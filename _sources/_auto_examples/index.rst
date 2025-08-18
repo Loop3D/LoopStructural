@@ -234,10 +234,10 @@ Examples
 
 .. only:: html
 
-  .. image:: /_auto_examples/3_fault/images/thumb/sphx_glr__faulted_intrusion_thumb.png
+  .. image:: /_auto_examples/3_fault/images/thumb/sphx_glr_plot_faulted_intrusion_thumb.png
     :alt:
 
-  :ref:`sphx_glr__auto_examples_3_fault__faulted_intrusion.py`
+  :ref:`sphx_glr__auto_examples_3_fault_plot_faulted_intrusion.py`
 
 .. raw:: html
 
@@ -251,10 +251,10 @@ Examples
 
 .. only:: html
 
-  .. image:: /_auto_examples/3_fault/images/thumb/sphx_glr_fault_network_thumb.png
+  .. image:: /_auto_examples/3_fault/images/thumb/sphx_glr_plot_fault_network_thumb.png
     :alt:
 
-  :ref:`sphx_glr__auto_examples_3_fault_fault_network.py`
+  :ref:`sphx_glr__auto_examples_3_fault_plot_fault_network.py`
 
 .. raw:: html
 
@@ -268,14 +268,85 @@ Examples
 
 .. only:: html
 
-  .. image:: /_auto_examples/3_fault/images/thumb/sphx_glr__define_fault_displacement_thumb.png
+  .. image:: /_auto_examples/3_fault/images/thumb/sphx_glr_plot_define_fault_displacement_thumb.png
     :alt:
 
-  :ref:`sphx_glr__auto_examples_3_fault__define_fault_displacement.py`
+  :ref:`sphx_glr__auto_examples_3_fault_plot_define_fault_displacement.py`
 
 .. raw:: html
 
       <div class="sphx-glr-thumbnail-title">3c. Defining the fault displacement function</div>
+    </div>
+
+
+.. thumbnail-parent-div-close
+
+.. raw:: html
+
+    </div>
+
+4. Advanced use
+===============================
+This section will cover advanced usage of the LoopStructural library, including:
+- Customising the geological model
+- Advanced visualisation techniques
+- Working with complex geological features
+
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbnails">
+
+.. thumbnail-parent-div-open
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="LoopStructural uses all of these logging levels to report the various aspects of the model building process. Generally, the user only needs to be aware of the warning and error messages.">
+
+.. only:: html
+
+  .. image:: /_auto_examples/4_advanced/images/thumb/sphx_glr_plot_1_using_logging_thumb.png
+    :alt:
+
+  :ref:`sphx_glr__auto_examples_4_advanced_plot_1_using_logging.py`
+
+.. raw:: html
+
+      <div class="sphx-glr-thumbnail-title">1e. Using logging</div>
+    </div>
+
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="1f. Local data weighting">
+
+.. only:: html
+
+  .. image:: /_auto_examples/4_advanced/images/thumb/sphx_glr_plot_2_local_weights_thumb.png
+    :alt:
+
+  :ref:`sphx_glr__auto_examples_4_advanced_plot_2_local_weights.py`
+
+.. raw:: html
+
+      <div class="sphx-glr-thumbnail-title">1f. Local data weighting</div>
+    </div>
+
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="4.a Building a model using the ProcessInputData">
+
+.. only:: html
+
+  .. image:: /_auto_examples/4_advanced/images/thumb/sphx_glr_plot_model_from_geological_map_thumb.png
+    :alt:
+
+  :ref:`sphx_glr__auto_examples_4_advanced_plot_model_from_geological_map.py`
+
+.. raw:: html
+
+      <div class="sphx-glr-thumbnail-title">4.a Building a model using the ProcessInputData</div>
     </div>
 
 
@@ -294,6 +365,7 @@ Examples
    /_auto_examples//1_basic/index.rst
    /_auto_examples//2_fold/index.rst
    /_auto_examples//3_fault/index.rst
+   /_auto_examples//4_advanced/index.rst
 
 
 .. only:: html

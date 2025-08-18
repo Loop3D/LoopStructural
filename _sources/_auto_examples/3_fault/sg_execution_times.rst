@@ -6,7 +6,7 @@
 
 Computation times
 =================
-**00:00.000** total execution time for 3 files **from _auto_examples/3_fault**:
+**00:25.604** total execution time for 3 files **from _auto_examples/3_fault**:
 
 .. container::
 
@@ -32,12 +32,12 @@ Computation times
    * - Example
      - Time
      - Mem (MB)
-   * - :ref:`sphx_glr__auto_examples_3_fault__define_fault_displacement.py` (``_define_fault_displacement.py``)
-     - 00:00.000
+   * - :ref:`sphx_glr__auto_examples_3_fault_plot_define_fault_displacement.py` (``plot_define_fault_displacement.py``)
+     - 00:12.311
      - 0.0
-   * - :ref:`sphx_glr__auto_examples_3_fault__faulted_intrusion.py` (``_faulted_intrusion.py``)
-     - 00:00.000
+   * - :ref:`sphx_glr__auto_examples_3_fault_plot_faulted_intrusion.py` (``plot_faulted_intrusion.py``)
+     - 00:10.129
      - 0.0
-   * - :ref:`sphx_glr__auto_examples_3_fault_fault_network.py` (``fault_network.py``)
-     - 00:00.000
+   * - :ref:`sphx_glr__auto_examples_3_fault_plot_fault_network.py` (``plot_fault_network.py``)
+     - 00:03.164
      - 0.0

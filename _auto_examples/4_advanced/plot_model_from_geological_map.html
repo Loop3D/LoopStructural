@@ -1,0 +1,979 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>4.a Building a model using the ProcessInputData &#8212; LoopStructural 1.6.19 documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+<link href="../../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery.css?v=d2d258e8" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-binder.css?v=f4aeca0c" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-dataframe.css?v=2082cf3c" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-rendered-html.css?v=1277b6f3" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../../_static/custom.css" />
+  
+  <!-- So that users can add custom icons -->
+  <script src="../../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
+<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
+
+    <script src="../../_static/documentation_options.js?v=d5a64886"></script>
+    <script src="../../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/design-tabs.js?v=f930bc37"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = '_auto_examples/4_advanced/plot_model_from_geological_map';</script>
+    <script src="../../_static/custom-icon.js?v=40bda21d"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="User Guide" href="../../user_guide/index.html" />
+    <link rel="prev" title="1f. Local data weighting" href="plot_2_local_weights.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="" />
+    <meta name="docbuild:last-update" content="Aug 18, 2025"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../../index.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../../_static/infinity_loop_icon.svg" class="logo__image only-light" alt=""/>
+    <img src="../../_static/infinity_loop_icon.svg" class="logo__image only-dark pst-js-only" alt=""/>
+  
+  
+    <p class="title logo__title">LoopStructural - 1.6.19</p>
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../getting_started/index.html">
+    Getting Started
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="../index.html">
+    Examples
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../user_guide/index.html">
+    User Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../API.html">
+    API
+  </a>
+</li>
+
+            <li class="nav-item dropdown">
+                <button class="btn dropdown-toggle nav-item" type="button"
+                data-bs-toggle="dropdown" aria-expanded="false"
+                aria-controls="pst-nav-more-links">
+                    More
+                </button>
+                <ul id="pst-nav-more-links" class="dropdown-menu">
+                    
+<li class=" ">
+  <a class="nav-link dropdown-item nav-external" href="https://www.loop3d.org">
+    Loop3d
+  </a>
+</li>
+
+                </ul>
+            </li>
+            
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+        </div>
+      
+      
+        <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+      
+        <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://twitter.com/loop3d" title="Twitter" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">Twitter</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/loop3d/LoopStructural" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-github fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://pypi.org/project/LoopStructural" title="PyPI" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-custom fa-pypi fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">PyPI</span></a>
+        </li>
+</ul></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+    </div>
+  
+
+  
+    <button class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
+      <span class="fa-solid fa-outdent"></span>
+    </button>
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../getting_started/index.html">
+    Getting Started
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="../index.html">
+    Examples
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../user_guide/index.html">
+    User Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../API.html">
+    API
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-external" href="https://www.loop3d.org">
+    Loop3d
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+        
+          <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://twitter.com/loop3d" title="Twitter" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">Twitter</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/loop3d/LoopStructural" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-github fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://pypi.org/project/LoopStructural" title="PyPI" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-custom fa-pypi fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">PyPI</span></a>
+        </li>
+</ul></div>
+        
+      </div>
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+<nav class="bd-docs-nav bd-links"
+     aria-label="Section Navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
+  <div class="bd-toc-item navbar-nav"><ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../1_basic/index.html">1. Basics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../2_fold/index.html">2. Modelling Folds</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../3_fault/index.html">3. Modelling Faults</a></li>
+<li class="toctree-l1 current active has-children"><a class="reference internal" href="index.html">4. Advanced use</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="plot_1_using_logging.html">1e. Using logging</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plot_2_local_weights.html">1f. Local data weighting</a></li>
+<li class="toctree-l2 current active"><a class="current reference internal" href="#">4.a Building a model using the ProcessInputData</a></li>
+</ul>
+</details></li>
+</ul>
+</div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="../index.html" class="nav-link">Examples</a></li>
+    
+    
+    <li class="breadcrumb-item"><a href="index.html" class="nav-link">4. Advanced use</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">4.a Building a model using the ProcessInputData</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <div class="sphx-glr-download-link-note admonition note">
+<p class="admonition-title">Note</p>
+<p><a class="reference internal" href="#sphx-glr-download-auto-examples-4-advanced-plot-model-from-geological-map-py"><span class="std std-ref">Go to the end</span></a>
+to download the full example code.</p>
+</div>
+<section class="sphx-glr-example-title" id="a-building-a-model-using-the-processinputdata">
+<span id="sphx-glr-auto-examples-4-advanced-plot-model-from-geological-map-py"></span><h1>4.a Building a model using the ProcessInputData<a class="headerlink" href="#a-building-a-model-using-the-processinputdata" title="Link to this heading">#</a></h1>
+<p>There is a disconnect between the input data required by 3D modelling software and a geological map.
+In LoopStructural the geological model is a collection of implicit functions that can be mapped to
+the distribution of stratigraphic units and the location of fault surfaces. Each implicit function
+is approximated from the observations of the stratigraphy, this requires grouping conformable geological
+units together as a singla implicit function, mapping the different stratigraphic horizons to a value of
+the implicit function and determining the relationship with geological structures such as faults.
+In this tutorial the <strong>ProcessInputData</strong> class will be used to convert geologically meaningful datasets to input for LoopStructural.
+The <strong>ProcessInputData</strong> class uses:
+* stratigraphic contacts* stratigraphic orientations* stratigraphic thickness* stratigraphic order
+To build a model of stratigraphic horizons and:* fault locations* fault orientations * fault properties* fault edges
+To use incorporate faults into the geological model.</p>
+<section id="imports">
+<h2>Imports<a class="headerlink" href="#imports" title="Link to this heading">#</a></h2>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">LoopStructural.modelling</span><span class="w"> </span><span class="kn">import</span> <a href="../../_autosummary/LoopStructural.modelling.ProcessInputData.html#LoopStructural.modelling.ProcessInputData" title="LoopStructural.modelling.ProcessInputData" class="sphx-glr-backref-module-LoopStructural-modelling sphx-glr-backref-type-py-class"><span class="n">ProcessInputData</span></a>
+<span class="kn">from</span><span class="w"> </span><span class="nn">LoopStructural</span><span class="w"> </span><span class="kn">import</span> <a href="../../_autosummary/LoopStructural.GeologicalModel.html#LoopStructural.GeologicalModel" title="LoopStructural.GeologicalModel" class="sphx-glr-backref-module-LoopStructural sphx-glr-backref-type-py-class"><span class="n">GeologicalModel</span></a>
+<span class="kn">from</span><span class="w"> </span><span class="nn">LoopStructural.visualisation</span><span class="w"> </span><span class="kn">import</span> <a href="../../_autosummary/LoopStructural.visualisation.Loop3DView.html#LoopStructural.visualisation.Loop3DView" title="LoopStructural.visualisation.Loop3DView" class="sphx-glr-backref-module-LoopStructural-visualisation sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">Loop3DView</span></a>
+<span class="kn">from</span><span class="w"> </span><span class="nn">LoopStructural.datasets</span><span class="w"> </span><span class="kn">import</span> <span class="n">load_geological_map_data</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
+</pre></div>
+</div>
+</section>
+<section id="read-stratigraphy-from-csv">
+<h2>Read stratigraphy from csv<a class="headerlink" href="#read-stratigraphy-from-csv" title="Link to this heading">#</a></h2>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="p">(</span>
+    <span class="n">contacts</span><span class="p">,</span>
+    <span class="n">stratigraphic_orientations</span><span class="p">,</span>
+    <span class="n">stratigraphic_thickness</span><span class="p">,</span>
+    <span class="n">stratigraphic_order</span><span class="p">,</span>
+    <span class="n">bbox</span><span class="p">,</span>
+    <span class="n">fault_locations</span><span class="p">,</span>
+    <span class="n">fault_orientations</span><span class="p">,</span>
+    <span class="n">fault_properties</span><span class="p">,</span>
+    <span class="n">fault_edges</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">=</span> <span class="n">load_geological_map_data</span><span class="p">()</span>
+
+<span class="n">thicknesses</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+    <span class="nb">zip</span><span class="p">(</span>
+        <span class="nb">list</span><span class="p">(</span><span class="n">stratigraphic_thickness</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]),</span>
+        <span class="nb">list</span><span class="p">(</span><span class="n">stratigraphic_thickness</span><span class="p">[</span><span class="s2">&quot;thickness&quot;</span><span class="p">]),</span>
+    <span class="p">)</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<section id="stratigraphic-contacts">
+<h3>Stratigraphic Contacts<a class="headerlink" href="#stratigraphic-contacts" title="Link to this heading">#</a></h3>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">contacts</span>
+
+<span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">contacts</span><span class="p">[</span><span class="s2">&quot;X&quot;</span><span class="p">],</span> <span class="n">contacts</span><span class="p">[</span><span class="s2">&quot;Y&quot;</span><span class="p">],</span> <span class="n">c</span><span class="o">=</span><span class="n">contacts</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="s2">&quot;category&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">cat</span><span class="o">.</span><span class="n">codes</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">&quot;Contact data&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<img src="../../_images/sphx_glr_plot_model_from_geological_map_001.png" srcset="../../_images/sphx_glr_plot_model_from_geological_map_001.png" alt="Contact data" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Text(0.5, 1.0, &#39;Contact data&#39;)
+</pre></div>
+</div>
+</section>
+</section>
+<section id="stratigraphic-orientations">
+<h2>Stratigraphic orientations<a class="headerlink" href="#stratigraphic-orientations" title="Link to this heading">#</a></h2>
+<p>Stratigraphic orientations needs to have X, Y, Z and either azimuth and dip, dipdirection and dip, strike
+and dip (RH thumb rule) or the vector components of the normal vector (nx, ny, nz)</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">stratigraphic_orientations</span>
+</pre></div>
+</div>
+<div class="output_subarea output_html rendered_html output_result">
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>X</th>
+      <th>Y</th>
+      <th>Z</th>
+      <th>azimuth</th>
+      <th>dip</th>
+      <th>polarity</th>
+      <th>formation</th>
+      <th>source</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>535257.611616</td>
+      <td>7.499030e+06</td>
+      <td>516.933711</td>
+      <td>360.000000</td>
+      <td>40.000000</td>
+      <td>1</td>
+      <td>Jeerinah_Formation</td>
+      <td>observed</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>548279.320612</td>
+      <td>7.493304e+06</td>
+      <td>547.201842</td>
+      <td>190.000000</td>
+      <td>50.000000</td>
+      <td>1</td>
+      <td>Jeerinah_Formation</td>
+      <td>observed</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>548279.320612</td>
+      <td>7.493304e+06</td>
+      <td>547.201842</td>
+      <td>190.000000</td>
+      <td>55.000000</td>
+      <td>1</td>
+      <td>Jeerinah_Formation</td>
+      <td>observed</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>541013.160392</td>
+      <td>7.493387e+06</td>
+      <td>540.217972</td>
+      <td>150.000000</td>
+      <td>28.000000</td>
+      <td>1</td>
+      <td>Bunjinah_Formation</td>
+      <td>observed</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>536742.232168</td>
+      <td>7.490698e+06</td>
+      <td>500.982205</td>
+      <td>110.000000</td>
+      <td>28.000000</td>
+      <td>1</td>
+      <td>Bunjinah_Formation</td>
+      <td>observed</td>
+    </tr>
+    <tr>
+      <th>...</th>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+    </tr>
+    <tr>
+      <th>201</th>
+      <td>543123.310952</td>
+      <td>7.491848e+06</td>
+      <td>603.965999</td>
+      <td>108.413106</td>
+      <td>26.895259</td>
+      <td>1</td>
+      <td>Wittenoom_Formation</td>
+      <td>contact_orientations</td>
+    </tr>
+    <tr>
+      <th>202</th>
+      <td>544238.128958</td>
+      <td>7.492249e+06</td>
+      <td>606.486202</td>
+      <td>140.129808</td>
+      <td>20.872559</td>
+      <td>1</td>
+      <td>Wittenoom_Formation</td>
+      <td>contact_orientations</td>
+    </tr>
+    <tr>
+      <th>203</th>
+      <td>546356.500042</td>
+      <td>7.493059e+06</td>
+      <td>584.507590</td>
+      <td>180.231910</td>
+      <td>25.229506</td>
+      <td>1</td>
+      <td>Wittenoom_Formation</td>
+      <td>contact_orientations</td>
+    </tr>
+    <tr>
+      <th>204</th>
+      <td>548354.744485</td>
+      <td>7.492679e+06</td>
+      <td>567.312965</td>
+      <td>178.569396</td>
+      <td>55.725098</td>
+      <td>1</td>
+      <td>Wittenoom_Formation</td>
+      <td>contact_orientations</td>
+    </tr>
+    <tr>
+      <th>205</th>
+      <td>550574.233917</td>
+      <td>7.493345e+06</td>
+      <td>625.412651</td>
+      <td>157.358988</td>
+      <td>65.845552</td>
+      <td>1</td>
+      <td>Wittenoom_Formation</td>
+      <td>contact_orientations</td>
+    </tr>
+  </tbody>
+</table>
+<p>206 rows × 8 columns</p>
+</div>
+</div>
+<br />
+<br /></section>
+<section id="stratigraphic-thickness">
+<h2>Stratigraphic thickness<a class="headerlink" href="#stratigraphic-thickness" title="Link to this heading">#</a></h2>
+<p>Stratigraphic thickness should be a dictionary containing the unit name (which should be in the contacts table)
+and the corresponding thickness of this unit.</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">thicknesses</span>
+</pre></div>
+</div>
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>{&#39;Mount_McRae_Shale_and_Mount_Sylvia_Formation&#39;: 224.5, &#39;Marra_Mamba_Iron_Formation&#39;: 152.0, &#39;Boolgeeda_Iron_Formation&#39;: 166.5, &#39;Woongarra_Rhyolite&#39;: 389.0, &#39;Jeerinah_Formation&#39;: 600.0, &#39;Brockman_Iron_Formation&#39;: 557.0, &#39;Wittenoom_Formation&#39;: 236.0, &#39;Weeli_Wolli_Formation&#39;: 241.5, &#39;Turee_Creek_Group&#39;: 162.0, &#39;Fortescue_Group&#39;: 236.0, &#39;Bunjinah_Formation&#39;: 236.0, &#39;Pyradie_Formation&#39;: 236.0}
+</pre></div>
+</div>
+</section>
+<section id="bounding-box">
+<h2>Bounding box<a class="headerlink" href="#bounding-box" title="Link to this heading">#</a></h2>
+<ul class="simple">
+<li><p>Origin - bottom left corner of the model # * Maximum - top right hand corner of the model</p></li>
+</ul>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">origin</span> <span class="o">=</span> <span class="n">bbox</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="s2">&quot;origin&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">()</span>  <span class="c1"># np.array(bbox[0].split(&#39;,&#39;)[1:],dtype=float)</span>
+<span class="n">maximum</span> <span class="o">=</span> <span class="n">bbox</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="s2">&quot;maximum&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">()</span>  <span class="c1"># np.array(bbox[1].split(&#39;,&#39;)[1:],dtype=float)</span>
+
+<span class="n">bbox</span>
+</pre></div>
+</div>
+<div class="output_subarea output_html rendered_html output_result">
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>X</th>
+      <th>Y</th>
+      <th>Z</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>origin</th>
+      <td>519572.569</td>
+      <td>7489723.89</td>
+      <td>-4800.0</td>
+    </tr>
+    <tr>
+      <th>maximum</th>
+      <td>551978.745</td>
+      <td>7516341.01</td>
+      <td>1200.0</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+</div>
+<br />
+<br /></section>
+<section id="stratigraphic-column">
+<h2>Stratigraphic column<a class="headerlink" href="#stratigraphic-column" title="Link to this heading">#</a></h2>
+<p>The order of stratrigraphic units is defined a list of tuples containing the name of the group and the
+order of units within the group. For example there are 7 units in the following example that form two groups.</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="c1"># example nested list</span>
+<span class="p">[</span>
+    <span class="p">(</span><span class="s2">&quot;youngest_group&quot;</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;unit1&quot;</span><span class="p">,</span> <span class="s2">&quot;unit2&quot;</span><span class="p">,</span> <span class="s2">&quot;unit3&quot;</span><span class="p">,</span> <span class="s2">&quot;unit4&quot;</span><span class="p">]),</span>
+    <span class="p">(</span><span class="s2">&quot;older_group&quot;</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;unit5&quot;</span><span class="p">,</span> <span class="s2">&quot;unit6&quot;</span><span class="p">,</span> <span class="s2">&quot;unit7&quot;</span><span class="p">]),</span>
+<span class="p">]</span>
+
+<span class="n">stratigraphic_order</span>
+
+<span class="n">order</span> <span class="o">=</span> <span class="p">[(</span><span class="s2">&quot;supergroup_0&quot;</span><span class="p">,</span> <span class="nb">list</span><span class="p">(</span><span class="n">stratigraphic_order</span><span class="p">[</span><span class="s2">&quot;unit name&quot;</span><span class="p">]))]</span>
+</pre></div>
+</div>
+</section>
+<section id="building-a-stratigraphic-model">
+<h2>Building a stratigraphic model<a class="headerlink" href="#building-a-stratigraphic-model" title="Link to this heading">#</a></h2>
+<p>A ProcessInputData onject can be built from these datasets using the argument names.
+A full list of possible arguments can be found in the documentation.</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><a href="../../_autosummary/LoopStructural.modelling.ProcessInputData.html#LoopStructural.modelling.ProcessInputData" title="LoopStructural.modelling.ProcessInputData" class="sphx-glr-backref-module-LoopStructural-modelling sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">processor</span></a> <span class="o">=</span> <a href="../../_autosummary/LoopStructural.modelling.ProcessInputData.html#LoopStructural.modelling.ProcessInputData" title="LoopStructural.modelling.ProcessInputData" class="sphx-glr-backref-module-LoopStructural-modelling sphx-glr-backref-type-py-class"><span class="n">ProcessInputData</span></a><span class="p">(</span>
+    <span class="n">contacts</span><span class="o">=</span><span class="n">contacts</span><span class="p">,</span>
+    <span class="n">contact_orientations</span><span class="o">=</span><span class="n">stratigraphic_orientations</span><span class="o">.</span><span class="n">rename</span><span class="p">({</span><span class="s2">&quot;formation&quot;</span><span class="p">:</span> <span class="s2">&quot;name&quot;</span><span class="p">},</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">),</span>
+    <span class="n">thicknesses</span><span class="o">=</span><span class="n">thicknesses</span><span class="p">,</span>
+    <span class="n">stratigraphic_order</span><span class="o">=</span><span class="n">order</span><span class="p">,</span>
+    <span class="n">origin</span><span class="o">=</span><span class="n">origin</span><span class="p">,</span>
+    <span class="n">maximum</span><span class="o">=</span><span class="n">maximum</span><span class="p">,</span>
+<span class="p">)</span>
+<a href="../../_autosummary/LoopStructural.modelling.ProcessInputData.html#LoopStructural.modelling.ProcessInputData" title="LoopStructural.modelling.ProcessInputData" class="sphx-glr-backref-module-LoopStructural-modelling sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">processor</span></a><span class="o">.</span><span class="n">foliation_properties</span><span class="p">[</span><span class="s2">&quot;supergroup_0&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;regularisation&quot;</span><span class="p">:</span> <span class="mf">1.0</span><span class="p">}</span>
+</pre></div>
+</div>
+<p>The process input data can be used to directly build a geological model</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><a href="../../_autosummary/LoopStructural.GeologicalModel.html#LoopStructural.GeologicalModel" title="LoopStructural.GeologicalModel" class="sphx-glr-backref-module-LoopStructural sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">model</span></a> <span class="o">=</span> <a href="../../_autosummary/LoopStructural.GeologicalModel.html#LoopStructural.GeologicalModel.from_processor" title="LoopStructural.GeologicalModel.from_processor" class="sphx-glr-backref-module-LoopStructural sphx-glr-backref-type-py-method"><span class="n">GeologicalModel</span><span class="o">.</span><span class="n">from_processor</span></a><span class="p">(</span><a href="../../_autosummary/LoopStructural.modelling.ProcessInputData.html#LoopStructural.modelling.ProcessInputData" title="LoopStructural.modelling.ProcessInputData" class="sphx-glr-backref-module-LoopStructural-modelling sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">processor</span></a><span class="p">)</span>
+<a href="../../_autosummary/LoopStructural.GeologicalModel.html#LoopStructural.GeologicalModel" title="LoopStructural.GeologicalModel" class="sphx-glr-backref-module-LoopStructural sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">model</span></a><span class="o">.</span><span class="n">update</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>Or build directly from the dataframe and processor attributes.</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><a href="../../_autosummary/LoopStructural.GeologicalModel.html#LoopStructural.GeologicalModel" title="LoopStructural.GeologicalModel" class="sphx-glr-backref-module-LoopStructural sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">model2</span></a> <span class="o">=</span> <a href="../../_autosummary/LoopStructural.GeologicalModel.html#LoopStructural.GeologicalModel" title="LoopStructural.GeologicalModel" class="sphx-glr-backref-module-LoopStructural sphx-glr-backref-type-py-class"><span class="n">GeologicalModel</span></a><span class="p">(</span><a href="../../_autosummary/LoopStructural.modelling.ProcessInputData.html#LoopStructural.modelling.ProcessInputData" title="LoopStructural.modelling.ProcessInputData" class="sphx-glr-backref-module-LoopStructural-modelling sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">processor</span></a><span class="o">.</span><span class="n">origin</span><span class="p">,</span> <a href="../../_autosummary/LoopStructural.modelling.ProcessInputData.html#LoopStructural.modelling.ProcessInputData" title="LoopStructural.modelling.ProcessInputData" class="sphx-glr-backref-module-LoopStructural-modelling sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">processor</span></a><span class="o">.</span><span class="n">maximum</span><span class="p">)</span>
+<a href="../../_autosummary/LoopStructural.GeologicalModel.html#LoopStructural.GeologicalModel.data" title="LoopStructural.GeologicalModel.data" class="sphx-glr-backref-module-LoopStructural sphx-glr-backref-type-py-attribute"><span class="n">model2</span><span class="o">.</span><span class="n">data</span></a> <span class="o">=</span> <a href="../../_autosummary/LoopStructural.modelling.ProcessInputData.html#LoopStructural.modelling.ProcessInputData.data" title="LoopStructural.modelling.ProcessInputData.data" class="sphx-glr-backref-module-LoopStructural-modelling sphx-glr-backref-type-py-property"><span class="n">processor</span><span class="o">.</span><span class="n">data</span></a>
+<a href="../../_autosummary/LoopStructural.GeologicalModel.html#LoopStructural.GeologicalModel.create_and_add_foliation" title="LoopStructural.GeologicalModel.create_and_add_foliation" class="sphx-glr-backref-module-LoopStructural sphx-glr-backref-type-py-method"><span class="n">model2</span><span class="o">.</span><span class="n">create_and_add_foliation</span></a><span class="p">(</span><span class="s2">&quot;supergroup_0&quot;</span><span class="p">)</span>
+<a href="../../_autosummary/LoopStructural.GeologicalModel.html#LoopStructural.GeologicalModel" title="LoopStructural.GeologicalModel" class="sphx-glr-backref-module-LoopStructural sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">model2</span></a><span class="o">.</span><span class="n">update</span><span class="p">()</span>
+</pre></div>
+</div>
+</section>
+<section id="visualising-model">
+<h2>Visualising model<a class="headerlink" href="#visualising-model" title="Link to this heading">#</a></h2>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">view</span> <span class="o">=</span> <a href="../../_autosummary/LoopStructural.visualisation.Loop3DView.html#LoopStructural.visualisation.Loop3DView" title="LoopStructural.visualisation.Loop3DView" class="sphx-glr-backref-module-LoopStructural-visualisation sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">Loop3DView</span></a><span class="p">(</span><a href="../../_autosummary/LoopStructural.GeologicalModel.html#LoopStructural.GeologicalModel" title="LoopStructural.GeologicalModel" class="sphx-glr-backref-module-LoopStructural sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">model</span></a><span class="p">)</span>
+<span class="n">view</span><span class="o">.</span><span class="n">plot_model_surfaces</span><span class="p">()</span>
+<span class="n">view</span><span class="o">.</span><span class="n">display</span><span class="p">()</span>
+</pre></div>
+</div>
+<img src="../../_images/sphx_glr_plot_model_from_geological_map_002.png" srcset="../../_images/sphx_glr_plot_model_from_geological_map_002.png" alt="plot model from geological map" class = "sphx-glr-single-img"/></section>
+<section id="adding-faults">
+<h2>Adding faults<a class="headerlink" href="#adding-faults" title="Link to this heading">#</a></h2>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">fault_orientations</span>
+
+
+<span class="n">fault_edges</span>
+
+
+<span class="n">fault_properties</span>
+
+<a href="../../_autosummary/LoopStructural.modelling.ProcessInputData.html#LoopStructural.modelling.ProcessInputData" title="LoopStructural.modelling.ProcessInputData" class="sphx-glr-backref-module-LoopStructural-modelling sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">processor</span></a> <span class="o">=</span> <a href="../../_autosummary/LoopStructural.modelling.ProcessInputData.html#LoopStructural.modelling.ProcessInputData" title="LoopStructural.modelling.ProcessInputData" class="sphx-glr-backref-module-LoopStructural-modelling sphx-glr-backref-type-py-class"><span class="n">ProcessInputData</span></a><span class="p">(</span>
+    <span class="n">contacts</span><span class="o">=</span><span class="n">contacts</span><span class="p">,</span>
+    <span class="n">contact_orientations</span><span class="o">=</span><span class="n">stratigraphic_orientations</span><span class="o">.</span><span class="n">rename</span><span class="p">({</span><span class="s2">&quot;formation&quot;</span><span class="p">:</span> <span class="s2">&quot;name&quot;</span><span class="p">},</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">),</span>
+    <span class="n">thicknesses</span><span class="o">=</span><span class="n">thicknesses</span><span class="p">,</span>
+    <span class="n">stratigraphic_order</span><span class="o">=</span><span class="n">order</span><span class="p">,</span>
+    <span class="n">origin</span><span class="o">=</span><span class="n">origin</span><span class="p">,</span>
+    <span class="n">maximum</span><span class="o">=</span><span class="n">maximum</span><span class="p">,</span>
+    <span class="n">fault_edges</span><span class="o">=</span><span class="n">fault_edges</span><span class="p">,</span>
+    <span class="n">fault_orientations</span><span class="o">=</span><span class="n">fault_orientations</span><span class="p">,</span>
+    <span class="n">fault_locations</span><span class="o">=</span><span class="n">fault_locations</span><span class="p">,</span>
+    <span class="n">fault_properties</span><span class="o">=</span><span class="n">fault_properties</span><span class="p">,</span>
+<span class="p">)</span>
+<a href="../../_autosummary/LoopStructural.modelling.ProcessInputData.html#LoopStructural.modelling.ProcessInputData" title="LoopStructural.modelling.ProcessInputData" class="sphx-glr-backref-module-LoopStructural-modelling sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">processor</span></a><span class="o">.</span><span class="n">foliation_properties</span><span class="p">[</span><span class="s1">&#39;supergroup_0&#39;</span><span class="p">][</span><span class="s1">&#39;regularisation&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mf">1.0</span>
+<a href="../../_autosummary/LoopStructural.GeologicalModel.html#LoopStructural.GeologicalModel" title="LoopStructural.GeologicalModel" class="sphx-glr-backref-module-LoopStructural sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">model</span></a> <span class="o">=</span> <a href="../../_autosummary/LoopStructural.GeologicalModel.html#LoopStructural.GeologicalModel.from_processor" title="LoopStructural.GeologicalModel.from_processor" class="sphx-glr-backref-module-LoopStructural sphx-glr-backref-type-py-method"><span class="n">GeologicalModel</span><span class="o">.</span><span class="n">from_processor</span></a><span class="p">(</span><a href="../../_autosummary/LoopStructural.modelling.ProcessInputData.html#LoopStructural.modelling.ProcessInputData" title="LoopStructural.modelling.ProcessInputData" class="sphx-glr-backref-module-LoopStructural-modelling sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">processor</span></a><span class="p">)</span>
+<a href="../../_autosummary/LoopStructural.GeologicalModel.html#LoopStructural.GeologicalModel" title="LoopStructural.GeologicalModel" class="sphx-glr-backref-module-LoopStructural sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">model</span></a><span class="o">.</span><span class="n">update</span><span class="p">()</span>
+
+<span class="n">view</span> <span class="o">=</span> <a href="../../_autosummary/LoopStructural.visualisation.Loop3DView.html#LoopStructural.visualisation.Loop3DView" title="LoopStructural.visualisation.Loop3DView" class="sphx-glr-backref-module-LoopStructural-visualisation sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">Loop3DView</span></a><span class="p">(</span><a href="../../_autosummary/LoopStructural.GeologicalModel.html#LoopStructural.GeologicalModel" title="LoopStructural.GeologicalModel" class="sphx-glr-backref-module-LoopStructural sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">model</span></a><span class="p">)</span>
+<span class="n">view</span><span class="o">.</span><span class="n">plot_model_surfaces</span><span class="p">()</span>
+<span class="n">view</span><span class="o">.</span><span class="n">display</span><span class="p">()</span>
+</pre></div>
+</div>
+<img src="../../_images/sphx_glr_plot_model_from_geological_map_003.png" srcset="../../_images/sphx_glr_plot_model_from_geological_map_003.png" alt="plot model from geological map" class = "sphx-glr-single-img"/><p>Visualise stratigraphic column
+## ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">LoopStructural.visualisation</span><span class="w"> </span><span class="kn">import</span> <a href="../../_autosummary/LoopStructural.visualisation.StratigraphicColumnView.html#LoopStructural.visualisation.StratigraphicColumnView" title="LoopStructural.visualisation.StratigraphicColumnView" class="sphx-glr-backref-module-LoopStructural-visualisation sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">StratigraphicColumnView</span></a>
+
+<span class="n">scv</span> <span class="o">=</span> <a href="../../_autosummary/LoopStructural.visualisation.StratigraphicColumnView.html#LoopStructural.visualisation.StratigraphicColumnView" title="LoopStructural.visualisation.StratigraphicColumnView" class="sphx-glr-backref-module-LoopStructural-visualisation sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">StratigraphicColumnView</span></a><span class="p">(</span><a href="../../_autosummary/LoopStructural.GeologicalModel.html#LoopStructural.GeologicalModel" title="LoopStructural.GeologicalModel" class="sphx-glr-backref-module-LoopStructural sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">model</span></a><span class="p">)</span>
+<span class="n">scv</span><span class="o">.</span><span class="n">plot</span><span class="p">()</span>
+</pre></div>
+</div>
+<img src="../../_images/sphx_glr_plot_model_from_geological_map_004.png" srcset="../../_images/sphx_glr_plot_model_from_geological_map_004.png" alt="plot model from geological map" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>&lt;Figure size 200x1000 with 1 Axes&gt;
+</pre></div>
+</div>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (1 minutes 52.790 seconds)</p>
+<div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-4-advanced-plot-model-from-geological-map-py">
+<div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
+<p><a class="reference download internal" download="" href="../../_downloads/2c1d5f94017beb5a483f22f24b4a726d/plot_model_from_geological_map.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">plot_model_from_geological_map.ipynb</span></code></a></p>
+</div>
+<div class="sphx-glr-download sphx-glr-download-python docutils container">
+<p><a class="reference download internal" download="" href="../../_downloads/4f2780c54f256c0c69260e13d634f372/plot_model_from_geological_map.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">plot_model_from_geological_map.py</span></code></a></p>
+</div>
+<div class="sphx-glr-download sphx-glr-download-zip docutils container">
+<p><a class="reference download internal" download="" href="../../_downloads/653b1373e6ae7e695742cc19faa25e96/plot_model_from_geological_map.zip"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">zipped:</span> <span class="pre">plot_model_from_geological_map.zip</span></code></a></p>
+</div>
+</div>
+<p class="sphx-glr-signature"><a class="reference external" href="https://sphinx-gallery.github.io">Gallery generated by Sphinx-Gallery</a></p>
+</section>
+</section>
+
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="plot_2_local_weights.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">1f. Local data weighting</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="../../user_guide/index.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">User Guide</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#imports">Imports</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#read-stratigraphy-from-csv">Read stratigraphy from csv</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#stratigraphic-contacts">Stratigraphic Contacts</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#stratigraphic-orientations">Stratigraphic orientations</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#stratigraphic-thickness">Stratigraphic thickness</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#bounding-box">Bounding box</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#stratigraphic-column">Stratigraphic column</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#building-a-stratigraphic-model">Building a stratigraphic model</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#visualising-model">Visualising model</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#adding-faults">Adding faults</a></li>
+</ul>
+  </nav></div>
+
+  <div class="sidebar-secondary-item">
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../../_sources/_auto_examples/4_advanced/plot_model_from_geological_map.rst"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
+<script defer src="../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
+
+ <script type="text/javascript">
+    $(document).ready(function() {
+        $(".toggle > *").hide();
+        $(".toggle .header").show();
+        $(".toggle .header").click(function() {
+            $(this).parent().children().not(".header").toggle(400);
+            $(this).parent().children(".header").toggleClass("open");
+        })
+    });
+</script>
+
+  </body>
+</html>
