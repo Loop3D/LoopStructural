@@ -1,5 +1,6 @@
 from ....modelling.features.builders import GeologicalFeatureBuilder
 from ....modelling.features.fold.fold_function import FoldRotationType, get_fold_rotation_profile
+from ....modelling.features import FeatureType
 import numpy as np
 
 from ....utils import getLogger, InterpolatorError
@@ -48,11 +49,13 @@ class FoldedFeatureBuilder(GeologicalFeatureBuilder):
             region=region,
             **kwargs,
         )
+        self._feature.type = FeatureType.FOLDED
         # link the interpolator to the fold object
         self.interpolator.fold = fold
         self.fold = fold
         self.fold_weights = fold_weights
-        self.kwargs = kwargs
+        self.update_build_arguments(kwargs)
+        # self.kwargs = kwargs
         self.svario = svario
         self.axis_profile_type = axis_profile_type
         self.limb_profile_type = limb_profile_type
@@ -87,7 +90,7 @@ class FoldedFeatureBuilder(GeologicalFeatureBuilder):
 
     def set_fold_axis(self):
         """calculates the fold axis/ fold axis rotation and adds this to the fold"""
-        kwargs = self.kwargs
+        kwargs = self.build_arguments
         fold_axis = kwargs.get("fold_axis", None)
         if fold_axis is not None:
             fold_axis = np.array(fold_axis)
@@ -112,7 +115,7 @@ class FoldedFeatureBuilder(GeologicalFeatureBuilder):
 
     def set_fold_limb_rotation(self):
         """Calculates the limb rotation of the fold and adds it to the fold object"""
-        kwargs = self.kwargs
+        kwargs = self.build_arguments
         # need to calculate the fold axis before the fold limb rotation angle
         if self.fold.fold_axis is None:
             self.set_fold_axis()
