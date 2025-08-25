@@ -271,7 +271,7 @@ class BaseFeature(metaclass=ABCMeta):
 
     def surfaces(
         self,
-        value: Union[float, int, List[Union[float, int]]],
+        value: Optional[Union[float, int, List[Union[float, int]]]] = None,
         bounding_box=None,
         name: Optional[Union[List[str], str]] = None,
         colours: Optional[Union[str, np.ndarray]] = None,
@@ -293,6 +293,7 @@ class BaseFeature(metaclass=ABCMeta):
                 raise ValueError("Must specify bounding box")
             bounding_box = self.model.bounding_box
         regions = self.regions
+        
         try:
             self.regions = [
                 r for r in self.regions if r.name != self.name and r.parent.name != self.name
