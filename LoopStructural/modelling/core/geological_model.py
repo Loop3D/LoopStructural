@@ -21,6 +21,7 @@ from ...modelling.features import (
     UnconformityFeature,
     StructuralFrame,
     GeologicalFeature,
+    BaseFeature,
     FeatureType,
 )
 from ...modelling.features.fold import (
@@ -341,7 +342,7 @@ class GeologicalModel:
         feature : GeologicalFeature
             the geological feature to set
         """
-        if not isinstance(feature, GeologicalFeature):
+        if not issubclass(type(feature), BaseFeature):
             raise TypeError("feature must be a GeologicalFeature")
         if feature.name != feature_name:
             raise ValueError("feature name does not match key")
