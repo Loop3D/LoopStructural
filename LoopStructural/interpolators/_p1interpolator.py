@@ -6,8 +6,9 @@ import logging
 
 import numpy as np
 
-from ._discrete_interpolator import DiscreteInterpolator
 
+from ._discrete_interpolator import DiscreteInterpolator
+from . import InterpolatorType
 logger = logging.getLogger(__name__)
 
 
@@ -37,7 +38,7 @@ class P1Interpolator(DiscreteInterpolator):
             "tpw": 1.0,
             "ipw": 1.0,
         }
-
+        self.type = InterpolatorType.PIECEWISE_LINEAR
     def add_gradient_constraints(self, w=1.0):
         pass
 
