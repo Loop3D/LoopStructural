@@ -1,5 +1,20 @@
 # Changelog
 
+## [1.6.20](https://github.com/Loop3D/LoopStructural/compare/v1.6.19...v1.6.20) (2025-08-25)
+
+
+### Bug Fixes
+
+* add convert from feature to structural frame ([5b34346](https://github.com/Loop3D/LoopStructural/commit/5b34346e0b930f07044244916ded99d55cb4b3e3))
+* add type to P1 and P2 ([71ce492](https://github.com/Loop3D/LoopStructural/commit/71ce4922f917e59913fe948b63f632beda8cbaaf))
+* add wrapper to convert between a feature and structural frame ([676c0ef](https://github.com/Loop3D/LoopStructural/commit/676c0ef4a01b777d5c934e55a3202a4f29ea266e))
+* allow model to set any type of feature using basefeature subclass check ([97122a5](https://github.com/Loop3D/LoopStructural/commit/97122a5bdf0b2e49b3e56fd7a2b22c40bd94314e))
+* allow no isovalue for surfaces. Take middle as value ([178d78b](https://github.com/Loop3D/LoopStructural/commit/178d78bbe775e77e0294875e3f56c7d7ce41d3fa))
+* change kwargs to build args ([cb0af22](https://github.com/Loop3D/LoopStructural/commit/cb0af22ef96ddf21e06ca6ae0250a45de52de220))
+* linting ([a32ee4f](https://github.com/Loop3D/LoopStructural/commit/a32ee4f4973f701638eede4caef1a66e1f4baf2d))
+* rename optional data argument to data for consistency ([9b23bd3](https://github.com/Loop3D/LoopStructural/commit/9b23bd30bb1fcf4af4f7ca656b41e88855afcdff))
+* return the first feature of a structural frame ([6972062](https://github.com/Loop3D/LoopStructural/commit/6972062ac60f3e97618f26139649db2167bdcfd9))
+
 ## [1.6.19](https://github.com/Loop3D/LoopStructural/compare/v1.6.18...v1.6.19) (2025-08-14)
 
 
