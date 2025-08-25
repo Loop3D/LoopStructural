@@ -1,5 +1,5 @@
 from LoopStructural.modelling.features.fold import FoldEvent
-from LoopStructural.modelling.features.builders import FoldedFeatureBuilder
+from LoopStructural.modelling.features.builders import FoldedFeatureBuilder, StructuralFrameBuilder
 def add_fold_to_feature(feature, fold_frame,**kwargs):
     fold = FoldEvent(fold_frame, name=f"Fold_{feature.name}", invert_norm=kwargs.get('invert_fold_norm', False))
 
@@ -11,3 +11,26 @@ def add_fold_to_feature(feature, fold_frame,**kwargs):
     feature = builder.feature
     feature.fold = fold
     return feature
+
+def convert_feature_to_structural_frame(feature, **kwargs):
+    """
+    Convert a geological feature to a structural frame by adding the feature to the frame
+
+    Parameters
+    ----------
+    feature : GeologicalFeature
+        the geological feature to convert
+    
+    Returns
+    -------
+    StructuralFrame
+        the updated structural frame with the feature added
+    """
+    builder = feature.builder
+
+    new_builder = StructuralFrameBuilder.from_feature_builder(
+        builder,
+        **kwargs
+    )
+    return new_builder.frame
+    
