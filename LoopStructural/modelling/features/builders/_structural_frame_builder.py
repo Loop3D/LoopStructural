@@ -7,6 +7,7 @@ from typing import Union
 from LoopStructural.utils.exceptions import LoopException
 
 import numpy as np
+import copy
 
 from ....utils import getLogger
 from ....datatypes import BoundingBox
@@ -120,6 +121,38 @@ class StructuralFrameBuilder:
             model=self.model,
         )
         self._frame.builder = self
+
+    @classmethod
+    def from_feature_builder(cls, feature_builder, **kwargs):
+        """
+        Create a structural frame builder from an existing feature builder
+
+        Parameters
+        ----------
+        feature_builder - a geological feature builder
+        kwargs
+
+        Returns
+        -------
+
+        """
+        if not isinstance(feature_builder, GeologicalFeatureBuilder):
+            raise LoopException(
+                f"feature_builder is {type(feature_builder)} and must be a GeologicalFeatureBuilder"
+            )
+        if hasattr(feature_builder, 'fold'):
+            logger.warning("feature builder has a fold - using this to create a folded frame")
+            kwargs['fold'] = copy.deepcopy(feature_builder.fold)
+        builder  = cls(
+            interpolatortype=[feature_builder.interpolator.type]*3,
+            bounding_box=feature_builder.model.bounding_box,
+            nelements=[feature_builder.interpolator.n_elements]*3,
+            name=feature_builder.name,
+            **kwargs
+        )
+        builder.add_data_from_data_frame(feature_builder.data)
+        return builder
+
     @property
     def build_arguments(self):
         return self.builders[0].build_arguments
