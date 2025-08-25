@@ -219,7 +219,7 @@ Where the optional kwargs can be:
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 4.015 seconds)
+   **Total running time of the script:** (0 minutes 3.932 seconds)
 
 
 .. _sphx_glr_download__auto_examples_1_basic_plot_3_model_visualisation.py:
