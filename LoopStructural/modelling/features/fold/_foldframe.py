@@ -19,7 +19,24 @@ class FoldFrame(StructuralFrame):
         features
         """
         super().__init__(name, features, fold, model)
+    @classmethod
+    def from_structural_frame(cls, frame, fold=None):
+        """
+        Create a FoldFrame from an existing StructuralFrame
 
+        Parameters
+        ----------
+        frame - StructuralFrame
+            the structural frame to convert to a fold frame
+        fold - FoldEvent, optional
+            the fold event to associate with the fold frame
+
+        Returns
+        -------
+        FoldFrame
+            the new fold frame
+        """
+        return cls(frame.name, frame.features, fold, frame.model)
     def calculate_fold_axis_rotation(self, feature_builder, fold_axis=None):
         """
         Calculate the fold axis rotation angle by finding the angle between the

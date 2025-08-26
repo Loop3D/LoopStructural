@@ -148,6 +148,7 @@ class StructuralFrameBuilder:
             bounding_box=feature_builder.model.bounding_box,
             nelements=[feature_builder.interpolator.n_elements]*3,
             name=feature_builder.name,
+            model=feature_builder.model,
             **kwargs
         )
         builder.add_data_from_data_frame(feature_builder.data)
