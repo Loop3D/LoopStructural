@@ -40,6 +40,7 @@ from ...modelling.intrusions import IntrusionBuilder
 
 from ...modelling.intrusions import IntrusionFrameBuilder
 from .stratigraphic_column import StratigraphicColumn
+from .model_graph import GeologicalTopologyGraph
 
 logger = getLogger(__name__)
 
@@ -129,6 +130,10 @@ class GeologicalModel:
 
         self.tol = 1e-10 * np.max(self.bounding_box.maximum - self.bounding_box.origin)
         self._dtm = None
+        # Topology is now mandatory: instantiate on model creation
+        self.topology: GeologicalTopologyGraph = GeologicalTopologyGraph()
+        # How to combine topology region masks with legacy per-feature regions: 'and', 'or', 'replace'
+  
 
     def to_dict(self):
         """
@@ -188,36 +193,7 @@ class GeologicalModel:
         ].astype(float)
         return data
 
-        if "type" in data:
-            logger.warning("'type' is deprecated replace with 'feature_name' \n")
-            data.rename(columns={"type": "feature_name"}, inplace=True)
-        if "feature_name" not in data:
-            logger.error("Data does not contain 'feature_name' column")
-            raise BaseException("Cannot load data")
-        for h in all_heading():
-            if h not in data:
-                data[h] = np.nan
-                if h == "w":
-                    data[h] = 1.0
-                if h == "coord":
-                    data[h] = 0
-                if h == "polarity":
-                    data[h] = 1.0
-        # LS wants polarity as -1 or 1, change 0  to -1
-        data.loc[data["polarity"] == 0, "polarity"] = -1.0
-        data.loc[np.isnan(data["w"]), "w"] = 1.0
-        if "strike" in data and "dip" in data:
-            logger.info("Converting strike and dip to vectors")
-            mask = np.all(~np.isnan(data.loc[:, ["strike", "dip"]]), axis=1)
-            data.loc[mask, gradient_vec_names()] = (
-                strikedip2vector(data.loc[mask, "strike"], data.loc[mask, "dip"])
-                * data.loc[mask, "polarity"].to_numpy()[:, None]
-            )
-            data.drop(["strike", "dip"], axis=1, inplace=True)
-        data[['X', 'Y', 'Z', 'val', 'nx', 'ny', 'nz', 'gx', 'gy', 'gz', 'tx', 'ty', 'tz']] = data[
-            ['X', 'Y', 'Z', 'val', 'nx', 'ny', 'nz', 'gx', 'gy', 'gz', 'tx', 'ty', 'tz']
-        ].astype(float)
-        return data
+        
     @classmethod
     def from_processor(cls, processor):
         """Builds a model from a :class:`LoopStructural.modelling.input.ProcessInputData` object
@@ -471,11 +447,29 @@ class GeologicalModel:
                 self.features.append(feature)
                 self.feature_name_index[feature.name] = len(self.features) - 1
                 logger.info(f"Adding {feature.name} to model at location {len(self.features)}")
-        self._add_domain_fault_above(feature)
-        if feature.type == FeatureType.INTERPOLATED:
-            self._add_unconformity_above(feature)
+        
         feature.model = self
 
+        
+        if feature.type == FeatureType.FAULT:
+            obj_type = 'fault'
+        elif feature.type == FeatureType.UNCONFORMITY:
+            obj_type = 'unconformity'
+        else:
+            # interpolated, foliations, frames, intrusions -> foliation/general
+            obj_type = 'foliation'
+
+
+        # If object already exists, update its properties, otherwise add it.
+        if feature.name in getattr(self.topology, '_objects', {}):
+            topo_obj = self.topology.get_object(feature.name)
+        else:
+            self.topology.add_geological_object(
+                name=feature.name,
+                object_type=obj_type,
+                object_id=feature.name,
+            )
+        
     def data_for_feature(self, feature_name: str) -> pd.DataFrame:
         """Get all of the data associated with a geological feature
 
@@ -1184,19 +1178,6 @@ class GeologicalModel:
         # look backwards through features and add the unconformity as a region until
         # we get to an unconformity
         uc_feature = UnconformityFeature(feature, value)
-        feature.add_region(uc_feature.inverse())
-        for f in reversed(self.features):
-            if f.type == FeatureType.UNCONFORMITY:
-                logger.debug(f"Reached unconformity {f.name}")
-                break
-            logger.debug(f"Adding {uc_feature.name} as unconformity to {f.name}")
-            if f.type == FeatureType.FAULT or f.type == FeatureType.INACTIVEFAULT:
-                continue
-            if f == feature:
-                continue
-            else:
-                f.add_region(uc_feature)
-        # now add the unconformity to the feature list
         self._add_feature(uc_feature,index=index)
         return uc_feature
 
@@ -1219,15 +1200,7 @@ class GeologicalModel:
         """
         feature.regions = []
         uc_feature = UnconformityFeature(feature, value, False, onlap=True)
-        feature.add_region(uc_feature.inverse())
-        for f in reversed(self.features):
-            if f.type == FeatureType.UNCONFORMITY:
-                # f.add_region(uc_feature)
-                continue
-            if f.type == FeatureType.FAULT:
-                continue
-            if f != feature:
-                f.add_region(uc_feature)
+        
         self._add_feature(uc_feature.inverse(),index=index)
 
         return uc_feature
@@ -1556,12 +1529,49 @@ class GeologicalModel:
             return strat_id
 
         s_id = 0
+
+        # Precompute topology masks for all registered topology objects (younger/affecting first)
+        topology_masks: Dict[str, np.ndarray] = {}
+        if getattr(self, 'topology', None) is not None and hasattr(self.topology, 'build_region_masks'):
+            try:
+                topology_masks = self.topology.build_region_masks(xyz, claim_overlaps=True, model=self)
+            except Exception:
+                logger.exception("Failed to build topology region masks")
+                topology_masks = {}
+
         for g in reversed(self.stratigraphic_column.get_groups()):
             feature_id = self.feature_name_index.get(g.name, -1)
             if feature_id >= 0:
                 vals = self.features[feature_id].evaluate_value(xyz)
                 for u in g.units:
-                    strat_id[np.logical_and(vals < u.max(), vals > u.min())] = s_id
+                    # unit scalar bounds
+                    unit_mask = np.logical_and(vals < u.max(), vals > u.min())
+
+                    # topology-provided mask (precomputed)
+                    topo_mask = topology_masks.get(g.name)
+
+                    if topo_mask is None:
+                        # No topology object for this group. Preserve legacy behaviour
+                        # by assigning points based on scalar bounds ONLY if no topology
+                        # is registered. If topology exists but the specific group is
+                        # missing, assign no points (requires explicit registration).
+                        if not topology_masks:
+                            final_mask = unit_mask
+                        else:
+                            logger.error(f"Topology does not contain object for group '{g.name}'; assigning no points for this unit")
+                            final_mask = np.zeros(xyz.shape[0], dtype=bool)
+                    else:
+                        strat = getattr(self, 'topology_combine_strategy', 'and').lower()
+                        if strat == 'and':
+                            final_mask = np.logical_and(unit_mask, topo_mask)
+                        elif strat == 'or':
+                            final_mask = np.logical_or(unit_mask, topo_mask)
+                        elif strat == 'replace':
+                            final_mask = topo_mask
+                        else:
+                            final_mask = np.logical_and(unit_mask, topo_mask)
+
+                    strat_id[final_mask] = s_id
                     s_id += 1
             if feature_id == -1:
                 logger.error(f"Model does not contain {g.name}")
@@ -1645,7 +1655,7 @@ class GeologicalModel:
         else:
             raise ValueError(f"{feature_name} does not exist!")
 
-    def evaluate_feature_value(self, feature_name, xyz, scale=True):
+    def evaluate_feature_value(self, feature_name, xyz, scale=True, use_regions=True):
         """Evaluate the scalar value of the geological feature given the name at locations
         xyz
 
@@ -1663,35 +1673,40 @@ class GeologicalModel:
         np.array((N))
             vector of scalar values
 
-        Examples
-        --------
-        Evaluate on a voxet using model boundaries
-
-        >>> x = np.linspace(model.bounding_box[0, 0], model.bounding_box[1, 0],
-                        nsteps[0])
-        >>> y = np.linspace(model.bounding_box[0, 1], model.bounding_box[1, 1],
-                        nsteps[1])
-        >>> z = np.linspace(model.bounding_box[1, 2], model.bounding_box[0, 2],
-                        nsteps[2])
-        >>> xx, yy, zz = np.meshgrid(x, y, z, indexing='ij')
-        >>> xyz = np.array([xx.flatten(), yy.flatten(), zz.flatten()]).T
-        >>> model.evaluate_feature_vaue('feature',xyz,scale=False)
-
-        Evaluate on points in UTM coordinates
-
-        >>> model.evaluate_feature_vaue('feature',utm_xyz)
-
         """
         feature = self.get_feature_by_name(feature_name)
         if feature:
             scaled_xyz = xyz
             if scale:
                 scaled_xyz = self.scale(xyz, inplace=False)
-            return feature.evaluate_value(scaled_xyz)
+
+            # Evaluate full field
+            vals = feature.evaluate_value(scaled_xyz)
+
+            # If topology is present, compute topology region masks and apply mask for this feature
+            if use_regions and getattr(self, 'topology', None) is not None and hasattr(self.topology, 'build_region_masks'):
+                try:
+                    topology_masks = self.topology.build_region_masks(scaled_xyz, claim_overlaps=True, model=self)
+                    topo_mask = topology_masks.get(feature_name)
+                except Exception:
+                    logger.exception("Failed to build topology region masks for feature value evaluation")
+                    topo_mask = None
+
+                if topo_mask is not None:
+                    # Ensure boolean mask length matches
+                    try:
+                        topo_mask = np.asarray(topo_mask, dtype=bool)
+                        if topo_mask.shape[0] == vals.shape[0]:
+                            vals = vals.astype(float)  # allow NaNs
+                            vals[~topo_mask] = np.nan
+                    except Exception:
+                        logger.exception("Failed to apply topology mask to feature values")
+
+            return vals
         else:
             return np.zeros(xyz.shape[0])
 
-    def evaluate_feature_gradient(self, feature_name, xyz, scale=True):
+    def evaluate_feature_gradient(self, feature_name, xyz, scale=True, use_regions=True):
         """Evaluate the gradient of the geological feature at a location
 
         Parameters
@@ -1713,7 +1728,29 @@ class GeologicalModel:
             scaled_xyz = xyz
             if scale:
                 scaled_xyz = self.scale(xyz, inplace=False)
-            return feature.evaluate_gradient(scaled_xyz)
+
+            grad = feature.evaluate_gradient(scaled_xyz)
+
+            # If topology is present, compute topology region masks and apply mask for this feature
+            if use_regions and getattr(self, 'topology', None) is not None and hasattr(self.topology, 'build_region_masks'):
+                try:
+                    topology_masks = self.topology.build_region_masks(scaled_xyz, claim_overlaps=True, model=self)
+                    topo_mask = topology_masks.get(feature_name)
+                except Exception:
+                    logger.exception("Failed to build topology region masks for feature gradient evaluation")
+                    topo_mask = None
+
+                if topo_mask is not None:
+                    try:
+                        topo_mask = np.asarray(topo_mask, dtype=bool)
+                        if topo_mask.shape[0] == grad.shape[0]:
+                            # set rows outside topology region to NaN
+                            grad = grad.astype(float)
+                            grad[~topo_mask, :] = np.nan
+                    except Exception:
+                        logger.exception("Failed to apply topology mask to feature gradients")
+
+            return grad
         else:
             return np.zeros(xyz.shape[0])
 
