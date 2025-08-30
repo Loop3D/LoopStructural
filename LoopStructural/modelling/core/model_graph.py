@@ -25,8 +25,7 @@ class GeologicalObjectType(Enum):
     """Enumeration of geological object types supported by the topology graph."""
     FAULT = "fault"
     FOLIATION = "foliation"
-    UNCONFORMITY = "unconformity"
-
+    FOLD = "fold"
 
 class RelationshipType(Enum):
     """Types of topological relationships between geological objects."""
@@ -183,7 +182,7 @@ class GeologicalTopologyGraph:
     def add_relationship(self,
                         from_object_id: str,
                         to_object_id: str,
-                        relationship_type: Union[RelationshipType, str]) -> TopologicalRelationship:
+                        relationship_type: Union[RelationshipType, str], **properties) -> TopologicalRelationship:
         """
         Add a topological relationship between two objects.
         
@@ -195,8 +194,6 @@ class GeologicalTopologyGraph:
             ID of the target object
         relationship_type : RelationshipType or str
             Type of relationship
-        confidence : float, optional
-            Confidence in the relationship (default: 1.0)
         **properties
             Additional relationship properties
             
@@ -657,7 +654,7 @@ class GeologicalTopologyGraph:
                     stack.append(s)
         return result
 
-    def build_region_masks(self, xyz: np.ndarray, *, claim_overlaps: bool = True) -> Dict[str, np.ndarray]:
+    def build_region_masks(self, xyz: np.ndarray, *, claim_overlaps: bool = True, model=None) -> Dict[str, np.ndarray]:
         """
         Compute boolean region masks for each topology object given points.
 
@@ -697,17 +694,60 @@ class GeologicalTopologyGraph:
             if topo_obj is None:
                 continue
 
-            # region callable is expected to be stored under properties['region_callable']
-            region_callable = getattr(topo_obj, 'properties', {}).get('region_callable')
-            if not callable(region_callable):
-                masks[topo_obj.name] = np.zeros(N, dtype=bool)
-                continue
+            mask = np.ones(N, dtype=bool)
+            # Attempt to derive mask from unconformity relationships.
+            rels: List[TopologicalRelationship] = []
+            # relationships where this object is the target
+            rels.extend(self.get_relationships(to_object_id=obj_id))
+            rels.extend(self.get_relationships(from_object_id=obj_id))
+            for rel in rels:
+                rtype = rel.relationship_type
+                if rtype in (
+                    RelationshipType.ERODE_UNCONFORMABLY_OVERLIES,
+                    RelationshipType.ERODE_UNCONFORMABLY_UNDERLIES,
+                    RelationshipType.ONLAP_UNCONFORMABLY_OVERLIES,
+                    RelationshipType.ONLAP_UNCONFORMABLY_UNDERLIES,
+                ):
+                    # determine the feature id to sample scalar field from
+                    if rtype in (
+                        RelationshipType.ERODE_UNCONFORMABLY_OVERLIES,
+                        RelationshipType.ERODE_UNCONFORMABLY_UNDERLIES,
+                    ):
+                        # erode -> use younger feature's geometry (value > 0)
+                        if rtype == RelationshipType.ERODE_UNCONFORMABLY_OVERLIES:
+                            source_id = rel.from_object
+                            symbol = '<'
+                        else:
+                            source_id = rel.to_object
+                            symbol = '>'
+                    else:
+                        # onlap -> use older feature's geometry (value > 0)
+                        if rtype == RelationshipType.ONLAP_UNCONFORMABLY_OVERLIES:
+                            source_id = rel.to_object
+                            symbol = '>'
+                        else:
+                            source_id = rel.from_object
+                            symbol = '<'
+                    # If a model is provided, evaluate the scalar field for the source feature.
+                    if model is not None:
+                        try:
+                            
+                            vals = model.evaluate_feature_value(source_id, xyz, scale=False,use_regions=False)
+                            mask = np.asarray(vals > 0, dtype=bool) if symbol == '>' else np.asarray(vals < 0, dtype=bool)
+                        except Exception:
+                            logger.exception(
+                                f"Failed to evaluate scalar field for topology source feature '{source_id}'"
+                            )
+                            mask = np.ones(N, dtype=bool)
+                    else:
+                        # No model available to evaluate scalar field -> empty mask
+                        mask = np.ones(N, dtype=bool)
 
-            try:
-                mask = np.asarray(region_callable(xyz), dtype=bool)
-            except Exception:
-                logger.exception(f"Topology region_callable for '{topo_obj.name}' failed during batch mask build")
-                mask = np.zeros(N, dtype=bool)
+                    # We add all unconformities to a feature                    
+
+            # If still no mask, default to empty mask
+            if mask is None:
+                mask = np.ones(N, dtype=bool)
 
             if claim_overlaps:
                 mask = np.logical_and(mask, ~claimed)
