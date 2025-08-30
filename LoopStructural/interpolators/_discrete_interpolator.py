@@ -501,7 +501,8 @@ class DiscreteInterpolator(GeologicalInterpolator):
 
         mats = []
         bs = []
-        for c in self.constraints.values():
+        for cname, c in self.constraints.items():
+            logger.info(f"Adding constraint {cname} with {c['matrix'].shape[0]} rows")
             if len(c["w"]) == 0:
                 continue
             mats.append(c['matrix'].multiply(c['w'][:, None]))
