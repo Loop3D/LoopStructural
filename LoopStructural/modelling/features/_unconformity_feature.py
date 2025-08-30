@@ -20,7 +20,7 @@ class UnconformityFeature(GeologicalFeature):
         GeologicalFeature.__init__(
             self,
             name=f"__{feature.name}_unconformity",
-            faults=feature.faults,
+            # faults=feature.faults,
             regions=[],  # feature.regions.copy(),  # don't want to share regionsbetween unconformity and # feature.regions,
             builder=feature.builder,
             model=feature.model,
