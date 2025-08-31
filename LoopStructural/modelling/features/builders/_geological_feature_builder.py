@@ -80,8 +80,7 @@ class GeologicalFeatureBuilder(BaseBuilder):
         self._feature = GeologicalFeature(
             self._name,
             builder=self,
-            regions=[],
-            faults=self.faults,
+            model=model
         )
         self._orthogonal_features = {}
         self._equality_constraints = {}

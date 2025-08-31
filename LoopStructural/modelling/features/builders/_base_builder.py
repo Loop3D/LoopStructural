@@ -27,8 +27,11 @@ class BaseBuilder:
         self._feature = None
         self._up_to_date = False
         self._build_arguments = {}
-        self.faults = []
 
+    @property
+    def faults(self):
+        fnames = self.model.get_faults_for_feature(self.name)
+        return [self.model[fname] for fname in fnames]
     def set_not_up_to_date(self, caller):
         logger.info(
             f"Setting {self.name} to not up to date from an instance of {caller.__class__.__name__}"
@@ -64,7 +67,7 @@ class BaseBuilder:
             logger.info(f"{self.name} is up to date")
             return
         logger.info(f"Updating {self.name}")
-        self._feature.faults = self.faults
+        # self._feature.faults = self.faults
         self.build(**self.build_arguments)
 
     def build(self, **kwargs):
@@ -103,19 +106,4 @@ class BaseBuilder:
         if callable(callback):
             callback(1)
 
-    def add_fault(self, fault):
-        """
-        Add a fault to the geological feature builder
-
-        Parameters
-        ----------
-        fault : FaultSegment
-            A faultsegment to add to the geological feature
-
-        Returns
-        -------
-
-        """
-        logger.info(f'Adding fault {fault.name} to {self.name}')
-        self._up_to_date = False
-        self.faults.append(fault)
+    

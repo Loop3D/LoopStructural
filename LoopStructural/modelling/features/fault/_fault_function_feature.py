@@ -26,7 +26,7 @@ class FaultDisplacementFeature(BaseFeature):
         fault_frame - geometry of the fault
         displacement - function defining fault displacement
         """
-        BaseFeature.__init__(self, f"{name}_displacement", model, faults, regions, builder)
+        BaseFeature.__init__(self, f"{name}_displacement", model=model,  builder=builder)
         self.fault_frame = StructuralFrame(
             f"{fault_frame.name}_displacementframe",
             [fault_frame[0].copy(), fault_frame[1].copy(), fault_frame[2].copy()],

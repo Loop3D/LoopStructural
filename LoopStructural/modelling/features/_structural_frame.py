@@ -22,7 +22,7 @@ class StructuralFrame(BaseFeature):
         name - name of the structural frame
         features - list of features to build the frame with
         """
-        BaseFeature.__init__(self, name, model, [], [], None)
+        BaseFeature.__init__(self, name, model=model, builder=None)
         self.features = features
         self.fold = fold
         self.type = FeatureType.STRUCTURALFRAME

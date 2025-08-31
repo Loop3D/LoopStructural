@@ -40,8 +40,6 @@ class GeologicalFeature(BaseFeature):
         self,
         name: str,
         builder,
-        regions: list = [],
-        faults: list = [],
         interpolator=None,
         model=None,
     ):
@@ -58,7 +56,7 @@ class GeologicalFeature(BaseFeature):
 
 
         """
-        BaseFeature.__init__(self, name, model, faults, regions, builder)
+        BaseFeature.__init__(self, name, model=model,  builder= builder)
         self.name = name
         self.builder = builder
         self.interpolator = self.builder.interpolator if self.builder is not None else interpolator
@@ -118,7 +116,7 @@ class GeologicalFeature(BaseFeature):
         # check if the points are within the display region
         v = np.zeros(evaluation_points.shape[0])
         v[:] = np.nan
-        mask = self._calculate_mask(pos, ignore_regions=ignore_regions)
+        mask = np.ones(pos.shape[0],dtype=bool)#self._calculate_mask(pos, ignore_regions=ignore_regions)
         evaluation_points = self._apply_faults(evaluation_points)
         if mask.dtype not in [int, bool]:
             logger.error(f"Unable to evaluate value for {self.name}")
@@ -167,7 +165,8 @@ class GeologicalFeature(BaseFeature):
 
         v = np.zeros(pos.shape)
         v[:] = np.nan
-        mask = self._calculate_mask(pos, ignore_regions=ignore_regions)
+        mask = np.ones(pos.shape[0],dtype=bool)
+        #self._calculate_mask(pos, ignore_regions=ignore_regions)
         # evaluate the faults on the nodes of the faulted feature support
         # then evaluate the gradient at these points
         if len(self.faults) > 0:
@@ -257,8 +256,6 @@ class GeologicalFeature(BaseFeature):
             name = f"{self.name}_copy"
         feature = GeologicalFeature(
             name=name,
-            faults=self.faults,
-            regions=[],  # feature.regions.copy(),  # don't want to share regionsbetween unconformity and # feature.regions,
             builder=self.builder,
             model=self.model,
         )

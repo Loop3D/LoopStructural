@@ -18,7 +18,7 @@ class BaseFeature(metaclass=ABCMeta):
     Base class for geological features.
     """
 
-    def __init__(self, name: str, model=None, faults: list = [], regions: list = [], builder=None):
+    def __init__(self, name: str,*, model=None, builder=None):
         """Base geological feature, this is a virtual class and should not be
         used directly. Inheret from this to implement a new type of geological
         feature or use one of the exisitng implementations
@@ -38,10 +38,8 @@ class BaseFeature(metaclass=ABCMeta):
         """
         self.name = name
         self.type = FeatureType.BASE
-        self.regions = regions
-        self._faults = []
-        if faults:
-            self.faults = faults
+        if model is None:
+            logger.warning(f"Model is none for {name}")
         self._model = model
         self.builder = builder
         self.faults_enabled = True
@@ -50,23 +48,11 @@ class BaseFeature(metaclass=ABCMeta):
 
     @property
     def faults(self):
-        return self._faults
+        return self.builder.faults
 
     @faults.setter
     def faults(self, faults: list):
-        _faults = []
-        try:
-            for f in faults:
-                if not issubclass(type(f), BaseFeature):
-                    raise TypeError("Faults must be a list of BaseFeature")
-                _faults.append(f)
-        except TypeError:
-            logger.error(
-                f'Faults must be a list of BaseFeature \n Trying to set using {type(faults)}'
-            )
-            raise TypeError("Faults must be a list of BaseFeature")
-
-        self._faults = _faults
+        raise DeprecationWarning("Faults can no longer be set per features. Please use the model.topology")
 
     def to_json(self):
         """
@@ -79,7 +65,6 @@ class BaseFeature(metaclass=ABCMeta):
         """
         json = {}
         json["name"] = self.name
-        json["regions"] = [r.to_json() for r in self.regions]
         json["faults"] = [f.name for f in self.faults]
         json["type"] = self.type
         return json
@@ -88,9 +73,6 @@ class BaseFeature(metaclass=ABCMeta):
         _str = "-----------------------------------------------------\n"
         _str += f"{self.name} {self.type} \n"
         _str += "-----------------------------------------------------\n"
-        _str += f"\t{len(self.regions)} regions\n"
-        for r in self.regions:
-            _str += f"\t \t{r.__str__}\n"
         _str += f"\t{len(self.faults)} faults.\n"
         _str += f"\tFault enabled {self.faults_enabled}\n"
 
@@ -131,22 +113,7 @@ class BaseFeature(metaclass=ABCMeta):
         logger.warning(f"Toggling faults for feature {self.name}")
         self.faults_enabled = not self.faults_enabled
 
-    def add_region(self, region):
-        """
-        Adds a region where the geological feature is active to the model.
 
-        Parameters
-        ----------
-        region : boolean function(x,y,z)
-                returns true if inside region, false if outside
-                can be passed as a lambda function e.g.
-                lambda pos : feature.evaluate_value(pos) > 0
-
-        Returns
-        -------
-
-        """
-        self.regions.append(region)
 
     def __call__(self, xyz):
         """Calls evaluate_value method
@@ -196,12 +163,12 @@ class BaseFeature(metaclass=ABCMeta):
         """
         mask = np.zeros(evaluation_points.shape[0]).astype(bool)
 
-        mask[:] = True
-        if not ignore_regions:
-            # check regions
-            for r in self.regions:
-                # try:
-                mask = np.logical_and(mask, r(evaluation_points))
+        # mask[:] = True
+        # if not ignore_regions:
+        #     # check regions
+        #     for r in self.regions:
+        #         # try:
+        #         mask = np.logical_and(mask, r(evaluation_points))
         return mask
 
     def _apply_faults(self, evaluation_points: np.ndarray, reverse: bool = False) -> np.ndarray:
@@ -260,12 +227,10 @@ class BaseFeature(metaclass=ABCMeta):
         return np.nanmax(self.evaluate_value(self.model.regular_grid(nsteps=(10, 10, 10))))
 
     def __tojson__(self):
-        regions = [r.name for r in self.regions]
         faults = [f.name for f in self.faults]
         return {
             "name": self.name,
             "type": self.type,
-            "regions": regions,
             "faults": faults,
         }
 
@@ -292,13 +257,9 @@ class BaseFeature(metaclass=ABCMeta):
             if self.model is None:
                 raise ValueError("Must specify bounding box")
             bounding_box = self.model.bounding_box
-        regions = self.regions
         
         try:
-            self.regions = [
-                r for r in self.regions if r.name != self.name and r.parent.name != self.name
-            ]
-
+           
             callable = lambda xyz: (
                 self.evaluate_value(self.model.scale(xyz))
                 if self.model is not None
@@ -313,7 +274,7 @@ class BaseFeature(metaclass=ABCMeta):
             logger.error(e)
             surfaces = []
         finally:
-            self.regions = regions
+            pass
 
         return surfaces
 

@@ -76,6 +76,7 @@ class StructuralFrameBuilder:
                     interpolatortype[0],
                     bounding_box,
                     self.fold,
+                    model=model,
                     nelements=nelements[0],
                     name=f"{self.name}__0",
                     **kwargs,
@@ -87,6 +88,7 @@ class StructuralFrameBuilder:
                     interpolatortype[0],
                     bounding_box,
                     nelements[0],
+                    model=model,
                     name=f"{self.name}__0",
                     **kwargs,
                 )
@@ -96,6 +98,7 @@ class StructuralFrameBuilder:
                 interpolatortype[1],
                 bounding_box,
                 nelements[1],
+                model=model,
                 name=f"{self.name}__1",
                 **kwargs,
             )
@@ -105,6 +108,7 @@ class StructuralFrameBuilder:
                 interpolatortype[2],
                 bounding_box,
                 nelements[2],
+                model=model,
                 name=f"{self.name}__2",
                 **kwargs,
             )
@@ -121,7 +125,10 @@ class StructuralFrameBuilder:
             model=self.model,
         )
         self._frame.builder = self
-
+    @property
+    def faults(self):
+        fnames = self.model.get_faults_for_feature(self.name)
+        return [self.model[fname] for fname in fnames]
     @classmethod
     def from_feature_builder(cls, feature_builder, **kwargs):
         """
