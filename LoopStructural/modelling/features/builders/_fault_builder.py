@@ -226,7 +226,7 @@ class FaultBuilder(StructuralFrameBuilder):
                 self.maximum = self.model.bounding_box.maximum
                 return
             major_axis = np.max(distance)
-            logger.warning(f"Fault major axis using map length: {major_axis}")
+            logger.info(f"Fault major axis using map length: {major_axis}")
 
         if minor_axis is None:
             logger.info(f"Fault minor axis not set, using half major axis: {major_axis/2}")
