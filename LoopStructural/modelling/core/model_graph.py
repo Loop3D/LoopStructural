@@ -716,24 +716,25 @@ class GeologicalTopologyGraph:
                         # erode -> use younger feature's geometry (value > 0)
                         if rtype == RelationshipType.ERODE_UNCONFORMABLY_OVERLIES:
                             source_id = rel.from_object
-                            symbol = '<'
+                            symbol = '>'
                         else:
                             source_id = rel.to_object
-                            symbol = '>'
+                            symbol = '<'
                     else:
                         # onlap -> use older feature's geometry (value > 0)
                         if rtype == RelationshipType.ONLAP_UNCONFORMABLY_OVERLIES:
-                            source_id = rel.to_object
-                            symbol = '>'
-                        else:
                             source_id = rel.from_object
                             symbol = '<'
+                        else:
+                            source_id = rel.to_object
+                            symbol = '>'
                     # If a model is provided, evaluate the scalar field for the source feature.
                     if model is not None:
                         try:
                             
                             vals = model.evaluate_feature_value(source_id, xyz, scale=False,use_regions=False)
                             mask = np.asarray(vals > 0, dtype=bool) if symbol == '>' else np.asarray(vals < 0, dtype=bool)
+                            print(f"[DEBUG] Topology '{topo_obj.name}' using scalar field from '{source_id}' with symbol '{symbol}': true_count={np.sum(mask)}, false_count={np.sum(~mask)}")
                         except Exception:
                             logger.exception(
                                 f"Failed to evaluate scalar field for topology source feature '{source_id}'"
@@ -749,9 +750,16 @@ class GeologicalTopologyGraph:
             if mask is None:
                 mask = np.ones(N, dtype=bool)
 
-            if claim_overlaps:
+            if claim_overlaps and rtype in (
+                RelationshipType.ERODE_UNCONFORMABLY_OVERLIES,
+                RelationshipType.ERODE_UNCONFORMABLY_UNDERLIES,
+                RelationshipType.ONLAP_UNCONFORMABLY_OVERLIES,
+                RelationshipType.ONLAP_UNCONFORMABLY_UNDERLIES,
+            ):
+                print(f"[DEBUG] Topology '{topo_obj.name}' before claiming: true_count={np.sum(mask)}, false_count={np.sum(~mask)}")
                 mask = np.logical_and(mask, ~claimed)
                 claimed |= mask
+                print(f"[DEBUG] Topology '{topo_obj.name}' after claiming: true_count={np.sum(mask)}, false_count={np.sum(~mask)}")
 
             masks[topo_obj.name] = mask
 

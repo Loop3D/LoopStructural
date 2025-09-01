@@ -134,6 +134,16 @@ class GeologicalModel:
         self.topology: GeologicalTopologyGraph = GeologicalTopologyGraph()
         # How to combine topology region masks with legacy per-feature regions: 'and', 'or', 'replace'
   
+    def get_faults_for_feature(self, feature_name):
+        if feature_name not in self.feature_names():
+            return []
+            raise ValueError(f'Feature not in model: {feature_name}')
+        rel_list = self.topology.get_relationships(from_object_id=feature_name, relationship_type='is_cut_by')
+        fault_names = []
+        for rel in rel_list:
+            fault_names.append(rel.to_object)
+        return fault_names
+
 
     def to_dict(self):
         """
@@ -673,7 +683,6 @@ class GeologicalModel:
             logger.warning("No data for {series_surface_data}, skipping")
             return
         series_builder.add_data_from_data_frame(self.prepare_data(data))
-        self._add_faults(series_builder, features=faults)
 
         # build feature
         # series_feature = series_builder.build(**kwargs)
@@ -684,6 +693,8 @@ class GeologicalModel:
 
         series_feature.type = FeatureType.INTERPOLATED
         self._add_feature(series_feature,index=index)
+        self._add_faults(series_builder, features=faults)
+
         return series_feature
 
     def create_and_add_fold_frame(
@@ -1080,7 +1091,8 @@ class GeologicalModel:
             if isinstance(f, str):
                 f = self.__getitem__(f)
             if f.type == FeatureType.FAULT:
-                feature_builder.add_fault(f)
+                self.topology.add_relationship(from_object_id=feature_builder.name,to_object_id=f.name,relationship_type='is_cut_by')
+                # feature_builder.add_fault(f)
 
     def _add_domain_fault_above(self, feature):
         """
@@ -1688,6 +1700,7 @@ class GeologicalModel:
                 try:
                     topology_masks = self.topology.build_region_masks(scaled_xyz, claim_overlaps=True, model=self)
                     topo_mask = topology_masks.get(feature_name)
+                    print(f"[DEBUG] Topology mask for feature '{feature_name}': shape={None if topo_mask is None else topo_mask.shape}, true_count={None if topo_mask is None else np.sum(topo_mask)}, false_count={None if topo_mask is None else np.sum(~topo_mask)}")
                 except Exception:
                     logger.exception("Failed to build topology region masks for feature value evaluation")
                     topo_mask = None
@@ -1697,8 +1710,10 @@ class GeologicalModel:
                     try:
                         topo_mask = np.asarray(topo_mask, dtype=bool)
                         if topo_mask.shape[0] == vals.shape[0]:
+                            print(f"[DEBUG] Applying mask to feature '{feature_name}': vals before mask min={np.nanmin(vals)}, max={np.nanmax(vals)}")
                             vals = vals.astype(float)  # allow NaNs
                             vals[~topo_mask] = np.nan
+                            print(f"[DEBUG] vals after mask: min={np.nanmin(vals)}, max={np.nanmax(vals)}, nan_count={np.sum(np.isnan(vals))}")
                     except Exception:
                         logger.exception("Failed to apply topology mask to feature values")
 
