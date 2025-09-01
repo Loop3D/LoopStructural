@@ -222,8 +222,8 @@ class StratigraphicColumn(Observable['StratigraphicColumn']):
         if basement:
             self.add_basement()
             
-        else:
-            self.order = []
+        
+        self.order = []
         self.group_mapping = {}
         self.notify('column_cleared')
     def add_unit(self, name,*, colour=None, thickness=None, where='top',id=None):
@@ -460,7 +460,7 @@ class StratigraphicColumn(Observable['StratigraphicColumn']):
         with self.freeze_notifications():
             self.clear(basement=False)
             elements_data = data.get("elements", [])
-            for element_data in elements_data:
+            for element_data in reversed(elements_data):
                 if "unconformity_type" in element_data:
                     element = StratigraphicUnconformity.from_dict(element_data)
                 else:
