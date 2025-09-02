@@ -1,5 +1,14 @@
 # Changelog
 
+## [1.6.21](https://github.com/Loop3D/LoopStructural/compare/v1.6.20...v1.6.21) (2025-09-02)
+
+
+### Bug Fixes
+
+* add model reference when converting from feature to frame ([ef07373](https://github.com/Loop3D/LoopStructural/commit/ef07373a816e60f4e931f4f32975ded13eb528f6))
+* change fault axis to info not warning ([68abea7](https://github.com/Loop3D/LoopStructural/commit/68abea77ceaad03db2255da0a7f6bcd65ee9df4c))
+* clear column actually removes elements. Also load from dict adds in reversed order to maintain correct order ([35ff6a6](https://github.com/Loop3D/LoopStructural/commit/35ff6a6427b32cb0ee45c3cedae998477b49a491))
+
 ## [1.6.20](https://github.com/Loop3D/LoopStructural/compare/v1.6.19...v1.6.20) (2025-08-25)
 
 
