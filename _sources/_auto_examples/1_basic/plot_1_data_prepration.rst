@@ -170,7 +170,7 @@ for the interpolator to be able to find a solution.
           <th>0</th>
           <td>0.000000</td>
           <td>0.0</td>
-          <td>1.629428</td>
+          <td>1.838459</td>
           <td>0.0</td>
           <td>conformable</td>
         </tr>
@@ -178,7 +178,7 @@ for the interpolator to be able to find a solution.
           <th>1</th>
           <td>1.111111</td>
           <td>0.0</td>
-          <td>1.562517</td>
+          <td>1.598706</td>
           <td>0.0</td>
           <td>conformable</td>
         </tr>
@@ -186,7 +186,7 @@ for the interpolator to be able to find a solution.
           <th>2</th>
           <td>2.222222</td>
           <td>0.0</td>
-          <td>1.992765</td>
+          <td>1.176306</td>
           <td>0.0</td>
           <td>conformable</td>
         </tr>
@@ -194,7 +194,7 @@ for the interpolator to be able to find a solution.
           <th>3</th>
           <td>3.333333</td>
           <td>0.0</td>
-          <td>1.576759</td>
+          <td>1.326732</td>
           <td>0.0</td>
           <td>conformable</td>
         </tr>
@@ -202,7 +202,7 @@ for the interpolator to be able to find a solution.
           <th>4</th>
           <td>4.444444</td>
           <td>0.0</td>
-          <td>1.053450</td>
+          <td>1.758904</td>
           <td>0.0</td>
           <td>conformable</td>
         </tr>
@@ -330,7 +330,7 @@ next tutorial will show how to use the lavavu visualisation model.
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 1.088 seconds)
+   **Total running time of the script:** (0 minutes 1.146 seconds)
 
 
 .. _sphx_glr_download__auto_examples_1_basic_plot_1_data_prepration.py:

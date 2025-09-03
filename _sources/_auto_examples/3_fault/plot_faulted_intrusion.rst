@@ -91,7 +91,7 @@ representative of modelling an intrusion.
  .. code-block:: none
 
 
-    <matplotlib.contour.QuadContourSet object at 0x7f5044042db0>
+    <matplotlib.contour.QuadContourSet object at 0x7fe788e8aed0>
 
 
 
@@ -186,7 +186,7 @@ fault frame and an expected displacement model.
 
  .. code-block:: none
 
-    ERROR:root:Input port 0 of algorithm vtkAppendFilter (0x5576b46adb10) has 0 connections but is not optional.
+    ERROR:root:Input port 0 of algorithm vtkAppendFilter (0x55bfffade900) has 0 connections but is not optional.
     /home/runner/work/LoopStructural/LoopStructural/LoopStructural/modelling/features/fault/_fault_segment.py:277: RuntimeWarning: invalid value encountered in divide
       v[mask, :] /= np.linalg.norm(v[mask, :], axis=1)[:, None]
 
@@ -196,7 +196,7 @@ fault frame and an expected displacement model.
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 9.962 seconds)
+   **Total running time of the script:** (0 minutes 10.041 seconds)
 
 
 .. _sphx_glr_download__auto_examples_3_fault_plot_faulted_intrusion.py:
