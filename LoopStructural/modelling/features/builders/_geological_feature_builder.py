@@ -419,7 +419,14 @@ class GeologicalFeatureBuilder(BaseBuilder):
             )
         else:
             return np.zeros((0, 5))
-
+    def get_inequality_pair_constraints(self):
+        mask = np.all(~np.isnan(self.data.loc[:,pairs_name()].to_numpy(float())),axis=1)
+        if mask.shape[0] > 0:
+            return self.data.loc[mask, xyz_names() + pairs_name()+weight_name()].to_numpy(float)
+    def get_inequality_constraints(self):
+        mask = np.all(~np.isnan(self.data.loc[:,inequality_name()].to_numpy(float())),axis=1)
+        if mask.shape[0] > 0:
+            return self.data.loc[mask, xyz_names() + inequality_name()+weight_name()].to_numpy(float)
     def get_data_locations(self):
         """
         Get only the location for all data points
