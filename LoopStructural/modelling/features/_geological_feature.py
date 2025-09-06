@@ -283,6 +283,8 @@ class GeologicalFeature(BaseFeature):
         value_constraints = self.builder.get_value_constraints()
         gradient_constraints = self.builder.get_gradient_constraints()
         norm_constraints = self.builder.get_norm_constraints()
+        inequality_pair_constraints = self.builder.get_inequality_pair_constraints()
+        inequality_constraints = self.builder.get_inequality_constraints()
         data = []
         if gradient_constraints.shape[0] > 0:
 
@@ -321,4 +323,18 @@ class GeologicalFeature(BaseFeature):
                         name=f"{self.name}_value",
                     )
                 )
+        if inequality_constraints.shape[0] > 0:
+
+            data.append(
+                ValuePoints(
+                    locations=self.model.rescale(
+                        inequality_constraints[:, :3]
+                    ),
+                    values=value_constraints[:, 3],
+                    name=f"{name}_inequality",
+                    properties = {'l':inequality_constraints[:,3],'u':inequality_constraints[:,4]}
+
+                )
+            )
+        # if inequality_pair_constraints.shape[0]
         return data
