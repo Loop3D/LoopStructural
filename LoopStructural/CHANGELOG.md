@@ -1,5 +1,14 @@
 # Changelog
 
+## [1.6.22](https://github.com/Loop3D/LoopStructural/compare/v1.6.21...v1.6.22) (2025-09-08)
+
+
+### Bug Fixes
+
+* add export of inequalities ([05a160e](https://github.com/Loop3D/LoopStructural/commit/05a160ee142cb8f49b715104c55a82023f569927))
+* dictionary serialisation was reversing order ([8bb63bb](https://github.com/Loop3D/LoopStructural/commit/8bb63bbeb49ed83745f1307210db056a53492931))
+* disable inequality data ([c9d16e9](https://github.com/Loop3D/LoopStructural/commit/c9d16e9717b470c29a11c93dd43664de0c99e5c4))
+
 ## [1.6.21](https://github.com/Loop3D/LoopStructural/compare/v1.6.20...v1.6.21) (2025-09-02)
 
 
