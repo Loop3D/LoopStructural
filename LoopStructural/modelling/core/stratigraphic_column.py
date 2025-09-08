@@ -460,7 +460,7 @@ class StratigraphicColumn(Observable['StratigraphicColumn']):
         with self.freeze_notifications():
             self.clear(basement=False)
             elements_data = data.get("elements", [])
-            for element_data in reversed(elements_data):
+            for element_data in elements_data:
                 if "unconformity_type" in element_data:
                     element = StratigraphicUnconformity.from_dict(element_data)
                 else:
