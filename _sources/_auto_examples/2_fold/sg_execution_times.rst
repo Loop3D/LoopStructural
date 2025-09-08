@@ -6,7 +6,7 @@
 
 Computation times
 =================
-**00:37.159** total execution time for 2 files **from _auto_examples/2_fold**:
+**00:36.593** total execution time for 2 files **from _auto_examples/2_fold**:
 
 .. container::
 
@@ -33,8 +33,8 @@ Computation times
      - Time
      - Mem (MB)
    * - :ref:`sphx_glr__auto_examples_2_fold_plot_2__refolded_folds.py` (``plot_2__refolded_folds.py``)
-     - 00:29.643
+     - 00:28.999
      - 0.0
    * - :ref:`sphx_glr__auto_examples_2_fold_plot_1_adding_folds_to_surfaces.py` (``plot_1_adding_folds_to_surfaces.py``)
-     - 00:07.516
+     - 00:07.594
      - 0.0

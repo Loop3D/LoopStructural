@@ -254,7 +254,7 @@ in the North of the model.
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 8.007 seconds)
+   **Total running time of the script:** (0 minutes 7.886 seconds)
 
 
 .. _sphx_glr_download__auto_examples_4_advanced_plot_2_local_weights.py:
