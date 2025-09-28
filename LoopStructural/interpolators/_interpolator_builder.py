@@ -77,9 +77,6 @@ class InterpolatorBuilder:
         bool
             True if constraints were added successfully
         """
-        InterpolatorBuilder
-            reference to the builder
-        """
 
         if self.interpolator:
             self.interpolator.set_gradient_constraints(gradient_constraints)
