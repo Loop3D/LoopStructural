@@ -69,7 +69,6 @@ class LambdaGeologicalFeature(BaseFeature):
         mask = self._calculate_mask(pos, ignore_regions=ignore_regions)
         pos = self._apply_faults(pos)
         if self.function is not None:
-
             v[mask] = self.function(pos[mask,:])
         return v
 
@@ -159,3 +158,7 @@ class LambdaGeologicalFeature(BaseFeature):
             self.faults,
             self.builder,
         )
+    def is_valid(self):
+        if self.function is None and self.gradient_function is None:
+            return False
+        return True
