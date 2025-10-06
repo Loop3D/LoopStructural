@@ -74,7 +74,7 @@ class FoldFrame(StructuralFrame):
         s1gyg /= np.linalg.norm(s1gyg, axis=1)[:, None]
         l1 = points[:, 3:]
         l1 /= np.linalg.norm(l1, axis=1)[:, None]
-        fad = self.features[1].evaluate_value(points[:, :3])
+        fad = self.features[1].evaluate_value(points[:, :3])    
         # Turn the faults back on
         # self.features[0].faults_enabled = True
         # self.features[1].faults_enabled = True
