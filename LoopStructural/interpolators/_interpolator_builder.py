@@ -100,15 +100,14 @@ class InterpolatorBuilder:
         if self.interpolator:
             self.interpolator.set_normal_constraints(normal_constraints)
         return self
-    #TODO implement/check inequalities
-    # def add_inequality_constraints(self, inequality_constraints: np.ndarray) -> 'InterpolatorBuilder':
-    #     if self.interpolator:
-    #         self.interpolator.set_value_inequality_constraints(inequality_constraints)
-    #     return self
-    # def add_inequality_pair_constraints(self, inequality_pair_constraints: np.ndarray) -> 'InterpolatorBuilder':
-    #     if self.interpolator:
-    #         self.interpolator.set_inequality_pairs_constraints(inequality_pair_constraints)
-    #     return self
+    def add_inequality_constraints(self, inequality_constraints: np.ndarray) -> 'InterpolatorBuilder':
+        if self.interpolator:
+            self.interpolator.set_value_inequality_constraints(inequality_constraints)
+        return self
+    def add_inequality_pair_constraints(self, inequality_pair_constraints: np.ndarray) -> 'InterpolatorBuilder':
+        if self.interpolator:
+            self.interpolator.set_inequality_pairs_constraints(inequality_pair_constraints)
+        return self
 
     def setup_interpolator(self, **kwargs) -> 'InterpolatorBuilder':
         """This adds all of the constraints to the interpolator and
