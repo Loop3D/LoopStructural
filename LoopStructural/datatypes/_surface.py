@@ -17,7 +17,53 @@ class Surface:
     values: Optional[np.ndarray] = None
     properties: Optional[dict] = None
     cell_properties: Optional[dict] = None
-
+    def __post_init__(self):
+        if self.vertices.ndim != 2 or self.vertices.shape[1] != 3:
+            raise ValueError("vertices must be a Nx3 numpy array")
+        if self.triangles.ndim != 2 or self.triangles.shape[1] != 3:
+            raise ValueError("triangles must be a Mx3 numpy array")
+        if self.normals is not None:
+            if (self.normals.shape[1] != 3 or 
+                (self.normals.shape[0] != self.vertices.shape[0] and self.normals.shape[0] != self.triangles.shape[0])):
+                raise ValueError("normals must be a Nx3 numpy array where N is the number of vertices or triangles")
+        if self.values is not None:
+            if self.values.shape[0] != self.vertices.shape[0]:
+                raise ValueError("values must be a N numpy array where N is the number of vertices")
+        if self.properties is not None:
+            for k, v in self.properties.items():
+                if len(v) != self.vertices.shape[0]:
+                    raise ValueError(f"property {k} must be a list or array of length {self.vertices.shape[0]}")
+        if self.cell_properties is not None:
+            for k, v in self.cell_properties.items():
+                if len(v) != self.triangles.shape[0]:
+                    raise ValueError(f"cell property {k} must be a list or array of length {self.triangles.shape[0]}")
+        if np.isnan(self.vertices).any():
+            self.remove_nan_vertices()
+    def remove_nan_vertices(self):
+        """Remove vertices with NaN values from the surface. Also removes any triangles that reference these vertices.
+        This modifies the vertices and triangles in place. Any associated properties are also updated.
+        """
+        vertex_index = np.arange(0, self.vertices.shape[0])
+        not_nan_indexes = np.where(~np.isnan(self.vertices).any(axis=1))[0]
+        new_vertex_map = np.zeros(self.vertices.shape[0], dtype=int) - 1
+        new_vertex_map[not_nan_indexes] = np.arange(0, not_nan_indexes.shape[0])
+        nan_indexes = np.setdiff1d(vertex_index, not_nan_indexes)
+        triangles_with_nan = np.any(np.isin(self.triangles, nan_indexes), axis=1)
+        nan_triangle_indexes = np.where(triangles_with_nan)[0]
+        new_triangles = np.delete(self.triangles, nan_triangle_indexes, axis=0)
+        vertices = self.vertices[not_nan_indexes]
+        self.triangles = new_vertex_map[new_triangles]
+        self.vertices = vertices
+        if self.normals is not None:
+            self.normals = self.normals[not_nan_indexes]
+        if self.values is not None:
+            self.values = self.values[not_nan_indexes]
+        if self.properties is not None:
+            for k, v in self.properties.items():
+                self.properties[k] = np.array(v)[not_nan_indexes]
+        if self.cell_properties is not None:
+            for k, v in self.cell_properties.items():
+                self.cell_properties[k] = np.array(v)[~triangles_with_nan]
     @property
     def triangle_area(self):
         """_summary_
