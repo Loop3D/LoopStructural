@@ -36,6 +36,26 @@ class BoundingBox:
         nsteps : Optional[np.ndarray], optional
             _description_, by default None
         """
+        if origin is not None and len(origin) != dimensions:
+            logger.warning(
+                f"Origin has {len(origin)} dimensions but bounding box has {dimensions}"
+            )
+            raise LoopValueError("Origin has incorrect number of dimensions")
+        if maximum is not None and len(maximum) != dimensions:
+            logger.warning(
+                f"Maximum has {len(maximum)} dimensions but bounding box has {dimensions}"
+            )
+            raise LoopValueError("Maximum has incorrect number of dimensions")
+        if global_origin is not None and len(global_origin) != dimensions:
+            logger.warning(
+                f"Global origin has {len(global_origin)} dimensions but bounding box has {dimensions}"
+            )
+            raise LoopValueError("Global origin has incorrect number of dimensions")
+        if nsteps is not None and len(nsteps) != dimensions:
+            logger.warning(
+                f"Nsteps has {len(nsteps)} dimensions but bounding box has {dimensions}"
+            )
+            raise LoopValueError("Nsteps has incorrect number of dimensions")
         # reproject relative to the global origin, if origin is not provided.
         # we want the local coordinates to start at 0
         # otherwise uses provided origin. This is useful for having multiple bounding boxes rela
