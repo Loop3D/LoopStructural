@@ -192,7 +192,7 @@ class Surface:
             d.get('cell_properties', None),
         )
 
-    def save(self, filename, replace_spaces=True, ext=None):
+    def save(self, filename, *, group='Loop',replace_spaces=True, ext=None):
         filename = filename.replace(' ', '_') if replace_spaces else filename
         if isinstance(filename, (io.StringIO, io.BytesIO)):
             if ext is None:
@@ -225,7 +225,7 @@ class Surface:
         elif ext == 'geoh5':
             from LoopStructural.export.geoh5 import add_surface_to_geoh5
 
-            add_surface_to_geoh5(filename, self)
+            add_surface_to_geoh5(filename, self, groupname=group)
 
         elif ext == 'pkl':
             import pickle

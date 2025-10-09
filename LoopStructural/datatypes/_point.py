@@ -49,7 +49,7 @@ class ValuePoints:
         except ImportError:
             logger.error("pyvista is required for vtk")
 
-    def save(self, filename: Union[str, io.StringIO], ext=None):
+    def save(self, filename: Union[str, io.StringIO], *, group='Loop',ext=None):
         if isinstance(filename, io.StringIO):
             if ext is None:
                 raise ValueError('Please provide an extension for StringIO')
@@ -68,7 +68,7 @@ class ValuePoints:
         elif ext == 'geoh5':
             from LoopStructural.export.geoh5 import add_points_to_geoh5
 
-            add_points_to_geoh5(filename, self)
+            add_points_to_geoh5(filename, self, groupname=group)
         elif ext == 'pkl':
             import pickle
 
@@ -189,7 +189,7 @@ class VectorPoints:
         except ImportError:
             logger.error("pyvista is required for vtk")
 
-    def save(self, filename):
+    def save(self, filename,*, group='Loop'):
         filename = str(filename)
         ext = filename.split('.')[-1]
         if ext == 'json':
@@ -203,7 +203,7 @@ class VectorPoints:
         elif ext == 'geoh5':
             from LoopStructural.export.geoh5 import add_points_to_geoh5
 
-            add_points_to_geoh5(filename, self)
+            add_points_to_geoh5(filename, self, groupname=group)
         elif ext == 'pkl':
             import pickle
 
