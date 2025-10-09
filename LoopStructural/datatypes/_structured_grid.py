@@ -104,7 +104,7 @@ class StructuredGrid:
         for name, data in other.properties.items():
             self.properties[name] = data
 
-    def save(self, filename):
+    def save(self, filename, *,group='Loop'):
         filename = str(filename)
         ext = filename.split('.')[-1]
         if ext == 'json':
@@ -118,7 +118,7 @@ class StructuredGrid:
         elif ext == 'geoh5':
             from LoopStructural.export.geoh5 import add_structured_grid_to_geoh5
 
-            add_structured_grid_to_geoh5(filename, self)
+            add_structured_grid_to_geoh5(filename, self, groupname=group)
         elif ext == 'pkl':
             import pickle
 
