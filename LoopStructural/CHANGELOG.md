@@ -1,5 +1,14 @@
 # Changelog
 
+## [1.6.23](https://github.com/Loop3D/LoopStructural/compare/v1.6.22...v1.6.23) (2025-10-09)
+
+
+### Bug Fixes
+
+* add function to clean nan vertices and post_init to validate data ([f69f6d8](https://github.com/Loop3D/LoopStructural/commit/f69f6d8132ec5f14d62785183f1f5c447414c937))
+* adding groupname to save option to geoh5 ([d8a8c63](https://github.com/Loop3D/LoopStructural/commit/d8a8c63cd9ce0269c8aad55df9dc492b17895e8d))
+* check dimensions of bounding box constructor ([39b694b](https://github.com/Loop3D/LoopStructural/commit/39b694b281502de8a7997ccf010dcb5d9ee4a17f))
+
 ## [1.6.22](https://github.com/Loop3D/LoopStructural/compare/v1.6.21...v1.6.22) (2025-09-08)
 
 
