@@ -11,10 +11,26 @@ __all__ = ["Observer", "Observable", "Disposable"]
 
 @runtime_checkable
 class Observer(Protocol):
-    """Objects implementing an *update* method can subscribe."""
+    """Protocol for objects that can observe events from Observable objects.
+
+    Classes implementing this protocol must provide an update method that
+    will be called when observed events occur.
+    """
 
     def update(self, observable: "Observable", event: str, *args: Any, **kwargs: Any) -> None:
-        """Receive a notification."""
+        """Receive a notification from an observable object.
+
+        Parameters
+        ----------
+        observable : Observable
+            The observable object that triggered the event
+        event : str
+            The name of the event that occurred
+        *args : Any
+            Positional arguments associated with the event
+        **kwargs : Any
+            Keyword arguments associated with the event
+        """
 
 
 Callback = Callable[["Observable", str, Any], None]
@@ -22,7 +38,16 @@ T = TypeVar("T", bound="Observable")
 
 
 class Disposable:
-    """A small helper that detaches an observer when disposed."""
+    """A helper class that manages detachment of observers.
+
+    This class provides a convenient way to detach observers from observables.
+    It can be used as a context manager for temporary subscriptions.
+
+    Parameters
+    ----------
+    detach : Callable[[], None]
+        Function to call when disposing of the observer
+    """
 
     __slots__ = ("_detach",)
 
@@ -44,7 +69,19 @@ class Disposable:
 
 
 class Observable(Generic[T]):
-    """Base‑class that provides Observer pattern plumbing."""
+    """Base class that implements the Observer pattern.
+
+    This class provides the infrastructure for managing observers and 
+    notifying them of events. Observers can be attached to specific events
+    or to all events.
+
+    Attributes
+    ----------
+    _observers : dict[str, weakref.WeakSet[Callback]]
+        Internal storage mapping event names to sets of callbacks
+    _any_observers : weakref.WeakSet[Callback]
+        Set of callbacks that listen to all events
+    """
 
     #: Internal storage: mapping *event* → WeakSet[Callback]
     _observers: dict[str, weakref.WeakSet[Callback]]
@@ -59,9 +96,19 @@ class Observable(Generic[T]):
 
     # ‑‑‑ subscription api --------------------------------------------------
     def attach(self, listener: Observer | Callback, event: str | None = None) -> Disposable:  
-        """Register *listener* for *event* (all events if *event* is None).
+        """Register a listener for specific event or all events.
 
-        Returns a :class:`Disposable` so the caller can easily detach again.
+        Parameters
+        ----------
+        listener : Observer | Callback
+            The observer object or callback function to attach
+        event : str | None, optional
+            The specific event to listen for. If None, listens to all events, by default None
+
+        Returns
+        -------
+        Disposable
+            A disposable object that can be used to detach the listener
         """
         callback: Callback = (
             listener.update  # type: ignore[attr‑defined]
@@ -78,7 +125,15 @@ class Observable(Generic[T]):
         return Disposable(lambda: self.detach(listener, event))
 
     def detach(self, listener: Observer | Callback, event: str | None = None) -> None:  
-        """Unregister a previously attached *listener*."""
+        """Unregister a previously attached listener.
+
+        Parameters
+        ----------
+        listener : Observer | Callback
+            The observer object or callback function to detach
+        event : str | None, optional
+            The specific event to stop listening for. If None, detaches from all events, by default None
+        """
 
         callback: Callback = (
             listener.update  # type: ignore[attr‑defined]
@@ -94,12 +149,27 @@ class Observable(Generic[T]):
             else:
                 self._observers.get(event, weakref.WeakSet()).discard(callback)
     def __getstate__(self):
+        """Prepare object state for pickling by removing unpicklable attributes.
+
+        Returns
+        -------
+        dict
+            Object state dictionary with thread locks and weak references removed
+        """
         state = self.__dict__.copy()
         state.pop('_lock', None)  # RLock cannot be pickled
         state.pop('_observers', None)  # WeakSet cannot be pickled
         state.pop('_any_observers', None)
         return state
+    
     def __setstate__(self, state):
+        """Restore object state after unpickling and reinitialize locks and observers.
+
+        Parameters
+        ----------
+        state : dict
+            The restored object state dictionary
+        """
         self.__dict__.update(state)
         self._lock = threading.RLock()
         self._observers = {}
@@ -107,7 +177,17 @@ class Observable(Generic[T]):
         self._frozen = 0
     # ‑‑‑ notification api --------------------------------------------------
     def notify(self: T, event: str, *args: Any, **kwargs: Any) -> None:  
-        """Notify observers that *event* happened."""
+        """Notify all observers that an event has occurred.
+
+        Parameters
+        ----------
+        event : str
+            The name of the event that occurred
+        *args : Any
+            Positional arguments to pass to the observers
+        **kwargs : Any
+            Keyword arguments to pass to the observers
+        """
 
         with self._lock:
             if self._frozen:
@@ -134,7 +214,17 @@ class Observable(Generic[T]):
     # ‑‑‑ batching ----------------------------------------------------------
     @contextmanager
     def freeze_notifications(self):  
-        """Context manager that batches notifications until exit."""
+        """Context manager that batches notifications until exit.
+
+        While in this context, notifications are queued rather than sent
+        immediately. When the context exits, all queued notifications are
+        sent in order.
+
+        Yields
+        ------
+        Observable
+            Self reference for method chaining
+        """
 
         with self._lock:
             self._frozen += 1

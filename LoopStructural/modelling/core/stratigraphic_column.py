@@ -5,8 +5,14 @@ from LoopStructural.utils import rng, getLogger, Observable, random_colour
 logger = getLogger(__name__)
 logger.info("Imported LoopStructural Stratigraphic Column module")
 class UnconformityType(enum.Enum):
-    """
-    An enumeration for different types of unconformities in a stratigraphic column.
+    """Enumeration for different types of unconformities in a stratigraphic column.
+    
+    Attributes
+    ----------
+    ERODE : str
+        Erosional unconformity type
+    ONLAP : str
+        Onlap unconformity type
     """
 
     ERODE = 'erode'
@@ -14,8 +20,14 @@ class UnconformityType(enum.Enum):
 
 
 class StratigraphicColumnElementType(enum.Enum):
-    """
-    An enumeration for different types of elements in a stratigraphic column.
+    """Enumeration for different types of elements in a stratigraphic column.
+    
+    Attributes
+    ----------
+    UNIT : str
+        Stratigraphic unit element type
+    UNCONFORMITY : str
+        Unconformity element type
     """
 
     UNIT = 'unit'
@@ -23,14 +35,29 @@ class StratigraphicColumnElementType(enum.Enum):
 
 
 class StratigraphicColumnElement:
-    """
-    A class to represent an element in a stratigraphic column, which can be a unit or a topological object
-    for example unconformity.
+    """Base class for elements in a stratigraphic column.
+    
+    This class represents a generic element that can be either a stratigraphic unit 
+    or a topological object such as an unconformity.
+
+    Parameters
+    ----------
+    uuid : str, optional
+        Unique identifier for the element. If None, a UUID4 is generated, by default None
+
+    Attributes
+    ----------
+    uuid : str
+        Unique identifier for the element
     """
 
     def __init__(self, uuid=None):
-        """
-        Initializes the StratigraphicColumnElement with a uuid.
+        """Initialize the StratigraphicColumnElement with a UUID.
+
+        Parameters
+        ----------
+        uuid : str, optional
+            Unique identifier for the element. If None, a UUID4 is generated, by default None
         """
         if uuid is None:
             import uuid as uuid_module
@@ -40,13 +67,53 @@ class StratigraphicColumnElement:
 
 
 class StratigraphicUnit(StratigraphicColumnElement, Observable['StratigraphicUnit']):
-    """
-    A class to represent a stratigraphic unit.
+    """A class representing a stratigraphic unit in the geological column.
+
+    This class combines the basic element functionality with observable capabilities
+    to track changes to unit properties such as thickness and ID.
+
+    Parameters
+    ----------
+    uuid : str, optional
+        Unique identifier for the unit, by default None
+    name : str, optional
+        Human-readable name for the unit, by default None
+    colour : array_like, optional
+        RGB colour values for visualization. If None, random colour is assigned, by default None
+    thickness : float, optional
+        Thickness of the unit, by default None
+    data : dict, optional
+        Additional data associated with the unit, by default None
+    id : int, optional
+        Numeric identifier for the unit, by default None
+
+    Attributes
+    ----------
+    element_type : StratigraphicColumnElementType
+        Type of the element (always UNIT for this class)
+    min_value : float
+        Minimum scalar field value for the unit
+    max_value : float
+        Maximum scalar field value for the unit
     """
 
     def __init__(self, *, uuid=None, name=None, colour=None, thickness=None, data=None, id=None):
-        """
-        Initializes the StratigraphicUnit with a name and an optional description.
+        """Initialize the StratigraphicUnit.
+
+        Parameters
+        ----------
+        uuid : str, optional
+            Unique identifier for the unit, by default None
+        name : str, optional
+            Human-readable name for the unit, by default None
+        colour : array_like, optional
+            RGB colour values for visualization. If None, random colour is assigned, by default None
+        thickness : float, optional
+            Thickness of the unit, by default None
+        data : dict, optional
+            Additional data associated with the unit, by default None
+        id : int, optional
+            Numeric identifier for the unit, by default None
         """
         StratigraphicColumnElement.__init__(self, uuid)
         Observable.__init__(self)
@@ -62,39 +129,78 @@ class StratigraphicUnit(StratigraphicColumnElement, Observable['StratigraphicUni
         self.max_value = None  # Maximum scalar field value for the unit
     @property
     def id(self):
+        """Get the numeric identifier of the unit.
+
+        Returns
+        -------
+        int
+            The numeric identifier
+        """
         return self._id
+    
     @property
     def thickness(self):
+        """Get the thickness of the unit.
+
+        Returns
+        -------
+        float
+            The thickness value
+        """
         return self._thickness
+    
     @thickness.setter
     def thickness(self, value):
-        """
-        Sets the thickness of the unit.
+        """Set the thickness of the unit and notify observers.
+
+        Parameters
+        ----------
+        value : float
+            The new thickness value
         """
         self._thickness = value
         self.notify('unit/thickness_updated', unit=self)
+    
     @id.setter
     def id(self, value):
-        """
-        Sets the ID of the unit.
+        """Set the ID of the unit and notify observers.
+
+        Parameters
+        ----------
+        value : int
+            The new ID value
         """
         if not isinstance(value, int):
             raise TypeError("ID must be an integer")
         self._id = value
         self.notify('unit/id_updated', unit=self)
     def min(self):
-        """
-        Returns the minimum value of the unit.
+        """Return the minimum scalar field value of the unit.
+
+        Returns
+        -------
+        float
+            Minimum value, or 0 if not set
         """
         return self.min_value if self.min_value is not None else 0
+    
     def max(self):
-        """
-        Returns the maximum value of the unit.
+        """Return the maximum scalar field value of the unit.
+
+        Returns
+        -------
+        float
+            Maximum value, or infinity if not set
         """
         return self.max_value if self.max_value is not None else np.inf
+    
     def to_dict(self):
-        """
-        Converts the stratigraphic unit to a dictionary representation.
+        """Convert the stratigraphic unit to a dictionary representation.
+
+        Returns
+        -------
+        dict
+            Dictionary containing unit properties: name, colour, thickness, uuid, and id
         """
         colour = self.colour
         if isinstance(colour, np.ndarray):
@@ -103,8 +209,22 @@ class StratigraphicUnit(StratigraphicColumnElement, Observable['StratigraphicUni
 
     @classmethod
     def from_dict(cls, data):
-        """
-        Creates a StratigraphicUnit from a dictionary representation.
+        """Create a StratigraphicUnit from a dictionary representation.
+
+        Parameters
+        ----------
+        data : dict
+            Dictionary containing unit properties
+
+        Returns
+        -------
+        StratigraphicUnit
+            New stratigraphic unit instance
+
+        Raises
+        ------
+        TypeError
+            If data is not a dictionary
         """
         if not isinstance(data, dict):
             raise TypeError("Data must be a dictionary")
@@ -115,8 +235,12 @@ class StratigraphicUnit(StratigraphicColumnElement, Observable['StratigraphicUni
         return cls(uuid=uuid, name=name, colour=colour, thickness=thickness, id=data.get("id", None))
 
     def __str__(self):
-        """
-        Returns a string representation of the stratigraphic unit.
+        """Return a string representation of the stratigraphic unit.
+
+        Returns
+        -------
+        str
+            String representation showing name, colour, and thickness
         """
         return (
             f"StratigraphicUnit(name={self.name}, colour={self.colour}, thickness={self.thickness})"
@@ -175,49 +299,92 @@ class StratigraphicUnconformity(StratigraphicColumnElement):
         uuid = data.get("uuid", None)
         return cls(uuid=uuid, name=name, unconformity_type=unconformity_type)
 class StratigraphicGroup:
-    """
-    A class to represent a group of stratigraphic units.
-    This class is not fully implemented and serves as a placeholder for future development.
+    """A class representing a group of stratigraphic units.
+    
+    This class serves as a container for related stratigraphic units and provides
+    a placeholder for future group-level functionality.
+
+    Parameters
+    ----------
+    name : str, optional
+        Name of the stratigraphic group, by default None
+    units : list, optional
+        List of stratigraphic units in the group, by default None
+
+    Attributes
+    ----------
+    name : str
+        Name of the group
+    units : list
+        List of units contained in the group
     """
 
     def __init__(self, name=None, units=None):
-        """
-        Initializes the StratigraphicGroup with a name and an optional list of units.
+        """Initialize the StratigraphicGroup.
+
+        Parameters
+        ----------
+        name : str, optional
+            Name of the stratigraphic group, by default None
+        units : list, optional
+            List of stratigraphic units in the group, by default None
         """
         self.name = name
         self.units = units if units is not None else []
 
 
 class StratigraphicColumn(Observable['StratigraphicColumn']):
-    """
-    A class to represent a stratigraphic column, which is a vertical section of the Earth's crust
-    showing the sequence of rock layers and their relationships.
+    """A class representing a stratigraphic column.
+    
+    The stratigraphic column represents a vertical section of the Earth's crust 
+    showing the sequence of rock layers and their relationships, including 
+    unconformities and basement rock.
+
+    Attributes
+    ----------
+    order : list
+        Ordered list of stratigraphic elements (units and unconformities)
+    group_mapping : dict
+        Mapping of groups to their constituent units
     """
 
     def __init__(self):
-        """
-        Initializes the StratigraphicColumn with a name and a list of layers.
-        """
+        """Initialize the StratigraphicColumn with basement and base unconformity."""
         super().__init__()
         self.order = []
         self.add_basement()
         self.group_mapping = {}
 
     def get_new_id(self):
-        """
-        Generates a new unique ID for a stratigraphic unit.
+        """Generate a new unique ID for a stratigraphic unit.
+
+        Returns
+        -------
+        int
+            New unique ID for the next unit
         """
         if not self.order:
             return 0
         return max([u.id for u in self.order if isinstance(u, StratigraphicUnit)], default=0) + 1
+    
     def add_basement(self):
+        """Add basement unit and base unconformity to the stratigraphic column.
+        
+        This method adds the fundamental basement unit with infinite thickness
+        and an erosional unconformity at the base of the column.
+        """
         self.add_unit(name='Basement', colour='grey', thickness=np.inf)
         self.add_unconformity(
             name='Base Unconformity', unconformity_type=UnconformityType.ERODE
         )
+    
     def clear(self, basement=True):
-        """
-        Clears the stratigraphic column, removing all elements.
+        """Clear the stratigraphic column, removing all elements.
+
+        Parameters
+        ----------
+        basement : bool, optional
+            Whether to add basement after clearing, by default True
         """
         if basement:
             self.add_basement()

@@ -6,6 +6,23 @@ logger = getLogger(__name__)
 
 
 def strike_symbol(strike):
+    """Create rotation vectors for geological strike symbols.
+
+    Generate rotation matrix and vectors for displaying geological strike symbols
+    based on the strike angle.
+
+    Parameters
+    ----------
+    strike : float
+        Strike angle in degrees
+
+    Returns
+    -------
+    rotated : np.ndarray
+        Rotated vector for primary strike direction
+    r2 : np.ndarray
+        Rotated vector for secondary strike direction
+    """
     R = np.zeros((2, 2))
     R[0, 0] = np.cos(np.deg2rad(-strike))
     R[0, 1] = -np.sin(np.deg2rad(-strike))
@@ -25,16 +42,27 @@ def strike_symbol(strike):
 
 
 def read_voxet(voxetname, propertyfile):
-    """
-    Read a gocad property file and the geometry information from the .vo file
-    voxetname - is the path to the voxet file
-    propertyfile is the path to the binary file
+    """Read a GOCAD property file and the geometry information from the .vo file.
+
+    Parameters
+    ----------
+    voxetname : str
+        Path to the voxet (.vo) file
+    propertyfile : str
+        Path to the binary property file
+
     Returns
-    origin numpy array
-    voxet_extent - is the length of each axis of the voxet
-    N is the number of steps in the voxet
-    array is the property values
-    steps is the size of the step vector for the voxet
+    -------
+    origin : np.ndarray
+        Origin point of the voxet as numpy array
+    voxet_extent : np.ndarray
+        Length of each axis of the voxet
+    N : np.ndarray
+        Number of steps in each direction of the voxet
+    array : np.ndarray
+        Property values from the binary file
+    steps : np.ndarray
+        Size of the step vector for the voxet
     """
     array = np.fromfile(propertyfile, dtype="float32")
     array = array.astype("<f4")  # little endian
@@ -56,12 +84,22 @@ def read_voxet(voxetname, propertyfile):
 
 
 def write_property_to_gocad_voxet(propertyfilename, propertyvalues):
-    """
-    This function writes a numpy array into the right format for a gocad
-    voxet property file. This assumet there is a property already added to the .vo file,
-    and is just updating the file.
-    propertyfile - string giving the path to the file to write
-    propertyvalues - numpy array nz,ny,nx ordering and in float format
+    """Write a numpy array to a GOCAD voxet property file format.
+
+    This function writes a numpy array into the right format for a GOCAD
+    voxet property file. This assumes there is a property already added to 
+    the .vo file, and is just updating the file.
+
+    Parameters
+    ----------
+    propertyfilename : str
+        Path to the file where the property values will be written
+    propertyvalues : np.ndarray
+        Numpy array with nz,ny,nx ordering and in float format
+
+    Notes
+    -----
+    The property values are converted to big-endian format before writing.
     """
     propertyvalues = propertyvalues.astype(">f4")  # big endian
     #     array = propertyvalues.newbyteorder()

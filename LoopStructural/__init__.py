@@ -23,8 +23,21 @@ ch.setLevel(logging.WARNING)
 loggers = {}
 @dataclass
 class LoopStructuralConfig:
-    """
-    Configuration for LoopStructural 
+    """Configuration for LoopStructural package.
+
+    This dataclass holds configuration parameters for the LoopStructural
+    geological modelling package.
+
+    Parameters
+    ----------
+    nelements : int, optional
+        The default number of elements to use in interpolation, by default 10_000
+
+    Examples
+    --------
+    >>> config = LoopStructuralConfig(nelements=50000)
+    >>> config.nelements
+    50000
     """
    
     nelements: int = 10_000
@@ -42,15 +55,21 @@ logger.info("Imported LoopStructural")
 
 
 def setLogging(level="info", handler=None):
-    """
-    Set the logging parameters for log file or custom handler
+    """Set the logging parameters for log file or custom handler.
 
     Parameters
     ----------
-    level : str
-        'info', 'warning', 'error', 'debug'
+    level : str, optional
+        Logging level to set, by default "info"
+        Valid options: 'info', 'warning', 'error', 'debug'
     handler : logging.Handler, optional
-        A logging handler to use instead of the default StreamHandler
+        A logging handler to use instead of the default StreamHandler, by default None
+
+    Examples
+    --------
+    >>> import LoopStructural
+    >>> LoopStructural.setLogging('debug')
+    >>> LoopStructural.setLogging('info', logging.FileHandler('loop.log'))
     """
     import LoopStructural
 

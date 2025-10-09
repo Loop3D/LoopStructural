@@ -1,6 +1,8 @@
-"""
-Interpolators and interpolation supports
+"""Interpolators and interpolation supports for LoopStructural.
 
+This module provides various interpolation methods and support structures
+for geological modelling, including finite difference, piecewise linear,
+and radial basis function interpolators.
 """
 
 
