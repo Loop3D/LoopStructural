@@ -151,8 +151,8 @@ class StructuralFrame(BaseFeature):
 
         """
         if i is not None:
-            return self.features[i].support.evaluate_gradient(pos, ignore_regions=ignore_regions)
-        return self.features[0].support.evaluate_gradient(pos, ignore_regions=ignore_regions)            
+            return self.features[i].interpolator.evaluate_gradient(pos)
+        return self.features[0].interpolator.evaluate_gradient(pos)            
 
     def get_data(self, value_map: Optional[dict] = None) -> List[Union[ValuePoints, VectorPoints]]:
         """Return the data associated with the features in the
