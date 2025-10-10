@@ -166,7 +166,7 @@ class FoldFrame(StructuralFrame):
             ds = np.einsum("ij,ij->i", fold_axis, vv)
             flr = np.rad2deg(np.arcsin(r2))  # np.where(ds > 0, np.rad2deg(np.arcsin(r2)),
             # (- )))
-            flr[ds < 0] *= -1
+            # flr[ds < 0] *= -1     
 
             # flr = np.where(flr < -90, (180. + flr), flr)
             # flr = np.where(flr > 90, -(180. - flr), flr)
