@@ -27,6 +27,40 @@ def strikedip2vector(strike: NumericInput, dip: NumericInput) -> np.ndarray:
     vec[:, 2] = np.cos(d_r)
     vec /= np.linalg.norm(vec, axis=1)[:, None]
     return vec
+def dipdipdirection2vector(dip_direction: NumericInput, dip: NumericInput, degrees: bool = True) -> np.ndarray:
+    """Convert dip direction and dip to a vector
+
+    Parameters
+    ----------
+    dip_direction : _type_
+        _description_
+    dip : _type_
+        _description_
+    degrees : bool, optional
+        _description_, by default True
+
+    Returns
+    -------
+    _type_
+        _description_
+    """
+    if isinstance(dip_direction, numbers.Number):
+        dip_direction = np.array([dip_direction])
+    else:
+        dip_direction = np.array(dip_direction)
+    if isinstance(dip, numbers.Number):
+        dip = np.array([dip])
+    else:
+        dip = np.array(dip)
+    if degrees:
+        dip_direction = np.deg2rad(dip_direction)
+        dip = np.deg2rad(dip)
+    vec = np.zeros((len(dip_direction), 3))
+    vec[:, 0] = np.sin(dip) * np.sin(dip_direction)
+    vec[:, 1] = np.sin(dip) * np.cos(dip_direction)
+    vec[:, 2] = np.cos(dip)
+    vec /= np.linalg.norm(vec, axis=1)[:, None]
+    return vec
 
 def azimuthplunge2vector(
         plunge: NumericInput,
@@ -110,6 +144,42 @@ def normal_vector_to_strike_and_dip(
 
     return np.array([strike, dip]).T
 
+def normal_vector_to_dip_and_dip_direction(
+    normal_vector: NumericInput, degrees: bool = True
+) -> np.ndarray:
+    """Convert from a normal vector to dip and dip direction
+
+    Parameters
+    ----------
+    normal_vector : np.ndarray, list
+        array of normal vectors
+    degrees : bool, optional
+        whether to return in degrees or radians, by default True
+    Returns
+    -------
+    np.ndarray
+        2xn array of dip direction and dip values
+
+    Notes
+    ------
+
+    if a 1d array is passed in it is assumed to be a single normal vector
+    and cast into a 1x3 array
+
+    """
+    normal_vector = np.array(normal_vector)
+    if len(normal_vector.shape) == 1:
+        normal_vector = normal_vector[None, :]
+    # normalise the normal vector
+    normal_vector /= np.linalg.norm(normal_vector, axis=1)[:, None]
+    dip = np.arccos(normal_vector[:, 2])
+    dip_direction = np.arctan2(normal_vector[:, 0], normal_vector[:, 1])
+    if degrees:
+        dip = np.rad2deg(dip)
+        dip_direction = np.rad2deg(dip_direction)
+        dip_direction = (dip_direction + 360) % 360
+
+    return np.array([dip_direction, dip]).T
 
 def rotation(axis: NumericInput, angle: NumericInput) -> np.ndarray:
     """Create a rotation matrix for an axis and angle
