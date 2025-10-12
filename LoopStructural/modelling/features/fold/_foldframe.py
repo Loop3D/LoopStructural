@@ -74,7 +74,7 @@ class FoldFrame(StructuralFrame):
         s1gyg /= np.linalg.norm(s1gyg, axis=1)[:, None]
         l1 = points[:, 3:]
         l1 /= np.linalg.norm(l1, axis=1)[:, None]
-        fad = self.features[1].evaluate_value(points[:, :3])
+        fad = self.features[1].evaluate_value(points[:, :3])    
         # Turn the faults back on
         # self.features[0].faults_enabled = True
         # self.features[1].faults_enabled = True
@@ -166,7 +166,7 @@ class FoldFrame(StructuralFrame):
             ds = np.einsum("ij,ij->i", fold_axis, vv)
             flr = np.rad2deg(np.arcsin(r2))  # np.where(ds > 0, np.rad2deg(np.arcsin(r2)),
             # (- )))
-            flr[ds < 0] *= -1
+            # flr[ds < 0] *= -1     
 
             # flr = np.where(flr < -90, (180. + flr), flr)
             # flr = np.where(flr > 90, -(180. - flr), flr)

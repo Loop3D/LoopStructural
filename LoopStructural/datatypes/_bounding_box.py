@@ -156,6 +156,7 @@ class BoundingBox:
     def bb(self):
         return np.array([self.origin, self.maximum])
 
+     
     @nelements.setter
     def nelements(self, nelements: Union[int, float]):
         """Update the number of elements in the associated grid

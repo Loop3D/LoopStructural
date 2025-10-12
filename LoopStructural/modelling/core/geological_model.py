@@ -188,36 +188,6 @@ class GeologicalModel:
         ].astype(float)
         return data
 
-        if "type" in data:
-            logger.warning("'type' is deprecated replace with 'feature_name' \n")
-            data.rename(columns={"type": "feature_name"}, inplace=True)
-        if "feature_name" not in data:
-            logger.error("Data does not contain 'feature_name' column")
-            raise BaseException("Cannot load data")
-        for h in all_heading():
-            if h not in data:
-                data[h] = np.nan
-                if h == "w":
-                    data[h] = 1.0
-                if h == "coord":
-                    data[h] = 0
-                if h == "polarity":
-                    data[h] = 1.0
-        # LS wants polarity as -1 or 1, change 0  to -1
-        data.loc[data["polarity"] == 0, "polarity"] = -1.0
-        data.loc[np.isnan(data["w"]), "w"] = 1.0
-        if "strike" in data and "dip" in data:
-            logger.info("Converting strike and dip to vectors")
-            mask = np.all(~np.isnan(data.loc[:, ["strike", "dip"]]), axis=1)
-            data.loc[mask, gradient_vec_names()] = (
-                strikedip2vector(data.loc[mask, "strike"], data.loc[mask, "dip"])
-                * data.loc[mask, "polarity"].to_numpy()[:, None]
-            )
-            data.drop(["strike", "dip"], axis=1, inplace=True)
-        data[['X', 'Y', 'Z', 'val', 'nx', 'ny', 'nz', 'gx', 'gy', 'gz', 'tx', 'ty', 'tz']] = data[
-            ['X', 'Y', 'Z', 'val', 'nx', 'ny', 'nz', 'gx', 'gy', 'gz', 'tx', 'ty', 'tz']
-        ].astype(float)
-        return data
     @classmethod
     def from_processor(cls, processor):
         """Builds a model from a :class:`LoopStructural.modelling.input.ProcessInputData` object
