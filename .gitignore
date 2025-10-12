@@ -137,3 +137,4 @@ conda/channeldata.json
 conda/noarch
 conda/win-64
 .DS_Store
+sandbox/*
