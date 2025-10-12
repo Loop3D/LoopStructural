@@ -63,7 +63,7 @@ def test_fault_builder_create_data_from_geometry_with_normals(interpolatortype):
     # Check if the fault attributes are updated correctly
     expected_fault_normal_vector = np.array([0, 1.0, 0])
     expected_fault_slip_vector = np.array([0.0, 0.0, 1.0])
-    expected_fault_centre = np.array([0.15, 0.6, 1.05])
+    # expected_fault_centre = np.array([0.15, 0.6, 1.05])
     expected_fault_normal_vector /= np.linalg.norm(expected_fault_normal_vector)
     expected_fault_slip_vector /= np.linalg.norm(expected_fault_slip_vector)
     # expected_fault_minor_axis = 0.5

@@ -162,8 +162,8 @@ class FoldFrame(StructuralFrame):
             r2 = np.einsum("ij,ij->i", projected_s1, projected_s0)  #
             # adjust the fold rotation angle so that its always between -90
             # and 90
-            vv = np.cross(s1g, s0g, axisa=1, axisb=1)
-            ds = np.einsum("ij,ij->i", fold_axis, vv)
+            # vv = np.cross(s1g, s0g, axisa=1, axisb=1)
+            # ds = np.einsum("ij,ij->i", fold_axis, vv)
             flr = np.rad2deg(np.arcsin(r2))  # np.where(ds > 0, np.rad2deg(np.arcsin(r2)),
             # (- )))
             # flr[ds < 0] *= -1     
