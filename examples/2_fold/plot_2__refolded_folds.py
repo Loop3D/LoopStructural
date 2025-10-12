@@ -6,7 +6,6 @@
 """
 
 from LoopStructural import GeologicalModel
-from LoopStructural.modelling.features import fold
 from LoopStructural.visualisation import Loop3DView, RotationAnglePlotter
 from LoopStructural.datasets import load_laurent2016
 import pandas as pd
