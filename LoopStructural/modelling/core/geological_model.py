@@ -153,14 +153,14 @@ class GeologicalModel:
     def _ipython_key_completions_(self):
         return self.feature_name_index.keys()
 
-    def prepare_data(self, data: pd.DataFrame) -> pd.DataFrame:
+    def prepare_data(self, data: pd.DataFrame, include_feature_name:bool=True) -> pd.DataFrame:
         data = data.copy()
         data[['X', 'Y', 'Z']] = self.bounding_box.project(data[['X', 'Y', 'Z']].to_numpy())
 
         if "type" in data:
             logger.warning("'type' is deprecated replace with 'feature_name' \n")
             data.rename(columns={"type": "feature_name"}, inplace=True)
-        if "feature_name" not in data:
+        if "feature_name" not in data and include_feature_name:
             logger.error("Data does not contain 'feature_name' column")
             raise BaseException("Cannot load data")
         for h in all_heading():
@@ -678,7 +678,7 @@ class GeologicalModel:
         if data.shape[0] == 0:
             logger.warning("No data for {series_surface_data}, skipping")
             return
-        series_builder.add_data_from_data_frame(self.prepare_data(data))
+        series_builder.add_data_from_data_frame(self.prepare_data(data, include_feature_name=False))
         self._add_faults(series_builder, features=faults)
 
         # build feature
@@ -752,7 +752,7 @@ class GeologicalModel:
         if data.shape[0] == 0:
             logger.warning(f"No data for {fold_frame_name}, skipping")
             return
-        fold_frame_builder.add_data_from_data_frame(self.prepare_data(data))
+        fold_frame_builder.add_data_from_data_frame(self.prepare_data(data, include_feature_name=False))
         self._add_faults(fold_frame_builder[0])
         self._add_faults(fold_frame_builder[1])
         self._add_faults(fold_frame_builder[2])
@@ -837,7 +837,7 @@ class GeologicalModel:
         if data.shape[0] == 0:
             logger.warning(f"No data for {foliation_name}, skipping")
             return
-        series_builder.add_data_from_data_frame(self.prepare_data(data))
+        series_builder.add_data_from_data_frame(self.prepare_data(data, include_feature_name=False))
 
         self._add_faults(series_builder)
         # series_builder.add_data_to_interpolator(True)
@@ -933,7 +933,7 @@ class GeologicalModel:
         )
         if data is None:
             data = self.data[self.data["feature_name"] == fold_frame_name]
-        fold_frame_builder.add_data_from_data_frame(self.prepare_data(data))
+        fold_frame_builder.add_data_from_data_frame(self.prepare_data(data, include_feature_name=False))
 
         for i in range(3):
             self._add_faults(fold_frame_builder[i])
@@ -1406,7 +1406,7 @@ class GeologicalModel:
         if intermediate_axis:
             intermediate_axis = intermediate_axis
         fault_frame_builder.create_data_from_geometry(
-            fault_frame_data=self.prepare_data(data),
+            fault_frame_data=self.prepare_data(data, include_feature_name=False),
             fault_center=fault_center,
             fault_normal_vector=fault_normal_vector,
             fault_slip_vector=fault_slip_vector,
