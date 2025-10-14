@@ -62,19 +62,20 @@ class InterpolatorBuilder:
         return self
 
     def add_gradient_constraints(self, gradient_constraints: np.ndarray) -> 'InterpolatorBuilder':
-        """Add gradient constraints to the interpolator
-        Where g1 and g2 are two vectors that are orthogonal to the gradient
-        $'(X)\cdot g1 = 0$ and $'(X)\cdot g2 = 0$
+        """Add gradient constraints to the interpolator.
+        
+        Where g1 and g2 are two vectors that are orthogonal to the gradient:
+        f'(X) · g1 = 0 and f'(X) · g2 = 0
 
         Parameters
         ----------
         gradient_constraints : np.ndarray
-            x,y,z,gradient_x,gradient_y,gradient_z of the constraints
+            Array with columns [x, y, z, gradient_x, gradient_y, gradient_z] of the constraints
 
         Returns
         -------
-        InterpolatorBuilder
-            reference to the builder
+        bool
+            True if constraints were added successfully
         """
 
         if self.interpolator:

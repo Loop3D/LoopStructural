@@ -8,6 +8,26 @@ logger = getLogger(__name__)
 
 @dataclass
 class StructuredGrid:
+    """A structured grid for storing 3D geological data.
+
+    This class represents a regular 3D grid with properties and cell properties
+    that can be used for geological modelling and visualisation.
+
+    Parameters
+    ----------
+    origin : np.ndarray, optional
+        Origin point of the grid, by default [0, 0, 0]
+    step_vector : np.ndarray, optional
+        Step size in each direction, by default [1, 1, 1]
+    nsteps : np.ndarray, optional
+        Number of steps in each direction, by default [10, 10, 10]
+    cell_properties : Dict[str, np.ndarray], optional
+        Properties defined at cell centres, by default empty dict
+    properties : Dict[str, np.ndarray], optional
+        Properties defined at grid nodes, by default empty dict
+    name : str, optional
+        Name of the grid, by default "default_grid"
+    """
     origin: np.ndarray = field(default_factory=lambda: np.array([0, 0, 0]))
     step_vector: np.ndarray = field(default_factory=lambda: np.array([1, 1, 1]))
     nsteps: np.ndarray = field(default_factory=lambda: np.array([10, 10, 10]))
@@ -16,6 +36,13 @@ class StructuredGrid:
     name: str = "default_grid"
 
     def to_dict(self):
+        """Convert the structured grid to a dictionary representation.
+
+        Returns
+        -------
+        dict
+            Dictionary containing all grid properties and metadata
+        """
         return {
             "origin": self.origin,
             "maximum": self.maximum,
@@ -28,9 +55,28 @@ class StructuredGrid:
 
     @property
     def maximum(self):
+        """Calculate the maximum coordinates of the grid.
+
+        Returns
+        -------
+        np.ndarray
+            Maximum coordinates (origin + nsteps * step_vector)
+        """
         return self.origin + self.nsteps * self.step_vector
 
     def vtk(self):
+        """Convert the structured grid to a PyVista RectilinearGrid.
+
+        Returns
+        -------
+        pv.RectilinearGrid
+            PyVista grid object with all properties attached
+
+        Raises
+        ------
+        ImportError
+            If PyVista is not installed
+        """
         try:
             import pyvista as pv
         except ImportError:
@@ -65,6 +111,13 @@ class StructuredGrid:
 
     @property
     def cell_centres(self):
+        """Calculate the coordinates of cell centres.
+
+        Returns
+        -------
+        tuple of np.ndarray
+            X, Y, Z coordinates of all cell centres
+        """
         x = np.linspace(
             self.origin[0] + self.step_vector[0] * 0.5,
             self.maximum[0] + self.step_vector[0] * 0.5,

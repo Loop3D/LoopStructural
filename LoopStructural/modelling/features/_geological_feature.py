@@ -1,5 +1,7 @@
-"""
-Geological features
+"""Geological features for LoopStructural modeling.
+
+This module contains classes for representing geometrical elements in geological
+models such as foliations, fault planes, and fold rotation angles.
 """
 
 from LoopStructural.utils.maths import regular_tetraherdron_for_points, gradient_from_tetrahedron
@@ -16,24 +18,37 @@ logger = getLogger(__name__)
 
 
 class GeologicalFeature(BaseFeature):
-    """
-    Geological feature is class that is used to represent a geometrical element in a geological
-    model. For example foliations, fault planes, fold rotation angles etc.
+    """A geological feature representing a geometrical element in a geological model.
+    
+    This class provides the foundation for representing various geological structures
+    such as foliations, fault planes, fold rotation angles, and other geometrical
+    elements within a geological model.
+
+    Parameters
+    ----------
+    name : str
+        Unique name for the geological feature
+    builder : GeologicalFeatureBuilder
+        Builder object used to construct the feature
+    regions : list, optional
+        List of boolean functions defining where the feature is active, by default []
+    faults : list, optional
+        List of FaultSegments that affect this feature, by default []
+    interpolator : GeologicalInterpolator, optional
+        Interpolator for the feature. If None, uses builder's interpolator, by default None
+    model : GeologicalModel, optional
+        The geological model containing this feature, by default None
 
     Attributes
     ----------
-    name : string
-        should be a unique name for the geological feature
-    support : a ScalarField
-        holds the property values for the feature and links to the
-        support geometry
-    data : list
-        list containing geological data
-    region : list
-        list of boolean functions defining whether the feature is
-        active
-    faults : list
-        list of FaultSegments that affect this feature
+    name : str
+        Unique name for the geological feature
+    builder : GeologicalFeatureBuilder
+        Builder object used to construct the feature
+    interpolator : GeologicalInterpolator
+        Interpolator used to compute field values
+    type : FeatureType
+        Type of the feature (set to INTERPOLATED)
     """
 
     def __init__(
@@ -46,18 +61,22 @@ class GeologicalFeature(BaseFeature):
         interpolator=None,
         model=None,
     ):
-        """Default constructor for geological feature
+        """Initialize the geological feature.
 
         Parameters
         ----------
-        name: str
-        interpolator : GeologicalInterpolator
+        name : str
+            Unique name for the geological feature
         builder : GeologicalFeatureBuilder
-        region : list
-        faults : list
-        model : GeologicalModel
-
-
+            Builder object used to construct the feature
+        regions : list, optional
+            List of boolean functions defining where the feature is active, by default []
+        faults : list, optional
+            List of FaultSegments that affect this feature, by default []
+        interpolator : GeologicalInterpolator, optional
+            Interpolator for the feature. If None, uses builder's interpolator, by default None
+        model : GeologicalModel, optional
+            The geological model containing this feature, by default None
         """
         BaseFeature.__init__(self, name, model=model,  builder= builder)
         self.name = name
@@ -66,13 +85,13 @@ class GeologicalFeature(BaseFeature):
         self.type = FeatureType.INTERPOLATED
 
     def to_json(self):
-        """
-        Returns a json representation of the geological feature
+        """Return a JSON representation of the geological feature.
 
         Returns
         -------
-        json : dict
-            json representation of the geological feature
+        dict
+            Dictionary containing the feature's state suitable for JSON serialization,
+            including interpolator configuration
         """
         json = super().to_json()
         print(self.name, json)
