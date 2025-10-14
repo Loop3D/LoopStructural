@@ -1,5 +1,7 @@
-"""
-Base geological interpolator
+"""Base geological interpolator for LoopStructural.
+
+This module contains the abstract base class for all geological interpolators
+used in LoopStructural geological modelling framework.
 """
 
 from abc import ABCMeta, abstractmethod
@@ -14,20 +16,57 @@ logger = getLogger(__name__)
 
 
 class GeologicalInterpolator(metaclass=ABCMeta):
-    """
+    """Abstract base class for geological interpolators.
+
+    This class defines the interface for all geological interpolators in
+    LoopStructural, providing methods for setting constraints and evaluating
+    the interpolated scalar field.
+
     Attributes
     ----------
     data : dict
-        a dictionary with np.arrays for gradient, value, normal, tangent data
+        Dictionary containing numpy arrays for gradient, value, normal, and tangent data
+    n_g : int
+        Number of gradient constraints
+    n_i : int
+        Number of interface/value constraints  
+    n_n : int
+        Number of normal constraints
+    n_t : int
+        Number of tangent constraints
+    type : InterpolatorType
+        The type of interpolator
+    up_to_date : bool
+        Whether the interpolator needs to be rebuilt
+    constraints : list
+        List of applied constraints
+    valid : bool
+        Whether the interpolator is in a valid state
+    dimensions : int
+        Number of spatial dimensions (default 3)
+    support : object
+        The support structure used by the interpolator
     """
 
     @abstractmethod
     def __init__(self, data={}, up_to_date=False):
-        """
-        This class is the base class for a geological interpolator and contains
-        all of the main interface functions. Any class that is inheriting from
-        this should be callable by using any of these functions. This will
-        enable interpolators to be interchanged.
+        """Initialize the geological interpolator.
+
+        This method sets up the basic data structures and parameters required
+        for geological interpolation.
+
+        Parameters
+        ----------
+        data : dict, optional
+            Dictionary containing constraint data arrays, by default {}
+        up_to_date : bool, optional
+            Whether the interpolator is already built and up to date, by default False
+
+        Notes
+        -----
+        This is an abstract method that must be implemented by subclasses.
+        All subclasses should call this parent constructor to ensure proper
+        initialization of the base data structures.
         """
         self._data = {}
         self.data = data  # None
@@ -48,25 +87,75 @@ class GeologicalInterpolator(metaclass=ABCMeta):
 
     @abstractmethod
     def set_nelements(self, nelements: int) -> int:
+        """Set the number of elements for the interpolation support.
+
+        Parameters
+        ----------
+        nelements : int
+            Target number of elements
+
+        Returns
+        -------
+        int
+            Actual number of elements set
+
+        Notes
+        -----
+        This is an abstract method that must be implemented by subclasses.
+        The actual number of elements may differ from the requested number
+        depending on the interpolator's constraints.
+        """
         pass
 
     @property
     @abstractmethod
     def n_elements(self) -> int:
+        """Get the number of elements in the interpolation support.
+
+        Returns
+        -------
+        int
+            Number of elements
+
+        Notes
+        -----
+        This is an abstract property that must be implemented by subclasses.
+        """
         pass
 
     @property
     def data(self):
+        """Get the constraint data dictionary.
+
+        Returns
+        -------
+        dict
+            Dictionary containing constraint data arrays
+        """
         return self._data
 
     @data.setter
     def data(self, data):
+        """Set the constraint data dictionary.
+
+        Parameters
+        ----------
+        data : dict or None
+            Dictionary containing constraint data arrays. If None, an empty dict is used.
+        """
         if data is None:
             data = {}
         for k, v in data.items():
             self._data[k] = np.array(v)
 
     def __str__(self):
+        """Return string representation of the interpolator.
+
+        Returns
+        -------
+        str
+            String describing the interpolator type and constraint counts
+        """
         name = f"{self.type} \n"
         name += f"{self.n_g} gradient points\n"
         name += f"{self.n_i} interface points\n"
@@ -76,19 +165,41 @@ class GeologicalInterpolator(metaclass=ABCMeta):
         return name
 
     def check_array(self, array: np.ndarray):
+        """Validate and convert input to numpy array.
+
+        Parameters
+        ----------
+        array : array_like
+            Input array to validate and convert
+
+        Returns
+        -------
+        np.ndarray
+            Validated numpy array
+
+        Raises
+        ------
+        LoopTypeError
+            If the array cannot be converted to a numpy array
+        """
         try:
             return np.array(array)
         except Exception as e:
             raise LoopTypeError(str(e))
 
     def to_json(self):
-        """
-        Returns a json representation of the geological interpolator
+        """Return a JSON representation of the geological interpolator.
 
         Returns
         -------
-        json : dict
-            json representation of the geological interpolator
+        dict
+            Dictionary containing the interpolator's state and configuration
+            suitable for JSON serialization
+
+        Notes
+        -----
+        This method packages the essential state of the interpolator including
+        its type, constraints, data, and build status for serialization.
         """
         json = {}
         json["type"] = self.type
@@ -102,20 +213,39 @@ class GeologicalInterpolator(metaclass=ABCMeta):
 
     @abstractmethod
     def set_region(self, **kwargs):
+        """Set the interpolation region.
+
+        Parameters
+        ----------
+        **kwargs : dict
+            Region parameters specific to the interpolator implementation
+
+        Notes
+        -----
+        This is an abstract method that must be implemented by subclasses.
+        The specific parameters depend on the interpolator type.
+        """
         pass
 
     def set_value_constraints(self, points: np.ndarray):
-        """
+        """Set value constraints for the interpolation.
 
         Parameters
         ----------
         points : np.ndarray
-            array containing the value constraints usually 4-5 columns.
-            X,Y,Z,val,weight
+            Array containing the value constraints with shape (n_points, 4-5).
+            Columns should be [X, Y, Z, value, weight]. If weight is not provided,
+            a weight of 1.0 is assumed for all points.
 
-        Returns
-        -------
+        Raises
+        ------
+        ValueError
+            If points array doesn't have the minimum required columns
 
+        Notes
+        -----
+        Value constraints specify known scalar field values at specific locations.
+        These are typically used for interface points or measured data values.
         """
         points = self.check_array(points)
         if points.shape[1] == self.dimensions + 1:
@@ -127,17 +257,25 @@ class GeologicalInterpolator(metaclass=ABCMeta):
         self.up_to_date = False
 
     def set_gradient_constraints(self, points: np.ndarray):
-        """
+        """Set gradient constraints for the interpolation.
 
         Parameters
         ----------
         points : np.ndarray
-            array containing the value constraints usually 7-8 columns.
-            X,Y,Z,gx,gy,gz,weight
+            Array containing gradient constraints with shape (n_points, 7-8).
+            Columns should be [X, Y, Z, gx, gy, gz, weight]. If weight is not 
+            provided, a weight of 1.0 is assumed for all points.
 
-        Returns
-        -------
+        Raises
+        ------
+        ValueError
+            If points array doesn't have the minimum required columns
 
+        Notes
+        -----
+        Gradient constraints specify the direction and magnitude of the scalar
+        field gradient at specific locations. These are typically derived from
+        structural measurements like bedding or foliation orientations.
         """
         if points.shape[1] == self.dimensions * 2:
             points = np.hstack([points, np.ones((points.shape[0], 1))])

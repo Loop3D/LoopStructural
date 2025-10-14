@@ -102,10 +102,24 @@ class BoundingBox:
 
     @property
     def global_origin(self):
+        """Get the global origin of the bounding box.
+
+        Returns
+        -------
+        np.ndarray
+            The global origin coordinates
+        """
         return self._global_origin
 
     @global_origin.setter
     def global_origin(self, global_origin):
+        """Set the global origin of the bounding box.
+
+        Parameters
+        ----------
+        global_origin : array_like
+            The global origin coordinates
+        """
         if self.dimensions != len(global_origin):
             logger.warning(
                 f"Global origin has {len(global_origin)} dimensions but bounding box has {self.dimensions}"
@@ -114,20 +128,53 @@ class BoundingBox:
 
     @property
     def global_maximum(self):
+        """Get the global maximum coordinates of the bounding box.
+
+        Returns
+        -------
+        np.ndarray
+            The global maximum coordinates (local maximum + global origin)
+        """
         return self.maximum + self.global_origin
 
     @property
     def valid(self):
+        """Check if the bounding box has valid origin and maximum values.
+
+        Returns
+        -------
+        bool
+            True if both origin and maximum are set, False otherwise
+        """
         return self._origin is not None and self._maximum is not None
 
     @property
     def origin(self) -> np.ndarray:
+        """Get the origin coordinates of the bounding box.
+
+        Returns
+        -------
+        np.ndarray
+            Origin coordinates
+
+        Raises
+        ------
+        LoopValueError
+            If the origin is not set
+        """
         if self._origin is None:
             raise LoopValueError("Origin is not set")
         return self._origin
 
     @origin.setter
     def origin(self, origin: np.ndarray):
+        """Set the origin coordinates of the bounding box.
+
+        Parameters
+        ----------
+        origin : np.ndarray
+            Origin coordinates
+        """
         if self.dimensions != len(origin):
             logger.warning(
                 f"Origin has {len(origin)} dimensions but bounding box has {self.dimensions}"
@@ -136,24 +183,64 @@ class BoundingBox:
 
     @property
     def maximum(self) -> np.ndarray:
+        """Get the maximum coordinates of the bounding box.
+
+        Returns
+        -------
+        np.ndarray
+            Maximum coordinates
+
+        Raises
+        ------
+        LoopValueError
+            If the maximum is not set
+        """
         if self._maximum is None:
             raise LoopValueError("Maximum is not set")
         return self._maximum
 
     @maximum.setter
     def maximum(self, maximum: np.ndarray):
+        """Set the maximum coordinates of the bounding box.
+
+        Parameters
+        ----------
+        maximum : np.ndarray
+            Maximum coordinates
+        """
         self._maximum = maximum
 
     @property
     def nelements(self):
+        """Get the total number of elements in the bounding box.
+
+        Returns
+        -------
+        int
+            Total number of elements (product of nsteps)
+        """
         return self.nsteps.prod()
 
     @property
     def volume(self):
+        """Calculate the volume of the bounding box.
+
+        Returns
+        -------
+        float
+            Volume of the bounding box
+        """
         return np.prod(self.maximum - self.origin)
 
     @property
     def bb(self):
+        """Get a numpy array containing origin and maximum coordinates.
+
+        Returns
+        -------
+        np.ndarray
+            Array with shape (2, n_dimensions) containing [origin, maximum]
+        """
         return np.array([self.origin, self.maximum])
 
      
