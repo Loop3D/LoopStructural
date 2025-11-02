@@ -6,7 +6,7 @@ relationships between geological objects including faults, foliations, and
 unconformities.
 """
 
-from typing import Dict, List, Set, Optional, Tuple, Union, TYPE_CHECKING
+from typing import Dict, List, Set, Optional, Tuple, Union, TYPE_CHECKING, Any
 from enum import Enum
 import numpy as np
 from dataclasses import dataclass, field
@@ -26,6 +26,8 @@ class GeologicalObjectType(Enum):
     FAULT = "fault"
     FOLIATION = "foliation"
     FOLD = "fold"
+    UNCONFORMITY = "unconformity"
+    UNIT = "unit"
 
 class RelationshipType(Enum):
     """Types of topological relationships between geological objects."""
@@ -46,11 +48,24 @@ class RelationshipType(Enum):
     ERODE_UNCONFORMABLY_OVERLIES = "erode_unconformably_overlies"
     ERODE_UNCONFORMABLY_UNDERLIES = "erode_unconformably_underlies"
 
+    CONFORMABLE_OVERLIES = "conformable_overlies"
+    CONFORMABLE_UNDERLIES = "conformable_underlies"
     # Structural relationships
     FOLDS = "folds"                 # Feature folds another
     IS_FOLDED_BY = "is_folded_by"   # Feature is folded by another
 
-
+RECIPROCAL_MAP = {
+            RelationshipType.CUTS: RelationshipType.IS_CUT_BY,
+            RelationshipType.IS_CUT_BY: RelationshipType.CUTS,
+            RelationshipType.OLDER_THAN: RelationshipType.YOUNGER_THAN,
+            RelationshipType.YOUNGER_THAN: RelationshipType.OLDER_THAN,
+            RelationshipType.ONLAP_UNCONFORMABLY_OVERLIES: RelationshipType.ONLAP_UNCONFORMABLY_UNDERLIES,
+            RelationshipType.FOLDS: RelationshipType.IS_FOLDED_BY,
+            RelationshipType.IS_FOLDED_BY: RelationshipType.FOLDS,
+            RelationshipType.ABUTS: RelationshipType.IS_ABUTTED_BY,
+            RelationshipType.ERODE_UNCONFORMABLY_OVERLIES: RelationshipType.ERODE_UNCONFORMABLY_UNDERLIES,
+            RelationshipType.CONFORMABLE_OVERLIES: RelationshipType.CONFORMABLE_UNDERLIES
+        }
 @dataclass
 class GeologicalObject:
     """
@@ -69,6 +84,7 @@ class GeologicalObject:
     id: str
     name: str
     object_type: GeologicalObjectType
+    attributes: Dict[str, Any] = field(default_factory=dict)
     
     def __post_init__(self):
         """Validate object after initialization."""
@@ -82,7 +98,7 @@ class GeologicalObject:
         if not isinstance(other, GeologicalObject):
             return False
         return self.id == other.id
-
+    
 
 @dataclass
 class TopologicalRelationship:
@@ -126,7 +142,7 @@ class GeologicalTopologyGraph:
                             name: str, 
                             object_type: Union[GeologicalObjectType, str],
                             object_id: Optional[str] = None,
-                            ) -> GeologicalObject:
+                            attributes: Optional[Dict[str, Any]] = None) -> GeologicalObject:
         """
         Add a geological object to the graph.
         
@@ -138,7 +154,8 @@ class GeologicalTopologyGraph:
             Type of geological object
         object_id : str, optional
             Unique identifier. If None, generates automatically
-        
+        attributes : dict, optional
+            Additional attributes for the geological object
             
         Returns
         -------
@@ -166,13 +183,17 @@ class GeologicalTopologyGraph:
         if object_id in self._objects:
             raise ValueError(f"Object with ID '{object_id}' already exists")
         
-        # Create and store the object
-        geo_object = GeologicalObject(
-            id=object_id,
-            name=name,
-            object_type=object_type,
-            
-        )
+        attributes = attributes or {}
+        
+        # Choose subclass based on object_type
+        if object_type == GeologicalObjectType.UNIT:
+            geo_object = UnitNode(id=object_id, name=name, object_type=object_type, attributes=attributes)
+        elif object_type == GeologicalObjectType.FAULT:
+            geo_object = FaultNode(id=object_id, name=name, object_type=object_type, attributes=attributes)
+        elif object_type == GeologicalObjectType.FOLIATION:
+            geo_object = FoliationNode(id=object_id, name=name, object_type=object_type, attributes=attributes)
+        else:
+            geo_object = GeologicalObject(id=object_id, name=name, object_type=object_type, attributes=attributes)
         
         self._objects[object_id] = geo_object
         logger.info(f"Added {object_type.value} '{name}' with ID '{object_id}'")
@@ -231,45 +252,9 @@ class GeologicalTopologyGraph:
         # Store in both forward and reverse indices
         self._relationships[from_object_id].append(relationship)
         self._reverse_relationships[to_object_id].append(relationship)
-        
-        # Automatically add reciprocal relationships where appropriate
-        self._add_reciprocal_relationship(relationship)
-        
+        # Do NOT add reciprocal relationships automatically anymore
         logger.info(f"Added relationship: {from_object_id} {relationship_type.value} {to_object_id}")
-        
         return relationship
-    
-    def _add_reciprocal_relationship(self, relationship: TopologicalRelationship):
-        """Add reciprocal relationships automatically."""
-        reciprocal_map = {
-            RelationshipType.CUTS: RelationshipType.IS_CUT_BY,
-            RelationshipType.IS_CUT_BY: RelationshipType.CUTS,
-            RelationshipType.OLDER_THAN: RelationshipType.YOUNGER_THAN,
-            RelationshipType.YOUNGER_THAN: RelationshipType.OLDER_THAN,
-            RelationshipType.ONLAP_UNCONFORMABLY_OVERLIES: RelationshipType.ONLAP_UNCONFORMABLY_UNDERLIES,
-            RelationshipType.FOLDS: RelationshipType.IS_FOLDED_BY,
-            RelationshipType.IS_FOLDED_BY: RelationshipType.FOLDS,
-            RelationshipType.ABUTS: RelationshipType.IS_ABUTTED_BY,
-            RelationshipType.ERODE_UNCONFORMABLY_OVERLIES: RelationshipType.ERODE_UNCONFORMABLY_UNDERLIES,
-        }
-        
-        reciprocal_type = reciprocal_map.get(relationship.relationship_type)
-        if reciprocal_type:
-            # Check if reciprocal already exists
-            existing = self.get_relationships(
-                relationship.to_object, 
-                relationship.from_object,
-                reciprocal_type
-            )
-            
-            if not existing:
-                reciprocal = TopologicalRelationship(
-                    from_object=relationship.to_object,
-                    to_object=relationship.from_object,
-                    relationship_type=reciprocal_type,
-                )
-                self._relationships[reciprocal.from_object].append(reciprocal)
-                self._reverse_relationships[reciprocal.to_object].append(reciprocal)
     
     def get_object(self, object_id: str) -> Optional[GeologicalObject]:
         """Get a geological object by ID."""
@@ -285,7 +270,8 @@ class GeologicalTopologyGraph:
     def get_relationships(self,
                          from_object_id: Optional[str] = None,
                          to_object_id: Optional[str] = None,
-                         relationship_type: Optional[Union[RelationshipType, str]] = None) -> List[TopologicalRelationship]:
+                         relationship_type: Optional[Union[RelationshipType, str]] = None,
+                         include_reciprocal: bool = False) -> List[TopologicalRelationship]:
         """
         Get relationships matching the specified criteria.
         
@@ -297,6 +283,8 @@ class GeologicalTopologyGraph:
             Filter by target object ID
         relationship_type : RelationshipType or str, optional
             Filter by relationship type
+        include_reciprocal : bool, optional
+            Whether to include reciprocal relationships (one level only)
             
         Returns
         -------
@@ -326,7 +314,20 @@ class GeologicalTopologyGraph:
         # Filter by relationship type if specified
         if relationship_type:
             relationships = [r for r in relationships if r.relationship_type == relationship_type]
-        
+        # Optionally include reciprocals (calculated on the fly)
+        if include_reciprocal and relationship_type in RECIPROCAL_MAP:
+            reciprocal_type = RECIPROCAL_MAP[relationship_type]
+            reciprocal_rels = []
+            if from_object_id and to_object_id:
+                reciprocal_rels = [r for r in self._relationships.get(to_object_id, []) if r.to_object == from_object_id and r.relationship_type == reciprocal_type]
+            elif from_object_id:
+                reciprocal_rels = [r for r in self._reverse_relationships.get(from_object_id, []) if r.relationship_type == reciprocal_type]
+            elif to_object_id:
+                reciprocal_rels = [r for r in self._relationships.get(to_object_id, []) if r.relationship_type == reciprocal_type]
+            else:
+                for rel_list in self._relationships.values():
+                    reciprocal_rels.extend([r for r in rel_list if r.relationship_type == reciprocal_type])
+            relationships.extend(reciprocal_rels)
         return relationships
     
     def get_fault_network(self) -> Dict[str, List[str]]:
@@ -473,6 +474,79 @@ class GeologicalTopologyGraph:
                 for rel in rel_list
             ]
         }
+    
+    def to_networkx(self):
+        """
+        Convert the geological topology graph to a NetworkX DiGraph for visualization/analysis.
+        Returns
+        -------
+        nx.DiGraph
+            Directed graph with node/edge attributes.
+        """
+        try:
+            import networkx as nx
+        except ImportError:
+            raise ImportError("networkx is required for to_networkx(). Install with pip install networkx.")
+        G = nx.DiGraph()
+        for obj_id, obj in self._objects.items():
+            G.add_node(obj_id, label=obj.name, type=obj.object_type.value, **obj.attributes)
+        # Only add one direction for reciprocal relationships
+        seen = set()
+        for rel_list in self._relationships.values():
+            for rel in rel_list:
+                key = (rel.from_object, rel.to_object, rel.relationship_type)
+                reciprocal_type = RECIPROCAL_MAP.get(rel.relationship_type)
+                reciprocal_key = (rel.to_object, rel.from_object, reciprocal_type)
+                if reciprocal_type and reciprocal_key in seen:
+                    continue  # skip if reciprocal already added
+                G.add_edge(rel.from_object, rel.to_object, type=rel.relationship_type.value)
+                seen.add(key)
+        return G
+
+    def plot(self, with_labels=True, node_color_map=None, figsize=(10, 7)):
+        """
+        Visualize the topology graph using networkx and matplotlib.
+        Parameters
+        ----------
+        with_labels : bool
+            Whether to show node labels.
+        node_color_map : dict, optional
+            Mapping from object type to color.
+        figsize : tuple
+            Figure size for matplotlib.
+        """
+        try:
+            import networkx as nx
+            import matplotlib.pyplot as plt
+        except ImportError:
+            raise ImportError("networkx and matplotlib are required for plot(). Install with pip install networkx matplotlib.")
+        G = self.to_networkx()
+        plt.figure(figsize=figsize)
+        pos = nx.spring_layout(G, seed=42)
+        # Color nodes by type
+        node_types = nx.get_node_attributes(G, 'type')
+        if node_color_map is None:
+            default_colors = {
+                'unit': '#8dd3c7',
+                'fault': '#fb8072',
+                'foliation': '#80b1d3',
+                'fold': '#bebada',
+                'unconformity': '#fdb462',
+            }
+            node_color_map = default_colors
+        node_colors = [node_color_map.get(node_types.get(n, ''), '#cccccc') for n in G.nodes]
+        nx.draw_networkx_nodes(G, pos, node_color=node_colors, node_size=700, alpha=0.9)
+        nx.draw_networkx_edges(G, pos, arrows=True, arrowstyle='-|>', arrowsize=20)
+        if with_labels:
+            labels = nx.get_node_attributes(G, 'label')
+            nx.draw_networkx_labels(G, pos, labels=labels, font_size=10)
+        # Draw edge labels (relationship types)
+        edge_labels = nx.get_edge_attributes(G, 'type')
+        nx.draw_networkx_edge_labels(G, pos, edge_labels=edge_labels, font_color='gray', font_size=8)
+        plt.axis('off')
+        plt.title('Geological Topology Graph')
+        plt.tight_layout()
+        plt.show()
     
     def __len__(self) -> int:
         """Return the number of objects in the graph."""
@@ -764,3 +838,410 @@ class GeologicalTopologyGraph:
             masks[topo_obj.name] = mask
 
         return masks
+
+@dataclass
+class UnitNode(GeologicalObject):
+    thickness: Optional[float] = None
+    data: Any = None
+    def __post_init__(self):
+        super().__post_init__()
+        if self.thickness is None:
+            self.thickness = self.attributes.get('thickness')
+        if self.data is None:
+            self.data = self.attributes.get('data')
+
+@dataclass
+class FaultNode(GeologicalObject):
+    displacement: Optional[float] = None
+    length: Optional[float] = None
+    major_axis: Optional[float] = None
+    minor_axis: Optional[float] = None
+
+    def __post_init__(self):
+        super().__post_init__()
+        if self.displacement is None:
+            self.displacement = self.attributes.get('displacement')
+        if self.length is None:
+            self.length = self.attributes.get('length')
+        if self.major_axis is None:
+            self.major_axis = self.attributes.get('major_axis')
+        if self.minor_axis is None:
+            self.minor_axis = self.attributes.get('minor_axis')
+
+@dataclass
+class FoliationNode(GeologicalObject):
+    vector_field: Any = None
+    def __post_init__(self):
+        super().__post_init__()
+        if self.vector_field is None:
+            self.vector_field = self.attributes.get('vector_field')
+
+class StratigraphicColumnView:
+    """
+    A view of the stratigraphic column derived from the GeologicalTopologyGraph.
+    Provides methods to access units, groups, and their order as defined by the graph.
+    """
+    def __init__(self, topology_graph: 'GeologicalTopologyGraph'):
+        self.graph = topology_graph
+
+    def get_units(self) -> List[GeologicalObject]:
+        """Return all unit objects in the topology graph."""
+        return self.graph.get_objects_by_type(GeologicalObjectType.UNIT)
+
+    def get_groups(self) -> List[GeologicalObject]:
+        """Return all group objects in the topology graph (if groups are present)."""
+        # If groups are not explicitly a GeologicalObjectType, this can be adapted.
+        return self.graph.get_objects_by_type('group') if hasattr(GeologicalObjectType, 'GROUP') else []
+
+    def get_units_in_group(self, group_name: str) -> List[GeologicalObject]:
+        """Return all units belonging to a given group (by name)."""
+        group_obj = next((g for g in self.get_groups() if g.name == group_name), None)
+        if not group_obj:
+            return []
+        units = []
+        for unit in self.get_units():
+            rels = self.graph.get_relationships(from_object_id=unit.id, to_object_id=group_obj.id, relationship_type='belongs_to_group')
+            if rels:
+                units.append(unit)
+        return units
+
+    def get_ordered_units(self) -> List[GeologicalObject]:
+        """Return units in topological (stratigraphic) order (oldest to youngest)."""
+        # Use topological sort, filter to units only, and reverse for oldest to youngest
+        order = self.graph.topological_sort_by_dependencies().get('order', [])
+        units = [self.graph.get_object(obj_id) for obj_id in order if self.graph.get_object(obj_id) and self.graph.get_object(obj_id).object_type == GeologicalObjectType.UNIT]
+        return list(reversed(units))  # Oldest first
+
+    def get_unconformities(self) -> List[Tuple[str, str]]:
+        """Return unconformity relationships as (upper_unit, lower_unit) tuples."""
+        unconformities = []
+        for rel in self.graph.get_relationships():
+            if rel.relationship_type in [
+                RelationshipType.ERODE_UNCONFORMABLY_OVERLIES,
+                RelationshipType.ONLAP_UNCONFORMABLY_OVERLIES,
+            ]:
+                unconformities.append((rel.from_object, rel.to_object))
+        return unconformities
+
+    def identify_conformable_groups(self) -> List[List[GeologicalObject]]:
+        """
+        Identify groups of units by traversing the graph. Units belong to the same
+        group if they are connected by conformable relationships (no unconformity).
+        Groups are separated by unconformities.
+        
+        Returns
+        -------
+        List[List[GeologicalObject]]
+            List of groups, where each group is a list of units in stratigraphic
+            order (oldest to youngest within that group). Groups themselves are
+            ordered from oldest to youngest.
+            
+        Raises
+        ------
+        ValueError
+            If circular edges (cycles) are detected in the unit relationships.
+            
+        Examples
+        --------
+        >>> graph = GeologicalTopologyGraph()
+        >>> u1 = graph.add_geological_object('unit1', 'unit')
+        >>> u2 = graph.add_geological_object('unit2', 'unit')
+        >>> u3 = graph.add_geological_object('unit3', 'unit')
+        >>> graph.add_relationship(u2.id, u1.id, 'conformable_overlies')
+        >>> graph.add_relationship(u3.id, u2.id, 'erode_unconformably_overlies')
+        >>> column = StratigraphicColumnView(graph)
+        >>> groups = column.identify_conformable_groups()
+        >>> # Returns [[unit1, unit2], [unit3]] - two groups separated by unconformity
+        """
+        # First check for cycles in the entire graph
+        self._check_for_cycles()
+        
+        # Get all units
+        all_units = self.get_units()
+        if not all_units:
+            return []
+        
+        # Build adjacency information for conformable relationships only
+        conformable_types = {
+            RelationshipType.CONFORMABLE_OVERLIES,
+            RelationshipType.CONFORMABLE_UNDERLIES,
+            RelationshipType.OLDER_THAN,
+            RelationshipType.YOUNGER_THAN,
+        }
+        
+        unconformity_types = {
+            RelationshipType.ERODE_UNCONFORMABLY_OVERLIES,
+            RelationshipType.ERODE_UNCONFORMABLY_UNDERLIES,
+            RelationshipType.ONLAP_UNCONFORMABLY_OVERLIES,
+            RelationshipType.ONLAP_UNCONFORMABLY_UNDERLIES,
+        }
+        
+        # Build a conformable-only adjacency map (undirected for grouping purposes)
+        conformable_neighbors: Dict[str, Set[str]] = defaultdict(set)
+        unit_ids = {unit.id for unit in all_units}
+        
+        for unit_id in unit_ids:
+            # Get all relationships involving this unit
+            outgoing = self.graph.get_relationships(from_object_id=unit_id)
+            incoming = self.graph.get_relationships(to_object_id=unit_id)
+            
+            for rel in outgoing:
+                if rel.to_object in unit_ids:  # Only consider unit-to-unit relationships
+                    if rel.relationship_type in conformable_types:
+                        conformable_neighbors[unit_id].add(rel.to_object)
+                    # Unconformities break groups - don't add to neighbors
+            
+            for rel in incoming:
+                if rel.from_object in unit_ids:  # Only consider unit-to-unit relationships
+                    if rel.relationship_type in conformable_types:
+                        conformable_neighbors[unit_id].add(rel.from_object)
+                    # Unconformities break groups - don't add to neighbors
+        
+        # Find connected components using DFS
+        visited = set()
+        groups = []
+        
+        for unit in all_units:
+            if unit.id not in visited:
+                # Start a new group with DFS
+                group_ids = set()
+                stack = [unit.id]
+                
+                while stack:
+                    current_id = stack.pop()
+                    if current_id in visited:
+                        continue
+                    
+                    visited.add(current_id)
+                    group_ids.add(current_id)
+                    
+                    # Add conformable neighbors to explore
+                    for neighbor_id in conformable_neighbors[current_id]:
+                        if neighbor_id not in visited:
+                            stack.append(neighbor_id)
+                
+                # Convert IDs back to objects
+                group = [self.graph.get_object(uid) for uid in group_ids]
+                groups.append(group)
+        
+        # Sort units within each group (oldest to youngest)
+        for i, group in enumerate(groups):
+            groups[i] = self._sort_units_within_group(group)
+        
+        # Sort groups themselves (oldest to youngest)
+        groups = self._sort_groups(groups)
+        
+        return groups
+    
+    def _check_for_cycles(self):
+        """
+        Check for cycles in the unit relationships using DFS.
+        
+        Raises
+        ------
+        ValueError
+            If a cycle is detected in the graph.
+        """
+        all_units = self.get_units()
+        unit_ids = {unit.id for unit in all_units}
+        
+        # Build directed adjacency for all unit relationships
+        adj: Dict[str, List[str]] = defaultdict(list)
+        
+        for unit_id in unit_ids:
+            rels = self.graph.get_relationships(from_object_id=unit_id)
+            for rel in rels:
+                if rel.to_object in unit_ids:
+                    # Add directed edge based on relationship type
+                    if rel.relationship_type in [
+                        RelationshipType.CONFORMABLE_OVERLIES,
+                        RelationshipType.ERODE_UNCONFORMABLY_OVERLIES,
+                        RelationshipType.ONLAP_UNCONFORMABLY_OVERLIES,
+                        RelationshipType.YOUNGER_THAN,
+                    ]:
+                        # from is younger than to
+                        adj[unit_id].append(rel.to_object)
+                    elif rel.relationship_type in [
+                        RelationshipType.CONFORMABLE_UNDERLIES,
+                        RelationshipType.ERODE_UNCONFORMABLY_UNDERLIES,
+                        RelationshipType.ONLAP_UNCONFORMABLY_UNDERLIES,
+                        RelationshipType.OLDER_THAN,
+                    ]:
+                        # from is older than to
+                        adj[rel.to_object].append(unit_id)
+        
+        # DFS cycle detection with coloring
+        WHITE, GRAY, BLACK = 0, 1, 2
+        color = {uid: WHITE for uid in unit_ids}
+        
+        def dfs_visit(node_id: str, path: List[str]):
+            color[node_id] = GRAY
+            path.append(node_id)
+            
+            for neighbor_id in adj[node_id]:
+                if color[neighbor_id] == GRAY:
+                    # Back edge found - cycle detected
+                    cycle_start = path.index(neighbor_id)
+                    cycle = path[cycle_start:] + [neighbor_id]
+                    cycle_names = [self.graph.get_object(uid).name for uid in cycle]
+                    raise ValueError(
+                        f"Circular dependency detected in stratigraphic relationships: "
+                        f"{' -> '.join(cycle_names)}"
+                    )
+                elif color[neighbor_id] == WHITE:
+                    dfs_visit(neighbor_id, path)
+            
+            path.pop()
+            color[node_id] = BLACK
+        
+        for unit_id in unit_ids:
+            if color[unit_id] == WHITE:
+                dfs_visit(unit_id, [])
+    
+    def _sort_units_within_group(self, units: List[GeologicalObject]) -> List[GeologicalObject]:
+        """
+        Sort units within a conformable group from oldest to youngest.
+        
+        Parameters
+        ----------
+        units : List[GeologicalObject]
+            Units in the same conformable group
+            
+        Returns
+        -------
+        List[GeologicalObject]
+            Sorted units (oldest to youngest)
+        """
+        if len(units) <= 1:
+            return units
+        
+        unit_ids = {u.id for u in units}
+        
+        # Build adjacency for relationships within this group
+        adj: Dict[str, List[str]] = defaultdict(list)
+        in_degree = {uid: 0 for uid in unit_ids}
+        
+        for unit_id in unit_ids:
+            rels = self.graph.get_relationships(from_object_id=unit_id)
+            for rel in rels:
+                if rel.to_object not in unit_ids:
+                    continue
+                    
+                # Determine direction based on relationship type
+                if rel.relationship_type in [
+                    RelationshipType.CONFORMABLE_OVERLIES,
+                    RelationshipType.YOUNGER_THAN,
+                ]:
+                    # from is younger, to is older
+                    adj[rel.to_object].append(unit_id)
+                    in_degree[unit_id] += 1
+                elif rel.relationship_type in [
+                    RelationshipType.CONFORMABLE_UNDERLIES,
+                    RelationshipType.OLDER_THAN,
+                ]:
+                    # from is older, to is younger
+                    adj[unit_id].append(rel.to_object)
+                    in_degree[rel.to_object] += 1
+        
+        # Topological sort (Kahn's algorithm) - oldest to youngest
+        queue = deque([uid for uid in unit_ids if in_degree[uid] == 0])
+        sorted_ids = []
+        
+        while queue:
+            current = queue.popleft()
+            sorted_ids.append(current)
+            
+            for neighbor in adj[current]:
+                in_degree[neighbor] -= 1
+                if in_degree[neighbor] == 0:
+                    queue.append(neighbor)
+        
+        # If not all units were sorted, there might be isolated units
+        for uid in unit_ids:
+            if uid not in sorted_ids:
+                sorted_ids.append(uid)
+        
+        return [self.graph.get_object(uid) for uid in sorted_ids]
+    
+    def _sort_groups(self, groups: List[List[GeologicalObject]]) -> List[List[GeologicalObject]]:
+        """
+        Sort groups from oldest to youngest based on unconformity relationships.
+        
+        Parameters
+        ----------
+        groups : List[List[GeologicalObject]]
+            List of conformable groups
+            
+        Returns
+        -------
+        List[List[GeologicalObject]]
+            Sorted groups (oldest to youngest)
+        """
+        if len(groups) <= 1:
+            return groups
+        
+        # Create a mapping from unit ID to group index
+        unit_to_group = {}
+        for i, group in enumerate(groups):
+            for unit in group:
+                unit_to_group[unit.id] = i
+        
+        # Build inter-group adjacency based on unconformity relationships
+        group_adj: Dict[int, Set[int]] = defaultdict(set)
+        group_in_degree = {i: 0 for i in range(len(groups))}
+        
+        unconformity_types = {
+            RelationshipType.ERODE_UNCONFORMABLY_OVERLIES,
+            RelationshipType.ONLAP_UNCONFORMABLY_OVERLIES,
+            RelationshipType.ERODE_UNCONFORMABLY_UNDERLIES,
+            RelationshipType.ONLAP_UNCONFORMABLY_UNDERLIES,
+        }
+        
+        for rel in self.graph.get_relationships():
+            if rel.relationship_type not in unconformity_types:
+                continue
+            
+            from_group = unit_to_group.get(rel.from_object)
+            to_group = unit_to_group.get(rel.to_object)
+            
+            if from_group is None or to_group is None or from_group == to_group:
+                continue
+            
+            # Determine direction
+            if rel.relationship_type in [
+                RelationshipType.ERODE_UNCONFORMABLY_OVERLIES,
+                RelationshipType.ONLAP_UNCONFORMABLY_OVERLIES,
+            ]:
+                # from is younger, to is older
+                if to_group not in group_adj[from_group]:
+                    group_adj[to_group].add(from_group)
+                    group_in_degree[from_group] += 1
+            else:  # UNDERLIES
+                # from is older, to is younger
+                if from_group not in group_adj[to_group]:
+                    group_adj[from_group].add(to_group)
+                    group_in_degree[to_group] += 1
+        
+        # Topological sort for groups (oldest to youngest)
+        queue = deque([i for i in range(len(groups)) if group_in_degree[i] == 0])
+        sorted_indices = []
+        
+        while queue:
+            current = queue.popleft()
+            sorted_indices.append(current)
+            
+            for neighbor in group_adj[current]:
+                group_in_degree[neighbor] -= 1
+                if group_in_degree[neighbor] == 0:
+                    queue.append(neighbor)
+        
+        # Handle any remaining groups (isolated)
+        for i in range(len(groups)):
+            if i not in sorted_indices:
+                sorted_indices.append(i)
+        
+        return [groups[i] for i in sorted_indices]
+
+    def __str__(self):
+        units = self.get_ordered_units()
+        return f"StratigraphicColumnView: {len(units)} units (oldest to youngest): {[u.name for u in units]}"
