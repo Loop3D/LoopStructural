@@ -41,6 +41,47 @@ def load_horizontal() -> Tuple[pd.DataFrame, np.ndarray]:
     return data, bb
 
 
+def load_horizontal_v(v=0.5) -> Tuple[pd.DataFrame, np.ndarray]:
+    """Synthetic model for horizontal layers
+
+    Returns
+    -------
+    Tuple[pd.DataFrame, np.ndarray]
+        dataframe with feature_name 'strati', bounding box array
+    """
+    import numpy as np
+    import pandas as pd
+
+    bb = np.array([[0, 0, 0], [10, 10, 10]])
+    xy = np.mgrid[0:10, 0:10].reshape(2, -1).T
+    data = pd.DataFrame(
+        np.vstack(
+            [
+                np.hstack(
+                    [
+                        xy,
+                        np.zeros(xy.shape[0])[:, None] + 2,
+                        np.zeros(xy.shape[0])[:, None] + 2,
+                    ]
+                ),
+                np.hstack(
+                    [
+                        xy,
+                        np.zeros(xy.shape[0])[:, None]
+                        + 3 + v +
+                        + np.sin(np.pi / 6 * xy[:, [0]] + np.pi / 2) * v,
+                        np.zeros(xy.shape[0])[:, None] + 3,
+                    ]
+                ),
+            ]
+        ),
+        columns=["X", "Y", "Z", "val"],
+    )
+
+    data["feature_name"] = "strati"
+    return data, bb
+
+
 def load_claudius():
     """Model dataset sampled from 3D seismic data
 
