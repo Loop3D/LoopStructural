@@ -756,4 +756,6 @@ class DiscreteInterpolator(GeologicalInterpolator):
         }
 
     def vtk(self):
+        if self.up_to_date is False:
+            self.update()
         return self.support.vtk({'c': self.c})
