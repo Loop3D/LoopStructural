@@ -668,3 +668,23 @@ class BoundingBox:
             and np.allclose(self.maximum, other.maximum)
             and np.allclose(self.nsteps, other.nsteps)
         )
+
+    def matrix(self, normalise: bool = False) -> np.ndarray:
+        """Get the transformation matrix from local to global coordinates
+
+        Returns
+        -------
+        np.ndarray
+            4x4 transformation matrix
+        """
+        matrix = np.eye(4)
+        L = self.global_maximum - self.global_origin
+        L = np.max(L)
+        matrix[0, 3] = -self.global_origin[0]/L
+        matrix[1, 3] = -self.global_origin[1]/L
+        matrix[2, 3] = -self.global_origin[2]/L
+        if normalise:
+            matrix[0,0] = 1/L
+            matrix[1,1] = 1/L
+            matrix[2,2] = 1/L
+        return matrix
