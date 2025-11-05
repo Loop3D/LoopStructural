@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>LoopStructural.datatypes.StructuredGrid &#8212; LoopStructural 1.6.22 documentation</title>
+    <title>LoopStructural.datatypes.StructuredGrid &#8212; LoopStructural 1.6.23 documentation</title>
   
   
   
@@ -44,7 +44,7 @@
   <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../_static/documentation_options.js?v=b9a77b22"></script>
+    <script src="../_static/documentation_options.js?v=025bf93f"></script>
     <script src="../_static/doctools.js?v=9bcbadda"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/design-tabs.js?v=f930bc37"></script>
@@ -57,7 +57,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="" />
-    <meta name="docbuild:last-update" content="Sep 08, 2025"/>
+    <meta name="docbuild:last-update" content="Nov 05, 2025"/>
   </head>
   
   
@@ -127,7 +127,7 @@
     <img src="../_static/infinity_loop_icon.svg" class="logo__image only-dark pst-js-only" alt=""/>
   
   
-    <p class="title logo__title">LoopStructural - 1.6.22</p>
+    <p class="title logo__title">LoopStructural - 1.6.23</p>
   
 </a></div>
     
@@ -480,8 +480,23 @@
 <h1>LoopStructural.datatypes.StructuredGrid<a class="headerlink" href="#loopstructural-datatypes-structuredgrid" title="Link to this heading">#</a></h1>
 <dl class="py class">
 <dt class="sig sig-object py" id="LoopStructural.datatypes.StructuredGrid">
-<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">LoopStructural.datatypes.</span></span><span class="sig-name descname"><span class="pre">StructuredGrid</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">origin:</span> <span class="pre">numpy.ndarray</span> <span class="pre">=</span> <span class="pre">&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">step_vector:</span> <span class="pre">numpy.ndarray</span> <span class="pre">=</span> <span class="pre">&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nsteps:</span> <span class="pre">numpy.ndarray</span> <span class="pre">=</span> <span class="pre">&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cell_properties:</span> <span class="pre">Dict[str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">numpy.ndarray]</span> <span class="pre">=</span> <span class="pre">&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">properties:</span> <span class="pre">Dict[str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">numpy.ndarray]</span> <span class="pre">=</span> <span class="pre">&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name:</span> <span class="pre">str</span> <span class="pre">=</span> <span class="pre">'default_grid'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.datatypes.StructuredGrid" title="Link to this definition">#</a></dt>
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">LoopStructural.datatypes.</span></span><span class="sig-name descname"><span class="pre">StructuredGrid</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">origin:</span> <span class="pre">~numpy.ndarray</span> <span class="pre">=</span> <span class="pre">&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">step_vector:</span> <span class="pre">~numpy.ndarray</span> <span class="pre">=</span> <span class="pre">&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nsteps:</span> <span class="pre">~numpy.ndarray</span> <span class="pre">=</span> <span class="pre">&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cell_properties:</span> <span class="pre">~typing.Dict[str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">~numpy.ndarray]</span> <span class="pre">=</span> <span class="pre">&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">properties:</span> <span class="pre">~typing.Dict[str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">~numpy.ndarray]</span> <span class="pre">=</span> <span class="pre">&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name:</span> <span class="pre">str</span> <span class="pre">=</span> <span class="pre">'default_grid'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.datatypes.StructuredGrid" title="Link to this definition">#</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>A structured grid for storing 3D geological data.</p>
+<p>This class represents a regular 3D grid with properties and cell properties
+that can be used for geological modelling and visualisation.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>origin</strong> (<em>np.ndarray</em><em>, </em><em>optional</em>) – Origin point of the grid, by default [0, 0, 0]</p></li>
+<li><p><strong>step_vector</strong> (<em>np.ndarray</em><em>, </em><em>optional</em>) – Step size in each direction, by default [1, 1, 1]</p></li>
+<li><p><strong>nsteps</strong> (<em>np.ndarray</em><em>, </em><em>optional</em>) – Number of steps in each direction, by default [10, 10, 10]</p></li>
+<li><p><strong>cell_properties</strong> (<em>Dict</em><em>[</em><em>str</em><em>, </em><em>np.ndarray</em><em>]</em><em>, </em><em>optional</em>) – Properties defined at cell centres, by default empty dict</p></li>
+<li><p><strong>properties</strong> (<em>Dict</em><em>[</em><em>str</em><em>, </em><em>np.ndarray</em><em>]</em><em>, </em><em>optional</em>) – Properties defined at grid nodes, by default empty dict</p></li>
+<li><p><strong>name</strong> (<em>str</em><em>, </em><em>optional</em>) – Name of the grid, by default “default_grid”</p></li>
+</ul>
+</dd>
+</dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="LoopStructural.datatypes.StructuredGrid.__init__">
 <span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">origin:</span> <span class="pre">~numpy.ndarray</span> <span class="pre">=</span> <span class="pre">&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">step_vector:</span> <span class="pre">~numpy.ndarray</span> <span class="pre">=</span> <span class="pre">&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nsteps:</span> <span class="pre">~numpy.ndarray</span> <span class="pre">=</span> <span class="pre">&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cell_properties:</span> <span class="pre">~typing.Dict[str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">~numpy.ndarray]</span> <span class="pre">=</span> <span class="pre">&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">properties:</span> <span class="pre">~typing.Dict[str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">~numpy.ndarray]</span> <span class="pre">=</span> <span class="pre">&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name:</span> <span class="pre">str</span> <span class="pre">=</span> <span class="pre">'default_grid'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#LoopStructural.datatypes.StructuredGrid.__init__" title="Link to this definition">#</a></dt>
@@ -499,14 +514,14 @@
 <tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.datatypes.StructuredGrid.plot" title="LoopStructural.datatypes.StructuredGrid.plot"><code class="xref py py-obj docutils literal notranslate"><span class="pre">plot</span></code></a>([pyvista_kwargs])</p></td>
 <td><p>Calls pyvista plot on the vtk object</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">save</span></code>(filename)</p></td>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">save</span></code>(filename, *[, group])</p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">to_dict</span></code>()</p></td>
-<td><p></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.datatypes.StructuredGrid.to_dict" title="LoopStructural.datatypes.StructuredGrid.to_dict"><code class="xref py py-obj docutils literal notranslate"><span class="pre">to_dict</span></code></a>()</p></td>
+<td><p>Convert the structured grid to a dictionary representation.</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">vtk</span></code>()</p></td>
-<td><p></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.datatypes.StructuredGrid.vtk" title="LoopStructural.datatypes.StructuredGrid.vtk"><code class="xref py py-obj docutils literal notranslate"><span class="pre">vtk</span></code></a>()</p></td>
+<td><p>Convert the structured grid to a PyVista RectilinearGrid.</p></td>
 </tr>
 </tbody>
 </table>
@@ -514,11 +529,11 @@
 <p class="rubric">Attributes</p>
 <div class="pst-scrollable-table-container"><table class="autosummary longtable table">
 <tbody>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">cell_centres</span></code></p></td>
-<td><p></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.datatypes.StructuredGrid.cell_centres" title="LoopStructural.datatypes.StructuredGrid.cell_centres"><code class="xref py py-obj docutils literal notranslate"><span class="pre">cell_centres</span></code></a></p></td>
+<td><p>Calculate the coordinates of cell centres.</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">maximum</span></code></p></td>
-<td><p></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.datatypes.StructuredGrid.maximum" title="LoopStructural.datatypes.StructuredGrid.maximum"><code class="xref py py-obj docutils literal notranslate"><span class="pre">maximum</span></code></a></p></td>
+<td><p>Calculate the maximum coordinates of the grid.</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">name</span></code></p></td>
 <td><p></p></td>
@@ -544,6 +559,28 @@
 </tbody>
 </table>
 </div>
+<dl class="py property">
+<dt class="sig sig-object py" id="LoopStructural.datatypes.StructuredGrid.cell_centres">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">cell_centres</span></span><a class="headerlink" href="#LoopStructural.datatypes.StructuredGrid.cell_centres" title="Link to this definition">#</a></dt>
+<dd><p>Calculate the coordinates of cell centres.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p><em>tuple of np.ndarray</em> – X, Y, Z coordinates of all cell centres</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="LoopStructural.datatypes.StructuredGrid.maximum">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">maximum</span></span><a class="headerlink" href="#LoopStructural.datatypes.StructuredGrid.maximum" title="Link to this definition">#</a></dt>
+<dd><p>Calculate the maximum coordinates of the grid.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p><em>np.ndarray</em> – Maximum coordinates (origin + nsteps * step_vector)</p>
+</dd>
+</dl>
+</dd></dl>
+
 <dl class="py method">
 <dt class="sig sig-object py" id="LoopStructural.datatypes.StructuredGrid.plot">
 <span class="sig-name descname"><span class="pre">plot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pyvista_kwargs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{}</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.datatypes.StructuredGrid.plot" title="Link to this definition">#</a></dt>
@@ -551,6 +588,31 @@
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>pyvista_kwargs</strong> (<em>dict</em><em>, </em><em>optional</em>) – kwargs passed to pyvista.DataSet.plot(), by default {}</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="LoopStructural.datatypes.StructuredGrid.to_dict">
+<span class="sig-name descname"><span class="pre">to_dict</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.datatypes.StructuredGrid.to_dict" title="Link to this definition">#</a></dt>
+<dd><p>Convert the structured grid to a dictionary representation.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p><em>dict</em> – Dictionary containing all grid properties and metadata</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="LoopStructural.datatypes.StructuredGrid.vtk">
+<span class="sig-name descname"><span class="pre">vtk</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.datatypes.StructuredGrid.vtk" title="Link to this definition">#</a></dt>
+<dd><p>Convert the structured grid to a PyVista RectilinearGrid.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p><em>pv.RectilinearGrid</em> – PyVista grid object with all properties attached</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>ImportError</strong> – If PyVista is not installed</p>
 </dd>
 </dl>
 </dd></dl>
@@ -608,7 +670,11 @@
     <ul class="visible nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#LoopStructural.datatypes.StructuredGrid"><code class="docutils literal notranslate"><span class="pre">StructuredGrid</span></code></a><ul class="nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#LoopStructural.datatypes.StructuredGrid.__init__"><code class="docutils literal notranslate"><span class="pre">StructuredGrid.__init__()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#LoopStructural.datatypes.StructuredGrid.cell_centres"><code class="docutils literal notranslate"><span class="pre">StructuredGrid.cell_centres</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#LoopStructural.datatypes.StructuredGrid.maximum"><code class="docutils literal notranslate"><span class="pre">StructuredGrid.maximum</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#LoopStructural.datatypes.StructuredGrid.plot"><code class="docutils literal notranslate"><span class="pre">StructuredGrid.plot()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#LoopStructural.datatypes.StructuredGrid.to_dict"><code class="docutils literal notranslate"><span class="pre">StructuredGrid.to_dict()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#LoopStructural.datatypes.StructuredGrid.vtk"><code class="docutils literal notranslate"><span class="pre">StructuredGrid.vtk()</span></code></a></li>
 </ul>
 </li>
 </ul>

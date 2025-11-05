@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>LoopStructural.interpolators.P1Interpolator &#8212; LoopStructural 1.6.22 documentation</title>
+    <title>LoopStructural.interpolators.P1Interpolator &#8212; LoopStructural 1.6.23 documentation</title>
   
   
   
@@ -44,7 +44,7 @@
   <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../_static/documentation_options.js?v=b9a77b22"></script>
+    <script src="../_static/documentation_options.js?v=025bf93f"></script>
     <script src="../_static/doctools.js?v=9bcbadda"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/design-tabs.js?v=f930bc37"></script>
@@ -58,7 +58,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="" />
-    <meta name="docbuild:last-update" content="Sep 08, 2025"/>
+    <meta name="docbuild:last-update" content="Nov 05, 2025"/>
   </head>
   
   
@@ -128,7 +128,7 @@
     <img src="../_static/infinity_loop_icon.svg" class="logo__image only-dark pst-js-only" alt=""/>
   
   
-    <p class="title logo__title">LoopStructural - 1.6.22</p>
+    <p class="title logo__title">LoopStructural - 1.6.23</p>
   
 </a></div>
     
@@ -569,8 +569,8 @@ equation on a tetrahedral mesh. Uses constant gradient regularisation.</p>
 <tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.interpolators.P1Interpolator.calculate_residual_for_constraints" title="LoopStructural.interpolators.P1Interpolator.calculate_residual_for_constraints"><code class="xref py py-obj docutils literal notranslate"><span class="pre">calculate_residual_for_constraints</span></code></a>()</p></td>
 <td><p>Calculates Ax-B for all constraints added to the interpolator This could be a proxy to identify which constraints are controlling the model</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">check_array</span></code>(array)</p></td>
-<td><p></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.interpolators.P1Interpolator.check_array" title="LoopStructural.interpolators.P1Interpolator.check_array"><code class="xref py py-obj docutils literal notranslate"><span class="pre">check_array</span></code></a>(array)</p></td>
+<td><p>Validate and convert input to numpy array.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.interpolators.P1Interpolator.clean" title="LoopStructural.interpolators.P1Interpolator.clean"><code class="xref py py-obj docutils literal notranslate"><span class="pre">clean</span></code></a>()</p></td>
 <td><p>Removes all of the data from an interpolator</p></td>
@@ -618,7 +618,7 @@ equation on a tetrahedral mesh. Uses constant gradient regularisation.</p>
 <td><p>Reset the interpolation constraints</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.interpolators.P1Interpolator.set_gradient_constraints" title="LoopStructural.interpolators.P1Interpolator.set_gradient_constraints"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_gradient_constraints</span></code></a>(points)</p></td>
-<td><p></p></td>
+<td><p>Set gradient constraints for the interpolation.</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_inequality_pairs_constraints</span></code>(points)</p></td>
 <td><p></p></td>
@@ -629,8 +629,8 @@ equation on a tetrahedral mesh. Uses constant gradient regularisation.</p>
 <tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.interpolators.P1Interpolator.set_interpolation_weights" title="LoopStructural.interpolators.P1Interpolator.set_interpolation_weights"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_interpolation_weights</span></code></a>(weights)</p></td>
 <td><p>Set the interpolation weights dictionary</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_nelements</span></code>(nelements)</p></td>
-<td><p></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.interpolators.P1Interpolator.set_nelements" title="LoopStructural.interpolators.P1Interpolator.set_nelements"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_nelements</span></code></a>(nelements)</p></td>
+<td><p>Set the number of elements for the interpolation support.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.interpolators.P1Interpolator.set_normal_constraints" title="LoopStructural.interpolators.P1Interpolator.set_normal_constraints"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_normal_constraints</span></code></a>(points)</p></td>
 <td><p></p></td>
@@ -642,7 +642,7 @@ equation on a tetrahedral mesh. Uses constant gradient regularisation.</p>
 <td><p></p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.interpolators.P1Interpolator.set_value_constraints" title="LoopStructural.interpolators.P1Interpolator.set_value_constraints"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_value_constraints</span></code></a>(points)</p></td>
-<td><p></p></td>
+<td><p>Set value constraints for the interpolation.</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_value_inequality_constraints</span></code>(points)</p></td>
 <td><p></p></td>
@@ -660,7 +660,7 @@ equation on a tetrahedral mesh. Uses constant gradient regularisation.</p>
 <td><p></p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.interpolators.P1Interpolator.to_json" title="LoopStructural.interpolators.P1Interpolator.to_json"><code class="xref py py-obj docutils literal notranslate"><span class="pre">to_json</span></code></a>()</p></td>
-<td><p>Returns a json representation of the geological interpolator</p></td>
+<td><p>Return a JSON representation of the geological interpolator.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.interpolators.P1Interpolator.update" title="LoopStructural.interpolators.P1Interpolator.update"><code class="xref py py-obj docutils literal notranslate"><span class="pre">update</span></code></a>()</p></td>
 <td><p>Check if the solver is up to date, if not rerun interpolation using the previously used solver.</p></td>
@@ -674,8 +674,8 @@ equation on a tetrahedral mesh. Uses constant gradient regularisation.</p>
 <p class="rubric">Attributes</p>
 <div class="pst-scrollable-table-container"><table class="autosummary longtable table">
 <tbody>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">data</span></code></p></td>
-<td><p></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.interpolators.P1Interpolator.data" title="LoopStructural.interpolators.P1Interpolator.data"><code class="xref py py-obj docutils literal notranslate"><span class="pre">data</span></code></a></p></td>
+<td><p>Get the constraint data dictionary.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.interpolators.P1Interpolator.dof" title="LoopStructural.interpolators.P1Interpolator.dof"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dof</span></code></a></p></td>
 <td><p>Number of degrees of freedom for the interpolator</p></td>
@@ -818,6 +818,23 @@ This could be a proxy to identify which constraints are controlling the model</p
 </dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="LoopStructural.interpolators.P1Interpolator.check_array">
+<span class="sig-name descname"><span class="pre">check_array</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">array</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.interpolators.P1Interpolator.check_array" title="Link to this definition">#</a></dt>
+<dd><p>Validate and convert input to numpy array.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>array</strong> (<em>array_like</em>) – Input array to validate and convert</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><em>np.ndarray</em> – Validated numpy array</p>
+</dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>LoopTypeError</strong> – If the array cannot be converted to a numpy array</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="LoopStructural.interpolators.P1Interpolator.clean">
 <span class="sig-name descname"><span class="pre">clean</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.interpolators.P1Interpolator.clean" title="Link to this definition">#</a></dt>
 <dd><p>Removes all of the data from an interpolator</p>
@@ -828,6 +845,17 @@ This could be a proxy to identify which constraints are controlling the model</p
 <span class="sig-name descname"><span class="pre">clear_constraints</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.interpolators.P1Interpolator.clear_constraints" title="Link to this definition">#</a></dt>
 <dd><p>Clear the constraints from the interpolator, this makes sure we are not storing
 the constraints after the solver has been run</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="LoopStructural.interpolators.P1Interpolator.data">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">data</span></span><a class="headerlink" href="#LoopStructural.interpolators.P1Interpolator.data" title="Link to this definition">#</a></dt>
+<dd><p>Get the constraint data dictionary.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p><em>dict</em> – Dictionary containing constraint data arrays</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
@@ -963,12 +991,21 @@ mask for all elements that are interpolated</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="LoopStructural.interpolators.P1Interpolator.set_gradient_constraints">
 <span class="sig-name descname"><span class="pre">set_gradient_constraints</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">points</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.interpolators.P1Interpolator.set_gradient_constraints" title="Link to this definition">#</a></dt>
-<dd><dl class="field-list simple">
+<dd><p>Set gradient constraints for the interpolation.</p>
+<dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>points</strong> (<em>np.ndarray</em>) – array containing the value constraints usually 7-8 columns.
-X,Y,Z,gx,gy,gz,weight</p>
+<dd class="field-odd"><p><strong>points</strong> (<em>np.ndarray</em>) – Array containing gradient constraints with shape (n_points, 7-8).
+Columns should be [X, Y, Z, gx, gy, gz, weight]. If weight is not
+provided, a weight of 1.0 is assumed for all points.</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>ValueError</strong> – If points array doesn’t have the minimum required columns</p>
 </dd>
 </dl>
+<p class="rubric">Notes</p>
+<p>Gradient constraints specify the direction and magnitude of the scalar
+field gradient at specific locations. These are typically derived from
+structural measurements like bedding or foliation orientations.</p>
 </dd></dl>
 
 <dl class="py method">
@@ -980,6 +1017,24 @@ X,Y,Z,gx,gy,gz,weight</p>
 <dd class="field-odd"><p><strong>dictionary</strong> (<em>weights -</em>) – Entry of new weights to assign to self.interpolation_weights</p>
 </dd>
 </dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="LoopStructural.interpolators.P1Interpolator.set_nelements">
+<span class="sig-name descname"><span class="pre">set_nelements</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">nelements</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">int</span></span></span><a class="headerlink" href="#LoopStructural.interpolators.P1Interpolator.set_nelements" title="Link to this definition">#</a></dt>
+<dd><p>Set the number of elements for the interpolation support.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>nelements</strong> (<em>int</em>) – Target number of elements</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><em>int</em> – Actual number of elements set</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>This is an abstract method that must be implemented by subclasses.
+The actual number of elements may differ from the requested number
+depending on the interpolator’s constraints.</p>
 </dd></dl>
 
 <dl class="py method">
@@ -1020,12 +1075,20 @@ X,Y,Z,nx,ny,nz,weight</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="LoopStructural.interpolators.P1Interpolator.set_value_constraints">
 <span class="sig-name descname"><span class="pre">set_value_constraints</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">points</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.interpolators.P1Interpolator.set_value_constraints" title="Link to this definition">#</a></dt>
-<dd><dl class="field-list simple">
+<dd><p>Set value constraints for the interpolation.</p>
+<dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>points</strong> (<em>np.ndarray</em>) – array containing the value constraints usually 4-5 columns.
-X,Y,Z,val,weight</p>
+<dd class="field-odd"><p><strong>points</strong> (<em>np.ndarray</em>) – Array containing the value constraints with shape (n_points, 4-5).
+Columns should be [X, Y, Z, value, weight]. If weight is not provided,
+a weight of 1.0 is assumed for all points.</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>ValueError</strong> – If points array doesn’t have the minimum required columns</p>
 </dd>
 </dl>
+<p class="rubric">Notes</p>
+<p>Value constraints specify known scalar field values at specific locations.
+These are typically used for interface points or measured data values.</p>
 </dd></dl>
 
 <dl class="py method">
@@ -1066,12 +1129,16 @@ discreteinterpolator class</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="LoopStructural.interpolators.P1Interpolator.to_json">
 <span class="sig-name descname"><span class="pre">to_json</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.interpolators.P1Interpolator.to_json" title="Link to this definition">#</a></dt>
-<dd><p>Returns a json representation of the geological interpolator</p>
+<dd><p>Return a JSON representation of the geological interpolator.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>json</strong> (<em>dict</em>) – json representation of the geological interpolator</p>
+<dd class="field-odd"><p><em>dict</em> – Dictionary containing the interpolator’s state and configuration
+suitable for JSON serialization</p>
 </dd>
 </dl>
+<p class="rubric">Notes</p>
+<p>This method packages the essential state of the interpolator including
+its type, constraints, data, and build status for serialization.</p>
 </dd></dl>
 
 <dl class="py method">
@@ -1149,8 +1216,10 @@ return False</p>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#LoopStructural.interpolators.P1Interpolator.add_tangent_constraints"><code class="docutils literal notranslate"><span class="pre">P1Interpolator.add_tangent_constraints()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#LoopStructural.interpolators.P1Interpolator.build_matrix"><code class="docutils literal notranslate"><span class="pre">P1Interpolator.build_matrix()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#LoopStructural.interpolators.P1Interpolator.calculate_residual_for_constraints"><code class="docutils literal notranslate"><span class="pre">P1Interpolator.calculate_residual_for_constraints()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#LoopStructural.interpolators.P1Interpolator.check_array"><code class="docutils literal notranslate"><span class="pre">P1Interpolator.check_array()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#LoopStructural.interpolators.P1Interpolator.clean"><code class="docutils literal notranslate"><span class="pre">P1Interpolator.clean()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#LoopStructural.interpolators.P1Interpolator.clear_constraints"><code class="docutils literal notranslate"><span class="pre">P1Interpolator.clear_constraints()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#LoopStructural.interpolators.P1Interpolator.data"><code class="docutils literal notranslate"><span class="pre">P1Interpolator.data</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#LoopStructural.interpolators.P1Interpolator.debug"><code class="docutils literal notranslate"><span class="pre">P1Interpolator.debug()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#LoopStructural.interpolators.P1Interpolator.dof"><code class="docutils literal notranslate"><span class="pre">P1Interpolator.dof</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#LoopStructural.interpolators.P1Interpolator.evaluate_gradient"><code class="docutils literal notranslate"><span class="pre">P1Interpolator.evaluate_gradient()</span></code></a></li>
@@ -1166,6 +1235,7 @@ return False</p>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#LoopStructural.interpolators.P1Interpolator.reset"><code class="docutils literal notranslate"><span class="pre">P1Interpolator.reset()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#LoopStructural.interpolators.P1Interpolator.set_gradient_constraints"><code class="docutils literal notranslate"><span class="pre">P1Interpolator.set_gradient_constraints()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#LoopStructural.interpolators.P1Interpolator.set_interpolation_weights"><code class="docutils literal notranslate"><span class="pre">P1Interpolator.set_interpolation_weights()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#LoopStructural.interpolators.P1Interpolator.set_nelements"><code class="docutils literal notranslate"><span class="pre">P1Interpolator.set_nelements()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#LoopStructural.interpolators.P1Interpolator.set_normal_constraints"><code class="docutils literal notranslate"><span class="pre">P1Interpolator.set_normal_constraints()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#LoopStructural.interpolators.P1Interpolator.set_region"><code class="docutils literal notranslate"><span class="pre">P1Interpolator.set_region()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#LoopStructural.interpolators.P1Interpolator.set_tangent_constraints"><code class="docutils literal notranslate"><span class="pre">P1Interpolator.set_tangent_constraints()</span></code></a></li>

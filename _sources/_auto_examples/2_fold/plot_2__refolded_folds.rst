@@ -21,13 +21,12 @@
 2b. Refolded folds
 ===================
 
-.. GENERATED FROM PYTHON SOURCE LINES 7-31
+.. GENERATED FROM PYTHON SOURCE LINES 7-30
 
 .. code-block:: Python
 
 
     from LoopStructural import GeologicalModel
-    from LoopStructural.modelling.features import fold
     from LoopStructural.visualisation import Loop3DView, RotationAnglePlotter
     from LoopStructural.datasets import load_laurent2016
     import pandas as pd
@@ -56,13 +55,13 @@
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 32-35
+.. GENERATED FROM PYTHON SOURCE LINES 31-34
 
 Modelling S2
 ~~~~~~~~~~~~
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 35-46
+.. GENERATED FROM PYTHON SOURCE LINES 34-45
 
 .. code-block:: Python
 
@@ -89,13 +88,13 @@ Modelling S2
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 47-50
+.. GENERATED FROM PYTHON SOURCE LINES 46-49
 
 Modelling S1
 ~~~~~~~~~~~~
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 50-60
+.. GENERATED FROM PYTHON SOURCE LINES 49-59
 
 .. code-block:: Python
 
@@ -121,13 +120,13 @@ Modelling S1
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 61-64
+.. GENERATED FROM PYTHON SOURCE LINES 60-63
 
 S2/S1 S-Plots
 ~~~~~~~~~~~~~
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 64-74
+.. GENERATED FROM PYTHON SOURCE LINES 63-73
 
 .. code-block:: Python
 
@@ -155,17 +154,17 @@ S2/S1 S-Plots
  .. code-block:: none
 
 
-    [<matplotlib.lines.Line2D object at 0x7f5bed827aa0>]
+    [<matplotlib.lines.Line2D object at 0x7fb2d854ac30>]
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 75-78
+.. GENERATED FROM PYTHON SOURCE LINES 74-77
 
 Modelling S0
 ~~~~~~~~~~~~
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 78-91
+.. GENERATED FROM PYTHON SOURCE LINES 77-90
 
 .. code-block:: Python
 
@@ -194,13 +193,13 @@ Modelling S0
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 92-95
+.. GENERATED FROM PYTHON SOURCE LINES 91-94
 
 S1/S0 S-Plots
 ~~~~~~~~~~~~~
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 95-110
+.. GENERATED FROM PYTHON SOURCE LINES 94-109
 
 .. code-block:: Python
 
@@ -239,7 +238,7 @@ S1/S0 S-Plots
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 28.999 seconds)
+   **Total running time of the script:** (0 minutes 28.834 seconds)
 
 
 .. _sphx_glr_download__auto_examples_2_fold_plot_2__refolded_folds.py:

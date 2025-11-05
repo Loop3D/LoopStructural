@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>LoopStructural.datatypes.BoundingBox &#8212; LoopStructural 1.6.22 documentation</title>
+    <title>LoopStructural.datatypes.BoundingBox &#8212; LoopStructural 1.6.23 documentation</title>
   
   
   
@@ -44,7 +44,7 @@
   <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../_static/documentation_options.js?v=b9a77b22"></script>
+    <script src="../_static/documentation_options.js?v=025bf93f"></script>
     <script src="../_static/doctools.js?v=9bcbadda"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/design-tabs.js?v=f930bc37"></script>
@@ -57,7 +57,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="" />
-    <meta name="docbuild:last-update" content="Sep 08, 2025"/>
+    <meta name="docbuild:last-update" content="Nov 05, 2025"/>
   </head>
   
   
@@ -127,7 +127,7 @@
     <img src="../_static/infinity_loop_icon.svg" class="logo__image only-dark pst-js-only" alt=""/>
   
   
-    <p class="title logo__title">LoopStructural - 1.6.22</p>
+    <p class="title logo__title">LoopStructural - 1.6.23</p>
   
 </a></div>
     
@@ -532,28 +532,31 @@ origin, maximum and number of steps in each direction</p>
 <tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">is_inside</span></code>(xyz)</p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.datatypes.BoundingBox.project" title="LoopStructural.datatypes.BoundingBox.project"><code class="xref py py-obj docutils literal notranslate"><span class="pre">project</span></code></a>(xyz[, inplace])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.datatypes.BoundingBox.matrix" title="LoopStructural.datatypes.BoundingBox.matrix"><code class="xref py py-obj docutils literal notranslate"><span class="pre">matrix</span></code></a>([normalise])</p></td>
+<td><p>Get the transformation matrix from local to global coordinates</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.datatypes.BoundingBox.project" title="LoopStructural.datatypes.BoundingBox.project"><code class="xref py py-obj docutils literal notranslate"><span class="pre">project</span></code></a>(xyz[, inplace])</p></td>
 <td><p>Project a point into the bounding box</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.datatypes.BoundingBox.regular_grid" title="LoopStructural.datatypes.BoundingBox.regular_grid"><code class="xref py py-obj docutils literal notranslate"><span class="pre">regular_grid</span></code></a>([nsteps, shuffle, order, local])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.datatypes.BoundingBox.regular_grid" title="LoopStructural.datatypes.BoundingBox.regular_grid"><code class="xref py py-obj docutils literal notranslate"><span class="pre">regular_grid</span></code></a>([nsteps, shuffle, order, local])</p></td>
 <td><p>Get the grid of points from the bounding box</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.datatypes.BoundingBox.reproject" title="LoopStructural.datatypes.BoundingBox.reproject"><code class="xref py py-obj docutils literal notranslate"><span class="pre">reproject</span></code></a>(xyz[, inplace])</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.datatypes.BoundingBox.reproject" title="LoopStructural.datatypes.BoundingBox.reproject"><code class="xref py py-obj docutils literal notranslate"><span class="pre">reproject</span></code></a>(xyz[, inplace])</p></td>
 <td><p>Reproject a point from the bounding box to the global space</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">scale_by_projection_factor</span></code>(value)</p></td>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">scale_by_projection_factor</span></code>(value)</p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">structured_grid</span></code>([cell_data, vertex_data, name])</p></td>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">structured_grid</span></code>([cell_data, vertex_data, name])</p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.datatypes.BoundingBox.to_dict" title="LoopStructural.datatypes.BoundingBox.to_dict"><code class="xref py py-obj docutils literal notranslate"><span class="pre">to_dict</span></code></a>()</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.datatypes.BoundingBox.to_dict" title="LoopStructural.datatypes.BoundingBox.to_dict"><code class="xref py py-obj docutils literal notranslate"><span class="pre">to_dict</span></code></a>()</p></td>
 <td><p>Export the defining characteristics of the bounding box to a dictionary for json serialisation</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.datatypes.BoundingBox.vtk" title="LoopStructural.datatypes.BoundingBox.vtk"><code class="xref py py-obj docutils literal notranslate"><span class="pre">vtk</span></code></a>()</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.datatypes.BoundingBox.vtk" title="LoopStructural.datatypes.BoundingBox.vtk"><code class="xref py py-obj docutils literal notranslate"><span class="pre">vtk</span></code></a>()</p></td>
 <td><p>Export the model as a pyvista RectilinearGrid</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.datatypes.BoundingBox.with_buffer" title="LoopStructural.datatypes.BoundingBox.with_buffer"><code class="xref py py-obj docutils literal notranslate"><span class="pre">with_buffer</span></code></a>([buffer])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.datatypes.BoundingBox.with_buffer" title="LoopStructural.datatypes.BoundingBox.with_buffer"><code class="xref py py-obj docutils literal notranslate"><span class="pre">with_buffer</span></code></a>([buffer])</p></td>
 <td><p>Create a new bounding box with a buffer around the existing bounding box</p></td>
 </tr>
 </tbody>
@@ -562,8 +565,8 @@ origin, maximum and number of steps in each direction</p>
 <p class="rubric">Attributes</p>
 <div class="pst-scrollable-table-container"><table class="autosummary longtable table">
 <tbody>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">bb</span></code></p></td>
-<td><p></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.datatypes.BoundingBox.bb" title="LoopStructural.datatypes.BoundingBox.bb"><code class="xref py py-obj docutils literal notranslate"><span class="pre">bb</span></code></a></p></td>
+<td><p>Get a numpy array containing origin and maximum coordinates.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.datatypes.BoundingBox.corners" title="LoopStructural.datatypes.BoundingBox.corners"><code class="xref py py-obj docutils literal notranslate"><span class="pre">corners</span></code></a></p></td>
 <td><p>Returns the corners of the bounding box in local coordinates</p></td>
@@ -571,36 +574,47 @@ origin, maximum and number of steps in each direction</p>
 <tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.datatypes.BoundingBox.corners_global" title="LoopStructural.datatypes.BoundingBox.corners_global"><code class="xref py py-obj docutils literal notranslate"><span class="pre">corners_global</span></code></a></p></td>
 <td><p>Returns the corners of the bounding box in the original space</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">global_maximum</span></code></p></td>
-<td><p></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.datatypes.BoundingBox.global_maximum" title="LoopStructural.datatypes.BoundingBox.global_maximum"><code class="xref py py-obj docutils literal notranslate"><span class="pre">global_maximum</span></code></a></p></td>
+<td><p>Get the global maximum coordinates of the bounding box.</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">global_origin</span></code></p></td>
-<td><p></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.datatypes.BoundingBox.global_origin" title="LoopStructural.datatypes.BoundingBox.global_origin"><code class="xref py py-obj docutils literal notranslate"><span class="pre">global_origin</span></code></a></p></td>
+<td><p>Get the global origin of the bounding box.</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">length</span></code></p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">maximum</span></code></p></td>
-<td><p></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.datatypes.BoundingBox.maximum" title="LoopStructural.datatypes.BoundingBox.maximum"><code class="xref py py-obj docutils literal notranslate"><span class="pre">maximum</span></code></a></p></td>
+<td><p>Get the maximum coordinates of the bounding box.</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">nelements</span></code></p></td>
-<td><p></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.datatypes.BoundingBox.nelements" title="LoopStructural.datatypes.BoundingBox.nelements"><code class="xref py py-obj docutils literal notranslate"><span class="pre">nelements</span></code></a></p></td>
+<td><p>Get the total number of elements in the bounding box.</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">origin</span></code></p></td>
-<td><p></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.datatypes.BoundingBox.origin" title="LoopStructural.datatypes.BoundingBox.origin"><code class="xref py py-obj docutils literal notranslate"><span class="pre">origin</span></code></a></p></td>
+<td><p>Get the origin coordinates of the bounding box.</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">step_vector</span></code></p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">valid</span></code></p></td>
-<td><p></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#LoopStructural.datatypes.BoundingBox.valid" title="LoopStructural.datatypes.BoundingBox.valid"><code class="xref py py-obj docutils literal notranslate"><span class="pre">valid</span></code></a></p></td>
+<td><p>Check if the bounding box has valid origin and maximum values.</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">volume</span></code></p></td>
-<td><p></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#LoopStructural.datatypes.BoundingBox.volume" title="LoopStructural.datatypes.BoundingBox.volume"><code class="xref py py-obj docutils literal notranslate"><span class="pre">volume</span></code></a></p></td>
+<td><p>Calculate the volume of the bounding box.</p></td>
 </tr>
 </tbody>
 </table>
 </div>
+<dl class="py property">
+<dt class="sig sig-object py" id="LoopStructural.datatypes.BoundingBox.bb">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">bb</span></span><a class="headerlink" href="#LoopStructural.datatypes.BoundingBox.bb" title="Link to this definition">#</a></dt>
+<dd><p>Get a numpy array containing origin and maximum coordinates.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p><em>np.ndarray</em> – Array with shape (2, n_dimensions) containing [origin, maximum]</p>
+</dd>
+</dl>
+</dd></dl>
+
 <dl class="py method">
 <dt class="sig sig-object py" id="LoopStructural.datatypes.BoundingBox.cell_centres">
 <span class="sig-name descname"><span class="pre">cell_centres</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">order</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'F'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ndarray</span></span></span><a class="headerlink" href="#LoopStructural.datatypes.BoundingBox.cell_centres" title="Link to this definition">#</a></dt>
@@ -673,6 +687,78 @@ it updates the current one in place.</p>
 </dl>
 </dd></dl>
 
+<dl class="py property">
+<dt class="sig sig-object py" id="LoopStructural.datatypes.BoundingBox.global_maximum">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">global_maximum</span></span><a class="headerlink" href="#LoopStructural.datatypes.BoundingBox.global_maximum" title="Link to this definition">#</a></dt>
+<dd><p>Get the global maximum coordinates of the bounding box.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p><em>np.ndarray</em> – The global maximum coordinates (local maximum + global origin)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="LoopStructural.datatypes.BoundingBox.global_origin">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">global_origin</span></span><a class="headerlink" href="#LoopStructural.datatypes.BoundingBox.global_origin" title="Link to this definition">#</a></dt>
+<dd><p>Get the global origin of the bounding box.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p><em>np.ndarray</em> – The global origin coordinates</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="LoopStructural.datatypes.BoundingBox.matrix">
+<span class="sig-name descname"><span class="pre">matrix</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">normalise</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ndarray</span></span></span><a class="headerlink" href="#LoopStructural.datatypes.BoundingBox.matrix" title="Link to this definition">#</a></dt>
+<dd><p>Get the transformation matrix from local to global coordinates</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p><em>np.ndarray</em> – 4x4 transformation matrix</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="LoopStructural.datatypes.BoundingBox.maximum">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">maximum</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ndarray</span></em><a class="headerlink" href="#LoopStructural.datatypes.BoundingBox.maximum" title="Link to this definition">#</a></dt>
+<dd><p>Get the maximum coordinates of the bounding box.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p><em>np.ndarray</em> – Maximum coordinates</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>LoopValueError</strong> – If the maximum is not set</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="LoopStructural.datatypes.BoundingBox.nelements">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">nelements</span></span><a class="headerlink" href="#LoopStructural.datatypes.BoundingBox.nelements" title="Link to this definition">#</a></dt>
+<dd><p>Get the total number of elements in the bounding box.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p><em>int</em> – Total number of elements (product of nsteps)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="LoopStructural.datatypes.BoundingBox.origin">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">origin</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ndarray</span></em><a class="headerlink" href="#LoopStructural.datatypes.BoundingBox.origin" title="Link to this definition">#</a></dt>
+<dd><p>Get the origin coordinates of the bounding box.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p><em>np.ndarray</em> – Origin coordinates</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>LoopValueError</strong> – If the origin is not set</p>
+</dd>
+</dl>
+</dd></dl>
+
 <dl class="py method">
 <dt class="sig sig-object py" id="LoopStructural.datatypes.BoundingBox.project">
 <span class="sig-name descname"><span class="pre">project</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">xyz</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">inplace</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.datatypes.BoundingBox.project" title="Link to this definition">#</a></dt>
@@ -735,6 +821,28 @@ box to a dictionary for json serialisation</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
 <dd class="field-odd"><p><em>dict</em> – dictionary with origin, maximum and nsteps</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="LoopStructural.datatypes.BoundingBox.valid">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">valid</span></span><a class="headerlink" href="#LoopStructural.datatypes.BoundingBox.valid" title="Link to this definition">#</a></dt>
+<dd><p>Check if the bounding box has valid origin and maximum values.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p><em>bool</em> – True if both origin and maximum are set, False otherwise</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="LoopStructural.datatypes.BoundingBox.volume">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">volume</span></span><a class="headerlink" href="#LoopStructural.datatypes.BoundingBox.volume" title="Link to this definition">#</a></dt>
+<dd><p>Calculate the volume of the bounding box.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p><em>float</em> – Volume of the bounding box</p>
 </dd>
 </dl>
 </dd></dl>
@@ -823,15 +931,24 @@ box to a dictionary for json serialisation</p>
     <ul class="visible nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#LoopStructural.datatypes.BoundingBox"><code class="docutils literal notranslate"><span class="pre">BoundingBox</span></code></a><ul class="nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#LoopStructural.datatypes.BoundingBox.__init__"><code class="docutils literal notranslate"><span class="pre">BoundingBox.__init__()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#LoopStructural.datatypes.BoundingBox.bb"><code class="docutils literal notranslate"><span class="pre">BoundingBox.bb</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#LoopStructural.datatypes.BoundingBox.cell_centres"><code class="docutils literal notranslate"><span class="pre">BoundingBox.cell_centres()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#LoopStructural.datatypes.BoundingBox.corners"><code class="docutils literal notranslate"><span class="pre">BoundingBox.corners</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#LoopStructural.datatypes.BoundingBox.corners_global"><code class="docutils literal notranslate"><span class="pre">BoundingBox.corners_global</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#LoopStructural.datatypes.BoundingBox.fit"><code class="docutils literal notranslate"><span class="pre">BoundingBox.fit()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#LoopStructural.datatypes.BoundingBox.from_dict"><code class="docutils literal notranslate"><span class="pre">BoundingBox.from_dict()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#LoopStructural.datatypes.BoundingBox.global_maximum"><code class="docutils literal notranslate"><span class="pre">BoundingBox.global_maximum</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#LoopStructural.datatypes.BoundingBox.global_origin"><code class="docutils literal notranslate"><span class="pre">BoundingBox.global_origin</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#LoopStructural.datatypes.BoundingBox.matrix"><code class="docutils literal notranslate"><span class="pre">BoundingBox.matrix()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#LoopStructural.datatypes.BoundingBox.maximum"><code class="docutils literal notranslate"><span class="pre">BoundingBox.maximum</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#LoopStructural.datatypes.BoundingBox.nelements"><code class="docutils literal notranslate"><span class="pre">BoundingBox.nelements</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#LoopStructural.datatypes.BoundingBox.origin"><code class="docutils literal notranslate"><span class="pre">BoundingBox.origin</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#LoopStructural.datatypes.BoundingBox.project"><code class="docutils literal notranslate"><span class="pre">BoundingBox.project()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#LoopStructural.datatypes.BoundingBox.regular_grid"><code class="docutils literal notranslate"><span class="pre">BoundingBox.regular_grid()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#LoopStructural.datatypes.BoundingBox.reproject"><code class="docutils literal notranslate"><span class="pre">BoundingBox.reproject()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#LoopStructural.datatypes.BoundingBox.to_dict"><code class="docutils literal notranslate"><span class="pre">BoundingBox.to_dict()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#LoopStructural.datatypes.BoundingBox.valid"><code class="docutils literal notranslate"><span class="pre">BoundingBox.valid</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#LoopStructural.datatypes.BoundingBox.volume"><code class="docutils literal notranslate"><span class="pre">BoundingBox.volume</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#LoopStructural.datatypes.BoundingBox.vtk"><code class="docutils literal notranslate"><span class="pre">BoundingBox.vtk()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#LoopStructural.datatypes.BoundingBox.with_buffer"><code class="docutils literal notranslate"><span class="pre">BoundingBox.with_buffer()</span></code></a></li>
 </ul>

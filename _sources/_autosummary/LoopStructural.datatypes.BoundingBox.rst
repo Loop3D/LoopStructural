@@ -22,6 +22,7 @@ LoopStructural.datatypes.BoundingBox
       ~BoundingBox.from_dict
       ~BoundingBox.get_value
       ~BoundingBox.is_inside
+      ~BoundingBox.matrix
       ~BoundingBox.project
       ~BoundingBox.regular_grid
       ~BoundingBox.reproject

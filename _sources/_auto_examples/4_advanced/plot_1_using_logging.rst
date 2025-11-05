@@ -204,7 +204,7 @@ It is also possible to change the logging level for the console log.
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 3.106 seconds)
+   **Total running time of the script:** (0 minutes 3.149 seconds)
 
 
 .. _sphx_glr_download__auto_examples_4_advanced_plot_1_using_logging.py:
