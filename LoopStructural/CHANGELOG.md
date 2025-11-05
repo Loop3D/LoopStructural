@@ -1,5 +1,30 @@
 # Changelog
 
+## [1.6.23](https://github.com/Loop3D/LoopStructural/compare/v1.6.22...v1.6.23) (2025-11-05)
+
+
+### Bug Fixes
+
+* add dipdirection2vector helper ([717d6c9](https://github.com/Loop3D/LoopStructural/commit/717d6c940665791c44aeac0e8e1737b3b8cd48e0))
+* add function to clean nan vertices and post_init to validate data ([f69f6d8](https://github.com/Loop3D/LoopStructural/commit/f69f6d8132ec5f14d62785183f1f5c447414c937))
+* add horizontal model with change in thickness example ([6a5ee85](https://github.com/Loop3D/LoopStructural/commit/6a5ee857f90f02dd178e83d7b3d685538bc7b58c))
+* add inequalities to interpolator builder ([2ee38ac](https://github.com/Loop3D/LoopStructural/commit/2ee38acde97bab5a966c1995d7f70fc98a40651c))
+* add methods to fold rotation angle feature ([efb46a2](https://github.com/Loop3D/LoopStructural/commit/efb46a23e867eecaedb930a768f8c616ab2313d1))
+* add scaling/transformation matrix to bounding box ([984ab1c](https://github.com/Loop3D/LoopStructural/commit/984ab1c4551e92243e50c0ab7a3ce14eb580bfa0))
+* adding analytical fold builder ([6d238aa](https://github.com/Loop3D/LoopStructural/commit/6d238aa01bb3ed08eaf571dad4e40ce0ac05b86f))
+* adding groupname to save option to geoh5 ([d8a8c63](https://github.com/Loop3D/LoopStructural/commit/d8a8c63cd9ce0269c8aad55df9dc492b17895e8d))
+* adding min/max angle to trig profile ([c097372](https://github.com/Loop3D/LoopStructural/commit/c09737245c31a0b18ee6b35d2271edbc672bf939))
+* check dimensions of bounding box constructor ([39b694b](https://github.com/Loop3D/LoopStructural/commit/39b694b281502de8a7997ccf010dcb5d9ee4a17f))
+* evaluate gradient for structural frame calls interpolator, now working ([596e59f](https://github.com/Loop3D/LoopStructural/commit/596e59f1d28d68a54be321253c13cd8f02c94175))
+* remove fold rotation inversion when axis and cross product are not in the same direction. ([3d4d90f](https://github.com/Loop3D/LoopStructural/commit/3d4d90f90ed0dd54db74cf354cf4710fd9f99321))
+* remove requirement for featurename in dataframe used to directly construct feature ([09940ba](https://github.com/Loop3D/LoopStructural/commit/09940ba6e91c9293aa98261f8d9ba195bd2d50de))
+* run interpolator before trying to create vtk object ([b230152](https://github.com/Loop3D/LoopStructural/commit/b230152e9ec9137c1f1279ffddc6d30848b8f3b2))
+
+
+### Documentation
+
+* copilot review/update of docstrings to numpy format ([#273](https://github.com/Loop3D/LoopStructural/issues/273)) ([89a3c5f](https://github.com/Loop3D/LoopStructural/commit/89a3c5f8ae01b7b80c2e9bffd33e7f6339cc81e1))
+
 ## [1.6.22](https://github.com/Loop3D/LoopStructural/compare/v1.6.21...v1.6.22) (2025-09-08)
 
 
