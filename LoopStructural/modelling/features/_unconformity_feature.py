@@ -21,12 +21,11 @@ class UnconformityFeature(GeologicalFeature):
             self,
             name=f"__{feature.name}_unconformity",
             # faults=feature.faults,
-            regions=[],  # feature.regions.copy(),  # don't want to share regionsbetween unconformity and # feature.regions,
             builder=feature.builder,
             model=feature.model,
         )
         self.value = value
-        self.type = FeatureType.UNCONFORMITY if onlap is False else FeatureType.ONLAPUNCONFORMITY
+        self.type = FeatureType.UNCONFORMITY 
         self.sign = sign
         self.parent = feature
 

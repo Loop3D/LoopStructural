@@ -464,7 +464,9 @@ class GeologicalModel:
         if feature.type == FeatureType.FAULT:
             obj_type = 'fault'
         elif feature.type == FeatureType.UNCONFORMITY:
-            obj_type = 'unconformity'
+            obj_type = 'erode_unconformity'
+        elif feature.type == FeatureType.ONLAPUNCONFORMITY:
+            obj_type = 'onlap_unconformity'
         else:
             # interpolated, foliations, frames, intrusions -> foliation/general
             obj_type = 'foliation'
@@ -545,6 +547,33 @@ class GeologicalModel:
             the stratigraphic column of the model
         """
         return self._stratigraphic_column
+    def _register_units_in_topology(self):
+        """
+        Ensure all units in the stratigraphic column are present as nodes in the topology graph.
+        """
+        if not hasattr(self, "stratigraphic_column") or self.stratigraphic_column is None:
+            return
+        for group in self.stratigraphic_column.get_groups():
+            for unit in group.units:
+                if not self.topology.has_object(unit.name):
+                    self.topology.add_geological_object(
+                        name=unit.name,
+                        object_type="unit",
+                        object_id=unit.name,
+                    )
+                # Optionally, add relationship to group
+                if not self.topology.has_object(group.name):
+                    self.topology.add_geological_object(
+                        name=group.name,
+                        object_type="group",
+                        object_id=group.name,
+                    )
+                self.topology.add_relationship(
+                    from_object_id=unit.name,
+                    to_object_id=group.name,
+                    relationship_type="belongs_to_group",
+                )
+
     @stratigraphic_column.setter
     def stratigraphic_column(self, stratigraphic_column: Union[StratigraphicColumn,Dict]):
         """Set the stratigraphic column of the model
@@ -560,6 +589,7 @@ class GeologicalModel:
         elif not isinstance(stratigraphic_column, StratigraphicColumn):
             raise ValueError("stratigraphic_column must be a StratigraphicColumn object")
         self._stratigraphic_column = stratigraphic_column
+        self._register_units_in_topology()
 
     def set_stratigraphic_column(self, stratigraphic_column, cmap="tab20"):
         """
@@ -615,7 +645,7 @@ class GeologicalModel:
                 name=''.join([g, 'unconformity']),
             )
             self.stratigraphic_column.group_mapping[f'Group_{i}'] = g
-
+        self._register_units_in_topology()
     def create_and_add_foliation(
         self,
         series_surface_name: str,
