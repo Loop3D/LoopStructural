@@ -712,7 +712,6 @@ class GeologicalModel:
         if data.shape[0] == 0:
             logger.warning("No data for {series_surface_data}, skipping")
             return
-        series_builder.add_data_from_data_frame(self.prepare_data(data))
         series_builder.add_data_from_data_frame(self.prepare_data(data, include_feature_name=False))
 
         # build feature
@@ -724,8 +723,6 @@ class GeologicalModel:
 
         series_feature.type = FeatureType.INTERPOLATED
         self._add_feature(series_feature,index=index)
-        self._add_faults(series_builder, features=faults)
-
         return series_feature
 
     def create_and_add_fold_frame(
@@ -1698,7 +1695,7 @@ class GeologicalModel:
         else:
             raise ValueError(f"{feature_name} does not exist!")
 
-    def evaluate_feature_value(self, feature_name, xyz, scale=True, use_regions=True):
+    def evaluate_feature_value(self, feature_name, xyz, scale=True):
         """Evaluate the scalar value of the geological feature given the name at locations
         xyz
 
@@ -1715,6 +1712,24 @@ class GeologicalModel:
         -------
         np.array((N))
             vector of scalar values
+
+        Examples
+        --------
+        Evaluate on a voxet using model boundaries
+
+        >>> x = np.linspace(model.bounding_box[0, 0], model.bounding_box[1, 0],
+                        nsteps[0])
+        >>> y = np.linspace(model.bounding_box[0, 1], model.bounding_box[1, 1],
+                        nsteps[1])
+        >>> z = np.linspace(model.bounding_box[1, 2], model.bounding_box[0, 2],
+                        nsteps[2])
+        >>> xx, yy, zz = np.meshgrid(x, y, z, indexing='ij')
+        >>> xyz = np.array([xx.flatten(), yy.flatten(), zz.flatten()]).T
+        >>> model.evaluate_feature_vaue('feature',xyz,scale=False)
+
+        Evaluate on points in UTM coordinates
+
+        >>> model.evaluate_feature_vaue('feature',utm_xyz)
 
         """
         feature = self.get_feature_by_name(feature_name)
