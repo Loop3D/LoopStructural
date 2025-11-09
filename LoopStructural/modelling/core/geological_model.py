@@ -1695,7 +1695,7 @@ class GeologicalModel:
         else:
             raise ValueError(f"{feature_name} does not exist!")
 
-    def evaluate_feature_value(self, feature_name, xyz, scale=True):
+    def evaluate_feature_value(self, feature_name, xyz, scale=True, use_regions=True):
         """Evaluate the scalar value of the geological feature given the name at locations
         xyz
 
