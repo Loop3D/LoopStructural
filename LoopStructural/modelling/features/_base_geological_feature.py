@@ -48,6 +48,9 @@ class BaseFeature(metaclass=ABCMeta):
 
     @property
     def faults(self):
+        if self.builder is None:
+            logger.warning(f"Builder is None for feature {self.name}, cannot get faults")
+            return []
         return self.builder.faults
 
     @faults.setter

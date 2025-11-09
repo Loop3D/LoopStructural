@@ -38,8 +38,11 @@ class GeologicalFeature(BaseFeature):
 
     def __init__(
         self,
+        
         name: str,
+    
         builder,
+        *,
         interpolator=None,
         model=None,
     ):

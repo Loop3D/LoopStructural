@@ -11,10 +11,10 @@ def test_constructors():
     # base_feature = GeologicalFeature("test", None, [], [], None)
     # assert base_feature.type == FeatureType.BASE
     # assert base_feature.name == "test"
-    feature = GeologicalFeature("test", None, [], [], None)
+    feature = GeologicalFeature(name="test", builder=None, interpolator=None, model=None)
     assert feature.type == FeatureType.INTERPOLATED
     assert feature.name == "test"
-    feature = AnalyticalGeologicalFeature("test", [0, 0, 1], [0, 0, 0], [], [], None, None)
+    feature = AnalyticalGeologicalFeature("test", [0, 0, 1], [0, 0, 0], builder=None,model=None)
     # for analytical feature check that the evaluated value is correct.
     # this should be the distance from origin to the point in the direction
     # of the direction vector
@@ -28,7 +28,7 @@ def test_constructors():
 
 
 def test_toggle_faults():
-    base_feature = GeologicalFeature("test", None, [], [], None)
+    base_feature = GeologicalFeature("test", builder=None, interpolator=None, model=None)
     assert base_feature.faults_enabled is True
     base_feature.toggle_faults()
     assert base_feature.faults_enabled is False
@@ -37,7 +37,7 @@ def test_toggle_faults():
 
 
 def test_tojson():
-    base_feature = GeologicalFeature("test", None, [], [], None)
+    base_feature = GeologicalFeature("test", builder=None, interpolator=None, model=None)
     import json
     from LoopStructural.utils import LoopJSONEncoder
 

@@ -48,7 +48,7 @@ class IntrusionFrameBuilder(StructuralFrameBuilder):
         self.model = model
         self.minimum_origin = self.model.bounding_box[0, :]
         self.maximum_maximum = self.model.bounding_box[1, :]
-        self.faults = []
+        # self.faults = []
 
         # -- intrusion frame parameters
         self.intrusion_network_contact = (

@@ -30,6 +30,9 @@ class BaseBuilder:
 
     @property
     def faults(self):
+        if self.model is None:
+            logger.warning(f"Model is None for builder {self.name}, cannot get faults")
+            return []
         fnames = self.model.get_faults_for_feature(self.name)
         return [self.model[fname] for fname in fnames]
     def set_not_up_to_date(self, caller):
