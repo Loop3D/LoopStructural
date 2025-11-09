@@ -642,7 +642,7 @@ class GeologicalTopologyGraph:
 
         # Compute in-degree for Kahn's algorithm
         indeg: Dict[str, int] = dict.fromkeys(deps.keys(), 0)
-        for u, succs in deps.items():
+        for _u, succs in deps.items():
             for v in succs:
                 indeg[v] = indeg.get(v, 0) + 1
 
@@ -968,7 +968,7 @@ class StratigraphicColumnView:
             RelationshipType.YOUNGER_THAN,
         }
         
-        unconformity_types = {
+        _unconformity_types = {
             RelationshipType.ERODE_UNCONFORMABLY_OVERLIES,
             RelationshipType.ERODE_UNCONFORMABLY_UNDERLIES,
             RelationshipType.ONLAP_UNCONFORMABLY_OVERLIES,

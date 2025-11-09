@@ -354,7 +354,7 @@ class GeologicalScenario:
             return pd.DataFrame()
         
         dfs = []
-        for feature_name, obs_collection in self._observations.items():
+        for _feature_name, obs_collection in self._observations.items():
             df = obs_collection.to_dataframe()
             # Also include any raw dataframe
             if hasattr(obs_collection, '_raw_dataframe'):

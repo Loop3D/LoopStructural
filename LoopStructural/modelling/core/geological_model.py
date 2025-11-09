@@ -474,7 +474,7 @@ class GeologicalModel:
 
         # If object already exists, update its properties, otherwise add it.
         if feature.name in getattr(self.topology, '_objects', {}):
-            topo_obj = self.topology.get_object(feature.name)
+            _topo_obj = self.topology.get_object(feature.name)
         else:
             self.topology.add_geological_object(
                 name=feature.name,
