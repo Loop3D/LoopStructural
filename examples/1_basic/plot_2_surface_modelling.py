@@ -36,7 +36,6 @@ Visualization of the scalar field.
 # model building
 
 from LoopStructural import GeologicalModel
-from LoopStructural.modelling.core.stratigraphic_column import StratigraphicColumn
 from LoopStructural.visualisation import Loop3DView
 from LoopStructural.datasets import load_claudius  # demo data
 

@@ -5,7 +5,7 @@ High-level declarative API for building geological models from topology specific
 Provides a fluent interface for defining geological relationships before computational modeling.
 """
 
-from typing import List, Optional, Dict, Union, Any
+from typing import List, Optional, Dict
 import pandas as pd
 import numpy as np
 from ...utils import getLogger

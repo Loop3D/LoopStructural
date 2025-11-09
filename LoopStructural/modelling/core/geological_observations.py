@@ -5,7 +5,7 @@ Provides intuitive, geologically-meaningful data structures for observations
 that can be attached to geological objects in scenarios.
 """
 
-from typing import Optional, List, Literal, Union
+from typing import Optional, List, Union
 from dataclasses import dataclass, field
 import numpy as np
 import pandas as pd

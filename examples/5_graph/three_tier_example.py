@@ -95,7 +95,7 @@ print(f"\nUnits: {[u.name for u in column_view.get_units()]}")
 # Get conformable groups (separated by unconformities)
 try:
     groups = column_view.identify_conformable_groups()
-    print(f"\nConformable Groups:")
+    print("\nConformable Groups:")
     for i, group in enumerate(groups, 1):
         print(f"  Group {i}: {[u.name for u in group]}")
 except ValueError as e:
@@ -103,7 +103,7 @@ except ValueError as e:
 
 # Get unconformities
 unconformities = column_view.get_unconformities()
-print(f"\nUnconformities:")
+print("\nUnconformities:")
 for upper, lower in unconformities:
     upper_obj = model_explicit.topology.get_object(upper)
     lower_obj = model_explicit.topology.get_object(lower)
@@ -217,7 +217,7 @@ except ValueError as e:
 
 # Get stratigraphic information before building
 groups = scenario.get_stratigraphic_groups()
-print(f"\nConformable Groups in Scenario:")
+print("\nConformable Groups in Scenario:")
 for i, group in enumerate(groups, 1):
     print(f"  Group {i}: {group}")
 

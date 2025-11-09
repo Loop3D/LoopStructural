@@ -3,14 +3,11 @@ Unit tests for GeologicalTopologyGraph and StratigraphicColumnView classes.
 """
 
 import pytest
-import numpy as np
 from LoopStructural.modelling.core.model_graph import (
     GeologicalTopologyGraph,
     StratigraphicColumnView,
-    GeologicalObject,
     GeologicalObjectType,
     RelationshipType,
-    TopologicalRelationship,
 )
 
 

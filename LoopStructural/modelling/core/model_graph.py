@@ -11,12 +11,11 @@ from enum import Enum
 import numpy as np
 from dataclasses import dataclass, field
 from collections import defaultdict, deque
-import logging
 
 from ...utils import getLogger
 
 if TYPE_CHECKING:
-    from typing import Callable
+    pass
 
 logger = getLogger(__name__)
 
@@ -642,7 +641,7 @@ class GeologicalTopologyGraph:
         deps = self.build_dependency_graph()
 
         # Compute in-degree for Kahn's algorithm
-        indeg: Dict[str, int] = {n: 0 for n in deps.keys()}
+        indeg: Dict[str, int] = dict.fromkeys(deps.keys(), 0)
         for u, succs in deps.items():
             for v in succs:
                 indeg[v] = indeg.get(v, 0) + 1
@@ -1072,7 +1071,7 @@ class StratigraphicColumnView:
         
         # DFS cycle detection with coloring
         WHITE, GRAY, BLACK = 0, 1, 2
-        color = {uid: WHITE for uid in unit_ids}
+        color = dict.fromkeys(unit_ids, WHITE)
         
         def dfs_visit(node_id: str, path: List[str]):
             color[node_id] = GRAY
@@ -1119,7 +1118,7 @@ class StratigraphicColumnView:
         
         # Build adjacency for relationships within this group
         adj: Dict[str, List[str]] = defaultdict(list)
-        in_degree = {uid: 0 for uid in unit_ids}
+        in_degree = dict.fromkeys(unit_ids, 0)
         
         for unit_id in unit_ids:
             rels = self.graph.get_relationships(from_object_id=unit_id)
@@ -1188,7 +1187,7 @@ class StratigraphicColumnView:
         
         # Build inter-group adjacency based on unconformity relationships
         group_adj: Dict[int, Set[int]] = defaultdict(set)
-        group_in_degree = {i: 0 for i in range(len(groups))}
+        group_in_degree = dict.fromkeys(range(len(groups)), 0)
         
         unconformity_types = {
             RelationshipType.ERODE_UNCONFORMABLY_OVERLIES,

@@ -7,7 +7,6 @@ geological data in an intuitive, geologically-meaningful way.
 
 import numpy as np
 from LoopStructural.modelling.core.geological_scenario import GeologicalScenario
-from LoopStructural.modelling.core.geological_observations import ObservationCollection
 
 # ==============================================================================
 # Setup: Model domain
@@ -214,11 +213,11 @@ all_obs = scenario.get_all_observations_dataframe()
 
 print(f"\nTotal observations: {len(all_obs)}")
 print(f"Features with observations: {all_obs['feature_name'].unique().tolist()}")
-print(f"\nObservation types:")
+print("\nObservation types:")
 print(all_obs.groupby('feature_name').size())
 
 # Show summary statistics
-print(f"\nSummary:")
+print("\nSummary:")
 print(f"  Contact points (coord=0): {len(all_obs[all_obs['coord'] == 0])}")
 print(f"  Orientation constraints (coord=1): {len(all_obs[all_obs['coord'] == 1])}")
 print(f"  Inequality constraints (coord=2): {len(all_obs[all_obs['coord'] == 2])}")
