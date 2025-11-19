@@ -1,6 +1,8 @@
 import geoh5py
 import geoh5py.workspace
 import numpy as np
+import pandas as pd
+
 from LoopStructural.datatypes import ValuePoints, VectorPoints
 
 
