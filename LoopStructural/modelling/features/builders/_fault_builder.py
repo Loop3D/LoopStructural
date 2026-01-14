@@ -141,13 +141,12 @@ class FaultBuilder(StructuralFrameBuilder):
         if v is None:
             self._fault_normal_vector = None
         else:
-            if len(v.shape) != 1 or v.shape[0] != 3:
-                raise ValueError("fault_normal_vector must be a 3 element array")
-            if v.ndim != 1:
-                v = v[0,:]
-            if v.shape[0] != 3:
-                raise ValueError("fault_normal_vector must be a 3 element array")
             arr = np.array(v, dtype=float)
+            # If more than 1D, take the first row and then validate length
+            if arr.ndim > 1:
+                arr = arr[0]
+            if arr.shape[0] != 3:
+                raise ValueError("fault_normal_vector must be a 3 element array")
             norm = np.linalg.norm(arr)
             if norm == 0:
                 raise ValueError("fault_normal_vector cannot be the zero vector")

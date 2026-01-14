@@ -63,7 +63,7 @@ class DiscreteInterpolator(GeologicalInterpolator):
         logger.info("Creating discrete interpolator with {} degrees of freedom".format(self.dof))
         self.type = InterpolatorType.BASE_DISCRETE
         self.apply_scaling_matrix = True
-        self.add_ridge_regulatisation = True
+        self.add_ridge_regularisation = True
         self.ridge_factor = 1e-8
     def set_nelements(self, nelements: int) -> int:
         return self.support.set_nelements(nelements)
@@ -588,7 +588,7 @@ class DiscreteInterpolator(GeologicalInterpolator):
         self,
         solver: Optional[Union[Callable[[sparse.csr_matrix, np.ndarray], np.ndarray], str]] = None,
         tol: Optional[float] = None,
-        solver_kwargs: dict = {},
+        solver_kwargs: dict = None,
     ) -> bool:
         """
         Main entry point to run the solver and update the node value
@@ -608,15 +608,18 @@ class DiscreteInterpolator(GeologicalInterpolator):
             True if the interpolation is run
 
         """
+        if solver_kwargs is None:
+            solver_kwargs = {}
         if not self._pre_solve():
             raise ValueError("Pre solve failed")
 
+        S = None  # Initialize scaling matrix
         A, b = self.build_matrix()
-        if self.add_ridge_regulatisation:
+        if self.add_ridge_regularisation:
             ridge = sparse.eye(A.shape[1]) * self.ridge_factor
             A = sparse.vstack([A, ridge])
             b = np.hstack([b, np.zeros(A.shape[1])])
-            logger.info("Adding ridge regularisation to interpolation matrix")
+            logger.info("Adding ridge regularization to interpolation matrix")
         if self.apply_scaling_matrix:
             S = self.compute_column_scaling_matrix(A)
             A = A @ S
@@ -650,9 +653,6 @@ class DiscreteInterpolator(GeologicalInterpolator):
 
         elif solver == 'lsmr':
             logger.info("Solving using lsmr")
-            # if 'atol' not in solver_kwargs:
-            #     if tol is not None:
-            #         solver_kwargs['atol'] = tol
             if 'btol' not in solver_kwargs:
                 if tol is not None:
                     solver_kwargs['btol'] = tol
@@ -718,7 +718,11 @@ class DiscreteInterpolator(GeologicalInterpolator):
         # self._post_solve()
         # apply scaling matrix to solution
         if self.apply_scaling_matrix:
-            self.c = S @ self.c
+            if S is None:
+                logger.error("Scaling matrix S is not defined; skipping scaling of solution.")
+                self.up_to_date = False
+            else:
+                self.c = S @ self.c
         return self.up_to_date
 
     def update(self) -> bool:
