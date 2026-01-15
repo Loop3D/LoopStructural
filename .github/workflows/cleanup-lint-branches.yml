@@ -1,0 +1,175 @@
+name: "🧹 Cleanup Lint Branches"
+
+# This workflow automatically cleans up lint/* branches that have been merged or closed.
+# It helps maintain a clean repository by removing branches created by the linter workflow
+# after their associated pull requests are no longer active.
+
+on:
+  # Run daily at 00:00 UTC
+  schedule:
+    - cron: '0 0 * * *'
+
+  # Allow manual triggering with optional dry-run mode
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: 'Dry run mode (preview deletions without actually deleting)'
+        required: false
+        type: boolean
+        default: true
+
+permissions:
+  contents: write
+  pull-requests: read
+
+jobs:
+  cleanup:
+    name: Clean up merged/closed lint branches
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # Fetch all branches and history
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Setup GitHub CLI
+        run: |
+          # Verify gh CLI is available (pre-installed on ubuntu-latest)
+          gh --version
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Cleanup lint branches
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          DRY_RUN: ${{ github.event.inputs.dry_run || 'false' }}
+          BRANCH_AGE_DAYS: 7
+        run: |
+          set -e
+
+          echo "🧹 Starting lint branch cleanup..."
+          echo "Dry run mode: $DRY_RUN"
+          echo "Branch age threshold for orphaned branches: $BRANCH_AGE_DAYS days"
+          echo ""
+
+          # Get current date in seconds since epoch
+          current_date=$(date +%s)
+          age_threshold_seconds=$((BRANCH_AGE_DAYS * 86400))
+
+          # Track statistics
+          total_branches=0
+          deleted_branches=0
+          skipped_branches=0
+          error_branches=0
+
+          # Get all remote branches matching the pattern lint/style-fixes-*
+          echo "📋 Fetching lint branches..."
+          lint_branches=$(git ls-remote --heads origin 'refs/heads/lint/style-fixes-*' | awk '{print $2}' | sed 's#refs/heads/##' || echo "")
+
+          if [ -z "$lint_branches" ]; then
+            echo "✅ No lint branches found matching 'lint/style-fixes-*'"
+            exit 0
+          fi
+
+          echo "Found $(echo "$lint_branches" | wc -l) lint branches"
+          echo ""
+
+          # Process each branch
+          for branch in $lint_branches; do
+            total_branches=$((total_branches + 1))
+            echo "🔍 Processing: $branch"
+
+            # Extract run ID from branch name (e.g., lint/style-fixes-17199517932)
+            run_id=$(echo "$branch" | sed 's/lint\/style-fixes-//')
+
+            # Check if there's a PR for this branch
+            pr_number=$(gh pr list --state all --head "$branch" --json number --jq '.[0].number' 2>/dev/null || echo "")
+
+            should_delete=false
+            delete_reason=""
+
+            if [ -n "$pr_number" ]; then
+              # PR exists, check its state
+              echo "  Found PR #$pr_number"
+
+              pr_state=$(gh pr view "$pr_number" --json state --jq '.state' 2>/dev/null || echo "")
+              pr_merged=$(gh pr view "$pr_number" --json merged --jq '.merged' 2>/dev/null || echo "false")
+
+              if [ "$pr_merged" = "true" ]; then
+                should_delete=true
+                delete_reason="PR #$pr_number was merged"
+              elif [ "$pr_state" = "CLOSED" ]; then
+                should_delete=true
+                delete_reason="PR #$pr_number was closed"
+              else
+                echo "  ⏭️  Skipping: PR #$pr_number is still open"
+                skipped_branches=$((skipped_branches + 1))
+              fi
+            else
+              # No PR found - check if branch is old enough to delete
+              echo "  No associated PR found (orphaned branch)"
+
+              # Get the last commit date on this branch
+              last_commit_date=$(git log -1 --format=%ct "origin/$branch" 2>/dev/null || echo "0")
+
+              if [ "$last_commit_date" != "0" ]; then
+                branch_age_seconds=$((current_date - last_commit_date))
+                branch_age_days=$((branch_age_seconds / 86400))
+
+                echo "  Branch age: $branch_age_days days"
+
+                if [ $branch_age_seconds -gt $age_threshold_seconds ]; then
+                  should_delete=true
+                  delete_reason="Orphaned branch older than $BRANCH_AGE_DAYS days (age: $branch_age_days days)"
+                else
+                  echo "  ⏭️  Skipping: Orphaned branch is only $branch_age_days days old (threshold: $BRANCH_AGE_DAYS days)"
+                  skipped_branches=$((skipped_branches + 1))
+                fi
+              else
+                echo "  ⚠️  Warning: Could not determine branch age"
+                skipped_branches=$((skipped_branches + 1))
+              fi
+            fi
+
+            # Delete the branch if appropriate
+            if [ "$should_delete" = "true" ]; then
+              if [ "$DRY_RUN" = "true" ]; then
+                echo "  🔍 [DRY RUN] Would delete: $delete_reason"
+                deleted_branches=$((deleted_branches + 1))
+              else
+                echo "  🗑️  Deleting: $delete_reason"
+                if gh api -X DELETE "repos/${{ github.repository }}/git/refs/heads/$branch" 2>/dev/null; then
+                  echo "  ✅ Successfully deleted"
+                  deleted_branches=$((deleted_branches + 1))
+                else
+                  echo "  ❌ Failed to delete branch"
+                  error_branches=$((error_branches + 1))
+                fi
+              fi
+            fi
+
+            echo ""
+          done
+
+          # Print summary
+          echo "📊 Cleanup Summary"
+          echo "=================="
+          echo "Total lint branches processed: $total_branches"
+          if [ "$DRY_RUN" = "true" ]; then
+            echo "Branches that would be deleted: $deleted_branches"
+          else
+            echo "Branches deleted: $deleted_branches"
+          fi
+          echo "Branches skipped: $skipped_branches"
+          if [ $error_branches -gt 0 ]; then
+            echo "Branches with errors: $error_branches"
+          fi
+          echo ""
+
+          if [ "$DRY_RUN" = "true" ]; then
+            echo "✅ Dry run completed - no branches were actually deleted"
+          else
+            echo "✅ Cleanup completed"
+          fi
