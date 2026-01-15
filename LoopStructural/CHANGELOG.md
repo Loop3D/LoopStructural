@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.6.24](https://github.com/Loop3D/LoopStructural/compare/v1.6.23...v1.6.24) (2026-01-15)
+
+
+### Bug Fixes
+
+* change default regularisation to 1.0 as 0.1 was causing overfitting ([fd3fd20](https://github.com/Loop3D/LoopStructural/commit/fd3fd201e743d421708d0999b367a77cb290696c))
+
 ## [1.6.23](https://github.com/Loop3D/LoopStructural/compare/v1.6.22...v1.6.23) (2025-11-05)
 
 
