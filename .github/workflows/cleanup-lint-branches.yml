@@ -69,7 +69,7 @@ jobs:
 
           # Get all remote branches matching the pattern lint/style-fixes-*
           echo "📋 Fetching lint branches..."
-          lint_branches=$(git ls-remote --heads origin 'refs/heads/lint/style-fixes-*' | awk '{print $2}' | sed 's#refs/heads/##' || echo "")
+          lint_branches=$(git for-each-ref --format='%(refname:short)' 'refs/remotes/origin/lint/style-fixes-*' | sed 's|^origin/||' || echo "")
 
           if [ -z "$lint_branches" ]; then
             echo "✅ No lint branches found matching 'lint/style-fixes-*'"
@@ -94,7 +94,7 @@ jobs:
             fi
 
             # Check if there's a PR for this branch
-            pr_number=$(gh pr list --state all --head "$branch" --json number --jq '.[0].number' 2>/dev/null || echo "")
+            pr_number=$(gh pr list --state all --head "$branch" --json number --jq 'if length > 0 then .[0].number else empty end' 2>/dev/null || echo "")
 
             should_delete=false
             delete_reason=""
@@ -149,7 +149,8 @@ jobs:
                 deleted_branches=$((deleted_branches + 1))
               else
                 echo "  🗑️  Deleting: $delete_reason"
-                delete_error=$(gh api -X DELETE "repos/${{ github.repository }}/git/refs/heads/$branch" 2>&1)
+                # Use git push for safer deletion with validated branch name
+                delete_error=$(git push origin --delete "$branch" 2>&1)
                 if [ $? -eq 0 ]; then
                   echo "  ✅ Successfully deleted"
                   deleted_branches=$((deleted_branches + 1))
