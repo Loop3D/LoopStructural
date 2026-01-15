@@ -36,6 +36,7 @@ LoopStructural.interpolators.DiscreteInterpolator
       ~DiscreteInterpolator.check_array
       ~DiscreteInterpolator.clean
       ~DiscreteInterpolator.clear_constraints
+      ~DiscreteInterpolator.compute_column_scaling_matrix
       ~DiscreteInterpolator.debug
       ~DiscreteInterpolator.evaluate_gradient
       ~DiscreteInterpolator.evaluate_value

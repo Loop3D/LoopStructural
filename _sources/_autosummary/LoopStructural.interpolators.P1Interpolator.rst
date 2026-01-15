@@ -36,6 +36,7 @@ LoopStructural.interpolators.P1Interpolator
       ~P1Interpolator.check_array
       ~P1Interpolator.clean
       ~P1Interpolator.clear_constraints
+      ~P1Interpolator.compute_column_scaling_matrix
       ~P1Interpolator.debug
       ~P1Interpolator.evaluate_gradient
       ~P1Interpolator.evaluate_value

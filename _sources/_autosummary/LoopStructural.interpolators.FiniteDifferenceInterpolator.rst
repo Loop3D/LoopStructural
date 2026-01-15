@@ -37,6 +37,7 @@ LoopStructural.interpolators.FiniteDifferenceInterpolator
       ~FiniteDifferenceInterpolator.check_array
       ~FiniteDifferenceInterpolator.clean
       ~FiniteDifferenceInterpolator.clear_constraints
+      ~FiniteDifferenceInterpolator.compute_column_scaling_matrix
       ~FiniteDifferenceInterpolator.copy
       ~FiniteDifferenceInterpolator.debug
       ~FiniteDifferenceInterpolator.evaluate_gradient

@@ -37,6 +37,7 @@ LoopStructural.interpolators.DiscreteFoldInterpolator
       ~DiscreteFoldInterpolator.check_array
       ~DiscreteFoldInterpolator.clean
       ~DiscreteFoldInterpolator.clear_constraints
+      ~DiscreteFoldInterpolator.compute_column_scaling_matrix
       ~DiscreteFoldInterpolator.debug
       ~DiscreteFoldInterpolator.evaluate_gradient
       ~DiscreteFoldInterpolator.evaluate_value

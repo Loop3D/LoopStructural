@@ -25,7 +25,7 @@ This section will cover advanced usage of the LoopStructural library, including:
   .. image:: /_auto_examples/4_advanced/images/thumb/sphx_glr_plot_1_using_logging_thumb.png
     :alt:
 
-  :ref:`sphx_glr__auto_examples_4_advanced_plot_1_using_logging.py`
+  :doc:`/_auto_examples/4_advanced/plot_1_using_logging`
 
 .. raw:: html
 
@@ -42,7 +42,7 @@ This section will cover advanced usage of the LoopStructural library, including:
   .. image:: /_auto_examples/4_advanced/images/thumb/sphx_glr_plot_2_local_weights_thumb.png
     :alt:
 
-  :ref:`sphx_glr__auto_examples_4_advanced_plot_2_local_weights.py`
+  :doc:`/_auto_examples/4_advanced/plot_2_local_weights`
 
 .. raw:: html
 
@@ -59,7 +59,7 @@ This section will cover advanced usage of the LoopStructural library, including:
   .. image:: /_auto_examples/4_advanced/images/thumb/sphx_glr_plot_model_from_geological_map_thumb.png
     :alt:
 
-  :ref:`sphx_glr__auto_examples_4_advanced_plot_model_from_geological_map.py`
+  :doc:`/_auto_examples/4_advanced/plot_model_from_geological_map`
 
 .. raw:: html
 

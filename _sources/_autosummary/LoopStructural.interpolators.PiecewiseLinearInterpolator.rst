@@ -36,6 +36,7 @@ LoopStructural.interpolators.PiecewiseLinearInterpolator
       ~PiecewiseLinearInterpolator.check_array
       ~PiecewiseLinearInterpolator.clean
       ~PiecewiseLinearInterpolator.clear_constraints
+      ~PiecewiseLinearInterpolator.compute_column_scaling_matrix
       ~PiecewiseLinearInterpolator.debug
       ~PiecewiseLinearInterpolator.evaluate_gradient
       ~PiecewiseLinearInterpolator.evaluate_value

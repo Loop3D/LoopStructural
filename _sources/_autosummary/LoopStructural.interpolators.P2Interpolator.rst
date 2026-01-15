@@ -36,6 +36,7 @@ LoopStructural.interpolators.P2Interpolator
       ~P2Interpolator.check_array
       ~P2Interpolator.clean
       ~P2Interpolator.clear_constraints
+      ~P2Interpolator.compute_column_scaling_matrix
       ~P2Interpolator.copy
       ~P2Interpolator.debug
       ~P2Interpolator.evaluate_d2

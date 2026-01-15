@@ -21,7 +21,7 @@
   .. image:: /_auto_examples/2_fold/images/thumb/sphx_glr_plot_1_adding_folds_to_surfaces_thumb.png
     :alt:
 
-  :ref:`sphx_glr__auto_examples_2_fold_plot_1_adding_folds_to_surfaces.py`
+  :doc:`/_auto_examples/2_fold/plot_1_adding_folds_to_surfaces`
 
 .. raw:: html
 
@@ -38,7 +38,7 @@
   .. image:: /_auto_examples/2_fold/images/thumb/sphx_glr_plot_2__refolded_folds_thumb.png
     :alt:
 
-  :ref:`sphx_glr__auto_examples_2_fold_plot_2__refolded_folds.py`
+  :doc:`/_auto_examples/2_fold/plot_2__refolded_folds`
 
 .. raw:: html
 

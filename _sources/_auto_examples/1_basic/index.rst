@@ -21,7 +21,7 @@
   .. image:: /_auto_examples/1_basic/images/thumb/sphx_glr_plot_1_data_prepration_thumb.png
     :alt:
 
-  :ref:`sphx_glr__auto_examples_1_basic_plot_1_data_prepration.py`
+  :doc:`/_auto_examples/1_basic/plot_1_data_prepration`
 
 .. raw:: html
 
@@ -38,7 +38,7 @@
   .. image:: /_auto_examples/1_basic/images/thumb/sphx_glr_plot_2_surface_modelling_thumb.png
     :alt:
 
-  :ref:`sphx_glr__auto_examples_1_basic_plot_2_surface_modelling.py`
+  :doc:`/_auto_examples/1_basic/plot_2_surface_modelling`
 
 .. raw:: html
 
@@ -55,7 +55,7 @@
   .. image:: /_auto_examples/1_basic/images/thumb/sphx_glr_plot_3_multiple_groups_thumb.png
     :alt:
 
-  :ref:`sphx_glr__auto_examples_1_basic_plot_3_multiple_groups.py`
+  :doc:`/_auto_examples/1_basic/plot_3_multiple_groups`
 
 .. raw:: html
 
@@ -72,7 +72,7 @@
   .. image:: /_auto_examples/1_basic/images/thumb/sphx_glr_plot_3_model_visualisation_thumb.png
     :alt:
 
-  :ref:`sphx_glr__auto_examples_1_basic_plot_3_model_visualisation.py`
+  :doc:`/_auto_examples/1_basic/plot_3_model_visualisation`
 
 .. raw:: html
 
@@ -89,7 +89,7 @@
   .. image:: /_auto_examples/1_basic/images/thumb/sphx_glr_plot_4_using_stratigraphic_column_thumb.png
     :alt:
 
-  :ref:`sphx_glr__auto_examples_1_basic_plot_4_using_stratigraphic_column.py`
+  :doc:`/_auto_examples/1_basic/plot_4_using_stratigraphic_column`
 
 .. raw:: html
 
@@ -106,7 +106,7 @@
   .. image:: /_auto_examples/1_basic/images/thumb/sphx_glr_plot_5_unconformities_thumb.png
     :alt:
 
-  :ref:`sphx_glr__auto_examples_1_basic_plot_5_unconformities.py`
+  :doc:`/_auto_examples/1_basic/plot_5_unconformities`
 
 .. raw:: html
 
@@ -123,7 +123,7 @@
   .. image:: /_auto_examples/1_basic/images/thumb/sphx_glr_plot_6_fault_parameters_thumb.png
     :alt:
 
-  :ref:`sphx_glr__auto_examples_1_basic_plot_6_fault_parameters.py`
+  :doc:`/_auto_examples/1_basic/plot_6_fault_parameters`
 
 .. raw:: html
 
@@ -140,7 +140,7 @@
   .. image:: /_auto_examples/1_basic/images/thumb/sphx_glr_plot_7_exporting_thumb.png
     :alt:
 
-  :ref:`sphx_glr__auto_examples_1_basic_plot_7_exporting.py`
+  :doc:`/_auto_examples/1_basic/plot_7_exporting`
 
 .. raw:: html
 

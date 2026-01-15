@@ -35,7 +35,7 @@ Examples
   .. image:: /_auto_examples/1_basic/images/thumb/sphx_glr_plot_1_data_prepration_thumb.png
     :alt:
 
-  :ref:`sphx_glr__auto_examples_1_basic_plot_1_data_prepration.py`
+  :doc:`/_auto_examples/1_basic/plot_1_data_prepration`
 
 .. raw:: html
 
@@ -52,7 +52,7 @@ Examples
   .. image:: /_auto_examples/1_basic/images/thumb/sphx_glr_plot_2_surface_modelling_thumb.png
     :alt:
 
-  :ref:`sphx_glr__auto_examples_1_basic_plot_2_surface_modelling.py`
+  :doc:`/_auto_examples/1_basic/plot_2_surface_modelling`
 
 .. raw:: html
 
@@ -69,7 +69,7 @@ Examples
   .. image:: /_auto_examples/1_basic/images/thumb/sphx_glr_plot_3_multiple_groups_thumb.png
     :alt:
 
-  :ref:`sphx_glr__auto_examples_1_basic_plot_3_multiple_groups.py`
+  :doc:`/_auto_examples/1_basic/plot_3_multiple_groups`
 
 .. raw:: html
 
@@ -86,7 +86,7 @@ Examples
   .. image:: /_auto_examples/1_basic/images/thumb/sphx_glr_plot_3_model_visualisation_thumb.png
     :alt:
 
-  :ref:`sphx_glr__auto_examples_1_basic_plot_3_model_visualisation.py`
+  :doc:`/_auto_examples/1_basic/plot_3_model_visualisation`
 
 .. raw:: html
 
@@ -103,7 +103,7 @@ Examples
   .. image:: /_auto_examples/1_basic/images/thumb/sphx_glr_plot_4_using_stratigraphic_column_thumb.png
     :alt:
 
-  :ref:`sphx_glr__auto_examples_1_basic_plot_4_using_stratigraphic_column.py`
+  :doc:`/_auto_examples/1_basic/plot_4_using_stratigraphic_column`
 
 .. raw:: html
 
@@ -120,7 +120,7 @@ Examples
   .. image:: /_auto_examples/1_basic/images/thumb/sphx_glr_plot_5_unconformities_thumb.png
     :alt:
 
-  :ref:`sphx_glr__auto_examples_1_basic_plot_5_unconformities.py`
+  :doc:`/_auto_examples/1_basic/plot_5_unconformities`
 
 .. raw:: html
 
@@ -137,7 +137,7 @@ Examples
   .. image:: /_auto_examples/1_basic/images/thumb/sphx_glr_plot_6_fault_parameters_thumb.png
     :alt:
 
-  :ref:`sphx_glr__auto_examples_1_basic_plot_6_fault_parameters.py`
+  :doc:`/_auto_examples/1_basic/plot_6_fault_parameters`
 
 .. raw:: html
 
@@ -154,7 +154,7 @@ Examples
   .. image:: /_auto_examples/1_basic/images/thumb/sphx_glr_plot_7_exporting_thumb.png
     :alt:
 
-  :ref:`sphx_glr__auto_examples_1_basic_plot_7_exporting.py`
+  :doc:`/_auto_examples/1_basic/plot_7_exporting`
 
 .. raw:: html
 
@@ -187,7 +187,7 @@ Examples
   .. image:: /_auto_examples/2_fold/images/thumb/sphx_glr_plot_1_adding_folds_to_surfaces_thumb.png
     :alt:
 
-  :ref:`sphx_glr__auto_examples_2_fold_plot_1_adding_folds_to_surfaces.py`
+  :doc:`/_auto_examples/2_fold/plot_1_adding_folds_to_surfaces`
 
 .. raw:: html
 
@@ -204,7 +204,7 @@ Examples
   .. image:: /_auto_examples/2_fold/images/thumb/sphx_glr_plot_2__refolded_folds_thumb.png
     :alt:
 
-  :ref:`sphx_glr__auto_examples_2_fold_plot_2__refolded_folds.py`
+  :doc:`/_auto_examples/2_fold/plot_2__refolded_folds`
 
 .. raw:: html
 
@@ -237,7 +237,7 @@ Examples
   .. image:: /_auto_examples/3_fault/images/thumb/sphx_glr_plot_faulted_intrusion_thumb.png
     :alt:
 
-  :ref:`sphx_glr__auto_examples_3_fault_plot_faulted_intrusion.py`
+  :doc:`/_auto_examples/3_fault/plot_faulted_intrusion`
 
 .. raw:: html
 
@@ -254,7 +254,7 @@ Examples
   .. image:: /_auto_examples/3_fault/images/thumb/sphx_glr_plot_fault_network_thumb.png
     :alt:
 
-  :ref:`sphx_glr__auto_examples_3_fault_plot_fault_network.py`
+  :doc:`/_auto_examples/3_fault/plot_fault_network`
 
 .. raw:: html
 
@@ -271,11 +271,28 @@ Examples
   .. image:: /_auto_examples/3_fault/images/thumb/sphx_glr_plot_define_fault_displacement_thumb.png
     :alt:
 
-  :ref:`sphx_glr__auto_examples_3_fault_plot_define_fault_displacement.py`
+  :doc:`/_auto_examples/3_fault/plot_define_fault_displacement`
 
 .. raw:: html
 
       <div class="sphx-glr-thumbnail-title">3c. Defining the fault displacement function</div>
+    </div>
+
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="3d. Updating fault geometry">
+
+.. only:: html
+
+  .. image:: /_auto_examples/3_fault/images/thumb/sphx_glr_plot_update_fault_geometry_thumb.png
+    :alt:
+
+  :doc:`/_auto_examples/3_fault/plot_update_fault_geometry`
+
+.. raw:: html
+
+      <div class="sphx-glr-thumbnail-title">3d. Updating fault geometry</div>
     </div>
 
 
@@ -308,7 +325,7 @@ This section will cover advanced usage of the LoopStructural library, including:
   .. image:: /_auto_examples/4_advanced/images/thumb/sphx_glr_plot_1_using_logging_thumb.png
     :alt:
 
-  :ref:`sphx_glr__auto_examples_4_advanced_plot_1_using_logging.py`
+  :doc:`/_auto_examples/4_advanced/plot_1_using_logging`
 
 .. raw:: html
 
@@ -325,7 +342,7 @@ This section will cover advanced usage of the LoopStructural library, including:
   .. image:: /_auto_examples/4_advanced/images/thumb/sphx_glr_plot_2_local_weights_thumb.png
     :alt:
 
-  :ref:`sphx_glr__auto_examples_4_advanced_plot_2_local_weights.py`
+  :doc:`/_auto_examples/4_advanced/plot_2_local_weights`
 
 .. raw:: html
 
@@ -342,7 +359,7 @@ This section will cover advanced usage of the LoopStructural library, including:
   .. image:: /_auto_examples/4_advanced/images/thumb/sphx_glr_plot_model_from_geological_map_thumb.png
     :alt:
 
-  :ref:`sphx_glr__auto_examples_4_advanced_plot_model_from_geological_map.py`
+  :doc:`/_auto_examples/4_advanced/plot_model_from_geological_map`
 
 .. raw:: html
 

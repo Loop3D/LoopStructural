@@ -21,7 +21,7 @@
   .. image:: /_auto_examples/3_fault/images/thumb/sphx_glr_plot_faulted_intrusion_thumb.png
     :alt:
 
-  :ref:`sphx_glr__auto_examples_3_fault_plot_faulted_intrusion.py`
+  :doc:`/_auto_examples/3_fault/plot_faulted_intrusion`
 
 .. raw:: html
 
@@ -38,7 +38,7 @@
   .. image:: /_auto_examples/3_fault/images/thumb/sphx_glr_plot_fault_network_thumb.png
     :alt:
 
-  :ref:`sphx_glr__auto_examples_3_fault_plot_fault_network.py`
+  :doc:`/_auto_examples/3_fault/plot_fault_network`
 
 .. raw:: html
 
@@ -55,11 +55,28 @@
   .. image:: /_auto_examples/3_fault/images/thumb/sphx_glr_plot_define_fault_displacement_thumb.png
     :alt:
 
-  :ref:`sphx_glr__auto_examples_3_fault_plot_define_fault_displacement.py`
+  :doc:`/_auto_examples/3_fault/plot_define_fault_displacement`
 
 .. raw:: html
 
       <div class="sphx-glr-thumbnail-title">3c. Defining the fault displacement function</div>
+    </div>
+
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="3d. Updating fault geometry">
+
+.. only:: html
+
+  .. image:: /_auto_examples/3_fault/images/thumb/sphx_glr_plot_update_fault_geometry_thumb.png
+    :alt:
+
+  :doc:`/_auto_examples/3_fault/plot_update_fault_geometry`
+
+.. raw:: html
+
+      <div class="sphx-glr-thumbnail-title">3d. Updating fault geometry</div>
     </div>
 
 
@@ -76,4 +93,5 @@
    /_auto_examples/3_fault/plot_faulted_intrusion
    /_auto_examples/3_fault/plot_fault_network
    /_auto_examples/3_fault/plot_define_fault_displacement
+   /_auto_examples/3_fault/plot_update_fault_geometry
 
