@@ -62,7 +62,9 @@ class DiscreteInterpolator(GeologicalInterpolator):
         self.interpolation_weights = {}
         logger.info("Creating discrete interpolator with {} degrees of freedom".format(self.dof))
         self.type = InterpolatorType.BASE_DISCRETE
-
+        self.apply_scaling_matrix = True
+        self.add_ridge_regulatisation = True
+        self.ridge_factor = 1e-8
     def set_nelements(self, nelements: int) -> int:
         return self.support.set_nelements(nelements)
 
@@ -511,6 +513,25 @@ class DiscreteInterpolator(GeologicalInterpolator):
 
         B = np.hstack(bs)
         return A, B
+    def compute_column_scaling_matrix(self, A: sparse.csr_matrix) -> sparse.dia_matrix:
+        """Compute column scaling matrix S for matrix A so that A @ S has columns with unit norm.
+
+        Parameters
+        ----------
+        A : sparse.csr_matrix
+            interpolation matrix
+
+        Returns
+        -------
+        scipy.sparse.dia_matrix
+            diagonal scaling matrix S
+        """
+        col_norms = sparse.linalg.norm(A, axis=0)
+        scaling_factors = np.ones(A.shape[1])
+        mask = col_norms > 0
+        scaling_factors[mask] = 1.0 / col_norms[mask]
+        S = sparse.diags(scaling_factors)
+        return S
 
     def add_equality_block(self, A, B):
         if len(self.equal_constraints) > 0:
@@ -591,6 +612,15 @@ class DiscreteInterpolator(GeologicalInterpolator):
             raise ValueError("Pre solve failed")
 
         A, b = self.build_matrix()
+        if self.add_ridge_regulatisation:
+            ridge = sparse.eye(A.shape[1]) * self.ridge_factor
+            A = sparse.vstack([A, ridge])
+            b = np.hstack([b, np.zeros(A.shape[1])])
+            logger.info("Adding ridge regularisation to interpolation matrix")
+        if self.apply_scaling_matrix:
+            S = self.compute_column_scaling_matrix(A)
+            A = A @ S
+
         Q, bounds = self.build_inequality_matrix()
         if callable(solver):
             logger.warning('Using custom solver')
@@ -620,12 +650,14 @@ class DiscreteInterpolator(GeologicalInterpolator):
 
         elif solver == 'lsmr':
             logger.info("Solving using lsmr")
-            if 'atol' not in solver_kwargs:
-                if tol is not None:
-                    solver_kwargs['atol'] = tol
+            # if 'atol' not in solver_kwargs:
+            #     if tol is not None:
+            #         solver_kwargs['atol'] = tol
             if 'btol' not in solver_kwargs:
                 if tol is not None:
                     solver_kwargs['btol'] = tol
+                    solver_kwargs['atol'] = 0.
+                    logger.info(f"Setting lsmr btol to {tol}")
             logger.info(f"Solver kwargs: {solver_kwargs}")
             res = sparse.linalg.lsmr(A, b, **solver_kwargs)
             if res[1] == 1 or res[1] == 4 or res[1] == 2 or res[1] == 5:
@@ -684,6 +716,9 @@ class DiscreteInterpolator(GeologicalInterpolator):
             logger.error(f"Unknown solver {solver}")
             self.up_to_date = False
         # self._post_solve()
+        # apply scaling matrix to solution
+        if self.apply_scaling_matrix:
+            self.c = S @ self.c
         return self.up_to_date
 
     def update(self) -> bool:
