@@ -44,7 +44,9 @@ jobs:
       - name: Cleanup lint branches
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          DRY_RUN: ${{ github.event.inputs.dry_run || 'false' }}
+          # Default to false for manual triggers with dry_run=false, otherwise true
+          # This ensures scheduled runs default to true (safe mode)
+          DRY_RUN: ${{ github.event.inputs.dry_run == 'false' && 'false' || 'true' }}
           BRANCH_AGE_DAYS: 7
         run: |
           set -e
@@ -76,13 +78,19 @@ jobs:
           echo "Found $(echo "$lint_branches" | wc -l) lint branches"
           echo ""
 
-          # Process each branch
-          for branch in $lint_branches; do
+          # Process each branch (using while read to handle special characters safely)
+          while IFS= read -r branch; do
+            [ -z "$branch" ] && continue
             total_branches=$((total_branches + 1))
             echo "🔍 Processing: $branch"
 
-            # Extract run ID from branch name (e.g., lint/style-fixes-17199517932)
-            run_id=$(echo "$branch" | sed 's/lint\/style-fixes-//')
+            # Validate branch name matches expected pattern
+            if [[ ! "$branch" =~ ^lint/style-fixes-[0-9]+$ ]]; then
+              echo "  ⚠️  Warning: Branch name doesn't match expected pattern, skipping"
+              skipped_branches=$((skipped_branches + 1))
+              echo ""
+              continue
+            fi
 
             # Check if there's a PR for this branch
             pr_number=$(gh pr list --state all --head "$branch" --json number --jq '.[0].number' 2>/dev/null || echo "")
@@ -151,7 +159,7 @@ jobs:
             fi
 
             echo ""
-          done
+          done <<< "$lint_branches"
 
           # Print summary
           echo "📊 Cleanup Summary"
