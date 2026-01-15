@@ -44,12 +44,13 @@ jobs:
       - name: Cleanup lint branches
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          # Default to false for manual triggers with dry_run=false, otherwise true
-          # This ensures scheduled runs default to true (safe mode)
+          # Default to true (dry-run mode) unless explicitly set to false
+          # This ensures safe operation for both scheduled and manual triggers
           DRY_RUN: ${{ github.event.inputs.dry_run == 'false' && 'false' || 'true' }}
           BRANCH_AGE_DAYS: 7
         run: |
           set -e
+          set -o pipefail
 
           echo "🧹 Starting lint branch cleanup..."
           echo "Dry run mode: $DRY_RUN"
@@ -148,11 +149,12 @@ jobs:
                 deleted_branches=$((deleted_branches + 1))
               else
                 echo "  🗑️  Deleting: $delete_reason"
-                if gh api -X DELETE "repos/${{ github.repository }}/git/refs/heads/$branch" 2>/dev/null; then
+                delete_error=$(gh api -X DELETE "repos/${{ github.repository }}/git/refs/heads/$branch" 2>&1)
+                if [ $? -eq 0 ]; then
                   echo "  ✅ Successfully deleted"
                   deleted_branches=$((deleted_branches + 1))
                 else
-                  echo "  ❌ Failed to delete branch"
+                  echo "  ❌ Failed to delete branch: $delete_error"
                   error_branches=$((error_branches + 1))
                 fi
               fi
