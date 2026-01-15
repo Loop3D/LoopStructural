@@ -94,7 +94,7 @@ jobs:
             fi
 
             # Check if there's a PR for this branch
-            pr_number=$(gh pr list --state all --head "$branch" --json number --jq 'if length > 0 then .[0].number else empty end' 2>/dev/null || echo "")
+            pr_number=$(gh pr list --state all --head "$branch" --json number --jq '.[0].number // empty' 2>/dev/null || echo "")
 
             should_delete=false
             delete_reason=""
@@ -151,7 +151,8 @@ jobs:
                 echo "  🗑️  Deleting: $delete_reason"
                 # Use git push for safer deletion with validated branch name
                 delete_error=$(git push origin --delete "$branch" 2>&1)
-                if [ $? -eq 0 ]; then
+                exit_code=$?
+                if [ $exit_code -eq 0 ]; then
                   echo "  ✅ Successfully deleted"
                   deleted_branches=$((deleted_branches + 1))
                 else
