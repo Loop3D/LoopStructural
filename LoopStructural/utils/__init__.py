@@ -26,6 +26,7 @@ from .maths import (
     plungeazimuth2vector,
     azimuthplunge2vector,
     normal_vector_to_strike_and_dip,
+    normal_vector_to_dip_and_dip_direction,
     rotate,
 )
 from .helper import create_surface, create_box
