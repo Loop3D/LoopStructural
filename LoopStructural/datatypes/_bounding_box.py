@@ -60,16 +60,16 @@ class BoundingBox:
         # we want the local coordinates to start at 0
         # otherwise uses provided origin. This is useful for having multiple bounding boxes rela
         if global_origin is not None and origin is None:
-            origin = np.zeros(np.array(global_origin).shape)
+            origin = np.zeros(np.array(global_origin).shape, dtype=float)
         if global_maximum is not None and global_origin is not None:
-            maximum = np.array(global_maximum) - np.array(global_origin)
-        
+            maximum = np.array(global_maximum,dtype=float) - np.array(global_origin,dtype=float)
+
         if maximum is None and nsteps is not None and step_vector is not None:
             maximum = np.array(origin) + np.array(nsteps) * np.array(step_vector)
         if origin is not None and global_origin is None:
             global_origin = np.zeros(3)
-        self._origin = np.array(origin)
-        self._maximum = np.array(maximum)
+        self._origin = np.array(origin, dtype=float)
+        self._maximum = np.array(maximum, dtype=float)
         self.dimensions = dimensions
         if self.origin.shape:
             if self.origin.shape[0] != self.dimensions:
@@ -80,7 +80,10 @@ class BoundingBox:
         else:
             self.dimensions = dimensions
         self._global_origin = global_origin
-        self.nsteps = np.array([50, 50, 25])
+        if self.origin is not None and self.maximum is not None:
+            self.nelements = 10_000
+        else:
+            self.nsteps = np.array([50, 50, 25])
         if nsteps is not None:
             self.nsteps = np.array(nsteps)
         self.name_map = {
@@ -219,6 +222,7 @@ class BoundingBox:
         int
             Total number of elements (product of nsteps)
         """
+        
         return self.nsteps.prod()
 
     @property
@@ -230,7 +234,9 @@ class BoundingBox:
         float
             Volume of the bounding box
         """
-        return np.prod(self.maximum - self.origin)
+        length = self.maximum - self.origin
+        length = length.astype(float)
+        return np.prod(length)
 
     @property
     def bb(self):
