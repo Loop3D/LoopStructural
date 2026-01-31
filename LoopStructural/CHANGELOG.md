@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.6.25](https://github.com/Loop3D/LoopStructural/compare/v1.6.24...v1.6.25) (2026-01-31)
+
+
+### Bug Fixes
+
+* prevent int overflow if bb min/max is defined as int ([65d2819](https://github.com/Loop3D/LoopStructural/commit/65d2819fcf6fe0b0e0440f487d3cf75e629341b7))
+* speed up model eval by collecting all conformable units ([9b4a719](https://github.com/Loop3D/LoopStructural/commit/9b4a7192fb75e5f2e002e8079891d0a7dd5487bc))
+
 ## [1.6.24](https://github.com/Loop3D/LoopStructural/compare/v1.6.23...v1.6.24) (2026-01-15)
 
 
