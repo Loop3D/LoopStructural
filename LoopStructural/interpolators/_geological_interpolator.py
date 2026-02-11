@@ -252,7 +252,7 @@ class GeologicalInterpolator(metaclass=ABCMeta):
             points = np.hstack([points, np.ones((points.shape[0], 1))])
         if points.shape[1] < self.dimensions + 2:
             raise ValueError("Value points must at least have X,Y,Z,val,w")
-        self.data["value"] = points
+        self.data["value"] = points.copy()
         self.n_i = points.shape[0]
         self.up_to_date = False
 
@@ -282,7 +282,7 @@ class GeologicalInterpolator(metaclass=ABCMeta):
         if points.shape[1] < self.dimensions * 2 + 1:
             raise ValueError("Gradient constraints must at least have X,Y,Z,gx,gy,gz")
         self.n_g = points.shape[0]
-        self.data["gradient"] = points
+        self.data["gradient"] = points.copy()
         self.up_to_date = False
 
     def set_normal_constraints(self, points: np.ndarray):
@@ -308,7 +308,7 @@ class GeologicalInterpolator(metaclass=ABCMeta):
         if points.shape[1] < self.dimensions * 2 + 1:
             raise ValueError("Normal constraints must at least have X,Y,Z,nx,ny,nz")
         self.n_n = points.shape[0]
-        self.data["normal"] = points
+        self.data["normal"] = points.copy()
         self.up_to_date = False
 
     def set_tangent_constraints(self, points: np.ndarray):
@@ -328,24 +328,24 @@ class GeologicalInterpolator(metaclass=ABCMeta):
             points = np.hstack([points, np.ones((points.shape[0], 1))])
         if points.shape[1] < self.dimensions * 2 + 1:
             raise ValueError("Tangent constraints must at least have X,Y,Z,tx,ty,tz")
-        self.data["tangent"] = points
+        self.data["tangent"] = points.copy()
         self.up_to_date = False
 
     def set_interface_constraints(self, points: np.ndarray):
-        self.data["interface"] = points
+        self.data["interface"] = points.copy()
         self.up_to_date = False
 
     def set_value_inequality_constraints(self, points: np.ndarray):
         if points.shape[1] < self.dimensions + 2:
             raise ValueError("Inequality constraints must at least have X,Y,Z,lower,upper")
-        self.data["inequality"] = points
+        self.data["inequality"] = points.copy()
         self.up_to_date = False
 
     def set_inequality_pairs_constraints(self, points: np.ndarray):
         if points.shape[1] < self.dimensions + 1:
             raise ValueError("Inequality pairs constraints must at least have X,Y,Z,rock_id")
 
-        self.data["inequality_pairs"] = points
+        self.data["inequality_pairs"] = points.copy()
         self.up_to_date = False
 
     def get_value_constraints(self):
