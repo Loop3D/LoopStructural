@@ -246,6 +246,7 @@ class FaultBuilder(StructuralFrameBuilder):
         fault_dip=90,
         fault_dip_anisotropy=1.0,
         fault_pitch=None,
+        plane_line_threshold=0.05,
     ):
         """
         Generate the required data for building a fault frame with the specified parameters.
@@ -294,30 +295,53 @@ class FaultBuilder(StructuralFrameBuilder):
             ].to_numpy()
             self.fault_dip = fault_dip
             if fault_normal_vector is None:
-                if fault_frame_data.loc[
-                np.logical_and(fault_frame_data["coord"] == 0, fault_frame_data["nx"].notna())].shape[0]>0:
+                gx_mask = np.logical_and(fault_frame_data["coord"] == 0, fault_frame_data["gx"].notna())
+                nx_mask = np.logical_and(fault_frame_data["coord"] == 0, fault_frame_data["nx"].notna())
+                value_mask = np.logical_and(fault_frame_data["coord"] == 0, fault_frame_data["val"] == 0)
+                if not fault_frame_data.loc[gx_mask].empty:
                     fault_normal_vector = fault_frame_data.loc[
-                        np.logical_and(fault_frame_data["coord"] == 0, fault_frame_data["nx"].notna()),
+                        gx_mask,
+                        ["gx", "gy", "gz"],
+                    ].to_numpy().mean(axis=0)
+                elif not fault_frame_data.loc[nx_mask].empty:
+                    fault_normal_vector = fault_frame_data.loc[
+                        nx_mask,
                         ["nx", "ny", "nz"],
                     ].to_numpy().mean(axis=0)
 
                 else:
+                    fault_surface_pts = fault_frame_data.loc[
+                        value_mask,
+                        ["X", "Y", "Z"],
+                    ].to_numpy()
+                    fault_surface_pts = fault_surface_pts[
+                        ~np.isnan(fault_surface_pts).any(axis=1)
+                    ]
 
-                    # Calculate fault strike using eigenvectors
+                    if fault_surface_pts.shape[0] >= 3:
+                        pts_3d = fault_surface_pts - fault_surface_pts.mean(axis=0)
+                        cov_matrix = pts_3d.T @ pts_3d
+                        eigenvalues, eigenvectors = np.linalg.eigh(cov_matrix)
+                        # If points span a surface, use the smallest eigenvector as plane normal
+                        if eigenvalues[-1] > 0 and (eigenvalues[1] / eigenvalues[-1]) > plane_line_threshold:
+                            fault_normal_vector = eigenvectors[:, 0]
+                        
+                if fault_normal_vector is None:
+                    # Fall back to line-on-map strike logic
                     pts = fault_trace - fault_trace.mean(axis=0)
-                    # Calculate covariance matrix
                     cov_matrix = pts.T @ pts
-                    # Get eigenvectors and eigenvalues
                     eigenvalues, eigenvectors = np.linalg.eigh(cov_matrix)
-                    # Use eigenvector with largest eigenvalue as strike direction
                     strike_vector = eigenvectors[:, np.argmax(eigenvalues)]
                     strike_vector = np.append(strike_vector, 0)  # Add z component
                     strike_vector /= np.linalg.norm(strike_vector)
 
                     fault_normal_vector = np.cross(strike_vector, [0, 0, 1])
-                    # Rotate the fault normal vector according to the fault dip
-                    rotation_matrix = rotation(strike_vector[None, :], np.array([90 - fault_dip]))
-                    fault_normal_vector = np.einsum("ijk,ik->ij", rotation_matrix, fault_normal_vector[None, :])[0]
+                    rotation_matrix = rotation(
+                        strike_vector[None, :], np.array([90 - fault_dip])
+                    )
+                    fault_normal_vector = np.einsum(
+                        "ijk,ik->ij", rotation_matrix, fault_normal_vector[None, :]
+                    )[0]
 
             if not isinstance(fault_normal_vector, np.ndarray):
                 fault_normal_vector = np.array(fault_normal_vector)
