@@ -295,6 +295,12 @@ class FaultBuilder(StructuralFrameBuilder):
             self.fault_dip = fault_dip
             if fault_normal_vector is None:
                 if fault_frame_data.loc[
+                np.logical_and(fault_frame_data["coord"] == 0, fault_frame_data["gx"].notna())].shape[0]>0:
+                    fault_normal_vector = fault_frame_data.loc[
+                        np.logical_and(fault_frame_data["coord"] == 0, fault_frame_data["gx"].notna()),
+                        ["gx", "gy", "gz"],
+                    ].to_numpy().mean(axis=0)
+                elif fault_frame_data.loc[
                 np.logical_and(fault_frame_data["coord"] == 0, fault_frame_data["nx"].notna())].shape[0]>0:
                     fault_normal_vector = fault_frame_data.loc[
                         np.logical_and(fault_frame_data["coord"] == 0, fault_frame_data["nx"].notna()),
@@ -302,22 +308,56 @@ class FaultBuilder(StructuralFrameBuilder):
                     ].to_numpy().mean(axis=0)
 
                 else:
+                    fault_surface_pts = fault_frame_data.loc[
+                        np.logical_and(
+                            fault_frame_data["coord"] == 0,
+                            fault_frame_data["val"] == 0,
+                        ),
+                        ["X", "Y", "Z"],
+                    ].to_numpy()
+                    fault_surface_pts = fault_surface_pts[
+                        ~np.isnan(fault_surface_pts).any(axis=1)
+                    ]
 
-                    # Calculate fault strike using eigenvectors
-                    pts = fault_trace - fault_trace.mean(axis=0)
-                    # Calculate covariance matrix
-                    cov_matrix = pts.T @ pts
-                    # Get eigenvectors and eigenvalues
-                    eigenvalues, eigenvectors = np.linalg.eigh(cov_matrix)
-                    # Use eigenvector with largest eigenvalue as strike direction
-                    strike_vector = eigenvectors[:, np.argmax(eigenvalues)]
-                    strike_vector = np.append(strike_vector, 0)  # Add z component
-                    strike_vector /= np.linalg.norm(strike_vector)
+                    if fault_surface_pts.shape[0] >= 3:
+                        pts_3d = fault_surface_pts - fault_surface_pts.mean(axis=0)
+                        cov_matrix = pts_3d.T @ pts_3d
+                        eigenvalues, eigenvectors = np.linalg.eigh(cov_matrix)
+                        # If points span a surface, use the smallest eigenvector as plane normal
+                        if eigenvalues[-1] > 0 and (eigenvalues[1] / eigenvalues[-1]) > 0.05:
+                            fault_normal_vector = eigenvectors[:, 0]
+                        else:
+                            # Fall back to line-on-map strike logic
+                            pts = fault_trace - fault_trace.mean(axis=0)
+                            cov_matrix = pts.T @ pts
+                            eigenvalues, eigenvectors = np.linalg.eigh(cov_matrix)
+                            strike_vector = eigenvectors[:, np.argmax(eigenvalues)]
+                            strike_vector = np.append(strike_vector, 0)  # Add z component
+                            strike_vector /= np.linalg.norm(strike_vector)
 
-                    fault_normal_vector = np.cross(strike_vector, [0, 0, 1])
-                    # Rotate the fault normal vector according to the fault dip
-                    rotation_matrix = rotation(strike_vector[None, :], np.array([90 - fault_dip]))
-                    fault_normal_vector = np.einsum("ijk,ik->ij", rotation_matrix, fault_normal_vector[None, :])[0]
+                            fault_normal_vector = np.cross(strike_vector, [0, 0, 1])
+                            rotation_matrix = rotation(
+                                strike_vector[None, :], np.array([90 - fault_dip])
+                            )
+                            fault_normal_vector = np.einsum(
+                                "ijk,ik->ij", rotation_matrix, fault_normal_vector[None, :]
+                            )[0]
+                    else:
+                        # Fall back to line-on-map strike logic
+                        pts = fault_trace - fault_trace.mean(axis=0)
+                        cov_matrix = pts.T @ pts
+                        eigenvalues, eigenvectors = np.linalg.eigh(cov_matrix)
+                        strike_vector = eigenvectors[:, np.argmax(eigenvalues)]
+                        strike_vector = np.append(strike_vector, 0)  # Add z component
+                        strike_vector /= np.linalg.norm(strike_vector)
+
+                        fault_normal_vector = np.cross(strike_vector, [0, 0, 1])
+                        rotation_matrix = rotation(
+                            strike_vector[None, :], np.array([90 - fault_dip])
+                        )
+                        fault_normal_vector = np.einsum(
+                            "ijk,ik->ij", rotation_matrix, fault_normal_vector[None, :]
+                        )[0]
 
             if not isinstance(fault_normal_vector, np.ndarray):
                 fault_normal_vector = np.array(fault_normal_vector)
