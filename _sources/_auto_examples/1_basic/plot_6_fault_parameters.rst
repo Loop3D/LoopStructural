@@ -208,7 +208,7 @@ Plot the model with a displacement of 50 and minor axis 500
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (7 minutes 40.198 seconds)
+   **Total running time of the script:** (7 minutes 28.511 seconds)
 
 
 .. _sphx_glr_download__auto_examples_1_basic_plot_6_fault_parameters.py:

@@ -6,7 +6,7 @@
 
 Computation times
 =================
-**01:52.714** total execution time for 3 files **from _auto_examples/4_advanced**:
+**00:19.665** total execution time for 3 files **from _auto_examples/4_advanced**:
 
 .. container::
 
@@ -33,11 +33,11 @@ Computation times
      - Time
      - Mem (MB)
    * - :ref:`sphx_glr__auto_examples_4_advanced_plot_model_from_geological_map.py` (``plot_model_from_geological_map.py``)
-     - 01:47.773
+     - 00:16.202
      - 0.0
    * - :ref:`sphx_glr__auto_examples_4_advanced_plot_2_local_weights.py` (``plot_2_local_weights.py``)
-     - 00:03.327
+     - 00:02.476
      - 0.0
    * - :ref:`sphx_glr__auto_examples_4_advanced_plot_1_using_logging.py` (``plot_1_using_logging.py``)
-     - 00:01.614
+     - 00:00.988
      - 0.0

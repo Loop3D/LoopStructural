@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>LoopStructural &#8212; LoopStructural 1.6.24 documentation</title>
+    <title>LoopStructural &#8212; LoopStructural 1.6.26 documentation</title>
   
   
   
@@ -44,9 +44,9 @@
   <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="_static/documentation_options.js?v=974e7bee"></script>
-    <script src="_static/doctools.js?v=9bcbadda"></script>
-    <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/documentation_options.js?v=3bc67995"></script>
+    <script src="_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="_static/design-tabs.js?v=f930bc37"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'index';</script>
     <script src="_static/custom-icon.js?v=40bda21d"></script>
@@ -56,7 +56,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="" />
-    <meta name="docbuild:last-update" content="Jan 15, 2026"/>
+    <meta name="docbuild:last-update" content="Feb 11, 2026"/>
   </head>
   
   
@@ -126,7 +126,7 @@
     <img src="_static/infinity_loop_icon.svg" class="logo__image only-dark pst-js-only" alt=""/>
   
   
-    <p class="title logo__title">LoopStructural - 1.6.24</p>
+    <p class="title logo__title">LoopStructural - 1.6.26</p>
   
 </a></div>
     
@@ -479,7 +479,7 @@ evaluate the scalar field and gradient of the interpolator at some random locati
 </pre></div>
 </div>
 <figure class="align-default">
-<img alt="_images/index-1_00_00.png" src="_images/index-1_00_00.png" />
+<img alt="_images/index-be56e52647681c3d_00_00.png" src="_images/index-be56e52647681c3d_00_00.png" />
 </figure>
 </section>
 <section id="using-interpolatorbuilder">
@@ -487,53 +487,6 @@ evaluate the scalar field and gradient of the interpolator at some random locati
 <p>To access the interpolators directly the <cite>InterpolatorBuilder</cite> can be used
 to help assemble an interpolator from a combination of value, gradient and inequality
 constraints.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">LoopStructural</span><span class="w"> </span><span class="kn">import</span> <span class="n">BoundingBox</span><span class="p">,</span> <span class="n">InterpolatorBuilder</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">LoopStructural.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">EuclideanTransformation</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">LoopStructural.datasets</span><span class="w"> </span><span class="kn">import</span> <span class="n">load_claudius</span>
-
-<span class="c1"># load in a dataframe with x,y,z,val,nx,ny,nz to constrain the value and</span>
-<span class="c1"># gradient normal of the interpolator</span>
-<span class="n">data</span><span class="p">,</span> <span class="n">bb</span> <span class="o">=</span> <span class="n">load_claudius</span><span class="p">()</span>
-
-<span class="c1"># Find the bounding box of the data by finding the extent</span>
-<span class="n">bounding_box</span> <span class="o">=</span> <span class="n">BoundingBox</span><span class="p">()</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">data</span><span class="p">[[</span><span class="s2">&quot;X&quot;</span><span class="p">,</span> <span class="s2">&quot;Y&quot;</span><span class="p">,</span> <span class="s2">&quot;Z&quot;</span><span class="p">]])</span>
-<span class="c1"># assemble an interpolator using the bounding box and the data</span>
-<span class="n">interpolator</span> <span class="o">=</span> <span class="p">(</span>
-    <span class="n">InterpolatorBuilder</span><span class="p">(</span>
-        <span class="n">interpolatortype</span><span class="o">=</span><span class="s2">&quot;FDI&quot;</span><span class="p">,</span> <span class="n">bounding_box</span><span class="o">=</span><span class="n">bounding_box</span><span class="o">.</span><span class="n">with_buffer</span><span class="p">(</span><span class="mf">0.1</span><span class="p">)</span>
-    <span class="p">)</span>
-    <span class="o">.</span><span class="n">add_value_constraints</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;val&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">notna</span><span class="p">(),</span> <span class="p">[</span><span class="s2">&quot;X&quot;</span><span class="p">,</span> <span class="s2">&quot;Y&quot;</span><span class="p">,</span> <span class="s2">&quot;Z&quot;</span><span class="p">,</span> <span class="s2">&quot;val&quot;</span><span class="p">]]</span><span class="o">.</span><span class="n">values</span><span class="p">)</span>
-    <span class="o">.</span><span class="n">add_normal_constraints</span><span class="p">(</span>
-        <span class="n">data</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;nx&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">notna</span><span class="p">(),</span> <span class="p">[</span><span class="s2">&quot;X&quot;</span><span class="p">,</span> <span class="s2">&quot;Y&quot;</span><span class="p">,</span> <span class="s2">&quot;Z&quot;</span><span class="p">,</span> <span class="s2">&quot;nx&quot;</span><span class="p">,</span> <span class="s2">&quot;ny&quot;</span><span class="p">,</span> <span class="s2">&quot;nz&quot;</span><span class="p">]]</span><span class="o">.</span><span class="n">values</span>
-    <span class="p">)</span>
-    <span class="o">.</span><span class="n">build</span><span class="p">()</span>
-<span class="p">)</span>
-<span class="c1"># Set the number of elements in the bounding box to 10000 and create a structured grid</span>
-<span class="n">bounding_box</span><span class="o">.</span><span class="n">nelements</span> <span class="o">=</span> <span class="mi">10000</span>
-<span class="n">mesh</span> <span class="o">=</span> <span class="n">bounding_box</span><span class="o">.</span><span class="n">structured_grid</span><span class="p">()</span>
-<span class="c1"># add the interpolated values to the mesh at the nodes</span>
-<span class="n">mesh</span><span class="o">.</span><span class="n">properties</span><span class="p">[</span><span class="s2">&quot;v&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">interpolator</span><span class="o">.</span><span class="n">evaluate_value</span><span class="p">(</span><span class="n">mesh</span><span class="o">.</span><span class="n">nodes</span><span class="p">)</span>
-
-<span class="c1"># or the cell centres</span>
-<span class="c1"># mesh.cell_properties[&quot;v&quot;] = interpolator.evaluate_value(mesh.cell_centres)</span>
-
-
-<span class="c1"># visualise the scalar value</span>
-
-<span class="n">mesh</span><span class="o">.</span><span class="n">plot</span><span class="p">()</span>
-</pre></div>
-</div>
-<figure class="align-default">
-<img alt="_images/index-2_00_00.png" src="_images/index-2_00_00.png" />
-</figure>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># We can also add gradient properties and visualise these</span>
-<span class="n">mesh</span><span class="o">.</span><span class="n">properties</span><span class="p">[</span><span class="s2">&quot;grad&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">interpolator</span><span class="o">.</span><span class="n">evaluate_gradient</span><span class="p">(</span><span class="n">mesh</span><span class="o">.</span><span class="n">nodes</span><span class="p">)</span>
-<span class="n">mesh</span><span class="o">.</span><span class="n">vtk</span><span class="p">()</span><span class="o">.</span><span class="n">glyph</span><span class="p">(</span><span class="n">orient</span><span class="o">=</span><span class="s2">&quot;grad&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">plot</span><span class="p">()</span>
-</pre></div>
-</div>
-<figure class="align-default">
-<img alt="_images/index-2_01_00.png" src="_images/index-2_01_00.png" />
-</figure>
 <div class="toctree-wrapper compound">
 </div>
 </section>

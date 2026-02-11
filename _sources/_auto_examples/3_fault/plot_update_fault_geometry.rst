@@ -237,9 +237,9 @@ Create model using the standard fault displacement model
 
  .. code-block:: none
 
-    3.0 <bound method FaultBuilder.up_to_date of <LoopStructural.modelling.features.builders._fault_builder.FaultBuilder object at 0x7f92289d7380>>
-    6.0 <bound method FaultBuilder.up_to_date of <LoopStructural.modelling.features.builders._fault_builder.FaultBuilder object at 0x7f92289d7380>>
-    6.0 <bound method FaultBuilder.up_to_date of <LoopStructural.modelling.features.builders._fault_builder.FaultBuilder object at 0x7f92289d7380>>
+    3.0 <bound method FaultBuilder.up_to_date of <LoopStructural.modelling.features.builders._fault_builder.FaultBuilder object at 0x7fca0c3bfa70>>
+    6.0 <bound method FaultBuilder.up_to_date of <LoopStructural.modelling.features.builders._fault_builder.FaultBuilder object at 0x7fca0c3bfa70>>
+    6.0 <bound method FaultBuilder.up_to_date of <LoopStructural.modelling.features.builders._fault_builder.FaultBuilder object at 0x7fca0c3bfa70>>
 
 
 
@@ -247,7 +247,7 @@ Create model using the standard fault displacement model
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 1.961 seconds)
+   **Total running time of the script:** (0 minutes 0.651 seconds)
 
 
 .. _sphx_glr_download__auto_examples_3_fault_plot_update_fault_geometry.py:

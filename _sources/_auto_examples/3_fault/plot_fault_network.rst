@@ -188,7 +188,7 @@ the fault relationship to be abutting rather than splay.
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 2.115 seconds)
+   **Total running time of the script:** (0 minutes 1.978 seconds)
 
 
 .. _sphx_glr_download__auto_examples_3_fault_plot_fault_network.py:

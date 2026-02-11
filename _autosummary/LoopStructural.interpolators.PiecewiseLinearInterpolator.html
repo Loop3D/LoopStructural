@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>LoopStructural.interpolators.PiecewiseLinearInterpolator &#8212; LoopStructural 1.6.24 documentation</title>
+    <title>LoopStructural.interpolators.PiecewiseLinearInterpolator &#8212; LoopStructural 1.6.26 documentation</title>
   
   
   
@@ -44,10 +44,11 @@
   <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../_static/documentation_options.js?v=974e7bee"></script>
-    <script src="../_static/doctools.js?v=9bcbadda"></script>
-    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/documentation_options.js?v=3bc67995"></script>
+    <script src="../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../_static/design-tabs.js?v=f930bc37"></script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-mml-chtml.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = '_autosummary/LoopStructural.interpolators.PiecewiseLinearInterpolator';</script>
     <script src="../_static/custom-icon.js?v=40bda21d"></script>
     <link rel="index" title="Index" href="../genindex.html" />
@@ -57,7 +58,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="" />
-    <meta name="docbuild:last-update" content="Jan 15, 2026"/>
+    <meta name="docbuild:last-update" content="Feb 11, 2026"/>
   </head>
   
   
@@ -127,7 +128,7 @@
     <img src="../_static/infinity_loop_icon.svg" class="logo__image only-dark pst-js-only" alt=""/>
   
   
-    <p class="title logo__title">LoopStructural - 1.6.24</p>
+    <p class="title logo__title">LoopStructural - 1.6.26</p>
   
 </a></div>
     
@@ -492,7 +493,187 @@
 <dl class="py attribute">
 <dt class="sig sig-object py" id="LoopStructural.interpolators.PiecewiseLinearInterpolator">
 <span class="sig-prename descclassname"><span class="pre">LoopStructural.interpolators.</span></span><span class="sig-name descname"><span class="pre">PiecewiseLinearInterpolator</span></span><a class="headerlink" href="#LoopStructural.interpolators.PiecewiseLinearInterpolator" title="Link to this definition">#</a></dt>
-<dd><p>alias of <a class="reference internal" href="LoopStructural.interpolators.P1Interpolator.html#LoopStructural.interpolators.P1Interpolator" title="LoopStructural.interpolators._p1interpolator.P1Interpolator"><code class="xref py py-class docutils literal notranslate"><span class="pre">P1Interpolator</span></code></a></p>
+<dd><p class="rubric">Methods</p>
+<div class="pst-scrollable-table-container"><table class="autosummary longtable table">
+<tbody>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">__init__</span></code>(mesh)</p></td>
+<td><p>Piecewise Linear Interpolator Approximates scalar field by finding coefficients to a piecewise linear equation on a tetrahedral mesh.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">add_constraints_to_least_squares</span></code>(A, B, idc)</p></td>
+<td><p>Adds constraints to the least squares system.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">add_equality_block</span></code>(A, B)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">add_equality_constraints</span></code>(node_idx, values[, ...])</p></td>
+<td><p>Adds hard constraints to the least squares system.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">add_gradient_constraints</span></code>([w])</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">add_gradient_orthogonal_constraints</span></code>(points, ...)</p></td>
+<td><p>constraints scalar field to be orthogonal to a given vector</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">add_inequality_constraints_to_matrix</span></code>(A, ...)</p></td>
+<td><p>Adds constraints for a matrix where the linear function l &lt; Ax &gt; u constrains the objective function</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">add_inequality_feature</span></code>(feature[, lower, mask])</p></td>
+<td><p>Add an inequality constraint to the interpolator using an existing feature.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">add_inequality_pairs_constraints</span></code>([w, ...])</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">add_interface_constraints</span></code>([w])</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">add_norm_constraints</span></code>([w])</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">add_tangent_constraints</span></code>([w])</p></td>
+<td><p>Adds the constraints <span class="math notranslate nohighlight">\(f(X)\cdotT=0\)</span></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">add_value_constraints</span></code>([w])</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">add_value_inequality_constraints</span></code>([w])</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">build_inequality_matrix</span></code>()</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">build_matrix</span></code>()</p></td>
+<td><p>Assemble constraints into interpolation matrix.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">calculate_residual_for_constraints</span></code>()</p></td>
+<td><p>Calculates Ax-B for all constraints added to the interpolator This could be a proxy to identify which constraints are controlling the model</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">check_array</span></code>(array)</p></td>
+<td><p>Validate and convert input to numpy array.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">clean</span></code>()</p></td>
+<td><p>Removes all of the data from an interpolator</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">clear_constraints</span></code>()</p></td>
+<td><p>Clear the constraints from the interpolator, this makes sure we are not storing the constraints after the solver has been run</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">compute_column_scaling_matrix</span></code>(A)</p></td>
+<td><p>Compute column scaling matrix S for matrix A so that A &#64; S has columns with unit norm.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">debug</span></code>()</p></td>
+<td><p>Helper function for debugging when the interpolator isn't working</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">evaluate_gradient</span></code>(locations)</p></td>
+<td><p>Evaluate the gradient of the scalar field at the evaluation points :param evaluation_points: xyz locations to evaluate the gradient :type evaluation_points: np.array</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">evaluate_value</span></code>(locations)</p></td>
+<td><p>Evaluate the value of the interpolator at location</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_data_locations</span></code>()</p></td>
+<td><p>Get the location of all data points</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_gradient_constraints</span></code>()</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_inequality_pairs_constraints</span></code>()</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_inequality_value_constraints</span></code>()</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_interface_constraints</span></code>()</p></td>
+<td><p>Get the location of interface constraints</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_norm_constraints</span></code>()</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_tangent_constraints</span></code>()</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_value_constraints</span></code>()</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">minimise_edge_jumps</span></code>([w, vector_func, ...])</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">reset</span></code>()</p></td>
+<td><p>Reset the interpolation constraints</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_gradient_constraints</span></code>(points)</p></td>
+<td><p>Set gradient constraints for the interpolation.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_inequality_pairs_constraints</span></code>(points)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_interface_constraints</span></code>(points)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_interpolation_weights</span></code>(weights)</p></td>
+<td><p>Set the interpolation weights dictionary</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_nelements</span></code>(nelements)</p></td>
+<td><p>Set the number of elements for the interpolation support.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_normal_constraints</span></code>(points)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_region</span></code>([region])</p></td>
+<td><p>Set the region of the support the interpolator is working on</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_tangent_constraints</span></code>(points)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_value_constraints</span></code>(points)</p></td>
+<td><p>Set value constraints for the interpolation.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_value_inequality_constraints</span></code>(points)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">setup</span></code>(**kwargs)</p></td>
+<td><p>Runs all of the required setting up stuff</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">setup_interpolator</span></code>(**kwargs)</p></td>
+<td><p>Searches through kwargs for any interpolation weights and updates the dictionary.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">solve_system</span></code>([solver, tol, solver_kwargs])</p></td>
+<td><p>Main entry point to run the solver and update the node value attribute for the discreteinterpolator class</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">to_dict</span></code>()</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">to_json</span></code>()</p></td>
+<td><p>Return a JSON representation of the geological interpolator.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">update</span></code>()</p></td>
+<td><p>Check if the solver is up to date, if not rerun interpolation using the previously used solver.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">vtk</span></code>()</p></td>
+<td><p></p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p class="rubric">Attributes</p>
+<div class="pst-scrollable-table-container"><table class="autosummary longtable table">
+<tbody>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">data</span></code></p></td>
+<td><p>Get the constraint data dictionary.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">dof</span></code></p></td>
+<td><p>Number of degrees of freedom for the interpolator</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">n_elements</span></code></p></td>
+<td><p>Number of elements in the interpolator</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">region</span></code></p></td>
+<td><p>The active region of the interpolator.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">region_map</span></code></p></td>
+<td><p></p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>alias of <a class="reference internal" href="LoopStructural.interpolators.P1Interpolator.html#LoopStructural.interpolators.P1Interpolator" title="LoopStructural.interpolators._p1interpolator.P1Interpolator"><code class="xref py py-class docutils literal notranslate"><span class="pre">P1Interpolator</span></code></a></p>
 </dd></dl>
 
 </section>

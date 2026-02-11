@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>LoopStructural.modelling.GeologicalModel &#8212; LoopStructural 1.6.24 documentation</title>
+    <title>LoopStructural.modelling.GeologicalModel &#8212; LoopStructural 1.6.26 documentation</title>
   
   
   
@@ -44,9 +44,9 @@
   <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../_static/documentation_options.js?v=974e7bee"></script>
-    <script src="../_static/doctools.js?v=9bcbadda"></script>
-    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/documentation_options.js?v=3bc67995"></script>
+    <script src="../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../_static/design-tabs.js?v=f930bc37"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = '_autosummary/LoopStructural.modelling.GeologicalModel';</script>
     <script src="../_static/custom-icon.js?v=40bda21d"></script>
@@ -57,7 +57,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="" />
-    <meta name="docbuild:last-update" content="Jan 15, 2026"/>
+    <meta name="docbuild:last-update" content="Feb 11, 2026"/>
   </head>
   
   
@@ -127,7 +127,7 @@
     <img src="../_static/infinity_loop_icon.svg" class="logo__image only-dark pst-js-only" alt=""/>
   
   
-    <p class="title logo__title">LoopStructural - 1.6.24</p>
+    <p class="title logo__title">LoopStructural - 1.6.26</p>
   
 </a></div>
     
@@ -479,7 +479,7 @@
 <h1>LoopStructural.modelling.GeologicalModel<a class="headerlink" href="#loopstructural-modelling-geologicalmodel" title="Link to this heading">#</a></h1>
 <dl class="py class">
 <dt class="sig sig-object py" id="LoopStructural.modelling.GeologicalModel">
-<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">LoopStructural.modelling.</span></span><span class="sig-name descname"><span class="pre">GeologicalModel</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.modelling.GeologicalModel" title="Link to this definition">#</a></dt>
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">LoopStructural.modelling.</span></span><span class="sig-name descname"><span class="pre">GeologicalModel</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.modelling.GeologicalModel" title="Link to this definition">#</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>A geological model is the recipe for building a 3D model and  can include
 the rescaling of the model between 0 and 1.</p>
@@ -816,9 +816,9 @@ the rescaling of the model between 0 and 1.</p>
 <li><p><strong>fault_name</strong> (<em>string</em>) – name of the fault surface data in the dataframe</p></li>
 <li><p><strong>displacement</strong> (<em>displacement magnitude</em>) – displacement magnitude of the fault, in model units</p></li>
 <li><p><strong>fault_data</strong> (<em>pd.DataFrame</em><em>, </em><em>optional</em>) – data frame containing the fault data, if not specified uses the model data</p></li>
-<li><p><strong>major_axis</strong> (<em>[</em><em>type</em><em>]</em><em>, </em><em>optional</em>) – [description], by default None</p></li>
-<li><p><strong>minor_axis</strong> (<em>[</em><em>type</em><em>]</em><em>, </em><em>optional</em>) – [description], by default None</p></li>
-<li><p><strong>intermediate_axis</strong> (<em>[</em><em>type</em><em>]</em><em>, </em><em>optional</em>) – [description], by default None</p></li>
+<li><p><strong>major_axis</strong> (<em>[</em><a class="reference internal" href="LoopStructural.interpolators.GeologicalInterpolator.html#LoopStructural.interpolators.GeologicalInterpolator.type" title="LoopStructural.interpolators.GeologicalInterpolator.type"><em>type</em></a><em>]</em><em>, </em><em>optional</em>) – [description], by default None</p></li>
+<li><p><strong>minor_axis</strong> (<em>[</em><a class="reference internal" href="LoopStructural.interpolators.GeologicalInterpolator.html#LoopStructural.interpolators.GeologicalInterpolator.type" title="LoopStructural.interpolators.GeologicalInterpolator.type"><em>type</em></a><em>]</em><em>, </em><em>optional</em>) – [description], by default None</p></li>
+<li><p><strong>intermediate_axis</strong> (<em>[</em><a class="reference internal" href="LoopStructural.interpolators.GeologicalInterpolator.html#LoopStructural.interpolators.GeologicalInterpolator.type" title="LoopStructural.interpolators.GeologicalInterpolator.type"><em>type</em></a><em>]</em><em>, </em><em>optional</em>) – [description], by default None</p></li>
 <li><p><strong>kwargs</strong> (<em>additional kwargs for Fault and interpolators</em>)</p></li>
 </ul>
 </dd>
@@ -1155,7 +1155,7 @@ xyz</p>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="LoopStructural.modelling.GeologicalModel.faults">
-<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">faults</span></span><a class="headerlink" href="#LoopStructural.modelling.GeologicalModel.faults" title="Link to this definition">#</a></dt>
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">faults</span></span><a class="headerlink" href="#LoopStructural.modelling.GeologicalModel.faults" title="Link to this definition">#</a></dt>
 <dd><p>Get all of the fault features in the model</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
@@ -1166,7 +1166,7 @@ xyz</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="LoopStructural.modelling.GeologicalModel.from_file">
-<em class="property"><span class="k"><span class="pre">classmethod</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_file</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">file</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.modelling.GeologicalModel.from_file" title="Link to this definition">#</a></dt>
+<span class="property"><span class="k"><span class="pre">classmethod</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">from_file</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">file</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.modelling.GeologicalModel.from_file" title="Link to this definition">#</a></dt>
 <dd><p>Load a geological model from file</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -1180,7 +1180,7 @@ xyz</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="LoopStructural.modelling.GeologicalModel.from_processor">
-<em class="property"><span class="k"><span class="pre">classmethod</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_processor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">processor</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.modelling.GeologicalModel.from_processor" title="Link to this definition">#</a></dt>
+<span class="property"><span class="k"><span class="pre">classmethod</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">from_processor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">processor</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#LoopStructural.modelling.GeologicalModel.from_processor" title="Link to this definition">#</a></dt>
 <dd><p>Builds a model from a <code class="xref py py-class docutils literal notranslate"><span class="pre">LoopStructural.modelling.input.ProcessInputData</span></code> object
 This object stores the observations and order of the geological features</p>
 <dl class="field-list simple">
@@ -1284,7 +1284,7 @@ into scaled model space</p>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="LoopStructural.modelling.GeologicalModel.stratigraphic_column">
-<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">stratigraphic_column</span></span><a class="headerlink" href="#LoopStructural.modelling.GeologicalModel.stratigraphic_column" title="Link to this definition">#</a></dt>
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">stratigraphic_column</span></span><a class="headerlink" href="#LoopStructural.modelling.GeologicalModel.stratigraphic_column" title="Link to this definition">#</a></dt>
 <dd><p>Get the stratigraphic column of the model</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>

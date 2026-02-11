@@ -171,7 +171,9 @@ to the geological model. Key columns include:
 
  .. code-block:: none
 
+    <StringArray>
     ['strati']
+    Length: 1, dtype: str
 
 
 
@@ -270,7 +272,7 @@ stratigraphic units in 3D.
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 2.251 seconds)
+   **Total running time of the script:** (0 minutes 1.545 seconds)
 
 
 .. _sphx_glr_download__auto_examples_1_basic_plot_2_surface_modelling.py:
