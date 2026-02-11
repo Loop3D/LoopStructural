@@ -298,12 +298,12 @@ class FaultBuilder(StructuralFrameBuilder):
                 gx_mask = np.logical_and(fault_frame_data["coord"] == 0, fault_frame_data["gx"].notna())
                 nx_mask = np.logical_and(fault_frame_data["coord"] == 0, fault_frame_data["nx"].notna())
                 value_mask = np.logical_and(fault_frame_data["coord"] == 0, fault_frame_data["val"] == 0)
-                if fault_frame_data.loc[gx_mask].empty:
+                if not fault_frame_data.loc[gx_mask].empty:
                     fault_normal_vector = fault_frame_data.loc[
                         gx_mask,
                         ["gx", "gy", "gz"],
                     ].to_numpy().mean(axis=0)
-                elif fault_frame_data.loc[nx_mask].empty:
+                elif not fault_frame_data.loc[nx_mask].empty:
                     fault_normal_vector = fault_frame_data.loc[
                         nx_mask,
                         ["nx", "ny", "nz"],
