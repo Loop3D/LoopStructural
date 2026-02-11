@@ -1,5 +1,15 @@
 # Changelog
 
+## [1.6.26](https://github.com/Loop3D/LoopStructural/compare/v1.6.25...v1.6.26) (2026-02-11)
+
+
+### Bug Fixes
+
+* add threshold variable and remove duplicate code ([4d60155](https://github.com/Loop3D/LoopStructural/commit/4d60155ebe079bfee4f23b1cb6a607778728de0f))
+* calculate fault normal from plane of points as well as trace ([71c6f17](https://github.com/Loop3D/LoopStructural/commit/71c6f17169326daf847dcabfcf4a995a99d8de9c))
+* ensure all data are copies of original datastructure ([f409ad8](https://github.com/Loop3D/LoopStructural/commit/f409ad88b130cc770bd98ec9f459909edf037da8))
+* incorrect boolean ([5d9e04b](https://github.com/Loop3D/LoopStructural/commit/5d9e04b3532cd6a05dd3d1bf18ddafd4410626a0))
+
 ## [1.6.25](https://github.com/Loop3D/LoopStructural/compare/v1.6.24...v1.6.25) (2026-01-31)
 
 
