@@ -487,13 +487,33 @@ class StructuredGrid(BaseStructuredSupport):
         -------
         operators
             A dictionary with a numpy array and float weight
+        
+        Notes
+        -----
+        Operator weights are scaled by step vector to account for unequal grid spacing:
+        - Second derivatives (dxx, dyy, dzz): scale by 1 / step_vector[d]^2
+        - Mixed derivatives (dxy, dxz, dyz): scale by 1 / (step_vector[d1] * step_vector[d2])
         """
+        # Get step vector for scaling
+        step_x, step_y, step_z = self.step_vector[0], self.step_vector[1], self.step_vector[2]
+        
+        # Scale factors for finite difference operators
+        # Second derivatives need 1/h^2 scaling for physical space
+        dxx_scale = 1.0 / (step_x ** 2)
+        dyy_scale = 1.0 / (step_y ** 2)
+        dzz_scale = 1.0 / (step_z ** 2)
+        
+        # Mixed derivatives need 1/(h1*h2) scaling for physical space
+        dxy_scale = 1.0 / (step_x * step_y)
+        dyz_scale = 1.0 / (step_y * step_z)
+        dxz_scale = 1.0 / (step_x * step_z)
+        
         operators = {
-            'dxy': (Operator.Dxy_mask, weights['dxy'] / 4),
-            'dyz': (Operator.Dyz_mask, weights['dyz'] / 4),
-            'dxz': (Operator.Dxz_mask, weights['dxz'] / 4),
-            'dxx': (Operator.Dxx_mask, weights['dxx'] / 1),
-            'dyy': (Operator.Dyy_mask, weights['dyy'] / 1),
-            'dzz': (Operator.Dzz_mask, weights['dzz'] / 1),
+            'dxy': (Operator.Dxy_mask, weights['dxy'] / 4 * dxy_scale),
+            'dyz': (Operator.Dyz_mask, weights['dyz'] / 4 * dyz_scale),
+            'dxz': (Operator.Dxz_mask, weights['dxz'] / 4 * dxz_scale),
+            'dxx': (Operator.Dxx_mask, weights['dxx'] / 1 * dxx_scale),
+            'dyy': (Operator.Dyy_mask, weights['dyy'] / 1 * dyy_scale),
+            'dzz': (Operator.Dzz_mask, weights['dzz'] / 1 * dzz_scale),
         }
         return operators

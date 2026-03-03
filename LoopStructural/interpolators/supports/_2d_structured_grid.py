@@ -495,22 +495,36 @@ class StructuredGrid2D(BaseSupport):
         pass
 
     def get_operators(self, weights: Dict[str, float]) -> Dict[str, Tuple[np.ndarray, float]]:
-        """Get
+        """Get operators with step vector scaling for unequal spacing
 
         Parameters
         ----------
         weights : Dict[str, float]
-            _description_
+            Weight value per operator
 
         Returns
         -------
         Dict[str, Tuple[np.ndarray, float]]
-            _description_
+            Dictionary mapping operator names to (mask, scaled_weight) tuples
+        
+        Notes
+        -----
+        Operator weights are scaled by step vector to account for unequal grid spacing:
+        - Second derivatives (dxx, dyy): scale by 1 / step_vector[d]^2
+        - Mixed derivatives (dxy): scale by 1 / (step_vector[0] * step_vector[1])
         """
+        # Get step vector for scaling (2D uses x and y)
+        step_x, step_y = self.step_vector[0], self.step_vector[1]
+        
+        # Scale factors for finite difference operators
+        dxx_scale = 1.0 / (step_x ** 2)
+        dyy_scale = 1.0 / (step_y ** 2)
+        dxy_scale = 1.0 / (step_x * step_y)
+        
         # in a map we only want the xy operators
         operators = {
-            'dxy': (Operator.Dxy_mask[1, :, :], weights['dxy'] * 2),
-            'dxx': (Operator.Dxx_mask[1, :, :], weights['dxx']),
-            'dyy': (Operator.Dyy_mask[1, :, :], weights['dyy']),
+            'dxy': (Operator.Dxy_mask[1, :, :], weights['dxy'] * 2 * dxy_scale),
+            'dxx': (Operator.Dxx_mask[1, :, :], weights['dxx'] * dxx_scale),
+            'dyy': (Operator.Dyy_mask[1, :, :], weights['dyy'] * dyy_scale),
         }
         return operators
