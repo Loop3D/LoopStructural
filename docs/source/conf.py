@@ -122,9 +122,7 @@ html_css_files = ["custom.css"]
 html_js_files = ["custom-icon.js"]
 todo_include_todos = True
 
-autosummary_mock_imports = [
-    "LoopStructural.interpolators._cython",
-]
+
 # Sphinx gallery examples
 # from LoopStructural.visualisation.sphinx_scraper import Scraper as LoopScraper
 from sphinx_gallery.sorting import ExampleTitleSortKey
