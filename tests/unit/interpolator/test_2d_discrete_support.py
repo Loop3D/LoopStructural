@@ -1,5 +1,6 @@
 from LoopStructural.interpolators import StructuredGrid2D
 import numpy as np
+import pyvista as pv
 
 
 ## structured grid 2d tests
@@ -59,3 +60,18 @@ def test_get_element_outside2d():
     point = np.array([grid.origin - np.ones(2)])
     idc, inside = grid.position_to_cell_corners(point)
     assert not inside[0]
+
+
+def test_structured_grid2d_vtk_assigns_quad_cell_types():
+    grid = StructuredGrid2D(origin=np.zeros(2), nsteps=np.array([4, 4]))
+
+    vtk_grid = grid.vtk(z=0.0)
+
+    assert vtk_grid.n_cells == grid.n_elements
+    assert vtk_grid.celltypes.shape == (grid.n_elements,)
+    assert np.all(vtk_grid.celltypes == pv.CellType.QUAD)
+    assert vtk_grid.get_cell(0).point_ids == [0, 1, 5, 4]
+
+    triangulated = vtk_grid.triangulate()
+
+    assert triangulated.n_cells == grid.n_elements * 2
