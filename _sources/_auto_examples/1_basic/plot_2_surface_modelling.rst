@@ -272,7 +272,7 @@ stratigraphic units in 3D.
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 1.545 seconds)
+   **Total running time of the script:** (0 minutes 1.468 seconds)
 
 
 .. _sphx_glr_download__auto_examples_1_basic_plot_2_surface_modelling.py:

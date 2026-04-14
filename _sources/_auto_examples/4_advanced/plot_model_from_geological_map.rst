@@ -613,7 +613,7 @@ Visualise stratigraphic column
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 16.202 seconds)
+   **Total running time of the script:** (0 minutes 16.735 seconds)
 
 
 .. _sphx_glr_download__auto_examples_4_advanced_plot_model_from_geological_map.py:
