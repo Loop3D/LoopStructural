@@ -1,5 +1,14 @@
 # Changelog
 
+## [1.6.27](https://github.com/Loop3D/LoopStructural/compare/v1.6.26...v1.6.27) (2026-04-14)
+
+
+### Bug Fixes
+
+* add caching of reused values ([54fba19](https://github.com/Loop3D/LoopStructural/commit/54fba19df600210e6c14fb895d20b7f00451f663))
+* numpy speed improvements ([5e29fa1](https://github.com/Loop3D/LoopStructural/commit/5e29fa15b13a0864baa83ef9c95feef99d4cae01))
+* remove redundant call to mask nan values in discrete interpolator ([ce082f6](https://github.com/Loop3D/LoopStructural/commit/ce082f6e49bda22f8e02346e4c9cea9a81ba2bc0))
+
 ## [1.6.26](https://github.com/Loop3D/LoopStructural/compare/v1.6.25...v1.6.26) (2026-02-11)
 
 
