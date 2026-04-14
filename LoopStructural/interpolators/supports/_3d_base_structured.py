@@ -285,10 +285,8 @@ class BaseStructuredSupport(BaseSupport):
 
     def inside(self, pos):
         # check whether point is inside box
-        inside = np.ones(pos.shape[0]).astype(bool)
-        for i in range(3):
-            inside *= pos[:, i] > self.origin[None, i]
-            inside *= pos[:, i] < self.maximum[None, i]
+        pos = self.check_position(pos)
+        inside = np.all((pos > self.origin) & (pos < self.maximum), axis=1)
         return inside
 
     def check_position(self, pos: np.ndarray) -> np.ndarray:
@@ -306,11 +304,21 @@ class BaseStructuredSupport(BaseSupport):
         [type]
             [description]
         """
-        pos = np.array(pos)
+        if not isinstance(pos, np.ndarray):
+            try:
+                pos = np.array(pos, dtype=float)
+            except Exception as e:
+                logger.error(
+                    f"Position array should be a numpy array or list of points, not {type(pos)}"
+                )
+                raise ValueError(
+                    f"Position array should be a numpy array or list of points, not {type(pos)}"
+                ) from e
+
         if len(pos.shape) == 1:
             pos = np.array([pos])
         if len(pos.shape) != 2:
-            print("Position array needs to be a list of points or a point")
+            logger.error("Position array needs to be a list of points or a point")
             raise ValueError("Position array needs to be a list of points or a point")
         return pos
 
@@ -379,20 +387,24 @@ class BaseStructuredSupport(BaseSupport):
         ----------
         pos : np.array
             (N, 3) array of xyz coordinates representing the positions of N points.
-    
+
         Returns
         -------
         globalidx : np.array
-            (N, 8) array of global indices corresponding to the 8 corner nodes of the cell 
-            each point lies in. If a point lies outside the support, its corresponding entry 
+            (N, 8) array of global indices corresponding to the 8 corner nodes of the cell
+            each point lies in. If a point lies outside the support, its corresponding entry
             will be set to -1.
         inside : np.array
             (N,) boolean array indicating whether each point is inside the support domain.
         """
         cell_indexes, inside = self.position_to_cell_index(pos)
-        corner_indexes = self.cell_corner_indexes(cell_indexes)
-        globalidx = self.global_node_indices(corner_indexes)
-        # if global index is not inside the support set to -1
+        nx, ny = self.nsteps[0], self.nsteps[1]
+        offsets = np.array(
+            [0, 1, nx, nx + 1, nx * ny, nx * ny + 1, nx * ny + nx, nx * ny + nx + 1],
+            dtype=np.intp,
+        )
+        g = cell_indexes[:, 0] + nx * cell_indexes[:, 1] + nx * ny * cell_indexes[:, 2]
+        globalidx = g[:, None] + offsets[None, :]  # (N, 8)
         globalidx[~inside] = -1
         return globalidx, inside
 

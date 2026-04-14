@@ -311,13 +311,14 @@ class FaultSegment(StructuralFrame):
             d[mask] = self.faultfunction(gx[mask] + self.fault_offset, gy[mask], gz[mask])
         return d * self.displacement
 
-    def apply_to_points(self, points, reverse=False):
+    def apply_to_points(self, points, reverse=False, precomputed_gx=None):
         """
         Unfault the array of points
 
         Parameters
         ----------
         points - numpy array Nx3
+        precomputed_gx - optional pre-evaluated gx values (same points, avoids duplicate evaluation)
 
         Returns
         -------
@@ -328,10 +329,12 @@ class FaultSegment(StructuralFrame):
         newp = np.copy(points).astype(float)
         # evaluate fault function for all points
         # then define mask for only points affected by fault
-        gx = None
-        gy = None
-        gz = None
-        if use_threads:
+        # gx may be supplied by caller to avoid re-evaluation (precomputed from region check)
+        if precomputed_gx is not None:
+            gx = precomputed_gx
+            gy = self.__getitem__(1).evaluate_value(newp)
+            gz = self.__getitem__(2).evaluate_value(newp)
+        elif use_threads:
             with ThreadPoolExecutor(max_workers=8) as executor:
                 # all of these operations should be
                 # independent so just run as different threads
@@ -361,11 +364,15 @@ class FaultSegment(StructuralFrame):
             d *= -1.0
         # calculate the fault frame for the evaluation points
         for _i in range(steps):
-            gx = None
-            gy = None
-            gz = None
             g = None
-            if use_threads:
+            if _i == 0:
+                # Reuse gx/gy/gz from the initial full-array evaluation above — newp[mask] hasn't
+                # moved yet on the first iteration, so values are identical.
+                gx_m = gx[mask]
+                gy_m = gy[mask]
+                gz_m = gz[mask]
+                g = self.__getitem__(1).evaluate_gradient(newp[mask, :], ignore_regions=True)
+            elif use_threads:
                 with ThreadPoolExecutor(max_workers=8) as executor:
                     # all of these operations should be
                     # independent so just run as different threads
@@ -373,15 +380,16 @@ class FaultSegment(StructuralFrame):
                     g_future = executor.submit(self.__getitem__(1).evaluate_gradient, newp[mask, :])
                     gy_future = executor.submit(self.__getitem__(1).evaluate_value, newp[mask, :])
                     gz_future = executor.submit(self.__getitem__(2).evaluate_value, newp[mask, :])
-                    gx = gx_future.result()
+                    gx_m = gx_future.result()
                     g = g_future.result()
-                    gy = gy_future.result()
-                    gz = gz_future.result()
+                    gy_m = gy_future.result()
+                    gz_m = gz_future.result()
             else:
-                gx = self.__getitem__(0).evaluate_value(newp[mask, :])
-                gy = self.__getitem__(1).evaluate_value(newp[mask, :])
-                gz = self.__getitem__(2).evaluate_value(newp[mask, :])
+                gx_m = self.__getitem__(0).evaluate_value(newp[mask, :])
+                gy_m = self.__getitem__(1).evaluate_value(newp[mask, :])
+                gz_m = self.__getitem__(2).evaluate_value(newp[mask, :])
                 g = self.__getitem__(1).evaluate_gradient(newp[mask, :], ignore_regions=True)
+            gx, gy, gz = gx_m, gy_m, gz_m  # alias for block below
             # # get the fault frame val/grad for the points
             # determine displacement magnitude, for constant displacement
             # hanging wall should be > 0
