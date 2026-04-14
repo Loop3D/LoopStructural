@@ -285,6 +285,7 @@ class BaseStructuredSupport(BaseSupport):
 
     def inside(self, pos):
         # check whether point is inside box
+        pos = self.check_position(pos)
         inside = np.all((pos > self.origin) & (pos < self.maximum), axis=1)
         return inside
 

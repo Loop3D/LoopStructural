@@ -686,7 +686,7 @@ class DiscreteInterpolator(GeologicalInterpolator):
             solver_kwargs.pop("x0", None)
             if Q is None:
                 logger.warning("No inequality constraints, using lsmr")
-                return self.solve_system("lsmr", solver_kwargs)
+                return self.solve_system("lsmr", solver_kwargs=solver_kwargs)
 
             try:
                 from loopsolver import admm_solve
