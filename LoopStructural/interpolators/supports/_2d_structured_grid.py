@@ -378,12 +378,12 @@ class StructuredGrid2D(BaseSupport):
         ----------
         pos : np.array
             (N, 2) array of xy coordinates representing the positions of N points.
-    
+
         Returns
         -------
         globalidx : np.array
-            (N, 4) array of global indices corresponding to the 4 corner nodes of the cell 
-            each point lies in. If a point lies outside the support, its corresponding entry 
+            (N, 4) array of global indices corresponding to the 4 corner nodes of the cell
+            each point lies in. If a point lies outside the support, its corresponding entry
             will be set to -1.
         inside : np.array
             (N,) boolean array indicating whether each point is inside the support domain.
@@ -490,9 +490,31 @@ class StructuredGrid2D(BaseSupport):
     def onGeometryChange(self):
         pass
 
-    def vtk(self, node_properties={}, cell_properties={}):
-        raise NotImplementedError("VTK output not implemented for structured grid")
-        pass
+    def vtk(self, z=0.0, *, node_properties={}, cell_properties={}):
+        """
+        Create a vtk unstructured grid from the mesh
+        """
+        try:
+            import pyvista as pv
+        except ImportError:
+            raise ImportError("pyvista is required for this functionality")
+
+        from pyvista import CellType
+
+        points = np.zeros((self.n_nodes, 3))
+        points[:, :2] = self.nodes
+        points[:, 2] = z
+        celltype = np.full(self.n_elements, CellType.QUAD, dtype=np.uint8)
+        vtk_elements = self.elements[:, [0, 1, 3, 2]]
+        elements = np.hstack(
+            [np.full((vtk_elements.shape[0], 1), 4, dtype=int), vtk_elements.astype(np.int64)]
+        ).ravel()
+        grid = pv.UnstructuredGrid(elements, celltype, points)
+        for key, value in node_properties.items():
+            grid.point_data[key] = value
+        for key, value in cell_properties.items():
+            grid.cell_data[key] = value
+        return grid
 
     def get_operators(self, weights: Dict[str, float]) -> Dict[str, Tuple[np.ndarray, float]]:
         """Get
@@ -509,8 +531,8 @@ class StructuredGrid2D(BaseSupport):
         """
         # in a map we only want the xy operators
         operators = {
-            'dxy': (Operator.Dxy_mask[1, :, :], weights['dxy'] * 2),
-            'dxx': (Operator.Dxx_mask[1, :, :], weights['dxx']),
-            'dyy': (Operator.Dyy_mask[1, :, :], weights['dyy']),
+            "dxy": (Operator.Dxy_mask[1, :, :], weights["dxy"] * 2),
+            "dxx": (Operator.Dxx_mask[1, :, :], weights["dxx"]),
+            "dyy": (Operator.Dyy_mask[1, :, :], weights["dyy"]),
         }
         return operators

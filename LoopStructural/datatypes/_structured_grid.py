@@ -28,6 +28,7 @@ class StructuredGrid:
     name : str, optional
         Name of the grid, by default "default_grid"
     """
+
     origin: np.ndarray = field(default_factory=lambda: np.array([0, 0, 0]))
     step_vector: np.ndarray = field(default_factory=lambda: np.array([1, 1, 1]))
     nsteps: np.ndarray = field(default_factory=lambda: np.array([10, 10, 10]))
@@ -134,7 +135,7 @@ class StructuredGrid:
             self.nsteps[2] - 1,
         )
         x, y, z = np.meshgrid(x, y, z, indexing="ij")
-        return np.vstack([x.flatten(order='f'), y.flatten(order='f'), z.flatten(order='f')]).T
+        return np.vstack([x.flatten(order="f"), y.flatten(order="f"), z.flatten(order="f")]).T
 
     @property
     def nodes(self):
@@ -142,7 +143,7 @@ class StructuredGrid:
         y = np.linspace(self.origin[1], self.maximum[1], self.nsteps[1])
         z = np.linspace(self.origin[2], self.maximum[2], self.nsteps[2])
         x, y, z = np.meshgrid(x, y, z, indexing="ij")
-        return np.vstack([x.flatten(order='f'), y.flatten(order='f'), z.flatten(order='f')]).T
+        return np.vstack([x.flatten(order="f"), y.flatten(order="f"), z.flatten(order="f")]).T
 
     def merge(self, other):
         if not np.all(np.isclose(self.origin, other.origin)):
@@ -157,36 +158,33 @@ class StructuredGrid:
         for name, data in other.properties.items():
             self.properties[name] = data
 
-    def save(self, filename, *,group='Loop'):
+    def save(self, filename, *, group="Loop"):
         filename = str(filename)
-        ext = filename.split('.')[-1]
-        if ext == 'json':
+        ext = filename.split(".")[-1].lower()
+        if ext == "json":
             import json
 
-            with open(filename, 'w') as f:
+            with open(filename, "w") as f:
                 json.dump(self.to_dict(), f)
-        elif ext == 'vtk':
+        elif ext == "vtk":
             self.vtk().save(filename)
 
-        elif ext == 'geoh5':
+        elif ext == "geoh5":
             from LoopStructural.export.geoh5 import add_structured_grid_to_geoh5
 
             add_structured_grid_to_geoh5(filename, self, groupname=group)
-        elif ext == 'pkl':
+        elif ext == "pkl":
             import pickle
 
-            with open(filename, 'wb') as f:
+            with open(filename, "wb") as f:
                 pickle.dump(self, f)
-        elif ext == 'omf':
+        elif ext == "omf":
             from LoopStructural.export.omf_wrapper import add_structured_grid_to_omf
 
             add_structured_grid_to_omf(self, filename)
-        elif ext == 'vs':
-            raise NotImplementedError(
-                "Saving structured grids in gocad format is not yet implemented"
-            )
-            # from LoopStructural.export.gocad import _write_structued_grid
+        elif ext == "vo" or ext == "gocad":
+            from LoopStructural.export.gocad import _write_structured_grid_gocad
 
-            # _write_pointset(self, filename)
+            _write_structured_grid_gocad(self, filename)
         else:
-            raise ValueError(f'Unknown file extension {ext}')
+            raise ValueError(f"Unknown file extension {ext}")

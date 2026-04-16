@@ -1,4 +1,152 @@
+import re
+from pathlib import Path
+
 import numpy as np
+
+from LoopStructural.utils import getLogger
+
+logger = getLogger(__name__)
+
+
+def _normalise_voxet_property(values, property_name, nsteps):
+    array = np.asarray(values)
+    expected_shape = tuple(int(step) for step in nsteps)
+    expected_size = int(np.prod(expected_shape))
+
+    if array.shape == expected_shape:
+        flat_values = array.reshape(-1, order="F")
+    else:
+        flat_values = np.squeeze(array)
+        if flat_values.shape == expected_shape:
+            flat_values = flat_values.reshape(-1, order="F")
+        elif flat_values.ndim == 1 and flat_values.size == expected_size:
+            flat_values = flat_values
+        else:
+            raise ValueError(
+                f"Property '{property_name}' must have shape {expected_shape} or size {expected_size}"
+            )
+
+    if np.issubdtype(flat_values.dtype, np.integer):
+        if flat_values.size == 0:
+            export_dtype = np.int8
+            storage_type = "Octet"
+            element_size = 1
+        elif flat_values.min() >= np.iinfo(np.int8).min and flat_values.max() <= np.iinfo(np.int8).max:
+            export_dtype = np.int8
+            storage_type = "Octet"
+            element_size = 1
+        else:
+            export_dtype = np.dtype(">i4")
+            storage_type = "Integer"
+            element_size = 4
+        no_data_value = None
+    elif np.issubdtype(flat_values.dtype, np.floating):
+        export_dtype = np.dtype(">f4")
+        storage_type = "Float"
+        element_size = 4
+        no_data_value = -999999.0
+        flat_values = np.nan_to_num(flat_values, nan=no_data_value)
+    else:
+        raise ValueError(f"Property '{property_name}' has unsupported dtype {flat_values.dtype}")
+
+    return {
+        "values": np.asarray(flat_values, dtype=export_dtype),
+        "storage_type": storage_type,
+        "element_size": element_size,
+        "no_data_value": no_data_value,
+    }
+
+
+def _write_structured_grid_gocad(grid, file_name):
+    """Write a StructuredGrid to GOCAD VOXET format."""
+    vo_path = Path(file_name).with_suffix(".vo")
+    axis_n = np.asarray(grid.nsteps, dtype=int)
+    property_source = grid.properties
+    axis_min = np.min(grid.nodes, axis=0)
+    axis_max = np.max(grid.nodes, axis=0)
+
+    if property_source:
+        if grid.cell_properties:
+            logger.warning(
+                "StructuredGrid GOCAD export uses point properties; cell_properties were not exported"
+            )
+    elif grid.cell_properties:
+        axis_n = np.asarray(grid.nsteps, dtype=int) - 1
+        if np.any(axis_n <= 0):
+            raise ValueError("StructuredGrid cell_properties require at least two grid nodes per axis")
+        property_source = grid.cell_properties
+        axis_min = np.min(grid.cell_centres, axis=0)
+        axis_max = np.max(grid.cell_centres, axis=0)
+    else:
+        raise ValueError("StructuredGrid has no properties to export to GOCAD")
+
+    export_properties = []
+    for index, (property_name, values) in enumerate(property_source.items(), start=1):
+        export_info = _normalise_voxet_property(values, property_name, axis_n)
+        safe_name = re.sub(r"[^0-9A-Za-z_-]+", "_", property_name).strip("_") or f"property_{index}"
+        data_path = vo_path.with_name(f"{vo_path.stem}_{safe_name}@@")
+        export_properties.append(
+            {
+                "index": index,
+                "name": property_name,
+                "data_path": data_path,
+                **export_info,
+            }
+        )
+
+    with open(vo_path, "w") as fp:
+        fp.write(
+            f"""GOCAD Voxet 1
+HEADER {{
+name: {grid.name}
+}}
+GOCAD_ORIGINAL_COORDINATE_SYSTEM
+NAME Default
+AXIS_NAME \"X\" \"Y\" \"Z\"
+AXIS_UNIT \"m\" \"m\" \"m\"
+ZPOSITIVE Elevation
+END_ORIGINAL_COORDINATE_SYSTEM
+AXIS_O 0.000000 0.000000 0.000000
+AXIS_U 1.000000 0.000000 0.000000
+AXIS_V 0.000000 1.000000 0.000000
+AXIS_W 0.000000 0.000000 1.000000
+AXIS_MIN {axis_min[0]} {axis_min[1]} {axis_min[2]}
+AXIS_MAX {axis_max[0]} {axis_max[1]} {axis_max[2]}
+AXIS_N {axis_n[0]} {axis_n[1]} {axis_n[2]}
+AXIS_NAME \"X\" \"Y\" \"Z\"
+AXIS_UNIT \"m\" \"m\" \"m\"
+AXIS_TYPE even even even
+"""
+        )
+        for export_property in export_properties:
+            fp.write(
+                f"""PROPERTY {export_property['index']} {export_property['name']}
+PROPERTY_CLASS {export_property['index']} {export_property['name']}
+PROP_UNIT {export_property['index']} {export_property['name']}
+PROPERTY_CLASS_HEADER {export_property['index']} {export_property['name']} {{
+}}
+PROPERTY_SUBCLASS {export_property['index']} QUANTITY {export_property['storage_type']}
+"""
+            )
+            if export_property["no_data_value"] is not None:
+                fp.write(
+                    f"PROP_NO_DATA_VALUE {export_property['index']} {export_property['no_data_value']}\n"
+                )
+            fp.write(
+                f"""PROP_ETYPE {export_property['index']} IEEE
+PROP_FORMAT {export_property['index']} RAW
+PROP_ESIZE {export_property['index']} {export_property['element_size']}
+PROP_OFFSET {export_property['index']} 0
+PROP_FILE {export_property['index']} {export_property['data_path'].name}
+"""
+            )
+        fp.write("END\n")
+
+    for export_property in export_properties:
+        with open(export_property["data_path"], "wb") as fp:
+            export_property["values"].tofile(fp)
+
+    return True
 
 
 def _write_feat_surfs_gocad(surf, file_name):
@@ -23,8 +171,6 @@ def _write_feat_surfs_gocad(surf, file_name):
     True if successful
 
     """
-    from pathlib import Path
-
     properties_header = None
     if surf.properties:
 
@@ -112,8 +258,6 @@ TFACE
 #     True if successful
 
 #     """
-#     from pathlib import Path
-
 #     file_name = Path(file_name).with_suffix(".vs")
 #     with open(f"{file_name}", "w") as fd:
 #         fd.write(
