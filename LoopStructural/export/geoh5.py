@@ -1,6 +1,8 @@
 import geoh5py
 import geoh5py.workspace
 import numpy as np
+import pandas as pd
+
 from LoopStructural.datatypes import ValuePoints, VectorPoints
 
 
@@ -61,6 +63,47 @@ def add_points_to_geoh5(filename, point, overwrite=True, groupname="Loop"):
         )
         point.add_data(data)
 
+def add_points_from_df(filename, df, overwrite=True, child = None, parent = None, 
+                        normal_cols=['nx','ny','nz']):
+        with geoh5py.workspace.Workspace(filename) as workspace:
+            entities = workspace.get_entity(child)
+            child_name = child
+            child = entities[0] if entities else None
+            if not child:
+                child = geoh5py.groups.ContainerGroup.create(
+                    workspace, name=child_name, allow_delete=True,
+                )
+            if parent:
+                parent.add_children(child)
+
+            for _, row in df.iterrows():
+                name = row['name']
+                loc = np.array([[row['X'], row['Y'], row['Z']]])  # shape (1,3)
+
+                # remove existing entity if present and overwrite requested
+                if name in workspace.list_entities_name.values():
+                    existing = workspace.get_entity(name)
+                    if existing:
+                        existing[0].allow_delete = True
+                        if overwrite:
+                            workspace.remove_entity(existing[0])
+
+                pts = geoh5py.objects.Points.create(
+                    workspace,
+                    name=name,
+                    vertices=loc,
+                    parent=child,
+                )
+
+                # build data dict from normal_cols (and any other columns you want)
+                data = {}
+                for col in normal_cols:
+                    if col in row and not pd.isna(row[col]):
+                        # association must be "VERTEX" and values length must match vertices (1)
+                        data[col] = {"association": "VERTEX", "values": np.array([row[col]])}
+                        
+                if data:
+                    pts.add_data(data)
 
 def add_structured_grid_to_geoh5(filename, structured_grid, overwrite=True, groupname="Loop"):
     with geoh5py.workspace.Workspace(filename) as workspace:
