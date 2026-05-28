@@ -63,7 +63,7 @@ class StructuredGrid:
         np.ndarray
             Maximum coordinates (origin + nsteps * step_vector)
         """
-        return self.origin + self.nsteps * self.step_vector
+        return self.origin + (self.nsteps-1) * self.step_vector
 
     def vtk(self):
         """Convert the structured grid to a PyVista RectilinearGrid.
@@ -139,6 +139,7 @@ class StructuredGrid:
 
     @property
     def nodes(self):
+
         x = np.linspace(self.origin[0], self.maximum[0], self.nsteps[0])
         y = np.linspace(self.origin[1], self.maximum[1], self.nsteps[1])
         z = np.linspace(self.origin[2], self.maximum[2], self.nsteps[2])
