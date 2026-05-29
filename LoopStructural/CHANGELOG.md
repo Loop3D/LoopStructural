@@ -1,5 +1,14 @@
 # Changelog
 
+## [1.6.28](https://github.com/Loop3D/LoopStructural/compare/v1.6.27...v1.6.28) (2026-05-29)
+
+
+### Bug Fixes
+
+* add default for z ([12bdcd2](https://github.com/Loop3D/LoopStructural/commit/12bdcd2b1f9dcf8a5c3e19aa62dd68a11bd03f7f))
+* adding gocad export for structured grid support ([228ca78](https://github.com/Loop3D/LoopStructural/commit/228ca78889c9a263c83da54837342adc69a5b083))
+* vtk export had maximum &gt; grid maximum ([5f37322](https://github.com/Loop3D/LoopStructural/commit/5f37322e0b9c27cb68b0628410e586dd8d40a200))
+
 ## [1.6.27](https://github.com/Loop3D/LoopStructural/compare/v1.6.26...v1.6.27) (2026-04-14)
 
 
