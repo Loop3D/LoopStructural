@@ -61,7 +61,7 @@ class StructuredGrid:
         Returns
         -------
         np.ndarray
-            Maximum coordinates (origin + nsteps * step_vector)
+            Maximum coordinates (origin + (nsteps - 1) * step_vector)
         """
         return self.origin + (self.nsteps-1) * self.step_vector
 

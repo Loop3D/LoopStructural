@@ -490,10 +490,15 @@ class StructuredGrid2D(BaseSupport):
     def onGeometryChange(self):
         pass
 
-    def vtk(self, z=0.0, *, node_properties={}, cell_properties={}):
+    def vtk(self, node_properties=None, cell_properties=None, z=0.0):
         """
         Create a vtk unstructured grid from the mesh
         """
+        if node_properties is None:
+            node_properties = {}
+        if cell_properties is None:
+            cell_properties = {}
+
         try:
             import pyvista as pv
         except ImportError:
