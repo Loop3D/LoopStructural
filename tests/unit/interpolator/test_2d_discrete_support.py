@@ -1,6 +1,6 @@
 from LoopStructural.interpolators import StructuredGrid2D
 import numpy as np
-import pyvista as pv
+import pytest
 
 
 ## structured grid 2d tests
@@ -63,6 +63,10 @@ def test_get_element_outside2d():
 
 
 def test_structured_grid2d_vtk_assigns_quad_cell_types():
+    try:
+        import pyvista as pv
+    except ImportError:
+        pytest.skip("pyvista is required for vtk support")
     grid = StructuredGrid2D(origin=np.zeros(2), nsteps=np.array([4, 4]))
 
     vtk_grid = grid.vtk(z=0.0)

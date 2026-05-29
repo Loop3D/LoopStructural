@@ -88,7 +88,7 @@ def _write_structured_grid_gocad(grid, file_name):
         export_properties.append(
             {
                 "index": index,
-                "name": property_name,
+                "name": safe_name,
                 "data_path": data_path,
                 **export_info,
             }
