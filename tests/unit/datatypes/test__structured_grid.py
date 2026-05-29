@@ -30,8 +30,10 @@ def test_structured_grid_to_dict():
 
 def test_structured_grid_maximum():
     origin = np.array([0, 0, 0])
+    expected_maximum = np.array([9, 9, 9])
     nsteps = np.array([10, 10, 10])
     step_vector = np.array([1, 1, 1])
+    
 
     grid = StructuredGrid(
         origin=origin,
@@ -42,8 +44,6 @@ def test_structured_grid_maximum():
         name=None,
     )
     maximum = grid.maximum
-
-    expected_maximum = origin + nsteps * step_vector
     assert np.array_equal(maximum, expected_maximum)
 
 
