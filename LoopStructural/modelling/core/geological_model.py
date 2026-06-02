@@ -1751,14 +1751,22 @@ class GeologicalModel:
         if self.stratigraphic_column is None:
             return []
         units = self.stratigraphic_column.get_isovalues()
+        units_for_group = {}
         for name, u in units.items():
             if u['group'] not in self:
                 logger.warning(f"Group {u['group']} not found in model")
                 continue
-            feature = self.get_feature_by_name(u['group'])
-
+            if u['group'] not in units_for_group:
+                units_for_group[u['group']] = []
+            u['name'] = name
+            units_for_group[u['group']].append(u)
+        for group, us in units_for_group.items():
+            feature = self.get_feature_by_name(group)
+            values = [u['value'] for u in us]
+            colours = [u['colour'] for u in us]
+            names = [u['name'] for u in us]
             surfaces.extend(
-                feature.surfaces([u['value']], self.bounding_box, name=name, colours=[u['colour']])
+                feature.surfaces(values, self.bounding_box, name=names, colours=colours)
             )
 
         return surfaces

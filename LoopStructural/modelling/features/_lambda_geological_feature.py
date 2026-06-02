@@ -66,8 +66,25 @@ class LambdaGeologicalFeature(BaseFeature):
         v = np.zeros((pos.shape[0]))
         v[:] = np.nan
 
-        mask = self._calculate_mask(pos, ignore_regions=ignore_regions)
-        pos = self._apply_faults(pos)
+        # Precompute each fault's scalar value (gx = fault.__getitem__(0).evaluate_value)
+        # once and reuse for both the region mask check and fault application.
+        # FaultSegment.evaluate_value(pos) == self.__getitem__(0).evaluate_value(pos) == gx.
+        # apply_to_points also needs gx to determine the displacement mask — passing it
+        # avoids the duplicate evaluation on the np.copy of pos.
+        precomputed_gx = {id(f): f.evaluate_value(pos) for f in self.faults}
+
+        # Region mask: pass precomputed gx so PositiveRegion/NegativeRegion skip re-evaluation
+        mask = np.ones(pos.shape[0], dtype=bool)
+        if not ignore_regions:
+            for r in self.regions:
+                pre = precomputed_gx.get(id(getattr(r, 'feature', None)))
+                mask = np.logical_and(mask, r(pos, precomputed_val=pre))
+
+        # Apply faults: pass precomputed gx so apply_to_points skips one evaluate_value call
+        if self.faults_enabled:
+            for f in self.faults:
+                pos = f.apply_to_points(pos, precomputed_gx=precomputed_gx.get(id(f)))
+
         if self.function is not None:
             v[mask] = self.function(pos[mask,:])
         return v

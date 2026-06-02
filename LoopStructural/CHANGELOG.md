@@ -1,5 +1,39 @@
 # Changelog
 
+## [1.6.27](https://github.com/Loop3D/LoopStructural/compare/v1.6.26...v1.6.27) (2026-04-14)
+
+
+### Bug Fixes
+
+* add caching of reused values ([54fba19](https://github.com/Loop3D/LoopStructural/commit/54fba19df600210e6c14fb895d20b7f00451f663))
+* numpy speed improvements ([5e29fa1](https://github.com/Loop3D/LoopStructural/commit/5e29fa15b13a0864baa83ef9c95feef99d4cae01))
+* remove redundant call to mask nan values in discrete interpolator ([ce082f6](https://github.com/Loop3D/LoopStructural/commit/ce082f6e49bda22f8e02346e4c9cea9a81ba2bc0))
+
+## [1.6.26](https://github.com/Loop3D/LoopStructural/compare/v1.6.25...v1.6.26) (2026-02-11)
+
+
+### Bug Fixes
+
+* add threshold variable and remove duplicate code ([4d60155](https://github.com/Loop3D/LoopStructural/commit/4d60155ebe079bfee4f23b1cb6a607778728de0f))
+* calculate fault normal from plane of points as well as trace ([71c6f17](https://github.com/Loop3D/LoopStructural/commit/71c6f17169326daf847dcabfcf4a995a99d8de9c))
+* ensure all data are copies of original datastructure ([f409ad8](https://github.com/Loop3D/LoopStructural/commit/f409ad88b130cc770bd98ec9f459909edf037da8))
+* incorrect boolean ([5d9e04b](https://github.com/Loop3D/LoopStructural/commit/5d9e04b3532cd6a05dd3d1bf18ddafd4410626a0))
+
+## [1.6.25](https://github.com/Loop3D/LoopStructural/compare/v1.6.24...v1.6.25) (2026-01-31)
+
+
+### Bug Fixes
+
+* prevent int overflow if bb min/max is defined as int ([65d2819](https://github.com/Loop3D/LoopStructural/commit/65d2819fcf6fe0b0e0440f487d3cf75e629341b7))
+* speed up model eval by collecting all conformable units ([9b4a719](https://github.com/Loop3D/LoopStructural/commit/9b4a7192fb75e5f2e002e8079891d0a7dd5487bc))
+
+## [1.6.24](https://github.com/Loop3D/LoopStructural/compare/v1.6.23...v1.6.24) (2026-01-15)
+
+
+### Bug Fixes
+
+* change default regularisation to 1.0 as 0.1 was causing overfitting ([fd3fd20](https://github.com/Loop3D/LoopStructural/commit/fd3fd201e743d421708d0999b367a77cb290696c))
+
 ## [1.6.23](https://github.com/Loop3D/LoopStructural/compare/v1.6.22...v1.6.23) (2025-11-05)
 
 

@@ -45,23 +45,22 @@ class BaseSignRegion(BaseRegion):
         self.name = 'PositiveRegion'
         self.parent = feature
 
-    def _calculate_value_and_distance(self, xyz)-> Tuple[np.ndarray, np.ndarray]:
-        val = self.feature.evaluate_value(xyz)
-        # find a point on/near 0 isosurface
+    def _calculate_value_and_distance(self, xyz, precomputed_val=None)-> Tuple[np.ndarray, np.ndarray]:
+        val = precomputed_val if precomputed_val is not None else self.feature.evaluate_value(xyz)
+        # find a point on/near 0 isosurface — compute once and cache on self
         if self.point is None:
             mask = np.zeros(xyz.shape[0], dtype="bool")
             mask[:] = val < 0
             if np.sum(mask) == 0:
                 raise ValueError("Cannot find point on surface")
-            centre = xyz[mask, :][0, :]
-        else:
-            centre = self.point
+            self.point = xyz[mask, :][0, :]  # cache: characterises the fault, not the query points
+        centre = self.point
         if self.vector is None:
             average_gradient = self.feature.evaluate_gradient(np.array([centre]))[0]
             average_gradient[2] = 0
             average_gradient /= np.linalg.norm(average_gradient)
-        else:
-            average_gradient = self.vector
+            self.vector = average_gradient  # cache: fault geometry doesn't change between calls
+        average_gradient = self.vector
 
         distance = np.einsum(
             "ij,j->i", centre[None, :] - xyz, average_gradient.reshape(-1, 3)[0, :]
@@ -80,8 +79,8 @@ class PositiveRegion(BaseSignRegion):
         self.name = 'PositiveRegion'
         self.parent = feature
 
-    def __call__(self, xyz) -> np.ndarray:
-        val, distance = self._calculate_value_and_distance(xyz)
+    def __call__(self, xyz, precomputed_val=None) -> np.ndarray:
+        val, distance = self._calculate_value_and_distance(xyz, precomputed_val=precomputed_val)
         return np.logical_or(
             np.logical_and(~np.isnan(val), val > 0),
             np.logical_and(np.isnan(val), distance > 0),
@@ -99,8 +98,8 @@ class NegativeRegion(BaseSignRegion):
         self.name = 'NegativeRegion'
         self.parent = feature
 
-    def __call__(self, xyz) -> np.ndarray:
-        val, distance = self._calculate_value_and_distance(xyz)
+    def __call__(self, xyz, precomputed_val=None) -> np.ndarray:
+        val, distance = self._calculate_value_and_distance(xyz, precomputed_val=precomputed_val)
         return np.logical_or(
             np.logical_and(~np.isnan(val), val < 0),
             np.logical_and(np.isnan(val), distance < 0),

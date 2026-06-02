@@ -28,17 +28,14 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      # 1. Setup uv instantly (replaces the heavy setup-miniconda)
       - name: Set up uv
         uses: astral-sh/setup-uv@v3
         with:
           version: "latest"
 
-      # 2. Pin the exact Python version from your matrix variable
       - name: Set up Python ${{ matrix.matrix.python-version }}
         run: uv python install ${{ matrix.python-version }}
 
-      # 3. Create a clean virtual environment and install everything at once
       - name: Install dependencies and library
         run: |
           uv pip install --system \
@@ -53,7 +50,6 @@ jobs:
             geoh5py \
             -e .[tests]
 
-      # 4. Run pytest directly inside the environment
       - name: pytest
         run: |
           pytest

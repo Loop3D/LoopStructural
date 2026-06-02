@@ -19,6 +19,15 @@ def strikedip2vector(strike: NumericInput, dip: NumericInput) -> np.ndarray:
     _type_
         _description_
     """
+    if isinstance(strike, numbers.Number):
+        strike = np.array([strike])
+    else:
+        strike = np.array(strike)
+    if isinstance(dip, numbers.Number):
+        dip = np.array([dip])
+    else:
+        dip = np.array(dip)
+    
     vec = np.zeros((len(strike), 3))
     s_r = np.deg2rad(strike)
     d_r = np.deg2rad((dip))
