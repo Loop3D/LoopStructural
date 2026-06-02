@@ -14,7 +14,18 @@ class ValuePoints:
     values: np.ndarray = field(default_factory=lambda: np.array([0]))
     name: str = "unnamed"
     properties: Optional[dict] = None
-
+    def __post_init__(self):
+        
+        self.values = np.asarray(self.values)
+        self.locations = np.asarray(self.locations)
+        if self.locations.shape[1] != 3:
+            raise ValueError('locations must be of shape (n, 3)')
+        if len(self.values) != len(self.locations):
+            raise ValueError('values must be the same length as locations')
+        for k, v in (self.properties or {}).items():
+            if len(v) != len(self.locations):
+                raise ValueError(f'Property {k} must be the same length as locations')
+            self.properties[k] = np.asarray(v)
     def to_dict(self):
         return {
             "locations": self.locations,
@@ -112,7 +123,17 @@ class VectorPoints:
     vectors: np.ndarray = field(default_factory=lambda: np.array([[0, 0, 0]]))
     name: str = "unnamed"
     properties: Optional[dict] = None
-
+    def __post_init__(self):
+        self.vectors = np.asarray(self.vectors)
+        self.locations = np.asarray(self.locations)
+        if self.locations.shape[1] != 3:
+            raise ValueError('locations must be of shape (n, 3)')
+        if len(self.vectors) != len(self.locations):
+            raise ValueError('vectors must be the same length as locations')
+        for k, v in (self.properties or {}).items():
+            if len(v) != len(self.locations):
+                raise ValueError(f'Property {k} must be the same length as locations')
+            self.properties[k] = np.asarray(v)
     def to_dict(self):
         return {
             "locations": self.locations,
