@@ -37,7 +37,8 @@ jobs:
       - name: Building and install
         shell: bash -l {0}
         run: |
-          pip install .[tests] --user
+          pip install . --user
+          pip install geoh5py --user
       - name: pytest
         shell: bash -l {0}
         run: |
