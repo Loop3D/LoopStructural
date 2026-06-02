@@ -37,7 +37,7 @@ jobs:
       - name: Building and install
         shell: bash -l {0}
         run: |
-          pip install . --user
+          pip install .[tests] --user
       - name: pytest
         shell: bash -l {0}
         run: |

@@ -46,6 +46,7 @@ visualisation = ["matplotlib", "pyvista", "loopstructuralvisualisation>=0.1.14"]
 export = ["geoh5py", "pyevtk", "dill"]
 jupyter = ["pyvista[all]"]
 inequalities = ["loopsolver"]
+tests = ['pytest','all']
 docs = [
     "pyvista[all]",
     "pydata-sphinx-theme",
