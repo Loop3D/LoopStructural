@@ -51,7 +51,7 @@ jobs:
             osqp \
             matplotlib \
             geoh5py \
-            -e .
+            -e .[tests]
 
       # 4. Run pytest directly inside the environment
       - name: pytest
