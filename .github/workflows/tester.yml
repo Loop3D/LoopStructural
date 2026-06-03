@@ -38,7 +38,7 @@ jobs:
 
       - name: Install dependencies and library
         run: |
-          uv pip install --system \
+          uv pip install --user \
             numpy \
             scipy \
             scikit-image \
