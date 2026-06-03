@@ -47,7 +47,6 @@ jobs:
             networkx \
             osqp \
             matplotlib \
-            geoh5py \
             -e .[tests]
 
       - name: pytest
