@@ -1,5 +1,16 @@
 # Changelog
 
+## [1.6.28](https://github.com/Loop3D/LoopStructural/compare/v1.6.27...v1.6.28) (2026-06-03)
+
+
+### Bug Fixes
+
+* add default for z ([12bdcd2](https://github.com/Loop3D/LoopStructural/commit/12bdcd2b1f9dcf8a5c3e19aa62dd68a11bd03f7f))
+* adding add_group and add points from dataframe for geoh5 + some tests ([9d29d31](https://github.com/Loop3D/LoopStructural/commit/9d29d31c28f619438fe41af806d9332181c0eb87))
+* adding gocad export for structured grid support ([228ca78](https://github.com/Loop3D/LoopStructural/commit/228ca78889c9a263c83da54837342adc69a5b083))
+* adding post_init to ValuePoints/VectorPoints to validate as numpy arrays ([df938d1](https://github.com/Loop3D/LoopStructural/commit/df938d18c9ed5524628e5bd7925536e7b9687f12))
+* vtk export had maximum &gt; grid maximum ([5f37322](https://github.com/Loop3D/LoopStructural/commit/5f37322e0b9c27cb68b0628410e586dd8d40a200))
+
 ## [1.6.27](https://github.com/Loop3D/LoopStructural/compare/v1.6.26...v1.6.27) (2026-04-14)
 
 
