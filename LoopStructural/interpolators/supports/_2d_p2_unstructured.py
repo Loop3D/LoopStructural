@@ -3,9 +3,11 @@ Tetmesh based on cartesian grid for piecewise linear interpolation
 """
 
 import logging
+from typing import Optional
 
 import numpy as np
 from ._2d_base_unstructured import BaseUnstructured2d
+from ._2d_p1_unstructured import P1Unstructured2d
 from . import SupportType
 
 logger = logging.getLogger(__name__)
@@ -14,8 +16,25 @@ logger = logging.getLogger(__name__)
 class P2Unstructured2d(BaseUnstructured2d):
     """ """
 
-    def __init__(self, elements, vertices, neighbours):
-        BaseUnstructured2d.__init__(self, elements, vertices, neighbours)
+    def __init__(
+        self,
+        elements: Optional[np.ndarray] = None,
+        vertices: Optional[np.ndarray] = None,
+        neighbours: Optional[np.ndarray] = None,
+        aabb_nsteps=None,
+        origin: Optional[np.ndarray] = None,
+        step_vector: Optional[np.ndarray] = None,
+        nsteps: Optional[np.ndarray] = None,
+    ):
+        if elements is None or vertices is None or neighbours is None:
+            if origin is None or step_vector is None or nsteps is None:
+                raise ValueError(
+                    "P2Unstructured2d requires either explicit elements/vertices/"
+                    "neighbours arrays, or origin/step_vector/nsteps to build a "
+                    "quadratic triangular mesh over a bounding box"
+                )
+            vertices, elements, neighbours = self._build_from_bbox(origin, step_vector, nsteps)
+        BaseUnstructured2d.__init__(self, elements, vertices, neighbours, aabb_nsteps)
         self.type = SupportType.P2Unstructured2d
         # hessian of shape functions
         self.hessian = np.array(
@@ -24,6 +43,47 @@ class P2Unstructured2d(BaseUnstructured2d):
                 [[4, 0, 0, 4, -4, -4], [4, 0, 4, 0, -8, 0]],
             ]
         )
+
+    @staticmethod
+    def _build_from_bbox(origin: np.ndarray, step_vector: np.ndarray, nsteps: np.ndarray):
+        """Build a quadratic (6-node) triangular mesh over a structured grid.
+
+        Tessellates the grid into linear triangles (reusing
+        P1Unstructured2d's cartesian tessellation) and adds a node at the
+        midpoint of every edge, deduplicated so shared edges between
+        neighbouring triangles reuse the same midpoint node. Local node
+        ordering follows the shape functions used by evaluate_shape:
+        corners are 0-2, then edge midpoints (1,2)->3, (0,2)->4, (0,1)->5.
+
+        Returns
+        -------
+        tuple of (vertices, elements, neighbours) suitable for
+        BaseUnstructured2d.__init__
+        """
+        p1_vertices, p1_elements, p1_neighbours = P1Unstructured2d._build_from_bbox(
+            origin, step_vector, nsteps
+        )
+
+        local_edges = np.array([[1, 2], [0, 2], [0, 1]])
+        local_index_for_edge = [3, 4, 5]
+
+        n_tris = p1_elements.shape[0]
+        edge_nodes = p1_elements[:, local_edges]
+        edge_nodes_sorted = np.sort(edge_nodes, axis=2)
+        flat_edges = edge_nodes_sorted.reshape(-1, 2)
+
+        unique_edges, inverse = np.unique(flat_edges, axis=0, return_inverse=True)
+        midpoint_nodes = (p1_vertices[unique_edges[:, 0]] + p1_vertices[unique_edges[:, 1]]) / 2.0
+
+        all_vertices = np.vstack([p1_vertices, midpoint_nodes])
+        edge_node_index = p1_vertices.shape[0] + inverse.reshape(n_tris, 3)
+
+        p2_elements = np.zeros((n_tris, 6), dtype=p1_elements.dtype)
+        p2_elements[:, :3] = p1_elements
+        for edge_i, local_idx in enumerate(local_index_for_edge):
+            p2_elements[:, local_idx] = edge_node_index[:, edge_i]
+
+        return all_vertices, p2_elements, p1_neighbours
 
     def evaluate_d2_shape(self, indexes):
         vertices = self.nodes[self.elements[indexes], :]
@@ -232,6 +292,39 @@ class P2Unstructured2d(BaseUnstructured2d):
         N[:, 5] = 4 * c[:, 1] * c[:, 0]  # 4s(1-s-t)
 
         return N, tri, inside
+
+    def evaluate_value(self, pos: np.ndarray, property_array: np.ndarray) -> np.ndarray:
+        """
+        Evaluate value of interpolant using the quadratic (6-node) shape
+        functions. The base class implementation only uses the 3 linear
+        barycentric weights, which is only correct for P1 elements.
+        """
+        pos = np.asarray(pos)
+        if property_array.shape[0] != self.n_nodes:
+            raise ValueError("property array must have same length as nodes")
+        values = np.zeros(pos.shape[0])
+        values[:] = np.nan
+        N, tri, inside = self.evaluate_shape(pos[:, :2])
+        values[inside] = np.sum(N[inside, :] * property_array[self.elements[tri[inside], :]], axis=1)
+        return values
+
+    def evaluate_gradient(self, pos: np.ndarray, property_array: np.ndarray) -> np.ndarray:
+        """
+        Evaluate the gradient of the interpolant using the quadratic shape
+        function derivatives (see evaluate_value docstring for why the base
+        class implementation isn't correct here).
+        """
+        pos = np.asarray(pos)
+        if property_array.shape[0] != self.n_nodes:
+            raise ValueError("property array must have same length as nodes")
+        values = np.zeros(pos.shape)
+        values[:] = np.nan
+        element_gradients, tri = self.evaluate_shape_derivatives(pos[:, :2])
+        inside = tri >= 0
+        values[inside, :] = (
+            element_gradients[inside, :, :] * property_array[self.elements[tri[inside], None, :]]
+        ).sum(2)
+        return values
 
     def evaluate_d2(self, pos, property_array):
         """
