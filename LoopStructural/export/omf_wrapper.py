@@ -97,8 +97,7 @@ def add_pointset_to_omf(points, filename):
 
 
 def add_structured_grid_to_omf(grid, filename):
-    print('Open Mining Format cannot store structured grids')
-    return
+    raise NotImplementedError("Open Mining Format cannot store structured grids")
     # attributes = []
     # attributes += get_cell_attributes(grid)
     # attributes += get_point_attributed(grid)
