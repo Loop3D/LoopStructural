@@ -472,9 +472,8 @@ class UnStructuredTetMesh(BaseSupport):
         npts_step = int(1e4)
         # break into blocks of 10k points
         while npts < points.shape[0]:
-            cell_index, inside = self.aabb_grid.position_to_cell_index(
-                points[: npts + npts_step, :]
-            )
+            chunk = points[npts : npts + npts_step, :]
+            cell_index, chunk_inside = self.aabb_grid.position_to_cell_index(chunk)
             global_index = (
                 cell_index[:, 0]
                 + self.aabb_grid.nsteps_cells[None, 0] * cell_index[:, 1]
@@ -483,13 +482,13 @@ class UnStructuredTetMesh(BaseSupport):
                 * cell_index[:, 2]
             )
 
-            tetra_indices = self.aabb_table[global_index[inside], :].tocoo()
+            tetra_indices = self.aabb_table[global_index[chunk_inside], :].tocoo()
             # tetra_indices[:] = -1
             row = tetra_indices.row
             col = tetra_indices.col
             # using returned indexes calculate barycentric coords to determine which tetra the points are in
             vertices = self.nodes[self.elements[col, :4]]
-            pos = points[row, :]
+            pos = chunk[row, :]
             vap = pos[:, :] - vertices[:, 0, :]
             vbp = pos[:, :] - vertices[:, 1, :]
             #         # vcp = p - points[:, 2, :]
@@ -513,10 +512,10 @@ class UnStructuredTetMesh(BaseSupport):
             # inside = np.ones(c.shape[0],dtype=bool)
             mask = np.all(c >= 0, axis=1)
 
-            verts[: npts + npts_step, :, :][row[mask], :, :] = vertices[mask, :, :]
-            bc[: npts + npts_step, :][row[mask], :] = c[mask, :]
-            tetras[: npts + npts_step][row[mask]] = col[mask]
-            inside[: npts + npts_step][row[mask]] = True
+            verts[npts : npts + npts_step, :, :][row[mask], :, :] = vertices[mask, :, :]
+            bc[npts : npts + npts_step, :][row[mask], :] = c[mask, :]
+            tetras[npts : npts + npts_step][row[mask]] = col[mask]
+            inside[npts : npts + npts_step][row[mask]] = True
             npts += npts_step
         tetra_return = np.zeros((points.shape[0])).astype(int)
         tetra_return[:] = -1
