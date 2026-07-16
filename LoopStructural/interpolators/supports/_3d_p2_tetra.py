@@ -1,4 +1,6 @@
+from typing import Optional
 from ._3d_unstructured_tetra import UnStructuredTetMesh
+from ._3d_structured_tetra import TetMesh
 
 import numpy as np
 from . import SupportType
@@ -7,15 +9,26 @@ from . import SupportType
 class P2UnstructuredTetMesh(UnStructuredTetMesh):
     def __init__(
         self,
-        nodes: np.ndarray,
-        elements: np.ndarray,
-        neighbours: np.ndarray,
+        nodes: Optional[np.ndarray] = None,
+        elements: Optional[np.ndarray] = None,
+        neighbours: Optional[np.ndarray] = None,
         aabb_nsteps=None,
+        origin: Optional[np.ndarray] = None,
+        step_vector: Optional[np.ndarray] = None,
+        nsteps: Optional[np.ndarray] = None,
     ):
+        if nodes is None or elements is None or neighbours is None:
+            if origin is None or step_vector is None or nsteps is None:
+                raise ValueError(
+                    "P2UnstructuredTetMesh requires either explicit nodes/elements/"
+                    "neighbours arrays, or origin/step_vector/nsteps to build a "
+                    "quadratic tetrahedral mesh over a bounding box"
+                )
+            nodes, elements, neighbours = self._build_from_bbox(origin, step_vector, nsteps)
         UnStructuredTetMesh.__init__(self, nodes, elements, neighbours, aabb_nsteps)
         self.type = SupportType.P2UnstructuredTetMesh
         if self.elements.shape[1] != 10:
-            raise ValueError(f"P2 tetrahedron must have 8 nodes, has {self.elements.shape[1]}")
+            raise ValueError(f"P2 tetrahedron must have 10 nodes, has {self.elements.shape[1]}")
         self.hessian = np.array(
             [
                 [
@@ -35,6 +48,48 @@ class P2UnstructuredTetMesh(UnStructuredTetMesh):
                 ],
             ]
         )
+
+    @staticmethod
+    def _build_from_bbox(origin: np.ndarray, step_vector: np.ndarray, nsteps: np.ndarray):
+        """Build a quadratic (10-node) tetrahedral mesh over a structured grid.
+
+        Tessellates the grid into linear tets (reusing TetMesh's cartesian
+        tessellation) and adds a node at the midpoint of every edge,
+        deduplicated so shared edges between neighbouring tetrahedra reuse
+        the same midpoint node. Local node ordering follows the shape
+        functions used by evaluate_shape: corners are 0-3, then edge
+        midpoints (2,3)->4, (0,3)->5, (0,1)->6, (1,2)->7, (1,3)->8, (0,2)->9.
+
+        Returns
+        -------
+        tuple of (nodes, elements, neighbours) suitable for
+        UnStructuredTetMesh.__init__
+        """
+        p1 = TetMesh(origin=origin, nsteps=nsteps, step_vector=step_vector)
+        p1_nodes = p1.nodes
+        p1_elements = p1.elements
+        p1_neighbours = p1.neighbours
+
+        local_edges = np.array([[0, 1], [0, 2], [0, 3], [1, 2], [1, 3], [2, 3]])
+        local_index_for_edge = [6, 9, 5, 7, 8, 4]
+
+        n_elements = p1_elements.shape[0]
+        edge_nodes = p1_elements[:, local_edges]
+        edge_nodes_sorted = np.sort(edge_nodes, axis=2)
+        flat_edges = edge_nodes_sorted.reshape(-1, 2)
+
+        unique_edges, inverse = np.unique(flat_edges, axis=0, return_inverse=True)
+        midpoint_nodes = (p1_nodes[unique_edges[:, 0]] + p1_nodes[unique_edges[:, 1]]) / 2.0
+
+        all_nodes = np.vstack([p1_nodes, midpoint_nodes])
+        edge_node_index = p1_nodes.shape[0] + inverse.reshape(n_elements, 6)
+
+        p2_elements = np.zeros((n_elements, 10), dtype=p1_elements.dtype)
+        p2_elements[:, :4] = p1_elements
+        for edge_i, local_idx in enumerate(local_index_for_edge):
+            p2_elements[:, local_idx] = edge_node_index[:, edge_i]
+
+        return all_nodes, p2_elements, p1_neighbours
 
     def get_quadrature_points(self, npts: int = 3):
         """Calculate the quadrature points for the triangle using 3 points
