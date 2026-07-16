@@ -283,20 +283,17 @@ class BaseUnstructured2d(BaseSupport):
         npts_step = int(1e4)
         # break into blocks of 10k points
         while npts < points.shape[0]:
-            cell_index, inside = self.aabb_grid.position_to_cell_index(
-                points[: npts + npts_step, :]
-            )
+            chunk = points[npts : npts + npts_step, :]
+            cell_index, chunk_inside = self.aabb_grid.position_to_cell_index(chunk)
             global_index = self.aabb_grid.global_cell_indices(cell_index)
-            tetra_indices = self.aabb_table[global_index[inside], :].tocoo()
+            tetra_indices = self.aabb_table[global_index[chunk_inside], :].tocoo()
             # tetra_indices[:] = -1
             row = tetra_indices.row
             col = tetra_indices.col
             # using returned indexes calculate barycentric coords to determine which tetra the points are in
 
             vertices = self.nodes[self.elements[col, : self.dimension + 1]]
-            pos = points[row, : self.dimension]
-            row = tetra_indices.row
-            col = tetra_indices.col
+            pos = chunk[row, : self.dimension]
             # using returned indexes calculate barycentric coords to determine which tetra the points are in
             vpa = pos[:, :] - vertices[:, 0, :]
             vba = vertices[:, 1, :] - vertices[:, 0, :]
@@ -308,16 +305,21 @@ class BaseUnstructured2d(BaseSupport):
             d21 = np.einsum('ij,ij->i', vpa, vca)
             denom = d00 * d11 - d01 * d01
             c = np.zeros((denom.shape[0], 3))
-            c[:, 0] = (d11 * d20 - d01 * d21) / denom
-            c[:, 1] = (d00 * d21 - d01 * d20) / denom
-            c[:, 2] = 1.0 - c[:, 0] - c[:, 1]
+            # d11*d20-d01*d21 and d00*d21-d01*d20 are the barycentric weights
+            # for vertices[:,1] and vertices[:,2] respectively (standard
+            # Ericson barycentric technique) - assign to the matching columns
+            # so that c[:, i] lines up with self.elements[tri, i] everywhere
+            # else in the codebase (evaluate_value, add_value_constraints, ...)
+            c[:, 1] = (d11 * d20 - d01 * d21) / denom
+            c[:, 2] = (d00 * d21 - d01 * d20) / denom
+            c[:, 0] = 1.0 - c[:, 1] - c[:, 2]
 
             mask = np.all(c >= 0, axis=1)
             if return_verts:
-                verts[: npts + npts_step, :, :][row[mask], :, :] = vertices[mask, :, :]
-            bc[: npts + npts_step, :][row[mask], :] = c[mask, :]
-            tetras[: npts + npts_step][row[mask]] = col[mask]
-            inside[: npts + npts_step][row[mask]] = True
+                verts[npts : npts + npts_step, :, :][row[mask], :, :] = vertices[mask, :, :]
+            bc[npts : npts + npts_step, :][row[mask], :] = c[mask, :]
+            tetras[npts : npts + npts_step][row[mask]] = col[mask]
+            inside[npts : npts + npts_step][row[mask]] = True
             npts += npts_step
         tetra_return = np.zeros((points.shape[0])).astype(int)
         tetra_return[:] = -1
