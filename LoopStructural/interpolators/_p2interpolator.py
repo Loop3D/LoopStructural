@@ -103,7 +103,7 @@ class P2Interpolator(DiscreteInterpolator):
             wt *= w * area
             A = np.einsum("ikj,ij->ik", grad[inside, :], points[inside, 3:6])
             B = np.zeros(A.shape[0])
-            elements = self.support[elements[inside]]
+            elements = self.support.elements[elements[inside]]
             self.add_constraints_to_least_squares(A * wt[:, None], B, elements, name="gradient")
 
     def add_gradient_orthogonal_constraints(
@@ -268,7 +268,7 @@ class P2Interpolator(DiscreteInterpolator):
     def evaluate_d2(self, evaluation_points: np.ndarray) -> np.ndarray:
         evaluation_points = np.array(evaluation_points)
         evaluated = np.zeros(evaluation_points.shape[0])
-        mask = np.any(evaluation_points == np.nan, axis=1)
+        mask = np.any(np.isnan(evaluation_points), axis=1)
 
         if evaluation_points[~mask, :].shape[0] > 0:
             evaluated[~mask] = self.support.evaluate_d2(evaluation_points[~mask], self.c)
