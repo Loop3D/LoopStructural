@@ -237,7 +237,10 @@ class DiscreteInterpolator(GeologicalInterpolator):
             raise BaseException("Weight array does not match number of constraints")
         if np.any(np.isnan(idc)) or np.any(np.isnan(A)) or np.any(np.isnan(B)):
             logger.warning("Constraints contain nan not adding constraints: {}".format(name))
-            # return
+            return
+        if np.any(np.isinf(idc)) or np.any(np.isinf(A)) or np.any(np.isinf(B)):
+            logger.warning("Constraints contain inf not adding constraints: {}".format(name))
+            return
         rows = np.arange(0, n_rows).astype(int)
         base_name = name
         while name in self.constraints:
@@ -590,7 +593,7 @@ class DiscreteInterpolator(GeologicalInterpolator):
         self,
         solver: Optional[Union[Callable[[sparse.csr_matrix, np.ndarray], np.ndarray], str]] = None,
         tol: Optional[float] = None,
-        solver_kwargs: dict = {},
+        solver_kwargs: Optional[dict] = None,
     ) -> bool:
         """
         Main entry point to run the solver and update the node value
@@ -613,6 +616,7 @@ class DiscreteInterpolator(GeologicalInterpolator):
         if not self._pre_solve():
             raise ValueError("Pre solve failed")
 
+        solver_kwargs = {} if solver_kwargs is None else dict(solver_kwargs)
         A, b = self.build_matrix()
         if self.add_ridge_regulatisation:
             ridge = sparse.eye(A.shape[1]) * self.ridge_factor
