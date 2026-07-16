@@ -50,9 +50,6 @@ class FaultTopology(Observable['FaultTopology']):
         if fault_name not in self.faults or abutting_fault not in self.faults:
             raise ValueError("Both faults must be part of the fault topology.")
 
-        if fault_name not in self.adjacency:
-            self.adjacency[fault_name] = []
-
         self.adjacency[(fault_name, abutting_fault)] = FaultRelationshipType.ABUTTING
         self.notify('abutting_relationship_added', {'fault': fault_name, 'abutting_fault': abutting_fault})
     def add_stratigraphy_fault_relationship(self, unit_name:str, fault_name: str):
@@ -73,9 +70,6 @@ class FaultTopology(Observable['FaultTopology']):
         """
         if fault_name not in self.faults or faulted_fault_name not in self.faults:
             raise ValueError("Both faults must be part of the fault topology.")
-
-        if fault_name not in self.adjacency:
-            self.adjacency[fault_name] = []
 
         self.adjacency[(fault_name, faulted_fault_name)] = FaultRelationshipType.FAULTED
         self.notify('faulted_relationship_added', {'fault': fault_name, 'faulted_fault': faulted_fault_name})
@@ -204,12 +198,15 @@ class FaultTopology(Observable['FaultTopology']):
             self.faults.extend(data.get("faults", []))
             adjacency = data.get("adjacency", {})
             stratigraphy_fault_relationships = data.get("stratigraphy_fault_relationships", {})
-            for (fault,abutting_fault) in adjacency.values():
+            for (fault, related_fault), relationship_type in adjacency.items():
                 if fault not in self.faults:
                     self.add_fault(fault)
-                if abutting_fault not in self.faults:
-                    self.add_fault(abutting_fault)
-                self.add_abutting_relationship(fault, abutting_fault)
+                if related_fault not in self.faults:
+                    self.add_fault(related_fault)
+                if relationship_type == FaultRelationshipType.FAULTED:
+                    self.add_faulted_relationship(fault, related_fault)
+                elif relationship_type == FaultRelationshipType.ABUTTING:
+                    self.add_abutting_relationship(fault, related_fault)
             for unit_name, fault_names in stratigraphy_fault_relationships.items():
                 for fault_name in fault_names:
                     if fault_name not in self.faults:
