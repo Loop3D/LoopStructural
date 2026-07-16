@@ -1,0 +1,127 @@
+import numpy as np
+import pytest
+
+from LoopStructural.datatypes import BoundingBox
+from LoopStructural.interpolators import (
+    InterpolatorFactory,
+    P1Interpolator,
+    P2Interpolator,
+)
+from LoopStructural.interpolators.supports import P1Unstructured2d, P2Unstructured2d
+
+
+def _bbox_2d():
+    return BoundingBox(origin=np.array([0, 0]), maximum=np.array([1, 1]), dimensions=2)
+
+
+def test_p1_unstructured_2d_requires_explicit_arrays_or_bbox_args():
+    with pytest.raises(ValueError):
+        P1Unstructured2d()
+
+
+def test_p2_unstructured_2d_requires_explicit_arrays_or_bbox_args():
+    with pytest.raises(ValueError):
+        P2Unstructured2d()
+
+
+def test_p1_unstructured_2d_from_bbox_builds_valid_mesh():
+    mesh = P1Unstructured2d(origin=np.zeros(2), step_vector=np.ones(2) / 4, nsteps=np.array([5, 5]))
+    assert mesh.elements.shape[1] == 3
+    assert mesh.elements.min() == 0
+    assert mesh.elements.max() == mesh.nodes.shape[0] - 1
+    # neighbours must be mutual: if i lists n as a neighbour, n must list i back
+    for i, neighbours in enumerate(mesh.neighbours):
+        for n in neighbours:
+            if n >= 0:
+                assert i in mesh.neighbours[n]
+
+
+def test_p2_unstructured_2d_from_bbox_builds_valid_mesh():
+    mesh = P2Unstructured2d(origin=np.zeros(2), step_vector=np.ones(2) / 4, nsteps=np.array([5, 5]))
+    assert mesh.elements.shape[1] == 6
+    assert mesh.elements.min() == 0
+    assert mesh.elements.max() == mesh.nodes.shape[0] - 1
+    # edge midpoints deduplicated: far fewer nodes than the naive
+    # non-deduplicated upper bound
+    naive_upper_bound = mesh.nodes.shape[0] + 3 * mesh.n_elements
+    assert mesh.nodes.shape[0] < naive_upper_bound
+
+
+def test_create_p1_interpolator_2d_via_factory():
+    """Regression test: P1Unstructured2d previously only accepted explicit
+    elements/vertices/neighbours arrays, so building a 2D P1 interpolator via
+    the standard factory always raised TypeError.
+    """
+    interp = InterpolatorFactory.create_interpolator("P1", _bbox_2d(), nelements=200)
+    assert isinstance(interp, P1Interpolator)
+    assert interp.dof > 0
+
+
+def test_create_p2_interpolator_2d_via_factory():
+    interp = InterpolatorFactory.create_interpolator("P2", _bbox_2d(), nelements=200)
+    assert isinstance(interp, P2Interpolator)
+    assert interp.dof > 0
+
+
+def test_p1_interpolator_2d_reproduces_linear_field():
+    """Regression test for two independent, previously-undiscovered bugs:
+
+    1. _p1interpolator.py hardcoded points[:, :3]/points[:, 3] assuming 3D,
+       which silently fed a 2D constraint's *value* column in as if it were
+       a Z coordinate.
+    2. _2d_base_unstructured.py's get_element_for_location computed
+       barycentric weights for vertices [1, 2, 0] but stored them in columns
+       [0, 1, 2], so every value/gradient evaluation used the wrong vertex's
+       weight.
+
+    Both together made any real use of P1Unstructured2d silently wrong
+    (rather than crashing), which is why this went unnoticed - nothing in
+    LoopStructural/modelling ever uses 2D interpolation.
+    """
+    interp = InterpolatorFactory.create_interpolator("P1", _bbox_2d(), nelements=500)
+    support = interp.support
+
+    def f(xy):
+        x, y = xy[:, 0], xy[:, 1]
+        return 2 * x - 3 * y + 5
+
+    values = f(support.nodes)
+    constraints = np.hstack([support.nodes, values[:, None], np.ones((support.nodes.shape[0], 1))])
+    interp.set_value_constraints(constraints)
+    interp.add_value_constraints(w=1.0)
+    interp.solve_system(solver="lsmr")
+
+    rng = np.random.default_rng(0)
+    test_points = rng.uniform(0.05, 0.95, size=(200, 2))
+    predicted = interp.evaluate_value(test_points)
+    actual = f(test_points)
+    valid = ~np.isnan(predicted)
+    assert valid.sum() == len(test_points)
+    assert np.max(np.abs(predicted[valid] - actual[valid])) < 1e-8
+
+
+def test_p2_interpolator_2d_reproduces_quadratic_field():
+    """Strong correctness check for the 2D P1->P2 mesh elevation and the new
+    evaluate_value/evaluate_gradient overrides on P2Unstructured2d (the base
+    class implementation only handles 3-node linear elements).
+    """
+    interp = InterpolatorFactory.create_interpolator("P2", _bbox_2d(), nelements=2000)
+    support = interp.support
+
+    def f(xy):
+        x, y = xy[:, 0], xy[:, 1]
+        return x**2 + 2 * y**2 + x * y + 2 * x - 3 * y + 5
+
+    values = f(support.nodes)
+    constraints = np.hstack([support.nodes, values[:, None], np.ones((support.nodes.shape[0], 1))])
+    interp.set_value_constraints(constraints)
+    interp.add_value_constraints(w=1.0)
+    interp.solve_system(solver="lsmr")
+
+    rng = np.random.default_rng(0)
+    test_points = rng.uniform(0.05, 0.95, size=(500, 2))
+    predicted = interp.evaluate_value(test_points)
+    actual = f(test_points)
+    valid = ~np.isnan(predicted)
+    assert valid.sum() == len(test_points)
+    assert np.max(np.abs(predicted[valid] - actual[valid])) < 1e-6
