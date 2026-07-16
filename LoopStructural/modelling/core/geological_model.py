@@ -491,9 +491,9 @@ class GeologicalModel:
             logger.warning("Data is not a pandas data frame, trying to read data frame " "from csv")
             try:
                 data = pd.read_csv(data)
-            except:
+            except Exception as e:
                 logger.error("Could not load pandas data frame from data")
-                raise BaseException("Cannot load data")
+                raise ValueError("Cannot load data") from e
         logger.info(f"Adding data to GeologicalModel with {len(data)} data points")
         self._data = data.copy()
         # self._data[['X','Y','Z']] = self.bounding_box.project(self._data[['X','Y','Z']].to_numpy())
