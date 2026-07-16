@@ -10,7 +10,21 @@ from logging.config import dictConfig
 from dataclasses import dataclass
 
 
-__all__ = ["GeologicalModel"]
+__all__ = [
+    "GeologicalModel",
+    "StratigraphicColumn",
+    "FaultTopology",
+    "LoopInterpolator",
+    "InterpolatorBuilder",
+    "BoundingBox",
+    "LoopStructuralConfig",
+    "setLogging",
+    "log_to_console",
+    "log_to_file",
+    "getLogger",
+    "rng",
+    "get_levels",
+]
 import tempfile
 from pathlib import Path
 from .version import __version__
