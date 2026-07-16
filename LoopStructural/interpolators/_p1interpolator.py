@@ -68,7 +68,7 @@ class P1Interpolator(DiscreteInterpolator):
 
     def add_value_constraints(self, w=1.0):
         points = self.get_value_constraints()
-        if points.shape[0] > 1:
+        if points.shape[0] > 0:
             N, elements, inside = self.support.evaluate_shape(points[:, :3])
             size = self.support.element_size[elements[inside]]
 
