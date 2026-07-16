@@ -207,10 +207,10 @@ class FaultTopology(Observable['FaultTopology']):
                     self.add_faulted_relationship(fault, related_fault)
                 elif relationship_type == FaultRelationshipType.ABUTTING:
                     self.add_abutting_relationship(fault, related_fault)
-            for unit_name, fault_names in stratigraphy_fault_relationships.items():
-                for fault_name in fault_names:
-                    if fault_name not in self.faults:
-                        self.add_fault(fault_name)
+            for (unit_name, fault_name), flag in stratigraphy_fault_relationships.items():
+                if fault_name not in self.faults:
+                    self.add_fault(fault_name)
+                if flag:
                     self.add_stratigraphy_fault_relationship(unit_name, fault_name)
 
     @classmethod
