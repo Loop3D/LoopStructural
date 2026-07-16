@@ -100,6 +100,36 @@ def test_p1_interpolator_2d_reproduces_linear_field():
     assert np.max(np.abs(predicted[valid] - actual[valid])) < 1e-8
 
 
+def test_p2_unstructured_2d_get_quadrature_points_shape():
+    """Regression test: get_quadrature_points built `cp` with shape
+    (n_edges, self.ncps, 2) - using the element node count (6) instead of
+    the actual number of quadrature points (2) - and returned a `weight`
+    array of that same wrong shape. This only surfaced when
+    minimise_edge_jumps (used by the default constant-gradient
+    regularisation) actually ran, since 2D P2 was never exercised before.
+    """
+    mesh = P2Unstructured2d(origin=np.zeros(2), step_vector=np.ones(2) / 4, nsteps=np.array([5, 5]))
+    cp, weight = mesh.get_quadrature_points()
+    n_edges = mesh.shared_elements.shape[0]
+    assert cp.shape == (n_edges, 2, 2)
+    assert weight.shape == (n_edges, 2)
+
+
+def test_p2_interpolator_2d_minimise_edge_jumps_does_not_crash():
+    """Regression test for the get_quadrature_points shape bug above, at
+    the point where it actually surfaced: calling minimise_edge_jumps on a
+    2D P2 interpolator used to raise
+    ValueError: could not broadcast input array from shape (n,2) into shape (n,)
+    """
+    interp = InterpolatorFactory.create_interpolator("P2", _bbox_2d(), nelements=200)
+    interp.set_value_constraints(
+        np.hstack([np.random.default_rng(0).random((10, 2)), np.zeros((10, 1)), np.ones((10, 1))])
+    )
+    interp.add_value_constraints(w=1.0)
+    interp.minimise_edge_jumps(w=0.1)
+    assert any("shared element jump" in name for name in interp.constraints)
+
+
 def test_p2_interpolator_2d_reproduces_quadratic_field():
     """Strong correctness check for the 2D P1->P2 mesh elevation and the new
     evaluate_value/evaluate_gradient overrides on P2Unstructured2d (the base

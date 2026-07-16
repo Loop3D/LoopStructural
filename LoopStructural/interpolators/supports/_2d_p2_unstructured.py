@@ -367,10 +367,11 @@ class P2Unstructured2d(BaseUnstructured2d):
         if npts == 2:
             v1 = self.nodes[self.shared_elements][:, 0, :]
             v2 = self.nodes[self.shared_elements][:, 1, :]
-            cp = np.zeros((v1.shape[0], self.ncps, 2))
+            cp = np.zeros((v1.shape[0], 2, 2))
             cp[:, 0] = 0.25 * v1 + 0.75 * v2
             cp[:, 1] = 0.75 * v1 + 0.25 * v2
-            return cp, np.ones(cp.shape)
+            weight = np.ones((v1.shape[0], 2))
+            return cp, weight
         raise NotImplementedError("Only 2 point quadrature is implemented")
 
     def get_edge_normal(self, e):
