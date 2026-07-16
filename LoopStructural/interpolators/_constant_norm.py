@@ -6,6 +6,10 @@ from ._p1interpolator import P1Interpolator
 from typing import Optional, Union, Callable
 from scipy import sparse
 from LoopStructural.utils import rng
+from LoopStructural.utils import getLogger
+
+logger = getLogger(__name__)
+
 
 class ConstantNormInterpolator:
     """Adds a non linear constraint to an interpolator to constrain
@@ -62,7 +66,17 @@ class ConstantNormInterpolator:
             self.interpolator.c[self.support.elements[elements]],
         )
 
-        v_t = v_t / np.linalg.norm(v_t, axis=1)[:, np.newaxis]
+        norm = np.linalg.norm(v_t, axis=1)
+        valid = norm > 0
+        if not np.all(valid):
+            logger.warning(
+                f"Skipping {np.sum(~valid)} elements with zero gradient norm "
+                "when adding constant norm constraint"
+            )
+        t_g = t_g[valid]
+        v_t = v_t[valid] / norm[valid, np.newaxis]
+        elements = elements[valid]
+        element_indices = element_indices[valid]
         self.gradient_constraint_store.append(np.hstack([self.support.barycentre[element_indices],v_t]))
         A1 = np.einsum("ij,ijk->ik", v_t, t_g)
         volume = self.support.element_size[element_indices]
