@@ -18,7 +18,14 @@ class BaseFeature(metaclass=ABCMeta):
     Base class for geological features.
     """
 
-    def __init__(self, name: str, model=None, faults: list = [], regions: list = [], builder=None):
+    def __init__(
+        self,
+        name: str,
+        model=None,
+        faults: Optional[list] = None,
+        regions: Optional[list] = None,
+        builder=None,
+    ):
         """Base geological feature, this is a virtual class and should not be
         used directly. Inheret from this to implement a new type of geological
         feature or use one of the exisitng implementations
@@ -38,7 +45,7 @@ class BaseFeature(metaclass=ABCMeta):
         """
         self.name = name
         self.type = FeatureType.BASE
-        self.regions = regions
+        self.regions = list(regions) if regions else []
         self._faults = []
         if faults:
             self.faults = faults
