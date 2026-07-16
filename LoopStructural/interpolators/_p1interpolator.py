@@ -45,11 +45,13 @@ class P1Interpolator(DiscreteInterpolator):
     def add_norm_constraints(self, w=1.0):
         points = self.get_norm_constraints()
         if points.shape[0] > 0:
-            grad, elements, inside = self.support.evaluate_shape_derivatives(points[:, :3])
+            grad, elements, inside = self.support.evaluate_shape_derivatives(
+                points[:, : self.dimensions]
+            )
             size = self.support.element_scale[elements[inside]]
             wt = np.ones(size.shape[0])
             wt *= w  # s* size
-            elements = np.tile(self.support.elements[elements[inside]], (3, 1, 1))
+            elements = np.tile(self.support.elements[elements[inside]], (self.dimensions, 1, 1))
 
             elements = elements.swapaxes(0, 1)
             # elements = elements.swapaxes(0, 2)
@@ -58,7 +60,7 @@ class P1Interpolator(DiscreteInterpolator):
 
             self.add_constraints_to_least_squares(
                 grad[inside, :, :],
-                points[inside, 3:6],
+                points[inside, self.dimensions : self.dimensions * 2],
                 elements,
                 w=wt,
                 name="norm",
@@ -69,14 +71,14 @@ class P1Interpolator(DiscreteInterpolator):
     def add_value_constraints(self, w=1.0):
         points = self.get_value_constraints()
         if points.shape[0] > 0:
-            N, elements, inside = self.support.evaluate_shape(points[:, :3])
+            N, elements, inside = self.support.evaluate_shape(points[:, : self.dimensions])
             size = self.support.element_size[elements[inside]]
 
             wt = np.ones(size.shape[0])
             wt *= w  # * size
             self.add_constraints_to_least_squares(
                 N[inside, :],
-                points[inside, 3],
+                points[inside, self.dimensions],
                 self.support.elements[elements[inside], :],
                 w=wt,
                 name="value",
@@ -206,7 +208,9 @@ class P1Interpolator(DiscreteInterpolator):
 
         """
         if points.shape[0] > 0:
-            grad, elements, inside = self.support.evaluate_shape_derivatives(points[:, :3])
+            grad, elements, inside = self.support.evaluate_shape_derivatives(
+                points[:, : self.dimensions]
+            )
             size = self.support.element_size[elements[inside]]
             wt = np.ones(size.shape[0])
             wt *= w * size
@@ -219,7 +223,7 @@ class P1Interpolator(DiscreteInterpolator):
             # elements = elements.swapaxes(1, 2)
             norm = np.linalg.norm(vectors, axis=1)
             vectors[norm > 0, :] /= norm[norm > 0, None]
-            A = np.einsum("ij,ijk->ik", vectors[inside, :3], grad[inside, :, :])
+            A = np.einsum("ij,ijk->ik", vectors[inside, : self.dimensions], grad[inside, :, :])
             B = np.zeros(points[inside, :].shape[0]) + b
             self.add_constraints_to_least_squares(A, B, elements, w=wt, name=name)
             if np.sum(inside) <= 0:
