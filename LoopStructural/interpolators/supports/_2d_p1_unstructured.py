@@ -3,9 +3,11 @@ Tetmesh based on cartesian grid for piecewise linear interpolation
 """
 
 import logging
+from typing import Optional
 
 import numpy as np
 from ._2d_base_unstructured import BaseUnstructured2d
+from ._2d_structured_grid import StructuredGrid2D
 from . import SupportType
 
 logger = logging.getLogger(__name__)
@@ -14,9 +16,69 @@ logger = logging.getLogger(__name__)
 class P1Unstructured2d(BaseUnstructured2d):
     """ """
 
-    def __init__(self, elements, vertices, neighbours):
-        BaseUnstructured2d.__init__(self, elements, vertices, neighbours)
+    def __init__(
+        self,
+        elements: Optional[np.ndarray] = None,
+        vertices: Optional[np.ndarray] = None,
+        neighbours: Optional[np.ndarray] = None,
+        aabb_nsteps=None,
+        origin: Optional[np.ndarray] = None,
+        step_vector: Optional[np.ndarray] = None,
+        nsteps: Optional[np.ndarray] = None,
+    ):
+        if elements is None or vertices is None or neighbours is None:
+            if origin is None or step_vector is None or nsteps is None:
+                raise ValueError(
+                    "P1Unstructured2d requires either explicit elements/vertices/"
+                    "neighbours arrays, or origin/step_vector/nsteps to build a "
+                    "triangular mesh over a bounding box"
+                )
+            vertices, elements, neighbours = self._build_from_bbox(origin, step_vector, nsteps)
+        BaseUnstructured2d.__init__(self, elements, vertices, neighbours, aabb_nsteps)
         self.type = SupportType.P1Unstructured2d
+
+    @staticmethod
+    def _build_from_bbox(origin: np.ndarray, step_vector: np.ndarray, nsteps: np.ndarray):
+        """Build a triangular mesh over a structured 2D grid by splitting
+        every grid cell into two triangles along the (bottom-left, top-right)
+        diagonal.
+
+        Returns
+        -------
+        tuple of (vertices, elements, neighbours) suitable for
+        BaseUnstructured2d.__init__
+        """
+        grid = StructuredGrid2D(origin=origin, nsteps=nsteps, step_vector=step_vector)
+        vertices = grid.nodes
+        quads = grid.elements  # (M, 4): [bottom-left, bottom-right, top-left, top-right]
+
+        tri_a = quads[:, [0, 1, 2]]
+        tri_b = quads[:, [1, 3, 2]]
+        elements = np.vstack([tri_a, tri_b])
+        n_tris = elements.shape[0]
+
+        local_edges = np.array([[0, 1], [1, 2], [2, 0]])
+        edge_nodes = elements[:, local_edges]
+        edge_nodes_sorted = np.sort(edge_nodes, axis=2)
+        flat_edges = edge_nodes_sorted.reshape(-1, 2)
+        unique_edges, inverse = np.unique(flat_edges, axis=0, return_inverse=True)
+
+        tri_ids = np.repeat(np.arange(n_tris), 3)
+        local_edge_ids = np.tile(np.arange(3), n_tris)
+
+        order = np.argsort(inverse, kind="stable")
+        sorted_inverse = inverse[order]
+        sorted_tri = tri_ids[order]
+        sorted_local = local_edge_ids[order]
+
+        same_as_next = sorted_inverse[:-1] == sorted_inverse[1:]
+        pair_idx = np.where(same_as_next)[0]
+
+        neighbours = np.full((n_tris, 3), -1, dtype=np.int64)
+        neighbours[sorted_tri[pair_idx], sorted_local[pair_idx]] = sorted_tri[pair_idx + 1]
+        neighbours[sorted_tri[pair_idx + 1], sorted_local[pair_idx + 1]] = sorted_tri[pair_idx]
+
+        return vertices, elements, neighbours
 
     def evaluate_shape_derivatives(self, locations, elements=None):
         """
