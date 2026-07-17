@@ -7,7 +7,7 @@ name = 'LoopStructural'
 description = '3D geological modelling'
 authors = [{ name = 'Lachlan Grose', email = 'lachlan.grose@monash.edu' }]
 readme = 'README.md'
-requires-python = '>=3.8'
+requires-python = '>=3.9'
 keywords = [
     "earth sciences",
     "geology",
@@ -41,7 +41,7 @@ dependencies = [
 dynamic = ['version']
 
 [project.optional-dependencies]
-all = ['loopstructural[visualisation,inequalities,export,jupyter]', 'tqdm']
+all = ['loopstructural[inequalities]', 'tqdm']
 visualisation = ["matplotlib", "pyvista", "loopstructuralvisualisation>=0.1.14"]
 export = ["geoh5py", "pyevtk", "dill"]
 jupyter = ["pyvista[all]"]
@@ -59,6 +59,7 @@ docs = [
     "sphinx-gallery",
     "geoh5py",
     "geopandas",
+    "pillow>=10.4.0",
     "sphinxcontrib-bibtex",
     "myst-parser",
     "sphinx-design",
