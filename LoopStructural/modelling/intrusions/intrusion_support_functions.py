@@ -44,10 +44,15 @@ def findMinDiff(arr, n):
     # Initialize difference as infinite
     diff = 10**20
 
-    for i in range(n - 1):
-        for j in range(i + 1, n):
-            if abs(arr[i] - arr[j]) < diff:
-                diff = abs(arr[i] - arr[j])
+    if n < 2:
+        return diff
+
+    values = np.asarray(arr[:n], dtype=float)
+    pairwise_diff = np.abs(values[:, None] - values[None, :])
+    np.fill_diagonal(pairwise_diff, np.inf)
+    min_diff = pairwise_diff.min()
+    if min_diff < diff:
+        diff = min_diff
 
     return diff
 
@@ -84,12 +89,10 @@ def array_from_coords(df, section_axis, df_axis):
         zs = df["Z"].unique()
         rows = len(zs)
         columns = len(xys)
-        array = np.zeros([rows, columns])
-        n = 0
-        for j in range(columns):
-            for i in range(rows):
-                array[i, j] = df.iloc[i + n, df_axis]
-            n = n + rows
+        # values are laid out column-major (column j occupies rows
+        # n:n+rows of the sorted dataframe, n increasing by rows each column)
+        values = df.iloc[:, df_axis].to_numpy()
+        array = values.reshape(columns, rows).T
     return array
 
 
@@ -117,33 +120,23 @@ def find_inout_points(velocity_field_array, velocity_parameters):
     inlet_velocity = velocity_parameters[0] + 0.1
     outlet_velocity = velocity_parameters[len(velocity_parameters) - 1] + 0.1
 
-    k = 0
-    for i in range(len(velocity_field_array[0])):
-        if k == 1:
-            break
+    # inlet: leftmost column containing inlet_velocity, take its last (deepest) row match
+    inlet_mask = velocity_field_array == inlet_velocity
+    col_has_inlet = inlet_mask.any(axis=0)
+    if col_has_inlet.any():
+        col = int(np.argmax(col_has_inlet))
+        rows_matching = np.nonzero(inlet_mask[:, col])[0]
+        inlet_point[0] = rows_matching[-1]
+        inlet_point[1] = col
 
-        where_inlet_i = np.where(velocity_field_array[:, i] == inlet_velocity)
-
-        if len(where_inlet_i[0]) > 0:
-            inlet_point[0] = where_inlet_i[0][len(where_inlet_i[0]) - 1]
-            inlet_point[1] = i
-            k = 1
-        else:
-            continue
-
-    k = 0
-    for i in range(len(velocity_field_array[0])):
-        i_ = len(velocity_field_array[0]) - 1 - i
-        if k == 1:
-            break
-
-        where_outlet_i = np.where(velocity_field_array[:, i_] == outlet_velocity)
-        if len(where_outlet_i[0]) > 0:
-            outlet_point[0] = where_outlet_i[0][0]
-            outlet_point[1] = i_
-            k = 1
-        else:
-            continue
+    # outlet: rightmost column containing outlet_velocity, take its first row match
+    outlet_mask = velocity_field_array == outlet_velocity
+    col_has_outlet = outlet_mask.any(axis=0)
+    if col_has_outlet.any():
+        col = len(col_has_outlet) - 1 - int(np.argmax(col_has_outlet[::-1]))
+        rows_matching = np.nonzero(outlet_mask[:, col])[0]
+        outlet_point[0] = rows_matching[0]
+        outlet_point[1] = col
 
     return inlet_point, outlet_point
 
@@ -196,13 +189,17 @@ def shortest_path(inlet, outlet, time_map):
         else:
             continue
 
-    # Assing -1 to points below intrusion network
-    for j in range(len(inet[0])):  # columns
-        for h in range(len(inet)):  # rows
-            if inet[h, j] == 0:
-                break
-
-        inet[(h + 1) :, j] = -1
+    # Assign -1 to points below intrusion network.
+    # For each column, find the first row where inet == 0 and set everything
+    # below it to -1. Columns with no zero are left untouched (matches the
+    # original loop, where h would reach the last row without breaking and
+    # inet[(h + 1):, j] = -1 is then a no-op empty slice).
+    mask_zero = inet == 0
+    has_zero = mask_zero.any(axis=0)
+    first_zero_row = np.argmax(mask_zero, axis=0)
+    row_idx = np.arange(inet.shape[0])[:, None]
+    below_mask = (row_idx > first_zero_row[None, :]) & has_zero[None, :]
+    inet[below_mask] = -1
 
     return inet
 
@@ -225,91 +222,40 @@ def element_neighbour(index, array, inet):
 
     rows = len(array) - 1  # max index of rows of time_map array
     cols = len(array[0]) - 1  # max index of columns of time_map arrays
-    values = np.zeros(
-        8
-    )  # 8 - array to save values (element above, element to the left, element to the right)
-    # values[8] = 10
-    index_row = index[0]
-    index_col = index[1]
 
-    if index_row == 0:
-        values[0] = -1
-        values[1] = -1
-        values[2] = -1
+    # fixed offsets of the 8 neighbours, in the same order as the original
+    # k/h indices (0: above-left, 1: above, 2: above-right, 3: left, 4: right,
+    # 5: below-left, 6: below, 7: below-right)
+    offsets = np.array(
+        [
+            [-1, -1],
+            [-1, 0],
+            [-1, 1],
+            [0, -1],
+            [0, 1],
+            [1, -1],
+            [1, 0],
+            [1, 1],
+        ]
+    )
+    neighbour_idx = np.asarray(index) + offsets
+    valid = (
+        (neighbour_idx[:, 0] >= 0)
+        & (neighbour_idx[:, 0] <= rows)
+        & (neighbour_idx[:, 1] >= 0)
+        & (neighbour_idx[:, 1] <= cols)
+    )
 
-    if index_row == rows:
-        values[5] = -1
-        values[6] = -1
-        values[7] = -1
+    values = np.full(8, -1.0)
+    if valid.any():
+        valid_rows = neighbour_idx[valid, 0]
+        valid_cols = neighbour_idx[valid, 1]
+        values[valid] = array[valid_rows, valid_cols]
 
-    if index_col == 0:
-        values[0] = -1
-        values[3] = -1
-        values[5] = -1
-
-    if index_col == cols:
-        values[2] = -1
-        values[4] = -1
-        values[7] = -1
-
-    for k in range(8):
-        if values[k] > -1:
-            if k == 0:
-                values[0] = array[index[0] - 1, index[1] - 1]
-
-            if k == 1:
-                values[1] = array[index[0] - 1, index[1]]
-
-            if k == 2:
-                values[2] = array[index[0] - 1, index[1] + 1]
-
-            if k == 3:
-                values[3] = array[index[0], index[1] - 1]
-
-            if k == 4:
-                values[4] = array[index[0], index[1] + 1]
-
-            if k == 5:
-                values[5] = array[index[0] + 1, index[1] - 1]
-
-            if k == 6:
-                values[6] = array[index[0] + 1, index[1]]
-
-            if k == 7:
-                values[7] = array[index[0] + 1, index[1] + 1]
-
-        else:
-            continue
-
-    # check if some of the neighbours is already part of the intrusion network
-    for h in range(8):
-        if values[h] > -1:
-            if h == 0:
-                if inet[index[0] - 1, index[1] - 1] == 0:
-                    values[0] = -2
-            if h == 1:
-                if inet[index[0] - 1, index[1]] == 0:
-                    values[1] = -2
-            if h == 2:
-                if inet[index[0] - 1, index[1] + 1] == 0:
-                    values[2] = -2
-            if h == 3:
-                if inet[index[0], index[1] - 1] == 0:
-                    values[3] = -2
-            if h == 4:
-                if inet[index[0], index[1] + 1] == 0:
-                    values[4] = -2
-            if h == 5:
-                if inet[index[0] + 1, index[1] - 1] == 0:
-                    values[5] = -2
-            if h == 6:
-                if inet[index[0] + 1, index[1]] == 0:
-                    values[6] = -2
-            if h == 7:
-                if inet[index[0] + 1, index[1] + 1] == 0:
-                    values[7] = -2
-        else:
-            continue
+        # check if some of the neighbours is already part of the intrusion network
+        already_in_network = inet[valid_rows, valid_cols] == 0
+        valid_positions = np.nonzero(valid)[0]
+        values[valid_positions[already_in_network]] = -2
 
     return values
 
@@ -329,23 +275,16 @@ def index_min(array):
     """
 
     # return the index value of the minimum value in an array of 1x8
-    # print(array)
-    index_array = {}
+    array = np.asarray(array)
+    mask = array >= 0
 
-    for i in range(
-        8
-    ):  # create a dictionary assining positions from 0 to 7 to the values in the array
-        if array[i] >= 0:
-            index_array.update({i: array[i]})
-
-    if len(index_array.values()) > 0:
-
-        minimum_val = min(index_array.values())
-
-        for key, value in index_array.items():
-            if value == minimum_val:
-                index_min = key
-
+    if mask.any():
+        masked = np.where(mask, array, np.inf)
+        minimum_val = masked.min()
+        # original loop keeps overwriting index_min for every matching key
+        # in increasing order, so ties resolve to the LAST (highest) index
+        matches = np.nonzero(masked == minimum_val)[0]
+        index_min = int(matches[-1])
     else:
         index_min = 10
 
@@ -406,55 +345,45 @@ def grid_from_array(array, fixed_coord, lower_extent, upper_extent):
 
     """
 
+    array = np.asarray(array)
     spacing_i = len(array)  # number of rows
     spacing_j = len(array[0])  # number of columns
     values = np.zeros([spacing_i * spacing_j, 6])
+
+    # original loops iterate outer j, inner i, with l incrementing each
+    # inner step, so i is the fast-varying axis and j the slow-varying axis
+    i_flat = np.tile(np.arange(spacing_i), spacing_j)
+    j_flat = np.repeat(np.arange(spacing_j), spacing_i)
+    array_vals = array[spacing_i - 1 - i_flat, j_flat]
+
     if fixed_coord[0] == "X":
         y = np.linspace(lower_extent[1], upper_extent[1], spacing_j)
         z = np.linspace(lower_extent[2], upper_extent[2], spacing_i)
-        l = 0
-        for j in range(spacing_j):
-            for i in range(spacing_i):
-                values[l] = [
-                    i,
-                    j,
-                    fixed_coord[1],
-                    y[j],
-                    z[i],
-                    array[spacing_i - 1 - i, j],
-                ]
-                l = l + 1
+        values[:, 0] = i_flat
+        values[:, 1] = j_flat
+        values[:, 2] = fixed_coord[1]
+        values[:, 3] = y[j_flat]
+        values[:, 4] = z[i_flat]
+        values[:, 5] = array_vals
 
     if fixed_coord[0] == "Y":
         x = np.linspace(lower_extent[0], upper_extent[0], spacing_j)
         z = np.linspace(lower_extent[2], upper_extent[2], spacing_i)
-        l = 0
-        for j in range(spacing_j):
-            for i in range(spacing_i):
-                values[l] = [
-                    i,
-                    j,
-                    x[j],
-                    fixed_coord[1],
-                    z[i],
-                    array[spacing_i - 1 - i, j],
-                ]
-                l = l + 1
+        values[:, 0] = i_flat
+        values[:, 1] = j_flat
+        values[:, 2] = x[j_flat]
+        values[:, 3] = fixed_coord[1]
+        values[:, 4] = z[i_flat]
+        values[:, 5] = array_vals
 
     if fixed_coord[0] == "Z":
         x = np.linspace(lower_extent[0], upper_extent[0], spacing_j)
         y = np.linspace(lower_extent[1], upper_extent[1], spacing_i)
-        l = 0
-        for j in range(spacing_j):
-            for i in range(spacing_i):
-                values[l] = [
-                    spacing_i - 1 - i,
-                    spacing_j - 1 - j,
-                    x[j],
-                    y[i],
-                    fixed_coord[1],
-                    array[spacing_i - 1 - i, j],
-                ]
-                l = l + 1
+        values[:, 0] = spacing_i - 1 - i_flat
+        values[:, 1] = spacing_j - 1 - j_flat
+        values[:, 2] = x[j_flat]
+        values[:, 3] = y[i_flat]
+        values[:, 4] = fixed_coord[1]
+        values[:, 5] = array_vals
 
     return values
