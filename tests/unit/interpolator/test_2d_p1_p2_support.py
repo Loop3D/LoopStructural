@@ -155,3 +155,52 @@ def test_p2_interpolator_2d_reproduces_quadratic_field():
     valid = ~np.isnan(predicted)
     assert valid.sum() == len(test_points)
     assert np.max(np.abs(predicted[valid] - actual[valid])) < 1e-6
+
+
+def test_p2_unstructured_2d_evaluate_shape_d2_reproduces_analytic_second_derivatives():
+    """Regression test: evaluate_shape_d2 referenced self.hN, an attribute
+    that's never set anywhere, so calling it raised AttributeError.
+    Rewritten to follow the same reference-space hessian + chain rule
+    approach as P2UnstructuredTetMesh.evaluate_shape_d2 in 3D (using the
+    self.hessian array already built in __init__).
+
+    For a genuine quadratic field, the second derivatives are constant
+    everywhere, so this also verifies the fix is numerically correct and
+    not just crash-free.
+    """
+    interp = InterpolatorFactory.create_interpolator("P2", _bbox_2d(), nelements=1000)
+    support = interp.support
+
+    # f = 2x^2 + 3y^2 + 1.5xy + ... -> fxx=4, fxy=1.5, fyy=6 everywhere
+    def f(xy):
+        x, y = xy[:, 0], xy[:, 1]
+        return 2 * x**2 + 3 * y**2 + 1.5 * x * y + 2 * x - 3 * y + 5
+
+    values = f(support.nodes)
+    interp.set_value_constraints(
+        np.hstack([support.nodes, values[:, None], np.ones((support.nodes.shape[0], 1))])
+    )
+    interp.add_value_constraints(w=1.0)
+    interp.solve_system(solver="lsmr")
+
+    rng = np.random.default_rng(0)
+    test_points = rng.uniform(0.05, 0.95, size=(50, 2))
+    d2 = support.evaluate_d2(test_points, interp.c)
+    assert d2.shape == (50, 3)
+    assert np.allclose(np.nanmean(d2, axis=0), [4.0, 1.5, 6.0], atol=1e-6)
+
+
+def test_p2_interpolator_2d_minimise_grad_steepness_does_not_crash():
+    """Regression test: minimise_grad_steepness calls
+    support.evaluate_shape_d2, which previously raised
+    AttributeError: 'P2Unstructured2d' object has no attribute 'hN'
+    the moment it was invoked - i.e. every time setup_interpolator() ran
+    its default regularisation for a 2D P2 interpolator.
+    """
+    interp = InterpolatorFactory.create_interpolator("P2", _bbox_2d(), nelements=200)
+    interp.set_value_constraints(
+        np.hstack([np.random.default_rng(0).random((10, 2)), np.zeros((10, 1)), np.ones((10, 1))])
+    )
+    interp.setup_interpolator(regularisation=0.1)
+    interp.solve_system(solver="lsmr")
+    assert any("gradsteepness" in name for name in interp.constraints)

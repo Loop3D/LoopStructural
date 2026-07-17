@@ -190,20 +190,23 @@ class P2Unstructured2d(BaseUnstructured2d):
         #         + self.hN[None, 1, :] * (jac[:, 1, 0] * jac[:, 1, 1])[:, None]
         #     )
 
-    def evaluate_shape_d2(self, indexes):
-        """evaluate second derivatives of shape functions in s and t
+    def evaluate_shape_d2(self, indexes: np.ndarray) -> np.ndarray:
+        """evaluate second derivatives of shape functions in x and y,
+        following the same reference-space hessian + chain rule approach
+        as P2UnstructuredTetMesh.evaluate_shape_d2 in 3D.
 
         Parameters
         ----------
-        M : [type]
-            [description]
+        indexes : np.ndarray
+            array of element indexes
 
         Returns
         -------
-        [type]
-            [description]
+        np.ndarray
+            array of shape (n, 3, 6) containing the physical second
+            derivatives (d2/dxx, d2/dxy, d2/dyy) of each of the 6 shape
+            functions, for each element in indexes
         """
-
         vertices = self.nodes[self.elements[indexes], :]
 
         jac = np.array(
@@ -213,20 +216,27 @@ class P2Unstructured2d(BaseUnstructured2d):
                     (vertices[:, 1, 1] - vertices[:, 0, 1]),
                 ],
                 [
-                    vertices[:, 2, 0] - vertices[:, 0, 0],
-                    vertices[:, 2, 1] - vertices[:, 0, 1],
+                    (vertices[:, 2, 0] - vertices[:, 0, 0]),
+                    (vertices[:, 2, 1] - vertices[:, 0, 1]),
                 ],
             ]
-        ).T
+        )
+        jac = jac.swapaxes(0, 2)
+        jac = jac.swapaxes(1, 2)
         jac = np.linalg.inv(jac)
-        jac = jac * jac
-
-        d2_prod = np.einsum("lij,ik->lik", jac, self.hN)
-        # d2Const = d2_prod[:, 0, :] + d2_prod[:, 1, :]
-        xxConst = d2_prod[:, 0, :]
-        yyConst = d2_prod[:, 1, :]
-
-        return xxConst, yyConst
+        # calculate derivative by summation, using the reference-space
+        # hessian of the shape functions (self.hessian) and the chain rule
+        d2 = np.zeros((vertices.shape[0], 3, self.elements.shape[1]))
+        ii = 0
+        for i in range(2):
+            for j in range(i, 2):
+                for k in range(2):
+                    for l in range(2):
+                        d2[:, ii, :] += (
+                            jac[:, i, k, None] * jac[:, j, l, None] * self.hessian[None, k, l, :]
+                        )
+                ii += 1
+        return d2
 
     def evaluate_shape_derivatives(self, locations, elements=None):
         """
@@ -341,25 +351,15 @@ class P2Unstructured2d(BaseUnstructured2d):
         -------
 
         """
-        values = np.zeros(pos.shape[0])
+        c, tri, inside = self.evaluate_shape(pos[:, :2])
+        d2 = self.evaluate_shape_d2(tri)
+        values = np.zeros((pos.shape[0], d2.shape[1]))
         values[:] = np.nan
-        c, tri = self.evaluate_shape(pos[:, :2])
-        xxConst, yyConst, xyConst = self.evaluate_shape_d2(tri)
-        # xyConst = self.evaluate_mixed_derivative(tri)
-        inside = tri > 0
-        # vertices, c, elements, inside = self.get_elements_for_location(pos)
-        values[inside] = np.sum(
-            xxConst[inside, :] * property_array[self.elements[tri[inside], :]],
-            axis=1,
-        )
-        values[inside] += np.sum(
-            yyConst[inside, :] * property_array[self.elements[tri[inside], :]],
-            axis=1,
-        )
-        values[inside] += np.sum(
-            xyConst[inside, :] * property_array[self.elements[tri[inside], :]],
-            axis=1,
-        )
+        for i in range(d2.shape[1]):
+            values[inside, i] = np.sum(
+                d2[inside, i, :] * property_array[self.elements[tri[inside], :]],
+                axis=1,
+            )
 
         return values
 
