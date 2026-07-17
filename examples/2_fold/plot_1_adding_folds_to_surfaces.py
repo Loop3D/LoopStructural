@@ -1,22 +1,21 @@
 """
 2a. Modelling folds
 ====================
+This tutorial shows how LoopStructural improves the modelling of folds by
+using an accurate parameterisation of fold geometry, by:
 
- This tutorial will show how Loop Structural improves the modelling of
- folds by using an accurate parameterization of folds geometry. This will
- be done by: 1. Modelling folded surfaces without structural geology,
- i.e. using only data points and adjusting the scalar fields to those
- points. 2. Modelling folds using structural geology, which includes: \*
- Description of local fold frame and rotation angles calculation \*
- Construction of folded foliations using fold geostatistics inside the
- fold frame coordinate system
-
+1. modelling a folded surface without structural geology - i.e. using only
+   data points and letting the interpolator's regularisation shape the
+   surface between them, and
+2. modelling the same surface using structural geology, which involves
+   describing a local fold frame, calculating fold rotation angles, and
+   constructing folded foliations using fold geostatistics within the
+   fold frame coordinate system.
 """
 
 ######################################################################
 # Imports
 # -------
-#
 
 from LoopStructural import GeologicalModel
 from LoopStructural.datasets import load_noddy_single_fold
@@ -25,17 +24,8 @@ import pandas as pd
 
 
 ######################################################################
-#
-#
-
-
-######################################################################
 # Structural geology of folds
-# ---------------------------
-#
-
-
-######################################################################
+# ----------------------------
 # Folds are one of the most common features found in deformed rocks and
 # are defined by the location of higher curvature. The geometry of the
 # folded surface can be characterised by three geometrical elements:
@@ -51,9 +41,6 @@ import pandas as pd
 # to minimise the resulting curvature of the surface. To model folded
 # surfaces the geologist will need to characterise the geometry of the
 # folded surface in high detail.
-#
-#
-#
 
 
 ######################################################################
@@ -76,7 +63,7 @@ import pandas as pd
 #
 # 1. Load data from sample datasets
 # 2. Visualise data
-# 3. Look at varying degrees of sampling e.g. 200 points, 100 points, 10
+# 3. Look at varying degrees of sampling e.g. 200 points, 100 points, 10
 #    points.
 # 4. Look at using data points ONLY from a map surface
 #
@@ -126,27 +113,21 @@ data.head()
 # Testing data density
 # ~~~~~~~~~~~~~~~~~~~~
 #
-# -  Use the toggle bar to change the amount of data used by the
-#    interpolation algorithm.
-# -  How does the shape of the fold change as we remove data points?
-# -  Now what happens if we only consider data from the map view?
-#
-# **HINT** you can view the strike and dip data by unchecking the scalar
-# field box.
+# The number of points used to build the model is controlled by
+# ``npoints`` below - try changing it and re-running to see how the shape
+# of the interpolated fold degrades as fewer points are used, since
+# without a fold frame the interpolator only has the regularisation term
+# to constrain the surface between observations.
 #
 # **The black arrows are the normal vector to the folded surface**
 #
 npoints = 20
 model = GeologicalModel(boundary_points[0, :], boundary_points[1, :])
-model.set_model_data(data[:npoints])
+model.data = data[:npoints]
 stratigraphy = model.create_and_add_foliation(
     "s0", interpolatortype="PLI", nelements=5000, buffer=0.3, cgw=0.1
-)  # .2)
+)
 viewer = Loop3DView(model, background="white")
-# viewer.add_scalar_field(model.bounding_box,(38,55,30),
-#                       'box',
-#                      paint_with=stratigraphy,
-#                      cmap='prism')
 viewer.plot_data(stratigraphy)
 viewer.plot_surface(stratigraphy, value=10)
 viewer.show()
@@ -162,16 +143,18 @@ viewer.show()
 # curvilinear coordinate system based around the fold axis and the fold
 # axial surface.
 #
-# There are three coordinates to the fold frame: \* coordinate 0 is the
-# axial surface of the fold and is parallel to the axial foliation \*
-# coordinate 1 is the fold axis direction field and is orthogonal to the
-# axial foliation \* coordinate 2 is orthogonal to both the fold axis
-# direction field and axial foliation and is roughly parallel to the
-# extension direction of the fold
+# There are three coordinates to the fold frame:
+#
+# * coordinate 0 is the axial surface of the fold and is parallel to the
+#   axial foliation
+# * coordinate 1 is the fold axis direction field and is orthogonal to the
+#   axial foliation
+# * coordinate 2 is orthogonal to both the fold axis direction field and
+#   axial foliation and is roughly parallel to the extension direction of
+#   the fold
 #
 # Three direction vectors are defined by the normalised gradient of these
-# fields: \* :math:`e_0` - red \* :math:`e_1` - green \* :math:`e_2` -
-# blue
+# fields: :math:`e_0` (red), :math:`e_1` (green), :math:`e_2` (blue).
 #
 # The orientation of the folded foliation can be defined by rotating
 # :math:`e_1` around :math:`e_0` by the fold axis rotation angle
@@ -184,18 +167,17 @@ viewer.show()
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 #
 # The rotation angles can be calculated for observations of the folded
-# foliation and assocaited lineations. For example, the fold axis rotation
+# foliation and associated lineations. For example, the fold axis rotation
 # angle is found by calculating the angle between the gradient of the fold
-# axis direction field and the intersection lineations shown in A). The
-# fold limb rotation angle is found by finding the the angle to rotate the
-# folded foliation to be parallel to the plane of the axial foliation
-# shown in B and C.
-# The wavelength can be specified by the user or in some cases estimated
+# axis direction field and the intersection lineations. The fold limb
+# rotation angle is found by finding the angle needed to rotate the
+# folded foliation to be parallel to the plane of the axial foliation.
+# The wavelength can be specified by the user or, in some cases, estimated
 # from the s-variogram of the fold frame coordinate system.
 #
 mdata = pd.concat([data[:npoints], data[data["feature_name"] == "s1"]])
 model = GeologicalModel(boundary_points[0, :], boundary_points[1, :])
-model.set_model_data(mdata)
+model.data = mdata
 fold_frame = model.create_and_add_fold_frame(
     "s1",
     interpolatortype="PLI",
@@ -211,34 +193,24 @@ stratigraphy = model.create_and_add_folded_foliation(
     buffer=0.5,
 )
 viewer = Loop3DView(model, background="white")
-# viewer.add_scalar_field(model.bounding_box,(38,55,30),
-#                       'box',
-#                      paint_with=stratigraphy,
-#                      cmap='prism')
 viewer.plot_surface(
     fold_frame[0],
     value=10,
     colour="blue",
-    #                       isovalue=0.4,
     opacity=0.5,
 )
 viewer.plot_data(stratigraphy)
-# viewer.add_isosurface(fold_frame[1],colour='green',alpha=0.5)
-# viewer.add_vector_field(fold_frame[0],locations=fold_frame[0].get_interpolator().support.barycentre)
-# viewer.add_data(fold_frame[1])
-
-# viewer.add_data(stratigraphy)
 viewer.plot_surface(stratigraphy, value=10)
 viewer.show()
 
 ###########################################
 # Plotting the fold rotation angles
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# The fold limb rotation angle can be plotted against the fold frame
+# coordinate to show the calculated data (points), the fitted rotation
+# curve, and the S-variogram used to estimate the fold wavelength.
 rotation_plots = RotationAnglePlotter(stratigraphy)
 rotation_plots.add_fold_limb_data()
 rotation_plots.add_fold_limb_curve()
 rotation_plots.add_limb_svariogram()
-# plt.plot(stratigraphy.builder.fold.fold_limb_rotation.fold_frame_coordinate,stratigraphy['limb_rotation'],'bo')
-# x = np.linspace(fold_frame[0].min(),fold_frame[0].max(),100)
-# plt.plot(x,stratigraphy['fold'].fold_limb_rotation(x),'r--')
 rotation_plots.fig.show()

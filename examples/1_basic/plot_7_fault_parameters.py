@@ -1,9 +1,20 @@
 """
+1g. Fault parameters
 ============================
-1i. Fault parameters
-============================
-This tutorial will demonstrate how to add unconformities to a mode using LoopStructural.
+This example reuses the model from the previous tutorial (Unconformities
+and faults) and shows how the fault's geometric parameters change the
+extent and shape of its influence on the faulted surfaces:
 
+* ``displacement`` - the amount of offset across the fault
+* ``major_axis``, ``intermediate_axis``, ``minor_axis`` - the size of the
+  ellipsoid that controls how far the fault's effect extends away from
+  the fault surface/centre in each direction. In particular, the
+  ``minor_axis`` controls how far the fault's influence extends away from
+  the fault surface itself, which determines how localised the
+  deformation of the faulted surface looks.
+
+The model-building code is wrapped in a function so that it can be called
+multiple times with different fault parameters to compare the results.
 """
 
 import numpy as np
@@ -80,27 +91,39 @@ def build_model_and_plot(
     ax.contourf(val2.reshape((100, 100)), extent=(0, 1000, 0, 200), cmap='Reds')
     ax.contourf(val3.reshape((100, 100)), extent=(0, 1000, 0, 200), cmap='Blues')
     ax.contourf(val4.reshape((100, 100)), extent=(0, 1000, 0, 200), cmap='Greens')
-    ax.contour(fval.reshape((100, 100)), [0], extent=(0, 1000, 0, 200))
+    ax.contour(fval.reshape((100, 100)), [0], extent=(0, 1000, 0, 200), colors='k')
+    ax.set_xlabel("X")
+    ax.set_ylabel("Z")
+    ax.set_title(
+        f"displacement={displacement}, minor_axis={minor_axis}, "
+        f"major_axis={major_axis}, intermediate_axis={intermediate_axis}"
+    )
+    plt.show()
 
 
 #########################################################################
-# Plot the model with a displacement of 50
+# Baseline: displacement of 50
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-#
 build_model_and_plot(50)
 
 #########################################################################
-# Plot the model with a displacement of 100
+# Doubling the displacement to 100
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# The offset between the two sides of the fault is larger, but the shape
+# and extent of the deformed zone around the fault is unchanged.
 build_model_and_plot(100)
 
 #########################################################################
-# Plot the model with a displacement of 50 and minor axis 100
+# Shrinking the minor axis to 100
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# A smaller minor axis confines the fault's influence to a narrower zone
+# around the fault surface, making the offset look sharper/more localised.
 build_model_and_plot(displacement=50, minor_axis=100)
 
 
 #########################################################################
-# Plot the model with a displacement of 50 and minor axis 500
+# Growing the minor axis to 500
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# A larger minor axis spreads the fault's influence over a wider zone,
+# producing a smoother, more gradual-looking offset.
 build_model_and_plot(displacement=50, minor_axis=500)

@@ -1,8 +1,16 @@
 """
-1d. Using Stratigraphic Columns
+1e. Using Stratigraphic Columns
 ===============================
-We will use the previous example Creating a model with multiple geological features, dealing with unconformities.
+The previous example (Multiple groups) built a model from two separately
+interpolated scalar fields but stopped short of naming the rock units they
+represent. A **stratigraphic column** maps ranges of scalar field value
+within each group to named units with an integer id, which is what allows
+LoopStructural to evaluate a single "which unit is here" answer at any
+point in the model via :code:`model.evaluate_model(xyz)`, and to produce
+a labelled block model.
 
+This example reuses the two-group model from the previous tutorial and
+defines a stratigraphic column for it.
 """
 
 from LoopStructural import GeologicalModel
@@ -22,7 +30,7 @@ data.loc[792, ["nx", "ny", "nz"]] = [0, 0, 1]
 data.loc[792, "val"] = 0
 
 model = GeologicalModel(bb[0, :], bb[1, :])
-model.set_model_data(data)
+model.data = data
 
 strati2 = model.create_and_add_foliation(
     "strati2",
@@ -39,8 +47,13 @@ strati = model.create_and_add_foliation(
 
 ########################################################################
 # Stratigraphic columns
-# ~~~~~~~~~~~~~~~~~~~~~~~
-# We define the stratigraphic column using a nested dictionary
+# ~~~~~~~~~~~~~~~~~~~~~
+# The stratigraphic column is a nested dictionary keyed first by group
+# (feature) name, then by unit name. Each unit gives the ``min``/``max``
+# range of scalar field value it occupies within that group, and a unique
+# integer ``id`` used to label it in the block model. Ranges should be
+# contiguous and can extend to +/- infinity for the oldest/youngest unit
+# in a group.
 
 stratigraphic_column = {}
 stratigraphic_column["strati2"] = {}

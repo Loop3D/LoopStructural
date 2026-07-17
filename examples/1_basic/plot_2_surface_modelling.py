@@ -9,7 +9,7 @@ location observations.
 Implicit surface representation involves finding an unknown function
 where :math:`f(x,y,z)` matches observations of the surface geometry. We
 generate a scalar field where the scalar value is the distance away from
-a reference horizon. The reference horizon is arbritary and can either
+a reference horizon. The reference horizon is arbitrary and can either
 be:
 
 -  a single geological surface where the scalar field would represent
@@ -20,13 +20,13 @@ be:
    the layers is used to determine the relative scalar value for each
    surface
 
-This tutorial will demonstrate both of these approaches for modelling a
-number of horizons picked from seismic data sets, by following the next
-steps: 1. Creation of a geological model, which includes: \*
-Presentation and visualization of the data \* Addition of a geological
-feature, which in this case is the stratigraphy of the model. 2.
-Visualization of the scalar field.
+This tutorial demonstrates both of these approaches for modelling a
+number of horizons picked from seismic data, by:
 
+1. creating a geological model, which includes presenting/visualising the
+   data and adding a geological feature (here, the stratigraphy of the
+   model), then
+2. visualising the resulting scalar field.
 """
 
 #########################################################################
@@ -89,7 +89,7 @@ viewer.add_arrows(
 viewer.display()
 
 # Link the data to the geological model
-model.set_model_data(data)
+model.data = data
 
 ######################################################################
 # Add Geological Features

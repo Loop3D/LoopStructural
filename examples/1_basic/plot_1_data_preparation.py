@@ -108,13 +108,14 @@ data.head()
 from LoopStructural import GeologicalModel
 
 model = GeologicalModel(extent[:, 0], extent[:, 1])
-model.set_model_data(data)
+model.data = data
 
 ###############################################################################################
 # Adding a conformable foliation
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # We can create a geological feature using the create_and_add_foliation method.
-# This returns a To build a scalar field representing the
+# This builds a scalar field representing the "conformable" observations added
+# above and returns a GeologicalFeature that can be queried at any location.
 
 conformable_feature = model.create_and_add_foliation("conformable")
 
