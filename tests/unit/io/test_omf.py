@@ -104,14 +104,12 @@ def test_add_surface_to_omf_appends_to_existing_project_file(tmp_path):
     assert {element.name for element in project.elements} == {"First", "Second"}
 
 
-def test_add_structured_grid_to_omf_is_a_documented_noop(capsys):
-    # add_structured_grid_to_omf currently just prints a message and returns -
-    # the real implementation below it is commented out, so structured grids
-    # are silently not exported to omf.
-    result = add_structured_grid_to_omf(object(), "unused.omf")
-    assert result is None
-    captured = capsys.readouterr()
-    assert "cannot store structured grids" in captured.out.lower()
+def test_add_structured_grid_to_omf_raises_not_implemented():
+    # add_structured_grid_to_omf explicitly rejects structured grids - the
+    # real implementation below it is commented out, so structured grids
+    # cannot currently be exported to omf.
+    with pytest.raises(NotImplementedError, match="cannot store structured grids"):
+        add_structured_grid_to_omf(object(), "unused.omf")
 
 
 @pytest.mark.xfail(
