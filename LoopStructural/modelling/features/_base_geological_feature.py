@@ -315,7 +315,7 @@ class BaseFeature(metaclass=ABCMeta):
             if name is None and self.name is not None:
                 name = self.name
             surfaces = isosurfacer.fit(value, name, colours=colours)
-        except Exception as e:
+        except (ValueError, RuntimeError, TypeError, IndexError, AttributeError) as e:
             logger.error(f"Failed to create surface for {self.name} at value {value}")
             logger.error(e)
             surfaces = []

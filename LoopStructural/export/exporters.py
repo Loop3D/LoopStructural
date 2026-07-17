@@ -193,7 +193,7 @@ def _write_feat_surfs_evtk(surf, file_name):
             cell_types=cell_types,
             pointData={"values": pointData},
         )
-    except Exception as e:
+    except (IOError, OSError, ValueError) as e:
         logger.warning(f"Cannot export fault surface to VTK file {file_name}: {e}")
         return False
 
@@ -396,7 +396,7 @@ def _write_cubeface_evtk(model, file_name, data_label, nsteps, real_coords=True)
             cellData=None,
             pointData={data_label: val},
         )
-    except Exception as e:
+    except (IOError, OSError, ValueError) as e:
         logger.warning(f"Cannot export cuboid surface to VTK file {file_name}: {e}")
         return False
     return True
@@ -438,7 +438,7 @@ def _write_vol_evtk(model, file_name, data_label, nsteps, real_coords=True):
     # Write to grid
     try:
         pointsToVTK(file_name, x, y, z, data={data_label: vals})
-    except Exception as e:
+    except (IOError, OSError, ValueError) as e:
         logger.warning(f"Cannot export volume to VTK file {file_name}: {e}")
         return False
     return True

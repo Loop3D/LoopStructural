@@ -270,8 +270,8 @@ class FaultSegment(StructuralFrame):
         for r in self.regions:
             try:
                 mask = np.logical_and(mask, r(locations))
-            except:
-                logger.error("nan slicing ")
+            except (ValueError, IndexError) as e:
+                logger.error(f"nan slicing: {e}")
         # need to scale with fault displacement
         v[mask, :] = self.__getitem__(1).evaluate_gradient(locations[mask, :])
         v[mask, :] /= np.linalg.norm(v[mask, :], axis=1)[:, None]

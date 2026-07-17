@@ -176,7 +176,7 @@ class VectorPoints:
             try:
                 locations = bb.project(locations)
                 _projected = True
-            except Exception as e:
+            except (TypeError, ValueError, AttributeError) as e:
                 logger.error(f'Failed to project points to bounding box: {e}')
                 logger.error('Using unprojected points, this may cause issues with the glyphing')
         points = pv.PolyData(locations)

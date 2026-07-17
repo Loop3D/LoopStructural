@@ -184,8 +184,9 @@ class GeologicalInterpolator(metaclass=ABCMeta):
         """
         try:
             return np.array(array)
-        except Exception as e:
-            raise LoopTypeError(str(e))
+        except (TypeError, ValueError) as e:
+            logger.error(f"Could not convert array to numpy array: {e}")
+            raise LoopTypeError(str(e)) from e
 
     def to_json(self):
         """Return a JSON representation of the geological interpolator.

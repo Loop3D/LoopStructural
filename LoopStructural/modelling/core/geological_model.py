@@ -4,6 +4,7 @@ Main entry point for creating a geological model
 
 from LoopStructural import LoopStructuralConfig
 from ...utils import getLogger
+from ...utils import LoopValueError
 
 import numpy as np
 import pandas as pd
@@ -285,7 +286,15 @@ class GeologicalModel:
         except ImportError:
             logger.error("Cannot import from file, dill not installed")
             return None
-        model = pickle.load(open(file, "rb"))
+        path = pathlib.Path(file)
+        if not path.is_file():
+            raise LoopValueError(f"Cannot load model, file does not exist: {file}")
+        try:
+            with open(path, "rb") as f:
+                model = pickle.load(f)
+        except Exception as e:
+            logger.error(f"Failed to load model from {file}: {e}")
+            raise LoopValueError(f"Failed to load model from {file}: {e}") from e
         if isinstance(model, GeologicalModel):
             logger.info("GeologicalModel initialised from file")
             return model
@@ -491,9 +500,9 @@ class GeologicalModel:
             logger.warning("Data is not a pandas data frame, trying to read data frame " "from csv")
             try:
                 data = pd.read_csv(data)
-            except Exception as e:
-                logger.error("Could not load pandas data frame from data")
-                raise ValueError("Cannot load data") from e
+            except (OSError, ValueError, pd.errors.ParserError) as e:
+                logger.error(f"Could not load pandas data frame from data: {e}")
+                raise LoopValueError("Cannot load data") from e
         logger.info(f"Adding data to GeologicalModel with {len(data)} data points")
         self._data = data.copy()
         # self._data[['X','Y','Z']] = self.bounding_box.project(self._data[['X','Y','Z']].to_numpy())
@@ -785,7 +794,8 @@ class GeologicalModel:
         if fold_frame is None:
             logger.info("Using last feature as fold frame")
             fold_frame = self.features[-1]
-        assert isinstance(fold_frame, FoldFrame), "Please specify a FoldFrame"
+        if not isinstance(fold_frame, FoldFrame):
+            raise TypeError("Please specify a FoldFrame")
 
         fold = FoldEvent(fold_frame, name=f"Fold_{foliation_name}", invert_norm=invert_fold_norm)
 
@@ -883,7 +893,8 @@ class GeologicalModel:
         if fold_frame is None:
             logger.info("Using last feature as fold frame")
             fold_frame = self.features[-1]
-        assert isinstance(fold_frame, FoldFrame), "Please specify a FoldFrame"
+        if not isinstance(fold_frame, FoldFrame):
+            raise TypeError("Please specify a FoldFrame")
         fold = FoldEvent(fold_frame, name=f"Fold_{fold_frame_name}")
 
         interpolatortypes = [

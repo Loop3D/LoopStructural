@@ -307,7 +307,7 @@ class BaseStructuredSupport(BaseSupport):
         if not isinstance(pos, np.ndarray):
             try:
                 pos = np.array(pos, dtype=float)
-            except Exception as e:
+            except (TypeError, ValueError) as e:
                 logger.error(
                     f"Position array should be a numpy array or list of points, not {type(pos)}"
                 )
