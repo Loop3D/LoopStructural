@@ -28,13 +28,13 @@ class BoundingBox:
         Parameters
         ----------
         dimensions : int, optional
-            _description_, by default 3
+            number of spatial dimensions of the bounding box, by default 3
         origin : Optional[np.ndarray], optional
-            _description_, by default None
+            coordinates of the lower corner of the bounding box, by default None
         maximum : Optional[np.ndarray], optional
-            _description_, by default None
+            coordinates of the upper corner of the bounding box, by default None
         nsteps : Optional[np.ndarray], optional
-            _description_, by default None
+            number of steps/cells in each dimension used when generating a regular grid, by default None
         """
         if origin is not None and len(origin) != dimensions:
             logger.warning(
@@ -352,7 +352,7 @@ class BoundingBox:
         Raises
         ------
         LoopValueError
-            _description_
+            if the number of columns in locations does not match the number of dimensions of the bounding box
         """
         if locations.shape[1] != self.dimensions:
             raise LoopValueError(

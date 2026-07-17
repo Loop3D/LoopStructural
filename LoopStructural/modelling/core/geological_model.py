@@ -1573,10 +1573,10 @@ class GeologicalModel:
 
         Parameters
         ----------
-        xyz : np.array((N,3),dtype=float)
+        points : np.array((N,3),dtype=float)
             locations
         scale : bool
-            whether to rescale the xyz before evaluating model
+            whether to rescale the points before evaluating model
 
         Returns
         -------

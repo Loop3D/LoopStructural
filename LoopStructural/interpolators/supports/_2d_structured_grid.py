@@ -522,17 +522,18 @@ class StructuredGrid2D(BaseSupport):
         return grid
 
     def get_operators(self, weights: Dict[str, float]) -> Dict[str, Tuple[np.ndarray, float]]:
-        """Get
+        """Get the finite difference mask operators used to build the smoothing/regularisation
+        constraints for the 2d grid, scaled by the supplied weights.
 
         Parameters
         ----------
         weights : Dict[str, float]
-            _description_
+            dictionary mapping operator name ("dxy", "dxx", "dyy") to its weighting factor
 
         Returns
         -------
         Dict[str, Tuple[np.ndarray, float]]
-            _description_
+            dictionary mapping operator name to a tuple of (finite difference mask, weight)
         """
         # in a map we only want the xy operators
         operators = {

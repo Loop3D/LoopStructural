@@ -56,7 +56,7 @@ class LoopInterpolator:
         inequality_value_constraints: Optional[np.ndarray] = None,
         inequality_pairs_constraints: Optional[np.ndarray] = None,
     ):
-        """_summary_
+        """Set the constraints for the interpolator and run the interpolation
 
         Parameters
         ----------
@@ -66,8 +66,11 @@ class LoopInterpolator:
             tangent constraints for implicit function, by default None
         normal_vectors : Optional[np.ndarray], optional
             gradient norm constraints for implicit function, by default None
-        inequality_constraints : Optional[np.ndarray], optional
-            _description_, by default None
+        inequality_value_constraints : Optional[np.ndarray], optional
+            inequality constraints on the value of the implicit function at a location,
+            by default None
+        inequality_pairs_constraints : Optional[np.ndarray], optional
+            inequality constraints between pairs of points, by default None
         """
 
         if values is not None:
@@ -179,8 +182,8 @@ class LoopInterpolator:
 
         Returns
         -------
-        _type_
-            _description_
+        pyvista.UnstructuredGrid or None
+            the pyvista grid used for the 3d plot, or None for the 2d matplotlib plot
         """
         if self.dimensions == 3:
             vtkgrid = self.interpolator.support.vtk()

@@ -29,20 +29,22 @@ class LambdaGeologicalFeature(BaseFeature):
 
         Parameters
         ----------
-        function : _type_, optional
-            _description_, by default None
+        function : Callable[[np.ndarray], np.ndarray], optional
+            function that takes an Nx3 array of xyz points and returns the value of the
+            feature at each point, by default None
         name : str, optional
-            _description_, by default "unnamed_lambda"
-        gradient_function : _type_, optional
-            _description_, by default None
-        model : _type_, optional
-            _description_, by default None
+            name of the feature, by default "unnamed_lambda"
+        gradient_function : Callable[[np.ndarray], np.ndarray], optional
+            function that takes an Nx3 array of xyz points and returns the gradient of the
+            feature at each point, by default None
+        model : GeologicalModel, optional
+            the geological model this feature is associated with, by default None
         regions : list, optional
-            _description_, by default []
+            list of regions to restrict where this feature is evaluated, by default []
         faults : list, optional
-            _description_, by default []
-        builder : _type_, optional
-            _description_, by default None
+            list of faults that affect this feature, by default []
+        builder : optional
+            the builder used to create this feature, by default None
         """
         BaseFeature.__init__(self, name, model, faults if faults is not None else [], regions if regions is not None else [], builder)
         self.type = FeatureType.LAMBDA
@@ -51,17 +53,20 @@ class LambdaGeologicalFeature(BaseFeature):
         self.regions = regions if regions is not None else []
 
     def evaluate_value(self, pos: np.ndarray, ignore_regions=False) -> np.ndarray:
-        """_summary_
+        """Evaluate the value of the underlying function at locations, applying
+        any faults and regions associated with this feature
 
         Parameters
         ----------
-        xyz : np.ndarray
-            _description_
+        pos : np.ndarray
+            Nx3 array of xyz locations to evaluate the feature at
+        ignore_regions : bool, optional
+            whether to ignore the regions associated with this feature, by default False
 
         Returns
         -------
         np.ndarray
-            _description_
+            value of the feature at each location, nan where outside of the regions
         """
         v = np.zeros((pos.shape[0]))
         v[:] = np.nan
@@ -90,17 +95,23 @@ class LambdaGeologicalFeature(BaseFeature):
         return v
 
     def evaluate_gradient(self, pos: np.ndarray, ignore_regions=False,element_scale_parameter=None) -> np.ndarray:
-        """_summary_
+        """Evaluate the gradient of the underlying function at locations, applying
+        any faults associated with this feature
 
         Parameters
         ----------
-        xyz : np.ndarray
-            _description_
+        pos : np.ndarray
+            Nx3 array of xyz locations to evaluate the gradient at
+        ignore_regions : bool, optional
+            whether to ignore the regions associated with this feature, by default False
+        element_scale_parameter : float, optional
+            size of the finite tetrahedron used to numerically estimate the gradient when
+            faults are present, by default a tenth of the model's minimum step vector
 
         Returns
         -------
         np.ndarray
-            _description_
+            Nx3 array of the gradient of the feature at each location, nan where undefined
         """
         if pos.shape[1] != 3:
             raise LoopValueError("Need Nx3 array of xyz points to evaluate gradient")

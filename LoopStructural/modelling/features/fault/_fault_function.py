@@ -100,14 +100,15 @@ class CubicFunction(FaultProfileFunction):
         self.min_v = min_v
 
     def set_lim(self, min_x: float, max_x: float):
-        """
+        """Set the limits of the fault frame coordinate outside of which the
+        function value is clamped to the value at the limit
 
         Parameters
         ----------
-        min_x : _type_
-            _description_
-        max_x : _type_
-            _description_
+        min_x : float
+            minimum value of the fault frame coordinate
+        max_x : float
+            maximum value of the fault frame coordinate
         """
         self.lim = [min_x, max_x]
 
@@ -234,13 +235,14 @@ class Composite(FaultProfileFunction):
 
         Parameters
         ----------
-        data : _type_
-            _description_
+        data : dict
+            Dictionary containing "positive" and "negative" keys, each a dictionary
+            of CubicFunction parameters
 
         Returns
         -------
-        _type_
-            _description_
+        Composite
+            An initialised composite function given the dictionary parameters
         """
         positive = CubicFunction.from_dict(data["positive"])
         negative = CubicFunction.from_dict(data["negative"])

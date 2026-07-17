@@ -28,16 +28,18 @@ class FoldedFeatureBuilder(GeologicalFeatureBuilder):
 
         Parameters
         ----------
-        interpolator : GeologicalInterpolator
-            the interpolator to add the fold constraints to
+        interpolatortype : str
+            the type of interpolator to use to build the feature
+        bounding_box : BoundingBox
+            the bounding box for the interpolation support
         fold : FoldEvent
             a fold event object that contains the geometry of the fold
         fold_weights : dict, optional
             interpolation weights for the fold, by default {}
         name : str, optional
             name of the geological feature, by default "Feature"
-        region : _type_, optional
-            _description_, by default None
+        region : str, optional
+            name of the region to restrict the feature to, by default None
         """
         # create the feature builder, this intialises the interpolator
         GeologicalFeatureBuilder.__init__(

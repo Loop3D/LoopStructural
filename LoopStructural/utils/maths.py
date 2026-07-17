@@ -9,15 +9,15 @@ def strikedip2vector(strike: NumericInput, dip: NumericInput) -> np.ndarray:
 
     Parameters
     ----------
-    strike : _type_
-        _description_
-    dip : _type_
-        _description_
+    strike : NumericInput
+        strike angle(s) in degrees, measured clockwise from North
+    dip : NumericInput
+        dip angle(s) in degrees, measured from the horizontal plane
 
     Returns
     -------
-    _type_
-        _description_
+    np.ndarray
+        nx3 array of unit vectors normal to the plane defined by strike and dip
     """
     if isinstance(strike, numbers.Number):
         strike = np.array([strike])
@@ -27,7 +27,7 @@ def strikedip2vector(strike: NumericInput, dip: NumericInput) -> np.ndarray:
         dip = np.array([dip])
     else:
         dip = np.array(dip)
-    
+
     vec = np.zeros((len(strike), 3))
     s_r = np.deg2rad(strike)
     d_r = np.deg2rad((dip))
@@ -41,17 +41,17 @@ def dipdipdirection2vector(dip_direction: NumericInput, dip: NumericInput, degre
 
     Parameters
     ----------
-    dip_direction : _type_
-        _description_
-    dip : _type_
-        _description_
+    dip_direction : NumericInput
+        dip direction angle(s) in degrees, measured clockwise from North
+    dip : NumericInput
+        dip angle(s) in degrees, measured from the horizontal plane
     degrees : bool, optional
-        _description_, by default True
+        whether the input angles are in degrees, by default True
 
     Returns
     -------
-    _type_
-        _description_
+    np.ndarray
+        nx3 array of unit vectors normal to the plane defined by dip direction and dip
     """
     if isinstance(dip_direction, numbers.Number):
         dip_direction = np.array([dip_direction])

@@ -17,22 +17,23 @@ class FourierSeriesFoldRotationAngleProfile(BaseFoldRotationAngleProfile):
         c2=0,
         w=1,
     ):
-        """_summary_
+        """Fold rotation angle profile defined by a truncated Fourier series
+        c0 + c1*cos(2*pi/w * x) + c2*sin(2*pi/w * x)
 
         Parameters
         ----------
         rotation_angle : Optional[npt.NDArray[np.float64]], optional
-            _description_, by default None
+            the calculated fold rotation angle from observations in degrees, by default None
         fold_frame_coordinate : Optional[npt.NDArray[np.float64]], optional
-            _description_, by default None
+            fold frame coordinate scalar field value, by default None
         c0 : int, optional
-            _description_, by default 0
+            mean value coefficient of the Fourier series, by default 0
         c1 : int, optional
-            _description_, by default 0
+            cosine coefficient of the Fourier series, by default 0
         c2 : int, optional
-            _description_, by default 0
+            sine coefficient of the Fourier series, by default 0
         w : int, optional
-            _description_, by default 1
+            wavelength of the Fourier series, by default 1
         """
         super().__init__(rotation_angle, fold_frame_coordinate)
         self._c0 = c0
@@ -80,19 +81,25 @@ class FourierSeriesFoldRotationAngleProfile(BaseFoldRotationAngleProfile):
 
     @staticmethod
     def _function(x, c0, c1, c2, w):
-        """
+        """Evaluate the Fourier series fold rotation angle function
 
         Parameters
         ----------
         x
+            fold frame coordinate to evaluate the function at
         c0
+            mean value coefficient of the Fourier series
         c1
+            cosine coefficient of the Fourier series
         c2
+            sine coefficient of the Fourier series
         w
+            wavelength of the Fourier series
 
         Returns
         -------
-
+        np.ndarray
+            value of the Fourier series at x
         """
         v = np.array(x.astype(float))
         # v.fill(c0)

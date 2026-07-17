@@ -116,7 +116,7 @@ class GeologicalFeature(BaseFeature):
 
         Parameters
         ----------
-        evaluation_points : np.ndarray
+        pos : np.ndarray
             location to evaluate the scalar value
 
         Returns

@@ -220,16 +220,21 @@ class P2Interpolator(DiscreteInterpolator):
         vector_func: Optional[Callable[[np.ndarray], np.ndarray]] = None,
         quadrature_points: Optional[int] = None,
     ):
-        """_summary_
+        """Adds a constraint that minimises the jump in the gradient of the scalar field
+        across the shared edge/face between neighbouring elements, weighted by the
+        provided vector direction and quadrature points.
 
         Parameters
         ----------
         w : float, optional
-            _description_, by default 0.1
+            weighting of the constraint, by default 0.1
         wtfunc : callable, optional
-            _description_, by default None
+            a function that returns the weight to be applied at xyz. Called on the
+            barycentre of the shared elements, by default None
         vector_func : callable, optional
-            _description_, by default None
+            a function that returns the normal vector to evaluate the gradient jump
+            against at the quadrature points, overriding the shared element normal,
+            by default None
         """
         # NOTE: imposes \phi_T1(xi)-\phi_T2(xi) dot n =0
         # iterate over all triangles

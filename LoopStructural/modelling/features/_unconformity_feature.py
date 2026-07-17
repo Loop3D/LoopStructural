@@ -49,7 +49,7 @@ class UnconformityFeature(GeologicalFeature):
         Returns
         -------
         UnconformityFeature
-            _description_
+            a new unconformity feature with the sign of the unconformity reversed
         """
         uc = UnconformityFeature(
             self.parent,

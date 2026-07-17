@@ -32,7 +32,7 @@ class LoopIsosurfacer:
         Parameters
         ----------
         bounding_box : BoundingBox
-            _description_
+            bounding box defining the region over which to extract isosurfaces
         interpolator : Optional[GeologicalInterpolator], optional
             interpolator object, by default None
         callable : Optional[Callable[[npt.ArrayLike], npt.ArrayLike]], optional
@@ -41,11 +41,11 @@ class LoopIsosurfacer:
         Raises
         ------
         ValueError
-            _description_
+            if neither an interpolator nor a callable is provided
         ValueError
-            _description_
+            if both an interpolator and a callable are provided
         ValueError
-            _description_
+            if the callable could not be resolved from the interpolator or callable arguments
         """
         self.bounding_box = bounding_box
         self.callable = callable

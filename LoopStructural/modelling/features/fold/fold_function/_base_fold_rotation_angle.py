@@ -120,17 +120,20 @@ class BaseFoldRotationAngleProfile(metaclass=ABCMeta):
         self._evaluation_points = value
 
     def fit(self, params: dict = {}) -> bool:
-        """
+        """Fit the fold rotation angle function to the rotation angle and fold frame
+        coordinate observations using scipy curve_fit
 
         Parameters
         ----------
         params : dict, optional
-            _description_, by default {}
+            fitting parameters, may contain "guess", "wavelength", "reset",
+            "svariogram_parameters" and "calculate_wavelength" keys used to build the
+            initial guess, by default {}
 
         Returns
         -------
         bool
-            _description_
+            True if the curve was successfully fit, False otherwise
         """
         if len(self.params) > 0:
             success = False
@@ -193,21 +196,25 @@ class BaseFoldRotationAngleProfile(metaclass=ABCMeta):
         svariogram_parameters: dict = {},
         reset: bool = False,
     ) -> np.ndarray:
-        """_summary_
+        """Calculate an initial guess for the parameters of the fold rotation angle function,
+        optionally using the wavelength estimated from the svariogram
 
         Parameters
         ----------
-        selfcalculate_wavelength : bool, optional
-            _description_, by default True
+        wavelength : float, optional
+            wavelength to use for the initial guess, if None it is estimated from the
+            svariogram when calculate_wavelength is True, by default None
+        calculate_wavelength : bool, optional
+            whether to estimate the wavelength from the svariogram, by default True
         svariogram_parameters : dict, optional
-            _description_, by default {}
+            parameters passed to the svariogram when estimating the wavelength, by default {}
         reset : bool, optional
-            _description_, by default False
+            whether to reset any previously fitted parameters before guessing, by default False
 
         Returns
         -------
         np.ndarray
-            _description_
+            initial guess of the parameters for the fold rotation angle function
         """
         pass
 
@@ -221,11 +228,14 @@ class BaseFoldRotationAngleProfile(metaclass=ABCMeta):
         Parameters
         ----------
         s
+            fold frame coordinate to evaluate the function at
         *args
+            parameters of the fold rotation angle function
 
         Returns
         -------
-        _description_
+        np.ndarray
+            tan of the fold rotation angle in radians at s
         """
         pass
 
@@ -234,8 +244,8 @@ class BaseFoldRotationAngleProfile(metaclass=ABCMeta):
 
         Parameters
         ----------
-        ax : _description_, optional
-            _description_, by default None
+        ax : matplotlib axes, optional
+            the axes to plot onto, a new figure and axes are created if None, by default None
         **kwargs
             passed to matplotlib plot
         """

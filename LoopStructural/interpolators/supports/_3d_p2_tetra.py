@@ -99,12 +99,13 @@ class P2UnstructuredTetMesh(UnStructuredTetMesh):
         Parameters
         ----------
         npts : int, optional
-            _description_, by default 3
+            number of quadrature points to use per triangle, by default 3
 
         Returns
         -------
-        _type_
-            _description_
+        np.ndarray
+            array of shape (n_elements, npts, 3) containing the xyz coordinates of the
+            quadrature points for each shared triangular element
         """
         if npts == 3:
             vertices = self.nodes[self.shared_elements]

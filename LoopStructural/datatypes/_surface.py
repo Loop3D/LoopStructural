@@ -66,12 +66,12 @@ class Surface:
                 self.cell_properties[k] = np.array(v)[~triangles_with_nan]
     @property
     def triangle_area(self):
-        """_summary_
+        """Area of each triangle in the surface mesh
 
         Returns
         -------
-        _type_
-            _description_
+        np.ndarray
+            array of length n_triangles containing the area of each triangle
 
 
         Notes

@@ -17,8 +17,9 @@ class ConstantNormInterpolator:
 
     Returns
     -------
-    _type_
-        _description_
+    ConstantNormInterpolator
+        an interpolator mixin that iteratively re-weights a unit gradient norm constraint
+        into the least squares system of the wrapped discrete interpolator
     """
     def __init__(self, interpolator: DiscreteInterpolator,basetype):
         """Initialise the constant norm inteprolator
@@ -144,8 +145,8 @@ class ConstantNormP1Interpolator(P1Interpolator, ConstantNormInterpolator):
 
         Parameters
         ----------
-        support : _type_
-            _description_
+        support : support object
+            the mesh/support object that the base interpolator is built on
         """
         P1Interpolator.__init__(self, support)
         ConstantNormInterpolator.__init__(self, self, P1Interpolator)
@@ -189,8 +190,8 @@ class ConstantNormFDIInterpolator(FiniteDifferenceInterpolator, ConstantNormInte
 
         Parameters
         ----------
-        support : _type_
-            _description_
+        support : support object
+            the mesh/support object that the base interpolator is built on
         """
         FiniteDifferenceInterpolator.__init__(self, support)
         ConstantNormInterpolator.__init__(self, self, FiniteDifferenceInterpolator)

@@ -76,8 +76,8 @@ class TetMesh(BaseStructuredSupport):
 
         Returns
         -------
-        _type_
-            _description_
+        np.ndarray
+            array of length n_elements containing the volume of each tetrahedron
         """
         vecs = (
             self.nodes[self.elements[:, :4], :][:, 1:, :]

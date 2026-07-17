@@ -752,7 +752,7 @@ class DiscreteInterpolator(GeologicalInterpolator):
 
         Parameters
         ----------
-        evaluation_points : np.ndarray
+        locations : np.ndarray
             location to evaluate the interpolator
 
         Returns
@@ -769,12 +769,13 @@ class DiscreteInterpolator(GeologicalInterpolator):
         Evaluate the gradient of the scalar field at the evaluation points
         Parameters
         ----------
-        evaluation_points : np.array
+        locations : np.array
             xyz locations to evaluate the gradient
 
         Returns
         -------
-
+        np.ndarray
+            Nx3 gradient of the scalar field at the locations
         """
         self.update()
         if locations.shape[0] > 0:
