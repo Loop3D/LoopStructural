@@ -607,29 +607,14 @@ class TestMiscellaneous:
 
 
 # ---------------------------------------------------------------------------
-# Characterization tests for real bugs discovered while writing this suite.
-# These document CURRENT (broken) behaviour; they should be revisited if the
-# underlying implementation is ever fixed, rather than silently "fixed" here.
+# Regression tests for bugs that were previously present in this module.
+# These document the FIXED (correct) behaviour; see git history for the
+# characterization tests that used to document the broken behaviour.
 # ---------------------------------------------------------------------------
-class TestKnownBugs:
-    def test_clear_with_basement_true_leaves_column_empty_bug(self):
-        """Documents a bug in StratigraphicColumn.clear().
-
-        ``clear(basement=True)`` (the default) is implemented as:
-
-            if basement:
-                self.add_basement()
-            self.order = []
-            ...
-
-        ``add_basement()`` appends the Basement unit and Base Unconformity to
-        ``self.order``, but the very next line unconditionally resets
-        ``self.order = []`` - wiping out the basement that was just added.
-        The net effect is that ``clear()`` with its default argument produces
-        an EMPTY column, contrary to what the ``basement=True`` parameter name
-        promises (and contrary to what add_basement() is supposed to achieve).
-        Only ``clear(basement=False)`` behaves as its name would suggest
-        (an empty column).
+class TestFixedBugs:
+    def test_clear_with_basement_true_restores_basement(self):
+        """``clear(basement=True)`` (the default) must leave the column with
+        just the Basement unit and Base Unconformity, not empty.
         """
         column = StratigraphicColumn()
         column.add_unit("A", thickness=10)
@@ -637,56 +622,38 @@ class TestKnownBugs:
 
         column.clear()  # basement=True by default
 
-        # Expected (if not for the bug): len(column.order) == 2, containing
-        # the Basement unit and Base Unconformity. Actual current behaviour:
-        assert column.order == []
+        assert len(column.order) == 2
+        assert column.order[0].name == "Basement"
+        assert column.order[1].name == "Base Unconformity"
 
-    def test_unit_min_max_broken_due_to_basement_infinite_thickness_bug(self):
-        """Documents a bug in StratigraphicColumn.update_unit_values().
+    def test_unit_min_max_not_poisoned_by_basement_infinite_thickness(self):
+        """The basement unit is always created with ``thickness=np.inf``.
 
-        The basement unit is always created with ``thickness=np.inf``.
-        ``update_unit_values()`` walks ``self.order`` from index 0 forward,
-        accumulating ``cumulative_thickness`` across every StratigraphicUnit
-        encountered - including the basement, which is always first in a
-        normally constructed column (added by ``add_basement()`` in
-        ``__init__``). Once the basement is processed, ``cumulative_thickness``
-        becomes ``inf`` and every unit added above it also receives
-        ``min_value == max_value == inf``. This makes ``StratigraphicUnit.min()``
-        / ``.max()`` (and anything downstream that relies on them, e.g.
-        ``get_stratigraphic_ids()``) meaningless for every real unit in a
-        column built the normal way (i.e. via ``StratigraphicColumn()`` +
-        ``add_unit()``, without manually clearing the basement first).
+        ``update_unit_values()`` resets its cumulative thickness accumulator
+        at each unconformity, so the basement's infinite thickness is
+        contained within its own group (isolated by the Base Unconformity)
+        and does not leak into the min/max range of real units added above
+        it.
         """
         column = StratigraphicColumn()  # includes basement with thickness=inf
         unit = column.add_unit("A", thickness=10)
 
-        # Expected (if not for the bug): unit.min() == 0, unit.max() == 10.
-        # Actual current (broken) behaviour:
-        assert unit.min() == np.inf
-        assert unit.max() == np.inf
+        assert unit.min() == 0
+        assert unit.max() == 10
 
-    def test_thickness_setter_does_not_live_update_min_max_bug(self):
-        """Documents a bug in the Observable wiring between StratigraphicUnit
-        and StratigraphicColumn.
-
-        ``StratigraphicColumn.add_unit()`` does::
+    def test_thickness_setter_live_updates_min_max(self):
+        """``StratigraphicColumn.add_unit()`` does::
 
             unit.attach(self.update_unit_values, 'unit/*')
 
-        ``Observable.attach()`` stores the callback in a ``weakref.WeakSet``.
-        ``self.update_unit_values`` is a *bound method*, and Python creates a
-        fresh, transient bound-method object each time an attribute access
-        like ``self.update_unit_values`` happens - nothing else keeps a strong
-        reference to that specific bound-method object once ``attach()``
-        returns. As a result the weak reference is collected almost
-        immediately, so ``StratigraphicUnit.thickness``'s setter (which calls
-        ``self.notify('unit/thickness_updated', unit=self)``) never actually
-        reaches ``update_unit_values`` - the live-update mechanism is dead on
-        arrival. Consequently, changing ``unit.thickness`` after a unit has
-        already been added to a column does NOT automatically refresh the
-        cached ``min_value``/``max_value`` - only an explicit call to
-        ``column.update_unit_values()`` (or another mutating column method
-        that happens to call it) does.
+        ``self.update_unit_values`` is a bound method; ``Observable.attach()``
+        tracks bound-method listeners via ``weakref.WeakMethod`` (keyed on the
+        owning instance) rather than a plain weak reference to the transient
+        bound-method wrapper, so the subscription survives. Changing
+        ``unit.thickness`` after the unit has been added to a column
+        therefore automatically refreshes downstream ``min_value``/
+        ``max_value`` without an explicit call to
+        ``column.update_unit_values()``.
         """
         column = StratigraphicColumn()
         column.clear(basement=False)
@@ -696,15 +663,7 @@ class TestKnownBugs:
         assert b.min_value == 10
         assert b.max_value == 15
 
-        a.thickness = 100  # should, in principle, cascade to b's min/max
+        a.thickness = 100  # should cascade to b's min/max
 
-        # Expected (if the observer wiring worked): b.min_value == 100 and
-        # b.max_value == 105. Actual current (broken) behaviour: unchanged,
-        # because update_unit_values was never re-triggered.
-        assert b.min_value == 10
-        assert b.max_value == 15
-
-        # Confirming the values only change once update is called explicitly.
-        column.update_unit_values()
         assert b.min_value == 100
         assert b.max_value == 105

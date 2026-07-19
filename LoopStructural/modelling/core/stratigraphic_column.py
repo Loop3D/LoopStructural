@@ -386,12 +386,10 @@ class StratigraphicColumn(Observable['StratigraphicColumn']):
         basement : bool, optional
             Whether to add basement after clearing, by default True
         """
-        if basement:
-            self.add_basement()
-            
-        
         self.order = []
         self.group_mapping = {}
+        if basement:
+            self.add_basement()
         self.notify('column_cleared')
     def add_unit(self, name,*, colour=None, thickness=None, where='top',id=None):
         if id is None:
@@ -404,7 +402,7 @@ class StratigraphicColumn(Observable['StratigraphicColumn']):
             self.order.insert(0, unit)
         else:
             raise ValueError("Invalid 'where' argument. Use 'top' or 'bottom'.")
-        unit.attach(self.update_unit_values,'unit/*')
+        unit.attach(self.update_unit_values)
         self.notify('unit_added', unit=unit)
         self.update_unit_values()  # Update min and max values after adding a unit
         return unit
@@ -571,12 +569,20 @@ class StratigraphicColumn(Observable['StratigraphicColumn']):
         ]
         self.notify('order_updated', new_order=self.order)
         self.update_unit_values()  # Update min and max values after updating the order
-    def update_unit_values(self, *, observable: Optional["Observable"] = None, event: Optional[str]= None):
+    def update_unit_values(self, observable: Optional["Observable"] = None, event: Optional[str] = None, **kwargs):
         """
         Updates the min and max values for each unit based on their position in the column.
+
+        Cumulative thickness resets at each unconformity, so that an infinite-thickness
+        unit (e.g. the basement) is contained within its own group and does not propagate
+        into the min/max range of units in the group above it.
+
+        `observable`/`event`/`**kwargs` accept the arguments `Observable.notify()` passes
+        to attached callbacks (`cb(observable, event, *args, **kwargs)`), so this method can
+        be used directly as a listener as well as called explicitly with no arguments.
         """
-        # If the event is not 'unit/*', skip the update
-        if event is not None and event != 'unit/*':
+        # Ignore notifications that aren't unit-namespaced events (e.g. column-level events)
+        if event is not None and not event.startswith('unit/'):
             return
         cumulative_thickness = 0
         for element in self.order:
@@ -584,6 +590,8 @@ class StratigraphicColumn(Observable['StratigraphicColumn']):
                 element.min_value = cumulative_thickness
                 element.max_value = cumulative_thickness + (element.thickness or 0)
                 cumulative_thickness = element.max_value
+            elif isinstance(element, StratigraphicUnconformity):
+                cumulative_thickness = 0
 
     def update_element(self, unit_data: Dict):
         """

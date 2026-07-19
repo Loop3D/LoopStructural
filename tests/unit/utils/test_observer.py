@@ -37,18 +37,13 @@ def test_attach_callback_and_notify():
     assert received[0][3] == {"key": "value"}
 
 
-def test_attach_observer_object_is_dropped_immediately_bug():
-    """Documents a real bug in Observable.attach().
-
-    `attach()` stores `listener.update` (a freshly-created bound method) in a
-    `weakref.WeakSet`. Nothing else keeps a strong reference to that bound
-    method object, so under normal CPython refcounting it is deallocated
-    (and silently removed from the WeakSet) essentially immediately - often
-    before `attach()` even returns. As a result the documented "Observer
-    protocol" pattern (attaching an object that implements `update`) never
-    actually receives any notifications; only attaching a plain function/
-    callable that is kept alive elsewhere works (see the callback-based
-    tests below). This should probably use `weakref.WeakMethod` instead.
+def test_attach_observer_object_receives_notifications():
+    """`attach()` tracks bound-method listeners (e.g. `listener.update`) via
+    `weakref.WeakMethod`, which is keyed on the owning instance rather than
+    the transient bound-method wrapper object. As long as the observer
+    object itself (`recorder`) is kept alive, it continues to receive
+    notifications through the "Observer protocol" pattern (attaching an
+    object that implements `update`).
     """
     obs = Observable()
     recorder = Recorder()
@@ -57,9 +52,8 @@ def test_attach_observer_object_is_dropped_immediately_bug():
     gc.collect()
     obs.notify("event_a")
 
-    # Bug: this "should" be 1, but the bound method was already garbage
-    # collected by the time notify() runs, so the recorder never gets called.
-    assert recorder.calls == []
+    assert len(recorder.calls) == 1
+    assert recorder.calls[0][1] == "event_a"
 
 
 def test_attach_specific_event_only_triggers_for_that_event():

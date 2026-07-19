@@ -3,6 +3,7 @@ from __future__ import annotations
 from collections.abc import Callable
 from contextlib import contextmanager
 from typing import Any, Generic, Protocol, TypeVar, runtime_checkable
+import inspect
 import threading
 import weakref
 
@@ -86,11 +87,21 @@ class Observable(Generic[T]):
     #: Internal storage: mapping *event* → WeakSet[Callback]
     _observers: dict[str, weakref.WeakSet[Callback]]
     _any_observers: weakref.WeakSet[Callback]
-    
+    #: Bound-method listeners, kept separately as `weakref.WeakMethod` objects.
+    #: A bound method (e.g. ``self.some_method``) is a transient wrapper object -
+    #: nothing keeps it alive once the expression that created it finishes, so a
+    #: plain `weakref.ref`/`WeakSet` entry for it dies almost immediately. Storing
+    #: a strongly-held `WeakMethod` instead correctly tracks the lifetime of the
+    #: *owning instance* (`__self__`) rather than the throwaway wrapper.
+    _observer_methods: dict[str, set[weakref.WeakMethod]]
+    _any_observer_methods: set[weakref.WeakMethod]
+
     def __init__(self) -> None:
         self._lock = threading.RLock()
         self._observers = {}
         self._any_observers = weakref.WeakSet()
+        self._observer_methods = {}
+        self._any_observer_methods = set()
         self._frozen = 0
         self._pending: list[tuple[str, tuple[Any, ...], dict[str, Any]]] = []
 
@@ -117,7 +128,13 @@ class Observable(Generic[T]):
         )
 
         with self._lock:
-            if event is None:
+            if inspect.ismethod(callback):
+                method_ref = weakref.WeakMethod(callback)
+                if event is None:
+                    self._any_observer_methods.add(method_ref)
+                else:
+                    self._observer_methods.setdefault(event, set()).add(method_ref)
+            elif event is None:
                 self._any_observers.add(callback)
             else:
                 self._observers.setdefault(event, weakref.WeakSet()).add(callback)
@@ -142,7 +159,15 @@ class Observable(Generic[T]):
         )
 
         with self._lock:
-            if event is None:
+            if inspect.ismethod(callback):
+                method_ref = weakref.WeakMethod(callback)
+                if event is None:
+                    self._any_observer_methods.discard(method_ref)
+                    for s in self._observer_methods.values():
+                        s.discard(method_ref)
+                else:
+                    self._observer_methods.get(event, set()).discard(method_ref)
+            elif event is None:
                 self._any_observers.discard(callback)
                 for s in self._observers.values():
                     s.discard(callback)
@@ -160,6 +185,8 @@ class Observable(Generic[T]):
         state.pop('_lock', None)  # RLock cannot be pickled
         state.pop('_observers', None)  # WeakSet cannot be pickled
         state.pop('_any_observers', None)
+        state.pop('_observer_methods', None)  # WeakMethod cannot be pickled
+        state.pop('_any_observer_methods', None)
         return state
     
     def __setstate__(self, state):
@@ -174,6 +201,8 @@ class Observable(Generic[T]):
         self._lock = threading.RLock()
         self._observers = {}
         self._any_observers = weakref.WeakSet()
+        self._observer_methods = {}
+        self._any_observer_methods = set()
         self._frozen = 0
     # ‑‑‑ notification api --------------------------------------------------
     def notify(self: T, event: str, *args: Any, **kwargs: Any) -> None:  
@@ -197,6 +226,15 @@ class Observable(Generic[T]):
 
             observers = list(self._any_observers)
             observers.extend(self._observers.get(event, ()))
+            method_refs = list(self._any_observer_methods)
+            method_refs.extend(self._observer_methods.get(event, ()))
+
+        # Resolve weak method references to live bound methods, dropping any
+        # whose owning instance has since been garbage collected.
+        for method_ref in method_refs:
+            method = method_ref()
+            if method is not None:
+                observers.append(method)
 
         # Call outside lock — prevent deadlocks if observers trigger other
         # notifications.
