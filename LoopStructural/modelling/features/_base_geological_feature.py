@@ -4,6 +4,7 @@ from abc import ABCMeta, abstractmethod
 from typing import Union, List, Optional
 from LoopStructural.modelling.features import FeatureType
 from LoopStructural.utils import getLogger
+from LoopStructural.utils import LoopValueError
 from LoopStructural.utils.typing import NumericInput
 from LoopStructural.utils import LoopIsosurfacer, surface_list
 from LoopStructural.datatypes import VectorPoints
@@ -11,6 +12,31 @@ from LoopStructural.datatypes import VectorPoints
 import numpy as np
 
 logger = getLogger(__name__)
+
+
+def _reachable_features(start) -> dict:
+    """Walk the same edges evaluate_value/_apply_faults traverse at runtime and
+    return every feature reachable from `start`, keyed by id().
+
+    A feature can trigger evaluation of two kinds of dependency: the faults in
+    its own `faults` list, and -- for structural frames such as FaultSegment --
+    the coordinate features that make up the frame (evaluating the frame means
+    evaluating its components, which in turn apply their own faults). Mirroring
+    both edge types here means a cycle anywhere in that call graph is caught
+    before it can cause unbounded recursion at evaluation time.
+    """
+    seen = {}
+    stack = [start]
+    while stack:
+        current = stack.pop()
+        neighbours = list(getattr(current, '_faults', None) or [])
+        neighbours.extend(getattr(current, 'features', None) or [])
+        for neighbour in neighbours:
+            if neighbour is None or id(neighbour) in seen:
+                continue
+            seen[id(neighbour)] = neighbour
+            stack.append(neighbour)
+    return seen
 
 
 class BaseFeature(metaclass=ABCMeta):
@@ -72,6 +98,20 @@ class BaseFeature(metaclass=ABCMeta):
                 f'Faults must be a list of BaseFeature \n Trying to set using {type(faults)}'
             )
             raise TypeError("Faults must be a list of BaseFeature")
+
+        for f in _faults:
+            if f is self:
+                raise LoopValueError(
+                    f"Cannot add fault '{f.name}' to itself: a feature cannot be its own fault"
+                )
+            reachable = _reachable_features(f)
+            if id(self) in reachable:
+                raise LoopValueError(
+                    f"Adding fault '{f.name}' to '{self.name}' would create a circular "
+                    "fault dependency (evaluating it would eventually re-evaluate "
+                    f"'{self.name}' itself). Check the fault relationships between "
+                    f"'{self.name}' and '{f.name}'."
+                )
 
         self._faults = _faults
 
