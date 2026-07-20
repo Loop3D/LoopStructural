@@ -100,7 +100,7 @@ class LoopIsosurfacer:
             isovalues = [values]
         if isinstance(values, int) and values == 0:
             values = 0.0  # assume 0 isosurface is meant to be a float
-
+            isovalues = [values]
         elif isinstance(values, int) and values < 1:
             raise ValueError(
                 "Number of isosurfaces must be greater than 1. Either use a positive integer or provide a list or float for a specific isovalue."
