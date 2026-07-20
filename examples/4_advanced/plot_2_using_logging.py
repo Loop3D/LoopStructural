@@ -37,14 +37,13 @@ def build_claudius_model():
     model.data = data
 
     vals = [0, 60, 250, 330, 600]
-    strat_column = {"strati": {}}
     for i in range(len(vals) - 1):
-        strat_column["strati"]["unit_{}".format(i)] = {
-            "min": vals[i],
-            "max": vals[i + 1],
-            "id": i,
-        }
-    model.set_stratigraphic_column(strat_column)
+        model.stratigraphic_column.add_unit(
+            f"unit_{i}",
+            thickness=vals[i + 1] - vals[i],
+            id=i,
+        )
+    model.stratigraphic_column.group_mapping["Group_0"] = "strati"
     model.create_and_add_foliation(
         "strati",
         interpolatortype="FDI",  # try changing this to 'PLI'

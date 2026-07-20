@@ -62,20 +62,23 @@ def build_model_and_plot(
     model.add_onlap_unconformity(model["nconf"], 0)
     model.create_and_add_foliation("strati4")
 
-    stratigraphic_columns = {
-        "strati4": {"series4": {"min": -np.inf, "max": np.inf, "id": 5}},
-        "strati2": {
-            "series1": {"min": 0.0, "max": 2.0, "id": 0, "colour": "red"},
-            "series2": {"min": 2.0, "max": 5.0, "id": 1, "colour": "red"},
-            "series3": {"min": 5.0, "max": 10.0, "id": 2, "colour": "red"},
-        },
-        "strati": {
-            "series2": {"min": -np.inf, "max": -100, "id": 3, "colour": "blue"},
-            "series3": {"min": -100, "max": np.inf, "id": 4, "colour": "blue"},
-        },
-    }
+    # "strati2" (oldest group)
+    model.stratigraphic_column.add_unit("series1", thickness=2.0, id=0, colour="red")
+    model.stratigraphic_column.add_unit("series2", thickness=3.0, id=1, colour="red")
+    model.stratigraphic_column.add_unit("series3", thickness=5.0, id=2, colour="red")
+    model.stratigraphic_column.add_unconformity(name="strati2_unconformity")
 
-    model.set_stratigraphic_column(stratigraphic_columns)
+    # "strati"
+    model.stratigraphic_column.add_unit("series2", thickness=np.inf, id=3, colour="blue")
+    model.stratigraphic_column.add_unit("series3", thickness=np.inf, id=4, colour="blue")
+    model.stratigraphic_column.add_unconformity(name="strati_unconformity")
+
+    # "strati4" (youngest group)
+    model.stratigraphic_column.add_unit("series4", thickness=np.inf, id=5)
+
+    model.stratigraphic_column.group_mapping["Group_0"] = "strati4"
+    model.stratigraphic_column.group_mapping["Group_1"] = "strati"
+    model.stratigraphic_column.group_mapping["Group_2"] = "strati2"
 
     xx, zz = np.meshgrid(np.linspace(0, 1000, 100), np.linspace(0, 200, 100))
     yy = np.zeros_like(xx) + 500

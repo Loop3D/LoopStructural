@@ -48,29 +48,37 @@ strati = model.create_and_add_foliation(
 ########################################################################
 # Stratigraphic columns
 # ~~~~~~~~~~~~~~~~~~~~~
-# The stratigraphic column is a nested dictionary keyed first by group
-# (feature) name, then by unit name. Each unit gives the ``min``/``max``
-# range of scalar field value it occupies within that group, and a unique
-# integer ``id`` used to label it in the block model. Ranges should be
-# contiguous and can extend to +/- infinity for the oldest/youngest unit
-# in a group.
+# ``model.stratigraphic_column`` is a :class:`StratigraphicColumn` object.
+# Units are added with :code:`add_unit(name, thickness=..., id=...)`, from
+# the oldest/deepest unit up to the youngest/shallowest, and
+# :code:`add_unconformity(name=...)` marks the boundary between two groups
+# (features). Each unit's ``thickness`` sets how much of the group's
+# scalar field range it occupies - ranges are assigned automatically,
+# resetting to zero at every unconformity - and can be :code:`np.inf` for
+# the oldest unit in a group. A unique integer ``id`` is used to label
+# each unit in the block model.
 
-stratigraphic_column = {}
-stratigraphic_column["strati2"] = {}
-stratigraphic_column["strati2"]["unit1"] = {"min": 1, "max": 10, "id": 0}
-stratigraphic_column["strati"] = {}
-stratigraphic_column["strati"]["unit2"] = {"min": -60, "max": 0, "id": 1}
-stratigraphic_column["strati"]["unit3"] = {"min": -250, "max": -60, "id": 2}
-stratigraphic_column["strati"]["unit4"] = {"min": -330, "max": -250, "id": 3}
-stratigraphic_column["strati"]["unit5"] = {"min": -np.inf, "max": -330, "id": 4}
+# "strati" (oldest group) - four units from shallowest to deepest, the
+# last of which extends to infinite thickness
+model.stratigraphic_column.add_unit("unit2", thickness=60, id=1)
+model.stratigraphic_column.add_unit("unit3", thickness=190, id=2)
+model.stratigraphic_column.add_unit("unit4", thickness=80, id=3)
+model.stratigraphic_column.add_unit("unit5", thickness=np.inf, id=4)
+
+# mark the boundary between the "strati" and "strati2" groups
+model.stratigraphic_column.add_unconformity(name="strati_unconformity")
+
+# "strati2" (youngest group) - a single unit
+model.stratigraphic_column.add_unit("unit1", thickness=9, id=0)
+
+model.stratigraphic_column.group_mapping["Group_0"] = "strati2"
+model.stratigraphic_column.group_mapping["Group_1"] = "strati"
 
 ########################################################
 # Adding stratigraphic column to the model
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-# The stratigraphic column can be added to the geological model. Allowing
-# for the `model.evaluate_model(xyz)` function to be called.
-
-model.set_stratigraphic_column(stratigraphic_column)
+# With the stratigraphic column defined on the model, the
+# `model.evaluate_model(xyz)` function can be called.
 
 viewer = Loop3DView(model)
 viewer.plot_block_model(cmap='tab20')
