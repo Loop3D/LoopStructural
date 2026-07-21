@@ -10,7 +10,7 @@ from ...utils import getLogger
 from ...modelling.features import FeatureType
 import numpy as np
 from typing import Optional, List, Union
-from ...datatypes import ValuePoints, VectorPoints
+from ...geometry import ValuePoints, VectorPoints
 
 from ...utils import LoopValueError
 

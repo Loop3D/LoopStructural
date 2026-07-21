@@ -3,7 +3,7 @@ import pytest
 
 pyevtk = pytest.importorskip("pyevtk")
 
-from LoopStructural.datatypes import BoundingBox, Surface
+from LoopStructural.geometry import BoundingBox, Surface
 from LoopStructural.export import exporters
 from LoopStructural.export.file_formats import FileFormat
 from LoopStructural.utils.exceptions import LoopValueError

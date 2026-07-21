@@ -6,7 +6,7 @@ from . import (
     support_interpolator_map,
     interpolator_string_map,
 )
-from LoopStructural.datatypes import BoundingBox
+from LoopStructural.geometry import BoundingBox
 import numpy as np
 
 

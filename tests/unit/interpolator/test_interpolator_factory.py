@@ -1,13 +1,13 @@
 import numpy as np
 import pytest
 
-from LoopStructural.datatypes import BoundingBox
+from LoopStructural.geometry import BoundingBox
 from LoopStructural.interpolators import (
     FiniteDifferenceInterpolator,
     InterpolatorFactory,
     InterpolatorType,
     P1Interpolator,
-    StructuredGrid,
+    StructuredGridSupport,
     TetMesh,
 )
 
@@ -20,7 +20,7 @@ def bounding_box():
 def test_create_interpolator_with_string_fdi(bounding_box):
     interpolator = InterpolatorFactory.create_interpolator("FDI", bounding_box, 1000)
     assert isinstance(interpolator, FiniteDifferenceInterpolator)
-    assert isinstance(interpolator.support, StructuredGrid)
+    assert isinstance(interpolator.support, StructuredGridSupport)
 
 
 def test_create_interpolator_with_string_pli(bounding_box):
@@ -37,7 +37,7 @@ def test_create_interpolator_with_enum(bounding_box):
 
 
 def test_create_interpolator_with_explicit_support(bounding_box):
-    support = StructuredGrid(
+    support = StructuredGridSupport(
         origin=bounding_box.origin, nsteps=np.array([5, 5, 5]), step_vector=np.array([0.2, 0.2, 0.2])
     )
     interpolator = InterpolatorFactory.create_interpolator(

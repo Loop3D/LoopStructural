@@ -7,7 +7,7 @@ from LoopStructural.utils import getLogger
 from LoopStructural.utils import LoopValueError
 from LoopStructural.utils.typing import NumericInput
 from LoopStructural.utils import LoopIsosurfacer, surface_list
-from LoopStructural.datatypes import VectorPoints
+from LoopStructural.geometry import VectorPoints
 
 import numpy as np
 

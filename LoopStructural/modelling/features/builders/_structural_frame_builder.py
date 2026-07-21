@@ -10,7 +10,7 @@ import numpy as np
 import copy
 
 from ....utils import getLogger
-from ....datatypes import BoundingBox
+from ....geometry import BoundingBox
 
 logger = getLogger(__name__)
 

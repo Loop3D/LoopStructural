@@ -14,7 +14,7 @@ except ImportError:
     from skimage.measure import marching_cubes_lewiner as marching_cubes
 
 # from LoopStructural.interpolators._geological_interpolator import GeologicalInterpolator
-from LoopStructural.datatypes import Surface, BoundingBox
+from LoopStructural.geometry import Surface, BoundingBox
 
 surface_list = List[Surface]
 

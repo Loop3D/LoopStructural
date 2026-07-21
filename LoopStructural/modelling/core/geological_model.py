@@ -35,7 +35,7 @@ from ...utils.helper import (
     gradient_vec_names,
 )
 from ...utils import strikedip2vector
-from ...datatypes import BoundingBox
+from ...geometry import BoundingBox
 
 from ...modelling.intrusions import IntrusionBuilder
 

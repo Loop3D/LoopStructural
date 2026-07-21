@@ -16,7 +16,7 @@ from LoopStructural.utils import getLogger
 logger = getLogger(__name__)
 
 
-class StructuredGrid(BaseStructuredSupport):
+class StructuredGridSupport(BaseStructuredSupport):
     """ """
 
     def __init__(

@@ -52,7 +52,7 @@ to install the working 3D visualisation environment
 
 ```Python
 from LoopStructural import GeologicalModel
-from LoopStructural.datatypes import BoundingBox
+from LoopStructural.geometry import BoundingBox
 from LoopStructural.visualisation import Loop3DView
 from LoopStructural.datasets import load_claudius
 

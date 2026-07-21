@@ -61,7 +61,7 @@ from .modelling.core.stratigraphic_column import StratigraphicColumn
 from .modelling.core.fault_topology import FaultTopology
 from .interpolators._api import LoopInterpolator
 from .interpolators import InterpolatorBuilder
-from .datatypes import BoundingBox
+from .geometry import BoundingBox
 from .utils import log_to_console, log_to_file, getLogger, rng, get_levels
 
 logger = getLogger(__name__)

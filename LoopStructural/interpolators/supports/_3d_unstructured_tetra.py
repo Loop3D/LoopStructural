@@ -6,9 +6,8 @@ from ast import Tuple
 
 
 import numpy as np
-from scipy.sparse import csr_matrix, coo_matrix, tril
 
-from . import StructuredGrid
+from LoopStructural.geometry import UnstructuredMeshGeometry
 from LoopStructural.utils import getLogger
 from . import SupportType
 from ._base_support import BaseSupport
@@ -46,234 +45,57 @@ class UnStructuredTetMesh(BaseSupport):
             force nsteps for aabb, by default None
         """
         self.type = SupportType.UnStructuredTetMesh
-        self._nodes = np.array(nodes)
-        if self._nodes.shape[1] != 3:
-            raise ValueError("Nodes must be 3D")
-        self.neighbours = np.array(neighbours, dtype=np.int64)
-        if self.neighbours.shape[1] != 4:
-            raise ValueError("Neighbours array is too big")
-        self._elements = np.array(elements, dtype=np.int64)
-        if self.elements.shape[0] != self.neighbours.shape[0]:
-            raise ValueError("Number of elements and neighbours do not match")
-        self._barycentre = np.sum(self.nodes[self.elements[:, :4]][:, :, :], axis=1) / 4.0
-        self.minimum = np.min(self.nodes, axis=0)
-        self.maximum = np.max(self.nodes, axis=0)
-        length = self.maximum - self.minimum
-        self.minimum -= length * 0.1
-        self.maximum += length * 0.1
-        if self.elements.shape[0] < 2000:
-            self.aabb_grid = StructuredGrid(self.minimum, nsteps=[2, 2, 2], step_vector=[1, 1, 1])
-        else:
-            if aabb_nsteps is None:
-                box_vol = np.prod(self.maximum - self.minimum)
-                element_volume = box_vol / (len(self.elements) / 20)
-                # calculate the step vector of a regular cube
-                step_vector = np.zeros(3)
-                step_vector[:] = element_volume ** (1.0 / 3.0)
-                # number of steps is the length of the box / step vector
-                aabb_nsteps = np.ceil((self.maximum - self.minimum) / step_vector).astype(int)
-                # make sure there is at least one cell in every dimension
-                aabb_nsteps[aabb_nsteps < 2] = 2
-            aabb_nsteps = np.array(aabb_nsteps, dtype=int)
-            step_vector = (self.maximum - self.minimum) / (aabb_nsteps - 1)
-            self.aabb_grid = StructuredGrid(
-                self.minimum, nsteps=aabb_nsteps, step_vector=step_vector
-            )
-        # make a big table to store which tetra are in which element.
-        # if this takes up too much memory it could be simplified by using sparse matrices or dict but
-        # at the expense of speed
-        self.aabb_table = csr_matrix((self.aabb_grid.n_elements, len(self.elements)), dtype=bool)
-        self.shared_element_relationships = np.zeros(
-            (self.neighbours[self.neighbours >= 0].flatten().shape[0], 2), dtype=int
-        )
-        self.shared_elements = np.zeros(
-            (self.neighbours[self.neighbours >= 0].flatten().shape[0], 3), dtype=int
-        )
-        self._init_face_table()
-        self._initialise_aabb()
+        self._geom = UnstructuredMeshGeometry(nodes, elements, neighbours, aabb_nsteps=aabb_nsteps)
 
     def set_nelements(self, nelements):
         raise NotImplementedError("Cannot set number of elements for unstructured mesh")
 
     @property
     def nodes(self):
-        return self._nodes
+        return self._geom.nodes
 
     @property
     def elements(self):
-        return self._elements
+        return self._geom.elements
+
+    @property
+    def neighbours(self):
+        return self._geom.neighbours
+
+    @property
+    def minimum(self):
+        return self._geom.minimum
+
+    @property
+    def maximum(self):
+        return self._geom.maximum
+
+    @property
+    def aabb_grid(self):
+        return self._geom.aabb_grid
+
+    @property
+    def aabb_table(self):
+        return self._geom.aabb_table
+
+    @property
+    def shared_elements(self):
+        return self._geom.shared_elements
+
+    @property
+    def shared_element_relationships(self):
+        return self._geom.shared_element_relationships
 
     @property
     def barycentre(self):
-        return self._barycentre
+        return self._geom.barycentre
 
     @property
     def n_nodes(self):
-        return self.nodes.shape[0]
+        return self._geom.n_nodes
 
     def onGeometryChange(self):
         pass
-
-    def _init_face_table(self):
-        """
-        Fill table containing elements that share a face, and another
-        table that contains the nodes for a face.
-        """
-        # need to identify the shared nodes for pairs of elements
-        # we do this by creating a sparse matrix that has N rows (number of elements)
-        # and M columns (number of nodes).
-        # We then fill the location where a node is in an element with true
-        # Then we create a table for the pairs of elements in the mesh
-        # we have the neighbour relationships, which are the 4 neighbours for each element
-        # create a new table that shows the element index repeated four times
-        # flatten both of these arrays so we effectively have a table with pairs of neighbours
-        # disgard the negative neighbours because these are border neighbours
-        rows = np.tile(np.arange(self.n_elements)[:, None], (1, 4))
-        elements = self.get_elements()
-        neighbours = self.get_neighbours()
-        # add array of bool to the location where there are elements for each node
-
-        # use this to determine shared faces
-
-        element_nodes = coo_matrix(
-            (np.ones(elements.shape[0] * 4), (rows.ravel(), elements[:, :4].ravel())),
-            shape=(self.n_elements, self.n_nodes),
-            dtype=bool,
-        ).tocsr()
-        n1 = np.tile(np.arange(neighbours.shape[0], dtype=int)[:, None], (1, 4))
-        n1 = n1.flatten()
-        n2 = neighbours.flatten()
-        n1 = n1[n2 >= 0]
-        n2 = n2[n2 >= 0]
-        el_rel = np.zeros((self.neighbours.flatten().shape[0], 2), dtype=int)
-        el_rel[:] = -1
-        el_rel[np.arange(n1.shape[0]), 0] = n1
-        el_rel[np.arange(n1.shape[0]), 1] = n2
-        el_rel = el_rel[el_rel[:, 0] >= 0, :]
-
-        # el_rel2 = np.zeros((self.neighbours.flatten().shape[0], 2), dtype=int)
-        self.shared_element_relationships[:] = -1
-        el_pairs = coo_matrix((np.ones(el_rel.shape[0]), (el_rel[:, 0], el_rel[:, 1]))).tocsr()
-        i, j = tril(el_pairs).nonzero()
-        self.shared_element_relationships[: len(i), 0] = i
-        self.shared_element_relationships[: len(i), 1] = j
-
-        self.shared_element_relationships = self.shared_element_relationships[
-            self.shared_element_relationships[:, 0] >= 0, :
-        ]
-
-        faces = element_nodes[self.shared_element_relationships[:, 0], :].multiply(
-            element_nodes[self.shared_element_relationships[:, 1], :]
-        )
-        shared_faces = faces[np.array(np.sum(faces, axis=1) == 3).flatten(), :]
-        row, col = shared_faces.nonzero()
-        row = row[row.argsort()]
-        col = col[row.argsort()]
-        shared_face_index = np.zeros((shared_faces.shape[0], 3), dtype=int)
-        shared_face_index[:] = -1
-        shared_face_index[row.reshape(-1, 3)[:, 0], :] = col.reshape(-1, 3)
-
-        self.shared_elements[np.arange(self.shared_element_relationships.shape[0]), :] = (
-            shared_face_index
-        )
-        # resize
-        self.shared_elements = self.shared_elements[: len(self.shared_element_relationships), :]
-        # flag = np.zeros(self.elements.shape[0])
-        # face_index = 0
-        # for i, t in enumerate(self.elements):
-        #     flag[i] = True
-        #     for n in self.neighbours[i]:
-        #         if n < 0:
-        #             continue
-        #         if flag[n]:
-        #             continue
-        #         face_node_index = 0
-        #         self.shared_element_relationships[face_index, 0] = i
-        #         self.shared_element_relationships[face_index, 1] = n
-        #         for v in t:
-        #             if v in self.elements[n, :4]:
-        #                 self.shared_elements[face_index, face_node_index] = v
-        #                 face_node_index += 1
-
-        #         face_index += 1
-        # self.shared_elements = self.shared_elements[:face_index, :]
-        # self.shared_element_relationships = self.shared_element_relationships[
-        #     :face_index, :
-        # ]
-
-    def _initialise_aabb(self):
-        """assigns the tetras to the grid cells where the bounding box
-        of the tetra element overlaps the grid cell.
-        It could be changed to use the separating axis theorem, however this would require
-        significantly more calculations. (12 more I think).. #TODO test timing
-        """
-        # calculate the bounding box for all tetraherdon in the mesh
-        # find the min/max extents for xyz
-        # tetra_bb = np.zeros((self.elements.shape[0], 19, 3))
-        minx = np.min(self.nodes[self.elements[:, :4], 0], axis=1)
-        maxx = np.max(self.nodes[self.elements[:, :4], 0], axis=1)
-        miny = np.min(self.nodes[self.elements[:, :4], 1], axis=1)
-        maxy = np.max(self.nodes[self.elements[:, :4], 1], axis=1)
-        minz = np.min(self.nodes[self.elements[:, :4], 2], axis=1)
-        maxz = np.max(self.nodes[self.elements[:, :4], 2], axis=1)
-        cell_indexes = self.aabb_grid.global_index_to_cell_index(
-            np.arange(self.aabb_grid.n_elements)
-        )
-        corners = self.aabb_grid.cell_corner_indexes(cell_indexes)
-        positions = self.aabb_grid.node_indexes_to_position(corners)
-        ## Because we known the node orders just select min/max from each
-        # coordinate. Use these to check whether the tetra is in the cell
-        x_boundary = positions[:, [0, 1], 0]
-        y_boundary = positions[:, [0, 2], 1]
-        z_boundary = positions[:, [0, 6], 2]
-        a = np.logical_and(
-            minx[None, :] > x_boundary[:, None, 0],
-            minx[None, :] < x_boundary[:, None, 1],
-        )  # min point between cell
-        b = np.logical_and(
-            maxx[None, :] < x_boundary[:, None, 1],
-            maxx[None, :] > x_boundary[:, None, 0],
-        )  # max point between cell
-        c = np.logical_and(
-            minx[None, :] < x_boundary[:, None, 0],
-            maxx[None, :] > x_boundary[:, None, 0],
-        )  # min point < than cell & max point > cell
-
-        x_logic = np.logical_or(np.logical_or(a, b), c)
-
-        a = np.logical_and(
-            miny[None, :] > y_boundary[:, None, 0],
-            miny[None, :] < y_boundary[:, None, 1],
-        )  # min point between cell
-        b = np.logical_and(
-            maxy[None, :] < y_boundary[:, None, 1],
-            maxy[None, :] > y_boundary[:, None, 0],
-        )  # max point between cell
-        c = np.logical_and(
-            miny[None, :] < y_boundary[:, None, 0],
-            maxy[None, :] > y_boundary[:, None, 0],
-        )  # min point < than cell & max point > cell
-
-        y_logic = np.logical_or(np.logical_or(a, b), c)
-
-        a = np.logical_and(
-            minz[None, :] > z_boundary[:, None, 0],
-            minz[None, :] < z_boundary[:, None, 1],
-        )  # min point between cell
-        b = np.logical_and(
-            maxz[None, :] < z_boundary[:, None, 1],
-            maxz[None, :] > z_boundary[:, None, 0],
-        )  # max point between cell
-        c = np.logical_and(
-            minz[None, :] < z_boundary[:, None, 0],
-            maxz[None, :] > z_boundary[:, None, 0],
-        )  # min point < than cell & max point > cell
-
-        z_logic = np.logical_or(np.logical_or(a, b), c)
-        logic = np.logical_and(x_logic, y_logic)
-        logic = np.logical_and(logic, z_logic)
-
-        self.aabb_table = csr_matrix(logic)
 
     @property
     def ntetra(self):
@@ -292,18 +114,14 @@ class UnStructuredTetMesh(BaseSupport):
         """
         Get the normal to all of the shared elements
         """
-        elements = self.shared_elements
-        v1 = self.nodes[elements[:, 1], :] - self.nodes[elements[:, 0], :]
-        v2 = self.nodes[elements[:, 2], :] - self.nodes[elements[:, 0], :]
-        return np.cross(v1, v2, axisa=1, axisb=1)
+        return self._geom.shared_element_norm
 
     @property
     def shared_element_size(self):
         """
         Get the area of the share triangle
         """
-        norm = self.shared_element_norm
-        return 0.5 * np.linalg.norm(norm, axis=1)
+        return self._geom.shared_element_size
 
     @property
     def element_size(self):
@@ -315,11 +133,7 @@ class UnStructuredTetMesh(BaseSupport):
         np.ndarray
             array of length n_elements containing the volume of each tetrahedron
         """
-        vecs = (
-            self.nodes[self.elements[:, :4], :][:, 1:, :]
-            - self.nodes[self.elements[:, :4], :][:, 0, None, :]
-        )
-        return np.abs(np.linalg.det(vecs)) / 6
+        return self._geom.element_size
 
     def evaluate_shape_derivatives(self, locations, elements=None):
         """
@@ -437,18 +251,10 @@ class UnStructuredTetMesh(BaseSupport):
         if pos.shape[1] > 3:
             logger.warning(f"Converting {pos.shape[1]} to 3d using first 3 columns")
             pos = pos[:, :3]
-
-        inside = np.ones(pos.shape[0]).astype(bool)
-        for i in range(3):
-            inside *= pos[:, i] > self.origin[None, i]
-            inside *= (
-                pos[:, i]
-                < self.origin[None, i] + self.step_vector[None, i] * self.nsteps_cells[None, i]
-            )
-        return inside
+        return self._geom.inside(pos)
 
     def get_elements(self):
-        return self.elements
+        return self._geom.get_elements()
 
     def get_element_for_location(self, points: np.ndarray) -> Tuple:
         """
@@ -535,13 +341,6 @@ class UnStructuredTetMesh(BaseSupport):
         -------
 
         """
-        # points = np.zeros((5, 4, self.n_cells, 3))
-        # points[:, :, even_mask, :] = nodes[:, even_mask, :][self.tetra_mask_even, :, :]
-        # points[:, :, ~even_mask, :] = nodes[:, ~even_mask, :][self.tetra_mask, :, :]
-
-        # # changing order to points, tetra, nodes, coord
-        # points = points.swapaxes(0, 2)
-        # points = points.swapaxes(1, 2)
         if elements is None:
             elements = np.arange(0, self.n_elements, dtype=int)
         ps = self.nodes[
@@ -626,7 +425,7 @@ class UnStructuredTetMesh(BaseSupport):
         -------
 
         """
-        return self.neighbours
+        return self._geom.get_neighbours()
 
     def vtk(self, node_properties={}, cell_properties={}):
         try:

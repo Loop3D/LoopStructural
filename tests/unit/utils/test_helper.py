@@ -1,7 +1,7 @@
 import numpy as np
 import pandas as pd
 
-from LoopStructural.datatypes import BoundingBox
+from LoopStructural.geometry import BoundingBox
 from LoopStructural.utils.helper import (
     get_data_bounding_box,
     get_data_bounding_box_map,

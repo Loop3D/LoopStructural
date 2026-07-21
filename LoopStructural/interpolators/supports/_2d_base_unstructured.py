@@ -6,13 +6,10 @@ from abc import abstractmethod
 import logging
 from typing import Tuple
 import numpy as np
-from scipy import sparse
 
+from LoopStructural.geometry import UnstructuredMesh2DGeometry
 from . import SupportType
-from ._2d_structured_grid import StructuredGrid2D
 from ._base_support import BaseSupport
-from ._aabb import _initialise_aabb
-from ._face_table import _init_face_table
 
 logger = logging.getLogger(__name__)
 
@@ -24,97 +21,77 @@ class BaseUnstructured2d(BaseSupport):
 
     def __init__(self, elements, vertices, neighbours, aabb_nsteps=None):
         self.type = SupportType.BaseUnstructured2d
-        self._elements = elements
-        self.vertices = vertices
+        self._geom = UnstructuredMesh2DGeometry(
+            elements, vertices, neighbours, aabb_nsteps=aabb_nsteps
+        )
         if self.elements.shape[1] == 3:
             self.order = 1
         elif self.elements.shape[1] == 6:
             self.order = 2
         self.dof = self.vertices.shape[0]
-        self.neighbours = neighbours
-        self.minimum = np.min(self.nodes, axis=0)
-        self.maximum = np.max(self.nodes, axis=0)
-        length = self.maximum - self.minimum
-        self.minimum -= length * 0.1
-        self.maximum += length * 0.1
-        if aabb_nsteps is None:
-            box_vol = np.prod(self.maximum - self.minimum)
-            element_volume = box_vol / (len(self.elements) / 20)
-            # calculate the step vector of a regular cube
-            step_vector = np.zeros(2)
-            step_vector[:] = element_volume ** (1.0 / 2.0)
-            # number of steps is the length of the box / step vector
-            aabb_nsteps = np.ceil((self.maximum - self.minimum) / step_vector).astype(int)
-            # make sure there is at least one cell in every dimension
-            aabb_nsteps[aabb_nsteps < 2] = 2
-        step_vector = (self.maximum - self.minimum) / (aabb_nsteps - 1)
-        self.aabb_grid = StructuredGrid2D(self.minimum, nsteps=aabb_nsteps, step_vector=step_vector)
-        # make a big table to store which tetra are in which element.
-        # if this takes up too much memory it could be simplified by using sparse matrices or dict but
-        # at the expense of speed
-        self._aabb_table = sparse.csr_matrix(
-            (self.aabb_grid.n_elements, len(self.elements)), dtype=bool
-        )
-        self._shared_element_relationships = np.zeros(
-            (self.neighbours[self.neighbours >= 0].flatten().shape[0], 2), dtype=int
-        )
-        self._shared_elements = np.zeros(
-            (self.neighbours[self.neighbours >= 0].flatten().shape[0], self.dimension), dtype=int
-        )
+
+    @property
+    def vertices(self):
+        return self._geom.vertices
+
+    @property
+    def neighbours(self):
+        return self._geom.neighbours
+
+    @property
+    def minimum(self):
+        return self._geom.minimum
+
+    @property
+    def maximum(self):
+        return self._geom.maximum
+
+    @property
+    def aabb_grid(self):
+        return self._geom.aabb_grid
 
     @property
     def aabb_table(self):
-        if np.sum(self._aabb_table) == 0:
-            _initialise_aabb(self)
-        return self._aabb_table
+        return self._geom.aabb_table
 
     def set_nelements(self, nelements) -> int:
         raise NotImplementedError
 
     @property
     def shared_elements(self):
-        if np.sum(self._shared_elements) == 0:
-            _init_face_table(self)
-        return self._shared_elements
+        return self._geom.shared_elements
 
     @property
     def shared_element_relationships(self):
-        if np.sum(self._shared_element_relationships) == 0:
-            _init_face_table(self)
-        return self._shared_element_relationships
+        return self._geom.shared_element_relationships
 
     @property
     def elements(self):
-        return self._elements
+        return self._geom.elements
 
     def onGeometryChange(self):
         pass
 
     @property
     def n_elements(self):
-        return self.elements.shape[0]
+        return self._geom.n_elements
 
     @property
     def n_nodes(self):
-        return self.vertices.shape[0]
+        return self._geom.n_nodes
 
     def inside(self, pos):
         if pos.shape[1] > self.dimension:
             logger.warning(f"Converting {pos.shape[1]} to 3d using first {self.dimension} columns")
             pos = pos[:, : self.dimension]
-
-        inside = np.ones(pos.shape[0]).astype(bool)
-        for i in range(self.dimension):
-            inside *= pos[:, i] > self.origin[None, i]
-            inside *= pos[:, i] < self.maximum[None, i]
-        return inside
+        return self._geom.inside(pos)
 
     @property
     def ncps(self):
         """
         Returns the number of nodes for an element in the mesh
         """
-        return self.elements.shape[1]
+        return self._geom.ncps
 
     @property
     def nodes(self):
@@ -126,7 +103,7 @@ class BaseUnstructured2d(BaseSupport):
         nodes : np.array((N,3))
             Fortran ordered
         """
-        return self.vertices
+        return self._geom.nodes
 
     @property
     def barycentre(self):
@@ -143,38 +120,25 @@ class BaseUnstructured2d(BaseSupport):
         -------
 
         """
-        element_idx = np.arange(0, self.n_elements)
-        elements = self.elements[element_idx]
-        barycentre = np.sum(self.nodes[elements][:, :3, :], axis=1) / 3.0
-        return barycentre
+        return self._geom.barycentre
 
     @property
     def shared_element_norm(self):
         """
         Get the normal to all of the shared elements
         """
-        elements = self.shared_elements
-        v1 = self.nodes[elements[:, 1], :] - self.nodes[elements[:, 0], :]
-        norm = np.zeros_like(v1)
-        norm[:, 0] = v1[:, 1]
-        norm[:, 1] = -v1[:, 0]
-        return norm
+        return self._geom.shared_element_norm
 
     @property
     def shared_element_size(self):
         """
         Get the size of the shared elements
         """
-        elements = self.shared_elements
-        v1 = self.nodes[elements[:, 1], :] - self.nodes[elements[:, 0], :]
-        return np.linalg.norm(v1, axis=1)
+        return self._geom.shared_element_size
 
     @property
     def element_size(self):
-        v1 = self.nodes[self.elements[:, 1], :] - self.nodes[self.elements[:, 0], :]
-        v2 = self.nodes[self.elements[:, 2], :] - self.nodes[self.elements[:, 0], :]
-        # cross product isn't defined in 2d, numpy returns the magnitude of the orthogonal vector.
-        return 0.5 * np.cross(v1, v2, axisa=1, axisb=1)
+        return self._geom.element_size
 
     @abstractmethod
     def evaluate_shape(self, locations) -> Tuple[np.ndarray, np.ndarray, np.ndarray]:
@@ -193,11 +157,7 @@ class BaseUnstructured2d(BaseSupport):
         pass
 
     def element_area(self, elements):
-        tri_points = self.nodes[self.elements[elements, :], :]
-        M_t = np.ones((tri_points.shape[0], 3, 3))
-        M_t[:, :, 1:] = tri_points[:, :3, :]
-        area = np.abs(np.linalg.det(M_t)) * 0.5
-        return area
+        return self._geom.element_area(elements)
 
     def evaluate_value(self, evaluation_points: np.ndarray, property_array: np.ndarray):
         """

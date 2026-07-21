@@ -1,6 +1,6 @@
 import numpy as np
 import pytest
-from LoopStructural.datatypes._bounding_box import BoundingBox
+from LoopStructural.geometry._bounding_box import BoundingBox
 
 
 def test_bounding_box_creation():

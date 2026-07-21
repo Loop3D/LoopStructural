@@ -1,4 +1,4 @@
-from LoopStructural.interpolators import StructuredGrid
+from LoopStructural.interpolators import StructuredGridSupport
 import numpy as np
 import pytest
 
@@ -102,7 +102,7 @@ def test_get_element(support):
 
 
 def test_global_to_local_coordinates():
-    grid = StructuredGrid()
+    grid = StructuredGridSupport()
     point = np.array([[1.2, 1.5, 1.7]])
     local_coords = grid.position_to_local_coordinates(point)
     assert np.isclose(local_coords[0, 0], 0.2)

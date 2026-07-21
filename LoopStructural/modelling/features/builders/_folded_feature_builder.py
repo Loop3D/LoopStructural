@@ -4,7 +4,7 @@ from ....modelling.features import FeatureType
 import numpy as np
 
 from ....utils import getLogger, InterpolatorError
-from ....datatypes import BoundingBox
+from ....geometry import BoundingBox
 
 logger = getLogger(__name__)
 

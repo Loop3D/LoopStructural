@@ -10,7 +10,7 @@ from skimage.measure import marching_cubes
 
 from LoopStructural.utils.helper import create_box
 from LoopStructural.export.file_formats import FileFormat
-from LoopStructural.datatypes import Surface
+from LoopStructural.geometry import Surface
 
 from ..utils import getLogger
 

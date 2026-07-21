@@ -17,7 +17,7 @@ __all__ = [
     "P1Interpolator",
     "P2Interpolator",
     "TetMesh",
-    "StructuredGrid",
+    "StructuredGridSupport",
     "UnStructuredTetMesh",
     "P1Unstructured2d",
     "P2Unstructured2d",
@@ -34,7 +34,7 @@ from ..interpolators._geological_interpolator import GeologicalInterpolator
 from ..interpolators._discrete_interpolator import DiscreteInterpolator
 from ..interpolators.supports import (
     TetMesh,
-    StructuredGrid,
+    StructuredGridSupport,
     UnStructuredTetMesh,
     P1Unstructured2d,
     P2Unstructured2d,

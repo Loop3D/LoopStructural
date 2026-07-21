@@ -36,7 +36,7 @@ output_dir = pathlib.Path(tempfile.mkdtemp())
 # Isosurfaces can be extracted from a geological feature by calling the
 # ``.surfaces()`` method on the feature. The argument is the value, list of
 # values, or number of evenly-spaced surfaces to extract. This returns a
-# list of :class:`LoopStructural.datatypes.Surface` objects, which expose
+# list of :class:`LoopStructural.geometry.Surface` objects, which expose
 # the triangles/vertices/normals directly and can also be written to disk
 # with ``.save()``.
 

@@ -39,7 +39,7 @@ evaluate the scalar field and gradient of the interpolator at some random locati
    :force_static:
 
     from LoopStructural import GeologicalModel
-    from LoopStructural.datatypes import BoundingBox
+    from LoopStructural.geometry import BoundingBox
     from LoopStructural.visualisation import Loop3DView
     from LoopStructural.datasets import load_claudius
     

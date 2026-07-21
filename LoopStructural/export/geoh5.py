@@ -3,7 +3,7 @@ import geoh5py.workspace
 import numpy as np
 import pandas as pd
 
-from LoopStructural.datatypes import ValuePoints, VectorPoints
+from LoopStructural.geometry import ValuePoints, VectorPoints
 
 def add_group_to_geoh5(filename, groupname="Loop", parent=None, overwrite=True):
     with geoh5py.workspace.Workspace(filename) as workspace:

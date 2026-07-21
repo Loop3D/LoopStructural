@@ -2,7 +2,7 @@ from __future__ import annotations
 from typing import Optional, Union, Dict
 from LoopStructural.utils.exceptions import LoopValueError
 from LoopStructural.utils import rng
-from LoopStructural.datatypes._structured_grid import StructuredGrid
+from LoopStructural.geometry._structured_grid import StructuredGrid
 import numpy as np
 import copy
 

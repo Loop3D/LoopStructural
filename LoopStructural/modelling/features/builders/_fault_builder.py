@@ -6,7 +6,7 @@ from .. import AnalyticalGeologicalFeature
 import numpy as np
 import pandas as pd
 from ....utils import getLogger
-from ....datatypes import BoundingBox
+from ....geometry import BoundingBox
 
 logger = getLogger(__name__)
 

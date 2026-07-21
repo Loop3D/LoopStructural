@@ -3,7 +3,7 @@ import pytest
 
 omf = pytest.importorskip("omf")
 
-from LoopStructural.datatypes import Surface, ValuePoints
+from LoopStructural.geometry import Surface, ValuePoints
 from LoopStructural.export.omf_wrapper import (
     add_pointset_to_omf,
     add_structured_grid_to_omf,

@@ -1,7 +1,7 @@
 from ...modelling.features.builders import StructuralFrameBuilder
 from ...modelling.features.fault import FaultSegment
 from ...utils import getLogger, rng
-from ...datatypes import BoundingBox
+from ...geometry import BoundingBox
 
 from typing import Union
 

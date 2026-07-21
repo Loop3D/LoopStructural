@@ -3,7 +3,7 @@ import logging
 import numpy as np
 import pytest
 
-from LoopStructural.datatypes import StructuredGrid, Surface
+from LoopStructural.geometry import StructuredGrid, Surface
 from LoopStructural.export.gocad import (
     _normalise_voxet_property,
     _write_feat_surfs_gocad,

@@ -1,7 +1,7 @@
 import numpy as np
 import pytest
 
-from LoopStructural.datatypes import BoundingBox, Surface
+from LoopStructural.geometry import BoundingBox, Surface
 from LoopStructural.utils._surface import LoopIsosurfacer
 
 

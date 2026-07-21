@@ -145,7 +145,7 @@ def create_surface(bounding_box, nstep):
 
 
 def create_box(bounding_box, nsteps):
-    from LoopStructural.datatypes import BoundingBox
+    from LoopStructural.geometry import BoundingBox
 
     if isinstance(bounding_box, BoundingBox):
         bounding_box = bounding_box.bb

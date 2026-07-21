@@ -1,7 +1,7 @@
 import numpy as np
 import pytest
 
-from LoopStructural.datatypes import BoundingBox
+from LoopStructural.geometry import BoundingBox
 from LoopStructural.interpolators import (
     InterpolatorFactory,
     P1Interpolator,
