@@ -128,6 +128,28 @@ def test_intrusion_builder():
     assert len(intrusion_builder.data_for_vertical_extent_calculation[0]) > 0
     assert len(intrusion_builder.data_for_vertical_extent_calculation[1]) > 0
 
+    # regression test: up_to_date() must not rebuild the intrusion geometry
+    # once it has already been built and nothing has changed (previously
+    # IntrusionBuilder never set _up_to_date=True, so this rebuilt on every call)
+    call_count = {"n": 0}
+    original_prepare_data = intrusion_builder.prepare_data
+
+    def counting_prepare_data(*args, **kwargs):
+        call_count["n"] += 1
+        return original_prepare_data(*args, **kwargs)
+
+    intrusion_builder.prepare_data = counting_prepare_data
+
+    assert intrusion_builder._up_to_date is True
+    intrusion_builder.up_to_date()
+    intrusion_builder.up_to_date()
+    assert call_count["n"] == 0
+
+    intrusion_builder._up_to_date = False
+    intrusion_builder.up_to_date()
+    assert call_count["n"] == 1
+    assert intrusion_builder._up_to_date is True
+
 
 # if __name__ == "__main__":
 #     test_intrusion_freame_builder()

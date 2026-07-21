@@ -1,4 +1,5 @@
 from .intrusion_feature import IntrusionFeature
+from .intrusion_frame import IntrusionFrame
 from .intrusion_frame_builder import IntrusionFrameBuilder
 from .intrusion_builder import IntrusionBuilder
 from .geom_conceptual_models import (
@@ -14,6 +15,7 @@ from .geometric_scaling_functions import (
 
 __all__ = [
     "IntrusionFeature",
+    "IntrusionFrame",
     "IntrusionFrameBuilder",
     "IntrusionBuilder",
     "ellipse_function",

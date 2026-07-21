@@ -736,7 +736,7 @@ class GeologicalModel:
         self._add_faults(fold_frame_builder[1])
         self._add_faults(fold_frame_builder[2])
         kwargs["tol"] = tol
-        fold_frame_builder.setup(**kwargs)
+        fold_frame_builder.build(**kwargs)
         fold_frame = fold_frame_builder.frame
 
         fold_frame.type = FeatureType.STRUCTURALFRAME
@@ -921,7 +921,7 @@ class GeologicalModel:
         # build feature
         kwargs["frame"] = FoldFrame
         kwargs["tol"] = tol
-        fold_frame_builder.setup(**kwargs)
+        fold_frame_builder.build(**kwargs)
         # fold_frame_builder.build_arguments = kwargs
         folded_fold_frame = fold_frame_builder.frame
         folded_fold_frame.builder = fold_frame_builder
@@ -1018,7 +1018,7 @@ class GeologicalModel:
         intrusion_frame_builder.set_intrusion_frame_data(intrusion_frame_data)
 
         ## -- create intrusion frame
-        intrusion_frame_builder.setup(
+        intrusion_frame_builder.build(
             nelements=nelements,
             w2=weights[0],
             w1=weights[1],
@@ -1039,9 +1039,11 @@ class GeologicalModel:
         )
         intrusion_builder.set_data_for_extent_calculation(intrusion_data)
 
-        intrusion_builder.build_arguments = {
-            "geometric_scaling_parameters": geometric_scaling_parameters,
-        }
+        intrusion_builder.update_build_arguments(
+            {
+                "geometric_scaling_parameters": geometric_scaling_parameters,
+            }
+        )
 
         intrusion_feature = intrusion_builder.feature
         self._add_feature(intrusion_feature)
@@ -1408,7 +1410,7 @@ class GeologicalModel:
             fault_frame_builder.add_splay(kwargs["splay"], kwargs["splayregion"])
 
         kwargs["tol"] = tol
-        fault_frame_builder.setup(**kwargs)
+        fault_frame_builder.build(**kwargs)
         fault = fault_frame_builder.frame
         fault.displacement = displacement_scaled
         fault.faultfunction = faultfunction

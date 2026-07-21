@@ -670,3 +670,19 @@ class IntrusionBuilder(BaseBuilder):
 
         self.set_data_for_lateral_thresholds()
         self.set_data_for_vertical_thresholds()
+        self._up_to_date = True
+
+    def up_to_date(self, callback=None):
+        """
+        IntrusionBuilder doesn't own a single interpolator (its geometry is
+        derived from the intrusion frame's builders), so unlike BaseBuilder
+        it can't check `self._interpolator.up_to_date` -- just rebuild when
+        the `_up_to_date` flag has been cleared.
+        """
+        if not self._up_to_date:
+            self.update()
+            if callable(callback):
+                callback(1)
+            return
+        if callable(callback):
+            callback(1)

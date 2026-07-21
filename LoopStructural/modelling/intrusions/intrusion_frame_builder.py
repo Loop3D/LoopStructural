@@ -1,5 +1,6 @@
 from ...modelling.features.builders import StructuralFrameBuilder
 from ...modelling.features.fault import FaultSegment
+from .intrusion_frame import IntrusionFrame
 from ...utils import getLogger, rng
 from ...geometry import BoundingBox
 
@@ -41,11 +42,18 @@ class IntrusionFrameBuilder(StructuralFrameBuilder):
             reference to the model containing the fault
         """
 
-        StructuralFrameBuilder.__init__(self, interpolatortype, bounding_box, nelements, **kwargs)
+        StructuralFrameBuilder.__init__(
+            self,
+            interpolatortype,
+            bounding_box,
+            nelements,
+            frame=IntrusionFrame,
+            model=model,
+            **kwargs,
+        )
 
         self.origin = np.array([np.nan, np.nan, np.nan])
         self.maximum = np.array([np.nan, np.nan, np.nan])
-        self.model = model
         self.minimum_origin = self.model.bounding_box[0, :]
         self.maximum_maximum = self.model.bounding_box[1, :]
         self.faults = []

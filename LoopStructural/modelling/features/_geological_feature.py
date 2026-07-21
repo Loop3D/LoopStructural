@@ -182,7 +182,8 @@ class GeologicalFeature(BaseFeature):
                 logger.error("element_scale_parameter must be a float")
                 element_scale_parameter = 1
 
-        self.builder.up_to_date()
+        if self.builder is not None:
+            self.builder.up_to_date()
 
         v = np.zeros(pos.shape)
         v[:] = np.nan
@@ -196,7 +197,7 @@ class GeologicalFeature(BaseFeature):
             resolved = False
             tetrahedron = regular_tetraherdron_for_points(pos, element_scale_parameter)
 
-            while resolved:
+            while not resolved:
                 for f in self.faults:
                     v = (
                         f[0]
@@ -239,7 +240,8 @@ class GeologicalFeature(BaseFeature):
         misfit : np.array(N,dtype=double)
             dot product between interpolated gradient and constraints
         """
-        self.builder.up_to_date()
+        if self.builder is not None:
+            self.builder.up_to_date()
         grad = self.interpolator.get_gradient_constraints()
         norm = self.interpolator.get_norm_constraints()
 
@@ -264,7 +266,8 @@ class GeologicalFeature(BaseFeature):
         misfit : np.array(N,dtype=double)
             difference between interpolated scalar field and value constraints
         """
-        self.builder.up_to_date()
+        if self.builder is not None:
+            self.builder.up_to_date()
 
         locations = self.interpolator.get_value_constraints()
         diff = np.abs(locations[:, 3] - self.evaluate_value(locations[:, :3]))

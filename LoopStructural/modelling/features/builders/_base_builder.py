@@ -39,6 +39,10 @@ class BaseBuilder:
     def model(self):
         return self._model
 
+    @model.setter
+    def model(self, model):
+        self._model = model
+
     @property
     def feature(self):
         return self._feature

@@ -2,6 +2,7 @@
 structural frame builder
 """
 
+import warnings
 from typing import Union
 
 from LoopStructural.utils.exceptions import LoopException
@@ -15,12 +16,13 @@ from ....geometry import BoundingBox
 logger = getLogger(__name__)
 
 
+from ._base_builder import BaseBuilder
 from ....modelling.features.builders import GeologicalFeatureBuilder
 from ....modelling.features.builders import FoldedFeatureBuilder
 from ....modelling.features import StructuralFrame
 
 
-class StructuralFrameBuilder:
+class StructuralFrameBuilder(BaseBuilder):
     def __init__(
         self,
         interpolatortype: Union[str, list],
@@ -42,16 +44,13 @@ class StructuralFrameBuilder:
         interpolator - a template interpolator for the frame
         kwargs
         """
+        name = kwargs.pop("name", "Undefined")
+        BaseBuilder.__init__(self, model, name=name)
 
         self.support = None
         self.fault_event = None
-        self.name = "Undefined"
-        self.model = model
         # self.region = 'everywhere'
         self.builders = []
-        if "name" in kwargs:
-            self.name = kwargs["name"]
-            kwargs.pop("name")
         self.data = [[], [], []]
         self.fold = kwargs.pop("fold", None)
         # list of interpolators
@@ -164,6 +163,12 @@ class StructuralFrameBuilder:
     def frame(self):
         return self._frame
 
+    @property
+    def feature(self):
+        """Alias of `.frame` so this builder can be used polymorphically
+        alongside builders that follow the BaseBuilder `.feature` contract."""
+        return self._frame
+
     def __getitem__(self, item):
         return self.builders[item]
 
@@ -198,7 +203,7 @@ class StructuralFrameBuilder:
         for i in range(3):
             self.builders[i].add_data_from_data_frame(data_frame.loc[data_frame["coord"] == i, :])
 
-    def setup(self, w1=1.0, w2=1.0, w3=1.0, **kwargs):
+    def build(self, w1=1.0, w2=1.0, w3=1.0, **kwargs):
         """
         Build the structural frame
         Parameters
@@ -252,7 +257,7 @@ class StructuralFrameBuilder:
             if w1 > 0:
                 self.builders[1].add_orthogonal_feature(self.builders[0].feature, w1, step=step)
             if w3 > 0 and len(self.builders[2].data) > 0:
-                self.builders[1].add_orthogonal_feature(self.builders[2].feature, w2, step=step)
+                self.builders[1].add_orthogonal_feature(self.builders[2].feature, w3, step=step)
             kwargs["regularisation"] = regularisation[1]
             self.builders[1].update_build_arguments(kwargs)
 
@@ -266,6 +271,15 @@ class StructuralFrameBuilder:
             self._frame[2] = c3
 
         # use the frame argument to build a structural frame
+
+    def setup(self, *args, **kwargs):
+        """Deprecated alias of `.build()`, kept for backwards compatibility."""
+        warnings.warn(
+            "StructuralFrameBuilder.setup() is deprecated, use .build() instead",
+            DeprecationWarning,
+            stacklevel=2,
+        )
+        return self.build(*args, **kwargs)
 
     def update(self):
         for i in range(3):
