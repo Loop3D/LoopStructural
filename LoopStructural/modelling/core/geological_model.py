@@ -1202,10 +1202,10 @@ class GeologicalModel:
         uc_feature = UnconformityFeature(feature, value, False, onlap=True)
         feature.add_region(uc_feature.inverse())
         for f in reversed(self.features):
-            if f.type == FeatureType.UNCONFORMITY:
-                # f.add_region(uc_feature)
-                continue
-            if f.type == FeatureType.FAULT:
+            if f.type in (FeatureType.UNCONFORMITY, FeatureType.ONLAPUNCONFORMITY):
+                logger.debug(f"Reached unconformity {f.name}")
+                break
+            if f.type == FeatureType.FAULT or f.type == FeatureType.INACTIVEFAULT:
                 continue
             if f != feature:
                 f.add_region(uc_feature)
