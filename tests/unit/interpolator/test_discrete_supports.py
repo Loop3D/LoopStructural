@@ -17,7 +17,7 @@ def test_create_support(support):
 def test_create_support_origin_nsteps(support_class):
     grid = support_class(
         origin=np.zeros(3),
-        nsteps=np.array([10, 10, 10]),
+        nsteps_cells=np.array([10, 10, 10]),
         step_vector=np.array([0.1, 0.1, 0.1]),
     )
     assert np.sum(grid.step_vector - np.array([0.1, 0.1, 0.1])) == 0
@@ -42,7 +42,7 @@ def test_evaluate_value(support):
 
 @pytest.mark.parametrize('steps',[10,20,100])
 def test_evaluate_gradient(support_class,steps):
-    support = support_class(nsteps=[steps]*3)
+    support = support_class(nsteps_cells=[steps]*3)
     # test by setting the scalar field to the y coordinate
     vector = support.evaluate_gradient(support.barycentre, support.nodes[:, 1])
     assert np.sum(vector - np.array([0, 1, 0])) == 0

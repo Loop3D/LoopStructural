@@ -15,16 +15,16 @@ class P2UnstructuredTetMesh(UnStructuredTetMesh):
         aabb_nsteps=None,
         origin: Optional[np.ndarray] = None,
         step_vector: Optional[np.ndarray] = None,
-        nsteps: Optional[np.ndarray] = None,
+        nsteps_cells: Optional[np.ndarray] = None,
     ):
         if nodes is None or elements is None or neighbours is None:
-            if origin is None or step_vector is None or nsteps is None:
+            if origin is None or step_vector is None or nsteps_cells is None:
                 raise ValueError(
                     "P2UnstructuredTetMesh requires either explicit nodes/elements/"
-                    "neighbours arrays, or origin/step_vector/nsteps to build a "
+                    "neighbours arrays, or origin/step_vector/nsteps_cells to build a "
                     "quadratic tetrahedral mesh over a bounding box"
                 )
-            nodes, elements, neighbours = self._build_from_bbox(origin, step_vector, nsteps)
+            nodes, elements, neighbours = self._build_from_bbox(origin, step_vector, nsteps_cells)
         UnStructuredTetMesh.__init__(self, nodes, elements, neighbours, aabb_nsteps)
         self.type = SupportType.P2UnstructuredTetMesh
         if self.elements.shape[1] != 10:
@@ -50,7 +50,7 @@ class P2UnstructuredTetMesh(UnStructuredTetMesh):
         )
 
     @staticmethod
-    def _build_from_bbox(origin: np.ndarray, step_vector: np.ndarray, nsteps: np.ndarray):
+    def _build_from_bbox(origin: np.ndarray, step_vector: np.ndarray, nsteps_cells: np.ndarray):
         """Build a quadratic (10-node) tetrahedral mesh over a structured grid.
 
         Tessellates the grid into linear tets (reusing TetMesh's cartesian
@@ -65,7 +65,7 @@ class P2UnstructuredTetMesh(UnStructuredTetMesh):
         tuple of (nodes, elements, neighbours) suitable for
         UnStructuredTetMesh.__init__
         """
-        p1 = TetMesh(origin=origin, nsteps=nsteps, step_vector=step_vector)
+        p1 = TetMesh(origin=origin, nsteps_cells=nsteps_cells, step_vector=step_vector)
         p1_nodes = p1.nodes
         p1_elements = p1.elements
         p1_neighbours = p1.neighbours

@@ -20,6 +20,16 @@ class SupportFactory:
             raise ValueError("No support type specified")
         return SupportFactory.create_support(support_type, **d)
 
+    # Support types whose constructor takes nsteps as a *cell* count
+    # (translated internally to a node count via BaseStructuredSupport).
+    # All other origin/step_vector/nsteps-based supports take nsteps as a
+    # node count directly, matching BoundingBox's convention.
+    _CELL_COUNT_SUPPORT_TYPES = {
+        SupportType.StructuredGrid,
+        SupportType.TetMesh,
+        SupportType.P2UnstructuredTetMesh,
+    }
+
     @staticmethod
     def create_support_from_bbox(
         support_type, bounding_box, nelements, element_volume=None, buffer: Optional[float] = None
@@ -33,8 +43,13 @@ class SupportFactory:
         if nelements is not None:
             bounding_box.nelements = nelements
 
+        nsteps_kwarg = (
+            "nsteps_cells"
+            if support_type in SupportFactory._CELL_COUNT_SUPPORT_TYPES
+            else "nsteps"
+        )
         return support_map[support_type](
             origin=bounding_box.origin,
             step_vector=bounding_box.step_vector,
-            nsteps=bounding_box.nsteps,
+            **{nsteps_kwarg: bounding_box.nsteps},
         )

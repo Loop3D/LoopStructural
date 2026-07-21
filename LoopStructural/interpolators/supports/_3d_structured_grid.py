@@ -22,7 +22,7 @@ class StructuredGridSupport(BaseStructuredSupport):
     def __init__(
         self,
         origin=np.zeros(3),
-        nsteps=np.array([10, 10, 10]),
+        nsteps_cells=np.array([10, 10, 10]),
         step_vector=np.ones(3),
         rotation_xy=None,
     ):
@@ -31,10 +31,12 @@ class StructuredGridSupport(BaseStructuredSupport):
         Parameters
         ----------
         origin - 3d list or numpy array
-        nsteps - 3d list or numpy array of ints
+        nsteps_cells - 3d list or numpy array of ints, number of cells in each direction
         step_vector - 3d list or numpy array of int
         """
-        BaseStructuredSupport.__init__(self, origin, nsteps, step_vector, rotation_xy=rotation_xy)
+        BaseStructuredSupport.__init__(
+            self, origin, nsteps_cells, step_vector, rotation_xy=rotation_xy
+        )
         self.type = SupportType.StructuredGrid
         self.regions = {}
         self.regions["everywhere"] = np.ones(self.n_nodes).astype(bool)

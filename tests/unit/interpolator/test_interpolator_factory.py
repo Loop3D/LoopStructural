@@ -38,7 +38,9 @@ def test_create_interpolator_with_enum(bounding_box):
 
 def test_create_interpolator_with_explicit_support(bounding_box):
     support = StructuredGridSupport(
-        origin=bounding_box.origin, nsteps=np.array([5, 5, 5]), step_vector=np.array([0.2, 0.2, 0.2])
+        origin=bounding_box.origin,
+        nsteps_cells=np.array([5, 5, 5]),
+        step_vector=np.array([0.2, 0.2, 0.2]),
     )
     interpolator = InterpolatorFactory.create_interpolator(
         "FDI", bounding_box, nelements=None, support=support

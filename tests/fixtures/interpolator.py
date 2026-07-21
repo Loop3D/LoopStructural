@@ -16,11 +16,11 @@ def interpolator(request):
     nsteps = np.array([20, 20, 20])
     step_vector = (maximum - origin) / nsteps
     if interpolator == "FDI":
-        grid = StructuredGridSupport(origin=origin, nsteps=nsteps, step_vector=step_vector)
+        grid = StructuredGridSupport(origin=origin, nsteps_cells=nsteps, step_vector=step_vector)
         interpolator = FDI(grid)
         return interpolator
     elif interpolator == "PLI":
-        grid = TetMesh(origin=origin, nsteps=nsteps, step_vector=step_vector)
+        grid = TetMesh(origin=origin, nsteps_cells=nsteps, step_vector=step_vector)
         interpolator = PLI(grid)
         return interpolator
     else:

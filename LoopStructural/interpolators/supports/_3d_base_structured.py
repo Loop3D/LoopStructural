@@ -19,7 +19,7 @@ class BaseStructuredSupport(BaseSupport):
     def __init__(
         self,
         origin=np.zeros(3),
-        nsteps=np.array([10, 10, 10]),
+        nsteps_cells=np.array([10, 10, 10]),
         step_vector=np.ones(3),
         rotation_xy=None,
     ):
@@ -28,23 +28,21 @@ class BaseStructuredSupport(BaseSupport):
         Parameters
         ----------
         origin - 3d list or numpy array
-        nsteps - 3d list or numpy array of ints
+        nsteps_cells - 3d list or numpy array of ints, number of cells in each direction
         step_vector - 3d list or numpy array of int
         """
-        # the geometry in the mesh can be calculated from the
-        # nsteps, step vector and origin
         # cast to numpy array, to allow list like input
-        nsteps = np.array(nsteps)
+        nsteps_cells = np.array(nsteps_cells)
 
         self.type = SupportType.BaseStructured
-        if np.any(nsteps == 0):
+        if np.any(nsteps_cells == 0):
             raise LoopException("nsteps cannot be zero")
-        if np.any(nsteps < 0):
+        if np.any(nsteps_cells < 0):
             raise LoopException("nsteps cannot be negative")
-        # BaseStructuredSupport's constructor takes nsteps as a *cell* count,
-        # while StructuredGrid3DGeometry (like datatypes.StructuredGrid/BoundingBox)
+        # BaseStructuredSupport's constructor takes nsteps_cells as a *cell* count,
+        # while StructuredGrid3DGeometry (like geometry.StructuredGrid/BoundingBox)
         # takes nsteps as a *node* count -- translate here, at the support boundary.
-        nsteps_nodes = np.array(nsteps, dtype=int) + 1
+        nsteps_nodes = np.array(nsteps_cells, dtype=int) + 1
         self._geom = StructuredGrid3DGeometry(
             origin=origin, nsteps=nsteps_nodes, step_vector=step_vector, rotation_xy=rotation_xy
         )

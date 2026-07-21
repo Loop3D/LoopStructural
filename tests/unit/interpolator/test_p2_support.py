@@ -15,7 +15,7 @@ def test_p2_tetmesh_requires_explicit_arrays_or_bbox_args():
     InterpolatorFactory.create_interpolator('P2', bounding_box, ...) - the
     standard, documented way to build any interpolator - always raised
     TypeError, since SupportFactory.create_support_from_bbox calls every
-    support class with origin/step_vector/nsteps.
+    support class with origin/step_vector/nsteps(_cells).
     """
     with pytest.raises(ValueError):
         P2UnstructuredTetMesh()
@@ -24,8 +24,8 @@ def test_p2_tetmesh_requires_explicit_arrays_or_bbox_args():
 def test_p2_tetmesh_from_bbox_builds_valid_mesh():
     origin = np.zeros(3)
     step_vector = np.ones(3) / 4
-    nsteps = np.array([5, 5, 5])
-    mesh = P2UnstructuredTetMesh(origin=origin, step_vector=step_vector, nsteps=nsteps)
+    nsteps_cells = np.array([5, 5, 5])
+    mesh = P2UnstructuredTetMesh(origin=origin, step_vector=step_vector, nsteps_cells=nsteps_cells)
 
     assert mesh.elements.shape[1] == 10
     # every node index used should be a valid row in nodes, with no gaps
