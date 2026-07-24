@@ -1,0 +1,93 @@
+name: "🔌 QGIS plugin compat"
+
+# Guards the compatibility contract documented in ROADMAP.md / COMPAT.md:
+# the LoopStructural QGIS plugin imports several internal module paths
+# directly, not just the top-level public API, and pins only a floor
+# version. This job installs this branch's LoopStructural over the
+# plugin's pinned version and runs the plugin's non-QGIS unit tests plus an
+# import smoke check against it, so a breaking internal move (like the
+# datatypes -> geometry move that motivated this workflow) fails CI here
+# instead of surfacing downstream in the plugin.
+#
+# Scope note: this does not run the plugin's tests/qgis/ suite (needs a
+# live QGIS container) - only tests/unit/ and the import smoke check.
+
+on:
+  push:
+    branches:
+      - master
+    paths:
+      - '**.py'
+      - .github/workflows/qgis-compat.yml
+  pull_request:
+    branches:
+      - master
+    paths:
+      - '**.py'
+      - .github/workflows/qgis-compat.yml
+  workflow_dispatch:
+
+jobs:
+  qgis-plugin-compat:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout LoopStructural
+        uses: actions/checkout@v4
+        with:
+          path: LoopStructural
+
+      - name: Checkout LoopStructural QGIS plugin
+        uses: actions/checkout@v4
+        with:
+          repository: Loop3D/plugin_loopstructural
+          path: plugin_loopstructural
+
+      - name: Set up uv
+        uses: astral-sh/setup-uv@v3
+        with:
+          version: "latest"
+
+      - name: Set up Python
+        run: uv python install 3.9
+
+      - name: Install plugin's non-QGIS test requirements
+        run: |
+          uv pip install --system -r plugin_loopstructural/requirements/testing.txt
+
+      - name: Install this branch's LoopStructural over the pinned version
+        run: |
+          uv pip install --system --no-deps -e ./LoopStructural
+
+      - name: Import smoke check on paths the plugin relies on
+        run: |
+          python - <<'EOF'
+          import importlib
+
+          # Kept in sync with the "QGIS-plugin compatibility" list in ROADMAP.md.
+          paths = [
+              "LoopStructural.modelling.core.fault_topology",
+              "LoopStructural.modelling.features",
+              "LoopStructural.modelling.features.fold",
+              "LoopStructural.modelling.features.builders",
+              "LoopStructural.modelling.features._feature_converters",
+              "LoopStructural.modelling.core.stratigraphic_column",
+              "LoopStructural.datatypes",
+              "LoopStructural.utils",
+          ]
+          for path in paths:
+              importlib.import_module(path)
+              print(f"ok: {path}")
+
+          from LoopStructural import (
+              GeologicalModel,
+              FaultTopology,
+              StratigraphicColumn,
+              getLogger,
+          )
+          EOF
+
+      - name: Run plugin unit tests (non-QGIS) against this branch
+        working-directory: plugin_loopstructural
+        run: |
+          uv pip install --system pytest
+          python -m pytest -p no:qgis tests/unit/
