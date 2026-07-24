@@ -117,6 +117,48 @@ just at release time.
     intrusion-workflow rewrite (Stage 6) onto the registry, and the rest of
     Stage 1's hardening work (coverage/logging/reproducibility beyond the
     API contract).
+  - [ ] **1b — Logging & timing infrastructure.** Replace the current
+    ad hoc `getLogger` usage with a generic, structured logging/timing
+    tool: pluggable sinks (file, stream/console, and a `sqlite` backend
+    for querying run history) and simple instrumentation helpers for
+    timing model-build/interpolation stages. Needs a handler-attachment
+    point — an external callable and/or an ABC that host apps can
+    subclass — since the QGIS plugin currently injects QGIS's own
+    logging by hooking into the LoopStructural logger; design the
+    sink interface so that pattern (and equivalents for other embedders)
+    is a supported extension point, not an incidental side effect of
+    Python's stdlib `logging`. Belongs in `loop_common` (the Loop2
+    package landing in Stage 2) so it's reusable outside LoopStructural
+    proper, with a thin `LoopStructural.utils.getLogger` shim kept for
+    QGIS-plugin compat (see QGIS-plugin compatibility above).
+  - [ ] **1c — Coding standards.** All functions must have docstrings.
+    All function arguments meant to be passed by keyword must be
+    keyword-only, separated from positional arguments with a bare `*` in
+    the signature, to prevent positional contamination (callers passing
+    by position and silently breaking when parameter order changes).
+    Applies to new/changed code going forward; retrofit existing public
+    surface opportunistically, but changing a **stable** (`API.md`)
+    signature from positional-or-keyword to keyword-only is itself a
+    breaking change per the API contract and needs a deprecation shim,
+    not a silent edit. Also:
+    - **Enforce docstrings via ruff's `D` (pydocstyle) rules.**
+      `pyproject.toml` already has a `[tool.pydocstyle]` numpy-convention
+      block, but it isn't wired into `ruff.lint.extend-select` so nothing
+      currently checks it — add `D` to `extend-select` so missing/malformed
+      docstrings fail CI instead of the config sitting unused.
+    - **Type hints on public signatures.** Parameters and return values on
+      public (`API.md` stable/provisional) functions must be typed; add
+      mypy or ruff's `ANN` rules to check it.
+    - **No mutable default arguments.** Enable ruff `B006`/`B008` to catch
+      mutable defaults and function-call defaults.
+    - **Re-enable bare-except lint.** Drop the `E722` entry from the
+      `ignore` list in `[tool.ruff.lint]` (currently marked "temporary")
+      so broad bare excepts get flagged again.
+    - **No `print()` for diagnostics.** Route through the logger instead —
+      depends on the 1b logging infrastructure landing first.
+    - **Pre-commit hook.** Add `.pre-commit-config.yaml` running
+      black/ruff locally, so violations are caught before commit instead
+      of only after push via the auto-fix-PR bot in `linter.yml`.
 - [ ] **Stage 2 — Extract interpolation (outcome 2).** Port
   `loop_common`/`loop_interpolation` from Loop2 into a real uv workspace
   under `packages/`, with CI that actually installs and tests it (this

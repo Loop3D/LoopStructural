@@ -23,6 +23,27 @@ know exactly what they must not break silently.
   promoting that functionality to a provisional public method rather than
   changing the private module.
 
+### Tier transition policy
+
+- **Provisional -> Stable** requires all of the following:
+  1. At least one public release containing the provisional symbol.
+  2. No signature churn during that release cycle.
+  3. Signature captured by the API snapshot test.
+  4. At least one user-facing example or docs reference.
+- **Stable -> Removed** requires deprecation handling per `COMPAT.md` and
+  must never happen in 1.x without a compatibility shim period.
+
+### What counts as a breaking API change
+
+For **Stable** symbols, all of the following are treated as breaking unless
+handled through documented deprecation + shims:
+- Renaming, moving, or removing a symbol.
+- Changing positional parameter order or required/optional status.
+- Renaming parameters used by keyword arguments.
+- Changing default argument values in a way that changes behavior.
+- Changing return type/shape or units/coordinate conventions.
+- Changing exception behavior that callers are expected to handle.
+
 Marked with `@public_api(tier=...)` from `LoopStructural/utils/_api_registry.py`
 — a no-op decorator at call time, it just records `(qualified_name,
 signature, tier)` for the CI signature-snapshot check. It is deliberately
@@ -30,6 +51,10 @@ not a `Protocol`/ABC: forcing the future graph-backend engine (`ROADMAP.md`
 Stage 5) to implement a fixed interface class is premature before that
 stage's design work happens. A registry + signature-diff test catches
 accidental breaks without pre-committing to a rigid shape now.
+
+Contract-test scope note: the snapshot test protects symbol presence and
+signatures, not full behavioral equivalence. Behavioral stability must be
+covered by unit/integration/example tests for the relevant stable surface.
 
 ## Stable surface (as of this policy, 2026-07-24)
 
@@ -86,6 +111,9 @@ The QGIS plugin imports
 directly. This is not being broken — `_feature_converters` stays as-is —
 but the plugin should migrate to `GeologicalModel.add_fold_to_feature`
 when convenient, since that's now the supported, tested path.
+
+Migration target: remove plugin dependence on `_feature_converters` private
+imports before the Stage 5 (`2.0`) release candidate window opens.
 
 ## Extension mechanism: `FeatureBuilderRegistry`
 
