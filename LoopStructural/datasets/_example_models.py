@@ -1,8 +1,12 @@
+from ..utils import getLogger
+
+logger = getLogger(__name__)
+
 vis = True
 try:
     pass
-except:
-    print("No visualisation")
+except Exception:
+    logger.warning("No visualisation")
     vis = False
 
 

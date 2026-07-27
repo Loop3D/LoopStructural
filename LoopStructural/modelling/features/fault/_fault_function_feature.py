@@ -35,8 +35,8 @@ class FaultDisplacementFeature(BaseFeature):
         displacement,
         name="fault_displacement",
         model=None,
-        faults=[],
-        regions=[],
+        faults=None,
+        regions=None,
         builder=None,
     ):
         """Initialize the fault displacement feature.
@@ -58,6 +58,10 @@ class FaultDisplacementFeature(BaseFeature):
         builder : object, optional
             Builder object used to create this feature, by default None
         """
+        if faults is None:
+            faults = []
+        if regions is None:
+            regions = []
         BaseFeature.__init__(self, f"{name}_displacement", model, faults, regions, builder)
         self.fault_frame = StructuralFrame(
             f"{fault_frame.name}_displacementframe",

@@ -19,7 +19,7 @@ logger = getLogger(__name__)
 
 class GeologicalFeature(BaseFeature):
     """A geological feature representing a geometrical element in a geological model.
-    
+
     This class provides the foundation for representing various geological structures
     such as foliations, fault planes, fold rotation angles, and other geometrical
     elements within a geological model.
@@ -55,8 +55,8 @@ class GeologicalFeature(BaseFeature):
         self,
         name: str,
         builder,
-        regions: list = [],
-        faults: list = [],
+        regions: list = None,
+        faults: list = None,
         interpolator=None,
         model=None,
     ):
@@ -77,6 +77,10 @@ class GeologicalFeature(BaseFeature):
         model : GeologicalModel, optional
             The geological model containing this feature, by default None
         """
+        if regions is None:
+            regions = []
+        if faults is None:
+            faults = []
         BaseFeature.__init__(self, name, model, faults, regions, builder)
         self.name = name
         self.builder = builder
@@ -93,10 +97,10 @@ class GeologicalFeature(BaseFeature):
             including interpolator configuration
         """
         json = super().to_json()
-        print(self.name, json)
+        logger.debug("%s %s", self.name, json)
         json["interpolator"] = self.interpolator.to_json()
         return json
-    
+
     def is_valid(self):
         return self.interpolator.valid
 

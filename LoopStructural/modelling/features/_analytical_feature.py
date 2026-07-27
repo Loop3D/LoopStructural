@@ -33,11 +33,15 @@ class AnalyticalGeologicalFeature(BaseFeature):
         name: str,
         vector: np.ndarray,
         origin: np.ndarray,
-        regions=[],
-        faults=[],
+        regions=None,
+        faults=None,
         model=None,
         builder=None,
     ):
+        if regions is None:
+            regions = []
+        if faults is None:
+            faults = []
         BaseFeature.__init__(self, name, model, faults, regions, builder)
         try:
             self.vector = np.array(vector, dtype=float).reshape(3)

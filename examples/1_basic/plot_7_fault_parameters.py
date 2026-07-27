@@ -40,8 +40,10 @@ def build_model_and_plot(
     minor_axis=300,
     major_axis=500,
     intermediate_axis=300,
-    fault_center=[700, 500, 0],
+    fault_center=None,
 ):
+    if fault_center is None:
+        fault_center = [700, 500, 0]
     model = GeologicalModel(np.zeros(3), np.array([1000, 1000, 200]))
     model.data = data
     model.create_and_add_foliation("strati2", buffer=0.0)

@@ -24,9 +24,9 @@ class StructuredGrid3DGeometry:
 
     def __init__(
         self,
-        origin=np.zeros(3),
-        nsteps=np.array([10, 10, 10]),
-        step_vector=np.ones(3),
+        origin=None,
+        nsteps=None,
+        step_vector=None,
         rotation_xy=None,
     ):
         """
@@ -37,6 +37,12 @@ class StructuredGrid3DGeometry:
         nsteps - 3d list or numpy array of ints, number of nodes in each direction
         step_vector - 3d list or numpy array of int
         """
+        if origin is None:
+            origin = np.zeros(3)
+        if nsteps is None:
+            nsteps = np.array([10, 10, 10])
+        if step_vector is None:
+            step_vector = np.ones(3)
         origin = np.array(origin)
         nsteps = np.array(nsteps)
         step_vector = np.array(step_vector)
@@ -499,7 +505,11 @@ class StructuredGrid3DGeometry:
         # all elements are the same size
         return 1.0
 
-    def vtk(self, node_properties={}, cell_properties={}):
+    def vtk(self, node_properties=None, cell_properties=None):
+        if node_properties is None:
+            node_properties = {}
+        if cell_properties is None:
+            cell_properties = {}
         try:
             import pyvista as pv
         except ImportError:

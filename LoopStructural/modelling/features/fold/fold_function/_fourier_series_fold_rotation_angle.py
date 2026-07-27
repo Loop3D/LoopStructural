@@ -110,9 +110,11 @@ class FourierSeriesFoldRotationAngleProfile(BaseFoldRotationAngleProfile):
         self,
         wavelength: Optional[float] = None,
         calculate_wavelength: bool = True,
-        svariogram_parameters: dict = {},
+        svariogram_parameters: dict = None,
         reset: bool = False,
     ):
+        if svariogram_parameters is None:
+            svariogram_parameters = {}
         # reset the fold paramters before fitting
         # otherwise use the current values to fit
         if reset:

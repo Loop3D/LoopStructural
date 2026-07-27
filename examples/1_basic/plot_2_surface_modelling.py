@@ -36,7 +36,6 @@ number of horizons picked from seismic data, by:
 # model building
 
 from LoopStructural import GeologicalModel
-from LoopStructural.modelling.core.stratigraphic_column import StratigraphicColumn
 from LoopStructural.visualisation import Loop3DView
 from LoopStructural.datasets import load_claudius  # demo data
 
@@ -103,10 +102,10 @@ vals = [0, 60, 250, 330, 600]
 for i in range(len(vals) - 1):
     model.stratigraphic_column.add_unit(
         f"unit_{i}",
-        thickness= vals[i + 1] - vals[i],
+        thickness=vals[i + 1] - vals[i],
         id=i,
     )
-model.stratigraphic_column.group_mapping['Group_0'] ='strati'
+model.stratigraphic_column.group_mapping['Group_0'] = 'strati'
 # Add a foliation to the model
 strati = model.create_and_add_foliation(
     "strati",

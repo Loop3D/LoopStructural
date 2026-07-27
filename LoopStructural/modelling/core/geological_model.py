@@ -162,7 +162,7 @@ class GeologicalModel:
     def _ipython_key_completions_(self):
         return self.feature_name_index.keys()
 
-    def prepare_data(self, data: pd.DataFrame, include_feature_name:bool=True) -> pd.DataFrame:
+    def prepare_data(self, data: pd.DataFrame, include_feature_name: bool = True) -> pd.DataFrame:
         data = data.copy()
         data[['X', 'Y', 'Z']] = self.bounding_box.project(data[['X', 'Y', 'Z']].to_numpy())
 
@@ -321,6 +321,7 @@ class GeologicalModel:
             name of the feature to return
         """
         return self.get_feature_by_name(feature_name)
+
     def __setitem__(self, feature_name, feature):
         """Set a feature in the model using feature_name_index
 
@@ -336,6 +337,7 @@ class GeologicalModel:
         if feature.name != feature_name:
             raise ValueError("feature name does not match key")
         self._add_feature(feature)
+
     def __contains__(self, feature_name):
         return feature_name in self.feature_name_index
 
@@ -523,6 +525,7 @@ class GeologicalModel:
     def set_model_data(self, data):
         logger.warning("deprecated method. Model data can now be set using the data attribute")
         self.data = data.copy()
+
     @property
     def stratigraphic_column(self):
         """Get the stratigraphic column of the model
@@ -533,8 +536,9 @@ class GeologicalModel:
             the stratigraphic column of the model
         """
         return self._stratigraphic_column
+
     @stratigraphic_column.setter
-    def stratigraphic_column(self, stratigraphic_column: Union[StratigraphicColumn,Dict]):
+    def stratigraphic_column(self, stratigraphic_column: Union[StratigraphicColumn, Dict]):
         """Set the stratigraphic column of the model
 
         Parameters
@@ -587,12 +591,10 @@ class GeologicalModel:
                     min_val = stratigraphic_column[g][u]["min"]
                     max_val = stratigraphic_column[g][u].get("max", None)
                     thickness = max_val - min_val if max_val is not None else None
-                logger.info(
-                    f"""
+                logger.info(f"""
                                model.stratigraphic_column.add_unit({u},
                                colour={stratigraphic_column[g][u].get("colour", None)},
-                                 thickness={thickness})"""
-                )
+                                 thickness={thickness})""")
                 self.stratigraphic_column.add_unit(
                     u,
                     colour=stratigraphic_column[g][u].get("colour", None),
@@ -742,7 +744,7 @@ class GeologicalModel:
         # could just pass a regular grid of points - mask by any above unconformities??
 
         series_feature.type = FeatureType.INTERPOLATED
-        self._add_feature(series_feature,index=index)
+        self._add_feature(series_feature, index=index)
         return series_feature
 
     @public_api(tier="stable")
@@ -836,7 +838,9 @@ class GeologicalModel:
         if data.shape[0] == 0:
             logger.warning(f"No data for {fold_frame_name}, skipping")
             return
-        fold_frame_builder.add_data_from_data_frame(self.prepare_data(data, include_feature_name=False))
+        fold_frame_builder.add_data_from_data_frame(
+            self.prepare_data(data, include_feature_name=False)
+        )
         self._add_faults(fold_frame_builder[0])
         self._add_faults(fold_frame_builder[1])
         self._add_faults(fold_frame_builder[2])
@@ -846,7 +850,7 @@ class GeologicalModel:
 
         fold_frame.type = FeatureType.STRUCTURALFRAME
         fold_frame.builder = fold_frame_builder
-        self._add_feature(fold_frame,index=index)
+        self._add_feature(fold_frame, index=index)
 
         return fold_frame
 
@@ -973,7 +977,7 @@ class GeologicalModel:
         series_feature.type = FeatureType.FOLDED
         series_feature.fold = fold
 
-        self._add_feature(series_feature,index)
+        self._add_feature(series_feature, index)
         return series_feature
 
     @public_api(tier="stable")
@@ -1087,7 +1091,9 @@ class GeologicalModel:
         )
         if data is None:
             data = self.data[self.data["feature_name"] == fold_frame_name]
-        fold_frame_builder.add_data_from_data_frame(self.prepare_data(data, include_feature_name=False))
+        fold_frame_builder.add_data_from_data_frame(
+            self.prepare_data(data, include_feature_name=False)
+        )
 
         for i in range(3):
             self._add_faults(fold_frame_builder[i])
@@ -1101,7 +1107,7 @@ class GeologicalModel:
 
         folded_fold_frame.type = FeatureType.STRUCTURALFRAME
 
-        self._add_feature(folded_fold_frame,index=index)
+        self._add_feature(folded_fold_frame, index=index)
 
         return folded_fold_frame
 
@@ -1111,10 +1117,10 @@ class GeologicalModel:
         intrusion_name,
         intrusion_frame_name,
         *,
-        intrusion_frame_parameters={},
+        intrusion_frame_parameters=None,
         intrusion_lateral_extent_model=None,
         intrusion_vertical_extent_model=None,
-        geometric_scaling_parameters={},
+        geometric_scaling_parameters=None,
         **kwargs,
     ):
         """Create an intrusion and add it to the model.
@@ -1123,6 +1129,10 @@ class GeologicalModel:
         wrapper around :meth:`create_and_add_feature` (see ``API.md``);
         kept as a stable, unchanged entry point.
         """
+        if intrusion_frame_parameters is None:
+            intrusion_frame_parameters = {}
+        if geometric_scaling_parameters is None:
+            geometric_scaling_parameters = {}
         return self.create_and_add_feature(
             "intrusion",
             intrusion_name,
@@ -1139,10 +1149,10 @@ class GeologicalModel:
         intrusion_name,
         intrusion_frame_name,
         *,
-        intrusion_frame_parameters={},
+        intrusion_frame_parameters=None,
         intrusion_lateral_extent_model=None,
         intrusion_vertical_extent_model=None,
-        geometric_scaling_parameters={},
+        geometric_scaling_parameters=None,
         **kwargs,
     ):
         """
@@ -1179,6 +1189,10 @@ class GeologicalModel:
         intrusion feature
 
         """
+        if intrusion_frame_parameters is None:
+            intrusion_frame_parameters = {}
+        if geometric_scaling_parameters is None:
+            geometric_scaling_parameters = {}
         # if intrusions is False:
         #     logger.error("Libraries not installed")
         #     raise Exception("Libraries not installed")
@@ -1346,7 +1360,9 @@ class GeologicalModel:
                 break
 
     @public_api(tier="stable")
-    def add_unconformity(self, feature: GeologicalFeature, value: float, index: Optional[int] = None) -> UnconformityFeature:
+    def add_unconformity(
+        self, feature: GeologicalFeature, value: float, index: Optional[int] = None
+    ) -> UnconformityFeature:
         """
         Use an existing feature to add an unconformity to the model.
 
@@ -1383,11 +1399,13 @@ class GeologicalModel:
             else:
                 f.add_region(uc_feature)
         # now add the unconformity to the feature list
-        self._add_feature(uc_feature,index=index)
+        self._add_feature(uc_feature, index=index)
         return uc_feature
 
     @public_api(tier="stable")
-    def add_onlap_unconformity(self, feature: GeologicalFeature, value: float, index: Optional[int] = None) -> GeologicalFeature:
+    def add_onlap_unconformity(
+        self, feature: GeologicalFeature, value: float, index: Optional[int] = None
+    ) -> GeologicalFeature:
         """
         Use an existing feature to add an unconformity to the model.
 
@@ -1415,12 +1433,14 @@ class GeologicalModel:
                 continue
             if f != feature:
                 f.add_region(uc_feature)
-        self._add_feature(uc_feature.inverse(),index=index)
+        self._add_feature(uc_feature.inverse(), index=index)
 
         return uc_feature
 
     @public_api(tier="provisional")
-    def add_fold_to_feature(self, feature_name: str, fold_frame: FoldFrame, **kwargs) -> GeologicalFeature:
+    def add_fold_to_feature(
+        self, feature_name: str, fold_frame: FoldFrame, **kwargs
+    ) -> GeologicalFeature:
         """Add a fold to an already-built feature, replacing it in the model.
 
         Promoted (``API.md``) from the previously-private
@@ -1570,7 +1590,7 @@ class GeologicalModel:
         minor_axis=None,
         intermediate_axis=None,
         faultfunction="BaseFault",
-        faults=[],
+        faults=None,
         force_mesh_geometry: bool = False,
         points: bool = False,
         fault_buffer=0.2,
@@ -1586,6 +1606,8 @@ class GeologicalModel:
         wrapper around :meth:`create_and_add_feature` (see ``API.md``);
         kept as a stable, unchanged entry point.
         """
+        if faults is None:
+            faults = []
         return self.create_and_add_feature(
             "fault",
             fault_name,
@@ -1628,7 +1650,7 @@ class GeologicalModel:
         minor_axis=None,
         intermediate_axis=None,
         faultfunction="BaseFault",
-        faults=[],
+        faults=None,
         force_mesh_geometry: bool = False,
         points: bool = False,
         fault_buffer=0.2,
@@ -1666,6 +1688,8 @@ class GeologicalModel:
         * :class:`LoopStructural.modelling.features.builders.FaultBuilder`
         * :meth:`LoopStructural.modelling.features.builders.FaultBuilder.setup`
         """
+        if faults is None:
+            faults = []
         if "fault_extent" in kwargs and major_axis is None:
             major_axis = kwargs["fault_extent"]
         if "fault_influence" in kwargs and minor_axis is None:
@@ -1762,7 +1786,7 @@ class GeologicalModel:
                 break
         if displacement == 0:
             fault.type = FeatureType.INACTIVEFAULT
-        self._add_feature(fault,index=index)
+        self._add_feature(fault, index=index)
 
         return fault
 
@@ -2068,10 +2092,8 @@ class GeologicalModel:
                 total_dof += f.interpolator.dof
                 continue
         if verbose:
-            print(
-                f"Updating geological model. There are: \n {nfeatures} \
-                    geological features that need to be interpolated\n"
-            )
+            logger.info(f"Updating geological model. There are: \n {nfeatures} \
+                    geological features that need to be interpolated\n")
 
         with timed_stage(logger, "update", nfeatures=nfeatures, total_dof=total_dof):
             if progressbar:
@@ -2102,7 +2124,9 @@ class GeologicalModel:
         return self.stratigraphic_column.get_stratigraphic_ids()
 
     @public_api(tier="stable")
-    def get_fault_surfaces(self, faults: List[str] = []):
+    def get_fault_surfaces(self, faults: List[str] = None):
+        if faults is None:
+            faults = []
         surfaces = []
         if len(faults) == 0:
             faults = self.fault_names()
@@ -2112,7 +2136,9 @@ class GeologicalModel:
         return surfaces
 
     @public_api(tier="stable")
-    def get_stratigraphic_surfaces(self, units: List[str] = [], bottoms: bool = True):
+    def get_stratigraphic_surfaces(self, units: List[str] = None, bottoms: bool = True):
+        if units is None:
+            units = []
         ## TODO change the stratigraphic column to its own class and have methods to get the relevant surfaces
         surfaces = []
         units = []

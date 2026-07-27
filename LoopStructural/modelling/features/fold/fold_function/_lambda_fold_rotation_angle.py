@@ -39,7 +39,9 @@ class LambdaFoldRotationAngleProfile(BaseFoldRotationAngleProfile):
         self,
         wavelength: float | None = None,
         calculate_wavelength: bool = True,
-        svariogram_parameters: dict = {},
+        svariogram_parameters: dict = None,
         reset: bool = False,
     ) -> np.ndarray:
+        if svariogram_parameters is None:
+            svariogram_parameters = {}
         return np.array([])

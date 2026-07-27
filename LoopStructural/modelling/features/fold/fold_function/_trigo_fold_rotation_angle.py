@@ -45,12 +45,15 @@ class TrigoFoldRotationAngleProfile(BaseFoldRotationAngleProfile):
     @property
     def wavelength(self):
         return self._wavelength
+
     @property
     def inflectionpointangle_min(self):
         return self._inflectionpointangle_min
+
     @property
     def inflectionpointangle_max(self):
         return self._inflectionpointangle_max
+
     @inflectionpointangle_max.setter
     def inflectionpointangle_max(self, value):
         if np.isfinite(value):
@@ -61,6 +64,7 @@ class TrigoFoldRotationAngleProfile(BaseFoldRotationAngleProfile):
             self._inflectionpointangle_max = value
         else:
             raise ValueError("inflectionpointangle_max must be a finite number")
+
     @inflectionpointangle_min.setter
     def inflectionpointangle_min(self, value):
         if np.isfinite(value):
@@ -71,13 +75,15 @@ class TrigoFoldRotationAngleProfile(BaseFoldRotationAngleProfile):
             self._inflectionpointangle_min = value
         else:
             raise ValueError("inflectionpointangle_min must be a finite number")
+
     @property
     def inflectionpointangle_half(self):
         return (self._inflectionpointangle_max - self._inflectionpointangle_min) / 2
-    
+
     @property
     def inflectionpointangle_shift(self):
         return (self._inflectionpointangle_max + self._inflectionpointangle_min) / 2
+
     @property
     def inflectionpointangle(self):
         return self._inflectionpointangle
@@ -140,8 +146,8 @@ class TrigoFoldRotationAngleProfile(BaseFoldRotationAngleProfile):
         inflectionpointangle_shift = (inflectionpointangle_max + inflectionpointangle_min) / 2
         tan_alpha_delta_half = np.tan(inflectionpointangle_half)
         tan_alpha_shift = np.tan(inflectionpointangle_shift)
-        print(f"tan_alpha_delta_half {np.rad2deg(np.arctan(tan_alpha_delta_half))} degrees")
-        print(f"tan_alpha_shift {np.rad2deg(np.arctan(tan_alpha_shift))} degrees")
+        logger.debug(f"tan_alpha_delta_half {np.rad2deg(np.arctan(tan_alpha_delta_half))} degrees")
+        logger.debug(f"tan_alpha_shift {np.rad2deg(np.arctan(tan_alpha_shift))} degrees")
         x = (s - origin) / wavelength
         return tan_alpha_delta_half * np.sin(2 * np.pi * x) + tan_alpha_shift
 
@@ -169,9 +175,11 @@ class TrigoFoldRotationAngleProfile(BaseFoldRotationAngleProfile):
         self,
         wavelength: Optional[float] = None,
         calculate_wavelength: bool = True,
-        svariogram_parameters: dict = {},
+        svariogram_parameters: dict = None,
         reset: bool = True,
     ):
+        if svariogram_parameters is None:
+            svariogram_parameters = {}
         # reset the fold paramters before fitting
         # otherwise use the current values to fit
         if reset:

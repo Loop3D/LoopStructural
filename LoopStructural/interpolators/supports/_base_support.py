@@ -114,10 +114,14 @@ class BaseSupport(metaclass=ABCMeta):
         pass
 
     @abstractmethod
-    def vtk(self, node_properties={}, cell_properties={}):
+    def vtk(self, node_properties=None, cell_properties=None):
         """
         Return a vtk object
         """
+        if node_properties is None:
+            node_properties = {}
+        if cell_properties is None:
+            cell_properties = {}
         pass
 
     @abstractmethod

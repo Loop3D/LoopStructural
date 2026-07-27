@@ -427,7 +427,11 @@ class UnStructuredTetMesh(BaseSupport):
         """
         return self._geom.get_neighbours()
 
-    def vtk(self, node_properties={}, cell_properties={}):
+    def vtk(self, node_properties=None, cell_properties=None):
+        if node_properties is None:
+            node_properties = {}
+        if cell_properties is None:
+            cell_properties = {}
         try:
             import pyvista as pv
         except ImportError:

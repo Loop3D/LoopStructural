@@ -18,9 +18,9 @@ class BaseStructuredSupport(BaseSupport):
 
     def __init__(
         self,
-        origin=np.zeros(3),
-        nsteps_cells=np.array([10, 10, 10]),
-        step_vector=np.ones(3),
+        origin=None,
+        nsteps_cells=None,
+        step_vector=None,
         rotation_xy=None,
     ):
         """
@@ -31,6 +31,12 @@ class BaseStructuredSupport(BaseSupport):
         nsteps_cells - 3d list or numpy array of ints, number of cells in each direction
         step_vector - 3d list or numpy array of int
         """
+        if origin is None:
+            origin = np.zeros(3)
+        if nsteps_cells is None:
+            nsteps_cells = np.array([10, 10, 10])
+        if step_vector is None:
+            step_vector = np.ones(3)
         # cast to numpy array, to allow list like input
         nsteps_cells = np.array(nsteps_cells)
 
@@ -316,5 +322,9 @@ class BaseStructuredSupport(BaseSupport):
         # all elements are the same size
         return self._geom.element_scale
 
-    def vtk(self, node_properties={}, cell_properties={}):
+    def vtk(self, node_properties=None, cell_properties=None):
+        if node_properties is None:
+            node_properties = {}
+        if cell_properties is None:
+            cell_properties = {}
         return self._geom.vtk(node_properties=node_properties, cell_properties=cell_properties)

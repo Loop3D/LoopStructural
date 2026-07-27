@@ -19,7 +19,7 @@ class LoopInterpolator:
         dimensions: int = 3,
         type=InterpolatorType.FINITE_DIFFERENCE,
         nelements: int = 1000,
-        interpolator_setup_kwargs={},
+        interpolator_setup_kwargs=None,
         buffer: float = 0.2,
     ):
         """Scikitlearn like interface for LoopStructural interpolators
@@ -39,6 +39,8 @@ class LoopInterpolator:
         nelements : int, optional
             degrees of freedom for interpolator, by default 1000
         """
+        if interpolator_setup_kwargs is None:
+            interpolator_setup_kwargs = {}
         logger.warning("LoopInterpolator is experimental and the API is subject to change")
         self.dimensions = dimensions
         self.type = "FDI"

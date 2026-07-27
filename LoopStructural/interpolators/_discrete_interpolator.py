@@ -19,7 +19,7 @@ logger = getLogger(__name__)
 class DiscreteInterpolator(GeologicalInterpolator):
     """ """
 
-    def __init__(self, support, data={}, c=None, up_to_date=False):
+    def __init__(self, support, data=None, c=None, up_to_date=False):
         """
         Base class for a discrete interpolator e.g. piecewise linear or finite difference which is
         any interpolator that solves the system using least squares approximation
@@ -29,6 +29,8 @@ class DiscreteInterpolator(GeologicalInterpolator):
         support
             A discrete mesh with, nodes, elements, etc
         """
+        if data is None:
+            data = {}
         GeologicalInterpolator.__init__(self, data=data, up_to_date=up_to_date)
         self.B = []
         self.support = support
@@ -329,10 +331,12 @@ class DiscreteInterpolator(GeologicalInterpolator):
     def add_inequality_pairs_constraints(
         self,
         w: float = 1.0,
-        upper_bound=np.finfo(float).eps,
+        upper_bound=None,
         lower_bound=-np.inf,
         pairs: Optional[list] = None,
     ):
+        if upper_bound is None:
+            upper_bound = np.finfo(float).eps
 
         points = self.get_inequality_pairs_constraints()
         if points.shape[0] > 0:

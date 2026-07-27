@@ -145,7 +145,7 @@ class IntrusionBuilder(BaseBuilder):
                 #     intrusion_length, intrusion_type
                 # )
 
-            print(
+            logger.info(
                 "Building tabular intrusion using geometric scaling parameters: estimated thicknes = {} meters".format(
                     round(estimated_thickness)
                 )
@@ -370,7 +370,7 @@ class IntrusionBuilder(BaseBuilder):
         maxL = self.conceptual_model_parameters.get("maxL")
 
         if self.width_data[0] is False:  # i.e., no lateral data for side L<0
-            print(
+            logger.info(
                 "Not enought lateral data to constrain side L<0. Conceptual model will be used to constrain lateral extent"
             )
 
@@ -431,7 +431,7 @@ class IntrusionBuilder(BaseBuilder):
             # data_for_min_L.loc[:, "ref_coord"] = 0
 
         if not self.width_data[1]:  # i.e., no lateral data for side L>0
-            print(
+            logger.info(
                 "Not enought lateral data to constrain side L>0. Conceptual model will be used to constrain lateral extent"
             )
 
@@ -530,7 +530,7 @@ class IntrusionBuilder(BaseBuilder):
         )
 
         if len(data_for_min_L_) > 0 and self.constrain_sides_with_rooffloor_data:
-            print("adding data from roof/floor to constrain L<0")
+            logger.info("adding data from roof/floor to constrain L<0")
             data_for_min_L = pd.concat([data_for_min_L, data_for_min_L_])
 
         data_maxL_temp = vertical_data[vertical_data["coord2"] >= 0].copy()
@@ -559,7 +559,7 @@ class IntrusionBuilder(BaseBuilder):
         )
 
         if len(data_for_max_L_) > 0 and self.constrain_sides_with_rooffloor_data:
-            print("adding data from roof/floor to constrain L>0")
+            logger.info("adding data from roof/floor to constrain L>0")
             data_for_max_L = pd.concat([data_for_max_L, data_for_max_L_])
 
         data_for_min_L["l_residual"] = data_for_min_L["l_residual"].astype(float)
@@ -651,7 +651,7 @@ class IntrusionBuilder(BaseBuilder):
     def build(
         self,
         # parameters_for_extent_sgs={},
-        geometric_scaling_parameters={},
+        geometric_scaling_parameters=None,
         **kwargs,
     ):
         """Main building function for intrusion.
@@ -665,6 +665,8 @@ class IntrusionBuilder(BaseBuilder):
         lateral_extent_sgs_parameters : dict, optional
             parameters for the vertical sequential gaussian simulation, by default {}
         """
+        if geometric_scaling_parameters is None:
+            geometric_scaling_parameters = {}
         self.prepare_data(geometric_scaling_parameters)
         self.create_grid_for_evaluation()
 

@@ -5,6 +5,10 @@ Pure 2D regular grid geometry: origin/nsteps/step_vector indexing.
 import numpy as np
 from typing import Tuple
 
+from ..utils import getLogger
+
+logger = getLogger(__name__)
+
 
 class StructuredGrid2DGeometry:
     """A 2D regular grid defined by an origin, step vector and number of steps.
@@ -19,9 +23,9 @@ class StructuredGrid2DGeometry:
 
     def __init__(
         self,
-        origin=np.zeros(2),
-        nsteps=np.array([10, 10]),
-        step_vector=np.ones(2),
+        origin=None,
+        nsteps=None,
+        step_vector=None,
     ):
         """
 
@@ -31,6 +35,12 @@ class StructuredGrid2DGeometry:
         nsteps - 2d list or numpy array of ints
         step_vector - 2d list or numpy array of int
         """
+        if origin is None:
+            origin = np.zeros(2)
+        if nsteps is None:
+            nsteps = np.array([10, 10])
+        if step_vector is None:
+            step_vector = np.ones(2)
         self.nsteps = np.ceil(np.array(nsteps)).astype(int)
         self.step_vector = np.array(step_vector)
         self.origin = np.array(origin)
@@ -69,12 +79,12 @@ class StructuredGrid2DGeometry:
         return self.global_node_indices(self.cell_corner_indexes(cell_indexes))
 
     def print_geometry(self):
-        print("Origin: %f %f %f" % (self.origin[0], self.origin[1], self.origin[2]))
-        print(
+        logger.info("Origin: %f %f %f" % (self.origin[0], self.origin[1], self.origin[2]))
+        logger.info(
             "Cell size: %f %f %f" % (self.step_vector[0], self.step_vector[1], self.step_vector[2])
         )
         max = self.origin + self.nsteps_cells * self.step_vector
-        print("Max extent: %f %f %f" % (max[0], max[1], max[2]))
+        logger.info("Max extent: %f %f %f" % (max[0], max[1], max[2]))
 
     def cell_centres(self, global_index: np.ndarray) -> np.ndarray:
         """[summary]
@@ -188,7 +198,7 @@ class StructuredGrid2DGeometry:
             )
             indexes = indexes[edge_mask, :].T
         if indexes.ndim != 2:
-            print(indexes.ndim)
+            logger.error("indexes.ndim = %s, expected 2", indexes.ndim)
             return
         # determine which neighbours to return default is diagonals included.
         if mask is None:

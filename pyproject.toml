@@ -149,9 +149,6 @@ ignore = [
     "E402",
     # Quotes (temporary)
     "Q0",
-    # bare excepts (temporary)
-    # "B001", "E722",
-    "E722",
     # we already check black
     # "BLK100",
     # 'from module import *' used; unable to detect undefined names
@@ -159,9 +156,156 @@ ignore = [
 ]
 fixable = ["ALL"]
 unfixable = []
-extend-select = ["B007", "B010", "C4", "F", "NPY", "PGH004", "RSE", "RUF100"]
+extend-select = [
+    "B006",
+    "B007",
+    "B008",
+    "B010",
+    "C4",
+    "D",
+    "ANN",
+    "F",
+    "NPY",
+    "PGH004",
+    "RSE",
+    "RUF100",
+]
+
+[tool.ruff.lint.pydocstyle]
+convention = "numpy"
 
 [tool.ruff.lint.flake8-comprehensions]
 allow-dict-calls-with-keyword-arguments = true
 [tool.ruff.lint.per-file-ignores]
 "__init__.py" = ["F401"]
+# D (docstrings) / ANN (type hints) are enforced going forward per Stage 1c
+# of ROADMAP.md; existing files are grandfathered here rather than
+# retroactively fixed in bulk. Any *new* file under LoopStructural/ is not
+# in this list and is enforced immediately. Remove an entry once that
+# file's public surface has been brought up to standard.
+"LoopStructural/__init__.py" = ["D", "ANN"]
+"LoopStructural/datasets/__init__.py" = ["D", "ANN"]
+"LoopStructural/datasets/_base.py" = ["D", "ANN"]
+"LoopStructural/datasets/_example_models.py" = ["D", "ANN"]
+"LoopStructural/datatypes/__init__.py" = ["D", "ANN"]
+"LoopStructural/export/exporters.py" = ["D", "ANN"]
+"LoopStructural/export/file_formats.py" = ["D", "ANN"]
+"LoopStructural/export/geoh5.py" = ["D", "ANN"]
+"LoopStructural/export/gocad.py" = ["D", "ANN"]
+"LoopStructural/export/omf_wrapper.py" = ["D", "ANN"]
+"LoopStructural/geometry/__init__.py" = ["D", "ANN"]
+"LoopStructural/geometry/_aabb.py" = ["D", "ANN"]
+"LoopStructural/geometry/_bounding_box.py" = ["D", "ANN"]
+"LoopStructural/geometry/_face_table.py" = ["D", "ANN"]
+"LoopStructural/geometry/_point.py" = ["D", "ANN"]
+"LoopStructural/geometry/_structured_grid.py" = ["D", "ANN"]
+"LoopStructural/geometry/_structured_grid_2d.py" = ["D", "ANN"]
+"LoopStructural/geometry/_structured_grid_3d.py" = ["D", "ANN"]
+"LoopStructural/geometry/_surface.py" = ["D", "ANN"]
+"LoopStructural/geometry/_unstructured_mesh.py" = ["D", "ANN"]
+"LoopStructural/interpolators/__init__.py" = ["D", "ANN"]
+"LoopStructural/interpolators/_api.py" = ["D", "ANN"]
+"LoopStructural/interpolators/_builders.py" = ["D", "ANN"]
+"LoopStructural/interpolators/_constant_norm.py" = ["D", "ANN"]
+"LoopStructural/interpolators/_cython/__init__.py" = ["D", "ANN"]
+"LoopStructural/interpolators/_discrete_fold_interpolator.py" = ["D", "ANN"]
+"LoopStructural/interpolators/_discrete_interpolator.py" = ["D", "ANN"]
+"LoopStructural/interpolators/_finite_difference_interpolator.py" = ["D", "ANN"]
+"LoopStructural/interpolators/_geological_interpolator.py" = ["D", "ANN"]
+"LoopStructural/interpolators/_interpolator_builder.py" = ["D", "ANN"]
+"LoopStructural/interpolators/_interpolator_factory.py" = ["D", "ANN"]
+"LoopStructural/interpolators/_interpolatortype.py" = ["D", "ANN"]
+"LoopStructural/interpolators/_operator.py" = ["D", "ANN"]
+"LoopStructural/interpolators/_p1interpolator.py" = ["D", "ANN"]
+"LoopStructural/interpolators/_p2interpolator.py" = ["D", "ANN"]
+"LoopStructural/interpolators/_surfe_wrapper.py" = ["D", "ANN"]
+"LoopStructural/interpolators/supports/_2d_base_unstructured.py" = ["D", "ANN"]
+"LoopStructural/interpolators/supports/_2d_p1_unstructured.py" = ["D", "ANN"]
+"LoopStructural/interpolators/supports/_2d_p2_unstructured.py" = ["D", "ANN"]
+"LoopStructural/interpolators/supports/_2d_structured_grid.py" = ["D", "ANN"]
+"LoopStructural/interpolators/supports/_3d_base_structured.py" = ["D", "ANN"]
+"LoopStructural/interpolators/supports/_3d_p2_tetra.py" = ["D", "ANN"]
+"LoopStructural/interpolators/supports/_3d_structured_grid.py" = ["D", "ANN"]
+"LoopStructural/interpolators/supports/_3d_structured_tetra.py" = ["D", "ANN"]
+"LoopStructural/interpolators/supports/_3d_unstructured_tetra.py" = ["D", "ANN"]
+"LoopStructural/interpolators/supports/__init__.py" = ["D", "ANN"]
+"LoopStructural/interpolators/supports/_base_support.py" = ["D", "ANN"]
+"LoopStructural/interpolators/supports/_support_factory.py" = ["D", "ANN"]
+"LoopStructural/modelling/__init__.py" = ["D", "ANN"]
+"LoopStructural/modelling/core/__init__.py" = ["D", "ANN"]
+"LoopStructural/modelling/core/_feature_registry.py" = ["D", "ANN"]
+"LoopStructural/modelling/core/fault_topology.py" = ["D", "ANN"]
+"LoopStructural/modelling/core/geological_model.py" = ["D", "ANN"]
+"LoopStructural/modelling/core/stratigraphic_column.py" = ["D", "ANN"]
+"LoopStructural/modelling/features/__init__.py" = ["D", "ANN"]
+"LoopStructural/modelling/features/_analytical_feature.py" = ["D", "ANN"]
+"LoopStructural/modelling/features/_base_geological_feature.py" = ["D", "ANN"]
+"LoopStructural/modelling/features/_cross_product_geological_feature.py" = ["D", "ANN"]
+"LoopStructural/modelling/features/_feature_converters.py" = ["D", "ANN"]
+"LoopStructural/modelling/features/_geological_feature.py" = ["D", "ANN"]
+"LoopStructural/modelling/features/_lambda_geological_feature.py" = ["D", "ANN"]
+"LoopStructural/modelling/features/_projected_vector_feature.py" = ["D", "ANN"]
+"LoopStructural/modelling/features/_region.py" = ["D", "ANN"]
+"LoopStructural/modelling/features/_structural_frame.py" = ["D", "ANN"]
+"LoopStructural/modelling/features/_unconformity_feature.py" = ["D", "ANN"]
+"LoopStructural/modelling/features/builders/__init__.py" = ["D", "ANN"]
+"LoopStructural/modelling/features/builders/_analytical_fold_builder.py" = ["D", "ANN"]
+"LoopStructural/modelling/features/builders/_base_builder.py" = ["D", "ANN"]
+"LoopStructural/modelling/features/builders/_fault_builder.py" = ["D", "ANN"]
+"LoopStructural/modelling/features/builders/_folded_feature_builder.py" = ["D", "ANN"]
+"LoopStructural/modelling/features/builders/_geological_feature_builder.py" = ["D", "ANN"]
+"LoopStructural/modelling/features/builders/_structural_frame_builder.py" = ["D", "ANN"]
+"LoopStructural/modelling/features/fault/__init__.py" = ["D", "ANN"]
+"LoopStructural/modelling/features/fault/_fault_function.py" = ["D", "ANN"]
+"LoopStructural/modelling/features/fault/_fault_function_feature.py" = ["D", "ANN"]
+"LoopStructural/modelling/features/fault/_fault_segment.py" = ["D", "ANN"]
+"LoopStructural/modelling/features/fold/__init__.py" = ["D", "ANN"]
+"LoopStructural/modelling/features/fold/_fold.py" = ["D", "ANN"]
+"LoopStructural/modelling/features/fold/_fold_rotation_angle_feature.py" = ["D", "ANN"]
+"LoopStructural/modelling/features/fold/_foldframe.py" = ["D", "ANN"]
+"LoopStructural/modelling/features/fold/_svariogram.py" = ["D", "ANN"]
+"LoopStructural/modelling/features/fold/fold_function/__init__.py" = ["D", "ANN"]
+"LoopStructural/modelling/features/fold/fold_function/_base_fold_rotation_angle.py" = ["D", "ANN"]
+"LoopStructural/modelling/features/fold/fold_function/_fourier_series_fold_rotation_angle.py" = ["D", "ANN"]
+"LoopStructural/modelling/features/fold/fold_function/_lambda_fold_rotation_angle.py" = ["D", "ANN"]
+"LoopStructural/modelling/features/fold/fold_function/_trigo_fold_rotation_angle.py" = ["D", "ANN"]
+"LoopStructural/modelling/input/__init__.py" = ["D", "ANN"]
+"LoopStructural/modelling/input/fault_network.py" = ["D", "ANN"]
+"LoopStructural/modelling/input/map2loop_processor.py" = ["D", "ANN"]
+"LoopStructural/modelling/input/process_data.py" = ["D", "ANN"]
+"LoopStructural/modelling/input/project_file.py" = ["D", "ANN"]
+"LoopStructural/modelling/intrusions/__init__.py" = ["D", "ANN"]
+"LoopStructural/modelling/intrusions/geom_conceptual_models.py" = ["D", "ANN"]
+"LoopStructural/modelling/intrusions/geometric_scaling_functions.py" = ["D", "ANN"]
+"LoopStructural/modelling/intrusions/intrusion_builder.py" = ["D", "ANN"]
+"LoopStructural/modelling/intrusions/intrusion_feature.py" = ["D", "ANN"]
+"LoopStructural/modelling/intrusions/intrusion_frame.py" = ["D", "ANN"]
+"LoopStructural/modelling/intrusions/intrusion_frame_builder.py" = ["D", "ANN"]
+"LoopStructural/modelling/intrusions/intrusion_support_functions.py" = ["D", "ANN"]
+"LoopStructural/utils/__init__.py" = ["D", "ANN"]
+"LoopStructural/utils/_api_registry.py" = ["D", "ANN"]
+"LoopStructural/utils/_log_sinks.py" = ["D", "ANN"]
+"LoopStructural/utils/_log_timing.py" = ["D", "ANN"]
+"LoopStructural/utils/_surface.py" = ["D", "ANN"]
+"LoopStructural/utils/_transformation.py" = ["D", "ANN"]
+"LoopStructural/utils/colours.py" = ["D", "ANN"]
+"LoopStructural/utils/config.py" = ["D", "ANN"]
+"LoopStructural/utils/dtm_creator.py" = ["D", "ANN"]
+"LoopStructural/utils/exceptions.py" = ["D", "ANN"]
+"LoopStructural/utils/features.py" = ["D", "ANN"]
+"LoopStructural/utils/helper.py" = ["D", "ANN"]
+"LoopStructural/utils/json_encoder.py" = ["D", "ANN"]
+"LoopStructural/utils/linalg.py" = ["D", "ANN"]
+"LoopStructural/utils/logging.py" = ["D", "ANN"]
+"LoopStructural/utils/maths.py" = ["D", "ANN"]
+"LoopStructural/utils/observer.py" = ["D", "ANN"]
+"LoopStructural/utils/regions.py" = ["D", "ANN"]
+"LoopStructural/utils/typing.py" = ["D", "ANN"]
+"LoopStructural/utils/utils.py" = ["D", "ANN"]
+"LoopStructural/version.py" = ["D", "ANN"]
+"LoopStructural/visualisation/__init__.py" = ["D", "ANN"]
+# D/ANN are not enforced outside the library package.
+"tests/*" = ["D", "ANN"]
+"examples/*" = ["D", "ANN"]
+"docs/*" = ["D", "ANN"]
+"setup.py" = ["D", "ANN"]

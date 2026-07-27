@@ -14,8 +14,9 @@ class ValuePoints:
     values: np.ndarray = field(default_factory=lambda: np.array([0]))
     name: str = "unnamed"
     properties: Optional[dict] = None
+
     def __post_init__(self):
-        
+
         self.values = np.asarray(self.values)
         self.locations = np.asarray(self.locations)
         if self.locations.shape[1] != 3:
@@ -26,6 +27,7 @@ class ValuePoints:
             if len(v) != len(self.locations):
                 raise ValueError(f'Property {k} must be the same length as locations')
             self.properties[k] = np.asarray(v)
+
     def to_dict(self):
         return {
             "locations": self.locations,
@@ -46,7 +48,7 @@ class ValuePoints:
             points["values"] = self.values
         return points
 
-    def plot(self, pyvista_kwargs={}):
+    def plot(self, pyvista_kwargs=None):
         """Calls pyvista plot on the vtk object
 
         Parameters
@@ -54,13 +56,15 @@ class ValuePoints:
         pyvista_kwargs : dict, optional
             kwargs passed to pyvista.DataSet.plot(), by default {}
         """
+        if pyvista_kwargs is None:
+            pyvista_kwargs = {}
         try:
             self.vtk().plot(**pyvista_kwargs)
             return
         except ImportError:
             logger.error("pyvista is required for vtk")
 
-    def save(self, filename: Union[str, io.StringIO], *, group='Loop',ext=None):
+    def save(self, filename: Union[str, io.StringIO], *, group='Loop', ext=None):
         if isinstance(filename, io.StringIO):
             if ext is None:
                 raise ValueError('Please provide an extension for StringIO')
@@ -121,6 +125,7 @@ class VectorPoints:
     vectors: np.ndarray = field(default_factory=lambda: np.array([[0, 0, 0]]))
     name: str = "unnamed"
     properties: Optional[dict] = None
+
     def __post_init__(self):
         self.vectors = np.asarray(self.vectors)
         self.locations = np.asarray(self.locations)
@@ -132,6 +137,7 @@ class VectorPoints:
             if len(v) != len(self.locations):
                 raise ValueError(f'Property {k} must be the same length as locations')
             self.properties[k] = np.asarray(v)
+
     def to_dict(self):
         return {
             "locations": self.locations,
@@ -194,7 +200,7 @@ class VectorPoints:
             glyphed.points = bb.reproject(glyphed.points)
         return glyphed
 
-    def plot(self, pyvista_kwargs={}):
+    def plot(self, pyvista_kwargs=None):
         """Calls pyvista plot on the vtk object
 
         Parameters
@@ -202,13 +208,15 @@ class VectorPoints:
         pyvista_kwargs : dict, optional
             kwargs passed to pyvista.DataSet.plot(), by default {}
         """
+        if pyvista_kwargs is None:
+            pyvista_kwargs = {}
         try:
             self.vtk().plot(**pyvista_kwargs)
             return
         except ImportError:
             logger.error("pyvista is required for vtk")
 
-    def save(self, filename,*, group='Loop'):
+    def save(self, filename, *, group='Loop'):
         filename = str(filename)
         ext = filename.split('.')[-1]
         if ext == 'json':

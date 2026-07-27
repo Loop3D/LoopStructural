@@ -182,7 +182,7 @@ class IntrusionFrameBuilder(StructuralFrameBuilder):
 
         return grid_points, spacing
 
-    def add_contact_anisotropies(self, series_list: list = [], **kwargs):
+    def add_contact_anisotropies(self, series_list: list = None, **kwargs):
         """
         Currently only used in 'Shortest path algorithm' (deprecated).
         Add to the intrusion network the anisotropies
@@ -208,6 +208,8 @@ class IntrusionFrameBuilder(StructuralFrameBuilder):
         [series_name, mean of scalar field vals, standar dev. of scalar field val]
 
         """
+        if series_list is None:
+            series_list = []
         if self.intrusion_network_type == "shortest path":
             n_clusters = self.number_of_contacts
 
@@ -248,7 +250,7 @@ class IntrusionFrameBuilder(StructuralFrameBuilder):
 
             self.anisotropies_series_parameters = series_parameters
 
-    def add_faults_anisotropies(self, fault_list: list = []):
+    def add_faults_anisotropies(self, fault_list: list = None):
         """
         Add to the intrusion network the anisotropies likely
         exploited by the intrusion (fault-type geological features)
@@ -267,6 +269,8 @@ class IntrusionFrameBuilder(StructuralFrameBuilder):
         -------
 
         """
+        if fault_list is None:
+            fault_list = []
         if fault_list is not None:
             self.anisotropies_fault_list.append(fault_list)
 

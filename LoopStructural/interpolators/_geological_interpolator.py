@@ -29,7 +29,7 @@ class GeologicalInterpolator(metaclass=ABCMeta):
     n_g : int
         Number of gradient constraints
     n_i : int
-        Number of interface/value constraints  
+        Number of interface/value constraints
     n_n : int
         Number of normal constraints
     n_t : int
@@ -49,7 +49,7 @@ class GeologicalInterpolator(metaclass=ABCMeta):
     """
 
     @abstractmethod
-    def __init__(self, data={}, up_to_date=False):
+    def __init__(self, data=None, up_to_date=False):
         """Initialize the geological interpolator.
 
         This method sets up the basic data structures and parameters required
@@ -68,6 +68,8 @@ class GeologicalInterpolator(metaclass=ABCMeta):
         All subclasses should call this parent constructor to ensure proper
         initialization of the base data structures.
         """
+        if data is None:
+            data = {}
         self._data = {}
         self.data = data  # None
         self.clean()  # init data structure
@@ -264,7 +266,7 @@ class GeologicalInterpolator(metaclass=ABCMeta):
         ----------
         points : np.ndarray
             Array containing gradient constraints with shape (n_points, 7-8).
-            Columns should be [X, Y, Z, gx, gy, gz, weight]. If weight is not 
+            Columns should be [X, Y, Z, gx, gy, gz, weight]. If weight is not
             provided, a weight of 1.0 is assumed for all points.
 
         Raises
@@ -427,10 +429,12 @@ class GeologicalInterpolator(metaclass=ABCMeta):
         self.setup_interpolator(**kwargs)
 
     @abstractmethod
-    def solve_system(self, solver, solver_kwargs: dict = {}) -> bool:
+    def solve_system(self, solver, solver_kwargs: dict = None) -> bool:
         """
         Solves the interpolation equations
         """
+        if solver_kwargs is None:
+            solver_kwargs = {}
         pass
 
     @abstractmethod
@@ -477,10 +481,12 @@ class GeologicalInterpolator(metaclass=ABCMeta):
     def add_inequality_pairs_constraints(
         self,
         w: float = 1.0,
-        upper_bound=np.finfo(float).eps,
+        upper_bound=None,
         lower_bound=-np.inf,
         pairs: Optional[list] = None,
     ):
+        if upper_bound is None:
+            upper_bound = np.finfo(float).eps
         pass
 
     def to_dict(self):
@@ -547,4 +553,4 @@ class GeologicalInterpolator(metaclass=ABCMeta):
             error_string += "There are no norm constraints in the model interpolation support \n"
             error_string += "Try increasing the model bounding box or adding more data\n"
         if error_code > 1:
-            print(error_string)
+            logger.warning(error_string)

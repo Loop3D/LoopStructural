@@ -17,28 +17,38 @@ class Surface:
     values: Optional[np.ndarray] = None
     properties: Optional[dict] = None
     cell_properties: Optional[dict] = None
+
     def __post_init__(self):
         if self.vertices.ndim != 2 or self.vertices.shape[1] != 3:
             raise ValueError("vertices must be a Nx3 numpy array")
         if self.triangles.ndim != 2 or self.triangles.shape[1] != 3:
             raise ValueError("triangles must be a Mx3 numpy array")
         if self.normals is not None:
-            if (self.normals.shape[1] != 3 or 
-                (self.normals.shape[0] != self.vertices.shape[0] and self.normals.shape[0] != self.triangles.shape[0])):
-                raise ValueError("normals must be a Nx3 numpy array where N is the number of vertices or triangles")
+            if self.normals.shape[1] != 3 or (
+                self.normals.shape[0] != self.vertices.shape[0]
+                and self.normals.shape[0] != self.triangles.shape[0]
+            ):
+                raise ValueError(
+                    "normals must be a Nx3 numpy array where N is the number of vertices or triangles"
+                )
         if self.values is not None:
             if self.values.shape[0] != self.vertices.shape[0]:
                 raise ValueError("values must be a N numpy array where N is the number of vertices")
         if self.properties is not None:
             for k, v in self.properties.items():
                 if len(v) != self.vertices.shape[0]:
-                    raise ValueError(f"property {k} must be a list or array of length {self.vertices.shape[0]}")
+                    raise ValueError(
+                        f"property {k} must be a list or array of length {self.vertices.shape[0]}"
+                    )
         if self.cell_properties is not None:
             for k, v in self.cell_properties.items():
                 if len(v) != self.triangles.shape[0]:
-                    raise ValueError(f"cell property {k} must be a list or array of length {self.triangles.shape[0]}")
+                    raise ValueError(
+                        f"cell property {k} must be a list or array of length {self.triangles.shape[0]}"
+                    )
         if np.isnan(self.vertices).any():
             self.remove_nan_vertices()
+
     def remove_nan_vertices(self):
         """Remove vertices with NaN values from the surface. Also removes any triangles that reference these vertices.
         This modifies the vertices and triangles in place. Any associated properties are also updated.
@@ -64,6 +74,7 @@ class Surface:
         if self.cell_properties is not None:
             for k, v in self.cell_properties.items():
                 self.cell_properties[k] = np.array(v)[~triangles_with_nan]
+
     @property
     def triangle_area(self):
         """Area of each triangle in the surface mesh
@@ -135,7 +146,7 @@ class Surface:
                 surface.cell_data[k] = np.array(v)
         return surface
 
-    def plot(self, pyvista_kwargs={}):
+    def plot(self, pyvista_kwargs=None):
         """Calls pyvista plot on the vtk object
 
         Parameters
@@ -143,6 +154,8 @@ class Surface:
         pyvista_kwargs : dict, optional
             kwargs passed to pyvista.DataSet.plot(), by default {}
         """
+        if pyvista_kwargs is None:
+            pyvista_kwargs = {}
         try:
             self.vtk().plot(**pyvista_kwargs)
             return
@@ -192,7 +205,7 @@ class Surface:
             d.get('cell_properties', None),
         )
 
-    def save(self, filename, *, group='Loop',replace_spaces=True, ext=None):
+    def save(self, filename, *, group='Loop', replace_spaces=True, ext=None):
         filename = filename.replace(' ', '_') if replace_spaces else filename
         if isinstance(filename, (io.StringIO, io.BytesIO)):
             if ext is None:

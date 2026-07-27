@@ -10,13 +10,15 @@ logger = getLogger(__name__)
 
 
 def ellipse_function(
-    lateral_contact_data=pd.DataFrame(),
+    lateral_contact_data=None,
     model=True,  # True to cover the extent of the model, regardless of data distribution
     minP=None,
     maxP=None,
     minS=None,
     maxS=None,
 ):
+    if lateral_contact_data is None:
+        lateral_contact_data = pd.DataFrame()
 
     if lateral_contact_data.empty:
         return model, minP, maxP, minS, maxS
@@ -60,7 +62,7 @@ def ellipse_function(
 
 
 def constant_function(
-    othercontact_data=pd.DataFrame(),
+    othercontact_data=None,
     mean_growth=None,
     minP=None,
     maxP=None,
@@ -68,6 +70,8 @@ def constant_function(
     maxS=None,
     vertex=None,
 ):
+    if othercontact_data is None:
+        othercontact_data = pd.DataFrame()
 
     if othercontact_data.empty:
         return mean_growth
@@ -83,7 +87,7 @@ def constant_function(
 
 
 def obliquecone_function(
-    othercontact_data=pd.DataFrame(),
+    othercontact_data=None,
     mean_growth=None,
     minP=None,
     maxP=None,
@@ -92,6 +96,8 @@ def obliquecone_function(
     vertex=None,
 ):
     # import math
+    if othercontact_data is None:
+        othercontact_data = pd.DataFrame()
 
     if othercontact_data.empty:
         return mean_growth

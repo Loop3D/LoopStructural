@@ -82,10 +82,12 @@ class SurfeRBFInterpolator(GeologicalInterpolator):
     def add_inequality_pairs_constraints(
         self,
         w: float = 1.0,
-        upper_bound=np.finfo(float).eps,
+        upper_bound=None,
         lower_bound=-np.inf,
         pairs: Optional[list] = None,
     ):
+        if upper_bound is None:
+            upper_bound = np.finfo(float).eps
         # self.surfe.Add
         pass
 
@@ -205,6 +207,7 @@ class SurfeRBFInterpolator(GeologicalInterpolator):
     @property
     def dof(self):
         return self.get_data_locations().shape[0]
+
     @property
-    def n_elements(self)->int:
+    def n_elements(self) -> int:
         return self.get_data_locations().shape[0]

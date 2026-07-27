@@ -63,7 +63,7 @@ class StructuredGrid:
         np.ndarray
             Maximum coordinates (origin + (nsteps - 1) * step_vector)
         """
-        return self.origin + (self.nsteps-1) * self.step_vector
+        return self.origin + (self.nsteps - 1) * self.step_vector
 
     def vtk(self):
         """Convert the structured grid to a PyVista RectilinearGrid.
@@ -96,7 +96,7 @@ class StructuredGrid:
             grid.cell_data[name] = data.reshape((grid.n_cells, -1), order="F")
         return grid
 
-    def plot(self, pyvista_kwargs={}):
+    def plot(self, pyvista_kwargs=None):
         """Calls pyvista plot on the vtk object
 
         Parameters
@@ -104,6 +104,8 @@ class StructuredGrid:
         pyvista_kwargs : dict, optional
             kwargs passed to pyvista.DataSet.plot(), by default {}
         """
+        if pyvista_kwargs is None:
+            pyvista_kwargs = {}
         try:
             self.vtk().plot(**pyvista_kwargs)
             return

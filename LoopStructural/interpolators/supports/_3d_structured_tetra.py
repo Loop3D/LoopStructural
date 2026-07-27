@@ -14,7 +14,13 @@ logger = getLogger(__name__)
 class TetMesh(BaseStructuredSupport):
     """ """
 
-    def __init__(self, origin=np.zeros(3), nsteps_cells=np.ones(3) * 10, step_vector=np.ones(3)):
+    def __init__(self, origin=None, nsteps_cells=None, step_vector=None):
+        if origin is None:
+            origin = np.zeros(3)
+        if nsteps_cells is None:
+            nsteps_cells = np.ones(3) * 10
+        if step_vector is None:
+            step_vector = np.ones(3)
         BaseStructuredSupport.__init__(self, origin, nsteps_cells, step_vector)
         self.type = SupportType.TetMesh
         self.tetra_mask_even = np.array(
@@ -85,13 +91,13 @@ class TetMesh(BaseStructuredSupport):
         )
 
         return np.abs(np.linalg.det(vecs)) / 6
-    
+
     @property
     def element_scale(self):
         size = self.element_size
-        size-= np.min(size)
-        size/= np.max(size)
-        size+=1.
+        size -= np.min(size)
+        size /= np.max(size)
+        size += 1.0
         return size
 
     @property
@@ -193,7 +199,7 @@ class TetMesh(BaseStructuredSupport):
         """
         norm = self.shared_element_norm
         return 0.5 * np.linalg.norm(norm, axis=1)
-    
+
     @property
     def shared_element_scale(self):
         return self.shared_element_size / np.mean(self.shared_element_size)
@@ -733,7 +739,11 @@ class TetMesh(BaseStructuredSupport):
 
         return neighbours
 
-    def vtk(self, node_properties={}, cell_properties={}):
+    def vtk(self, node_properties=None, cell_properties=None):
+        if node_properties is None:
+            node_properties = {}
+        if cell_properties is None:
+            cell_properties = {}
         try:
             import pyvista as pv
         except ImportError:

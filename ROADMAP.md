@@ -97,7 +97,7 @@ just at release time.
 - [x] **Stage 0 — Planning infra.** This file, release/versioning/compat
   policy, memory updated. Immediate fix for the live `datatypes` regression
   (see `COMPAT.md`).
-- [ ] **Stage 1 — Harden (outcome 3).** Tests/logging/reproducibility on the
+- [x] **Stage 1 — Harden (outcome 3).** Tests/logging/reproducibility on the
   current codebase — formalizing what's already happening informally in
   recent commits (fault-cycle detection, unconformity fixes, builder
   pattern).
@@ -141,34 +141,48 @@ just at release time.
     written so the sink/timing modules can move there largely unchanged,
     with `LoopStructural.utils.getLogger` becoming the thin compat shim
     at that point, per the original plan.
-  - [ ] **1c — Coding standards.** All functions must have docstrings.
-    All function arguments meant to be passed by keyword must be
-    keyword-only, separated from positional arguments with a bare `*` in
-    the signature, to prevent positional contamination (callers passing
-    by position and silently breaking when parameter order changes).
-    Applies to new/changed code going forward; retrofit existing public
-    surface opportunistically, but changing a **stable** (`API.md`)
-    signature from positional-or-keyword to keyword-only is itself a
-    breaking change per the API contract and needs a deprecation shim,
-    not a silent edit. Also:
-    - **Enforce docstrings via ruff's `D` (pydocstyle) rules.**
-      `pyproject.toml` already has a `[tool.pydocstyle]` numpy-convention
-      block, but it isn't wired into `ruff.lint.extend-select` so nothing
-      currently checks it — add `D` to `extend-select` so missing/malformed
-      docstrings fail CI instead of the config sitting unused.
-    - **Type hints on public signatures.** Parameters and return values on
-      public (`API.md` stable/provisional) functions must be typed; add
-      mypy or ruff's `ANN` rules to check it.
-    - **No mutable default arguments.** Enable ruff `B006`/`B008` to catch
-      mutable defaults and function-call defaults.
-    - **Re-enable bare-except lint.** Drop the `E722` entry from the
-      `ignore` list in `[tool.ruff.lint]` (currently marked "temporary")
-      so broad bare excepts get flagged again.
-    - **No `print()` for diagnostics.** Route through the logger instead —
-      depends on the 1b logging infrastructure landing first.
-    - **Pre-commit hook.** Add `.pre-commit-config.yaml` running
-      black/ruff locally, so violations are caught before commit instead
-      of only after push via the auto-fix-PR bot in `linter.yml`.
+  - [x] **1c — Coding standards.** `pyproject.toml`'s `[tool.ruff.lint]`
+    `extend-select` now includes `D` (pydocstyle, numpy convention via
+    `[tool.ruff.lint.pydocstyle]`), `ANN` (type hints), and `B006`/`B008`
+    (mutable/computed default arguments), alongside the already-enabled
+    `B007`/`B010`. `E722` (bare except) was dropped from the `ignore` list
+    so it's enforced again. `D`/`ANN` are **grandfathered per-file**: every
+    `.py` file that existed under `LoopStructural/` before this change has
+    an explicit `per-file-ignores` entry in `pyproject.toml` suppressing
+    `D`/`ANN` there (with a comment explaining the policy), while `tests/`,
+    `examples/`, `docs/`, and `setup.py` are exempted outright since they're
+    not public API surface. Any **new** file added to `LoopStructural/`
+    going forward is not on the grandfather list and gets both rule sets
+    enforced immediately — matching "applies to new/changed code going
+    forward; retrofit existing public surface opportunistically" without
+    trying to force a one-shot retrofit of ~6,500 pre-existing
+    docstring/type-hint findings across the current 121-file tree (that bulk
+    retrofit remains explicitly out of scope, to be chipped away at
+    file-by-file as each is touched — remove its grandfather entry once
+    done). All 80 real `B006`/`B008` violations that existed at the time
+    (mutable/computed defaults across 35 files, mostly `interpolators/`,
+    `geometry/`, `modelling/features/`) were fixed — changed to `None` with
+    the original default constructed inside the function body — and audited
+    for whether the shared default was ever mutated in place; none were
+    live cross-call state-leak bugs, all were latent-risk fixes. Four of
+    those were on **stable**-tier `GeologicalModel` methods
+    (`create_and_add_fault`, `create_and_add_intrusion`,
+    `get_fault_surfaces`, `get_stratigraphic_surfaces`); per the API
+    contract this needed `tests/fixtures/api_surface_snapshot.json` updated
+    plus a `COMPAT.md` entry — logged under "Migration notices (not
+    breaking, no shim needed)" since the effective default is identical for
+    every existing caller. Every `print()` call in library code — including
+    the `StructuredGrid2DGeometry.print_geometry()` display method — was
+    routed through the module's `logger` instead (30 call sites). Added
+    `.pre-commit-config.yaml` (black + ruff, pinned to matching versions)
+    so violations are caught locally before commit.
+    **Not done:** the keyword-only-arguments guideline (separating
+    by-keyword params with a bare `*`) has no mechanical lint rule behind
+    it — it isn't statically decidable which params are "meant" to be
+    keyword-only — so it remains a documented policy applied
+    opportunistically to new/changed code, not something retrofitted here;
+    and the bulk docstring/type-hint retrofit of existing files described
+    above.
 - [ ] **Stage 2 — Extract interpolation (outcome 2).** Port
   `loop_common`/`loop_interpolation` from Loop2 into a real uv workspace
   under `packages/`, with CI that actually installs and tests it (this
@@ -196,3 +210,16 @@ just at release time.
   promoted to registry-enforced stable, `GeologicalModel.update`
   instrumented, `tests/unit/test_logging.py` added. See Stage 1b bullet
   above for detail.
+- **2026-07-27:** Stage 1c done, closing out Stage 1. Ruff now enforces
+  `D`/`ANN`/`B006`/`B008`/`E722`; `D`/`ANN` grandfathered per-existing-file
+  in `pyproject.toml` so only new files are enforced immediately. Fixed all
+  80 pre-existing mutable/computed-default-argument bugs (`B006`/`B008`)
+  across 35 files — none were live cross-call state-leak bugs, all
+  latent-risk. Updated `api_surface_snapshot.json` and added `COMPAT.md`
+  migration-notice entries for the 4 affected stable `GeologicalModel`
+  methods. Routed 30 `print()` call sites through the module logger. Added
+  `.pre-commit-config.yaml` (black + ruff). Full unit test
+  suite green apart from this stage's own churn (fixed). See Stage 1c
+  bullet above for what's deliberately deferred (bulk docstring/type-hint
+  retrofit of existing files; keyword-only-args has no lint rule and stays
+  a going-forward policy).

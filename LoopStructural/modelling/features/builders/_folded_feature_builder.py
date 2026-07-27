@@ -16,7 +16,7 @@ class FoldedFeatureBuilder(GeologicalFeatureBuilder):
         bounding_box: BoundingBox,
         fold,
         nelements: int = 1000,
-        fold_weights={},
+        fold_weights=None,
         name="Feature",
         region=None,
         svario=True,
@@ -41,6 +41,8 @@ class FoldedFeatureBuilder(GeologicalFeatureBuilder):
         region : str, optional
             name of the region to restrict the feature to, by default None
         """
+        if fold_weights is None:
+            fold_weights = {}
         # create the feature builder, this intialises the interpolator
         GeologicalFeatureBuilder.__init__(
             self,

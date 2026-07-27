@@ -21,9 +21,9 @@ class StructuredGridSupport(BaseStructuredSupport):
 
     def __init__(
         self,
-        origin=np.zeros(3),
-        nsteps_cells=np.array([10, 10, 10]),
-        step_vector=np.ones(3),
+        origin=None,
+        nsteps_cells=None,
+        step_vector=None,
         rotation_xy=None,
     ):
         """
@@ -34,6 +34,12 @@ class StructuredGridSupport(BaseStructuredSupport):
         nsteps_cells - 3d list or numpy array of ints, number of cells in each direction
         step_vector - 3d list or numpy array of int
         """
+        if origin is None:
+            origin = np.zeros(3)
+        if nsteps_cells is None:
+            nsteps_cells = np.array([10, 10, 10])
+        if step_vector is None:
+            step_vector = np.ones(3)
         BaseStructuredSupport.__init__(
             self, origin, nsteps_cells, step_vector, rotation_xy=rotation_xy
         )
@@ -349,21 +355,24 @@ class StructuredGridSupport(BaseStructuredSupport):
         if np.max(idc[inside, :]) > property_array.shape[0]:
             cix, ciy, ciz = self.position_to_cell_index(evaluation_points)
             if not np.all(cix[inside] < self.nsteps_cells[0]):
-                print(
+                logger.error(
+                    "%s %s %s",
                     evaluation_points[inside, :][cix[inside] < self.nsteps_cells[0], 0],
                     self.origin[0],
                     self.maximum[0],
                 )
             if not np.all(ciy[inside] < self.nsteps_cells[1]):
-                print(
+                logger.error(
+                    "%s %s %s",
                     evaluation_points[inside, :][ciy[inside] < self.nsteps_cells[1], 1],
                     self.origin[1],
                     self.maximum[1],
                 )
             if not np.all(ciz[inside] < self.nsteps_cells[2]):
-                print(ciz[inside], self.nsteps_cells[2])
-                print(self.step_vector, self.nsteps_cells, self.nsteps)
-                print(
+                logger.error("%s %s", ciz[inside], self.nsteps_cells[2])
+                logger.error("%s %s %s", self.step_vector, self.nsteps_cells, self.nsteps)
+                logger.error(
+                    "%s %s %s",
                     evaluation_points[inside, :][~(ciz[inside] < self.nsteps_cells[2]), 2],
                     self.origin[2],
                     self.maximum[2],

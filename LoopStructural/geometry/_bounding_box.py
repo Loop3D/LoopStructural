@@ -37,9 +37,7 @@ class BoundingBox:
             number of steps/cells in each dimension used when generating a regular grid, by default None
         """
         if origin is not None and len(origin) != dimensions:
-            logger.warning(
-                f"Origin has {len(origin)} dimensions but bounding box has {dimensions}"
-            )
+            logger.warning(f"Origin has {len(origin)} dimensions but bounding box has {dimensions}")
             raise LoopValueError("Origin has incorrect number of dimensions")
         if maximum is not None and len(maximum) != dimensions:
             logger.warning(
@@ -52,9 +50,7 @@ class BoundingBox:
             )
             raise LoopValueError("Global origin has incorrect number of dimensions")
         if nsteps is not None and len(nsteps) != dimensions:
-            logger.warning(
-                f"Nsteps has {len(nsteps)} dimensions but bounding box has {dimensions}"
-            )
+            logger.warning(f"Nsteps has {len(nsteps)} dimensions but bounding box has {dimensions}")
             raise LoopValueError("Nsteps has incorrect number of dimensions")
         # reproject relative to the global origin, if origin is not provided.
         # we want the local coordinates to start at 0
@@ -62,7 +58,7 @@ class BoundingBox:
         if global_origin is not None and origin is None:
             origin = np.zeros(np.array(global_origin).shape, dtype=float)
         if global_maximum is not None and global_origin is not None:
-            maximum = np.array(global_maximum,dtype=float) - np.array(global_origin,dtype=float)
+            maximum = np.array(global_maximum, dtype=float) - np.array(global_origin, dtype=float)
 
         if maximum is None and nsteps is not None and step_vector is not None:
             maximum = np.array(origin) + np.array(nsteps) * np.array(step_vector)
@@ -222,7 +218,7 @@ class BoundingBox:
         int
             Total number of elements (product of nsteps)
         """
-        
+
         return self.nsteps.prod()
 
     @property
@@ -249,7 +245,6 @@ class BoundingBox:
         """
         return np.array([self.origin, self.maximum])
 
-     
     @nelements.setter
     def nelements(self, nelements: Union[int, float]):
         """Update the number of elements in the associated grid
@@ -506,7 +501,9 @@ class BoundingBox:
 
         if not local:
             coordinates = [
-                np.linspace(self.global_origin[i]+self.origin[i], self.global_maximum[i], nsteps[i])
+                np.linspace(
+                    self.global_origin[i] + self.origin[i], self.global_maximum[i], nsteps[i]
+                )
                 for i in range(self.dimensions)
             ]
         coordinate_grid = np.meshgrid(*coordinates, indexing="ij")
@@ -602,8 +599,15 @@ class BoundingBox:
         )
 
     def structured_grid(
-        self, cell_data: Dict[str, np.ndarray] = {}, vertex_data={}, name: str = "bounding_box"
+        self,
+        cell_data: Dict[str, np.ndarray] = None,
+        vertex_data=None,
+        name: str = "bounding_box",
     ):
+        if cell_data is None:
+            cell_data = {}
+        if vertex_data is None:
+            vertex_data = {}
         # python is passing a reference to the cell_data, vertex_data dicts so we need to
         # copy them to make sure that different instances of StructuredGrid are not sharing the same
         # underlying objects
@@ -636,7 +640,7 @@ class BoundingBox:
         if inplace:
             xyz -= self.global_origin
             return xyz
-        return (xyz - self.global_origin)  # np.clip(xyz, self.origin, self.maximum)
+        return xyz - self.global_origin  # np.clip(xyz, self.origin, self.maximum)
 
     def scale_by_projection_factor(self, value):
         return value / np.max((self.global_maximum - self.global_origin))
@@ -686,11 +690,11 @@ class BoundingBox:
         matrix = np.eye(4)
         L = self.global_maximum - self.global_origin
         L = np.max(L)
-        matrix[0, 3] = -self.global_origin[0]/L
-        matrix[1, 3] = -self.global_origin[1]/L
-        matrix[2, 3] = -self.global_origin[2]/L
+        matrix[0, 3] = -self.global_origin[0] / L
+        matrix[1, 3] = -self.global_origin[1] / L
+        matrix[2, 3] = -self.global_origin[2] / L
         if normalise:
-            matrix[0,0] = 1/L
-            matrix[1,1] = 1/L
-            matrix[2,2] = 1/L
+            matrix[0, 0] = 1 / L
+            matrix[1, 1] = 1 / L
+            matrix[2, 2] = 1 / L
         return matrix

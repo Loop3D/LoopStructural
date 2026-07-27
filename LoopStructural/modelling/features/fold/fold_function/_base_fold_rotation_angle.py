@@ -81,7 +81,7 @@ class BaseFoldRotationAngleProfile(metaclass=ABCMeta):
         )
 
     def estimate_wavelength(
-        self, svariogram_parameters: dict = {}, wavelength_number: int = 1
+        self, svariogram_parameters: dict = None, wavelength_number: int = 1
     ) -> Union[float, np.ndarray]:
         """Estimate the wavelength of the fold profile using the svariogram parameters
 
@@ -95,6 +95,8 @@ class BaseFoldRotationAngleProfile(metaclass=ABCMeta):
         float
             estimated wavelength
         """
+        if svariogram_parameters is None:
+            svariogram_parameters = {}
         wl = self.svario.find_wavelengths(**svariogram_parameters)
         if wavelength_number == 1:
             return wl[0]
@@ -119,7 +121,7 @@ class BaseFoldRotationAngleProfile(metaclass=ABCMeta):
     def evaluation_points(self, value):
         self._evaluation_points = value
 
-    def fit(self, params: dict = {}) -> bool:
+    def fit(self, params: dict = None) -> bool:
         """Fit the fold rotation angle function to the rotation angle and fold frame
         coordinate observations using scipy curve_fit
 
@@ -135,6 +137,8 @@ class BaseFoldRotationAngleProfile(metaclass=ABCMeta):
         bool
             True if the curve was successfully fit, False otherwise
         """
+        if params is None:
+            params = {}
         if len(self.params) > 0:
             success = False
             if self.rotation_angle is None or self.fold_frame_coordinate is None:
@@ -193,7 +197,7 @@ class BaseFoldRotationAngleProfile(metaclass=ABCMeta):
         self,
         wavelength: Optional[float] = None,
         calculate_wavelength: bool = True,
-        svariogram_parameters: dict = {},
+        svariogram_parameters: dict = None,
         reset: bool = False,
     ) -> np.ndarray:
         """Calculate an initial guess for the parameters of the fold rotation angle function,
@@ -216,6 +220,8 @@ class BaseFoldRotationAngleProfile(metaclass=ABCMeta):
         np.ndarray
             initial guess of the parameters for the fold rotation angle function
         """
+        if svariogram_parameters is None:
+            svariogram_parameters = {}
         pass
 
     @staticmethod

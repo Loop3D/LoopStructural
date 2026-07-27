@@ -15,6 +15,7 @@ def smooth_peak(x):
     v[mask] = x[mask] ** 4 - 2 * x[mask] ** 2 + 1
     return v
 
+
 class FaultProfileFunction(metaclass=ABCMeta):
     def __init__(self):
         self.lim = [-1, 1]
@@ -114,7 +115,7 @@ class CubicFunction(FaultProfileFunction):
 
     def check(self):
         if len(self.B) < 3:
-            print("underdetermined")
+            logger.error("underdetermined")
             raise ValueError("Underdetermined")
 
     def solve(self):
@@ -341,13 +342,13 @@ class FaultDisplacement:
         self.gz = gz
         self.scale = scale
         if self.gx is None:
-            print("Gx function none setting to ones")
+            logger.info("Gx function none setting to ones")
             self.gx = Ones()
         if self.gy is None:
-            print("Gy function none setting to ones")
+            logger.info("Gy function none setting to ones")
             self.gy = Ones()
         if self.gz is None:
-            print("Gz function none setting to ones")
+            logger.info("Gz function none setting to ones")
             self.gz = Ones()
 
         if self.gx is None:

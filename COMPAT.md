@@ -34,6 +34,10 @@ unchanged, but the new path is preferred going forward.
 |---|---|---|
 | `LoopStructural.modelling.features._feature_converters.add_fold_to_feature` (private module, imported directly by the QGIS plugin) | `GeologicalModel.add_fold_to_feature` | 2026-07-24 |
 | `LoopStructural.modelling.features._feature_converters.convert_feature_to_structural_frame` | `GeologicalModel.convert_feature_to_structural_frame` | 2026-07-24 |
+| `GeologicalModel.create_and_add_fault(..., faults=[])` | `GeologicalModel.create_and_add_fault(..., faults=None)` (list built internally, same effective default) | 2026-07-27 |
+| `GeologicalModel.create_and_add_intrusion(..., intrusion_frame_parameters={}, geometric_scaling_parameters={})` | `GeologicalModel.create_and_add_intrusion(..., intrusion_frame_parameters=None, geometric_scaling_parameters=None)` (dicts built internally, same effective default) | 2026-07-27 |
+| `GeologicalModel.get_fault_surfaces(faults=[])` | `GeologicalModel.get_fault_surfaces(faults=None)` (list built internally, same effective default) | 2026-07-27 |
+| `GeologicalModel.get_stratigraphic_surfaces(units=[])` | `GeologicalModel.get_stratigraphic_surfaces(units=None)` (list built internally, same effective default) | 2026-07-27 |
 
 ## Compatibility debt summary
 

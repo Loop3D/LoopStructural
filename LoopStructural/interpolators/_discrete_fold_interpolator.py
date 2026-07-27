@@ -60,7 +60,7 @@ class DiscreteFoldInterpolator(PiecewiseLinearInterpolator):
         self,
         fold_orientation=10.0,
         fold_axis_w=10.0,
-        fold_regularisation=[0.1, 0.01, 0.01],
+        fold_regularisation=None,
         fold_normalisation=1.0,
         fold_norm=1.0,
         step=2,
@@ -92,6 +92,8 @@ class DiscreteFoldInterpolator(PiecewiseLinearInterpolator):
         For more information about the fold weights see EPSL paper by Gautier Laurent 2016
 
         """
+        if fold_regularisation is None:
+            fold_regularisation = [0.1, 0.01, 0.01]
         # get the gradient of all of the elements of the mesh
         eg = self.support.get_element_gradients(np.arange(self.support.n_elements))
         # get array of all nodes for all elements N,4,3

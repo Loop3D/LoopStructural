@@ -304,10 +304,14 @@ class BaseUnstructured2d(BaseSupport):
         verts, c, tri, inside = self.get_element_for_location(pos, return_verts=False)
         return self.evaluate_shape_derivatives(pos, tri)
 
-    def vtk(self, node_properties={}, cell_properties={}):
+    def vtk(self, node_properties=None, cell_properties=None):
         """
         Create a vtk unstructured grid from the mesh
         """
+        if node_properties is None:
+            node_properties = {}
+        if cell_properties is None:
+            cell_properties = {}
         import pyvista as pv
 
         grid = pv.UnstructuredGrid()

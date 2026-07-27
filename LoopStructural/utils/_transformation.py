@@ -9,7 +9,7 @@ class EuclideanTransformation:
         self,
         dimensions: int = 2,
         angle: float = 0,
-        translation: np.ndarray = np.zeros(3),
+        translation: np.ndarray = None,
         fit_rotation: bool = True,
     ):
         """Transforms points into a new coordinate
@@ -24,6 +24,8 @@ class EuclideanTransformation:
         translation : np.ndarray, default zeros
             Translation to apply to the points, by default
         """
+        if translation is None:
+            translation = np.zeros(3)
         self.translation = translation[:dimensions]
         self.dimensions = dimensions
         self.angle = angle
@@ -169,7 +171,5 @@ class EuclideanTransformation:
             <p>Rotation Angle: {self.angle} degrees</p>
           </div>
         </div>
-        """.format(
-            self=self
-        )
+        """.format(self=self)
         return html_str
