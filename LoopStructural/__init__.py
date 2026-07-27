@@ -24,6 +24,14 @@ __all__ = [
     "getLogger",
     "rng",
     "get_levels",
+    "add_sink",
+    "remove_sink",
+    "timed_stage",
+    "timed",
+    "LogSink",
+    "StreamSink",
+    "FileSink",
+    "SqliteSink",
 ]
 import tempfile
 from pathlib import Path
@@ -35,6 +43,11 @@ formatter = logging.Formatter("%(levelname)s: %(asctime)s: %(filename)s:%(lineno
 ch.setFormatter(formatter)
 ch.setLevel(logging.WARNING)
 loggers = {}
+# Handlers attached via LoopStructural.utils.add_sink(); replayed onto every
+# logger getLogger() creates from here on, in addition to the default `ch`.
+_extra_sinks = []
+
+
 @dataclass
 class LoopStructuralConfig:
     """Configuration for LoopStructural package.
@@ -62,7 +75,21 @@ from .modelling.core.fault_topology import FaultTopology
 from .interpolators._api import LoopInterpolator
 from .interpolators import InterpolatorBuilder
 from .geometry import BoundingBox
-from .utils import log_to_console, log_to_file, getLogger, rng, get_levels
+from .utils import (
+    log_to_console,
+    log_to_file,
+    getLogger,
+    rng,
+    get_levels,
+    add_sink,
+    remove_sink,
+    timed_stage,
+    timed,
+    LogSink,
+    StreamSink,
+    FileSink,
+    SqliteSink,
+)
 
 logger = getLogger(__name__)
 logger.info("Imported LoopStructural")

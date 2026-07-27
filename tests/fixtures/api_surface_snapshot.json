@@ -1,4 +1,5 @@
 {
+  "getLogger": "(name)",
   "GeologicalModel.add_onlap_unconformity": "(self, feature: LoopStructural.modelling.features._geological_feature.GeologicalFeature, value: float, index: Optional[int] = None) -> LoopStructural.modelling.features._geological_feature.GeologicalFeature",
   "GeologicalModel.add_unconformity": "(self, feature: LoopStructural.modelling.features._geological_feature.GeologicalFeature, value: float, index: Optional[int] = None) -> LoopStructural.modelling.features._unconformity_feature.UnconformityFeature",
   "GeologicalModel.create_and_add_domain_fault": "(self, fault_surface_data, *, nelements=10000, interpolatortype='FDI', index: Optional[int] = None, **kwargs)",

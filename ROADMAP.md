@@ -117,20 +117,30 @@ just at release time.
     intrusion-workflow rewrite (Stage 6) onto the registry, and the rest of
     Stage 1's hardening work (coverage/logging/reproducibility beyond the
     API contract).
-  - [ ] **1b — Logging & timing infrastructure.** Replace the current
-    ad hoc `getLogger` usage with a generic, structured logging/timing
-    tool: pluggable sinks (file, stream/console, and a `sqlite` backend
-    for querying run history) and simple instrumentation helpers for
-    timing model-build/interpolation stages. Needs a handler-attachment
-    point — an external callable and/or an ABC that host apps can
-    subclass — since the QGIS plugin currently injects QGIS's own
-    logging by hooking into the LoopStructural logger; design the
-    sink interface so that pattern (and equivalents for other embedders)
-    is a supported extension point, not an incidental side effect of
-    Python's stdlib `logging`. Belongs in `loop_common` (the Loop2
-    package landing in Stage 2) so it's reusable outside LoopStructural
-    proper, with a thin `LoopStructural.utils.getLogger` shim kept for
-    QGIS-plugin compat (see QGIS-plugin compatibility above).
+  - [x] **1b — Logging & timing infrastructure.** Added
+    `LoopStructural/utils/_log_sinks.py` (`LogSink` ABC extension point +
+    `StreamSink`/`FileSink`/`SqliteSink` built-ins, `add_sink`/
+    `remove_sink`) and `_log_timing.py` (`timed_stage` context manager,
+    `timed` decorator; both emit structured `stage`/`event`/`duration_s`/
+    `run_id` fields via `logging`'s `extra=`, which `SqliteSink` stores in
+    dedicated columns and exposes through `.query(...)` for run-history
+    queries). `add_sink`/`remove_sink` are the documented handler-
+    attachment point for host apps (a `LogSink` subclass, or a plain
+    callable — no subclassing required) — the pattern the QGIS plugin's
+    current "hook into the LoopStructural logger" approach can migrate
+    to; the old direct-`addHandler` approach still works unchanged.
+    `getLogger` itself is unchanged in behavior/signature but is now
+    `@public_api(tier="stable")`-enforced (previously documented in
+    `API.md` as stable but not registry-checked). `GeologicalModel.update`
+    instrumented with `timed_stage` as the first real usage, wired
+    end-to-end and tested against a real model build. New sink/timing
+    surface documented in `API.md` under Provisional (see there); see
+    `tests/unit/test_logging.py`. **Deferred to Stage 2:** this currently
+    lives in `LoopStructural/utils/`, not yet in `loop_common` (which
+    doesn't exist as a workspace package in this repo until Stage 2) —
+    written so the sink/timing modules can move there largely unchanged,
+    with `LoopStructural.utils.getLogger` becoming the thin compat shim
+    at that point, per the original plan.
   - [ ] **1c — Coding standards.** All functions must have docstrings.
     All function arguments meant to be passed by keyword must be
     keyword-only, separated from positional arguments with a bare `*` in
@@ -181,3 +191,8 @@ just at release time.
 - **2026-07-24:** Stage 0 done in worktree `~/dev/LoopStructural-roadmap`
   (branch `roadmap-v2`): this file, `COMPAT.md`, the `datatypes` compat
   shim + regression test, `qgis-compat.yml` CI scaffold.
+- **2026-07-24:** Stage 1b done: structured logging/timing infrastructure
+  (`LoopStructural/utils/_log_sinks.py`, `_log_timing.py`), `getLogger`
+  promoted to registry-enforced stable, `GeologicalModel.update`
+  instrumented, `tests/unit/test_logging.py` added. See Stage 1b bullet
+  above for detail.

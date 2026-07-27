@@ -3,7 +3,20 @@ Utils
 =====
 """
 
-from .logging import getLogger, log_to_file, log_to_console, get_levels
+from .logging import (
+    getLogger,
+    log_to_file,
+    log_to_console,
+    get_levels,
+    LogSink,
+    StreamSink,
+    FileSink,
+    SqliteSink,
+    add_sink,
+    remove_sink,
+    timed_stage,
+    timed,
+)
 from .exceptions import (
     LoopException,
     LoopImportError,

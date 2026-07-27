@@ -103,6 +103,31 @@ exposed:
 - `GeologicalModel.add_fold_to_feature`,
   `GeologicalModel.convert_feature_to_structural_frame` — promoted from
   the internal `_feature_converters` module (logic unchanged).
+- Structured logging/timing (`ROADMAP.md` Stage 1b), all in
+  `LoopStructural/utils/_log_sinks.py` and `_log_timing.py`, re-exported
+  from `LoopStructural.utils` and top-level `LoopStructural`:
+  - `LogSink` — ABC extension point for routing LoopStructural log records
+    into a host application's own system (subclass and implement `emit`).
+    A plain `Callable[[logging.LogRecord], None]` works too, without
+    subclassing.
+  - `StreamSink`, `FileSink`, `SqliteSink` — built-in `LogSink`
+    implementations. `SqliteSink` stores structured fields (`stage`,
+    `event`, `duration_s`, `run_id`) in dedicated columns and exposes
+    `.query(...)` for querying run history.
+  - `add_sink(sink)` / `remove_sink(handler)` — attach/detach a sink (or
+    plain callable) to every current *and future* LoopStructural logger.
+    This is the pattern the QGIS plugin's current "hook into the
+    LoopStructural logger" approach should migrate to, though the old
+    approach (calling `logging.getLogger(name).addHandler(...)` directly
+    on a logger returned by `getLogger`) still works unchanged.
+  - `timed_stage(logger, stage, **extra)` (context manager) /
+    `timed(stage=None)` (decorator) — instrumentation helpers that log a
+    `start`/`end` pair with a `duration_s` field around a block or
+    function call. `GeologicalModel.update` is instrumented with
+    `timed_stage(logger, "update", ...)` as the first real usage.
+  - `getLogger` itself is promoted to enforced-**stable** (see below) as
+    part of this work — its signature/behavior are unchanged, only
+    tracked by the registry now.
 
 ## Known internal-path consumers
 

@@ -6,6 +6,7 @@ from LoopStructural import LoopStructuralConfig
 from ...utils import getLogger
 from ...utils import LoopValueError
 from ...utils import public_api
+from ...utils import timed_stage
 from ._feature_registry import FeatureBuilderRegistry
 from ..features._feature_converters import (
     add_fold_to_feature as _add_fold_to_feature,
@@ -2072,21 +2073,22 @@ class GeologicalModel:
                     geological features that need to be interpolated\n"
             )
 
-        if progressbar:
-            try:
-                from tqdm.auto import tqdm
+        with timed_stage(logger, "update", nfeatures=nfeatures, total_dof=total_dof):
+            if progressbar:
+                try:
+                    from tqdm.auto import tqdm
 
-                # Load tqdm with size counter instead of file counter
-                with tqdm(total=nfeatures) as pbar:
-                    for f in self.features:
-                        pbar.set_description(f"Interpolating {f.name}")
-                        f.builder.up_to_date(callback=pbar.update)
-                return
-            except ImportError:
-                logger.warning("Failed to import tqdm, disabling progress bar")
+                    # Load tqdm with size counter instead of file counter
+                    with tqdm(total=nfeatures) as pbar:
+                        for f in self.features:
+                            pbar.set_description(f"Interpolating {f.name}")
+                            f.builder.up_to_date(callback=pbar.update)
+                    return
+                except ImportError:
+                    logger.warning("Failed to import tqdm, disabling progress bar")
 
-        for f in self.features:
-            f.builder.up_to_date()
+            for f in self.features:
+                f.builder.up_to_date()
 
     @public_api(tier="stable")
     def stratigraphic_ids(self):
