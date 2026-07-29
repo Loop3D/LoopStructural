@@ -183,12 +183,217 @@ just at release time.
     opportunistically to new/changed code, not something retrofitted here;
     and the bulk docstring/type-hint retrofit of existing files described
     above.
-- [ ] **Stage 2 — Extract interpolation (outcome 2).** Port
-  `loop_common`/`loop_interpolation` from Loop2 into a real uv workspace
-  under `packages/`, with CI that actually installs and tests it (this
-  repo's `packages/` directory currently exists but is empty/orphaned from
-  an earlier abandoned attempt on branch `dev/restructure` — redo it
-  properly).
+- [x] **Stage 2 — Extract interpolation (outcome 2).** Ported
+  `loop_common`/`loop_interpolation` from Loop2 (`~/dev/Loop2`, branch
+  `loopstructural2.0`, tested green there: 546 passed/25 skipped before
+  porting) into `packages/loop_common` and `packages/loop_interpolation`,
+  each a standalone `src`-layout setuptools package with its own
+  `pyproject.toml` and copied-over test suite. Root `pyproject.toml` gained
+  `[tool.uv.workspace]` (`members = ["packages/*"]`) and `[tool.uv.sources]`
+  mapping `loop-common`/`loop-interpolation` to their workspace paths, so
+  `uv pip install -e packages/loop_interpolation` resolves `loop-common`
+  from the local path instead of failing to find it on PyPI. Fixed real
+  dependency-declaration gaps that existed in Loop2's own package
+  `pyproject.toml`s (they only worked there because Loop2's shared
+  workspace venv had every package's transitive deps merged together):
+  `loop-common` was missing `scipy`/`pyvista`/`pyyaml` (all hard,
+  module-level imports, not optional), and `loop-interpolation` didn't
+  declare `loop-common` as a dependency at all despite importing it
+  throughout. Both packages verified standalone in isolated venvs (not the
+  repo's own dev env): `loop_common` 150 passed, `loop_interpolation` 396
+  passed/25 skipped (surfe-only paths — `surfepy` is intentionally not a
+  hard dependency, matching the existing optional-import pattern in
+  `LoopStructural/interpolators/__init__.py`). Added
+  `.github/workflows/packages.yml`: a matrix job (loop_common/
+  loop_interpolation × python 3.10/3.11/3.12) that installs each package
+  with its `[tests]` extra and runs its own test suite, triggered only on
+  `packages/**` changes — independent from `tester.yml`, per the stage
+  philosophy of independently testable/reversible units. This repo's prior
+  `packages/` attempt lived only on the still-extant `dev/restructure`
+  branch (never merged, so nothing existed on `master`/this branch to
+  clean up) — that branch tried to move LoopStructural's own
+  interpolators/tests out in the same push and is left alone, not touched
+  or deleted, by this stage.
+  **Deliberately unchanged:** nothing under `LoopStructural/` consumes
+  these packages yet (no re-export shim, no internal interpolator swapped
+  over) — confirmed by re-running the existing `tests/unit` suite in a
+  clean venv (641 passed, 7 skipped, the same 7 pre-existing failures as
+  on this branch before this change, all unrelated: 2D P1/P2 support and
+  stratigraphic-column plotting/colour tests). Root install
+  (`pip install -e .[tests]`, Python ≥3.9) is unaffected.
+  **Not done / deferred:** (1) `requires-python` for the two new packages
+  stays `>=3.10` (unchanged from Loop2; no 3.10-only syntax found, just an
+  unreviewed floor) while the root package stays `>=3.9` — fine for
+  installing either independently, but running a unified `uv sync`/
+  `uv lock` across the whole workspace will raise the *effective* floor to
+  3.10 since uv resolves one environment satisfying every member; `uv.lock`
+  has deliberately not been regenerated in this stage (existing CI never
+  reads it — `tester.yml`/`qgis-compat.yml` both use `uv pip install
+  --system` with explicit dependency lists) but this is a decision point
+  before anyone runs a workspace-wide `uv sync` locally. (2) Ruff's D/ANN
+  policy (Stage 1c) isn't wired up for `packages/` — `linter.yml` only
+  lints the `LoopStructural/` folder, and the ported code has its own,
+  unreviewed pile of default-ruleset findings (mostly pyupgrade/typing
+  modernization) under default rules; left for a future dedicated lint job
+  if/when these packages get one. (3) `loop_common`'s lazy, guarded
+  `from LoopStructural.export...` calls in `geometry/_point.py`/
+  `geometry/_surface.py` (optional export helpers) mean it isn't fully
+  decoupled from `LoopStructural` for those specific methods — not resolved
+  here. (4) Loop2's `DESIGN.md`/`INTERPOLATION_DESIGN.md`/
+  `ADMM_IMPLEMENTATION.md` design docs were not ported, code only, per
+  outcome 2's scope.
+- [ ] **Stage 2b — Package `LoopStructural`, de-duplicate interpolation.**
+  Turn `LoopStructural/` itself into a `packages/loopstructural` uv-workspace
+  member (same `src`-layout/pyproject pattern as `packages/loop_common`/
+  `packages/loop_interpolation` from Stage 2), then switch its interpolation
+  code over to consume `loop_common`/`loop_interpolation` instead of its own
+  copies — closing out the "Deliberately unchanged" gap left by Stage 2
+  (nothing under `LoopStructural/` consumed the new packages yet). Any moved
+  module path needs a `DeprecationWarning` re-export shim per the versioning
+  policy (`COMPAT.md`), and the QGIS-plugin compat CI job
+  (`qgis-compat.yml`) needs to stay green throughout since
+  `LoopStructural.interpolators`/`.utils` are on the de facto public API
+  list.
+  **Known migration risks (interpolator-only comparison audit, 2026-07-27):**
+  `LoopStructural/interpolators/` vs `packages/loop_interpolation` (+
+  `loop_common/supports` for the support classes) is not a clean drop-in.
+  `loop_interpolation` is mostly a backward-compatible superset (adds
+  ADMM/fused-CG solvers, directional regularisation, pydantic constraint
+  validation, diagnostics — and fixes real old bugs like `== np.nan` masking
+  that was always `False`), but carries regressions that must be fixed or
+  explicitly accepted before swapping:
+  - **Bugs to fix in `loop_interpolation` first:**
+    `P2Interpolator.add_gradient_constraints` does
+    `self.support[elements[inside]]` — no `loop_common` support class
+    defines `__getitem__`, so this raises `TypeError` whenever gradient
+    constraints are used
+    (`packages/loop_interpolation/src/loop_interpolation/_p2interpolator.py:113`);
+    `add_value_constraints` in the same file silently drops a single value
+    constraint (guard changed from `shape[0] > 0` to `> 1`, `:165`).
+  - **Breaking renames/signatures to audit every call site for:**
+    `StructuredGridSupport` → `StructuredGrid`; `TetMesh(nsteps_cells=...)`
+    → `nsteps=...`; `StructuredGrid2D.vtk(node_properties, cell_properties,
+    z)` → `vtk(z, *, node_properties=, cell_properties=)`;
+    `GeologicalInterpolator.to_json()` return type `dict` → `str` (new
+    `to_dict()` returns the dict instead).
+  - **Numeric default flip:** `DiscreteFoldInterpolator`'s default
+    `fold_norm` flips sign (`1.0` → `-1.0`) — changes fold results for
+    callers relying on the default; needs a regression test before swap.
+  - **Reachability gap:** `ConstantNormP1Interpolator`/
+    `ConstantNormFDIInterpolator` exist in `_constant_norm.py` but are
+    commented out of `loop_interpolation/__init__.py`'s imports and
+    `interpolator_map` — unreachable via `InterpolatorFactory`/
+    `InterpolatorType` until re-enabled.
+  - **No package equivalent:** `LoopInterpolator`
+    (`LoopStructural/interpolators/_api.py`, exported from top-level
+    `LoopStructural.__init__`) has nothing corresponding in
+    `loop_interpolation`/`loop_common` — port it or keep it as a thin
+    in-tree wrapper over the package's `InterpolatorFactory`.
+  - **Missing fold profile:** `fold_function/` port lacks
+    `TrigonometricFoldRotationAngleProfile` (present in
+    `LoopStructural/modelling/features/fold/fold_function/_trigo_fold_rotation_angle.py`)
+    — tracked in 2c-11 below.
+  These feed directly into 2c-9's "confirm default behavior is unchanged"
+  audit and 2c-11's fold sub-task.
+- [ ] **Stage 2c — Insert `loop_common`/`loop_interpolation` into
+  `LoopStructural`.** Concrete task breakdown for Stage 2b, produced by a
+  codebase audit (2026-07-27) comparing `packages/loop_common`/
+  `packages/loop_interpolation` against `LoopStructural/interpolators/`,
+  `LoopStructural/geometry/`, and `LoopStructural/utils/`. Findings: most
+  `LoopStructural/interpolators/supports/*.py` files are file-for-file name
+  matches with `loop_common/supports/*.py` (diverged 10-40% in size since
+  the Stage 2 port — same lineage, not independent); `_builders.py` is
+  nearly identical (1-line diff) and is the safest pilot; `utils/maths.py`
+  and `utils/_transformation.py` closely match `loop_common/math/`; the two
+  `BoundingBox` implementations (`LoopStructural/geometry/_bounding_box.py`
+  vs `loop_common/geometry/_bounding_box.py`) have diverged onto different
+  APIs (global reprojection vs. local-frame transform) and need reconciling
+  before they can be unified; fold interpolation is the most architecturally
+  divergent and QGIS-compat-sensitive piece (`.fold` is on the compat list)
+  and should move last. `loop_common/geometry/_point.py` and `_surface.py`
+  still lazily import `LoopStructural.export.*` inside `save()` — a reverse
+  dependency that must be resolved (moving `LoopStructural/export/` into
+  `loop_common/io/`, currently empty) before `LoopStructural` can depend on
+  `loop_common.geometry` without a cycle.
+  - [ ] **2c-1.** Decide and record whether `LoopStructural/` becomes a
+    `packages/loopstructural` uv-workspace member (as Stage 2b's text
+    implies) or simply gains `loop-common`/`loop-interpolation` as regular
+    `[project.dependencies]` — the latter is lower-risk and can land first.
+  - [ ] **2c-2.** Pilot swap: `LoopStructural/interpolators/_builders.py` →
+    delegate to `loop_interpolation._builders` (near-identical today).
+    Proves the re-export pattern end-to-end through
+    `LoopStructural.interpolators.__init__` →
+    `LoopStructural.modelling.features.builders` → `qgis-compat.yml` before
+    touching anything larger.
+  - [ ] **2c-3.** Reconcile the two `BoundingBox` APIs (LS: `global_origin`/
+    `global_maximum` reprojection; loop_common: `local_origin`/
+    `local_rotation`, `set_local_transform`, `project`/`reproject`) — adapter
+    or pick-one-canonical, with callers ported — before aliasing
+    `LoopStructural.geometry.BoundingBox` to `loop_common`'s.
+  - [ ] **2c-4.** Swap `LoopStructural/utils/maths.py` internals to delegate
+    to `loop_common.math._maths`, keeping `LoopStructural/utils/__init__.py`'s
+    re-export names (`strikedip2vector`, `get_dip_vector`, etc.) unchanged so
+    the QGIS-plugin-facing `LoopStructural.utils.*` paths stay stable. Diff
+    implementations first — docstrings differ, numeric behavior must not.
+  - [ ] **2c-5.** Swap `LoopStructural/utils/_transformation.py`'s
+    `EuclideanTransformation` for `loop_common.math._transformation`'s,
+    fixing loop_common's mutable-default-argument bug
+    (`translation: np.ndarray = np.zeros(3)`) as part of the merge.
+  - [ ] **2c-6.** Resolve `loop_common`'s reverse dependency on
+    `LoopStructural.export.*`: move `LoopStructural/export/geoh5.py`,
+    `gocad.py`, `omf_wrapper.py`, `exporters.py` into `loop_common/io/`
+    (currently empty), and repoint the lazy imports in
+    `ValuePoints.save`/`VectorPoints.save`/`Surface.save`. Must land before
+    `LoopStructural` depends on `loop_common.geometry`, to avoid a circular
+    workspace dependency.
+  - [ ] **2c-7.** Swap `LoopStructural/interpolators/supports/*.py` (all 11
+    files) for `loop_common/supports/*.py`, file by file, diffing each pair
+    first; update `supports/__init__.py` and `_support_factory.py`.
+  - [ ] **2c-8.** Swap `LoopStructural/geometry/_aabb.py`, `_face_table.py`,
+    `_structured_grid*.py`, `_unstructured_mesh.py` for their
+    `loop_common.supports`/`loop_common.geometry` equivalents, reconciling
+    the `geometry`/`supports` subpackage taxonomy split between the two
+    codebases (add re-export aliases for whichever name loses).
+  - [ ] **2c-9.** Swap the core discrete-interpolator stack
+    (`_discrete_interpolator.py`, `_finite_difference_interpolator.py`,
+    `_p1interpolator.py`, `_p2interpolator.py`, `_constant_norm.py`,
+    `_operator.py`, `_geological_interpolator.py`, `_interpolator_builder.py`,
+    `_interpolator_factory.py`, `_interpolatortype.py`, `_surfe_wrapper.py`)
+    for `loop_interpolation` counterparts (10-90% larger — added
+    solver-strategy/regularisation/diagnostics/validation machinery). Audit
+    `loop_interpolation/_solver_pipeline.py`, `_solver_strategy.py`,
+    `_regularisation.py`, `_diagnostics.py`, `_validation.py`,
+    `constraints.py` first to confirm default behavior is unchanged, or
+    flag a numerical regression-test need.
+  - [ ] **2c-10.** Update `LoopStructural/interpolators/__init__.py` to
+    import from `loop_interpolation` instead of local modules, keeping
+    existing `__all__`/aliases (e.g. `PiecewiseLinearInterpolator =
+    P1Interpolator`) unchanged so
+    `modelling.features.builders._geological_feature_builder`'s
+    `from ....interpolators import ...` keeps working.
+  - [ ] **2c-11.** Fold interpolation, as its own sub-task (most divergent,
+    touches the compat-listed `.fold` path): port
+    `TrigoFoldRotationAngleProfile` into `loop_interpolation/fold_function/`
+    (missing there today); decide whether
+    `LoopStructural.modelling.features.fold` becomes a re-export shim over
+    `loop_interpolation._fold_event.FoldEvent` without breaking
+    `_discrete_fold_interpolator.py`'s existing import direction; swap
+    `_svariogram.py`.
+  - [ ] **2c-12.** Add `DeprecationWarning` re-export shims (pattern:
+    `LoopStructural/datatypes/__init__.py`) at every old path whose
+    implementation moved, each with a regression test asserting the old
+    path still imports and warns.
+  - [ ] **2c-13.** Extend `qgis-compat.yml`'s import-smoke list for any
+    newly-introduced/renamed top-level paths, and re-run it after each of
+    2c-2 through 2c-11 so a regression is bisectable to one step rather than
+    caught only at the end.
+  - [ ] **2c-14.** Re-run `tests/unit/` in a clean venv after each major
+    swap (2c-2, 2c-6 through 2c-9, 2c-11), diffing against Stage 2's
+    baseline ("641 passed, 7 skipped, 7 pre-existing failures") — any new
+    failure is a behavioral divergence to reconcile, not just an import fix.
+  - [ ] **2c-15.** Decide the fate of `LoopStructural/utils/linalg.py`
+    (8-line `normalise` helper) — fold into `loop_common.math` or drop if
+    unused outside `LoopStructural`. Low priority; can bundle into 2c-4.
 - [ ] **Stage 3 — YAML/JSON model recipe (outcome 1).** Schema for params +
   data-or-reference, round-tripped against the *current* `GeologicalModel`
   API.
@@ -223,3 +428,17 @@ just at release time.
   bullet above for what's deliberately deferred (bulk docstring/type-hint
   retrofit of existing files; keyword-only-args has no lint rule and stays
   a going-forward policy).
+- **2026-07-27:** Stage 2 done. `packages/loop_common` and
+  `packages/loop_interpolation` ported from Loop2 as real uv-workspace
+  members with their own `pyproject.toml`s and test suites (root
+  `pyproject.toml` gained `[tool.uv.workspace]`/`[tool.uv.sources]`); fixed
+  dependency-declaration gaps Loop2 had papered over (`scipy`/`pyvista`/
+  `pyyaml` missing from `loop-common`, `loop-common` itself missing from
+  `loop-interpolation`). Added `.github/workflows/packages.yml` to install
+  and test both independently of `tester.yml`. Verified standalone (150,
+  then 396/25-skipped tests passing in isolated venvs) and verified
+  non-invasive (existing `tests/unit` suite unaffected: same 641
+  passed/7 pre-existing failures/7 skipped as before this change). See
+  Stage 2 bullet above for what's deliberately deferred (workspace-wide
+  `uv.lock`/Python-floor interaction, packages/ lint policy, the still-lazy
+  `loop_common` → `LoopStructural.export` calls, design docs not ported).

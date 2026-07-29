@@ -32,6 +32,8 @@ classifiers = [
     'Programming Language :: Python :: 3.12',
 ]
 dependencies = [
+    "loop-common",
+    "loop-interpolation",
     "numpy>=1.18",
     "pandas",
     "scipy",
@@ -83,6 +85,13 @@ LoopStructural = [
     "datasets/data/geological_map_data/*.csv",
     "datasets/data/geological_map_data/*.txt",
 ]
+
+[tool.uv.workspace]
+members = ["packages/*"]
+
+[tool.uv.sources]
+loop-common = { workspace = true }
+loop-interpolation = { workspace = true }
 
 [tool.isort]
 profile = 'black'
@@ -183,6 +192,11 @@ allow-dict-calls-with-keyword-arguments = true
 # retroactively fixed in bulk. Any *new* file under LoopStructural/ is not
 # in this list and is enforced immediately. Remove an entry once that
 # file's public surface has been brought up to standard.
+# Stage 2 keeps lint hardening scoped to LoopStructural/; extracted workspace
+# packages are currently grandfathered for D/ANN and will get dedicated lint
+# policy in a later stage.
+"packages/loop_common/src/**/*.py" = ["D", "ANN"]
+"packages/loop_interpolation/src/**/*.py" = ["D", "ANN"]
 "LoopStructural/__init__.py" = ["D", "ANN"]
 "LoopStructural/datasets/__init__.py" = ["D", "ANN"]
 "LoopStructural/datasets/_base.py" = ["D", "ANN"]

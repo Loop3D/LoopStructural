@@ -75,6 +75,9 @@ class LoopInterpolator:
             inequality constraints between pairs of points, by default None
         """
 
+        inequality_values_for_compat = None
+        inequality_pairs_for_compat = None
+
         if values is not None:
             self.interpolator.set_value_constraints(values)
         if tangent_vectors is not None:
@@ -83,9 +86,18 @@ class LoopInterpolator:
             self.interpolator.set_normal_constraints(normal_vectors)
         if inequality_value_constraints is not None:
             self.interpolator.set_value_inequality_constraints(inequality_value_constraints)
+            inequality_values_for_compat = np.asarray(inequality_value_constraints)
         if inequality_pairs_constraints is not None:
             self.interpolator.set_inequality_pairs_constraints(inequality_pairs_constraints)
+            inequality_pairs_for_compat = np.asarray(inequality_pairs_constraints)
         self.interpolator.setup(**self.interpolator_setup_kwargs)
+
+        # Keep historical public API behaviour where callers could read back
+        # the same inequality arrays they passed into fit(...).
+        if inequality_values_for_compat is not None:
+            self.interpolator.data["inequality"] = inequality_values_for_compat.copy()
+        if inequality_pairs_for_compat is not None:
+            self.interpolator.data["inequality_pairs"] = inequality_pairs_for_compat.copy()
 
     def evaluate_scalar_value(self, locations: np.ndarray) -> np.ndarray:
         """Evaluate the value of the interpolator at locations

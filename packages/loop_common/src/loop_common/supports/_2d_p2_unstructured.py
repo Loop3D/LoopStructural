@@ -1,0 +1,348 @@
+"""
+Tetmesh based on cartesian grid for piecewise linear interpolation
+"""
+
+import logging
+from typing import Optional
+
+import numpy as np
+from ._2d_base_unstructured import BaseUnstructured2d
+from ._2d_p1_unstructured import P1Unstructured2d
+from . import SupportType
+
+logger = logging.getLogger(__name__)
+
+
+class P2Unstructured2d(BaseUnstructured2d):
+    """ """
+
+    def __init__(
+        self,
+        elements: Optional[np.ndarray] = None,
+        vertices: Optional[np.ndarray] = None,
+        neighbours: Optional[np.ndarray] = None,
+        aabb_nsteps=None,
+        origin: Optional[np.ndarray] = None,
+        step_vector: Optional[np.ndarray] = None,
+        nsteps: Optional[np.ndarray] = None,
+    ):
+        if elements is None or vertices is None or neighbours is None:
+            if origin is None or step_vector is None or nsteps is None:
+                raise ValueError(
+                    "P2Unstructured2d requires either explicit elements/vertices/"
+                    "neighbours arrays, or origin/step_vector/nsteps to build a "
+                    "quadratic triangular mesh over a bounding box"
+                )
+            vertices, elements, neighbours = self._build_from_bbox(origin, step_vector, nsteps)
+        BaseUnstructured2d.__init__(self, elements, vertices, neighbours, aabb_nsteps)
+        self.type = SupportType.P2Unstructured2d
+        # hessian of shape functions
+        self.hessian = np.array(
+            [
+                [[4, 4, 0, 0, 0, -8], [4, 0, 0, 4, -4, -4]],
+                [[4, 0, 0, 4, -4, -4], [4, 0, 4, 0, -8, 0]],
+            ]
+        )
+
+    @staticmethod
+    def _build_from_bbox(origin: np.ndarray, step_vector: np.ndarray, nsteps: np.ndarray):
+        """Build a quadratic (6-node) triangular mesh over a structured grid."""
+        p1_vertices, p1_elements, p1_neighbours = P1Unstructured2d._build_from_bbox(
+            origin, step_vector, nsteps
+        )
+
+        local_edges = np.array([[1, 2], [0, 2], [0, 1]])
+        local_index_for_edge = [3, 4, 5]
+
+        n_tris = p1_elements.shape[0]
+        edge_nodes = p1_elements[:, local_edges]
+        edge_nodes_sorted = np.sort(edge_nodes, axis=2)
+        flat_edges = edge_nodes_sorted.reshape(-1, 2)
+
+        unique_edges, inverse = np.unique(flat_edges, axis=0, return_inverse=True)
+        midpoint_nodes = (p1_vertices[unique_edges[:, 0]] + p1_vertices[unique_edges[:, 1]]) / 2.0
+
+        all_vertices = np.vstack([p1_vertices, midpoint_nodes])
+        edge_node_index = p1_vertices.shape[0] + inverse.reshape(n_tris, 3)
+
+        p2_elements = np.zeros((n_tris, 6), dtype=p1_elements.dtype)
+        p2_elements[:, :3] = p1_elements
+        for edge_i, local_idx in enumerate(local_index_for_edge):
+            p2_elements[:, local_idx] = edge_node_index[:, edge_i]
+
+        return all_vertices, p2_elements, p1_neighbours
+
+    def evaluate_d2_shape(self, indexes):
+        vertices = self.nodes[self.elements[indexes], :]
+        jac = np.array(
+            [
+                [
+                    (vertices[:, 1, 0] - vertices[:, 0, 0]),
+                    (vertices[:, 1, 1] - vertices[:, 0, 1]),
+                ],
+                [
+                    vertices[:, 2, 0] - vertices[:, 0, 0],
+                    vertices[:, 2, 1] - vertices[:, 0, 1],
+                ],
+            ]
+        )
+        jac = np.linalg.inv(jac)
+        dxy = (
+            self.hessian[None, 0, 1, :] * jac[:, 0, 0] * jac[:, 1, 1]
+            + self.hessian[None, 0, 1, :] * jac[:, 1, 0] * jac[:, 0, 1]
+            + self.hessian[None, 0, 0, :] * jac[:, 0, 0] * jac[:, 0, 1]
+            + self.hessian[None, 1, 1, :] * jac[:, 1, 0] * jac[:, 1, 1]
+        )
+        dxx = (
+            self.hessian[None, 0, 0, :] * jac[:, 0, 0] * jac[:, 0, 0]
+            + jac[:, 0, 0] * jac[:, 1, 0] * self.hessian[None, 0, 1, :]
+            + jac[:, 1, 0] * jac[:, 1, 0] * self.hessian[None, 1, 1]
+        )
+        dyy = (
+            self.hessian[None, 0, 0, :] * jac[:, 1, 0] * jac[:, 1, 0]
+            + jac[:, 1, 0] * jac[:, 1, 1] * self.hessian[None, 0, 1, :]
+            + jac[:, 1, 1] * jac[:, 1, 1] * self.hessian[None, 1, 1]
+        )
+        return dxx, dyy, dxy
+
+        #     vertices = np.zeros((3,2))
+        #     vertices[0,:] = [M[0,1],M[0,2]]
+        #     vertices[1,:] = [M[1,1],M[1,2]]
+        #     vertices[2,:] = [M[2,1],M[2,2]]
+        #     jac  = np.array([[(vertices[1,0]-vertices[0,0]),(vertices[1,1]-vertices[0,1])],
+        #         [vertices[2,0]-vertices[0,0],vertices[2,1]-vertices[0,1]]])
+        #     Nst_coeff = jac[0,0]*jac[1,1]+jac[0,1]*jac[1,0]
+
+        #     #N_st
+        #     Nst = np.zeros(6)
+        #     Nst[0] = 4
+        #     Nst[1] = 0
+        #     Nst[2] = 0
+        #     Nst[3] = 4
+        #     Nst[4] = -4
+        #     Nst[5] = -4
+
+        #     hN = np.zeros((2,6))
+
+        #     #N_ss
+        #     hN[0,0] = 4
+        #     hN[0,1] = 4
+        #     hN[0,2] = 0
+        #     hN[0,3] = 0
+        #     hN[0,4] = 0
+        #     hN[0,5] = -8
+
+        #     #N_tt
+        #     hN[1,0] = 4
+        #     hN[1,1] = 0
+        #     hN[1,2] = 4
+        #     hN[1,3] = 0
+        #     hN[1,4] = -8
+        #     hN[1,5] = 0
+
+        #     xyConst = Nst*Nst_coeff + hN[0] * jac[0,0]*jac[1,0] + hN[1] * jac[1,0]*jac[1,1]
+        #     jac = np.linalg.inv(jac)
+        #     jac = jac*jac
+
+        #     d2_prod = np.dot(jac,hN)
+        #     d2Const = d2_prod[0] + d2_prod[1]
+        #     xxConst = d2_prod[0]
+        #     yyConst = d2_prod[1]
+
+        #     return xxConst,yyConst,xyConstz
+        # def evaluate_mixed_derivative(self, indexes):
+        #     """
+        #     evaluate partial of N with respect to st (to set u_xy=0)
+        #     """
+
+        #     vertices = self.nodes[self.elements[indexes], :]
+        #     jac = np.array(
+        #         [
+        #             [
+        #                 (vertices[:, 1, 0] - vertices[:, 0, 0]),
+        #                 (vertices[:, 1, 1] - vertices[:, 0, 1]),
+        #             ],
+        #             [
+        #                 vertices[:, 2, 0] - vertices[:, 0, 0],
+        #                 vertices[:, 2, 1] - vertices[:, 0, 1],
+        #             ],
+        #         ]
+        #     ).T
+        #     Nst_coeff = jac[:, 0, 0] * jac[:, 1, 1] + jac[:, 0, 1] * jac[:, 1, 0]
+
+        #     Nst = self.Nst[None, :] * Nst_coeff[:, None]
+        #     return (
+        #         Nst
+        #         + self.hN[None, 0, :] * (jac[:, 0, 0] * jac[:, 1, 0])[:, None]
+        #         + self.hN[None, 1, :] * (jac[:, 1, 0] * jac[:, 1, 1])[:, None]
+        #     )
+
+    def evaluate_shape_d2(self, indexes):
+        """Evaluate physical second derivatives of quadratic shape functions."""
+        vertices = self.nodes[self.elements[indexes], :]
+
+        jac = np.array(
+            [
+                [
+                    (vertices[:, 1, 0] - vertices[:, 0, 0]),
+                    (vertices[:, 1, 1] - vertices[:, 0, 1]),
+                ],
+                [
+                    (vertices[:, 2, 0] - vertices[:, 0, 0]),
+                    (vertices[:, 2, 1] - vertices[:, 0, 1]),
+                ],
+            ]
+        )
+        jac = jac.swapaxes(0, 2)
+        jac = jac.swapaxes(1, 2)
+        jac = np.linalg.inv(jac)
+        # calculate derivative by summation, using the reference-space
+        # hessian of the shape functions (self.hessian) and the chain rule
+        d2 = np.zeros((vertices.shape[0], 3, self.elements.shape[1]))
+        ii = 0
+        for i in range(2):
+            for j in range(i, 2):
+                for k in range(2):
+                    for l in range(2):
+                        d2[:, ii, :] += (
+                            jac[:, i, k, None] * jac[:, j, l, None] * self.hessian[None, k, l, :]
+                        )
+                ii += 1
+        return d2
+
+    def evaluate_shape_derivatives(self, locations, elements=None):
+        """
+        Compute dN/ds (1st row), dN/dt(2nd row)
+        """
+        locations = np.array(locations)
+        if elements is None:
+            verts, c, tri, inside = self.get_element_for_location(locations)
+        else:
+            tri = elements
+            M = np.ones((elements.shape[0], 3, 3))
+            M[:, :, 1:] = self.vertices[self.elements[elements], :][:, :3, :]
+            points_ = np.ones((locations.shape[0], 3))
+            points_[:, 1:] = locations
+            minv = np.linalg.inv(M)
+            c = np.einsum("lij,li->lj", minv, points_)
+
+        vertices = self.nodes[self.elements[tri][:, :3]]
+        jac = np.zeros((tri.shape[0], 2, 2))
+        jac[:, 0, 0] = vertices[:, 1, 0] - vertices[:, 0, 0]
+        jac[:, 0, 1] = vertices[:, 1, 1] - vertices[:, 0, 1]
+        jac[:, 1, 0] = vertices[:, 2, 0] - vertices[:, 0, 0]
+        jac[:, 1, 1] = vertices[:, 2, 1] - vertices[:, 0, 1]
+        # N = np.zeros((tri.shape[0], 6))
+
+        # dN containts the derivatives of the shape functions
+        dN = np.zeros((tri.shape[0], 2, 6))
+        dN[:, 0, 0] = 4 * c[:, 1] + 4 * c[:, 2] - 3  # diff(N1,s).evalf(subs=vmap)
+        dN[:, 0, 1] = 4 * c[:, 1] - 1  # diff(N2,s).evalf(subs=vmap)
+        dN[:, 0, 2] = 0  # diff(N3,s).evalf(subs=vmap)
+        dN[:, 0, 3] = 4 * c[:, 2]  # diff(N4,s).evalf(subs=vmap)
+        dN[:, 0, 4] = -4 * c[:, 2]  # diff(N5,s).evalf(subs=vmap)
+        dN[:, 0, 5] = -8 * c[:, 1] - 4 * c[:, 2] + 4  # diff(N6,s).evalf(subs=vmap)
+
+        dN[:, 1, 0] = 4 * c[:, 1] + 4 * c[:, 2] - 3  # diff(N1,t).evalf(subs=vmap)
+        dN[:, 1, 1] = 0  # diff(N2,t).evalf(subs=vmap)
+        dN[:, 1, 2] = 4 * c[:, 2] - 1  # diff(N3,t).evalf(subs=vmap)
+        dN[:, 1, 3] = 4 * c[:, 1]  # diff(N4,t).evalf(subs=vmap)
+        dN[:, 1, 4] = -4 * c[:, 1] - 8 * c[:, 2] + 4  # diff(N5,t).evalf(subs=vmap)
+        dN[:, 1, 5] = -4 * c[:, 1]  # diff(N6,t).evalf(subs=vmap)
+
+        # find the derivatives in x and y by calculating the dot product between the jacobian^-1 and the
+        # derivative matrix
+        #         d_n = np.einsum('ijk,ijl->ilk',np.linalg.inv(jac),dN)
+        d_n = np.linalg.inv(jac)
+        #         d_n = d_n.swapaxes(1,2)
+        d_n = d_n @ dN
+        # d_n = d_n.swapaxes(2, 1)
+        # d_n = np.dot(np.linalg.inv(jac),dN)
+        return d_n, tri
+
+    def evaluate_shape(self, locations):
+        locations = np.array(locations)
+        verts, c, tri, inside = self.get_element_for_location(locations)
+        # c = np.dot(np.array([1,x,y]),np.linalg.inv(M)) # convert to barycentric coordinates
+        # order of bary coord is (1-s-t,s,t)
+        N = np.zeros((c.shape[0], 6))  # evaluate shape functions at barycentric coordinates
+        N[:, 0] = c[:, 0] * (2 * c[:, 0] - 1)  # (1-s-t)(1-2s-2t)
+        N[:, 1] = c[:, 1] * (2 * c[:, 1] - 1)  # s(2s-1)
+        N[:, 2] = c[:, 2] * (2 * c[:, 2] - 1)  # t(2t-1)
+        N[:, 3] = 4 * c[:, 1] * c[:, 2]  # 4st
+        N[:, 4] = 4 * c[:, 2] * c[:, 0]  # 4t(1-s-t)
+        N[:, 5] = 4 * c[:, 1] * c[:, 0]  # 4s(1-s-t)
+
+        return N, tri, inside
+
+    def evaluate_d2(self, pos, property_array):
+        """
+        Evaluate value of interpolant
+
+        Parameters
+        ----------
+        pos - numpy array
+            locations
+        prop - numpy array
+            property values at nodes
+
+        Returns
+        -------
+
+        """
+        c, tri, inside = self.evaluate_shape(pos[:, :2])
+        d2 = self.evaluate_shape_d2(tri)
+        values = np.zeros((pos.shape[0], d2.shape[1]))
+        values[:] = np.nan
+        for i in range(d2.shape[1]):
+            values[inside, i] = np.sum(
+                d2[inside, i, :] * property_array[self.elements[tri[inside], :]],
+                axis=1,
+            )
+
+        return values
+
+    def get_quadrature_points(self, npts=2):
+        if npts == 2:
+            v1 = self.nodes[self.shared_elements][:, 0, :]
+            v2 = self.nodes[self.shared_elements][:, 1, :]
+            cp = np.zeros((v1.shape[0], 2, 2))
+            cp[:, 0] = 0.25 * v1 + 0.75 * v2
+            cp[:, 1] = 0.75 * v1 + 0.25 * v2
+            weight = np.ones((v1.shape[0], 2))
+            return cp, weight
+        raise NotImplementedError("Only 2 point quadrature is implemented")
+
+    def evaluate_value(self, pos: np.ndarray, property_array: np.ndarray) -> np.ndarray:
+        """Evaluate value of interpolant using quadratic shape functions."""
+        pos = np.asarray(pos)
+        if property_array.shape[0] != self.n_nodes:
+            raise ValueError("property array must have same length as nodes")
+        values = np.zeros(pos.shape[0])
+        values[:] = np.nan
+        N, tri, inside = self.evaluate_shape(pos[:, :2])
+        values[inside] = np.sum(
+            N[inside, :] * property_array[self.elements[tri[inside], :]], axis=1
+        )
+        return values
+
+    def evaluate_gradient(self, pos: np.ndarray, property_array: np.ndarray) -> np.ndarray:
+        """Evaluate gradient of interpolant using quadratic shape derivatives."""
+        pos = np.asarray(pos)
+        if property_array.shape[0] != self.n_nodes:
+            raise ValueError("property array must have same length as nodes")
+        values = np.zeros(pos.shape)
+        values[:] = np.nan
+        element_gradients, tri = self.evaluate_shape_derivatives(pos[:, :2])
+        inside = tri >= 0
+        values[inside, :] = (
+            element_gradients[inside, :, :] * property_array[self.elements[tri[inside], None, :]]
+        ).sum(2)
+        return values
+
+    def get_edge_normal(self, e):
+        v = self.nodes[self.shared_elements][:, 0, :] - self.nodes[self.shared_elements][:, 1, :]
+        # e_len = np.linalg.norm(v, axis=1)
+        normal = np.array([v[:, 1], -v[:, 0]]).T
+        normal /= np.linalg.norm(normal, axis=1)[:, None]
+        return normal

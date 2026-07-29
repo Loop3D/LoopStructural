@@ -1,0 +1,17 @@
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "loop-common"
+description = "Common utilities for LoopStructural"
+version = "0.1.0"
+requires-python = ">=3.10"
+dependencies = ["numpy", "pandas", "pydantic", "scipy", "pyvista", "pyyaml"]
+
+[project.optional-dependencies]
+tests = ["pytest"]
+
+[tool.setuptools.packages.find]
+where = ["src"]
+include = ["loop_common", "loop_common.*"]
