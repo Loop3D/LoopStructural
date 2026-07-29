@@ -9,7 +9,8 @@ from loop_interpolation._interpolator_factory import InterpolatorFactory as _Int
 
 warn(
     "LoopStructural.interpolators._interpolator_factory is deprecated; use "
-    "loop_interpolation._interpolator_factory instead.",
+    "loop_interpolation._interpolator_factory instead. This compatibility shim "
+    "will be removed in 2 minor releases.",
     DeprecationWarning,
     stacklevel=2,
 )

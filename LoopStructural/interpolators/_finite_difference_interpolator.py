@@ -12,7 +12,8 @@ from loop_interpolation._finite_difference_interpolator import (
 
 warn(
     "LoopStructural.interpolators._finite_difference_interpolator is deprecated; use "
-    "loop_interpolation._finite_difference_interpolator instead.",
+    "loop_interpolation._finite_difference_interpolator instead. This compatibility "
+    "shim will be removed in 2 minor releases.",
     DeprecationWarning,
     stacklevel=2,
 )

@@ -10,6 +10,9 @@ any module-path move/rename on the 1.x line gets a re-export shim with a
 | `LoopStructural.datatypes.Surface` | `LoopStructural.geometry.Surface` | 2026-07-24 | TBD (next release containing this shim) | `b5eb4742` | TBD (2 minor releases after first shim release) | Active | Core maintainers |
 | `LoopStructural.datatypes.ValuePoints` | `LoopStructural.geometry.ValuePoints` | 2026-07-24 | TBD (next release containing this shim) | `b5eb4742` | TBD (2 minor releases after first shim release) | Active | Core maintainers |
 | `LoopStructural.datatypes.VectorPoints` | `LoopStructural.geometry.VectorPoints` | 2026-07-24 | TBD (next release containing this shim) | `b5eb4742` | TBD (2 minor releases after first shim release) | Active | Core maintainers |
+| `LoopStructural.interpolators._finite_difference_interpolator` | `loop_interpolation._finite_difference_interpolator` | 2026-07-29 | 2026-07-29 | extracted-package integration | 2 minor releases after first shim release | Active | Core maintainers |
+| `LoopStructural.interpolators._interpolator_builder` | `loop_interpolation._interpolator_builder` | 2026-07-29 | 2026-07-29 | extracted-package integration | 2 minor releases after first shim release | Active | Core maintainers |
+| `LoopStructural.interpolators._interpolator_factory` | `loop_interpolation._interpolator_factory` | 2026-07-29 | 2026-07-29 | extracted-package integration | 2 minor releases after first shim release | Active | Core maintainers |
 
 ## Deprecation lifecycle
 
@@ -41,6 +44,6 @@ unchanged, but the new path is preferred going forward.
 
 ## Compatibility debt summary
 
-- Active shims: 4
+- Active shims: 7
 - Oldest active shim added: 2026-07-24
-- Next cleanup milestone: set after first shim-containing release is tagged
+- Next cleanup milestone: remove the interpolator-path shims after 2 minor releases from 2026-07-29
