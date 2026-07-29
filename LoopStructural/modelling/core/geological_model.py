@@ -156,6 +156,76 @@ class GeologicalModel:
         # json["features"] = [f.to_json() for f in self.features]
         return json
 
+    @public_api(tier="provisional")
+    def to_recipe_dict(self, data_reference=None):
+        """Return a YAML/JSON-friendly recipe for rebuilding the model.
+
+        This captures the construction inputs needed for stage 3a: bounding
+        box, stratigraphic column, and either inline model data or a file
+        reference to it.
+        """
+        recipe = {
+            "schema": "LoopStructural.GeologicalModelRecipe",
+            "version": 1,
+            "model": {
+                "bounding_box": self.bounding_box.to_dict(),
+                "stratigraphic_column": self.stratigraphic_column.to_dict(),
+                "data_source": None,
+            },
+        }
+        if data_reference is not None:
+            recipe["model"]["data_source"] = {
+                "kind": "reference",
+                "path": str(pathlib.Path(data_reference)),
+            }
+        elif not self.data.empty:
+            recipe["model"]["data_source"] = {
+                "kind": "inline",
+                "dataframe": self.data.to_dict(orient="split"),
+            }
+        return recipe
+
+    @classmethod
+    @public_api(tier="provisional")
+    def from_recipe_dict(cls, recipe):
+        """Rebuild a geological model from a recipe dictionary."""
+        if not isinstance(recipe, dict):
+            raise TypeError("recipe must be a dictionary")
+
+        model_data = recipe.get("model", recipe)
+        bounding_box = model_data.get("bounding_box")
+        if isinstance(bounding_box, dict):
+            bounding_box = BoundingBox.from_dict(bounding_box)
+        if not isinstance(bounding_box, BoundingBox):
+            raise TypeError("recipe must include a bounding_box dictionary")
+
+        model = cls(bounding_box)
+
+        data_source = model_data.get("data_source")
+        if isinstance(data_source, dict):
+            kind = data_source.get("kind")
+            if kind == "reference":
+                model.data = pd.read_csv(pathlib.Path(data_source["path"]))
+            elif kind == "inline":
+                dataframe = data_source.get("dataframe")
+                if not isinstance(dataframe, dict):
+                    raise TypeError("inline data_source must include a dataframe dictionary")
+                model.data = pd.DataFrame(**dataframe)
+            elif kind is not None:
+                raise ValueError(f"Unsupported data_source kind: {kind}")
+        elif isinstance(data_source, str):
+            model.data = pd.read_csv(pathlib.Path(data_source))
+        elif data_source is not None:
+            raise TypeError("data_source must be a dictionary, string path, or None")
+
+        stratigraphic_column = model_data.get("stratigraphic_column")
+        if isinstance(stratigraphic_column, dict):
+            model.stratigraphic_column = StratigraphicColumn.from_dict(stratigraphic_column)
+        elif stratigraphic_column is not None:
+            raise TypeError("stratigraphic_column must be a dictionary or None")
+
+        return model
+
     def __str__(self):
         return f"GeologicalModel with {len(self.features)} features"
 

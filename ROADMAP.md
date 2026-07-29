@@ -432,9 +432,16 @@ just at release time.
     unused outside `LoopStructural`. Low priority; can bundle into 2c-4.
     Resolved: keep local in `LoopStructural.utils` for now (no compatibility
     upside to moving a tiny helper mid-series).
-- [ ] **Stage 3 — YAML/JSON model recipe (outcome 1).** Schema for params +
-  data-or-reference, round-tripped against the *current* `GeologicalModel`
-  API.
+- [ ] **Stage 3 — YAML/JSON model recipe (outcome 1).**
+  - [ ] **3a — Build recipe schema.** Schema for params + data-or-reference,
+    round-tripped against the *current* `GeologicalModel` construction API.
+  - [ ] **3b — Full model-state roundtrip.** Extend the contract so we can
+    round-trip the current in-memory model state, not just the recipe to
+    build it: bounding box, stratigraphic column, features, faults/regions,
+    and stored data/reference metadata.
+  - [ ] **3c — Serialization API + fixtures.** Add read/write helpers and
+    golden tests that prove both 3a and 3b stay aligned with the current
+    `GeologicalModel` API.
 - [ ] **Stage 4 — Bring in `loopresources` + `map2loop` (outcomes 5, 7).**
   Workspace packages, now that the pattern is proven internally in Stage 2.
 - [ ] **Stage 5 — Graph backend (outcome 4).** The `2.0` breaking change,
@@ -500,3 +507,9 @@ just at release time.
   in facade form or intentionally deferred to later architecture-heavy
   stages where broader API migration is already expected. Documentation
   build check passed: `uv run .\docs\make.bat html`.
+- **2026-07-29:** Stage 3a started. Added a provisional
+  `GeologicalModel.to_recipe_dict` / `GeologicalModel.from_recipe_dict`
+  roundtrip for the current model recipe shape, covering bounding box,
+  stratigraphic column, and either inline or file-referenced data. Added
+  focused unit coverage for inline-data and CSV-backed recipe roundtrips;
+  full in-memory model-state roundtrip remains for Stage 3b.
