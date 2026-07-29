@@ -17,6 +17,7 @@ import numpy as np
 import pandas as pd
 from typing import List, Optional, Union, Dict
 import pathlib
+import json
 from ...modelling.features.fault import FaultSegment
 
 from ...modelling.features.builders import (
@@ -156,6 +157,18 @@ class GeologicalModel:
         # json["features"] = [f.to_json() for f in self.features]
         return json
 
+    @staticmethod
+    def _feature_recipe_kind(feature):
+        if isinstance(feature, GeologicalFeature):
+            return "foliation"
+        if isinstance(feature, StructuralFrame):
+            return "structural_frame"
+        if isinstance(feature, UnconformityFeature):
+            return "unconformity"
+        if isinstance(feature, FaultSegment):
+            return "fault"
+        return feature.__class__.__name__.lower()
+
     @public_api(tier="provisional")
     def to_recipe_dict(self, data_reference=None):
         """Return a YAML/JSON-friendly recipe for rebuilding the model.
@@ -171,8 +184,21 @@ class GeologicalModel:
                 "bounding_box": self.bounding_box.to_dict(),
                 "stratigraphic_column": self.stratigraphic_column.to_dict(),
                 "data_source": None,
+                "features": [],
             },
         }
+        for feature in self.features:
+            feature_entry = {
+                "name": feature.name,
+                "kind": self._feature_recipe_kind(feature),
+                "faults": [
+                    fault.name
+                    for fault in getattr(feature, "faults", [])
+                    if getattr(fault, "name", None)
+                ],
+                "regions": [],
+            }
+            recipe["model"]["features"].append(feature_entry)
         if data_reference is not None:
             recipe["model"]["data_source"] = {
                 "kind": "reference",
@@ -224,7 +250,126 @@ class GeologicalModel:
         elif stratigraphic_column is not None:
             raise TypeError("stratigraphic_column must be a dictionary or None")
 
+        features = model_data.get("features", [])
+        if features is None:
+            features = []
+        if not isinstance(features, list):
+            raise TypeError("features must be a list")
+
+        feature_map = {}
+        for feature_entry in features:
+            if not isinstance(feature_entry, dict):
+                raise TypeError("each feature entry must be a dictionary")
+            feature_name = feature_entry.get("name")
+            if not isinstance(feature_name, str):
+                raise TypeError("each feature entry must include a string name")
+            feature_data = model.data.loc[model.data["feature_name"] == feature_name].copy()
+            if feature_data.empty:
+                feature_data = None
+            feature = model.create_and_add_foliation(feature_name, data=feature_data)
+            if feature is None:
+                raise ValueError(f"Could not recreate feature '{feature_name}' from recipe")
+            feature_map[feature_name] = feature
+
+        for feature_entry in features:
+            feature_name = feature_entry.get("name")
+            fault_names = feature_entry.get("faults", [])
+            if not isinstance(fault_names, list):
+                raise TypeError("faults must be a list")
+            if fault_names:
+                feature = feature_map[feature_name]
+                feature.faults = [feature_map[name] for name in fault_names if name in feature_map]
+
         return model
+
+    @public_api(tier="provisional")
+    def to_recipe_json(self, data_reference=None, indent=2):
+        """Return a JSON-formatted string of the recipe.
+
+        Parameters
+        ----------
+        data_reference : str, optional
+            Path to an external CSV file to reference instead of embedding
+            data inline in the JSON. If None, data is embedded.
+        indent : int, optional
+            JSON indentation level. Default is 2.
+
+        Returns
+        -------
+        str
+            JSON-formatted recipe string.
+        """
+        recipe = self.to_recipe_dict(data_reference=data_reference)
+        return json.dumps(recipe, indent=indent)
+
+    @classmethod
+    @public_api(tier="provisional")
+    def from_recipe_json(cls, json_str):
+        """Rebuild a geological model from a JSON-formatted recipe string.
+
+        Parameters
+        ----------
+        json_str : str
+            JSON-formatted recipe string.
+
+        Returns
+        -------
+        GeologicalModel
+            The reconstructed geological model.
+
+        Raises
+        ------
+        TypeError
+            If json_str is not a string or does not parse as valid JSON.
+        """
+        if not isinstance(json_str, str):
+            raise TypeError("json_str must be a string")
+        try:
+            recipe = json.loads(json_str)
+        except json.JSONDecodeError as e:
+            raise TypeError(f"json_str is not valid JSON: {e}")
+        return cls.from_recipe_dict(recipe)
+
+    @public_api(tier="provisional")
+    def save_recipe(self, filename, data_reference=None):
+        """Save the recipe to a JSON file.
+
+        Parameters
+        ----------
+        filename : str or Path
+            Path to the output JSON file.
+        data_reference : str, optional
+            Path to an external CSV file to reference instead of embedding
+            data inline in the JSON. If None, data is embedded.
+        """
+        filename = pathlib.Path(filename)
+        recipe = self.to_recipe_dict(data_reference=data_reference)
+        with open(filename, "w") as f:
+            json.dump(recipe, f, indent=2)
+        logger.info(f"Recipe saved to {filename}")
+
+    @classmethod
+    @public_api(tier="provisional")
+    def load_recipe(cls, filename):
+        """Load a geological model from a recipe JSON file.
+
+        Parameters
+        ----------
+        filename : str or Path
+            Path to the recipe JSON file.
+
+        Returns
+        -------
+        GeologicalModel
+            The reconstructed geological model.
+        """
+        filename = pathlib.Path(filename)
+        if not filename.exists():
+            raise FileNotFoundError(f"Recipe file not found: {filename}")
+        with open(filename, "r") as f:
+            recipe = json.load(f)
+        logger.info(f"Recipe loaded from {filename}")
+        return cls.from_recipe_dict(recipe)
 
     def __str__(self):
         return f"GeologicalModel with {len(self.features)} features"
@@ -661,10 +806,12 @@ class GeologicalModel:
                     min_val = stratigraphic_column[g][u]["min"]
                     max_val = stratigraphic_column[g][u].get("max", None)
                     thickness = max_val - min_val if max_val is not None else None
-                logger.info(f"""
+                logger.info(
+                    f"""
                                model.stratigraphic_column.add_unit({u},
                                colour={stratigraphic_column[g][u].get("colour", None)},
-                                 thickness={thickness})""")
+                                 thickness={thickness})"""
+                )
                 self.stratigraphic_column.add_unit(
                     u,
                     colour=stratigraphic_column[g][u].get("colour", None),
@@ -2162,8 +2309,10 @@ class GeologicalModel:
                 total_dof += f.interpolator.dof
                 continue
         if verbose:
-            logger.info(f"Updating geological model. There are: \n {nfeatures} \
-                    geological features that need to be interpolated\n")
+            logger.info(
+                f"Updating geological model. There are: \n {nfeatures} \
+                    geological features that need to be interpolated\n"
+            )
 
         with timed_stage(logger, "update", nfeatures=nfeatures, total_dof=total_dof):
             if progressbar:

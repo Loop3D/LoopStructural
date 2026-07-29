@@ -103,6 +103,23 @@ exposed:
 - `GeologicalModel.add_fold_to_feature`,
   `GeologicalModel.convert_feature_to_structural_frame` — promoted from
   the internal `_feature_converters` module (logic unchanged).
+- Model recipe serialization (`ROADMAP.md` Stage 3a–3c), all in
+  `LoopStructural.modelling.core.geological_model`:
+  - `GeologicalModel.to_recipe_dict(data_reference=None)` / `GeologicalModel.from_recipe_dict(recipe)` —
+    serialize/deserialize the current model state to/from a dictionary
+    (bounding box, stratigraphic column, inline or file-referenced data,
+    feature and fault relationships). Dictionary shape is JSON-friendly
+    with a `"schema": "LoopStructural.GeologicalModelRecipe", "version": 1`
+    header for forward compatibility.
+  - `GeologicalModel.to_recipe_json(data_reference=None, indent=2)` / `GeologicalModel.from_recipe_json(json_str)` —
+    convenience wrappers for JSON string format (identical to
+    `json.dumps(to_recipe_dict(...))` and `from_recipe_dict(json.loads(...))`).
+  - `GeologicalModel.save_recipe(filename, data_reference=None)` / `GeologicalModel.load_recipe(filename)` —
+    file I/O helpers (JSON on disk). `data_reference` allows external CSV
+    file reference instead of embedding data inline.
+  - See `tests/unit/modelling/test_geological_model.py` for roundtrip
+    examples covering inline data, file references, and feature/fault
+    relationships.
 - Structured logging/timing (`ROADMAP.md` Stage 1b), all in
   `LoopStructural/utils/_log_sinks.py` and `_log_timing.py`, re-exported
   from `LoopStructural.utils` and top-level `LoopStructural`:

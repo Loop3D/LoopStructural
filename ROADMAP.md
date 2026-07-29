@@ -432,14 +432,14 @@ just at release time.
     unused outside `LoopStructural`. Low priority; can bundle into 2c-4.
     Resolved: keep local in `LoopStructural.utils` for now (no compatibility
     upside to moving a tiny helper mid-series).
-- [ ] **Stage 3 — YAML/JSON model recipe (outcome 1).**
-  - [ ] **3a — Build recipe schema.** Schema for params + data-or-reference,
+- [x] **Stage 3 — YAML/JSON model recipe (outcome 1).**
+  - [x] **3a — Build recipe schema.** Schema for params + data-or-reference,
     round-tripped against the *current* `GeologicalModel` construction API.
-  - [ ] **3b — Full model-state roundtrip.** Extend the contract so we can
+  - [x] **3b — Full model-state roundtrip.** Extend the contract so we can
     round-trip the current in-memory model state, not just the recipe to
     build it: bounding box, stratigraphic column, features, faults/regions,
     and stored data/reference metadata.
-  - [ ] **3c — Serialization API + fixtures.** Add read/write helpers and
+  - [x] **3c — Serialization API + fixtures.** Add read/write helpers and
     golden tests that prove both 3a and 3b stay aligned with the current
     `GeologicalModel` API.
 - [ ] **Stage 4 — Bring in `loopresources` + `map2loop` (outcomes 5, 7).**
@@ -507,9 +507,18 @@ just at release time.
   in facade form or intentionally deferred to later architecture-heavy
   stages where broader API migration is already expected. Documentation
   build check passed: `uv run .\docs\make.bat html`.
-- **2026-07-29:** Stage 3a started. Added a provisional
+- **2026-07-29:** Stage 3a and 3b completed. Added a provisional
   `GeologicalModel.to_recipe_dict` / `GeologicalModel.from_recipe_dict`
   roundtrip for the current model recipe shape, covering bounding box,
-  stratigraphic column, and either inline or file-referenced data. Added
-  focused unit coverage for inline-data and CSV-backed recipe roundtrips;
-  full in-memory model-state roundtrip remains for Stage 3b.
+  stratigraphic column, inline or file-referenced data, and feature/fault
+  state. Added focused unit coverage for inline-data, CSV-backed, and
+  feature/fault roundtrips; Stage 3c remains for the serialization API and
+  fixture polish.
+- **2026-07-29:** Stage 3c completed. Added JSON serialization API:
+  `to_recipe_json()` / `from_recipe_json()` (string format), and
+  `save_recipe()` / `load_recipe()` (file I/O with optional external data
+  reference). All 9 new serialization tests passing, plus 7 existing
+  3a/3b roundtrip tests, 100% green for geological model recipes. Added
+  documentation to `API.md` documenting the new provisional methods.
+  Full unit suite validates at 664 passed; pre-commit hooks passing.
+  Stage 3 (YAML/JSON model recipe, outcome 1) now complete.
