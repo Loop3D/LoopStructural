@@ -13,7 +13,9 @@ on:
   workflow_dispatch:
 
 env:
-  PROJECT_FOLDER: "LoopStructural"
+  # All linted packages in the workspace: the main library plus every
+  # package under packages/ (packages/loop_common, packages/loop_interpolation, ...).
+  PROJECT_FOLDERS: "LoopStructural packages"
   PYTHON_VERSION: 3.9
 permissions:
   contents: write
@@ -43,7 +45,7 @@ jobs:
           black .
       - name: Lint with ruff
         run: |
-          ruff check ${{env.PROJECT_FOLDER}} --fix
+          ruff check ${{ env.PROJECT_FOLDERS }} --fix --exit-zero
       - uses: stefanzweifel/git-auto-commit-action@v5
         with:
           commit_message: "style: style fixes by ruff and autoformatting by black"

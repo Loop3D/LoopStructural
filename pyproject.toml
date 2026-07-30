@@ -49,6 +49,7 @@ export = ["geoh5py", "pyevtk", "dill"]
 jupyter = ["pyvista[all]"]
 inequalities = ["loopsolver"]
 tests = ['pytest']
+dev = ['ruff']
 docs = [
     "pyvista[all]",
     "pydata-sphinx-theme",
@@ -162,6 +163,9 @@ ignore = [
     # "BLK100",
     # 'from module import *' used; unable to detect undefined names
     "F403",
+    # invalid module name: the PyPI project name (LoopStructural) is
+    # intentionally CamelCase and shared by the top-level package/modules
+    "N999",
 ]
 fixable = ["ALL"]
 unfixable = []
@@ -316,3 +320,5 @@ allow-dict-calls-with-keyword-arguments = true
 "examples/*" = ["D", "ANN"]
 "docs/*" = ["D", "ANN"]
 "setup.py" = ["D", "ANN"]
+"packages/loop_common/tests/*" = ["D", "ANN"]
+"packages/loop_interpolation/tests/*" = ["D", "ANN"]
