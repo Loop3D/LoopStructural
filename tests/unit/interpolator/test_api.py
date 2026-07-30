@@ -1,12 +1,11 @@
 import numpy as np
 import pytest
 
+from loop_interpolation import FiniteDifferenceInterpolator, P1Interpolator
+
 from LoopStructural.geometry import BoundingBox
-from LoopStructural.interpolators import InterpolatorType, P1Interpolator
+from LoopStructural.interpolators import InterpolatorType
 from LoopStructural.interpolators._api import LoopInterpolator
-from LoopStructural.interpolators._finite_difference_interpolator import (
-    FiniteDifferenceInterpolator,
-)
 
 
 @pytest.fixture

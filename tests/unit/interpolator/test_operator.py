@@ -1,7 +1,7 @@
 import numpy as np
 import pytest
 
-from LoopStructural.interpolators._operator import Operator
+from loop_interpolation._operator import Operator
 
 ALL_MASKS = [
     "Dx_mask",

@@ -15,6 +15,7 @@ __all__ = [
     "SurfeRBFInterpolator",
     "P1Interpolator",
     "P2Interpolator",
+    "Operator",
     "TetMesh",
     "StructuredGridSupport",
     "StructuredGrid",
@@ -55,6 +56,7 @@ from loop_common.supports import (
     P2UnstructuredTetMesh,
     SupportType,
 )
+from loop_interpolation._operator import Operator
 
 from ..utils import getLogger
 

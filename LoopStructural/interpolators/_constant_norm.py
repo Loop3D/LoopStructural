@@ -1,10 +1,6 @@
 import numpy as np
 
-from LoopStructural.interpolators._discrete_interpolator import DiscreteInterpolator
-from LoopStructural.interpolators._finite_difference_interpolator import (
-    FiniteDifferenceInterpolator,
-)
-from ._p1interpolator import P1Interpolator
+from loop_interpolation import DiscreteInterpolator, FiniteDifferenceInterpolator, P1Interpolator
 from typing import Optional, Union, Callable
 from scipy import sparse
 from LoopStructural.utils import rng
