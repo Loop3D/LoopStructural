@@ -21,6 +21,9 @@ on:
       - .github/workflows/packages.yml
   workflow_dispatch:
 
+permissions:
+  contents: read
+
 jobs:
   packages-test:
     name: ${{ matrix.package }} (python ${{ matrix.python-version }})
