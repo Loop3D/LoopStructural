@@ -1,12 +1,11 @@
-"""Timing/instrumentation helpers for model-build and interpolation stages.
+"""Timing/instrumentation helpers for staged, long-running work.
 
-See ``ROADMAP.md`` Stage 1b. :func:`timed_stage` is the primitive (a
-context manager); :func:`timed` is a thin decorator wrapping it for
-whole-function timing. Both emit structured start/end log records (via the
-`extra=` mechanism of the stdlib `logging` module) carrying `stage`,
-`event`, `run_id` and, on completion, `duration_s` -- fields a
-`LoopStructural.utils.SqliteSink` stores in dedicated columns so run history
-can be queried without parsing message text.
+:func:`timed_stage` is the primitive (a context manager); :func:`timed` is
+a thin decorator wrapping it for whole-function timing. Both emit
+structured start/end log records (via the `extra=` mechanism of the
+stdlib `logging` module) carrying `stage`, `event`, `run_id` and, on
+completion, `duration_s` -- fields a `SqliteSink` stores in dedicated
+columns so run history can be queried without parsing message text.
 """
 
 from __future__ import annotations
@@ -18,12 +17,9 @@ import uuid
 from contextlib import contextmanager
 from typing import Callable, Optional
 
-from ._api_registry import public_api
-
 __all__ = ["timed_stage", "timed"]
 
 
-@public_api(tier="provisional")
 @contextmanager
 def timed_stage(
     logger: logging.Logger,
@@ -45,7 +41,7 @@ def timed_stage(
     stage : str
         Name of the stage being timed, e.g. "update" or "interpolate".
     run_id : str, optional
-        Correlates stages from the same model build/run; generated if omitted.
+        Correlates stages from the same run; generated if omitted.
     level : int, optional
         Logging level for the emitted records, by default `logging.INFO`.
     **extra
@@ -84,7 +80,6 @@ def timed_stage(
         )
 
 
-@public_api(tier="provisional")
 def timed(
     stage: Optional[str] = None,
     *,
@@ -98,7 +93,8 @@ def timed(
     stage : str, optional
         Name of the stage; defaults to the wrapped function's qualified name.
     logger : logging.Logger, optional
-        Logger to use; defaults to a logger named after the function's module.
+        Logger to use; defaults to a stdlib logger named after the
+        function's module.
     level : int, optional
         Logging level for the emitted records, by default `logging.INFO`.
     """
@@ -108,9 +104,7 @@ def timed(
 
         @functools.wraps(func)
         def wrapper(*args, **kwargs):
-            from .logging import getLogger
-
-            active_logger = logger or getLogger(func.__module__)
+            active_logger = logger or logging.getLogger(func.__module__)
             with timed_stage(active_logger, stage_name):
                 return func(*args, **kwargs)
 

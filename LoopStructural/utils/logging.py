@@ -1,17 +1,19 @@
 import logging
-import LoopStructural
 import os
+from typing import Dict, Optional, Union
 
-from ._api_registry import public_api
-from ._log_sinks import (
+import LoopStructural
+from loop_common.logging import (
     LogSink,
     StreamSink,
     FileSink,
     SqliteSink,
-    add_sink,
-    remove_sink,
+    timed_stage,
+    timed,
 )
-from ._log_timing import timed_stage, timed
+from loop_common.logging.sinks import LogCallable, _CallableHandler
+
+from ._api_registry import public_api
 
 __all__ = [
     "getLogger",
@@ -124,3 +126,48 @@ def log_to_console(level="warning"):
                 hdlr = LoopStructural.ch
                 hdlr.setLevel(level)
                 logger.addHandler(hdlr)
+
+
+@public_api(tier="provisional")
+def add_sink(
+    sink: Union[LogSink, LogCallable], *, loggers: Optional[Dict[str, logging.Logger]] = None
+) -> logging.Handler:
+    """Attach a sink to every currently-registered LoopStructural logger.
+
+    Parameters
+    ----------
+    sink : LogSink | Callable[[logging.LogRecord], None]
+        A `LogSink` subclass instance, or a plain callable -- both are
+        supported extension points for host applications (see `LogSink`).
+    loggers : dict[str, logging.Logger], optional
+        Registry to attach to; defaults to `LoopStructural.loggers`.
+
+    Returns
+    -------
+    logging.Handler
+        The resulting handler, so it can later be detached with `remove_sink`.
+
+    Notes
+    -----
+    Loggers created with `getLogger` *after* this call also pick up the
+    sink automatically, matching how the built-in console sink already
+    behaves.
+    """
+    handler = sink.handler() if isinstance(sink, LogSink) else _CallableHandler(sink)
+    LoopStructural._extra_sinks.append(handler)
+    target = loggers if loggers is not None else LoopStructural.loggers
+    for logger in target.values():
+        logger.addHandler(handler)
+    return handler
+
+
+@public_api(tier="provisional")
+def remove_sink(
+    handler: logging.Handler, *, loggers: Optional[Dict[str, logging.Logger]] = None
+) -> None:
+    """Detach a handler previously returned by `add_sink`."""
+    if handler in LoopStructural._extra_sinks:
+        LoopStructural._extra_sinks.remove(handler)
+    target = loggers if loggers is not None else LoopStructural.loggers
+    for logger in target.values():
+        logger.removeHandler(handler)

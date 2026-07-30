@@ -1,6 +1,9 @@
-"""Compatibility layer for LoopStructural utils."""
+"""
+Utils
+=====
+"""
 
-from loop_common.utils import (
+from .logging import (
     getLogger,
     log_to_file,
     log_to_console,
@@ -13,17 +16,18 @@ from loop_common.utils import (
     remove_sink,
     timed_stage,
     timed,
-    EuclideanTransformation,
-    get_data_bounding_box,
-    get_data_bounding_box_map,
-    create_surface,
-    create_box,
+)
+from .exceptions import (
     LoopException,
     LoopImportError,
     InterpolatorError,
     LoopTypeError,
     LoopValueError,
-    rng,
+)
+from ._transformation import EuclideanTransformation
+from .helper import (
+    get_data_bounding_box,
+    get_data_bounding_box_map,
 )
 
 from .maths import (
@@ -37,8 +41,12 @@ from .maths import (
     normal_vector_to_dip_and_dip_direction,
     rotate,
 )
+from .helper import create_surface, create_box
 from .regions import RegionEverywhere, RegionFunction, NegativeRegion, PositiveRegion
+
 from .json_encoder import LoopJSONEncoder
+from loop_common.utils import rng
+
 from ._surface import LoopIsosurfacer, surface_list
 from .colours import random_colour, random_hex_colour
 from .observer import Callback, Disposable, Observable

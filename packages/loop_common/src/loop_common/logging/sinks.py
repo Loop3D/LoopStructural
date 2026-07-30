@@ -1,19 +1,16 @@
-"""Pluggable log-sink infrastructure.
+"""Pluggable log-sink infrastructure, shared across Loop packages.
 
-Introduced in ``ROADMAP.md`` Stage 1b to replace ad hoc ``getLogger`` usage
-with a generic, structured logging tool. :class:`LogSink` is the documented
-extension point host applications (e.g. the QGIS plugin, which currently
-injects its own logging by hooking into the LoopStructural logger) use to
-route LoopStructural's log records into their own systems -- either by
+:class:`LogSink` is the documented extension point host applications use to
+route a package's log records into their own systems -- either by
 subclassing it, or by passing a plain
-``Callable[[logging.LogRecord], None]`` straight to :func:`add_sink`, no
-subclassing required.
+``Callable[[logging.LogRecord], None]`` straight to a package's
+``add_sink`` (e.g. ``LoopStructural.utils.add_sink``), no subclassing
+required.
 
-This module is designed to be lifted into ``loop_common`` largely unchanged
-once ``ROADMAP.md`` Stage 2 lands that package as a workspace member; the
-only LoopStructural-specific piece is the lazy ``import LoopStructural`` in
-:func:`add_sink`/:func:`remove_sink` used to reach the shared logger
-registry.
+Attaching sinks to a specific logger registry (LoopStructural keeps its own
+in ``LoopStructural.loggers``/``LoopStructural._extra_sinks``) is the
+caller's responsibility -- these classes only build the
+``logging.Handler`` that gets attached.
 """
 
 from __future__ import annotations
@@ -26,8 +23,6 @@ from datetime import datetime
 from pathlib import Path
 from typing import Callable, Dict, List, Optional, Union
 
-from ._api_registry import public_api
-
 LogCallable = Callable[[logging.LogRecord], None]
 
 __all__ = [
@@ -35,14 +30,12 @@ __all__ = [
     "StreamSink",
     "FileSink",
     "SqliteSink",
-    "add_sink",
-    "remove_sink",
     "default_formatter",
 ]
 
 
 def default_formatter() -> logging.Formatter:
-    """Return the formatter used by LoopStructural's built-in sinks."""
+    """Return the formatter used by the built-in sinks."""
     return logging.Formatter("%(levelname)s: %(asctime)s: %(filename)s:%(lineno)d -- %(message)s")
 
 
@@ -50,11 +43,9 @@ class LogSink(ABC):
     """Base class for a pluggable logging destination.
 
     Subclass and implement :meth:`emit` to receive every
-    ``logging.LogRecord`` forwarded to a LoopStructural logger. This is the
-    supported extension point for host applications that want to route
-    LoopStructural logging into their own systems; a plain
+    ``logging.LogRecord`` forwarded to a logger. A plain
     ``Callable[[logging.LogRecord], None]`` works too and does not require
-    subclassing this class at all -- pass it directly to :func:`add_sink`.
+    subclassing this class at all.
     """
 
     level: int = logging.NOTSET
@@ -134,12 +125,11 @@ class FileSink(LogSink):
 class SqliteSink(LogSink):
     """Writes structured log records to a SQLite database for querying run history.
 
-    Records produced by :func:`LoopStructural.utils.timed_stage`/``timed``
-    carry extra attributes (``stage``, ``event``, ``duration_s``,
-    ``run_id``) which are stored in dedicated columns, so build/
-    interpolation timings can be queried directly
-    (``sink.query(stage="update")``) instead of parsed out of formatted log
-    text.
+    Records produced by ``timed_stage``/``timed`` carry extra attributes
+    (``stage``, ``event``, ``duration_s``, ``run_id``) which are stored in
+    dedicated columns, so build/interpolation timings can be queried
+    directly (``sink.query(stage="update")``) instead of parsed out of
+    formatted log text.
     """
 
     _COLUMNS = (
@@ -229,52 +219,3 @@ class SqliteSink(LogSink):
             conn.row_factory = sqlite3.Row
             rows = conn.execute(sql, params).fetchall()
         return [dict(row) for row in rows]
-
-
-@public_api(tier="provisional")
-def add_sink(
-    sink: Union[LogSink, LogCallable], *, loggers: Optional[Dict[str, logging.Logger]] = None
-) -> logging.Handler:
-    """Attach a sink to every currently-registered LoopStructural logger.
-
-    Parameters
-    ----------
-    sink : LogSink | Callable[[logging.LogRecord], None]
-        A `LogSink` subclass instance, or a plain callable -- both are
-        supported extension points for host applications (see `LogSink`).
-    loggers : dict[str, logging.Logger], optional
-        Registry to attach to; defaults to `LoopStructural.loggers`.
-
-    Returns
-    -------
-    logging.Handler
-        The resulting handler, so it can later be detached with `remove_sink`.
-
-    Notes
-    -----
-    Loggers created with `getLogger` *after* this call also pick up the
-    sink automatically, matching how the built-in console sink already
-    behaves.
-    """
-    import LoopStructural
-
-    handler = sink.handler() if isinstance(sink, LogSink) else _CallableHandler(sink)
-    LoopStructural._extra_sinks.append(handler)
-    target = loggers if loggers is not None else LoopStructural.loggers
-    for logger in target.values():
-        logger.addHandler(handler)
-    return handler
-
-
-@public_api(tier="provisional")
-def remove_sink(
-    handler: logging.Handler, *, loggers: Optional[Dict[str, logging.Logger]] = None
-) -> None:
-    """Detach a handler previously returned by `add_sink`."""
-    import LoopStructural
-
-    if handler in LoopStructural._extra_sinks:
-        LoopStructural._extra_sinks.remove(handler)
-    target = loggers if loggers is not None else LoopStructural.loggers
-    for logger in target.values():
-        logger.removeHandler(handler)

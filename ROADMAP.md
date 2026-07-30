@@ -522,3 +522,72 @@ just at release time.
   documentation to `API.md` documenting the new provisional methods.
   Full unit suite validates at 664 passed; pre-commit hooks passing.
   Stage 3 (YAML/JSON model recipe, outcome 1) now complete.
+- **2026-07-30:** `LoopStructural/utils/` audited end-to-end against
+  `loop_common`'s scope, and a live regression from the same-day geometry
+  refactor (`b66b9289`) was found and fixed in the process: that commit had
+  pointed `LoopStructural/utils/__init__.py` at a new
+  `packages/loop_common/src/loop_common/utils.py`, but the module it
+  pointed to was a set of non-functional placeholder re-implementations
+  (`LogSink`/`StreamSink`/`FileSink`/`SqliteSink` with no real handler
+  wiring, `timed_stage`/`timed` as no-op passthroughs, `EuclideanTransformation`
+  with no methods) rather than ports of the real, tested code -- silently
+  breaking 12 of 14 `tests/unit/test_logging.py` tests and all 10
+  `tests/unit/utils/test_transformation.py` tests (confirmed by stashing the
+  fix and re-running: baseline 214 failed/436 passed vs. 192 failed/458
+  passed after, a clean diff with zero new failures either direction).
+  **Moved to `loop_common` for real** (generic, zero `LoopStructural`
+  coupling, so safe to lift as-is): the `LogSink` ABC + `StreamSink`/
+  `FileSink`/`SqliteSink`/`default_formatter` and `timed_stage`/`timed`
+  (now `loop_common/logging/sinks.py` and `.../logging/timing.py`,
+  exported from `loop_common.logging`), and the `Observer`/`Observable`/
+  `Disposable` pattern (now `loop_common/observer.py`). `LoopStructural/
+  utils/_log_sinks.py` and `_log_timing.py` deleted;
+  `LoopStructural/utils/logging.py` now imports the sink/timing primitives
+  from `loop_common.logging` and keeps only the genuinely
+  `LoopStructural`-specific glue (`getLogger`/`add_sink`/`remove_sink`/
+  `log_to_file`/`log_to_console`, which mutate the `LoopStructural.loggers`/
+  `LoopStructural._extra_sinks`/`LoopStructural.ch` globals and can't be
+  generic); `LoopStructural/utils/observer.py` is now a thin re-export.
+  `LoopStructural/utils/exceptions.py` also became a thin re-export of
+  `loop_common.utils`'s identical `LoopException` hierarchy (already used
+  for real inside `loop_common`/`loop_interpolation`, e.g.
+  `loop_common/geometry/_structured_grid_3d.py`) instead of a duplicate,
+  incompatible class hierarchy of the same names. The broken/duplicate
+  `EuclideanTransformation`, `get_data_bounding_box(_map)`, `create_surface`,
+  `create_box`, `add_sink`, `remove_sink` stubs were deleted from
+  `loop_common/utils.py`, which now only keeps what's genuinely used from
+  there (`LoopException` family, `getLogger`, `rng`).
+  **Deliberately kept local, not moved** (extends the Stage 2c-4/2c-5/2c-15
+  precedent of preferring a working facade over drift risk): `maths.py`,
+  `_transformation.py` (real `EuclideanTransformation`), `linalg.py` --
+  unchanged, per those already-recorded decisions; `helper.py` (PCA-flavoured
+  bounding-box/surface helpers) -- blocked on the same
+  `LoopStructural.geometry.BoundingBox` vs. `loop_common.geometry.BoundingBox`
+  divergence 2c-3 deferred, since `create_box` does an `isinstance` check
+  against the LoopStructural class; `_surface.py` (`LoopIsosurfacer`),
+  `regions.py` (fault sign-regions) -- modelling-domain-specific, not generic
+  utility code; `_api_registry.py` -- LoopStructural's own API-tier
+  contract/registry, not a cross-package concern; `colours.py`,
+  `dtm_creator.py` -- visualisation/map2loop-integration-specific rather
+  than common math/geometry, candidates to live nearer
+  `LoopStructural.visualisation` and a future `map2loop` package
+  respectively (Stage 4) rather than in `loop_common`.
+  **Found dead** (defined but unreferenced anywhere, including their own
+  `utils/__init__.py`) and left in place pending a separate cleanup
+  decision, out of scope for this audit: `utils/config.py`'s
+  `LoopStructuralConfig` (superseded by the real, used dataclass of the
+  same name in `LoopStructural/__init__.py`), `utils/features.py` (`X`/`Y`/`Z`
+  Lambda features), `utils/utils.py` (a third, unused duplicate of
+  `helper.py`'s bounding-box helpers). `utils/typing.py`'s `NumericInput` and
+  `utils/json_encoder.py`'s `LoopJSONEncoder` are tiny, generic, and low-risk
+  to move but have exactly one internal consumer each and no `loop_common`
+  demand yet, so left in place rather than moved speculatively.
+  Verified: `tests/unit/test_logging.py` 14/14,
+  `tests/unit/utils/test_transformation.py` 10/10,
+  `uv run pytest packages/loop_common/tests` 151 passed, full
+  `tests/unit` suite improves from 214 failed/436 passed to 192 failed/458
+  passed with a clean (zero-regression) diff -- the remaining 192 failures
+  predate this change (interpolator `_operator` module-not-found from the
+  `c9992811` interpolator-code removal, and the `BoundingBox.global_origin`
+  attribute gap from `b66b9289`'s geometry refactor, both unrelated to
+  `utils`/`loop_common`).
