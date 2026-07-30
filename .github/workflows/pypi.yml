@@ -2,6 +2,9 @@ name: "📦 PyPI "
 on:
   workflow_dispatch:
 
+permissions:
+  contents: read
+
 jobs:
   # loop_common/loop_interpolation (ROADMAP.md Stage 2) are workspace-local
   # deps of LoopStructural (see [tool.uv.sources] in pyproject.toml). They
