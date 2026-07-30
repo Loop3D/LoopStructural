@@ -7,7 +7,7 @@ from LoopStructural.interpolators import (
     P1Interpolator,
     P2Interpolator,
 )
-from LoopStructural.interpolators.supports import P1Unstructured2d, P2Unstructured2d
+from loop_common.supports import P1Unstructured2d, P2Unstructured2d
 
 
 def _bbox_2d():
@@ -188,6 +188,90 @@ def test_p2_unstructured_2d_evaluate_shape_d2_reproduces_analytic_second_derivat
     d2 = support.evaluate_d2(test_points, interp.c)
     assert d2.shape == (50, 3)
     assert np.allclose(np.nanmean(d2, axis=0), [4.0, 1.5, 6.0], atol=1e-6)
+
+
+def test_p1_interpolator_2d_gradient_orthogonal_constraints_consistent_with_linear_field():
+    """Regression test for a half-applied dimension fix: add_gradient_orthogonal_constraints
+    in _p1interpolator.py hardcoded points[:, :3] when slicing point coordinates, while the
+    sibling add_gradient_constraints/add_norm_constraints methods in the same file correctly
+    used points[:, : self.dimensions]. For a 2D interpolator (self.dimensions == 2) this is
+    exercised here directly: a gradient-orthogonal constraint that is mathematically consistent
+    with a known linear field should not corrupt the least-squares system, and the field should
+    still be reproduced (up to the small residual expected from blending an extra weighted
+    least-squares constraint on top of the exact value pins).
+    """
+    interp = InterpolatorFactory.create_interpolator("P1", _bbox_2d(), nelements=500)
+    support = interp.support
+
+    def f(xy):
+        x, y = xy[:, 0], xy[:, 1]
+        return 2 * x - 3 * y + 5
+
+    values = f(support.nodes)
+    constraints = np.hstack([support.nodes, values[:, None], np.ones((support.nodes.shape[0], 1))])
+    interp.set_value_constraints(constraints)
+    interp.add_value_constraints(w=1.0)
+
+    # gradient of f is (2, -3); (3, 2) is orthogonal to it (dot product == 0)
+    points = support.barycentre
+    assert points.shape[1] == 2
+    vectors = np.tile(np.array([3.0, 2.0]), (points.shape[0], 1))
+    interp.add_gradient_orthogonal_constraints(points, vectors, w=1.0, name="gradient orthogonal")
+    assert "gradient orthogonal" in interp.constraints
+
+    interp.solve_system(solver="lsmr")
+
+    rng = np.random.default_rng(0)
+    test_points = rng.uniform(0.05, 0.95, size=(200, 2))
+    predicted = interp.evaluate_value(test_points)
+    actual = f(test_points)
+    valid = ~np.isnan(predicted)
+    assert valid.sum() == len(test_points)
+    # A dimension-slicing bug (e.g. feeding a value/weight column in as a coordinate)
+    # would produce errors many orders of magnitude larger than this tolerance.
+    assert np.max(np.abs(predicted[valid] - actual[valid])) < 1e-3
+
+
+def test_p2_interpolator_2d_gradient_orthogonal_constraints_consistent_with_quadratic_field():
+    """Same regression as above for _p2interpolator.py's
+    add_gradient_orthogonal_constraints, which had the identical points[:, :3] vs
+    points[:, : self.dimensions] inconsistency. Here the orthogonal vector varies per point
+    since the quadratic field's gradient is not constant.
+    """
+    interp = InterpolatorFactory.create_interpolator("P2", _bbox_2d(), nelements=2000)
+    support = interp.support
+
+    def f(xy):
+        x, y = xy[:, 0], xy[:, 1]
+        return x**2 + 2 * y**2 + x * y + 2 * x - 3 * y + 5
+
+    def grad_f(xy):
+        x, y = xy[:, 0], xy[:, 1]
+        gx = 2 * x + y + 2
+        gy = 4 * y + x - 3
+        return np.stack([gx, gy], axis=1)
+
+    values = f(support.nodes)
+    constraints = np.hstack([support.nodes, values[:, None], np.ones((support.nodes.shape[0], 1))])
+    interp.set_value_constraints(constraints)
+    interp.add_value_constraints(w=1.0)
+
+    points = support.barycentre
+    assert points.shape[1] == 2
+    grad = grad_f(points)
+    # rotate each gradient vector by 90 degrees to get a vector orthogonal to it
+    vectors = np.stack([-grad[:, 1], grad[:, 0]], axis=1)
+    interp.add_gradient_orthogonal_constraints(points, vectors, w=1.0)
+
+    interp.solve_system(solver="lsmr")
+
+    rng = np.random.default_rng(0)
+    test_points = rng.uniform(0.05, 0.95, size=(500, 2))
+    predicted = interp.evaluate_value(test_points)
+    actual = f(test_points)
+    valid = ~np.isnan(predicted)
+    assert valid.sum() == len(test_points)
+    assert np.max(np.abs(predicted[valid] - actual[valid])) < 1e-3
 
 
 def test_p2_interpolator_2d_minimise_grad_steepness_does_not_crash():

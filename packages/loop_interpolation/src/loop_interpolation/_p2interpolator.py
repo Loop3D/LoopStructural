@@ -135,7 +135,7 @@ class P2Interpolator(DiscreteInterpolator):
 
         """
         if points.shape[0] > 0:
-            grad, elements = self.support.evaluate_shape_derivatives(points[:, :3])
+            grad, elements = self.support.evaluate_shape_derivatives(points[:, : self.dimensions])
             inside = elements > -1
             area = self.support.element_size[elements[inside]]
             wt = np.ones(area.shape[0])

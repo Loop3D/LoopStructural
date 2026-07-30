@@ -27,7 +27,7 @@ permissions:
 jobs:
   packages-test:
     name: ${{ matrix.package }} (python ${{ matrix.python-version }})
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
       matrix:
@@ -47,7 +47,7 @@ jobs:
 
       - name: Install package with test extras
         run: |
-          uv sync --package ${{ matrix.package }} --extra tests
+          uv sync --package ${{ matrix.package }} --extra tests --python ${{ matrix.python-version }}
 
       - name: pytest
         run: |

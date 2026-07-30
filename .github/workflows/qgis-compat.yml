@@ -45,8 +45,8 @@ jobs:
 
       - name: Install this branch's LoopStructural over the pinned version
         run: |
-          uv pip install --no-deps -e ../packages/loop_common
-          uv pip install --no-deps -e ../packages/loop_interpolation
+          uv pip install --no-deps -e ./LoopStructural/packages/loop_common
+          uv pip install --no-deps -e ./LoopStructural/packages/loop_interpolation
           uv pip install --no-deps -e ./LoopStructural
           uv pip install pytest
 

@@ -1,6 +1,9 @@
 import numpy as np
 
 from LoopStructural.modelling.features._region import Region
+from LoopStructural.modelling.features._analytical_feature import (
+    AnalyticalGeologicalFeature,
+)
 
 
 class PlaneFeature:
@@ -76,3 +79,29 @@ def test_region_stores_constructor_arguments():
     assert region.feature is feature
     assert region.value == 1.5
     assert region.sign is False
+
+
+def test_base_feature_regions_not_shared_between_instances():
+    """Regression test: BaseFeature used to default `regions`/`faults` to a
+    single mutable list shared across all instances (a classic mutable
+    default argument bug). This was fixed by defaulting to None and copying
+    into a fresh list per-instance in BaseFeature.__init__. Confirm here that
+    mutating one instance's `.regions` does not leak into another instance
+    that was also constructed with the default (no explicit regions passed).
+    """
+    feature_a = AnalyticalGeologicalFeature(
+        name="feature_a", vector=np.array([1.0, 0.0, 0.0]), origin=np.array([0.0, 0.0, 0.0])
+    )
+    feature_b = AnalyticalGeologicalFeature(
+        name="feature_b", vector=np.array([0.0, 1.0, 0.0]), origin=np.array([0.0, 0.0, 0.0])
+    )
+
+    assert feature_a.regions == []
+    assert feature_b.regions == []
+    assert feature_a.regions is not feature_b.regions
+
+    region = Region(PlaneFeature(), value=0.0, sign=True)
+    feature_a.regions.append(region)
+
+    assert feature_a.regions == [region]
+    assert feature_b.regions == []

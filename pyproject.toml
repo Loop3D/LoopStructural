@@ -32,8 +32,8 @@ classifiers = [
     'Programming Language :: Python :: 3.12',
 ]
 dependencies = [
-    "loop-common",
-    "loop-interpolation",
+    "loop-common>=0.1.0,<0.2.0",
+    "loop-interpolation>=0.1.0,<0.2.0",
     "numpy>=1.18",
     "pandas",
     "scipy",
@@ -230,18 +230,6 @@ allow-dict-calls-with-keyword-arguments = true
 "LoopStructural/interpolators/_p1interpolator.py" = ["D", "ANN"]
 "LoopStructural/interpolators/_p2interpolator.py" = ["D", "ANN"]
 "LoopStructural/interpolators/_surfe_wrapper.py" = ["D", "ANN"]
-"LoopStructural/interpolators/supports/_2d_base_unstructured.py" = ["D", "ANN"]
-"LoopStructural/interpolators/supports/_2d_p1_unstructured.py" = ["D", "ANN"]
-"LoopStructural/interpolators/supports/_2d_p2_unstructured.py" = ["D", "ANN"]
-"LoopStructural/interpolators/supports/_2d_structured_grid.py" = ["D", "ANN"]
-"LoopStructural/interpolators/supports/_3d_base_structured.py" = ["D", "ANN"]
-"LoopStructural/interpolators/supports/_3d_p2_tetra.py" = ["D", "ANN"]
-"LoopStructural/interpolators/supports/_3d_structured_grid.py" = ["D", "ANN"]
-"LoopStructural/interpolators/supports/_3d_structured_tetra.py" = ["D", "ANN"]
-"LoopStructural/interpolators/supports/_3d_unstructured_tetra.py" = ["D", "ANN"]
-"LoopStructural/interpolators/supports/__init__.py" = ["D", "ANN"]
-"LoopStructural/interpolators/supports/_base_support.py" = ["D", "ANN"]
-"LoopStructural/interpolators/supports/_support_factory.py" = ["D", "ANN"]
 "LoopStructural/modelling/__init__.py" = ["D", "ANN"]
 "LoopStructural/modelling/core/__init__.py" = ["D", "ANN"]
 "LoopStructural/modelling/core/_feature_registry.py" = ["D", "ANN"]

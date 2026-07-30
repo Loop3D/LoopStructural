@@ -230,5 +230,39 @@ def test_recipe_json_formatting():
     assert len(json_str_no_indent) < len(json_str)
 
 
+def test_from_file_default_loads_pickled_model(tmp_path):
+    """Default behaviour (allow_pickle=True) should still load a valid
+    pickled model file successfully, preserving backward compatibility."""
+    pytest.importorskip("dill")
+    data, bb = load_claudius()
+    model = GeologicalModel(bb[0, :], bb[1, :])
+    model.set_model_data(data.iloc[:3].copy())
+
+    model_file = tmp_path / "model.pkl"
+    model.to_file(model_file)
+
+    restored = GeologicalModel.from_file(model_file)
+
+    assert restored is not None
+    assert isinstance(restored, GeologicalModel)
+    assert restored.bounding_box.to_dict() == model.bounding_box.to_dict()
+
+
+def test_from_file_allow_pickle_false_raises_without_loading(tmp_path):
+    """allow_pickle=False must refuse to unpickle the file and raise a clear,
+    actionable error rather than attempting to load it."""
+    from LoopStructural.utils import LoopValueError
+
+    data, bb = load_claudius()
+    model = GeologicalModel(bb[0, :], bb[1, :])
+    model.set_model_data(data.iloc[:3].copy())
+
+    model_file = tmp_path / "model.pkl"
+    model.to_file(model_file)
+
+    with pytest.raises(LoopValueError, match="allow_pickle"):
+        GeologicalModel.from_file(model_file, allow_pickle=False)
+
+
 if __name__ == "__main__":
     test_prepare_data_keeps_world_coordinates()

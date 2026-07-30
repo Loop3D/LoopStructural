@@ -79,8 +79,16 @@ class AnalyticalGeologicalFeature(BaseFeature):
         xyz2[:] = pos[:]
         for f in self.faults:
             xyz2[:] = f.apply_to_points(pos)
-        if self.model is not None:
-            xyz2[:] = self.model.rescale(xyz2, inplace=False)
+        # NOTE: `pos` (and hence `xyz2`) is already expressed in world
+        # coordinates under the affine-transform bounding box contract, so no
+        # further local<->world conversion is required here. `self.model` is
+        # kept as an attribute for parity with other features (e.g. so
+        # `self.origin`/`self.vector` based calculations can be extended to
+        # use model-aware transforms in future), but calling
+        # `self.model.rescale` on already-world-space points would incorrectly
+        # apply the local->world transform a second time. See
+        # `evaluate_gradient` below, which likewise treats `pos`/direction as
+        # already being in world space and performs no rescale.
         xyz2[:] = xyz2 - self.origin
         normal = self.vector / np.linalg.norm(self.vector)
         distance = normal[0] * xyz2[:, 0] + normal[1] * xyz2[:, 1] + normal[2] * xyz2[:, 2]

@@ -341,20 +341,39 @@ class BoundingBox:
         -------
         np.ndarray
             array of corners in clockwise order
+
+        Raises
+        ------
+        NotImplementedError
+            If the bounding box has a number of dimensions other than 2 or 3
         """
 
-        return np.array(
-            [
-                self.origin.tolist(),
-                [self.maximum[0], self.origin[1], self.origin[2]],
-                [self.maximum[0], self.maximum[1], self.origin[2]],
-                [self.origin[0], self.maximum[1], self.origin[2]],
-                [self.origin[0], self.origin[1], self.maximum[2]],
-                [self.maximum[0], self.origin[1], self.maximum[2]],
-                self.maximum.tolist(),
-                [self.origin[0], self.maximum[1], self.maximum[2]],
-            ]
-        )
+        if self.dimensions == 3:
+            return np.array(
+                [
+                    self.origin.tolist(),
+                    [self.maximum[0], self.origin[1], self.origin[2]],
+                    [self.maximum[0], self.maximum[1], self.origin[2]],
+                    [self.origin[0], self.maximum[1], self.origin[2]],
+                    [self.origin[0], self.origin[1], self.maximum[2]],
+                    [self.maximum[0], self.origin[1], self.maximum[2]],
+                    self.maximum.tolist(),
+                    [self.origin[0], self.maximum[1], self.maximum[2]],
+                ]
+            )
+        elif self.dimensions == 2:
+            return np.array(
+                [
+                    self.origin.tolist(),
+                    [self.maximum[0], self.origin[1]],
+                    self.maximum.tolist(),
+                    [self.origin[0], self.maximum[1]],
+                ]
+            )
+        else:
+            raise NotImplementedError(
+                f"corners not yet supported for a {self.dimensions}D bounding box"
+            )
 
     @property
     def corners_global(self) -> np.ndarray:
@@ -483,7 +502,7 @@ class BoundingBox:
         if iy == -1:
             return self.origin[ix]
 
-        return self.bb[ix,]
+        return self.bb[ix, iy]
 
     def __getitem__(self, name):
         if isinstance(name, str):
@@ -496,17 +515,18 @@ class BoundingBox:
         xyz = np.array(xyz)
         if len(xyz.shape) == 1:
             xyz = xyz.reshape((1, -1))
-        if xyz.shape[1] != 3:
+        if xyz.shape[1] != self.dimensions:
             raise LoopValueError(
                 f"locations array is {xyz.shape[1]}D but bounding box is {self.dimensions}"
             )
+        if self.dimensions not in (2, 3):
+            raise NotImplementedError(
+                f"is_inside not yet supported for a {self.dimensions}D bounding box"
+            )
         inside = np.ones(xyz.shape[0], dtype=bool)
-        inside = np.logical_and(inside, xyz[:, 0] > self.origin[0])
-        inside = np.logical_and(inside, xyz[:, 0] < self.maximum[0])
-        inside = np.logical_and(inside, xyz[:, 1] > self.origin[1])
-        inside = np.logical_and(inside, xyz[:, 1] < self.maximum[1])
-        inside = np.logical_and(inside, xyz[:, 2] > self.origin[2])
-        inside = np.logical_and(inside, xyz[:, 2] < self.maximum[2])
+        for i in range(self.dimensions):
+            inside = np.logical_and(inside, xyz[:, i] > self.origin[i])
+            inside = np.logical_and(inside, xyz[:, i] < self.maximum[i])
         return inside
 
     def regular_grid(
@@ -657,9 +677,12 @@ class BoundingBox:
         _cell_data = copy.deepcopy(cell_data)
         _vertex_data = copy.deepcopy(vertex_data)
         if local_coordinates:
-            # Project origin/maximum directly (rather than all corners, which
-            # only supports 3D) -- exact for translation-only transforms.
-            local_points = self.project(np.array([self.origin, self.maximum]))
+            # Project all corners of the box through the affine transform and
+            # take the min/max over all of them. Projecting only the
+            # origin/maximum corners is only exact for translation-only
+            # transforms; a rotation can move any of the other corners
+            # outside the [origin, maximum] range in local space.
+            local_points = self.project(self.corners)
             local_origin = np.min(local_points, axis=0)
             local_maximum = np.max(local_points, axis=0)
             step_vector = (local_maximum - local_origin) / self.nsteps

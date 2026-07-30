@@ -117,6 +117,12 @@ class GeologicalModel:
             bounding_box = args[0]
             if not isinstance(bounding_box, BoundingBox):
                 raise ValueError("Must provide a bounding box")
+            # A pre-built BoundingBox already carries its own local transform
+            # (defaulted to a zero local_origin/identity rotation in
+            # BoundingBox.__init__, or explicitly configured by the caller via
+            # set_local_transform/from_dict/with_buffer), so we deliberately
+            # do not call set_local_transform again here -- doing so would
+            # override any anchoring the caller already set up.
             self.bounding_box = bounding_box
         if len(args) == 2:
             origin = np.array(args[0])
@@ -497,19 +503,56 @@ class GeologicalModel:
 
     @classmethod
     @public_api(tier="stable")
-    def from_file(cls, file):
+    def from_file(cls, file, allow_pickle: bool = True):
         """Load a geological model from file
+
+        .. warning::
+            Model files are loaded using `dill` (an extension of `pickle`).
+            Unpickling data is **not safe** against maliciously constructed
+            data: loading a file from an untrusted or unauthenticated source
+            can execute arbitrary code on your machine. Only call
+            ``from_file`` on files you created yourself or that come from a
+            source you fully trust. If you need to load model definitions
+            from an untrusted source, use the JSON/dictionary-based
+            ``GeologicalModel.from_recipe_dict``/``to_recipe_dict`` recipe
+            format instead, or pass ``allow_pickle=False`` here to make sure
+            pickle-based loading is refused outright.
 
         Parameters
         ----------
         file : string
             path to the file
+        allow_pickle : bool, optional
+            whether to allow loading the file using `dill`/`pickle`, by
+            default True. Set to False to refuse pickle-based deserialisation
+            (e.g. when the file may come from an untrusted source) -- in that
+            case a :class:`LoopValueError` is raised instead of attempting to
+            unpickle the file. Use ``GeologicalModel.from_recipe_dict`` for a
+            safe, JSON-based alternative.
 
         Returns
         -------
         GeologicalModel
             the geological model object
         """
+        if not allow_pickle:
+            raise LoopValueError(
+                "Pickle-based loading is disabled (allow_pickle=False). "
+                f"Refusing to unpickle '{file}' because deserialising untrusted "
+                "pickle/dill data can execute arbitrary code. If you generated "
+                "this file yourself and trust its contents, call "
+                "GeologicalModel.from_file(file, allow_pickle=True). Otherwise, "
+                "use the JSON-based GeologicalModel.from_recipe_dict "
+                "(paired with GeologicalModel.to_recipe_dict) as a safe "
+                "alternative serialisation format."
+            )
+        logger.warning(
+            f"Loading GeologicalModel from '{file}' using dill/pickle. "
+            "Only load model files from trusted sources: deserialising a "
+            "pickle file can execute arbitrary code. Pass allow_pickle=False "
+            "to refuse pickle-based loading, or use "
+            "GeologicalModel.from_recipe_dict for untrusted/JSON-based input."
+        )
         try:
             import dill as pickle
         except ImportError:

@@ -66,3 +66,66 @@ def test_matrix_matches_world_to_local_transform():
 def test_legacy_global_arguments_are_rejected():
     with pytest.raises(TypeError):
         BoundingBox(global_origin=[10.0, 10.0, 10.0], global_maximum=[20.0, 20.0, 20.0])
+
+
+def test_getitem_returns_scalar_component_for_each_axis():
+    bbox = BoundingBox(origin=[0.0, 0.0, 0.0], maximum=[10.0, 20.0, 30.0])
+
+    xmax = bbox["xmax"]
+    ymax = bbox["ymax"]
+    zmax = bbox["zmax"]
+
+    # each lookup should be a scalar, and different axes should return
+    # different values (previously ix was used to index a 2xN array
+    # while ignoring iy, so xmax and ymax both returned the full maximum
+    # vector).
+    assert np.isscalar(xmax) or np.asarray(xmax).shape == ()
+    assert np.isscalar(ymax) or np.asarray(ymax).shape == ()
+    assert xmax != ymax
+    assert xmax == 10.0
+    assert ymax == 20.0
+    assert zmax == 30.0
+
+    xmin = bbox["xmin"]
+    ymin = bbox["ymin"]
+    assert xmin == 0.0
+    assert ymin == 0.0
+
+
+def test_corners_and_is_inside_for_2d_bounding_box():
+    bbox = BoundingBox(
+        origin=[0.0, 0.0],
+        maximum=[10.0, 20.0],
+        dimensions=2,
+    )
+
+    corners = bbox.corners
+    assert corners.shape == (4, 2)
+    assert np.allclose(corners.min(axis=0), [0.0, 0.0])
+    assert np.allclose(corners.max(axis=0), [10.0, 20.0])
+
+    inside = bbox.is_inside(np.array([[5.0, 10.0], [-1.0, 10.0], [5.0, 25.0]]))
+    assert inside.tolist() == [True, False, False]
+
+
+def test_structured_grid_local_coordinates_accounts_for_rotation():
+    bbox = BoundingBox(origin=[0.0, 0.0, 0.0], maximum=[10.0, 10.0, 10.0], nsteps=[5, 5, 5])
+
+    angle = np.radians(45.0)
+    rotation = np.array(
+        [
+            [np.cos(angle), -np.sin(angle), 0.0],
+            [np.sin(angle), np.cos(angle), 0.0],
+            [0.0, 0.0, 1.0],
+        ]
+    )
+    bbox.set_local_transform(local_origin=[0.0, 0.0, 0.0], rotation_matrix=rotation)
+
+    projected_corners = bbox.project(bbox.corners)
+
+    grid = bbox.structured_grid(local_coordinates=True)
+
+    # the computed local origin/maximum must contain every rotated corner,
+    # not just the two corners obtained by projecting origin/maximum alone.
+    assert np.all(grid.origin <= projected_corners.min(axis=0) + 1e-8)
+    assert np.all(grid.maximum >= projected_corners.max(axis=0) - 1e-8)
