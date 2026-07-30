@@ -28,6 +28,9 @@ on:
       - .github/workflows/qgis-compat.yml
   workflow_dispatch:
 
+permissions:
+  contents: read
+
 jobs:
   qgis-plugin-compat:
     runs-on: ubuntu-latest
