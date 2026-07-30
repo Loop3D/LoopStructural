@@ -51,4 +51,4 @@ jobs:
 
       - name: pytest
         run: |
-          pytest packages/${{ matrix.package }}/tests
+          uv run pytest packages/${{ matrix.package }}/tests
