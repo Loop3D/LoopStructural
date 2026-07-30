@@ -1,18 +1,5 @@
 name: "🔌 QGIS plugin compat"
 
-# Guards the compatibility contract documented in ROADMAP.md / COMPAT.md:
-# the LoopStructural QGIS plugin imports several internal module paths
-# directly, not just the top-level public API, and pins only a floor
-# version. This job installs this branch's LoopStructural over the
-# plugin's pinned version and runs the plugin's non-QGIS unit tests plus
-# tests/unit/test_stable_api_surface.py's import/symbol smoke check against
-# it, so a breaking internal move (like the datatypes -> geometry move that
-# motivated this workflow) fails CI here instead of surfacing downstream in
-# the plugin.
-#
-# Scope note: this does not run the plugin's tests/qgis/ suite (needs a
-# live QGIS container) - only tests/unit/ and the smoke check.
-
 on:
   push:
     branches:
@@ -46,29 +33,27 @@ jobs:
           repository: Loop3D/plugin_loopstructural
           path: plugin_loopstructural
 
-      - name: Set up uv
-        uses: astral-sh/setup-uv@v3
+      - name: Set up uv and Python
+        uses: astral-sh/setup-uv@v5
         with:
-          version: "latest"
-
-      - name: Set up Python
-        run: uv python install 3.9
+          python-version: "3.9"
+          enable-cache: true
 
       - name: Install plugin's non-QGIS test requirements
         run: |
-          uv pip install --system -r plugin_loopstructural/requirements/testing.txt
+          uv pip install -r plugin_loopstructural/requirements/testing.txt
 
       - name: Install this branch's LoopStructural over the pinned version
         run: |
-          uv pip install --system --no-deps -e ./LoopStructural
-          uv pip install --system pytest
+          uv pip install --no-deps -e ./LoopStructural
+          uv pip install pytest
 
       - name: Import/symbol smoke check on paths the plugin relies on
         working-directory: LoopStructural
         run: |
-          python -m pytest tests/unit/test_stable_api_surface.py -v
+          uv run pytest tests/unit/test_stable_api_surface.py -v
 
       - name: Run plugin unit tests (non-QGIS) against this branch
         working-directory: plugin_loopstructural
         run: |
-          python -m pytest -p no:qgis tests/unit/
+          uv run pytest -p no:qgis tests/unit/
