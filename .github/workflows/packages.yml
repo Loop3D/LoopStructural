@@ -47,7 +47,7 @@ jobs:
 
       - name: Install package with test extras
         run: |
-          uv pip install --system -e "packages/${{ matrix.package }}[tests]"
+          uv sync --package ${{ matrix.package }} --extra tests
 
       - name: pytest
         run: |
