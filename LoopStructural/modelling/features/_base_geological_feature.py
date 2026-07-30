@@ -7,7 +7,7 @@ from LoopStructural.utils import getLogger
 from LoopStructural.utils import LoopValueError
 from LoopStructural.utils.typing import NumericInput
 from LoopStructural.utils import LoopIsosurfacer, surface_list
-from LoopStructural.geometry import VectorPoints
+from LoopStructural.geometry import VectorPoints, StructuredGrid
 
 import numpy as np
 
@@ -346,11 +346,7 @@ class BaseFeature(metaclass=ABCMeta):
                 r for r in self.regions if r.name != self.name and r.parent.name != self.name
             ]
 
-            callable = lambda xyz: (
-                self.evaluate_value(self.model.scale(xyz))
-                if self.model is not None
-                else self.evaluate_value(xyz)
-            )
+            callable = lambda xyz: self.evaluate_value(xyz)
             isosurfacer = LoopIsosurfacer(bounding_box, callable=callable)
             if name is None and self.name is not None:
                 name = self.name
@@ -381,17 +377,19 @@ class BaseFeature(metaclass=ABCMeta):
             if self.model is None:
                 raise ValueError("Must specify bounding box")
             bounding_box = self.model.bounding_box
-        grid = bounding_box.structured_grid(name=self.name)
+        # NOTE: bounding_box.structured_grid() returns loop_common's
+        # interpolation-support StructuredGrid (no properties dict); use
+        # LoopStructural's own geometry StructuredGrid for storing values.
+        grid = StructuredGrid(
+            origin=bounding_box.origin,
+            step_vector=bounding_box.step_vector,
+            nsteps=bounding_box.nsteps,
+            name=self.name,
+        )
         value = self.evaluate_value(bounding_box.regular_grid(local=False, order='F'))
-        if self.model is not None:
-
-            value = self.evaluate_value(
-                self.model.scale(bounding_box.regular_grid(local=False, order='F'))
-            )
-
         grid.properties[self.name] = value
 
-        value = self.evaluate_value(bounding_box.cell_centres(order='F'))
+        value = self.evaluate_value(bounding_box.reproject(bounding_box.cell_centres(order='F')))
         grid.cell_properties[self.name] = value
         return grid
 
@@ -412,22 +410,21 @@ class BaseFeature(metaclass=ABCMeta):
             if self.model is None:
                 raise ValueError("Must specify bounding box")
             bounding_box = self.model.bounding_box
-        grid = bounding_box.structured_grid(name=self.name)
+        grid = StructuredGrid(
+            origin=bounding_box.origin,
+            step_vector=bounding_box.step_vector,
+            nsteps=bounding_box.nsteps,
+            name=self.name,
+        )
         value = np.linalg.norm(
             self.evaluate_gradient(bounding_box.regular_grid(local=False, order='F')),
             axis=1,
         )
-        if self.model is not None:
-            value = np.linalg.norm(
-                self.evaluate_gradient(
-                    self.model.scale(bounding_box.regular_grid(local=False, order='F'))
-                ),
-                axis=1,
-            )
         grid.properties[self.name] = value
 
         value = np.linalg.norm(
-            self.evaluate_gradient(bounding_box.cell_centres(order='F')), axis=1
+            self.evaluate_gradient(bounding_box.reproject(bounding_box.cell_centres(order='F'))),
+            axis=1,
         )
         grid.cell_properties[self.name] = value
         return grid
@@ -448,10 +445,8 @@ class BaseFeature(metaclass=ABCMeta):
             if self.model is None:
                 raise ValueError("Must specify bounding box")
             bounding_box = self.model.bounding_box
-        points = bounding_box.cell_centres()
+        points = bounding_box.reproject(bounding_box.cell_centres())
         value = self.evaluate_gradient(points)
-        if self.model is not None:
-            points = self.model.rescale(points)
         return VectorPoints(points, value, self.name)
 
     @abstractmethod

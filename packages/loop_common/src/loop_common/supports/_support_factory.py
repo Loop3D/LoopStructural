@@ -30,7 +30,12 @@ class SupportFactory:
 
     @staticmethod
     def create_support_from_bbox(
-        support_type, bounding_box, nelements, element_volume=None, buffer: Optional[float] = None
+        support_type,
+        bounding_box,
+        nelements,
+        element_volume=None,
+        buffer: Optional[float] = None,
+        local_coordinates: bool = True,
     ):
         if isinstance(support_type, str):
             support_type = SupportType._member_map_[support_type].numerator
@@ -41,11 +46,27 @@ class SupportFactory:
         if nelements is not None:
             bounding_box.nelements = nelements
 
+        if local_coordinates:
+            # Build the mesh in the bounding box's local (interpolation) frame
+            # rather than raw world coordinates -- keeps node coordinates
+            # numerically well-conditioned. Project origin/maximum directly
+            # (rather than all corners, which BoundingBox.corners only
+            # supports in 3D) -- exact for translation-only transforms, which
+            # is the only kind in use today (no code sets a non-identity
+            # rotation on a bounding box).
+            local_points = bounding_box.project(np.array([bounding_box.origin, bounding_box.maximum]))
+            origin = np.min(local_points, axis=0)
+            local_maximum = np.max(local_points, axis=0)
+            step_vector = (local_maximum - origin) / bounding_box.nsteps
+        else:
+            origin = bounding_box.origin
+            step_vector = bounding_box.step_vector
+
         nsteps_kwarg = (
             "nsteps_cells" if support_type in SupportFactory._CELL_COUNT_SUPPORT_TYPES else "nsteps"
         )
         return support_map[support_type](
-            origin=bounding_box.origin,
-            step_vector=bounding_box.step_vector,
+            origin=origin,
+            step_vector=step_vector,
             **{nsteps_kwarg: bounding_box.nsteps},
         )

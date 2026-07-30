@@ -105,6 +105,7 @@ class GeologicalInterpolator(BaseRepresentation, metaclass=ABCMeta):
         self.valid = True
         self.dimensions = 3  # default to 3d
         self.support = None
+        self.bounding_box = None
         self.latest_diagnostics_report: Optional[ConstraintDiagnosticsReport] = None
 
     @abstractmethod
@@ -246,6 +247,45 @@ class GeologicalInterpolator(BaseRepresentation, metaclass=ABCMeta):
             return points
         return InequalityPair.from_array(points, dimensions=self.dimensions)
 
+    def _project_points(self, points: np.ndarray) -> np.ndarray:
+        """World -> local coordinates for point locations (translation + rotation)."""
+        if self.bounding_box is None:
+            return points
+        return self.bounding_box.project(points)
+
+    def _reproject_points(self, points: np.ndarray) -> np.ndarray:
+        """Local -> world coordinates for point locations (translation + rotation)."""
+        if self.bounding_box is None:
+            return points
+        return self.bounding_box.reproject(points)
+
+    def _project_vectors(self, vectors: np.ndarray) -> np.ndarray:
+        """World -> local for direction vectors (rotation only, no translation)."""
+        if self.bounding_box is None:
+            return vectors
+        return self.bounding_box.project_vectors(vectors)
+
+    def _reproject_vectors(self, vectors: np.ndarray) -> np.ndarray:
+        """Local -> world for direction vectors (rotation only, no translation)."""
+        if self.bounding_box is None:
+            return vectors
+        return self.bounding_box.reproject_vectors(vectors)
+
+    def _project_constraint_array(self, array: np.ndarray, has_vector: bool = False) -> np.ndarray:
+        """Project the leading xyz (and, for gradient/normal/tangent constraints,
+        the following gx/gy/gz) columns of a constraint array from world into
+        the interpolator's local coordinate frame. Trailing id/value/weight
+        columns are left untouched.
+        """
+        if self.bounding_box is None or array.shape[0] == 0:
+            return array
+        d = self.dimensions
+        array = array.copy()
+        array[:, :d] = self._project_points(array[:, :d])
+        if has_vector:
+            array[:, d : 2 * d] = self._project_vectors(array[:, d : 2 * d])
+        return array
+
     @abstractmethod
     def set_region(self, **kwargs):
         """Set the interpolation region.
@@ -287,6 +327,7 @@ class GeologicalInterpolator(BaseRepresentation, metaclass=ABCMeta):
         try:
             check_unsupported_combinations(self.data, "value")
             points = self._coerce_value_constraint(points).to_array()
+            points = self._project_constraint_array(points)
             self.data["value"] = points.copy()
             self.n_i = points.shape[0]
             self.up_to_date = False
@@ -320,6 +361,7 @@ class GeologicalInterpolator(BaseRepresentation, metaclass=ABCMeta):
         try:
             check_unsupported_combinations(self.data, "gradient")
             points = self._coerce_gradient_constraint(points).to_array()
+            points = self._project_constraint_array(points, has_vector=True)
             self.n_g = points.shape[0]
             self.data["gradient"] = points.copy()
             self.up_to_date = False
@@ -352,6 +394,7 @@ class GeologicalInterpolator(BaseRepresentation, metaclass=ABCMeta):
         try:
             check_unsupported_combinations(self.data, "normal")
             points = self._coerce_gradient_constraint(points, is_normal=True).to_array()
+            points = self._project_constraint_array(points, has_vector=True)
             self.n_n = points.shape[0]
             self.data["normal"] = points.copy()
             self.up_to_date = False
@@ -384,6 +427,7 @@ class GeologicalInterpolator(BaseRepresentation, metaclass=ABCMeta):
         try:
             check_unsupported_combinations(self.data, "tangent")
             points = self._coerce_gradient_constraint(points).to_array()
+            points = self._project_constraint_array(points, has_vector=True)
             self.n_t = points.shape[0]
             self.data["tangent"] = points.copy()
             self.up_to_date = False
@@ -413,6 +457,7 @@ class GeologicalInterpolator(BaseRepresentation, metaclass=ABCMeta):
         try:
             check_unsupported_combinations(self.data, "interface")
             points = self._coerce_interface_constraint(points).to_array()
+            points = self._project_constraint_array(points)
             self.data["interface"] = points.copy()
             self.up_to_date = False
         except ValidationError as e:
@@ -443,6 +488,7 @@ class GeologicalInterpolator(BaseRepresentation, metaclass=ABCMeta):
         try:
             check_unsupported_combinations(self.data, "inequality")
             points = self._coerce_inequality_constraint(points).to_array()
+            points = self._project_constraint_array(points)
             self.data["inequality"] = points.copy()
             self.up_to_date = False
         except ValidationError as e:
@@ -471,6 +517,7 @@ class GeologicalInterpolator(BaseRepresentation, metaclass=ABCMeta):
         try:
             check_unsupported_combinations(self.data, "inequality_pairs")
             points = self._coerce_inequality_pair_constraint(points).to_array()
+            points = self._project_constraint_array(points)
             self.data["inequality_pairs"] = points.copy()
             self.up_to_date = False
         except ValidationError as e:
@@ -676,13 +723,40 @@ class GeologicalInterpolator(BaseRepresentation, metaclass=ABCMeta):
     def update(self) -> bool:
         return False
 
-    @abstractmethod
     def evaluate_value(self, locations: np.ndarray):
-        raise NotImplementedError("evaluate_value not implemented")
+        """Evaluate the scalar field value at world-coordinate locations.
+
+        Projects ``locations`` into the interpolator's local coordinate
+        frame (a no-op if no ``bounding_box`` is set) before delegating to
+        the subclass's ``_evaluate_value_local``.
+        """
+        return self._evaluate_value_local(self._project_points(locations))
+
+    def evaluate_gradient(self, locations: np.ndarray):
+        """Evaluate the gradient at world-coordinate locations, returned in
+        world-coordinate directions.
+
+        Projects ``locations`` into the local frame, evaluates the gradient
+        there, then reprojects the resulting vectors back to world (rotation
+        only -- both are no-ops if no ``bounding_box`` is set).
+        """
+        gradient = self._evaluate_gradient_local(self._project_points(locations))
+        return self._reproject_vectors(gradient)
 
     @abstractmethod
-    def evaluate_gradient(self, locations: np.ndarray):
-        raise NotImplementedError("evaluate_gradient not implemented")
+    def _evaluate_value_local(self, locations: np.ndarray):
+        """Evaluate the scalar field value at locations already expressed in
+        the interpolator's local coordinate frame. Implemented by subclasses.
+        """
+        raise NotImplementedError("_evaluate_value_local not implemented")
+
+    @abstractmethod
+    def _evaluate_gradient_local(self, locations: np.ndarray):
+        """Evaluate the gradient at locations already expressed in the
+        interpolator's local coordinate frame, returning local-frame
+        direction vectors. Implemented by subclasses.
+        """
+        raise NotImplementedError("_evaluate_gradient_local not implemented")
 
     def surfaces(self, value):
         raise NotImplementedError("Surface extraction not implemented for this representation")

@@ -65,6 +65,8 @@ class InterpolatorFactory:
                 buffer=buffer,
             )
         interpolator = interpolator_map[interpolatortype](support)
+        if boundingbox is not None:
+            interpolator.bounding_box = boundingbox
         if solver is not None:
             interpolator.solver = solver
         return interpolator

@@ -98,7 +98,8 @@ def test_regular_grid_2d():
     assert grid.shape == (10 * 10, 2)
 
 def test_project_to_local():
-    bbox = BoundingBox(global_origin=[10,10,10], global_maximum=[20,20,20])
+    bbox = BoundingBox(origin=[10, 10, 10], maximum=[20, 20, 20])
+    bbox.set_local_transform(local_origin=[10, 10, 10])
     point = np.array([15, 15, 15])
     local_point = bbox.project(point)
     assert np.all(local_point == np.array([5, 5, 5]))

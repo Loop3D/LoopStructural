@@ -43,7 +43,7 @@ from ...utils.helper import (
     gradient_vec_names,
 )
 from ...utils import strikedip2vector
-from ...geometry import BoundingBox
+from ...geometry import BoundingBox, StructuredGrid
 
 from ...modelling.intrusions import IntrusionBuilder
 
@@ -125,10 +125,13 @@ class GeologicalModel:
                 raise ValueError("Must provide origin and maximum as numpy arrays")
             self.bounding_box = BoundingBox(
                 dimensions=3,
-                origin=np.zeros(3),
-                maximum=maximum - origin,
-                global_origin=origin,
+                origin=origin,
+                maximum=maximum,
             )
+            # Anchor the interpolation frame near zero for numerical
+            # conditioning without leaking the shift into the public
+            # origin/maximum, which now stay in world coordinates.
+            self.bounding_box.set_local_transform(local_origin=origin)
         logger.info("Initialising geological model")
         self.features = []
         self.feature_name_index = {}
@@ -379,7 +382,8 @@ class GeologicalModel:
 
     def prepare_data(self, data: pd.DataFrame, include_feature_name: bool = True) -> pd.DataFrame:
         data = data.copy()
-        data[['X', 'Y', 'Z']] = self.bounding_box.project(data[['X', 'Y', 'Z']].to_numpy())
+        # Data is kept in world coordinates end-to-end; the interpolator
+        # projects into its local frame when constraints are set.
 
         if "type" in data:
             logger.warning("'type' is deprecated replace with 'feature_name' \n")
@@ -2060,9 +2064,11 @@ class GeologicalModel:
         Returns
         -------
         xyz : np.array((N,3),dtype=float)
-            locations of points in regular grid
+            locations of points in regular grid, in world coordinates
         """
-        return self.bounding_box.regular_grid(nsteps=nsteps, shuffle=shuffle, order=order)
+        return self.bounding_box.regular_grid(
+            nsteps=nsteps, shuffle=shuffle, order=order, local=False
+        )
 
     @public_api(tier="stable")
     def evaluate_model(self, xyz: np.ndarray, *, scale: bool = True) -> np.ndarray:
@@ -2114,9 +2120,11 @@ class GeologicalModel:
         >>> model.evaluate_model(xyz,scale=True)
 
         """
+        # `scale` is retained for API-signature compatibility only: features
+        # now project world -> local coordinates internally (via the
+        # interpolator's bounding_box), so xyz is always treated as world
+        # coordinates here.
         xyz = np.array(xyz)
-        if scale:
-            xyz = self.scale(xyz, inplace=False)
         strat_id = np.zeros(xyz.shape[0], dtype=int)
         # set strat id to -1 to identify which areas of the model aren't covered
         strat_id[:] = -1
@@ -2153,9 +2161,9 @@ class GeologicalModel:
         np.ndarray
             N,3 array of gradient vectors
         """
+        # `scale` is retained for API-signature compatibility only -- see
+        # evaluate_model.
         xyz = np.array(points)
-        if scale:
-            xyz = self.scale(xyz, inplace=False)
         grad = np.zeros(xyz.shape)
         for g in reversed(self.stratigraphic_column.get_groups()):
             feature_id = self.feature_name_index.get(g.name, -1)
@@ -2184,8 +2192,8 @@ class GeologicalModel:
         fault_displacement : np.array(N,dtype=float)
             the fault displacement magnitude
         """
-        if scale:
-            points = self.scale(points, inplace=False)
+        # `scale` is retained for API-signature compatibility only -- see
+        # evaluate_model.
         vals = np.zeros(points.shape[0])
         for f in self.features:
             if f.type == FeatureType.FAULT:
@@ -2255,12 +2263,11 @@ class GeologicalModel:
         >>> model.evaluate_feature_vaue('feature',utm_xyz)
 
         """
+        # `scale` is retained for API-signature compatibility only -- see
+        # evaluate_model.
         feature = self.get_feature_by_name(feature_name)
         if feature:
-            scaled_xyz = xyz
-            if scale:
-                scaled_xyz = self.scale(xyz, inplace=False)
-            return feature.evaluate_value(scaled_xyz)
+            return feature.evaluate_value(xyz)
         else:
             return np.zeros(xyz.shape[0])
 
@@ -2282,12 +2289,11 @@ class GeologicalModel:
         results : np.array((N,3))
             gradient of the scalar field at the locations specified
         """
+        # `scale` is retained for API-signature compatibility only -- see
+        # evaluate_model.
         feature = self.get_feature_by_name(feature_name)
         if feature:
-            scaled_xyz = xyz
-            if scale:
-                scaled_xyz = self.scale(xyz, inplace=False)
-            return feature.evaluate_gradient(scaled_xyz)
+            return feature.evaluate_gradient(xyz)
         else:
             return np.zeros(xyz.shape[0])
 
@@ -2386,7 +2392,15 @@ class GeologicalModel:
 
     @public_api(tier="stable")
     def get_block_model(self, name='block model'):
-        grid = self.bounding_box.structured_grid(name=name)
+        # NOTE: bounding_box.structured_grid() returns loop_common's
+        # interpolation-support StructuredGrid (no properties dict); use
+        # LoopStructural's own geometry StructuredGrid for storing values.
+        grid = StructuredGrid(
+            origin=self.bounding_box.origin,
+            step_vector=self.bounding_box.step_vector,
+            nsteps=self.bounding_box.nsteps,
+            name=name,
+        )
 
         grid.cell_properties['stratigraphy'] = self.evaluate_model(
             self.rescale(self.bounding_box.cell_centres())

@@ -148,9 +148,13 @@ class LoopIsosurfacer:
                 logger.warning(f"Failed to extract isosurface for {isovalue}")
                 continue
             values = np.zeros(verts.shape[0]) + isovalue
-            # need to add both global and local origin. If the bb is a buffer the local
-            # origin may not be 0
-            verts += self.bounding_box.global_origin+self.bounding_box.origin
+            # marching_cubes returns vertices relative to grid index (0,0,0),
+            # which is bounding_box.origin in whichever frame regular_grid(local=...)
+            # generated the grid in above.
+            grid_origin = self.bounding_box.origin
+            if local:
+                grid_origin = self.bounding_box.project(grid_origin)
+            verts += grid_origin
             surfaces.append(
                 Surface(
                     vertices=verts,

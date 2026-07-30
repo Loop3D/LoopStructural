@@ -346,9 +346,18 @@ just at release time.
     `local_rotation`, `set_local_transform`, `project`/`reproject`) — adapter
     or pick-one-canonical, with callers ported — before aliasing
     `LoopStructural.geometry.BoundingBox` to `loop_common`'s.
-    Closed as deferred: keep `LoopStructural.geometry.BoundingBox` as-is for
-    current API stability; revisit during Stage 5 graph-backend work if a
-    single canonical box API becomes necessary.
+    Closed for real (2026-07-30): `LoopStructural.geometry.BoundingBox` now
+    re-exports `loop_common.geometry.BoundingBox` directly; the local
+    `_bounding_box.py` fork is deleted. World<->local projection
+    responsibility moved down into the interpolator/support layer
+    (`GeologicalInterpolator.bounding_box` projects constraint/query points
+    via `project`/`reproject`/`project_vectors`/`reproject_vectors`;
+    `SupportFactory.create_support_from_bbox` builds the mesh in the box's
+    local frame) instead of `GeologicalModel` pre-shifting data into a
+    zeroed local frame at ingestion. `origin`/`maximum` are now always world
+    coordinates; the near-zero interpolation frame is set via
+    `set_local_transform(local_origin=...)`. See `COMPAT.md` for the
+    constructor signature break (`global_origin`/`global_maximum` removed).
   - [x] **2c-4.** Swap `LoopStructural/utils/maths.py` internals to delegate
     to `loop_common.math._maths`, keeping `LoopStructural/utils/__init__.py`'s
     re-export names (`strikedip2vector`, `get_dip_vector`, etc.) unchanged so
@@ -660,3 +669,63 @@ just at release time.
   stashing all of this change and re-running `pytest tests/unit`: identical
   192 failed/9 errors on both sides (the pre-existing, documented-elsewhere
   failures), only new passing tests added on top.
+- **2026-07-30:** Closed **2c-3** for real: `LoopStructural.geometry.BoundingBox`
+  now re-exports `loop_common.geometry.BoundingBox`; the local
+  `_bounding_box.py` fork (`global_origin`/`global_maximum` reprojection) is
+  deleted. Rather than adapting callers to loop_common's box in place, moved
+  world<->local projection responsibility down into the interpolator/support
+  layer: `GeologicalInterpolator` gained a `bounding_box` attribute (set by
+  `InterpolatorFactory.create_interpolator`) and now projects constraint
+  points/vectors on `set_*_constraints` and projects/reprojects on
+  `evaluate_value`/`evaluate_gradient` (split into public world-facing
+  methods delegating to new `_evaluate_value_local`/`_evaluate_gradient_local`
+  abstract methods); `loop_common`'s `SupportFactory.create_support_from_bbox`
+  now builds the mesh in the box's local frame by default (fixing a
+  pre-existing gap where it read `.origin`/`.step_vector` raw, ignoring the
+  local/world distinction entirely). `GeologicalModel` no longer pre-shifts
+  data into a zeroed local frame at ingestion (`prepare_data` keeps world
+  coordinates); `origin`/`maximum` are now always world coordinates, with the
+  near-zero interpolation frame set via `set_local_transform(local_origin=...)`.
+  `scale()`/`rescale()` stay as public, signature-stable pass-throughs to
+  `bounding_box.project`/`.reproject`.
+  This surfaced and fixed several latent frame-mismatch bugs exposed by
+  `GeologicalFeature.evaluate_value`/`evaluate_gradient` becoming genuinely
+  world-facing (previously local-only, with `GeologicalModel` doing the only
+  world<->local conversion): `evaluate_value_misfit`/`evaluate_gradient_misfit`,
+  `set_interpolation_geometry` (shared by `_fault_builder.py`/
+  `_structural_frame_builder.py`), `LoopInterpolator.fit_and_evaluate_*`,
+  `GeologicalModel.evaluate_model`/`evaluate_model_gradient`/
+  `evaluate_fault_displacements`/`evaluate_feature_value`/
+  `evaluate_feature_gradient` (dropped their now-redundant manual `scale()`
+  pre-conversion), `GeologicalModel.regular_grid()` (now returns world
+  coordinates), and `_base_geological_feature.py`'s `surfaces`/`scalar_field`/
+  `gradient_norm_scalar_field`/`vector_field`. Also found and fixed an
+  unrelated pre-existing break: `bounding_box.structured_grid()` returns
+  `loop_common.supports.StructuredGrid` (an interpolation support object with
+  no properties dict), not the LoopStructural geometry `StructuredGrid`
+  dataclass `scalar_field`/`get_block_model` actually need -- those call
+  sites now construct `LoopStructural.geometry.StructuredGrid` directly.
+  Fixed a 2D-bounding-box regression in the new local-frame support-building
+  code: `BoundingBox.corners` is 3D-only, so `create_support_from_bbox` and
+  `structured_grid(local_coordinates=True)` now project `origin`/`maximum`
+  directly instead (exact for the translation-only transforms in use today).
+  Updated `COMPAT.md` with the `BoundingBox` constructor signature break
+  (`global_origin`/`global_maximum` removed) and regenerated the affected
+  entries in `tests/fixtures/api_surface_snapshot.json`. Rewrote the tests
+  that depended on the old `global_origin`/`global_maximum` API
+  (`tests/unit/geometry/test_bounding_box.py`,
+  `tests/unit/modelling/test__bounding_box.py`,
+  `tests/unit/modelling/test_geological_model.py`,
+  `tests/integration/test_interpolator.py`,
+  `tests/unit/interpolator/test_api.py`).
+  Verified: `packages/loop_common/tests` 151/151,
+  `packages/loop_interpolation/tests` 396/396 (25 skipped),
+  `tests/integration` 20/20, `tests/unit` 670 passed/2 failed/2 skipped
+  (excluding one pre-existing collection error in
+  `tests/unit/interpolator/test_2d_p1_p2_support.py` from the dead
+  `LoopStructural/interpolators/supports/` code, per the note two entries up)
+  -- both remaining failures (`tests/unit/io/test_geoh5.py`) are unrelated
+  geoh5py data-type issues, confirmed pre-existing against the unmodified
+  baseline via `git stash`. This is a large improvement on the
+  192-failed/458-passed baseline noted above, since most of those failures
+  were exactly this `BoundingBox.global_origin` attribute gap.

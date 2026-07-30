@@ -147,7 +147,7 @@ class LoopInterpolator:
             inequality_value_constraints=inequality_value_constraints,
             inequality_pairs_constraints=inequality_pairs_constraints,
         )
-        locations = self.interpolator.get_data_locations()
+        locations = self.bounding_box.reproject(self.interpolator.get_data_locations())
         return self.evaluate_scalar_value(locations)
 
     def fit_and_evaluate_gradient(
@@ -165,7 +165,7 @@ class LoopInterpolator:
             inequality_value_constraints=inequality_value_constraints,
             inequality_pairs_constraints=inequality_pairs_constraints,
         )
-        locations = self.interpolator.get_data_locations()
+        locations = self.bounding_box.reproject(self.interpolator.get_data_locations())
         return self.evaluate_gradient(locations)
 
     def fit_and_evaluate_value_and_gradient(
@@ -183,7 +183,7 @@ class LoopInterpolator:
             inequality_value_constraints=inequality_value_constraints,
             inequality_pairs_constraints=inequality_pairs_constraints,
         )
-        locations = self.interpolator.get_data_locations()
+        locations = self.bounding_box.reproject(self.interpolator.get_data_locations())
         return self.evaluate_scalar_value(locations), self.evaluate_gradient(locations)
 
     def plot(self, ax=None, **kwargs):

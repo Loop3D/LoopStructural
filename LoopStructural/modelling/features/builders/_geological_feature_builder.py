@@ -459,6 +459,15 @@ class GeologicalFeatureBuilder(BaseBuilder):
             logger.warning("Maximum is NaN, not updating")
             return
 
+        # origin/maximum are given in world coordinates (e.g. straight from
+        # model.bounding_box or fault-frame data); project into the
+        # interpolator's local frame before writing to the support. Exact
+        # for translation-only transforms -- no code sets a non-identity
+        # rotation on the bounding box today.
+        if self.interpolator.bounding_box is not None:
+            origin = self.interpolator.bounding_box.project(origin)
+            maximum = self.interpolator.bounding_box.project(maximum)
+
         self.interpolator.support.origin = origin
         self.interpolator.support.maximum = maximum
         self.interpolator.support.rotation_xy = rotation

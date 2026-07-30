@@ -252,12 +252,18 @@ class GeologicalFeature(BaseFeature):
         dot = []
         if grad.shape[0] > 0:
             grad /= np.linalg.norm(grad, axis=1)[:, None]
-            model_grad = self.evaluate_gradient(grad[:, :3])
+            positions = grad[:, :3]
+            if self.interpolator.bounding_box is not None:
+                positions = self.interpolator.bounding_box.reproject(positions)
+            model_grad = self.evaluate_gradient(positions)
             dot.append(np.einsum("ij,ij->i", model_grad, grad[:, :3:6]).tolist())
 
         if norm.shape[0] > 0:
             norm /= np.linalg.norm(norm, axis=1)[:, None]
-            model_norm = self.evaluate_gradient(norm[:, :3])
+            positions = norm[:, :3]
+            if self.interpolator.bounding_box is not None:
+                positions = self.interpolator.bounding_box.reproject(positions)
+            model_norm = self.evaluate_gradient(positions)
             dot.append(np.einsum("ij,ij->i", model_norm, norm[:, :3:6]))
 
         return np.array(dot)
@@ -274,7 +280,10 @@ class GeologicalFeature(BaseFeature):
             self.builder.up_to_date()
 
         locations = self.interpolator.get_value_constraints()
-        diff = np.abs(locations[:, 3] - self.evaluate_value(locations[:, :3]))
+        positions = locations[:, :3]
+        if self.interpolator.bounding_box is not None:
+            positions = self.interpolator.bounding_box.reproject(positions)
+        diff = np.abs(locations[:, 3] - self.evaluate_value(positions))
         diff /= self.max() - self.min()
         return diff
 

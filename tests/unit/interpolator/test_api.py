@@ -125,7 +125,6 @@ def test_plot_2d_returns_image_and_axis():
     bb2 = BoundingBox(
         origin=np.array([0.0, 0.0]),
         maximum=np.array([1.0, 1.0]),
-        global_origin=np.array([0.0, 0.0]),
         dimensions=2,
     )
     api = LoopInterpolator(bb2, dimensions=2, nelements=200)

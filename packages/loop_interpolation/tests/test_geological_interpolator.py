@@ -102,10 +102,10 @@ class _MinimalGeologicalInterpolator(GeologicalInterpolator):
     def update(self) -> bool:
         return True
 
-    def evaluate_value(self, locations: np.ndarray):
+    def _evaluate_value_local(self, locations: np.ndarray):
         return np.zeros(np.asarray(locations).shape[0])
 
-    def evaluate_gradient(self, locations: np.ndarray):
+    def _evaluate_gradient_local(self, locations: np.ndarray):
         locations = np.asarray(locations)
         return np.zeros((locations.shape[0], locations.shape[1]))
 

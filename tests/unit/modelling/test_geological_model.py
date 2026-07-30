@@ -9,18 +9,21 @@ import json
 @pytest.mark.parametrize("origin, maximum", [([0, 0, 0], [5, 5, 5]), ([10, 10, 10], [15, 15, 15])])
 def test_create_geological_model(origin, maximum):
     model = GeologicalModel(origin, maximum)
-    assert (model.bounding_box.global_origin - np.array(origin)).sum() == 0
-    assert (model.bounding_box.global_maximum - np.array(maximum)).sum() == 0
-    assert (model.bounding_box.origin - np.zeros(3)).sum() == 0
-    assert (model.bounding_box.maximum - np.ones(3) * 5).sum() == 0
+    # origin/maximum are world coordinates; the interpolation frame is
+    # anchored at `origin` internally via set_local_transform, without
+    # shifting the public origin/maximum themselves.
+    assert (model.bounding_box.origin - np.array(origin)).sum() == 0
+    assert (model.bounding_box.maximum - np.array(maximum)).sum() == 0
+    assert (model.bounding_box.local_origin - np.array(origin)).sum() == 0
 
 
-def test_rescale_model_data():
+def test_prepare_data_keeps_world_coordinates():
     data, bb = load_claudius()
     model = GeologicalModel(bb[0, :], bb[1, :])
     model.set_model_data(data)
-    # Check that the model data is rescaled to local coordinates
-    expected = data[['X', 'Y', 'Z']].values - bb[None, 0, :]
+    # Data is kept in world coordinates end-to-end; the interpolator projects
+    # into its local frame when constraints are set, not at data ingestion.
+    expected = data[['X', 'Y', 'Z']].values
     actual = model.prepare_data(model.data)[['X', 'Y', 'Z']].values
     assert np.allclose(actual, expected, atol=1e-6)
 
@@ -228,4 +231,4 @@ def test_recipe_json_formatting():
 
 
 if __name__ == "__main__":
-    test_rescale_model_data()
+    test_prepare_data_keeps_world_coordinates()

@@ -1340,7 +1340,7 @@ class DiscreteInterpolator(GeologicalInterpolator):
             return self.up_to_date
         return bool(self.up_to_date)
 
-    def evaluate_value(self, locations: np.ndarray) -> np.ndarray:
+    def _evaluate_value_local(self, locations: np.ndarray) -> np.ndarray:
         """Evaluate the value of the interpolator at location
 
         Parameters
@@ -1362,7 +1362,7 @@ class DiscreteInterpolator(GeologicalInterpolator):
             evaluated[~mask] = self.support.evaluate_value(evaluation_points[~mask], self.c)
         return evaluated
 
-    def evaluate_gradient(self, locations: np.ndarray) -> np.ndarray:
+    def _evaluate_gradient_local(self, locations: np.ndarray) -> np.ndarray:
         """
         Evaluate the gradient of the scalar field at the evaluation points
         Parameters

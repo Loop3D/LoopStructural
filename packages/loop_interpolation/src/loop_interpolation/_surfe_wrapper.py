@@ -159,7 +159,7 @@ class SurfeRBFInterpolator(GeologicalInterpolator):
     def update(self):
         return self.surfe.InterpolantComputed()
 
-    def evaluate_value(self, evaluation_points):
+    def _evaluate_value_local(self, evaluation_points):
         """Evaluate surfe interpolant at points
 
         Parameters
@@ -180,7 +180,7 @@ class SurfeRBFInterpolator(GeologicalInterpolator):
             evaluated[~mask] = self.surfe.EvaluateInterpolantAtPoints(evaluation_points[~mask])
         return evaluated
 
-    def evaluate_gradient(self, evaluation_points):
+    def _evaluate_gradient_local(self, evaluation_points):
         """Evaluate surfe interpolant gradient at points
 
         Parameters

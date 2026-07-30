@@ -657,9 +657,11 @@ class BoundingBox:
         _cell_data = copy.deepcopy(cell_data)
         _vertex_data = copy.deepcopy(vertex_data)
         if local_coordinates:
-            local_corners = self.project(self.corners)
-            local_origin = np.min(local_corners, axis=0)
-            local_maximum = np.max(local_corners, axis=0)
+            # Project origin/maximum directly (rather than all corners, which
+            # only supports 3D) -- exact for translation-only transforms.
+            local_points = self.project(np.array([self.origin, self.maximum]))
+            local_origin = np.min(local_points, axis=0)
+            local_maximum = np.max(local_points, axis=0)
             step_vector = (local_maximum - local_origin) / self.nsteps
             origin = local_origin
         else:
