@@ -3,11 +3,13 @@ import numpy as np
 from ....modelling.features._structural_frame import StructuralFrame
 
 from ....utils import getLogger
+from ....utils._api_registry import public_api
 
 logger = getLogger(__name__)
 
 
 class FoldFrame(StructuralFrame):
+    @public_api(tier="stable")
     def __init__(self, name, features, fold=None, model=None):
         """
         A structural frame that can calculate the fold axis/limb rotation angle

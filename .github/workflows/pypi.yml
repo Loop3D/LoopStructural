@@ -3,6 +3,49 @@ on:
   workflow_dispatch:
 
 jobs:
+  # loop_common/loop_interpolation (ROADMAP.md Stage 2) are workspace-local
+  # deps of LoopStructural (see [tool.uv.sources] in pyproject.toml). They
+  # must land on PyPI before the LoopStructural sdist below is uploaded, or
+  # `pip install LoopStructural` breaks for anyone not using uv.
+  make_sdist_packages:
+    name: Make SDist (${{ matrix.package }})
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        package: [loop_common, loop_interpolation]
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build SDist
+        working-directory: packages/${{ matrix.package }}
+        run: |
+          pip install build
+          python -m build
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: dist-${{ matrix.package }}
+          path: packages/${{ matrix.package }}/dist/
+
+  upload_packages_to_pypi:
+    name: Upload ${{ matrix.package }} to PyPI
+    needs: ["make_sdist_packages"]
+    runs-on: "ubuntu-latest"
+    strategy:
+      matrix:
+        package: [loop_common, loop_interpolation]
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: dist-${{ matrix.package }}
+          path: dist
+      - uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          skip_existing: true
+          verbose: true
+          user: ${{ secrets.PYPI_USERNAME }}
+          password: ${{ secrets.PYPI_PASSWORD }}
+
   make_sdist:
     name: Make SDist
     runs-on: ubuntu-latest
@@ -20,7 +63,7 @@ jobs:
           path: dist/
 
   upload_to_pypi:
-    needs: ["make_sdist"]
+    needs: ["make_sdist", "upload_packages_to_pypi"]
     runs-on: "ubuntu-latest"
 
     steps:

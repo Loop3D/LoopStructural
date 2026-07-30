@@ -52,9 +52,51 @@ Stage 5) to implement a fixed interface class is premature before that
 stage's design work happens. A registry + signature-diff test catches
 accidental breaks without pre-committing to a rigid shape now.
 
+For symbols LoopStructural re-exports but doesn't define (`BoundingBox`,
+`Surface`, `ValuePoints`, `VectorPoints`, `Observable` — all owned by
+`loop_common`, a separately-releasable package per `ROADMAP.md` Stage 2),
+`@public_api` can't be applied at the definition site without giving
+`loop_common` a LoopStructural-specific dependency. Instead
+`register_external_stable(qualname, obj)` is called once from the
+LoopStructural module that re-exports the symbol (`LoopStructural/geometry/__init__.py`,
+`LoopStructural/utils/observer.py`) to record the same registry entry.
+
 Contract-test scope note: the snapshot test protects symbol presence and
 signatures, not full behavioral equivalence. Behavioral stability must be
 covered by unit/integration/example tests for the relevant stable surface.
+
+## How the stable surface is actually enforced
+
+Three mechanisms, layered by what they can and can't catch, all run in CI on
+every push/PR to `master` (`tester.yml`) and, redundantly for the
+plugin-facing subset, in `qgis-compat.yml`:
+
+1. **Signature drift** — `tests/unit/test_public_api_contract.py` diffs
+   `get_stable_surface()` (every `@public_api(tier="stable")`-registered
+   callable, plus `register_external_stable` entries) against the checked-in
+   `tests/fixtures/api_surface_snapshot.json`. A changed, added, or removed
+   entry fails the test unless it's also logged in `COMPAT.md` (for
+   changes/removals) — new stable entries must be added to the snapshot
+   deliberately, as a statement "yes, this signature is now the accepted
+   baseline."
+2. **Symbol/module-path existence** — `tests/unit/test_stable_api_surface.py`
+   asserts every module path in the "QGIS-plugin compatibility" list below
+   still imports, every top-level symbol (`GeologicalModel`, `FaultTopology`,
+   `StratigraphicColumn`, `getLogger`) still resolves, and the classes with
+   no useful call-signature to snapshot (`FeatureType`,
+   `FaultRelationshipType`, `StratigraphicColumnElementType` — Enums) still
+   contain every currently-protected member name. This catches renames/moves
+   the signature snapshot can't (an Enum member isn't a callable), and runs
+   locally with plain `pytest`, no plugin checkout needed.
+3. **Real-world consumer regression** — `.github/workflows/qgis-compat.yml`
+   installs this branch's LoopStructural over the QGIS plugin's pinned
+   version and runs the plugin's own non-QGIS test suite against it, which
+   catches everything the first two are structurally blind to (behavior
+   changes within an unchanged signature).
+
+None of these three replace behavioral tests for the stable surface itself —
+they guarantee the surface exists with the promised shape, not that it does
+the same thing it used to.
 
 ## Stable surface (as of this policy, 2026-07-24)
 

@@ -591,3 +591,72 @@ just at release time.
   `c9992811` interpolator-code removal, and the `BoundingBox.global_origin`
   attribute gap from `b66b9289`'s geometry refactor, both unrelated to
   `utils`/`loop_common`).
+- **2026-07-30:** `.github/workflows/pypi.yml` now also builds and uploads
+  `packages/loop_common` and `packages/loop_interpolation` sdists to PyPI
+  (matrix jobs `make_sdist_packages`/`upload_packages_to_pypi`), gating the
+  existing `LoopStructural` sdist upload on their completion via
+  `needs: ["make_sdist", "upload_packages_to_pypi"]` -- root
+  `pyproject.toml` already listed `loop-common`/`loop-interpolation` as
+  plain `[project.dependencies]` (Stage 2b), but they weren't reachable via
+  `pip` for anyone outside the `uv` workspace (`[tool.uv.sources]` is
+  uv-only) until published.
+- **2026-07-30:** Closed the version-tracking gap from the previous entry.
+  `release-please-config.json` gained `packages/loop_common`
+  (component `loop-common`) and `packages/loop_interpolation` (component
+  `loop-interpolation`) as independent manifest components alongside
+  `LoopStructural`, each `release-type: python` (bumps the `version` field
+  in that package's own `pyproject.toml`); `.release-please-manifest.json`
+  seeded both at `0.1.0` to match current state. Conventional-commit history
+  under both paths is `refactor:`-only so far (no `feat`/`fix`), so no
+  release PR is expected until a real feature/bugfix lands there.
+  `.github/workflows/release-please.yml` needed one change beyond the
+  config: the job's `release_created` output is a repo-wide "did anything
+  release" flag (`steps.release.outputs.releases_created`), which now also
+  goes true for a solo `loop_common`/`loop_interpolation` bump -- correct
+  for gating the `pypi.yml` trigger (still want to publish whichever
+  package changed) but wrong for the conda/docs triggers, which are
+  LoopStructural-specific. Added a second output,
+  `loopstructural_release_created` (path-prefixed
+  `steps.release.outputs['LoopStructural--release_created']`), and gated
+  the conda/docs trigger steps on it so a workspace-package-only release no
+  longer spuriously re-runs conda/doc builds.
+  **Follow-up noted, not done:** `loop-common`/`loop-interpolation` version
+  bumps are independent of `LoopStructural`'s -- a commit touching only
+  `packages/loop_common/**` bumps `loop-common` alone, with no automatic
+  signal that `LoopStructural` should re-release or re-test against it.
+  This is currently harmless because root `pyproject.toml`'s dependency
+  entries (`"loop-common"`, `"loop-interpolation"`) are unpinned, so
+  `pip install LoopStructural` always resolves the latest published
+  version anyway -- but it also means no enforced compatibility floor: a
+  breaking `loop-common` release wouldn't be caught until something
+  downstream fails. Revisit once these two packages stabilize past 0.x:
+  add a real version constraint (e.g. `loop-common>=0.2,<0.3`) and consider
+  `release-please`'s linked-versions/`extra-files` mechanism if the two
+  should ever need to move in lockstep with `LoopStructural`.
+- **2026-07-30:** Closed a gap between API.md's documented "Stable surface"
+  and what was actually enforced: the `@public_api` signature-snapshot
+  mechanism (`tests/unit/test_public_api_contract.py`) only covered
+  `GeologicalModel` methods and 3 `utils/logging.py` functions, despite
+  API.md also listing `StratigraphicColumn`, `FaultTopology`,
+  `StructuralFrame`, `FoldFrame`, the 4 feature builders, the 4 `geometry`
+  dataclasses, and `Observable` as stable. Added `@public_api(tier="stable")`
+  to the `__init__` of the six classes LoopStructural defines directly, and
+  a new `register_external_stable(qualname, obj)` helper in
+  `_api_registry.py` for the five re-exported from `loop_common`
+  (`BoundingBox`/`Surface`/`ValuePoints`/`VectorPoints`/`Observable`) --
+  `loop_common` is a separately-releasable package and shouldn't import
+  LoopStructural's registry, so registration happens at the re-export site
+  (`LoopStructural/geometry/__init__.py`, `LoopStructural/utils/observer.py`)
+  instead. Regenerated `tests/fixtures/api_surface_snapshot.json` (32 -> 44
+  entries) to make the newly-captured signatures the accepted baseline.
+  Added `tests/unit/test_stable_api_surface.py` for what signature-snapshotting
+  can't cover: module-path importability for the full "QGIS-plugin
+  compatibility" list (previously only checked inline inside
+  `qgis-compat.yml`'s heredoc, CI-only), and member-name protection for the
+  three Enums in the stable surface (`FeatureType`, `FaultRelationshipType`,
+  `StratigraphicColumnElementType`) which have no call signature to
+  snapshot. Simplified `qgis-compat.yml` to call this new test file instead
+  of duplicating the import list inline. Verified zero regressions by
+  stashing all of this change and re-running `pytest tests/unit`: identical
+  192 failed/9 errors on both sides (the pre-existing, documented-elsewhere
+  failures), only new passing tests added on top.

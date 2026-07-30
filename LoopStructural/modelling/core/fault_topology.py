@@ -1,5 +1,6 @@
 from ..features.fault import FaultSegment
 from ...utils import Observable
+from ...utils._api_registry import public_api
 from .stratigraphic_column import StratigraphicColumn
 import enum
 import numpy as np
@@ -12,6 +13,7 @@ class FaultTopology(Observable['FaultTopology']):
     """A graph representation of the relationships between faults and the
      relationship with stratigraphic units.
     """
+    @public_api(tier="stable")
     def __init__(self, stratigraphic_column: 'StratigraphicColumn'):
         super().__init__()
         self.faults = []

@@ -4,13 +4,14 @@ name: "🔌 QGIS plugin compat"
 # the LoopStructural QGIS plugin imports several internal module paths
 # directly, not just the top-level public API, and pins only a floor
 # version. This job installs this branch's LoopStructural over the
-# plugin's pinned version and runs the plugin's non-QGIS unit tests plus an
-# import smoke check against it, so a breaking internal move (like the
-# datatypes -> geometry move that motivated this workflow) fails CI here
-# instead of surfacing downstream in the plugin.
+# plugin's pinned version and runs the plugin's non-QGIS unit tests plus
+# tests/unit/test_stable_api_surface.py's import/symbol smoke check against
+# it, so a breaking internal move (like the datatypes -> geometry move that
+# motivated this workflow) fails CI here instead of surfacing downstream in
+# the plugin.
 #
 # Scope note: this does not run the plugin's tests/qgis/ suite (needs a
-# live QGIS container) - only tests/unit/ and the import smoke check.
+# live QGIS container) - only tests/unit/ and the smoke check.
 
 on:
   push:
@@ -57,37 +58,14 @@ jobs:
       - name: Install this branch's LoopStructural over the pinned version
         run: |
           uv pip install --system --no-deps -e ./LoopStructural
+          uv pip install --system pytest
 
-      - name: Import smoke check on paths the plugin relies on
+      - name: Import/symbol smoke check on paths the plugin relies on
+        working-directory: LoopStructural
         run: |
-          python - <<'EOF'
-          import importlib
-
-          # Kept in sync with the "QGIS-plugin compatibility" list in ROADMAP.md.
-          paths = [
-              "LoopStructural.modelling.core.fault_topology",
-              "LoopStructural.modelling.features",
-              "LoopStructural.modelling.features.fold",
-              "LoopStructural.modelling.features.builders",
-              "LoopStructural.modelling.features._feature_converters",
-              "LoopStructural.modelling.core.stratigraphic_column",
-              "LoopStructural.datatypes",
-              "LoopStructural.utils",
-          ]
-          for path in paths:
-              importlib.import_module(path)
-              print(f"ok: {path}")
-
-          from LoopStructural import (
-              GeologicalModel,
-              FaultTopology,
-              StratigraphicColumn,
-              getLogger,
-          )
-          EOF
+          python -m pytest tests/unit/test_stable_api_surface.py -v
 
       - name: Run plugin unit tests (non-QGIS) against this branch
         working-directory: plugin_loopstructural
         run: |
-          uv pip install --system pytest
           python -m pytest -p no:qgis tests/unit/

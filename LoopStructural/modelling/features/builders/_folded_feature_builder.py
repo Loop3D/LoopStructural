@@ -4,12 +4,14 @@ from ....modelling.features import FeatureType
 import numpy as np
 
 from ....utils import getLogger, InterpolatorError
+from ....utils._api_registry import public_api
 from ....geometry import BoundingBox
 
 logger = getLogger(__name__)
 
 
 class FoldedFeatureBuilder(GeologicalFeatureBuilder):
+    @public_api(tier="stable")
     def __init__(
         self,
         interpolatortype: str,

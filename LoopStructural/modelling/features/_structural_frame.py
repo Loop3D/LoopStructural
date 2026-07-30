@@ -5,6 +5,7 @@ Structural frames
 from ..features import BaseFeature, FeatureType
 import numpy as np
 from ...utils import getLogger
+from ...utils._api_registry import public_api
 from typing import Optional, List, Union
 from ...geometry import ValuePoints, VectorPoints
 
@@ -12,6 +13,7 @@ logger = getLogger(__name__)
 
 
 class StructuralFrame(BaseFeature):
+    @public_api(tier="stable")
     def __init__(self, name: str, features: list, fold=None, model=None):
         """
         Structural frame is a curvilinear coordinate system defined by

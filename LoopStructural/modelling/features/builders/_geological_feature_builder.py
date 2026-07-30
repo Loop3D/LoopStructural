@@ -6,6 +6,7 @@ import numpy as np
 import pandas as pd
 
 from ....utils import getLogger
+from ....utils._api_registry import public_api
 
 
 from ....interpolators import GeologicalInterpolator
@@ -32,6 +33,7 @@ logger = getLogger(__name__)
 
 
 class GeologicalFeatureBuilder(BaseBuilder):
+    @public_api(tier="stable")
     def __init__(
         self,
         interpolatortype: str,

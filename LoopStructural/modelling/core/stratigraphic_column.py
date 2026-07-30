@@ -2,6 +2,7 @@ import enum
 from typing import Dict, Optional, List, Tuple
 import numpy as np
 from LoopStructural.utils import rng, getLogger, Observable, random_colour
+from LoopStructural.utils._api_registry import public_api
 logger = getLogger(__name__)
 logger.info("Imported LoopStructural Stratigraphic Column module")
 class UnconformityType(enum.Enum):
@@ -348,6 +349,7 @@ class StratigraphicColumn(Observable['StratigraphicColumn']):
         Mapping of groups to their constituent units
     """
 
+    @public_api(tier="stable")
     def __init__(self):
         """Initialize the StratigraphicColumn with basement and base unconformity."""
         super().__init__()

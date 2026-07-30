@@ -11,6 +11,7 @@ import numpy as np
 import copy
 
 from ....utils import getLogger
+from ....utils._api_registry import public_api
 from ....geometry import BoundingBox
 
 logger = getLogger(__name__)
@@ -23,6 +24,7 @@ from ....modelling.features import StructuralFrame
 
 
 class StructuralFrameBuilder(BaseBuilder):
+    @public_api(tier="stable")
     def __init__(
         self,
         interpolatortype: Union[str, list],

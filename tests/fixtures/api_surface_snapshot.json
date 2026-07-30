@@ -1,5 +1,9 @@
 {
-  "getLogger": "(name)",
+  "FaultBuilder.__init__": "(self, interpolatortype: Union[str, list], bounding_box: loop_common.geometry._bounding_box.BoundingBox, nelements: Union[int, list] = 1000, model=None, fault_bounding_box_buffer=0.2, **kwargs)",
+  "FaultTopology.__init__": "(self, stratigraphic_column: 'StratigraphicColumn')",
+  "FoldFrame.__init__": "(self, name, features, fold=None, model=None)",
+  "FoldedFeatureBuilder.__init__": "(self, interpolatortype: str, bounding_box: loop_common.geometry._bounding_box.BoundingBox, fold, nelements: int = 1000, fold_weights=None, name='Feature', region=None, svario=True, axis_profile_type=FOURIER_SERIES, limb_profile_type=FOURIER_SERIES, **kwargs)",
+  "GeologicalFeatureBuilder.__init__": "(self, interpolatortype: str, bounding_box, nelements: int = 1000, name='Feature', model=None, **kwargs)",
   "GeologicalModel.add_onlap_unconformity": "(self, feature: LoopStructural.modelling.features._geological_feature.GeologicalFeature, value: float, index: Optional[int] = None) -> LoopStructural.modelling.features._geological_feature.GeologicalFeature",
   "GeologicalModel.add_unconformity": "(self, feature: LoopStructural.modelling.features._geological_feature.GeologicalFeature, value: float, index: Optional[int] = None) -> LoopStructural.modelling.features._unconformity_feature.UnconformityFeature",
   "GeologicalModel.create_and_add_domain_fault": "(self, fault_surface_data, *, nelements=10000, interpolatortype='FDI', index: Optional[int] = None, **kwargs)",
@@ -29,5 +33,14 @@
   "GeologicalModel.stratigraphic_ids": "(self)",
   "GeologicalModel.to_dict": "(self)",
   "GeologicalModel.to_file": "(self, file)",
-  "GeologicalModel.update": "(self, verbose=False, progressbar=True)"
+  "GeologicalModel.update": "(self, verbose=False, progressbar=True)",
+  "LoopStructural.geometry.BoundingBox": "(self, origin: 'Optional[np.ndarray]' = None, maximum: 'Optional[np.ndarray]' = None, nsteps: 'Optional[np.ndarray]' = None, step_vector: 'Optional[np.ndarray]' = None, dimensions: 'Optional[int]' = 3)",
+  "LoopStructural.geometry.Surface": "(self, vertices: numpy.ndarray = <factory>, triangles: numpy.ndarray = <factory>, colour: Union[str, numpy.ndarray, NoneType] = <factory>, normals: Optional[numpy.ndarray] = None, name: str = 'surface', values: Optional[numpy.ndarray] = None, properties: Optional[dict] = None, cell_properties: Optional[dict] = None) -> None",
+  "LoopStructural.geometry.ValuePoints": "(self, locations: numpy.ndarray = <factory>, values: numpy.ndarray = <factory>, name: str = 'unnamed', properties: Optional[dict] = None) -> None",
+  "LoopStructural.geometry.VectorPoints": "(self, locations: numpy.ndarray = <factory>, vectors: numpy.ndarray = <factory>, name: str = 'unnamed', properties: Optional[dict] = None) -> None",
+  "LoopStructural.utils.observer.Observable": "(self) -> 'None'",
+  "StratigraphicColumn.__init__": "(self)",
+  "StructuralFrame.__init__": "(self, name: str, features: list, fold=None, model=None)",
+  "StructuralFrameBuilder.__init__": "(self, interpolatortype: Union[str, list], bounding_box: loop_common.geometry._bounding_box.BoundingBox, nelements: Union[int, list] = 1000, frame=<class 'LoopStructural.modelling.features._structural_frame.StructuralFrame'>, model=None, **kwargs)",
+  "getLogger": "(name)"
 }

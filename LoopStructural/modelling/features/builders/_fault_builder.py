@@ -6,12 +6,14 @@ from .. import AnalyticalGeologicalFeature
 import numpy as np
 import pandas as pd
 from ....utils import getLogger
+from ....utils._api_registry import public_api
 from ....geometry import BoundingBox
 
 logger = getLogger(__name__)
 
 
 class FaultBuilder(StructuralFrameBuilder):
+    @public_api(tier="stable")
     def __init__(
         self,
         interpolatortype: Union[str, list],

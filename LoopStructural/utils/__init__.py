@@ -50,4 +50,9 @@ from loop_common.utils import rng
 from ._surface import LoopIsosurfacer, surface_list
 from .colours import random_colour, random_hex_colour
 from .observer import Callback, Disposable, Observable
-from ._api_registry import public_api, get_registry, get_stable_surface
+from ._api_registry import (
+    public_api,
+    get_registry,
+    get_stable_surface,
+    register_external_stable,
+)
