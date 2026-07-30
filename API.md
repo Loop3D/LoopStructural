@@ -52,14 +52,20 @@ Stage 5) to implement a fixed interface class is premature before that
 stage's design work happens. A registry + signature-diff test catches
 accidental breaks without pre-committing to a rigid shape now.
 
-For symbols LoopStructural re-exports but doesn't define (`BoundingBox`,
-`Surface`, `ValuePoints`, `VectorPoints`, `Observable` — all owned by
-`loop_common`, a separately-releasable package per `ROADMAP.md` Stage 2),
-`@public_api` can't be applied at the definition site without giving
-`loop_common` a LoopStructural-specific dependency. Instead
-`register_external_stable(qualname, obj)` is called once from the
-LoopStructural module that re-exports the symbol (`LoopStructural/geometry/__init__.py`,
-`LoopStructural/utils/observer.py`) to record the same registry entry.
+For symbols LoopStructural re-exports but doesn't define (`Surface`,
+`ValuePoints`, `VectorPoints`, `Observable` — all owned by `loop_common`, a
+separately-releasable package per `ROADMAP.md` Stage 2), `@public_api` can't
+be applied at the definition site without giving `loop_common` a
+LoopStructural-specific dependency. Instead `register_external_stable(qualname,
+obj)` is called once from the LoopStructural module that re-exports the
+symbol (`LoopStructural/geometry/__init__.py`, `LoopStructural/utils/observer.py`)
+to record the same registry entry. `BoundingBox` is registered the same way
+but is *not* re-exported from `loop_common`: the two implementations diverged
+onto incompatible constructor/property surfaces (`global_origin`/
+`global_maximum` reprojection vs. `local_origin`/`local_rotation` affine
+transform — see `ROADMAP.md` 2c-3), so `LoopStructural.geometry.BoundingBox`
+stays the local `LoopStructural/geometry/_bounding_box.py` implementation
+until that's reconciled.
 
 Contract-test scope note: the snapshot test protects symbol presence and
 signatures, not full behavioral equivalence. Behavioral stability must be

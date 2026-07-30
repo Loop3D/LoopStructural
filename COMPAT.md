@@ -41,6 +41,7 @@ unchanged, but the new path is preferred going forward.
 | `GeologicalModel.create_and_add_intrusion(..., intrusion_frame_parameters={}, geometric_scaling_parameters={})` | `GeologicalModel.create_and_add_intrusion(..., intrusion_frame_parameters=None, geometric_scaling_parameters=None)` (dicts built internally, same effective default) | 2026-07-27 |
 | `GeologicalModel.get_fault_surfaces(faults=[])` | `GeologicalModel.get_fault_surfaces(faults=None)` (list built internally, same effective default) | 2026-07-27 |
 | `GeologicalModel.get_stratigraphic_surfaces(units=[])` | `GeologicalModel.get_stratigraphic_surfaces(units=None)` (list built internally, same effective default) | 2026-07-27 |
+| `FaultBuilder.__init__`/`FoldedFeatureBuilder.__init__`/`StructuralFrameBuilder.__init__` `bounding_box` param annotated as `loop_common.geometry._bounding_box.BoundingBox` | annotated as `LoopStructural.geometry._bounding_box.BoundingBox` — `LoopStructural.geometry.BoundingBox` reverted to the local implementation (see `API.md`); accepted argument type is unchanged, only the class's canonical module path | 2026-07-30 |
 
 ## Compatibility debt summary
 

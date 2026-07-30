@@ -1,6 +1,6 @@
 import numpy as np
 import pytest
-from LoopStructural.geometry._surface import Surface
+from LoopStructural.geometry import Surface
 
 
 def test_surface_creation():
