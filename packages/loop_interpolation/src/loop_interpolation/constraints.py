@@ -195,7 +195,7 @@ class GradientConstraint(BaseConstraint):
     vectors: NumpyArray = Field(default_factory=lambda: np.empty((0, 3), dtype=float))
     weights: Union[float, NumpyArray] = 1.0
     is_normal: bool = False
-
+    drop_invalid_rows: bool = True
     @model_validator(mode="after")
     def check_shapes(self):
         label = "Normal" if self.is_normal else "Gradient"
@@ -234,12 +234,25 @@ class GradientConstraint(BaseConstraint):
         magnitudes = np.linalg.norm(self.vectors, axis=1)
         zero_mag = magnitudes < 1e-14
         if np.any(zero_mag):
-            zero_indices = np.where(zero_mag)[0]
-            raise VectorError(
-                f"Found {int(np.sum(zero_mag))} {label.lower()} constraints with zero or near-zero magnitude. "
-                f"{label} vectors must have non-zero length. "
-                f"Zero-magnitude vectors at indices: {zero_indices}"
-            )
+            if self.drop_invalid_rows:
+                _logger.warning(
+                    "Dropping %d %s constraints with zero or near-zero magnitude vectors.",
+                    int(np.sum(zero_mag)),
+                    label.lower(),
+                )
+                self._set_field("vectors", self.vectors[~zero_mag])
+                self._set_field("points", self.points[~zero_mag])
+                if not np.isscalar(self.weights):
+                    self._set_field("weights", self.weights[~zero_mag])
+                    self._validate_weights()
+            else:
+
+                zero_indices = np.where(zero_mag)[0]
+                raise VectorError(
+                    f"Found {int(np.sum(zero_mag))} {label.lower()} constraints with zero or near-zero magnitude. "
+                    f"{label} vectors must have non-zero length. "
+                    f"Zero-magnitude vectors at indices: {zero_indices}"
+                )
         return self
 
     def to_array(self) -> np.ndarray:
