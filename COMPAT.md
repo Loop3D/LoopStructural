@@ -45,6 +45,8 @@ unchanged, but the new path is preferred going forward.
 | `BoundingBox(global_origin=..., global_maximum=...)` (local/global split, `origin`/`maximum` pre-shifted to be near-zero) | `BoundingBox(origin=..., maximum=...)` with `origin`/`maximum` always in world coordinates, plus `set_local_transform(local_origin=...)` for the interpolation frame and `project()`/`reproject()` as a proper affine transform. `global_origin`/`global_maximum` constructor args and properties are removed; `GeologicalModel`'s `scale()`/`rescale()` public methods keep their existing signature and behavior. | 2026-07-30 |
 | `GeologicalModel.from_file(file)` (always loads via `dill`/`pickle`, no opt-out) | `GeologicalModel.from_file(file, allow_pickle=True)` — same default behavior (still unpickles trusted files with no code change required), but `allow_pickle=False` now refuses to unpickle and raises `LoopValueError` instead, since deserialising an untrusted pickle/dill file can execute arbitrary code. A runtime warning is also now logged whenever pickle-based loading is used. For untrusted/JSON-based input, use `GeologicalModel.from_recipe_dict`/`to_recipe_dict` instead. | 2026-07-30 |
 
+The following stable methods remain part of the documented public API surface after the package extraction work and are covered by the snapshot-based contract test: add_onlap_unconformity, add_unconformity, create_and_add_domain_fault, create_and_add_fault, create_and_add_fold_frame, create_and_add_folded_fold_frame, create_and_add_folded_foliation, create_and_add_foliation, evaluate_model, evaluate_model_gradient, from_file, get_fault_surfaces, get_feature_by_name, get_stratigraphic_surfaces, rescale, save, scale.
+
 ## Compatibility debt summary
 
 - Active shims: 7
