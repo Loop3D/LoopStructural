@@ -241,8 +241,8 @@ class TestP2ComparisionWithP1:
         p2 = P2Interpolator(mesh)
 
         # Create value constraints for a linear field f(x,y,z) = x + 2y + 3z + 1
-        np.random.seed(42)
-        test_points = np.random.uniform(0.5, 3.5, (10, 3))
+        rng = np.random.default_rng(42)
+        test_points = rng.uniform(0.5, 3.5, (10, 3))
         values = test_points[:, 0] + 2 * test_points[:, 1] + 3 * test_points[:, 2] + 1
 
         # Format constraints: [x, y, z, f(x,y,z)]
@@ -258,8 +258,8 @@ class TestP2ComparisionWithP1:
         p2 = P2Interpolator(mesh)
 
         # Create value constraints for f(x,y,z) = x^2 + y^2 + z^2
-        np.random.seed(42)
-        test_points = np.random.uniform(0.5, 3.5, (15, 3))
+        rng = np.random.default_rng(42)
+        test_points = rng.uniform(0.5, 3.5, (15, 3))
         values = np.sum(test_points**2, axis=1)
 
         constraints = np.column_stack([test_points, values])
@@ -330,14 +330,10 @@ class TestP2EdgeCases:
 
     def test_empty_constraints(self, interpolator):
         """Test behavior with no constraints added."""
-        # Should not raise an error when setup with no constraints
-        try:
-            diagnostics = interpolator.setup_interpolator(
-                cgw=0.0, gpw=0.0, npw=0.0, tpw=0.0, cpw=0.0
-            )
-            assert diagnostics is not None
-        except Exception as e:
-            pytest.fail(f"setup_interpolator with empty constraints raised: {e}")
+        diagnostics = interpolator.setup_interpolator(
+            cgw=0.0, gpw=0.0, npw=0.0, tpw=0.0, cpw=0.0
+        )
+        assert diagnostics is not None
 
     def test_single_constraint(self, interpolator):
         """Test with minimal constraint set."""
@@ -382,12 +378,12 @@ class TestP2InterpolatorIntegration:
         p2 = P2Interpolator(mesh)
 
         # Simulate geological layer constraints (value constraints at different heights)
-        np.random.seed(42)
+        rng = np.random.default_rng(42)
         value_constraints = []
         for z_level in [0.5, 1.0, 1.5]:
             for _ in range(5):
-                x = np.random.uniform(-0.5, 0.5)
-                y = np.random.uniform(-0.5, 0.5)
+                x = rng.uniform(-0.5, 0.5)
+                y = rng.uniform(-0.5, 0.5)
                 value_constraints.append([x, y, z_level, z_level])
 
         constraints_array = np.array(value_constraints)

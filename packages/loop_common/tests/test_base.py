@@ -1,6 +1,6 @@
 import time
 import uuid
-from datetime import datetime
+from datetime import datetime, timezone
 
 import numpy as np
 import pytest
@@ -30,9 +30,9 @@ def test_explicit_name_is_kept():
 
 
 def test_default_last_modified_is_recent_iso_timestamp():
-    before = datetime.now()
+    before = datetime.now(tz=timezone.utc)
     e = LoopEntity()
-    after = datetime.now()
+    after = datetime.now(tz=timezone.utc)
     ts = datetime.fromisoformat(e.last_modified)
     assert before <= ts <= after
 

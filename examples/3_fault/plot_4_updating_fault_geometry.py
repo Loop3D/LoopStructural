@@ -33,7 +33,7 @@ data = pd.DataFrame(
     columns=["X", "Y", "Z", "val", "nx", "ny", "nz", "coord", "feature_name"],
 )
 
-data
+# The prepared example data is used below to build the faulted model.
 
 ######################################################################
 # Build the model once

@@ -206,7 +206,7 @@ class GeologicalInterpolator(BaseRepresentation, metaclass=ABCMeta):
         """
         try:
             return np.array(array)
-        except Exception as e:
+        except (TypeError, ValueError) as e:
             raise LoopTypeError(str(e))
 
     def _coerce_value_constraint(
@@ -790,7 +790,7 @@ class GeologicalInterpolator(BaseRepresentation, metaclass=ABCMeta):
     def add_inequality_pairs_constraints(
         self,
         w: float = 1.0,
-        upper_bound=np.finfo(float).eps,
+        upper_bound=None,
         lower_bound=-np.inf,
         pairs: list | None = None,
     ):

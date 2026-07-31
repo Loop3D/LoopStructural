@@ -60,7 +60,7 @@ def resolve_fold_norm_target(
 
     try:
         _, _, dgz = fold.get_deformed_orientation(points)
-    except Exception as exc:  # pragma: no cover - defensive fallback
+    except (AttributeError, TypeError, ValueError, RuntimeError) as exc:  # pragma: no cover - defensive fallback
         logger.warning("Could not evaluate dgz for alignment check (%s).", exc)
         return target_norm
 

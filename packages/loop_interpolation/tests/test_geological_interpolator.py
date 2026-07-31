@@ -136,11 +136,12 @@ class _MinimalGeologicalInterpolator(GeologicalInterpolator):
     def add_inequality_pairs_constraints(
         self,
         w: float = 1.0,
-        upper_bound=np.finfo(float).eps,
+        upper_bound: float | None = None,
         lower_bound=-np.inf,
         pairs=None,
     ):
-        return None
+        if upper_bound is None:
+            upper_bound = np.finfo(float).eps
 
 
 def test_default_surfaces_raises_not_implemented():

@@ -109,20 +109,18 @@ class SVariogram:
         wl1 = 0.0
         wl1py = 0.0
         for i in range(len(px)):
-            if 0 < i < len(px) - 1 and py[i] > 10:
-                if py[i - 1] < py[i] * 0.7 and py[i + 1] < py[i] * 0.7:
-                    wl1 = px[i]
-                    if wl1 > 0.0:
-                        wl1py = py[i]
-                        break
+            if 0 < i < len(px) - 1 and py[i] > 10 and py[i - 1] < py[i] * 0.7 and py[i + 1] < py[i] * 0.7:
+                wl1 = px[i]
+                if wl1 > 0.0:
+                    wl1py = py[i]
+                    break
 
         wl2 = 0.0
         for i in range(len(px2)):
-            if 0 < i < len(px2) - 1:
-                if py2[i - 1] < py2[i] * 0.90 and py2[i + 1] < py2[i] * 0.90:
-                    wl2 = px2[i]
-                    if wl2 > 0.0 and wl2 > wl1 * 2 and wl1py < py2[i]:
-                        break
+            if 0 < i < len(px2) - 1 and py2[i - 1] < py2[i] * 0.90 and py2[i + 1] < py2[i] * 0.90:
+                wl2 = px2[i]
+                if wl2 > 0.0 and wl2 > wl1 * 2 and wl1py < py2[i]:
+                    break
 
         if wl1 == 0.0 and wl2 == 0.0:
             logger.warning("Could not auto-estimate wavelength; using 2× data range")

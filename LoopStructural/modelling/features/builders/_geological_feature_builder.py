@@ -334,9 +334,9 @@ class GeologicalFeatureBuilder(BaseBuilder):
                 val = e[0].evaluate_value(support.nodes[e[1](support.nodes), :])
                 mask = ~np.isnan(val)
                 self.interpolator.add_equality_constraints(idc[mask], val[mask] * e[2])
-            except BaseException as e:
+            except (AttributeError, TypeError, ValueError, RuntimeError) as exc:
                 logger.error(f"Could not add equality for {self.name}")
-                logger.error(f"Exception: {e}")
+                logger.error(f"Exception: {exc}")
 
     def get_value_constraints(self):
         """

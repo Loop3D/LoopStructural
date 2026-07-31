@@ -129,7 +129,7 @@ class P1Interpolator(DiscreteInterpolator):
         if vector is not None and bc_t1.shape[0] == vector.shape[0]:
             norm = vector
         # evaluate the shape function for the edges for each neighbouring triangle
-        Dt, tri1, inside = self.support.evaluate_shape_derivatives(
+        Dt, tri1, _inside = self.support.evaluate_shape_derivatives(
             bc_t1, elements=self.support.shared_element_relationships[:, 0]
         )
         Dn, tri2, _inside = self.support.evaluate_shape_derivatives(
@@ -230,8 +230,11 @@ class P1Interpolator(DiscreteInterpolator):
 
         logger.info(
             "Added %i gradient constraints, %i normal constraints,"
-            "%i tangent constraints and %i value constraints"
-            % (self.n_g, self.n_n, self.n_t, self.n_i)
+            "%i tangent constraints and %i value constraints",
+            self.n_g,
+            self.n_n,
+            self.n_t,
+            self.n_i,
         )
         self.add_gradient_constraints(self.interpolation_weights["gpw"])
         self.add_norm_constraints(self.interpolation_weights["npw"])

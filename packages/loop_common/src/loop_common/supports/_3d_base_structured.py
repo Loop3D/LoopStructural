@@ -23,9 +23,9 @@ class BaseStructuredSupport(BaseSupport):
 
     def __init__(
         self,
-        origin=np.zeros(3),
-        nsteps=np.array([10, 10, 10]),
-        step_vector=np.ones(3),
+        origin=None,
+        nsteps=None,
+        step_vector=None,
         rotation_xy=None,
     ):
         """
@@ -42,6 +42,12 @@ class BaseStructuredSupport(BaseSupport):
         # the geometry need to change
         # inisialise the private attributes
         # cast to numpy array, to allow list like input
+        if origin is None:
+            origin = np.zeros(3)
+        if nsteps is None:
+            nsteps = np.array([10, 10, 10])
+        if step_vector is None:
+            step_vector = np.ones(3)
         origin = np.array(origin)
         nsteps = np.array(nsteps)
         step_vector = np.array(step_vector)

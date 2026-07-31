@@ -55,8 +55,8 @@ def test_create_3d_bounding_box_from_2d_points():
     bbox = BoundingBox(dimensions=3)
     try:
         bbox.fit(np.array([[0, 0], [1, 1]]))
-    except Exception as e:
-        assert str(e) == "locations array is 2D but bounding box is 3"
+    except ValueError as exc:
+        assert str(exc) == "locations array is 2D but bounding box is 3"
     else:
         assert False
 

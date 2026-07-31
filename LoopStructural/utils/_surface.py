@@ -89,7 +89,7 @@ class LoopIsosurfacer:
         """
 
         if not callable(self.callable):
-            raise ValueError("No interpolator of callable function set")
+            raise TypeError("No interpolator of callable function set")
 
         surfaces = []
         all_values = self.callable(self.bounding_box.regular_grid(local=local, order='C'))
@@ -130,7 +130,7 @@ class LoopIsosurfacer:
                 individual_names = True
         if colours is None:
             colours = [None] * len(isovalues)
-        for name, isovalue, colour in zip(names, isovalues, colours):
+        for surface_name, isovalue, colour in zip(names, isovalues, colours):
             try:
                 step_vector = (self.bounding_box.maximum - self.bounding_box.origin) / (
                     np.array(self.bounding_box.nsteps) - 1
@@ -162,7 +162,7 @@ class LoopIsosurfacer:
                     vertices=verts,
                     triangles=faces,
                     normals=normals,
-                    name=name if individual_names else f"{name}_{isovalue}",
+                    name=surface_name if individual_names else f"{surface_name}_{isovalue}",
                     values=values,
                     colour=colour,
                 )

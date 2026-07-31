@@ -367,7 +367,7 @@ class FiniteDifferenceInterpolator(DiscreteInterpolator):
                 _vertices,
                 T,
                 _elements,
-                inside_,
+                _inside,
             ) = self.support.get_element_gradient_for_location(
                 points[inside, : self.support.dimension]
             )
@@ -428,7 +428,7 @@ class FiniteDifferenceInterpolator(DiscreteInterpolator):
                 _vertices,
                 T,
                 _elements,
-                inside_,
+                _inside,
             ) = self.support.get_element_gradient_for_location(
                 points[inside, : self.support.dimension]
             )
@@ -517,7 +517,7 @@ class FiniteDifferenceInterpolator(DiscreteInterpolator):
                 _vertices,
                 T,
                 _elements,
-                inside_,
+                _inside,
             ) = self.support.get_element_gradient_for_location(
                 points[inside, : self.support.dimension]
             )

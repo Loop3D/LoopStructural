@@ -45,7 +45,7 @@ class BaseFoldRotationAngleProfile(metaclass=ABCMeta):
     @svario.setter
     def svario(self, value: SVariogram):
         if not isinstance(value, SVariogram):
-            raise ValueError("svario must be a SVariogram instance")
+            raise TypeError("svario must be a SVariogram instance")
         self._svariogram = value
 
     def add_observer(self, watcher) -> None:
@@ -168,7 +168,7 @@ class BaseFoldRotationAngleProfile(metaclass=ABCMeta):
                     full_output=True,
                 )
                 guess = res[0]
-            except Exception as e:
+            except (TypeError, ValueError, RuntimeError) as e:
                 logger.error(f"curve_fit failed ({e}); using initial guess as fallback")
 
             # Scale wavelength back to original coordinate space.
@@ -176,7 +176,7 @@ class BaseFoldRotationAngleProfile(metaclass=ABCMeta):
 
             try:
                 self.update_params(guess)
-            except Exception:
+            except (TypeError, ValueError, RuntimeError):
                 logger.error("update_params failed after fit")
                 return False
             return True

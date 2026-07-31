@@ -88,8 +88,11 @@ class P2Interpolator(DiscreteInterpolator):
 
         logger.info(
             "Added %i gradient constraints, %i normal constraints,"
-            "%i tangent constraints and %i value constraints"
-            % (self.n_g, self.n_n, self.n_t, self.n_i)
+            "%i tangent constraints and %i value constraints",
+            self.n_g,
+            self.n_n,
+            self.n_t,
+            self.n_i,
         )
         self.add_gradient_constraints(self.interpolation_weights["gpw"])
         self.add_norm_constraints(self.interpolation_weights["npw"])

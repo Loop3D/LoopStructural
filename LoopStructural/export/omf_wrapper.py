@@ -74,7 +74,7 @@ def add_surface_to_omf(surface, filename):
     project.elements += [surface]
     project.metadata = {
         "coordinate_reference_system": "epsg 3857",
-        "date_created": datetime.datetime.utcnow(),
+        "date_created": datetime.datetime.now(datetime.timezone.utc),
         "version": "v1.3",
         "revision": "10",
     }

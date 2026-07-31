@@ -49,7 +49,7 @@ class BaseFoldRotationAngleProfile(metaclass=ABCMeta):
             self._svariogram = value
         else:
             logger.error("svario must be an instance of SVariogram")
-            raise ValueError("svario must be an instance of SVariogram")
+            raise TypeError("svario must be an instance of SVariogram")
 
     def add_observer(self, watcher):
         self._observers.append(watcher)

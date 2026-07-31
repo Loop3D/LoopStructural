@@ -276,10 +276,11 @@ class TestDiscreteFoldInterpolatorConstraintWeighting:
     def test_fold_constraints_use_element_volume_weighting(self):
         """Test that fold constraints respect element volume weighting."""
         support = TetMesh(nsteps=np.array([3, 3, 3]))
+        rng = np.random.default_rng(0)
         fold = MockFoldEvent(
-            orientation_grad=np.random.rand(support.n_elements, 3),
-            axis_grad=np.random.rand(support.n_elements, 3),
-            deformed_normal=np.random.rand(support.n_elements, 3),
+            orientation_grad=rng.random((support.n_elements, 3)),
+            axis_grad=rng.random((support.n_elements, 3)),
+            deformed_normal=rng.random((support.n_elements, 3)),
         )
 
         interpolator = DiscreteFoldInterpolator(support, fold=fold)

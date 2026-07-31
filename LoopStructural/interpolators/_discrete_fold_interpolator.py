@@ -50,7 +50,7 @@ class DiscreteFoldInterpolator(PiecewiseLinearInterpolator):
 
     def setup_interpolator(self, **kwargs):
         if self.fold is None:
-            raise Exception("No fold event specified")
+            raise ValueError("No fold event specified")
         fold_weights = kwargs.get("fold_weights", {})
         super().setup_interpolator(**kwargs)
         self.add_fold_constraints(**fold_weights)

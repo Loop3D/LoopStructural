@@ -21,9 +21,9 @@ class StructuredGrid2D(BaseSupport):
 
     def __init__(
         self,
-        origin=np.zeros(2),
-        nsteps=np.array([10, 10]),
-        step_vector=np.ones(2),
+        origin=None,
+        nsteps=None,
+        step_vector=None,
     ):
         """
 
@@ -33,6 +33,13 @@ class StructuredGrid2D(BaseSupport):
         nsteps - 2d list or numpy array of ints
         step_vector - 2d list or numpy array of int
         """
+        if origin is None:
+            origin = np.zeros(2)
+        if nsteps is None:
+            nsteps = np.array([10, 10])
+        if step_vector is None:
+            step_vector = np.ones(2)
+
         self.type = SupportType.StructuredGrid2D
         self.nsteps = np.ceil(np.array(nsteps)).astype(int)
         self.step_vector = np.array(step_vector)

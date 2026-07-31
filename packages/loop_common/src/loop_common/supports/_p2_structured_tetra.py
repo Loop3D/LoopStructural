@@ -25,7 +25,14 @@ class P2TetMesh(BaseStructuredSupport):
     This class builds a mesh with both vertex and edge midpoint nodes.
     """
 
-    def __init__(self, origin=np.zeros(3), nsteps=np.ones(3) * 10, step_vector=np.ones(3)):
+    def __init__(self, origin=None, nsteps=None, step_vector=None):
+        if origin is None:
+            origin = np.zeros(3)
+        if nsteps is None:
+            nsteps = np.ones(3) * 10
+        if step_vector is None:
+            step_vector = np.ones(3)
+
         BaseStructuredSupport.__init__(self, origin, nsteps, step_vector)
         self.type = SupportType.P2StructuredTetMesh
         

@@ -6,11 +6,11 @@ rewrite) register a factory here instead of requiring changes to
 ``GeologicalModel``'s source.
 """
 
-from typing import Callable
+from typing import Callable, ClassVar
 
 
 class FeatureBuilderRegistry:
-    _factories: dict[str, Callable] = {}
+    _factories: ClassVar[dict[str, Callable]] = {}
 
     @classmethod
     def register(cls, feature_type: str, factory: Callable) -> None:

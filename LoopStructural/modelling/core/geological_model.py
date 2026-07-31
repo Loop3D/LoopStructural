@@ -391,7 +391,7 @@ class GeologicalModel:
             data.rename(columns={"type": "feature_name"}, inplace=True)
         if "feature_name" not in data and include_feature_name:
             logger.error("Data does not contain 'feature_name' column")
-            raise BaseException("Cannot load data")
+            raise ValueError("Cannot load data")
         for h in all_heading():
             if h not in data:
                 data[h] = np.nan
@@ -614,9 +614,8 @@ class GeologicalModel:
 
         """
         if not callable(dtm):
-            raise BaseException("DTM must be a callable function \n")
-        else:
-            self._dtm = dtm
+            raise TypeError("DTM must be a callable function")
+        self._dtm = dtm
 
     @property
     def faults(self):
@@ -688,7 +687,8 @@ class GeologicalModel:
             return
         try:
             logger.info(f"Writing GeologicalModel to: {file}")
-            pickle.dump(self, open(file, "wb"))
+            with open(file, "wb") as handle:
+                pickle.dump(self, handle)
         except pickle.PicklingError:
             logger.error("Error saving file")
 
@@ -715,8 +715,8 @@ class GeologicalModel:
                 self.features.insert(index, feature)
                 self.feature_name_index[feature.name] = index
                 logger.info(f"Adding {feature.name} to model at location {index}")
-                for index, feature in enumerate(self.features):
-                    self.feature_name_index[feature.name] = index
+                for feature_index, feature_in_list in enumerate(self.features):
+                    self.feature_name_index[feature_in_list.name] = feature_index
             else:
                 self.features.append(feature)
                 self.feature_name_index[feature.name] = len(self.features) - 1
@@ -806,7 +806,7 @@ class GeologicalModel:
             self.set_stratigraphic_column(stratigraphic_column)
             return
         elif not isinstance(stratigraphic_column, StratigraphicColumn):
-            raise ValueError("stratigraphic_column must be a StratigraphicColumn object")
+            raise TypeError("stratigraphic_column must be a StratigraphicColumn object")
         self._stratigraphic_column = stratigraphic_column
 
     def set_stratigraphic_column(self, stratigraphic_column, cmap="tab20"):
@@ -1563,7 +1563,7 @@ class GeologicalModel:
             if f.name == feature.name:
                 continue
             if f.type == "domain_fault":
-                feature.add_region(lambda pos: f.evaluate_value(pos) < 0)
+                feature.add_region(lambda pos, fault=f: fault.evaluate_value(pos) < 0)
                 break
 
     def _add_domain_fault_below(self, domain_fault):
@@ -2005,12 +2005,8 @@ class GeologicalModel:
 
         if fault_center is not None and ~np.isnan(fault_center).any():
             fault_center = self.scale(fault_center, inplace=False)
-        if minor_axis:
-            minor_axis = minor_axis
-        if major_axis:
-            major_axis = major_axis
-        if intermediate_axis:
-            intermediate_axis = intermediate_axis
+        # Keep the supplied fault-axis values unchanged; the previous self-assignment
+        # was only present to satisfy a linter and did not affect behavior.
         fault_frame_builder.create_data_from_geometry(
             fault_frame_data=self.prepare_data(data, include_feature_name=False),
             fault_center=fault_center,

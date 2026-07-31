@@ -60,7 +60,7 @@ thicknesses = dict(
 # ***********************
 
 
-contacts
+# Contacts are loaded and plotted below to inspect the input dataset.
 
 fig, ax = plt.subplots(1)
 ax.scatter(contacts["X"], contacts["Y"], c=contacts["name"].astype("category").cat.codes)
@@ -73,7 +73,7 @@ plt.show()
 # Stratigraphic orientations needs to have X, Y, Z and either azimuth and dip, dipdirection and dip, strike
 # and dip (RH thumb rule) or the vector components of the normal vector (nx, ny, nz)
 
-stratigraphic_orientations
+# Stratigraphic orientations are inspected here before being passed into the processor.
 
 ##############################
 # Stratigraphic thickness
@@ -81,7 +81,7 @@ stratigraphic_orientations
 # Stratigraphic thickness should be a dictionary containing the unit name (which should be in the contacts table)
 # and the corresponding thickness of this unit.
 
-thicknesses
+# Thicknesses are assembled into a dictionary for the processor input.
 
 ##############################
 # Bounding box
@@ -92,7 +92,7 @@ thicknesses
 origin = bbox.loc["origin"].to_numpy()
 maximum = bbox.loc["maximum"].to_numpy()
 
-bbox
+# The bounding box values are used to define the model extent.
 
 ##############################
 # Stratigraphic column
@@ -110,7 +110,7 @@ bbox
 # Here all the units belong to a single group, "supergroup_0", since the
 # dataset only contains one conformable sequence.
 
-stratigraphic_order
+# The stratigraphic order is converted to the tuple format expected by the processor.
 
 order = [("supergroup_0", list(stratigraphic_order["unit name"]))]
 
@@ -168,11 +168,7 @@ view.display()
 # fault network example in :code:`3_fault` for how the interaction angle
 # is used).
 
-fault_orientations
-
-fault_edges
-
-fault_properties
+# Fault orientation, edge, and property tables are passed into the processor later.
 
 processor = ProcessInputData(
     contacts=contacts,

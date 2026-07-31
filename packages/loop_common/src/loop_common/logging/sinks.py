@@ -19,7 +19,7 @@ import logging
 import sqlite3
 import threading
 from abc import ABC, abstractmethod
-from datetime import datetime
+from datetime import datetime, timezone
 from pathlib import Path
 from typing import Callable
 
@@ -69,7 +69,7 @@ class _CallableHandler(logging.Handler):
     def emit(self, record: logging.LogRecord) -> None:
         try:
             self._callback(record)
-        except Exception:
+        except (AttributeError, TypeError, ValueError, RuntimeError):
             self.handleError(record)
 
 
@@ -168,7 +168,7 @@ class SqliteSink(LogSink):
 
     def emit(self, record: logging.LogRecord) -> None:
         row = {
-            "timestamp": datetime.fromtimestamp(record.created).isoformat(),
+            "timestamp": datetime.fromtimestamp(record.created, tz=timezone.utc).isoformat(),
             "logger_name": record.name,
             "level": record.levelname,
             "message": record.getMessage(),

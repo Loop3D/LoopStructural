@@ -261,7 +261,7 @@ class IntrusionFeature(BaseFeature):
             intrusion_coord2_pts,
         ]
 
-        thresholds, residuals, conceptual = self.interpolate_lateral_thresholds(
+        thresholds, _residuals, _conceptual = self.interpolate_lateral_thresholds(
             intrusion_coord1_pts
         )
 
@@ -359,7 +359,7 @@ class IntrusionFeature(BaseFeature):
             intrusion_coord2_pts,
         ]
 
-        thresholds, residuals, conceptual = self.interpolate_lateral_thresholds(
+        thresholds, _residuals, _conceptual = self.interpolate_lateral_thresholds(
             intrusion_coord1_pts
         )
 

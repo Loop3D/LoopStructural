@@ -80,7 +80,7 @@ class SurfeRBFInterpolator(GeologicalInterpolator):
     def add_inequality_pairs_constraints(
         self,
         w: float = 1.0,
-        upper_bound=np.finfo(float).eps,
+        upper_bound=None,
         lower_bound=-np.inf,
         pairs: list | None = None,
     ):
@@ -142,7 +142,7 @@ class SurfeRBFInterpolator(GeologicalInterpolator):
             self.surfe.SetGreedyAlgorithm(True, greedy[0], greedy[1])
         poly_order = kwargs.get("poly_order", None)
         if poly_order:
-            logger.info("Setting poly order to %i" % poly_order)
+            logger.info("Setting poly order to %i", poly_order)
             self.surfe.SetPolynomialOrder(poly_order)
         global_anisotropy = kwargs.get("anisotropy", False)
         if global_anisotropy:

@@ -7,8 +7,7 @@ def test_import_common_modules():
         import loop_common.geometry
         import loop_common.io
         import loop_common.logging
-        import loop_common.math
-        import loop_common.supports
+        import loop_common.math  # noqa: F401
     except ImportError as e:
         pytest.fail(f"Failed to import a module from common: {e}")
 

@@ -135,7 +135,7 @@ class IntrusionBuilder(BaseBuilder):
         else:  # -- create synthetic data to constrain interpolation using geometric scaling
             estimated_thickness = thickness
             if estimated_thickness is None:
-                raise Exception('Not implemented')
+                raise NotImplementedError("Not implemented")
                 # estimated_thickness = thickness_from_geometric_scaling(
                 #     intrusion_length, intrusion_type
                 # )
@@ -143,7 +143,7 @@ class IntrusionBuilder(BaseBuilder):
             logger.info(
                 f"Building tabular intrusion using geometric scaling parameters: estimated thicknes = {round(estimated_thickness)} meters"
             )
-            raise Exception('Not implemented')
+            raise NotImplementedError("Not implemented")
             # (
             #     other_contact_data_temp,
             #     other_contact_data_xyz_temp,
@@ -270,7 +270,7 @@ class IntrusionBuilder(BaseBuilder):
 
         """
         if not callable(self.lateral_extent_model) or not callable(self.vertical_extent_model):
-            raise ValueError("lateral_extent_model and vertical_extent_model must be functions")
+            raise TypeError("lateral_extent_model and vertical_extent_model must be functions")
 
         grid_points_coord1 = self.evaluation_grid[2]
 

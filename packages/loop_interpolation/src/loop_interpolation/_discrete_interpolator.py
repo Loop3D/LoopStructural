@@ -3,7 +3,6 @@ Discrete interpolator base for least squares
 """
 from __future__ import annotations
 
-import logging
 from abc import abstractmethod
 from collections import defaultdict
 from time import perf_counter
@@ -368,10 +367,10 @@ class DiscreteInterpolator(GeologicalInterpolator):
         if isinstance(w, (float, int)):
             w = np.ones(A.shape[0]) * w
         if not isinstance(w, np.ndarray):
-            raise BaseException("w must be a numpy array")
+            raise TypeError("w must be a numpy array")
 
         if w.shape[0] != A.shape[0]:
-            raise BaseException("Weight array does not match number of constraints")
+            raise ValueError("Weight array does not match number of constraints")
         rows = np.arange(0, n_rows).astype(int)
         base_name = name
         while name in self.constraints:
@@ -899,7 +898,7 @@ class DiscreteInterpolator(GeologicalInterpolator):
             _, gradient, elements, inside = support.get_element_gradient_for_location(
                 support.barycentre[element_indices]
             )
-        except Exception as err:
+        except (AttributeError, TypeError, ValueError) as err:
             logger.debug("Unable to build constant-norm gradient rows: %s", err)
             return None
 
@@ -1332,7 +1331,7 @@ class DiscreteInterpolator(GeologicalInterpolator):
 
         """
         if self.solver is None:
-            logging.debug("Cannot rerun interpolator")
+            logger.debug("Cannot rerun interpolator")
             return False
         if not self.up_to_date:
             self.setup_interpolator()

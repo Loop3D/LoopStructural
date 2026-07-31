@@ -433,8 +433,7 @@ class ProcessInputData:
         if self.stratigraphic_order is None:
             return names
         for _name, sg in self.stratigraphic_order:
-            for g in sg:
-                names.append(g)
+            names.extend(sg)
         return names
 
     def _stratigraphic_value(self):

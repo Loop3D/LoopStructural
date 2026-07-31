@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import uuid
-from datetime import datetime
+from datetime import datetime, timezone
 from pathlib import Path
 from typing import Annotated, Any
 
@@ -56,13 +56,13 @@ class LoopEntity(BaseModel):
     name: str | None = Field(default=None, description="Human-readable label")
 
     last_modified: str = Field(
-        default_factory=lambda: datetime.now().isoformat(),
+        default_factory=lambda: datetime.now(tz=timezone.utc).isoformat(),
         description="ISO timestamp of last change",
     )
 
     def mark_modified(self):
         """Manually trigger a timestamp update."""
-        self.last_modified = datetime.now().isoformat()
+        self.last_modified = datetime.now(tz=timezone.utc).isoformat()
 
     @classmethod
     def from_json(cls, json_str: str):

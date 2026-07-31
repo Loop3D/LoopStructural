@@ -33,7 +33,7 @@ data = pd.DataFrame(
     columns=["X", "Y", "Z", "val", "nx", "ny", "nz", "coord", "feature_name"],
 )
 
-data
+# The prepared dataset is used below to build the example model.
 
 ######################################################################
 # Create model using the standard fault displacement model

@@ -91,10 +91,6 @@ except ImportError:
             )
 
 
-# Ensure compatibility between the fallback and imported class
-SurfeRBFInterpolator = SurfeRBFInterpolator
-
-
 interpolator_string_map = {
     "FDI": InterpolatorType.FINITE_DIFFERENCE,
     "PLI": InterpolatorType.PIECEWISE_LINEAR,

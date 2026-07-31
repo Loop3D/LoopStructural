@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from typing import ClassVar
+
 import numpy as np
 
 from loop_common.supports import SupportType, support_map
@@ -24,11 +26,13 @@ class SupportFactory:
 
     # Support types whose constructor takes nsteps as a *cell* count
     # (translated internally to a node count via BaseStructuredSupport).
-    _CELL_COUNT_SUPPORT_TYPES = {
-        SupportType.StructuredGrid,
-        SupportType.TetMesh,
-        SupportType.P2UnstructuredTetMesh,
-    }
+    _CELL_COUNT_SUPPORT_TYPES: ClassVar[frozenset[SupportType]] = frozenset(
+        {
+            SupportType.StructuredGrid,
+            SupportType.TetMesh,
+            SupportType.P2UnstructuredTetMesh,
+        }
+    )
 
     @staticmethod
     def create_support_from_bbox(

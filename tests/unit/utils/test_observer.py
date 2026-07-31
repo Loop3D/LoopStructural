@@ -224,9 +224,8 @@ def test_nested_freeze_notifications_bug():
     assigned, even though a notification did occur.
     """
     obs = Observable()
-    with pytest.raises(UnboundLocalError), obs.freeze_notifications():
-        with obs.freeze_notifications():
-            obs.notify("nested")
+    with pytest.raises(UnboundLocalError), obs.freeze_notifications(), obs.freeze_notifications():
+        obs.notify("nested")
 
 
 def test_weakref_callback_stops_receiving_after_garbage_collection():
