@@ -16,7 +16,7 @@ def test_get_elements():
 
     mesh = UnStructuredTetMesh(nodes, elements, neighbours)
     points = rng.random((100, 3))
-    verts, c, tetra, inside = mesh.get_element_for_location(points)
+    _verts, c, tetra, _inside = mesh.get_element_for_location(points)
 
     vertices = nodes[elements, :]
     pos = points[:, :]
@@ -46,7 +46,7 @@ def test_get_elements():
     c[:, :, 2] = vc / v
 
     c[:, :, 3] = vd / v
-    row, col = np.where(np.all(c >= 0, axis=2))
+    _row, col = np.where(np.all(c >= 0, axis=2))
 
     tetra_idx = col
 

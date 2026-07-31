@@ -4,7 +4,6 @@ Tetmesh based on cartesian grid for piecewise linear interpolation
 
 import logging
 from abc import abstractmethod
-from typing import Tuple
 
 import numpy as np
 from scipy import sparse
@@ -178,7 +177,7 @@ class BaseUnstructured2d(BaseSupport):
         return 0.5 * np.cross(v1, v2, axisa=1, axisb=1)
 
     @abstractmethod
-    def evaluate_shape(self, locations) -> Tuple[np.ndarray, np.ndarray, np.ndarray]:
+    def evaluate_shape(self, locations) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
         """
         Evaluate the shape functions at the locations
 
@@ -258,7 +257,7 @@ class BaseUnstructured2d(BaseSupport):
         return_bc=True,
         return_inside=True,
         return_tri=True,
-    ) -> Tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray]:
+    ) -> tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray]:
         """
         Determine the elements from a numpy array of points
 
@@ -325,7 +324,7 @@ class BaseUnstructured2d(BaseSupport):
 
     def get_element_gradient_for_location(
         self, pos: np.ndarray
-    ) -> Tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray]:
+    ) -> tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray]:
         """
         Get the element gradients for a location
 
@@ -338,7 +337,7 @@ class BaseUnstructured2d(BaseSupport):
         -------
 
         """
-        verts, c, tri, inside = self.get_element_for_location(pos, return_verts=False)
+        _verts, _c, tri, _inside = self.get_element_for_location(pos, return_verts=False)
         return self.evaluate_shape_derivatives(pos, tri)
 
     def vtk(self, node_properties=None, cell_properties=None):

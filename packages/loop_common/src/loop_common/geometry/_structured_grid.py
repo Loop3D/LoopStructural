@@ -1,5 +1,4 @@
 from dataclasses import dataclass, field
-from typing import Dict
 
 import numpy as np
 
@@ -15,8 +14,8 @@ class StructuredGrid:
     origin: np.ndarray = field(default_factory=lambda: np.array([0, 0, 0]))
     step_vector: np.ndarray = field(default_factory=lambda: np.array([1, 1, 1]))
     nsteps: np.ndarray = field(default_factory=lambda: np.array([10, 10, 10]))
-    cell_properties: Dict[str, np.ndarray] = field(default_factory=dict)
-    properties: Dict[str, np.ndarray] = field(default_factory=dict)
+    cell_properties: dict[str, np.ndarray] = field(default_factory=dict)
+    properties: dict[str, np.ndarray] = field(default_factory=dict)
     name: str = "default_grid"
 
     def to_dict(self):

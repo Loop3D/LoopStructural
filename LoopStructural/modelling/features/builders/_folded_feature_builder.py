@@ -159,12 +159,11 @@ class FoldedFeatureBuilder(GeologicalFeatureBuilder):
         # not setting the norm
 
         # Use norm constraints if the fold normalisation weight is 0.
-        if constrained is None:
-            if "fold_normalisation" in kwargs:
-                if kwargs["fold_normalisation"] == 0.0:
-                    constrained = False
-                else:
-                    constrained = True
+        if constrained is None and "fold_normalisation" in kwargs:
+            if kwargs["fold_normalisation"] == 0.0:
+                constrained = False
+            else:
+                constrained = True
         self.add_data_to_interpolator(constrained=constrained)
         if not self.fold.foldframe[0].is_valid():
             raise InterpolatorError("Fold frame main coordinate is not valid")

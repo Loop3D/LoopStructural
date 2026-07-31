@@ -222,7 +222,7 @@ class TetMesh(BaseStructuredSupport):
         """
         values = np.zeros(pos.shape[0])
         values[:] = np.nan
-        vertices, c, tetras, inside = self.get_element_for_location(pos)
+        _vertices, c, tetras, inside = self.get_element_for_location(pos)
         values[inside] = np.sum(
             c[inside, :] * property_array[self.elements[tetras[inside]]], axis=1
         )
@@ -247,7 +247,7 @@ class TetMesh(BaseStructuredSupport):
         values = np.zeros(pos.shape)
         values[:] = np.nan
         (
-            vertices,
+            _vertices,
             element_gradients,
             tetras,
             inside,
@@ -370,7 +370,7 @@ class TetMesh(BaseStructuredSupport):
 
         """
         locations = np.array(locations)
-        verts, c, elements, inside = self.get_element_for_location(locations)
+        _verts, c, elements, inside = self.get_element_for_location(locations)
         return c, elements, inside
 
     def get_elements(self):
@@ -490,7 +490,7 @@ class TetMesh(BaseStructuredSupport):
         if elements is not None:
             inside = np.ones(elements.shape[0], dtype=bool)
         if elements is None:
-            verts, c, elements, inside = self.get_element_for_location(pos)
+            _verts, _c, elements, inside = self.get_element_for_location(pos)
             # np.arange(0, self.n_elements, dtype=int)
 
         return (
@@ -511,7 +511,7 @@ class TetMesh(BaseStructuredSupport):
         -------
 
         """
-        vertices, bc, tetras, inside = self.get_element_for_location(pos)
+        vertices, _bc, tetras, inside = self.get_element_for_location(pos)
         ps = vertices
         m = np.array(
             [

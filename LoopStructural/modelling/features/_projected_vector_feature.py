@@ -1,8 +1,6 @@
 """ """
 from __future__ import annotations
 
-from typing import Optional
-
 import numpy as np
 
 from ...modelling.features import BaseFeature
@@ -101,10 +99,10 @@ class ProjectedVectorFeature(BaseFeature):
             return self.value_feature.max()
         return 0.0
 
-    def get_data(self, value_map: Optional[dict] = None):
+    def get_data(self, value_map: dict | None = None):
         return
 
-    def copy(self, name: Optional[str] = None):
+    def copy(self, name: str | None = None):
         if name is None:
             name = f'{self.name}_copy'
         return ProjectedVectorFeature(

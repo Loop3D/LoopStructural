@@ -260,7 +260,7 @@ class TestSurfeRBFNaNMaskingCorrectness:
             [np.nan, np.nan, np.nan],
         ])
 
-        result = interpolator.evaluate_value(points)
+        interpolator.evaluate_value(points)
 
         # Surfe should only be called with valid (non-NaN) rows
         surfe_input = call_log[0]

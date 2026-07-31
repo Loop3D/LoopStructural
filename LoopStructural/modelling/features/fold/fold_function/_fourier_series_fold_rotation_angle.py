@@ -1,7 +1,5 @@
 from __future__ import annotations
 
-from typing import List, Optional, Union
-
 import numpy as np
 import numpy.typing as npt
 
@@ -14,8 +12,8 @@ logger = getLogger(__name__)
 class FourierSeriesFoldRotationAngleProfile(BaseFoldRotationAngleProfile):
     def __init__(
         self,
-        rotation_angle: Optional[npt.NDArray[np.float64]] = None,
-        fold_frame_coordinate: Optional[npt.NDArray[np.float64]] = None,
+        rotation_angle: npt.NDArray[np.float64] | None = None,
+        fold_frame_coordinate: npt.NDArray[np.float64] | None = None,
         c0=0,
         c1=0,
         c2=0,
@@ -112,9 +110,9 @@ class FourierSeriesFoldRotationAngleProfile(BaseFoldRotationAngleProfile):
 
     def initial_guess(
         self,
-        wavelength: Optional[float] = None,
+        wavelength: float | None = None,
         calculate_wavelength: bool = True,
-        svariogram_parameters: dict = None,
+        svariogram_parameters: dict | None = None,
         reset: bool = False,
     ):
         if svariogram_parameters is None:
@@ -145,16 +143,15 @@ class FourierSeriesFoldRotationAngleProfile(BaseFoldRotationAngleProfile):
     @params.setter
     def params(self, params):
         for key in params:
-            if key == 'w':
-                if params[key] <= 0:
-                    raise ValueError('wavelength must be greater than 0')
+            if key == 'w' and params[key] <= 0:
+                raise ValueError('wavelength must be greater than 0')
             setattr(self, key, params[key])
         self.c0 = params["c0"]
         self.c1 = params["c1"]
         self.c2 = params["c2"]
         self.w = params["w"]
 
-    def update_params(self, params: Union[List[float], npt.NDArray[np.float64]]):
+    def update_params(self, params: list[float] | npt.NDArray[np.float64]):
         if len(params) != 4:
             raise ValueError('params must have 4 elements')
         self.c0 = params[0]

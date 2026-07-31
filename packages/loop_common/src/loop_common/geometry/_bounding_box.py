@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import copy
-from typing import Dict, Optional, Union
 
 import numpy as np
 
@@ -22,11 +21,11 @@ class LoopValueError(ValueError):
 class BoundingBox:
     def __init__(
         self,
-        origin: Optional[np.ndarray] = None,
-        maximum: Optional[np.ndarray] = None,
-        nsteps: Optional[np.ndarray] = None,
-        step_vector: Optional[np.ndarray] = None,
-        dimensions: Optional[int] = 3,
+        origin: np.ndarray | None = None,
+        maximum: np.ndarray | None = None,
+        nsteps: np.ndarray | None = None,
+        step_vector: np.ndarray | None = None,
+        dimensions: int | None = 3,
     ):
         """A bounding box for a model, defined by the
         origin, maximum and number of steps in each direction
@@ -118,8 +117,8 @@ class BoundingBox:
 
     def set_local_transform(
         self,
-        local_origin: Optional[np.ndarray] = None,
-        rotation_matrix: Optional[np.ndarray] = None,
+        local_origin: np.ndarray | None = None,
+        rotation_matrix: np.ndarray | None = None,
     ):
         """Set the world->local affine transform used for interpolation coordinates.
 
@@ -532,7 +531,7 @@ class BoundingBox:
 
     def regular_grid(
         self,
-        nsteps: Optional[Union[list, np.ndarray]] = None,
+        nsteps: list | np.ndarray | None = None,
         shuffle: bool = False,
         order: str = "F",
         local: bool = True,
@@ -663,8 +662,8 @@ class BoundingBox:
 
     def structured_grid(
         self,
-        cell_data: Optional[Dict[str, np.ndarray]] = None,
-        vertex_data: Optional[Dict] = None,
+        cell_data: dict[str, np.ndarray] | None = None,
+        vertex_data: dict | None = None,
         name: str = "bounding_box",
         local_coordinates: bool = False,
     ):

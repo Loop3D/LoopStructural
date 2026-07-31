@@ -97,7 +97,7 @@ def test_evaluate_gradient2(support_class, seed):
 def test_get_element(support):
     point = support.barycentre[[0], :]
     # point[0, 0] += 0.1
-    vertices, dof, idc, inside = support.get_element_for_location(point)
+    vertices, _dof, _idc, _inside = support.get_element_for_location(point)
     # vertices = vertices.reshape(-1, 3)
     bary = np.mean(vertices, axis=1)
     assert np.isclose(np.sum(point - bary), 0)
@@ -114,7 +114,7 @@ def test_global_to_local_coordinates():
 
 def test_get_element_outside(support):
     point = np.array([support.origin - np.ones(3)])
-    idc, inside = support.position_to_cell_corners(point)
+    _idc, inside = support.position_to_cell_corners(point)
     assert not inside[0]
 
 

@@ -16,7 +16,6 @@ NaN handling contract
 from __future__ import annotations
 
 import logging
-from typing import Tuple, Union
 
 import numpy as np
 
@@ -152,7 +151,7 @@ def _ensure_float_array(arr: np.ndarray, name: str = "array") -> np.ndarray:
 
 def _check_shape(
     arr: np.ndarray,
-    expected_shape: Tuple[Union[int, None], ...],
+    expected_shape: tuple[int | None, ...],
     name: str = "array",
 ) -> None:
     """Validate array shape matches expectations.
@@ -495,10 +494,10 @@ def validate_inequality_pairs_constraint(
 
 
 def validate_weights(
-    weights: Union[float, np.ndarray],
+    weights: float | np.ndarray,
     n_constraints: int,
     constraint_name: str = "constraint",
-) -> Union[float, np.ndarray]:
+) -> float | np.ndarray:
     """Validate weight values for constraints.
 
     Weights must be positive scalars or arrays.

@@ -1,7 +1,5 @@
 from __future__ import annotations
 
-from typing import Optional
-
 import numpy as np
 
 from . import SupportType
@@ -12,13 +10,13 @@ from ._3d_unstructured_tetra import UnStructuredTetMesh
 class P2UnstructuredTetMesh(UnStructuredTetMesh):
     def __init__(
         self,
-        nodes: Optional[np.ndarray] = None,
-        elements: Optional[np.ndarray] = None,
-        neighbours: Optional[np.ndarray] = None,
+        nodes: np.ndarray | None = None,
+        elements: np.ndarray | None = None,
+        neighbours: np.ndarray | None = None,
         aabb_nsteps=None,
-        origin: Optional[np.ndarray] = None,
-        step_vector: Optional[np.ndarray] = None,
-        nsteps_cells: Optional[np.ndarray] = None,
+        origin: np.ndarray | None = None,
+        step_vector: np.ndarray | None = None,
+        nsteps_cells: np.ndarray | None = None,
     ):
         if nodes is None or elements is None or neighbours is None:
             if origin is None or step_vector is None or nsteps_cells is None:
@@ -208,7 +206,7 @@ class P2UnstructuredTetMesh(UnStructuredTetMesh):
         """
         locations = np.array(locations)
         if elements is None:
-            verts, c, elements, inside = self.get_element_for_location(locations)
+            verts, c, elements, _inside = self.get_element_for_location(locations)
         else:
             M = np.ones((elements.shape[0], 4, 4))
             M[:, :, 1:] = self.nodes[self.elements[elements], :][:, :4, :]
@@ -288,7 +286,7 @@ class P2UnstructuredTetMesh(UnStructuredTetMesh):
 
     def evaluate_shape(self, locations: np.ndarray):
         locations = np.array(locations)
-        verts, c, elements, inside = self.get_element_for_location(locations)
+        _verts, c, elements, inside = self.get_element_for_location(locations)
         # order of bary coord is (1-s-t,s,t)
         N = np.zeros((c.shape[0], 10))  # evaluate shape functions at barycentric coordinates
 
@@ -320,7 +318,7 @@ class P2UnstructuredTetMesh(UnStructuredTetMesh):
         -------
 
         """
-        c, tri, inside = self.evaluate_shape(pos)
+        _c, tri, inside = self.evaluate_shape(pos)
         d2 = self.evaluate_shape_d2(tri)
         values = np.zeros((pos.shape[0], d2.shape[1]))
         values[:] = np.nan

@@ -1,3 +1,5 @@
+import sys
+
 import numpy as np
 
 from LoopStructural.modelling.features import (
@@ -51,4 +53,4 @@ if __name__ == "__main__":
     test_toggle_faults()
     test_tojson()
     print("All tests passed")
-    exit(0)
+    sys.exit(0)

@@ -2,7 +2,6 @@ from __future__ import annotations
 
 import io
 from dataclasses import dataclass, field
-from typing import Optional, Union
 
 import numpy as np
 
@@ -16,7 +15,7 @@ class ValuePoints:
     locations: np.ndarray = field(default_factory=lambda: np.array([[0, 0, 0]]))
     values: np.ndarray = field(default_factory=lambda: np.array([0]))
     name: str = "unnamed"
-    properties: Optional[dict] = None
+    properties: dict | None = None
 
     def to_dict(self):
         return {
@@ -54,7 +53,7 @@ class ValuePoints:
         except ImportError:
             logger.error("pyvista is required for vtk")
 
-    def save(self, filename: Union[str, io.StringIO], *, group="Loop", ext=None):
+    def save(self, filename: str | io.StringIO, *, group="Loop", ext=None):
         if isinstance(filename, io.StringIO):
             if ext is None:
                 raise ValueError("Please provide an extension for StringIO")
@@ -116,7 +115,7 @@ class VectorPoints:
     locations: np.ndarray = field(default_factory=lambda: np.array([[0, 0, 0]]))
     vectors: np.ndarray = field(default_factory=lambda: np.array([[0, 0, 0]]))
     name: str = "unnamed"
-    properties: Optional[dict] = None
+    properties: dict | None = None
 
     def to_dict(self):
         return {

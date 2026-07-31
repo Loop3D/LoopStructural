@@ -272,7 +272,7 @@ class ProcessInputData:
         if self.stratigraphic_order is None:
             return
         if foliation_properties is None:
-            for k in self.stratigraphic_column.keys():
+            for k in self.stratigraphic_column:
                 if k != "faults":
                     self._foliation_properties[k] = {}
         else:
@@ -501,7 +501,7 @@ class ProcessInputData:
         if not self._use_thickness:
             contacts["interface"] = np.nan
             interface_val = 0
-            for k in self._stratigraphic_value().keys():
+            for k in self._stratigraphic_value():
                 contacts.loc[contacts["name"] == k, "interface"] = interface_val
             contacts = contacts.loc[
                 ~np.isnan(contacts["interface"]),

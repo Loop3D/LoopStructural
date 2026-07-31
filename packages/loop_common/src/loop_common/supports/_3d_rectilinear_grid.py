@@ -8,8 +8,6 @@ specified explicitly as monotonically increasing 1-D arrays.
 
 from __future__ import annotations
 
-from typing import Dict, Tuple
-
 import numpy as np
 
 from ..logging import get_logger as getLogger
@@ -117,7 +115,7 @@ class RectilinearGrid(StructuredGrid):
     def inside(self, pos: np.ndarray) -> np.ndarray:
         return np.all((pos > self.origin[None, :]) & (pos < self.maximum[None, :]), axis=1)
 
-    def position_to_cell_index(self, pos: np.ndarray) -> Tuple[np.ndarray, np.ndarray]:
+    def position_to_cell_index(self, pos: np.ndarray) -> tuple[np.ndarray, np.ndarray]:
         """Return (i,j,k) cell indices and an *inside* boolean mask."""
         pos = self.check_position(pos)
         inside = self.inside(pos)
@@ -162,7 +160,7 @@ class RectilinearGrid(StructuredGrid):
 
     def get_element_gradient_for_location(
         self, pos: np.ndarray
-    ) -> Tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray]:
+    ) -> tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray]:
         """Return (vertices, T, elements, inside) with T of shape (N, 3, 8).
 
         T correctly accounts for local cell size so that
@@ -216,7 +214,7 @@ class RectilinearGrid(StructuredGrid):
     # FD regularisation operators
     # ------------------------------------------------------------------
 
-    def get_operators(self, weights: Dict[str, float]) -> Dict[str, Tuple]:
+    def get_operators(self, weights: dict[str, float]) -> dict[str, tuple]:
         """Return rectilinear FD operators.
 
         The mask is ``None`` to signal to the FD interpolator that it should
@@ -233,7 +231,7 @@ class RectilinearGrid(StructuredGrid):
 
     def build_scaled_operator_rows(
         self, axis: int, cross_axis: int = -1
-    ) -> Tuple[np.ndarray, np.ndarray, np.ndarray]:
+    ) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
         """Build per-node FD stencil rows scaled for non-uniform spacing.
 
         Parameters

@@ -1,12 +1,11 @@
 from os.path import dirname, join
 from pathlib import Path
-from typing import Tuple
 
 import numpy as np
 import pandas as pd
 
 
-def load_horizontal() -> Tuple[pd.DataFrame, np.ndarray]:
+def load_horizontal() -> tuple[pd.DataFrame, np.ndarray]:
     """Synthetic model for horizontal layers
 
     Returns
@@ -42,7 +41,7 @@ def load_horizontal() -> Tuple[pd.DataFrame, np.ndarray]:
     return data, bb
 
 
-def load_horizontal_v(v=0.5) -> Tuple[pd.DataFrame, np.ndarray]:
+def load_horizontal_v(v=0.5) -> tuple[pd.DataFrame, np.ndarray]:
     """Synthetic model for horizontal layers
 
     Returns

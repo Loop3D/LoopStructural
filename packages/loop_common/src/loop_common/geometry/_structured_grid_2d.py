@@ -1,6 +1,5 @@
 """Pure 2D regular grid geometry: origin/nsteps/step_vector indexing."""
 
-from typing import Tuple
 
 import numpy as np
 
@@ -57,12 +56,12 @@ class StructuredGrid2DGeometry:
         return self.global_node_indices(self.cell_corner_indexes(cell_indexes))
 
     def print_geometry(self):
-        logger.info("Origin: %f %f %f" % (self.origin[0], self.origin[1], self.origin[2]))
+        logger.info(f"Origin: {self.origin[0]:f} {self.origin[1]:f} {self.origin[2]:f}")
         logger.info(
-            "Cell size: %f %f %f" % (self.step_vector[0], self.step_vector[1], self.step_vector[2])
+            f"Cell size: {self.step_vector[0]:f} {self.step_vector[1]:f} {self.step_vector[2]:f}"
         )
         max = self.origin + self.nsteps_cells * self.step_vector
-        logger.info("Max extent: %f %f %f" % (max[0], max[1], max[2]))
+        logger.info(f"Max extent: {max[0]:f} {max[1]:f} {max[2]:f}")
 
     def cell_centres(self, global_index: np.ndarray) -> np.ndarray:
         cell_indexes = self.global_index_to_cell_index(global_index)
@@ -79,7 +78,7 @@ class StructuredGrid2DGeometry:
         )
         return cell_centres
 
-    def position_to_cell_index(self, pos: np.ndarray) -> Tuple[np.ndarray, np.ndarray]:
+    def position_to_cell_index(self, pos: np.ndarray) -> tuple[np.ndarray, np.ndarray]:
         inside = self.inside(pos)
         cell_indexes = np.zeros((pos.shape[0], 2))
         cell_indexes[:, 0] = pos[:, 0] - self.origin[None, 0]

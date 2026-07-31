@@ -3,7 +3,7 @@ Finite difference interpolator with fold constraints.
 """
 from __future__ import annotations
 
-from typing import Callable, Optional
+from typing import Callable
 
 import numpy as np
 from loop_common.logging import get_logger as getLogger
@@ -53,7 +53,7 @@ class FDFoldInterpolator(FiniteDifferenceInterpolator):
         Initial constraint data forwarded to the parent interpolator.
     """
 
-    def __init__(self, grid, fold: Optional[FoldEvent] = None, data=None):
+    def __init__(self, grid, fold: FoldEvent | None = None, data=None):
         FiniteDifferenceInterpolator.__init__(self, grid, data=data)
         self.type = InterpolatorType.FINITE_DIFFERENCE
         self.fold = fold
@@ -91,13 +91,13 @@ class FDFoldInterpolator(FiniteDifferenceInterpolator):
 
     def add_fold_constraints(
         self,
-        fold_orientation: Optional[float] = 10.0,
-        fold_axis_w: Optional[float] = 10.0,
+        fold_orientation: float | None = 10.0,
+        fold_axis_w: float | None = 10.0,
         fold_regularisation=_DEFAULT_FOLD_REGULARISATION,
-        fold_normalisation: Optional[float] = 1.0,
-        fold_norm: Optional[float] = -1.0,
+        fold_normalisation: float | None = 1.0,
+        fold_norm: float | None = -1.0,
         dgz_alignment: str = "warn",
-        mask_fn: Optional[Callable] = None,
+        mask_fn: Callable | None = None,
     ):
         """
         Add fold geometry constraints to the finite difference system.

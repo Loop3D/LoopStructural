@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from collections.abc import Iterable
-from typing import Callable, List, Optional, Union
+from typing import Callable
 
 import numpy as np
 import numpy.typing as npt
@@ -18,7 +18,7 @@ except ImportError:
 # from LoopStructural.interpolators._geological_interpolator import GeologicalInterpolator
 from LoopStructural.geometry import BoundingBox, Surface
 
-surface_list = List[Surface]
+surface_list = list[Surface]
 
 
 class LoopIsosurfacer:
@@ -26,7 +26,7 @@ class LoopIsosurfacer:
         self,
         bounding_box: BoundingBox,
         interpolator=None,
-        callable: Optional[Callable[[npt.ArrayLike], npt.ArrayLike]] = None,
+        callable: Callable[[npt.ArrayLike], npt.ArrayLike] | None = None,
     ):
         """Extract isosurfaces from a geological interpolator or a callable function.
 
@@ -63,10 +63,10 @@ class LoopIsosurfacer:
 
     def fit(
         self,
-        values: Optional[Union[list, int, float]],
-        name: Optional[Union[List[str], str]] = None,
+        values: list | float | None,
+        name: list[str] | str | None = None,
         local=False,
-        colours: Optional[List] = None,
+        colours: list | None = None,
     ) -> surface_list:
         """Extract isosurfaces from the interpolator
 

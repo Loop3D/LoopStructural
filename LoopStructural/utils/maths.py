@@ -1,5 +1,4 @@
 import numbers
-from typing import Tuple
 
 import numpy as np
 
@@ -267,7 +266,7 @@ def rotate(vector: NumericInput, axis: NumericInput, angle: NumericInput) -> np.
     # return vector
 
 
-def get_vectors(normal: NumericInput) -> Tuple[np.ndarray, np.ndarray]:
+def get_vectors(normal: NumericInput) -> tuple[np.ndarray, np.ndarray]:
     """Find strike and dip vectors for a normal vector.
     Makes assumption the strike vector is horizontal component and the dip is vertical.
     Found by calculating strike and and dip angle and then finding the appropriate vectors

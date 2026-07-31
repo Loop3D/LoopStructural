@@ -9,7 +9,7 @@ try:
         RotationAnglePlotter,
         StratigraphicColumnView,
     )
-except ImportError as e:
+except ImportError:
     logger.error("Please install the loopstructuralvisualisation package")
     logger.error("pip install loopstructuralvisualisation")
-    raise e
+    raise

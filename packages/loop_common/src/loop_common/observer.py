@@ -9,6 +9,8 @@ from collections.abc import Callable
 from contextlib import contextmanager
 from typing import Any, Generic, Protocol, TypeVar, runtime_checkable
 
+from typing_extensions import Self
+
 __all__ = ["Disposable", "Observable", "Observer"]
 
 
@@ -63,7 +65,7 @@ class Disposable:
         self._detach()
 
     # Allow use as a context‑manager for temporary subscriptions
-    def __enter__(self) -> Disposable:
+    def __enter__(self) -> Self:
         return self
 
     def __exit__(self, exc_type, exc, tb):

@@ -15,7 +15,7 @@ import logging
 import time
 import uuid
 from contextlib import contextmanager
-from typing import Callable, Optional
+from typing import Callable
 
 __all__ = ["timed", "timed_stage"]
 
@@ -25,7 +25,7 @@ def timed_stage(
     logger: logging.Logger,
     stage: str,
     *,
-    run_id: Optional[str] = None,
+    run_id: str | None = None,
     level: int = logging.INFO,
     **extra,
 ):
@@ -81,9 +81,9 @@ def timed_stage(
 
 
 def timed(
-    stage: Optional[str] = None,
+    stage: str | None = None,
     *,
-    logger: Optional[logging.Logger] = None,
+    logger: logging.Logger | None = None,
     level: int = logging.INFO,
 ):
     """Decorator version of `timed_stage`, timing an entire function call.

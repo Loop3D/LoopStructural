@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from collections.abc import Sequence
 from dataclasses import dataclass
-from typing import Callable, Optional, Tuple, Union
+from typing import Callable, Union
 
 import numpy as np
 
@@ -18,8 +18,8 @@ class DirectionalRegularisation:
 
 @dataclass(frozen=True)
 class RegularisationConfig:
-    isotropic: Optional[float] = None
-    directional: Tuple[DirectionalRegularisation, ...] = ()
+    isotropic: float | None = None
+    directional: tuple[DirectionalRegularisation, ...] = ()
 
 
 def _is_directional_mapping(value) -> bool:
@@ -54,7 +54,7 @@ def _coerce_directional_term(
 def coerce_directional_regularisation(
     value,
     default_name: str = "directional regularisation",
-) -> Tuple[DirectionalRegularisation, ...]:
+) -> tuple[DirectionalRegularisation, ...]:
     if value is None:
         return ()
 

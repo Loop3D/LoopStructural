@@ -5,7 +5,6 @@ from __future__ import annotations
 
 import json
 import pathlib
-from typing import Dict, List, Optional, Union
 
 import numpy as np
 import pandas as pd
@@ -452,20 +451,19 @@ class GeologicalModel:
                     logger.warning(f"Cannot add splay {edge[1]} or {edge[0]} are not in the model")
                     continue
                 splay = False
-                if "angle" in properties:
-                    if float(properties["angle"]) < 30 and (
-                        "dip_dir" not in processor.stratigraphic_column["faults"][edge[0]]
-                        or np.abs(
-                            processor.stratigraphic_column["faults"][edge[0]]["dip_dir"]
-                            - processor.stratigraphic_column["faults"][edge[1]]["dip_dir"]
-                        )
-                        < 90
-                    ):
-                        # splay
-                        region = model[edge[1]].builder.add_splay(model[edge[0]])
+                if "angle" in properties and float(properties["angle"]) < 30 and (
+                    "dip_dir" not in processor.stratigraphic_column["faults"][edge[0]]
+                    or np.abs(
+                        processor.stratigraphic_column["faults"][edge[0]]["dip_dir"]
+                        - processor.stratigraphic_column["faults"][edge[1]]["dip_dir"]
+                    )
+                    < 90
+                ):
+                    # splay
+                    region = model[edge[1]].builder.add_splay(model[edge[0]])
 
-                        model[edge[1]].splay[model[edge[0]].name] = region
-                        splay = True
+                    model[edge[1]].splay[model[edge[0]].name] = region
+                    splay = True
                 if splay is False:
                     positive = None
                     if "downthrow_dir" in processor.stratigraphic_column["faults"][edge[0]]:
@@ -480,7 +478,7 @@ class GeologicalModel:
                         model[edge[0]],
                         positive=positive,
                     )
-        for s in processor.stratigraphic_column.keys():
+        for s in processor.stratigraphic_column:
             if s != "faults":
                 faults = None
                 if processor.fault_stratigraphy is not None:
@@ -694,7 +692,7 @@ class GeologicalModel:
         except pickle.PicklingError:
             logger.error("Error saving file")
 
-    def _add_feature(self, feature, index: Optional[int] = None):
+    def _add_feature(self, feature, index: int | None = None):
         """
         Add a feature to the model stack
 
@@ -796,7 +794,7 @@ class GeologicalModel:
         return self._stratigraphic_column
 
     @stratigraphic_column.setter
-    def stratigraphic_column(self, stratigraphic_column: Union[StratigraphicColumn, Dict]):
+    def stratigraphic_column(self, stratigraphic_column: StratigraphicColumn | dict):
         """Set the stratigraphic column of the model
 
         Parameters
@@ -836,14 +834,14 @@ class GeologicalModel:
         # if the colour for a unit hasn't been specified we can just sample from
         # a colour map e.g. tab20
         logger.info("Adding stratigraphic column to model")
-        DeprecationWarning(
+        raise DeprecationWarning(
             "set_stratigraphic_column is deprecated, use model.stratigraphic_column.add_units instead"
         )
         for i, g in enumerate(stratigraphic_column.keys()):
             if g == 'faults':
                 logger.info('Not adding faults to stratigraphic column')
                 continue
-            for u in stratigraphic_column[g].keys():
+            for u in stratigraphic_column[g]:
                 thickness = 0
                 if "min" in stratigraphic_column[g][u] and "max" in stratigraphic_column[g][u]:
                     min_val = stratigraphic_column[g][u]["min"]
@@ -862,7 +860,7 @@ class GeologicalModel:
                 )
 
             self.stratigraphic_column.add_unconformity(
-                name=''.join([g, 'unconformity']),
+                name=f"{g}unconformity",
             )
             self.stratigraphic_column.group_mapping[f'Group_{i}'] = g
 
@@ -901,8 +899,8 @@ class GeologicalModel:
         self,
         series_surface_name: str,
         *,
-        index: Optional[int] = None,
-        data: Optional[pd.DataFrame] = None,
+        index: int | None = None,
+        data: pd.DataFrame | None = None,
         interpolatortype: str = "FDI",
         nelements: int = LoopStructuralConfig.nelements,
         tol=None,
@@ -931,8 +929,8 @@ class GeologicalModel:
         self,
         series_surface_name: str,
         *,
-        index: Optional[int] = None,
-        data: Optional[pd.DataFrame] = None,
+        index: int | None = None,
+        data: pd.DataFrame | None = None,
         interpolatortype: str = "FDI",
         nelements: int = LoopStructuralConfig.nelements,
         tol=None,
@@ -1012,7 +1010,7 @@ class GeologicalModel:
         self,
         fold_frame_name: str,
         *,
-        index: Optional[int] = None,
+        index: int | None = None,
         data=None,
         interpolatortype="FDI",
         nelements=LoopStructuralConfig.nelements,
@@ -1042,7 +1040,7 @@ class GeologicalModel:
         self,
         fold_frame_name: str,
         *,
-        index: Optional[int] = None,
+        index: int | None = None,
         data=None,
         interpolatortype="FDI",
         nelements=LoopStructuralConfig.nelements,
@@ -1119,7 +1117,7 @@ class GeologicalModel:
         self,
         foliation_name,
         *,
-        index: Optional[int] = None,
+        index: int | None = None,
         data=None,
         interpolatortype="DFI",
         nelements=LoopStructuralConfig.nelements,
@@ -1155,7 +1153,7 @@ class GeologicalModel:
         self,
         foliation_name,
         *,
-        index: Optional[int] = None,
+        index: int | None = None,
         data=None,
         interpolatortype="DFI",
         nelements=LoopStructuralConfig.nelements,
@@ -1245,8 +1243,8 @@ class GeologicalModel:
         self,
         fold_frame_name: str,
         *,
-        index: Optional[int] = None,
-        data: Optional[pd.DataFrame] = None,
+        index: int | None = None,
+        data: pd.DataFrame | None = None,
         interpolatortype="FDI",
         nelements=LoopStructuralConfig.nelements,
         fold_frame=None,
@@ -1275,8 +1273,8 @@ class GeologicalModel:
         self,
         fold_frame_name: str,
         *,
-        index: Optional[int] = None,
-        data: Optional[pd.DataFrame] = None,
+        index: int | None = None,
+        data: pd.DataFrame | None = None,
         interpolatortype="FDI",
         nelements=LoopStructuralConfig.nelements,
         fold_frame=None,
@@ -1621,7 +1619,7 @@ class GeologicalModel:
 
     @public_api(tier="stable")
     def add_unconformity(
-        self, feature: GeologicalFeature, value: float, index: Optional[int] = None
+        self, feature: GeologicalFeature, value: float, index: int | None = None
     ) -> UnconformityFeature:
         """
         Use an existing feature to add an unconformity to the model.
@@ -1664,7 +1662,7 @@ class GeologicalModel:
 
     @public_api(tier="stable")
     def add_onlap_unconformity(
-        self, feature: GeologicalFeature, value: float, index: Optional[int] = None
+        self, feature: GeologicalFeature, value: float, index: int | None = None
     ) -> GeologicalFeature:
         """
         Use an existing feature to add an unconformity to the model.
@@ -1759,7 +1757,7 @@ class GeologicalModel:
         *,
         nelements=LoopStructuralConfig.nelements,
         interpolatortype="FDI",
-        index: Optional[int] = None,
+        index: int | None = None,
         **kwargs,
     ):
         """Create a domain fault and add it to the model.
@@ -1783,7 +1781,7 @@ class GeologicalModel:
         *,
         nelements=LoopStructuralConfig.nelements,
         interpolatortype="FDI",
-        index: Optional[int] = None,
+        index: int | None = None,
         **kwargs,
     ):
         """
@@ -1839,8 +1837,8 @@ class GeologicalModel:
         fault_name: str,
         displacement: float,
         *,
-        index: Optional[int] = None,
-        data: Optional[pd.DataFrame] = None,
+        index: int | None = None,
+        data: pd.DataFrame | None = None,
         interpolatortype="FDI",
         tol=None,
         fault_slip_vector=None,
@@ -1899,8 +1897,8 @@ class GeologicalModel:
         fault_name: str,
         displacement: float,
         *,
-        index: Optional[int] = None,
-        data: Optional[pd.DataFrame] = None,
+        index: int | None = None,
+        data: pd.DataFrame | None = None,
         interpolatortype="FDI",
         tol=None,
         fault_slip_vector=None,
@@ -2388,7 +2386,7 @@ class GeologicalModel:
         return self.stratigraphic_column.get_stratigraphic_ids()
 
     @public_api(tier="stable")
-    def get_fault_surfaces(self, faults: List[str] = None):
+    def get_fault_surfaces(self, faults: list[str] | None = None):
         if faults is None:
             faults = []
         surfaces = []
@@ -2400,7 +2398,7 @@ class GeologicalModel:
         return surfaces
 
     @public_api(tier="stable")
-    def get_stratigraphic_surfaces(self, units: List[str] = None, bottoms: bool = True):
+    def get_stratigraphic_surfaces(self, units: list[str] | None = None, bottoms: bool = True):
         if units is None:
             units = []
         ## TODO change the stratigraphic column to its own class and have methods to get the relevant surfaces
@@ -2475,21 +2473,20 @@ class GeologicalModel:
                 else:
                     s.save(f'{parent}/{name}_{s.name}{extension}')
         if block_model:
-            grid, ids = self.get_block_model()
+            grid, _ids = self.get_block_model()
             if extension == ".geoh5" or extension == '.omf':
                 grid.save(filename)
             else:
                 grid.save(f'{parent}/{name}_block_model{extension}')
-        if stratigraphic_data:
-            if self.stratigraphic_column is not None:
-                for group in self.stratigraphic_column.keys():
-                    if group == "faults":
-                        continue
-                    for data in self.__getitem__(group).get_data():
-                        if extension == ".geoh5" or extension == '.omf':
-                            data.save(filename)
-                        else:
-                            data.save(f'{parent}/{name}_{group}_data{extension}')
+        if stratigraphic_data and self.stratigraphic_column is not None:
+            for group in self.stratigraphic_column:
+                if group == "faults":
+                    continue
+                for data in self.__getitem__(group).get_data():
+                    if extension == ".geoh5" or extension == '.omf':
+                        data.save(filename)
+                    else:
+                        data.save(f'{parent}/{name}_{group}_data{extension}')
         if fault_data:
             for f in self.fault_names():
                 for d in self.__getitem__(f).get_data():

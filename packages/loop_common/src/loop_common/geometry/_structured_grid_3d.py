@@ -1,6 +1,5 @@
 """Pure 3D regular grid geometry: origin/nsteps/step_vector indexing."""
 
-from typing import Tuple
 
 import numpy as np
 
@@ -172,7 +171,7 @@ class StructuredGrid3DGeometry:
     def rotate(self, pos):
         return np.einsum("ijk,ik->ij", self.rotation_xy[None, :, :], pos)
 
-    def position_to_cell_index(self, pos: np.ndarray) -> Tuple[np.ndarray, np.ndarray]:
+    def position_to_cell_index(self, pos: np.ndarray) -> tuple[np.ndarray, np.ndarray]:
         inside = self.inside(pos)
         pos = self.check_position(pos)
         cell_indexes = np.zeros((pos.shape[0], 3), dtype=int)

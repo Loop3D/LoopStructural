@@ -9,8 +9,6 @@ Higher-level fluent APIs should delegate construction to this module.
 """
 from __future__ import annotations
 
-from typing import Optional, Union
-
 import numpy as np
 from loop_common.geometry import BoundingBox
 from loop_common.supports import SupportFactory
@@ -28,7 +26,7 @@ class InterpolatorFactory:
 
     @staticmethod
     def _normalise_interpolator_type(
-        interpolatortype: Union[str, InterpolatorType],
+        interpolatortype: str | InterpolatorType,
     ) -> InterpolatorType:
         if isinstance(interpolatortype, str):
             if interpolatortype in interpolator_string_map:
@@ -40,13 +38,13 @@ class InterpolatorFactory:
 
     @staticmethod
     def create_interpolator(
-        interpolatortype: Optional[Union[str, InterpolatorType]] = None,
-        boundingbox: Optional[BoundingBox] = None,
-        nelements: Optional[int] = None,
-        element_volume: Optional[float] = None,
+        interpolatortype: str | InterpolatorType | None = None,
+        boundingbox: BoundingBox | None = None,
+        nelements: int | None = None,
+        element_volume: float | None = None,
         support=None,
-        buffer: Optional[float] = None,
-        solver: Optional[str] = None,
+        buffer: float | None = None,
+        solver: str | None = None,
     ):
         if interpolatortype is None:
             raise ValueError("No interpolator type specified")
@@ -150,11 +148,11 @@ class InterpolatorFactory:
         interpolatortype: str,
         boundingbox: BoundingBox,
         nelements: int,
-        element_volume: Optional[float] = None,
+        element_volume: float | None = None,
         support=None,
-        value_constraints: Optional[np.ndarray] = None,
-        gradient_norm_constraints: Optional[np.ndarray] = None,
-        gradient_constraints: Optional[np.ndarray] = None,
+        value_constraints: np.ndarray | None = None,
+        gradient_norm_constraints: np.ndarray | None = None,
+        gradient_constraints: np.ndarray | None = None,
     ):
         interpolator = InterpolatorFactory.create_interpolator(
             interpolatortype, boundingbox, nelements, element_volume, support

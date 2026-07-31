@@ -1,7 +1,5 @@
 from __future__ import annotations
 
-from typing import Optional
-
 import numpy as np
 
 from ...modelling.features import BaseFeature, FeatureType
@@ -107,10 +105,10 @@ class AnalyticalGeologicalFeature(BaseFeature):
         v[:, :] = self.vector[None, :]
         return v
 
-    def get_data(self, value_map: Optional[dict] = None):
+    def get_data(self, value_map: dict | None = None):
         return
 
-    def copy(self, name: Optional[str] = None):
+    def copy(self, name: str | None = None):
         if name is None:
             name = self.name
         return AnalyticalGeologicalFeature(

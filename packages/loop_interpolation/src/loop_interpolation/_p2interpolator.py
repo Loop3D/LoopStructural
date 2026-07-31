@@ -4,7 +4,7 @@ Piecewise quadratic interpolator
 from __future__ import annotations
 
 import logging
-from typing import Callable, Optional
+from typing import Callable
 
 import numpy as np
 
@@ -82,7 +82,7 @@ class P2Interpolator(DiscreteInterpolator):
                 wtfunc=self.interpolation_weights.get("steepness_wtfunc", None),
             )
             logger.info(
-                "Using constant gradient regularisation w = %f" % self.interpolation_weights["cgw"]
+                "Using constant gradient regularisation w = {:f}".format(self.interpolation_weights["cgw"])
             )
         self.add_directional_regularisation(regularisation_config.directional)
 
@@ -185,7 +185,7 @@ class P2Interpolator(DiscreteInterpolator):
         self,
         w: float = 0.1,
         maskall: bool = False,
-        wtfunc: Optional[Callable[[np.ndarray], np.ndarray]] = None,
+        wtfunc: Callable[[np.ndarray], np.ndarray] | None = None,
     ):
         """This constraint minimises the second derivative of the gradient
         mimimising the 2nd derivative should prevent high curvature solutions
@@ -226,9 +226,9 @@ class P2Interpolator(DiscreteInterpolator):
     def minimise_edge_jumps(
         self,
         w: float = 0.1,
-        wtfunc: Optional[Callable[[np.ndarray], np.ndarray]] = None,
-        vector_func: Optional[Callable[[np.ndarray], np.ndarray]] = None,
-        quadrature_points: Optional[int] = None,
+        wtfunc: Callable[[np.ndarray], np.ndarray] | None = None,
+        vector_func: Callable[[np.ndarray], np.ndarray] | None = None,
+        quadrature_points: int | None = None,
     ):
         """_summary_
 

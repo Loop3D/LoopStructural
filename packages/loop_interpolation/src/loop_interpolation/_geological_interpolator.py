@@ -7,7 +7,6 @@ from __future__ import annotations
 
 import json
 from abc import ABCMeta, abstractmethod
-from typing import Dict, Optional, Union
 
 import numpy as np
 from loop_common.interfaces.representation import BaseRepresentation
@@ -108,7 +107,7 @@ class GeologicalInterpolator(BaseRepresentation, metaclass=ABCMeta):
         self.dimensions = 3  # default to 3d
         self.support = None
         self.bounding_box = None
-        self.latest_diagnostics_report: Optional[ConstraintDiagnosticsReport] = None
+        self.latest_diagnostics_report: ConstraintDiagnosticsReport | None = None
 
     @abstractmethod
     def set_nelements(self, nelements: int) -> int:
@@ -211,14 +210,14 @@ class GeologicalInterpolator(BaseRepresentation, metaclass=ABCMeta):
             raise LoopTypeError(str(e))
 
     def _coerce_value_constraint(
-        self, points: Union[np.ndarray, ValueConstraint]
+        self, points: np.ndarray | ValueConstraint
     ) -> ValueConstraint:
         if isinstance(points, ValueConstraint):
             return points
         return ValueConstraint.from_array(points, dimensions=self.dimensions)
 
     def _coerce_gradient_constraint(
-        self, points: Union[np.ndarray, GradientConstraint], is_normal: bool = False
+        self, points: np.ndarray | GradientConstraint, is_normal: bool = False
     ) -> GradientConstraint:
         if isinstance(points, GradientConstraint):
             return points
@@ -227,21 +226,21 @@ class GeologicalInterpolator(BaseRepresentation, metaclass=ABCMeta):
         )
 
     def _coerce_interface_constraint(
-        self, points: Union[np.ndarray, InterfaceConstraint]
+        self, points: np.ndarray | InterfaceConstraint
     ) -> InterfaceConstraint:
         if isinstance(points, InterfaceConstraint):
             return points
         return InterfaceConstraint.from_array(points, dimensions=self.dimensions)
 
     def _coerce_inequality_constraint(
-        self, points: Union[np.ndarray, InequalityConstraint]
+        self, points: np.ndarray | InequalityConstraint
     ) -> InequalityConstraint:
         if isinstance(points, InequalityConstraint):
             return points
         return InequalityConstraint.from_array(points, dimensions=self.dimensions)
 
     def _coerce_inequality_pair_constraint(
-        self, points: Union[np.ndarray, InequalityPair]
+        self, points: np.ndarray | InequalityPair
     ) -> InequalityPair:
         if isinstance(points, InequalityPair):
             return points
@@ -301,7 +300,7 @@ class GeologicalInterpolator(BaseRepresentation, metaclass=ABCMeta):
         The specific parameters depend on the interpolator type.
         """
 
-    def set_value_constraints(self, points: Union[np.ndarray, ValueConstraint]):
+    def set_value_constraints(self, points: np.ndarray | ValueConstraint):
         """Set value constraints for the interpolation.
 
         Parameters
@@ -333,7 +332,7 @@ class GeologicalInterpolator(BaseRepresentation, metaclass=ABCMeta):
         except ValidationError as e:
             raise ValidationError(f"Failed to set value constraints: {e}") from e
 
-    def set_gradient_constraints(self, points: Union[np.ndarray, GradientConstraint]):
+    def set_gradient_constraints(self, points: np.ndarray | GradientConstraint):
         """Set gradient constraints for the interpolation.
 
         Parameters
@@ -367,7 +366,7 @@ class GeologicalInterpolator(BaseRepresentation, metaclass=ABCMeta):
         except ValidationError as e:
             raise ValidationError(f"Failed to set gradient constraints: {e}") from e
 
-    def set_normal_constraints(self, points: Union[np.ndarray, GradientConstraint]):
+    def set_normal_constraints(self, points: np.ndarray | GradientConstraint):
         """Set normal constraints for the interpolation.
 
         Parameters
@@ -400,7 +399,7 @@ class GeologicalInterpolator(BaseRepresentation, metaclass=ABCMeta):
         except ValidationError as e:
             raise ValidationError(f"Failed to set normal constraints: {e}") from e
 
-    def set_tangent_constraints(self, points: Union[np.ndarray, GradientConstraint]):
+    def set_tangent_constraints(self, points: np.ndarray | GradientConstraint):
         """Set tangent constraints for the interpolation.
 
         Parameters
@@ -433,7 +432,7 @@ class GeologicalInterpolator(BaseRepresentation, metaclass=ABCMeta):
         except ValidationError as e:
             raise ValidationError(f"Failed to set tangent constraints: {e}") from e
 
-    def set_interface_constraints(self, points: Union[np.ndarray, InterfaceConstraint]):
+    def set_interface_constraints(self, points: np.ndarray | InterfaceConstraint):
         """Set interface constraints for the interpolation.
 
         Parameters
@@ -462,7 +461,7 @@ class GeologicalInterpolator(BaseRepresentation, metaclass=ABCMeta):
         except ValidationError as e:
             raise ValidationError(f"Failed to set interface constraints: {e}") from e
 
-    def set_value_inequality_constraints(self, points: Union[np.ndarray, InequalityConstraint]):
+    def set_value_inequality_constraints(self, points: np.ndarray | InequalityConstraint):
         """Set inequality value constraints for the interpolation.
 
         Parameters
@@ -493,7 +492,7 @@ class GeologicalInterpolator(BaseRepresentation, metaclass=ABCMeta):
         except ValidationError as e:
             raise ValidationError(f"Failed to set inequality value constraints: {e}") from e
 
-    def set_inequality_pairs_constraints(self, points: Union[np.ndarray, InequalityPair]):
+    def set_inequality_pairs_constraints(self, points: np.ndarray | InequalityPair):
         """Set inequality pairs constraints for the interpolation.
 
         Parameters
@@ -585,7 +584,7 @@ class GeologicalInterpolator(BaseRepresentation, metaclass=ABCMeta):
     def get_inequality_pairs_constraints(self):
         return self.data["inequality_pairs"]
 
-    def _outside_model_points_from_data(self) -> Dict[str, int]:
+    def _outside_model_points_from_data(self) -> dict[str, int]:
         if self.support is None or not hasattr(self.support, "inside"):
             return {}
 
@@ -712,7 +711,7 @@ class GeologicalInterpolator(BaseRepresentation, metaclass=ABCMeta):
         raise NotImplementedError("setup_interpolator must be implemented by subclasses")
 
     @abstractmethod
-    def solve_system(self, solver, solver_kwargs: Optional[dict] = None) -> bool:
+    def solve_system(self, solver, solver_kwargs: dict | None = None) -> bool:
         """
         Solves the interpolation equations
         """
@@ -793,7 +792,7 @@ class GeologicalInterpolator(BaseRepresentation, metaclass=ABCMeta):
         w: float = 1.0,
         upper_bound=np.finfo(float).eps,
         lower_bound=-np.inf,
-        pairs: Optional[list] = None,
+        pairs: list | None = None,
     ):
         pass
 
@@ -837,7 +836,7 @@ class GeologicalInterpolator(BaseRepresentation, metaclass=ABCMeta):
     def from_json(cls, json_str: str) -> GeologicalInterpolator:
         return cls.from_dict(json.loads(json_str))
 
-    def to_yaml(self, file_path: Optional[str] = None) -> None | str:
+    def to_yaml(self, file_path: str | None = None) -> None | str:
         try:
             import yaml
         except ImportError as exc:

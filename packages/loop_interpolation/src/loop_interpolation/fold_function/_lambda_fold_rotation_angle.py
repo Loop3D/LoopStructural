@@ -1,7 +1,7 @@
 """Lambda (arbitrary callable) fold rotation-angle profile."""
 from __future__ import annotations
 
-from typing import Callable, Optional
+from typing import Callable
 
 import numpy as np
 import numpy.typing as npt
@@ -19,8 +19,8 @@ class LambdaFoldRotationAngleProfile(BaseFoldRotationAngleProfile):
     def __init__(
         self,
         fn: Callable[[np.ndarray], np.ndarray],
-        rotation_angle: Optional[npt.NDArray[np.float64]] = None,
-        fold_frame_coordinate: Optional[npt.NDArray[np.float64]] = None,
+        rotation_angle: npt.NDArray[np.float64] | None = None,
+        fold_frame_coordinate: npt.NDArray[np.float64] | None = None,
     ):
         super().__init__(rotation_angle, fold_frame_coordinate)
         self._fn = fn
@@ -43,9 +43,11 @@ class LambdaFoldRotationAngleProfile(BaseFoldRotationAngleProfile):
 
     def initial_guess(
         self,
-        wavelength: Optional[float] = None,
+        wavelength: float | None = None,
         calculate_wavelength: bool = True,
-        svariogram_parameters: dict = {},
+        svariogram_parameters: dict | None = None,
         reset: bool = False,
     ) -> np.ndarray:
+        if svariogram_parameters is None:
+            svariogram_parameters = {}
         return np.array([])

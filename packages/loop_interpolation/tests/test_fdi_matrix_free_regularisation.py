@@ -109,7 +109,7 @@ def test_interior_family_matvec_matches_explicit(name):
 
 @pytest.mark.parametrize("name", sorted(INTERIOR_OPERATORS))
 def test_interior_family_rmatvec_matches_explicit(name):
-    matrix, w, dof = _explicit_family_matrix(name)
+    matrix, w, _dof = _explicit_family_matrix(name)
     op, _ = _matrix_free_family_operator(name)
 
     weighted = matrix.multiply(w[:, None]).tocsr()
@@ -477,7 +477,7 @@ def _fused_operator_interior_only(nsteps, weights=WEIGHTS_DEFAULT):
 )
 def test_fused_cg_regularisation_operator_matches_explicit_gram_everywhere(nsteps):
     R, dof = _explicit_interior_gram(nsteps)
-    op, interp = _fused_operator_interior_only(nsteps)
+    op, _interp = _fused_operator_interior_only(nsteps)
     assert op is not None
     assert op.shape == (dof, dof)
 

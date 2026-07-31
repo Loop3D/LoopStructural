@@ -1,5 +1,4 @@
 from abc import abstractmethod
-from typing import Tuple
 
 import numpy as np
 
@@ -243,7 +242,7 @@ class BaseStructuredSupport(BaseSupport):
         """ """
         return np.einsum("ijk,ik->ij", self.rotation_xy[None, :, :], pos)
 
-    def position_to_cell_index(self, pos: np.ndarray) -> Tuple[np.ndarray, np.ndarray]:
+    def position_to_cell_index(self, pos: np.ndarray) -> tuple[np.ndarray, np.ndarray]:
         """Get the indexes (i,j,k) of a cell
         that a point is inside
 
@@ -277,7 +276,7 @@ class BaseStructuredSupport(BaseSupport):
         return cell_indexes, inside
 
     def position_to_cell_global_index(self, pos):
-        ix, iy, iz = self.position_to_cell_index(pos)
+        _ix, _iy, _iz = self.position_to_cell_index(pos)
 
     def inside(self, pos):
         # check whether point is inside box

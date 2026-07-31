@@ -4,7 +4,6 @@ Cartesian grid for fold interpolator
 """
 
 import logging
-from typing import Dict, Tuple
 
 import numpy as np
 
@@ -93,12 +92,12 @@ class StructuredGrid2D(BaseSupport):
         return self.global_node_indices(self.cell_corner_indexes(cell_indexes))
 
     def print_geometry(self):
-        print("Origin: %f %f %f" % (self.origin[0], self.origin[1], self.origin[2]))
+        print(f"Origin: {self.origin[0]:f} {self.origin[1]:f} {self.origin[2]:f}")
         print(
-            "Cell size: %f %f %f" % (self.step_vector[0], self.step_vector[1], self.step_vector[2])
+            f"Cell size: {self.step_vector[0]:f} {self.step_vector[1]:f} {self.step_vector[2]:f}"
         )
         max = self.origin + self.nsteps_cells * self.step_vector
-        print("Max extent: %f %f %f" % (max[0], max[1], max[2]))
+        print(f"Max extent: {max[0]:f} {max[1]:f} {max[2]:f}")
 
     def cell_centres(self, global_index: np.ndarray) -> np.ndarray:
         """[summary]
@@ -130,7 +129,7 @@ class StructuredGrid2D(BaseSupport):
         )
         return cell_centres
 
-    def position_to_cell_index(self, pos: np.ndarray) -> Tuple[np.ndarray, np.ndarray]:
+    def position_to_cell_index(self, pos: np.ndarray) -> tuple[np.ndarray, np.ndarray]:
         """[summary]
 
         [extended_summary]
@@ -431,7 +430,7 @@ class StructuredGrid2D(BaseSupport):
 
     def get_element_gradient_for_location(
         self, pos
-    ) -> Tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray]:
+    ) -> tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray]:
         """
         Calculates the gradient matrix at location pos
         :param pos: numpy array of location Nx3
@@ -458,7 +457,7 @@ class StructuredGrid2D(BaseSupport):
 
     def get_element_for_location(
         self, pos: np.ndarray
-    ) -> Tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray]:
+    ) -> tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray]:
 
         vertices, inside = self.position_to_cell_vertices(pos)
         vertices = np.array(vertices)
@@ -517,7 +516,7 @@ class StructuredGrid2D(BaseSupport):
             grid.cell_data[key] = value
         return grid
 
-    def get_operators(self, weights: Dict[str, float]) -> Dict[str, Tuple[np.ndarray, float]]:
+    def get_operators(self, weights: dict[str, float]) -> dict[str, tuple[np.ndarray, float]]:
         """Get
 
         Parameters

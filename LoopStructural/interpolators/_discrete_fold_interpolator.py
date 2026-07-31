@@ -3,7 +3,7 @@ Piecewise linear interpolator using folds
 """
 from __future__ import annotations
 
-from typing import Callable, Optional
+from typing import Callable
 
 import numpy as np
 
@@ -17,7 +17,7 @@ logger = getLogger(__name__)
 class DiscreteFoldInterpolator(PiecewiseLinearInterpolator):
     """ """
 
-    def __init__(self, support, fold: Optional[FoldEvent] = None):
+    def __init__(self, support, fold: FoldEvent | None = None):
         """
         A piecewise linear interpolator that can also use fold constraints defined in Laurent et al., 2016
 
@@ -64,7 +64,7 @@ class DiscreteFoldInterpolator(PiecewiseLinearInterpolator):
         fold_normalisation=1.0,
         fold_norm=1.0,
         step=2,
-        mask_fn: Optional[Callable] = None,
+        mask_fn: Callable | None = None,
     ):
         """
 

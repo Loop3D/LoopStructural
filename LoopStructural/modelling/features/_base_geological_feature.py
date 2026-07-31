@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 from abc import ABCMeta, abstractmethod
-from typing import List, Optional, Union
 
 import numpy as np
 
@@ -47,8 +46,8 @@ class BaseFeature(metaclass=ABCMeta):
         self,
         name: str,
         model=None,
-        faults: Optional[list] = None,
-        regions: Optional[list] = None,
+        faults: list | None = None,
+        regions: list | None = None,
         builder=None,
     ):
         """Base geological feature, this is a virtual class and should not be
@@ -317,10 +316,10 @@ class BaseFeature(metaclass=ABCMeta):
 
     def surfaces(
         self,
-        value: Optional[Union[float, int, List[Union[float, int]]]] = None,
+        value: float | list[float | int] | None = None,
         bounding_box=None,
-        name: Optional[Union[List[str], str]] = None,
-        colours: Optional[Union[str, np.ndarray]] = None,
+        name: list[str] | str | None = None,
+        colours: str | np.ndarray | None = None,
     ) -> surface_list:
         """Find the surfaces of the geological feature at a given value
 
@@ -449,7 +448,7 @@ class BaseFeature(metaclass=ABCMeta):
         return VectorPoints(points, value, self.name)
 
     @abstractmethod
-    def get_data(self, value_map: Optional[dict] = None):
+    def get_data(self, value_map: dict | None = None):
         """Get the data for the feature
 
         Parameters
@@ -465,7 +464,7 @@ class BaseFeature(metaclass=ABCMeta):
         raise NotImplementedError
 
     @abstractmethod
-    def copy(self, name: Optional[str] = None):
+    def copy(self, name: str | None = None):
         """Copy the feature
 
         Returns

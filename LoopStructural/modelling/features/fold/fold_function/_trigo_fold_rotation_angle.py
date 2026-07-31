@@ -1,7 +1,5 @@
 from __future__ import annotations
 
-from typing import List, Optional, Union
-
 import numpy as np
 import numpy.typing as npt
 
@@ -14,8 +12,8 @@ logger = getLogger(__name__)
 class TrigoFoldRotationAngleProfile(BaseFoldRotationAngleProfile):
     def __init__(
         self,
-        rotation_angle: Optional[npt.NDArray[np.float64]] = None,
-        fold_frame_coordinate: Optional[npt.NDArray[np.float64]] = None,
+        rotation_angle: npt.NDArray[np.float64] | None = None,
+        fold_frame_coordinate: npt.NDArray[np.float64] | None = None,
         origin: float = 0,
         wavelength: float = 0,
         inflectionpointangle_min: float = 0,
@@ -169,7 +167,7 @@ class TrigoFoldRotationAngleProfile(BaseFoldRotationAngleProfile):
     ) -> np.ndarray:
         return super().calculate_misfit(rotation_angle, fold_frame_coordinate)
 
-    def update_params(self, params: Union[List, npt.NDArray[np.float64]]) -> None:
+    def update_params(self, params: list | npt.NDArray[np.float64]) -> None:
         self.origin = params[0]
         self.wavelength = params[1]
         self.inflectionpointangle_min = params[2]
@@ -177,9 +175,9 @@ class TrigoFoldRotationAngleProfile(BaseFoldRotationAngleProfile):
 
     def initial_guess(
         self,
-        wavelength: Optional[float] = None,
+        wavelength: float | None = None,
         calculate_wavelength: bool = True,
-        svariogram_parameters: dict = None,
+        svariogram_parameters: dict | None = None,
         reset: bool = True,
     ):
         if svariogram_parameters is None:

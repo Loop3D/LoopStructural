@@ -5,8 +5,6 @@ models such as foliations, fault planes, and fold rotation angles.
 """
 from __future__ import annotations
 
-from typing import List, Optional, Union
-
 import numpy as np
 
 from LoopStructural.utils.maths import gradient_from_tetrahedron, regular_tetraherdron_for_points
@@ -56,8 +54,8 @@ class GeologicalFeature(BaseFeature):
         self,
         name: str,
         builder,
-        regions: list = None,
-        faults: list = None,
+        regions: list | None = None,
+        faults: list | None = None,
         interpolator=None,
         model=None,
     ):
@@ -300,7 +298,7 @@ class GeologicalFeature(BaseFeature):
         )
         return feature
 
-    def get_data(self, value_map: Optional[dict] = None) -> List[Union[ValuePoints, VectorPoints]]:
+    def get_data(self, value_map: dict | None = None) -> list[ValuePoints | VectorPoints]:
         """Return the data associated with this geological feature
 
         Parameters

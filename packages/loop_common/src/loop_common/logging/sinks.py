@@ -21,7 +21,7 @@ import threading
 from abc import ABC, abstractmethod
 from datetime import datetime
 from pathlib import Path
-from typing import Callable, Dict, List, Optional, Union
+from typing import Callable
 
 LogCallable = Callable[[logging.LogRecord], None]
 
@@ -80,7 +80,7 @@ class StreamSink(LogSink):
         self,
         stream=None,
         *,
-        formatter: Optional[logging.Formatter] = None,
+        formatter: logging.Formatter | None = None,
         level: int = logging.WARNING,
     ):
         self.level = level
@@ -100,10 +100,10 @@ class FileSink(LogSink):
 
     def __init__(
         self,
-        path: Union[str, Path],
+        path: str | Path,
         *,
         overwrite: bool = False,
-        formatter: Optional[logging.Formatter] = None,
+        formatter: logging.Formatter | None = None,
         level: int = logging.INFO,
     ):
         self.path = Path(path)
@@ -147,7 +147,7 @@ class SqliteSink(LogSink):
     )
 
     def __init__(
-        self, path: Union[str, Path], *, table: str = "log_records", level: int = logging.NOTSET
+        self, path: str | Path, *, table: str = "log_records", level: int = logging.NOTSET
     ):
         self.path = Path(path)
         self.level = level
@@ -191,12 +191,12 @@ class SqliteSink(LogSink):
     def query(
         self,
         *,
-        stage: Optional[str] = None,
-        run_id: Optional[str] = None,
-        logger_name: Optional[str] = None,
-        level: Optional[str] = None,
-        limit: Optional[int] = None,
-    ) -> List[Dict]:
+        stage: str | None = None,
+        run_id: str | None = None,
+        logger_name: str | None = None,
+        level: str | None = None,
+        limit: int | None = None,
+    ) -> list[dict]:
         """Query recorded log rows, optionally filtered. Returns dict rows, oldest first."""
         clauses, params = [], []
         for column, value in (

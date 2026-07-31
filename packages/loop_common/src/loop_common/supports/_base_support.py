@@ -1,5 +1,4 @@
 from abc import ABCMeta, abstractmethod
-from typing import Tuple
 
 import numpy as np
 
@@ -48,7 +47,7 @@ class BaseSupport(metaclass=ABCMeta):
     @abstractmethod
     def get_element_for_location(
         self, pos: np.ndarray
-    ) -> Tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray]:
+    ) -> tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray]:
         """
         Get the element for a location
         """
@@ -56,7 +55,7 @@ class BaseSupport(metaclass=ABCMeta):
     @abstractmethod
     def get_element_gradient_for_location(
         self, pos: np.ndarray
-    ) -> Tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray]:
+    ) -> tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray]:
         pass
 
     @property

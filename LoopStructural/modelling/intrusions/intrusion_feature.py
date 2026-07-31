@@ -1,7 +1,5 @@
 from __future__ import annotations
 
-from typing import Optional
-
 import numpy as np
 import pandas as pd
 from scipy.interpolate import Rbf
@@ -275,7 +273,7 @@ class IntrusionFeature(BaseFeature):
             c2_minside_threshold = thresholds[0]
             c2_maxside_threshold = thresholds[1]
 
-        thresholds, residuals, conceptual = self.interpolate_vertical_thresholds(
+        thresholds, _residuals, _conceptual = self.interpolate_vertical_thresholds(
             intrusion_coord1_pts, intrusion_coord2_pts
         )
         c0_minside_threshold = thresholds[1]
@@ -373,7 +371,7 @@ class IntrusionFeature(BaseFeature):
             c2_minside_threshold = thresholds[0]
             c2_maxside_threshold = thresholds[1]
 
-        thresholds, residuals, conceptual = self.interpolate_vertical_thresholds(
+        thresholds, _residuals, _conceptual = self.interpolate_vertical_thresholds(
             intrusion_coord1_pts, intrusion_coord2_pts
         )
         c0_minside_threshold = thresholds[1]
@@ -409,7 +407,7 @@ class IntrusionFeature(BaseFeature):
 
         return intrusion_sf
 
-    def get_data(self, value_map: Optional[dict] = None):
+    def get_data(self, value_map: dict | None = None):
         pass
 
     def copy(self):

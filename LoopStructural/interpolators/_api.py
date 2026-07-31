@@ -1,7 +1,5 @@
 from __future__ import annotations
 
-from typing import Optional
-
 import numpy as np
 
 from LoopStructural.geometry import BoundingBox
@@ -55,11 +53,11 @@ class LoopInterpolator:
 
     def fit(
         self,
-        values: Optional[np.ndarray] = None,
-        tangent_vectors: Optional[np.ndarray] = None,
-        normal_vectors: Optional[np.ndarray] = None,
-        inequality_value_constraints: Optional[np.ndarray] = None,
-        inequality_pairs_constraints: Optional[np.ndarray] = None,
+        values: np.ndarray | None = None,
+        tangent_vectors: np.ndarray | None = None,
+        normal_vectors: np.ndarray | None = None,
+        inequality_value_constraints: np.ndarray | None = None,
+        inequality_pairs_constraints: np.ndarray | None = None,
     ):
         """Set the constraints for the interpolator and run the interpolation
 
@@ -136,11 +134,11 @@ class LoopInterpolator:
 
     def fit_and_evaluate_value(
         self,
-        values: Optional[np.ndarray] = None,
-        tangent_vectors: Optional[np.ndarray] = None,
-        normal_vectors: Optional[np.ndarray] = None,
-        inequality_value_constraints: Optional[np.ndarray] = None,
-        inequality_pairs_constraints: Optional[np.ndarray] = None,
+        values: np.ndarray | None = None,
+        tangent_vectors: np.ndarray | None = None,
+        normal_vectors: np.ndarray | None = None,
+        inequality_value_constraints: np.ndarray | None = None,
+        inequality_pairs_constraints: np.ndarray | None = None,
     ):
         # get locations
         self.fit(
@@ -155,11 +153,11 @@ class LoopInterpolator:
 
     def fit_and_evaluate_gradient(
         self,
-        values: Optional[np.ndarray] = None,
-        tangent_vectors: Optional[np.ndarray] = None,
-        normal_vectors: Optional[np.ndarray] = None,
-        inequality_value_constraints: Optional[np.ndarray] = None,
-        inequality_pairs_constraints: Optional[np.ndarray] = None,
+        values: np.ndarray | None = None,
+        tangent_vectors: np.ndarray | None = None,
+        normal_vectors: np.ndarray | None = None,
+        inequality_value_constraints: np.ndarray | None = None,
+        inequality_pairs_constraints: np.ndarray | None = None,
     ):
         self.fit(
             values=values,
@@ -173,11 +171,11 @@ class LoopInterpolator:
 
     def fit_and_evaluate_value_and_gradient(
         self,
-        values: Optional[np.ndarray] = None,
-        tangent_vectors: Optional[np.ndarray] = None,
-        normal_vectors: Optional[np.ndarray] = None,
-        inequality_value_constraints: Optional[np.ndarray] = None,
-        inequality_pairs_constraints: Optional[np.ndarray] = None,
+        values: np.ndarray | None = None,
+        tangent_vectors: np.ndarray | None = None,
+        normal_vectors: np.ndarray | None = None,
+        inequality_value_constraints: np.ndarray | None = None,
+        inequality_pairs_constraints: np.ndarray | None = None,
     ):
         self.fit(
             values=values,
@@ -211,7 +209,7 @@ class LoopInterpolator:
             if ax is None:
                 import matplotlib.pyplot as plt
 
-                fig, ax = plt.subplots()
+                _fig, ax = plt.subplots()
             val = self.interpolator.c
             val = np.rot90(val.reshape(self.interpolator.support.nsteps, order='F'), 3)
             ax.imshow(

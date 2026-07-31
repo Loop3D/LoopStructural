@@ -8,11 +8,11 @@ and fail CI if it drifts without a matching ``COMPAT.md`` entry.
 
 import functools
 import inspect
-from typing import Callable, Dict, Literal
+from typing import Callable, Literal
 
 Tier = Literal["stable", "provisional"]
 
-_REGISTRY: Dict[str, Dict[str, str]] = {}
+_REGISTRY: dict[str, dict[str, str]] = {}
 
 
 def public_api(tier: Tier = "stable") -> Callable:
@@ -47,11 +47,11 @@ def register_external_stable(qualname: str, obj: Callable, tier: Tier = "stable"
     }
 
 
-def get_registry() -> Dict[str, Dict[str, str]]:
+def get_registry() -> dict[str, dict[str, str]]:
     return dict(_REGISTRY)
 
 
-def get_stable_surface() -> Dict[str, str]:
+def get_stable_surface() -> dict[str, str]:
     return {
         name: entry["signature"]
         for name, entry in _REGISTRY.items()

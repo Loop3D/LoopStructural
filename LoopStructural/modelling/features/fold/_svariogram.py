@@ -1,7 +1,5 @@
 from __future__ import annotations
 
-from typing import List, Optional, Tuple
-
 import numpy as np
 
 from ....utils import getLogger
@@ -9,7 +7,7 @@ from ....utils import getLogger
 logger = getLogger(__name__)
 
 
-def find_peaks_and_troughs(x: np.ndarray, y: np.ndarray) -> Tuple[List, List]:
+def find_peaks_and_troughs(x: np.ndarray, y: np.ndarray) -> tuple[list, list]:
     """
 
     Parameters
@@ -65,7 +63,7 @@ class SVariogram:
         self.variogram = None
         self.wavelength_guesses = []
 
-    def initialise_lags(self, step: Optional[float] = None, nsteps: Optional[int] = None):
+    def initialise_lags(self, step: float | None = None, nsteps: int | None = None):
         """
         Initialise the lags for the s-variogram
 
@@ -113,9 +111,9 @@ class SVariogram:
 
     def calc_semivariogram(
         self,
-        step: Optional[float] = None,
-        nsteps: Optional[int] = None,
-        lags: Optional[np.ndarray] = None,
+        step: float | None = None,
+        nsteps: int | None = None,
+        lags: np.ndarray | None = None,
     ):
         """
         Calculate a semi-variogram for the x and y data for this object.
@@ -161,10 +159,10 @@ class SVariogram:
 
     def find_wavelengths(
         self,
-        step: Optional[float] = None,
-        nsteps: Optional[int] = None,
-        lags: Optional[np.ndarray] = None,
-    ) -> List:
+        step: float | None = None,
+        nsteps: int | None = None,
+        lags: np.ndarray | None = None,
+    ) -> list:
         """
         Picks the wavelengths of the fold by finding the maximum and
         minimums of the s-variogram
@@ -197,23 +195,19 @@ class SVariogram:
         wl1 = 0.0
         wl1py = 0.0
         for i in range(len(px)):
-            if i > 0 and i < len(px) - 1:
-                if py[i] > 10:
-
-                    if py[i - 1] < py[i] * 0.7:
-                        if py[i + 1] < py[i] * 0.7:
-                            wl1 = px[i]
-                            if wl1 > 0.0:
-                                wl1py = py[i]
-                                break
+            if i > 0 and i < len(px) - 1 and py[i] > 10 and py[i - 1] < py[i] * 0.7:
+                if py[i + 1] < py[i] * 0.7:
+                    wl1 = px[i]
+                    if wl1 > 0.0:
+                        wl1py = py[i]
+                        break
         wl2 = 0.0
         for i in range(len(px2)):
-            if i > 0 and i < len(px2) - 1:
-                if py2[i - 1] < py2[i] * 0.90:
-                    if py2[i + 1] < py2[i] * 0.90:
-                        wl2 = px2[i]
-                        if wl2 > 0.0 and wl2 > wl1 * 2 and wl1py < py2[i]:
-                            break
+            if i > 0 and i < len(px2) - 1 and py2[i - 1] < py2[i] * 0.90:
+                if py2[i + 1] < py2[i] * 0.90:
+                    wl2 = px2[i]
+                    if wl2 > 0.0 and wl2 > wl1 * 2 and wl1py < py2[i]:
+                        break
         if wl1 == 0.0 and wl2 == 0.0:
             logger.warning(
                 'Could not automatically guess the wavelength, using 2x the range of the data'

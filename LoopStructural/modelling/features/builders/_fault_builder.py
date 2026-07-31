@@ -1,7 +1,5 @@
 from __future__ import annotations
 
-from typing import Union
-
 import numpy as np
 import pandas as pd
 
@@ -20,9 +18,9 @@ class FaultBuilder(StructuralFrameBuilder):
     @public_api(tier="stable")
     def __init__(
         self,
-        interpolatortype: Union[str, list],
+        interpolatortype: str | list,
         bounding_box: BoundingBox,
-        nelements: Union[int, list] = 1000,
+        nelements: int | list = 1000,
         model=None,
         fault_bounding_box_buffer=0.2,
         **kwargs,

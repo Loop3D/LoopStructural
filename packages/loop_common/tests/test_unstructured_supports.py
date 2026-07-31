@@ -48,7 +48,7 @@ def test_get_elements():
     nodes, elements, neighbours = _load_mesh()
     mesh = UnStructuredTetMesh(nodes, elements, neighbours)
     points = rng.random((100, 3))
-    verts, c, tetra, inside = mesh.get_element_for_location(points)
+    _verts, _c, tetra, inside = mesh.get_element_for_location(points)
 
     _, tetra_idx = _brute_force_tetra(nodes, elements, points)
 
@@ -72,7 +72,7 @@ def test_get_elements_outside_bounds():
     points = np.vstack([inside_pts, outside_pts])
     local_rng.shuffle(points)
 
-    verts, c, tetra, inside = mesh.get_element_for_location(points)
+    _verts, c, tetra, inside = mesh.get_element_for_location(points)
     brute_inside, brute_tetra = _brute_force_tetra(nodes, elements, points)
 
     assert np.array_equal(inside, brute_inside)
@@ -95,7 +95,7 @@ def test_get_elements_chunk_boundary():
     points = np.vstack([inside_pts, outside_pts])
     local_rng.shuffle(points)
 
-    verts, c, tetra, inside = mesh.get_element_for_location(points)
+    _verts, _c, tetra, inside = mesh.get_element_for_location(points)
     brute_inside, brute_tetra = _brute_force_tetra(nodes, elements, points)
 
     assert np.array_equal(inside, brute_inside)
@@ -120,7 +120,7 @@ def test_get_elements_small_mesh_real_world_scale():
     assert mesh.n_elements < 2000
 
     points = small_nodes[small_elements[:, :4]].mean(axis=1)  # element barycentres
-    verts, c, tetra, inside = mesh.get_element_for_location(points)
+    _verts, c, _tetra, inside = mesh.get_element_for_location(points)
 
     assert np.all(inside)
     assert np.allclose(c.sum(axis=1), 1.0)

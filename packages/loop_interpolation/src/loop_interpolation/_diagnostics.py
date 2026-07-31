@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from typing import Dict, Optional
 
 
 @dataclass(frozen=True)
@@ -9,10 +8,10 @@ class ConstraintFamilyDiagnostics:
     name: str
     active: bool
     row_count: int
-    dropped_rows: Optional[int]
-    effective_weight_mean: Optional[float]
-    effective_weight_min: Optional[float]
-    effective_weight_max: Optional[float]
+    dropped_rows: int | None
+    effective_weight_mean: float | None
+    effective_weight_min: float | None
+    effective_weight_max: float | None
     source_point_count: int = 0
     outside_model_point_count: int = 0
 
@@ -28,16 +27,16 @@ class RegionCoverageDiagnostics:
 @dataclass(frozen=True)
 class ConstraintDiagnosticsReport:
     interpolator_type: str
-    families: Dict[str, ConstraintFamilyDiagnostics] = field(default_factory=dict)
-    region_coverage: Optional[RegionCoverageDiagnostics] = None
-    outside_model_points: Dict[str, int] = field(default_factory=dict)
+    families: dict[str, ConstraintFamilyDiagnostics] = field(default_factory=dict)
+    region_coverage: RegionCoverageDiagnostics | None = None
+    outside_model_points: dict[str, int] = field(default_factory=dict)
 
     @property
     def total_rows(self) -> int:
         return int(sum(f.row_count for f in self.families.values()))
 
     @property
-    def active_families(self) -> Dict[str, ConstraintFamilyDiagnostics]:
+    def active_families(self) -> dict[str, ConstraintFamilyDiagnostics]:
         return {k: v for k, v in self.families.items() if v.active}
 
     def to_dict(self) -> dict:

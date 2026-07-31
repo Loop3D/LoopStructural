@@ -2,7 +2,6 @@ from __future__ import annotations
 
 import io
 from dataclasses import dataclass, field
-from typing import Optional, Union
 
 import numpy as np
 import pyvista as pv
@@ -16,29 +15,27 @@ logger = getLogger(__name__)
 class Surface:
     vertices: np.ndarray = field(default_factory=lambda: np.array([[0, 0, 0]]))
     triangles: np.ndarray = field(default_factory=lambda: np.array([[0, 0, 0]]))
-    colour: Optional[Union[str, np.ndarray]] = field(default_factory=lambda: None)
-    normals: Optional[np.ndarray] = None
+    colour: str | np.ndarray | None = field(default_factory=lambda: None)
+    normals: np.ndarray | None = None
     name: str = "surface"
-    values: Optional[np.ndarray] = None
-    properties: Optional[dict] = None
-    cell_properties: Optional[dict] = None
+    values: np.ndarray | None = None
+    properties: dict | None = None
+    cell_properties: dict | None = None
 
     def __post_init__(self):
         if self.vertices.ndim != 2 or self.vertices.shape[1] != 3:
             raise ValueError("vertices must be a Nx3 numpy array")
         if self.triangles.ndim != 2 or self.triangles.shape[1] != 3:
             raise ValueError("triangles must be a Mx3 numpy array")
-        if self.normals is not None:
-            if self.normals.shape[1] != 3 or (
-                self.normals.shape[0] != self.vertices.shape[0]
-                and self.normals.shape[0] != self.triangles.shape[0]
-            ):
-                raise ValueError(
-                    "normals must be a Nx3 numpy array where N is the number of vertices or triangles"
-                )
-        if self.values is not None:
-            if self.values.shape[0] != self.vertices.shape[0]:
-                raise ValueError("values must be a N numpy array where N is the number of vertices")
+        if self.normals is not None and (self.normals.shape[1] != 3 or (
+            self.normals.shape[0] != self.vertices.shape[0]
+            and self.normals.shape[0] != self.triangles.shape[0]
+        )):
+            raise ValueError(
+                "normals must be a Nx3 numpy array where N is the number of vertices or triangles"
+            )
+        if self.values is not None and self.values.shape[0] != self.vertices.shape[0]:
+            raise ValueError("values must be a N numpy array where N is the number of vertices")
         if self.properties is not None:
             for k, v in self.properties.items():
                 if len(v) != self.vertices.shape[0]:
@@ -211,7 +208,7 @@ class Surface:
         )
 
     @classmethod
-    def from_vtk(cls, vtk_surface: Union[pv.PolyData, str]):
+    def from_vtk(cls, vtk_surface: pv.PolyData | str):
         if isinstance(vtk_surface, str):
             import pyvista as pv
 

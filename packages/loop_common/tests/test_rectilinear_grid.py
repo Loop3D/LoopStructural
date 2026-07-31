@@ -225,7 +225,7 @@ def test_cell_centres_x_values():
     z = np.array([0.0, 1.0])
     grid = RectilinearGrid(x, y, z)
     centres = grid.cell_centres(np.arange(grid.n_elements))
-    expected_cx = np.tile([0.5, 2.0, 4.5], grid.n_elements // 3)
+    np.tile([0.5, 2.0, 4.5], grid.n_elements // 3)
     assert np.allclose(np.sort(np.unique(centres[:, 0])), [0.5, 2.0, 4.5])
 
 

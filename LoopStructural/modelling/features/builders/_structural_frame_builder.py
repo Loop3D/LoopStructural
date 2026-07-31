@@ -5,7 +5,6 @@ from __future__ import annotations
 
 import copy
 import warnings
-from typing import Union
 
 import numpy as np
 
@@ -27,9 +26,9 @@ class StructuralFrameBuilder(BaseBuilder):
     @public_api(tier="stable")
     def __init__(
         self,
-        interpolatortype: Union[str, list],
+        interpolatortype: str | list,
         bounding_box: BoundingBox,
-        nelements: Union[int, list] = 1000,
+        nelements: int | list = 1000,
         frame=StructuralFrame,
         model=None,
         **kwargs,

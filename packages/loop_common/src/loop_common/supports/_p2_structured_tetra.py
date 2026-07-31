@@ -237,7 +237,7 @@ class P2TetMesh(BaseStructuredSupport):
     def evaluate_shape(self, locations: np.ndarray):
         """Evaluate quadratic tetrahedral shape functions at locations."""
         locations = np.array(locations)
-        verts, c, elements, inside = self.get_element_for_location(locations)
+        _verts, c, elements, inside = self.get_element_for_location(locations)
         N = np.zeros((c.shape[0], 10))
 
         for i in range(c.shape[1]):
@@ -256,7 +256,7 @@ class P2TetMesh(BaseStructuredSupport):
         """Evaluate quadratic tetrahedral shape derivatives at locations."""
         locations = np.array(locations)
         if elements is None:
-            verts, c, elements, inside = self.get_element_for_location(locations)
+            verts, c, elements, _inside = self.get_element_for_location(locations)
         else:
             M = np.ones((elements.shape[0], 4, 4))
             M[:, :, 1:] = self.nodes[self.elements[elements], :][:, :4, :]
@@ -567,7 +567,7 @@ class P2TetMesh(BaseStructuredSupport):
         
         Uses vertex-only evaluation (P1 gradients).
         """
-        vertices, bc, tetras, inside = self.get_element_for_location(pos)
+        vertices, _bc, tetras, inside = self.get_element_for_location(pos)
         ps = vertices
         
         m = np.array([

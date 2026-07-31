@@ -6,8 +6,6 @@ configuring setup options, and solving.
 """
 from __future__ import annotations
 
-from typing import Optional, Union
-
 import numpy as np
 from loop_common.geometry import BoundingBox
 
@@ -17,10 +15,10 @@ from loop_interpolation import GeologicalInterpolator, InterpolatorFactory, Inte
 class InterpolatorBuilder:
     def __init__(
         self,
-        interpolatortype: Union[str, InterpolatorType] = InterpolatorType.FINITE_DIFFERENCE,
+        interpolatortype: str | InterpolatorType = InterpolatorType.FINITE_DIFFERENCE,
         bounding_box: BoundingBox | None = None,
-        nelements: Optional[int] = None,
-        buffer: Optional[float] = None,
+        nelements: int | None = None,
+        buffer: float | None = None,
         **kwargs,
     ):
         """This class helps initialise and setup a geological interpolator.
@@ -78,8 +76,8 @@ class InterpolatorBuilder:
 
     def solve(
         self,
-        solver: Optional[str] = None,
-        tol: Optional[float] = None,
+        solver: str | None = None,
+        tol: float | None = None,
         **solver_kwargs,
     ) -> InterpolatorBuilder:
         """Solve the configured interpolator system.

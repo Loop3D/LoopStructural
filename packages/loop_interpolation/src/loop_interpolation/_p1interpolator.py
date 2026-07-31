@@ -126,14 +126,13 @@ class P1Interpolator(DiscreteInterpolator):
         # evaluate normal if using vector func for cp2
         if vector_func:
             norm = vector_func((v1 + v2) / 2)
-        if vector is not None:
-            if bc_t1.shape[0] == vector.shape[0]:
-                norm = vector
+        if vector is not None and bc_t1.shape[0] == vector.shape[0]:
+            norm = vector
         # evaluate the shape function for the edges for each neighbouring triangle
         Dt, tri1, inside = self.support.evaluate_shape_derivatives(
             bc_t1, elements=self.support.shared_element_relationships[:, 0]
         )
-        Dn, tri2, inside = self.support.evaluate_shape_derivatives(
+        Dn, tri2, _inside = self.support.evaluate_shape_derivatives(
             bc_t2, elements=self.support.shared_element_relationships[:, 1]
         )
         # constraint for each cp is triangle - neighbour create a Nx12 matrix
@@ -225,7 +224,7 @@ class P1Interpolator(DiscreteInterpolator):
             #     wtfunc=self.interpolation_weights.get("steepness_wtfunc", None),
             # )
             logger.info(
-                "Using constant gradient regularisation w = %f" % self.interpolation_weights["cgw"]
+                "Using constant gradient regularisation w = {:f}".format(self.interpolation_weights["cgw"])
             )
         self.add_directional_regularisation(regularisation_config.directional)
 

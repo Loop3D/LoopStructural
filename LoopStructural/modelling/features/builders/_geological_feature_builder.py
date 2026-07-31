@@ -293,7 +293,7 @@ class GeologicalFeatureBuilder(BaseBuilder):
     def install_gradient_constraint(self):
         if issubclass(type(self.interpolator), DiscreteInterpolator):
             for g in self._orthogonal_features.values():
-                feature, w, region, step, B = g
+                feature, w, _region, step, B = g
                 if w == 0:
                     continue
                 logger.info(f"Adding gradient orthogonal constraint {feature.name} to {self.name}")

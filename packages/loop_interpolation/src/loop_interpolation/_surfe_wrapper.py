@@ -3,8 +3,6 @@ Wrapper for using surfepy
 """
 from __future__ import annotations
 
-from typing import Optional
-
 import numpy as np
 import surfepy
 from loop_common.logging import get_logger as getLogger
@@ -84,7 +82,7 @@ class SurfeRBFInterpolator(GeologicalInterpolator):
         w: float = 1.0,
         upper_bound=np.finfo(float).eps,
         lower_bound=-np.inf,
-        pairs: Optional[list] = None,
+        pairs: list | None = None,
     ):
         # self.surfe.Add
         pass
@@ -129,17 +127,17 @@ class SurfeRBFInterpolator(GeologicalInterpolator):
         self.add_tangent_constraints()
 
         kernel = kwargs.get("kernel", "r3")
-        logger.info("Setting surfe RBF kernel to %s" % kernel)
+        logger.info(f"Setting surfe RBF kernel to {kernel}")
         self.surfe.SetRBFKernel(kernel)
         regression = kwargs.get("regression_smoothing", 0.0)
         if regression > 0:
-            logger.info("Using regression smoothing %f" % regression)
+            logger.info(f"Using regression smoothing {regression:f}")
             self.surfe.SetRegressionSmoothing(True, regression)
         greedy = kwargs.get("greedy", (0, 0))
 
         if greedy[0] > 0 or greedy[1] > 0:
             logger.info(
-                "Using greedy algorithm: inferface %f and angular %f" % (greedy[0], greedy[1])
+                f"Using greedy algorithm: inferface {greedy[0]:f} and angular {greedy[1]:f}"
             )
             self.surfe.SetGreedyAlgorithm(True, greedy[0], greedy[1])
         poly_order = kwargs.get("poly_order", None)
@@ -152,7 +150,7 @@ class SurfeRBFInterpolator(GeologicalInterpolator):
             self.surfe.SetGlobalAnisotropy(global_anisotropy)
         radius = kwargs.get("radius", False)
         if radius:
-            logger.info("Setting RBF radius to %f" % radius)
+            logger.info(f"Setting RBF radius to {radius:f}")
             self.surfe.SetRBFShapeParameter(radius)
 
         return self.get_constraint_diagnostics_report(refresh=True)

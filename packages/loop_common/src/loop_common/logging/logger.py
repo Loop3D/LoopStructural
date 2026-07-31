@@ -17,7 +17,6 @@ from __future__ import annotations
 import logging
 import sys
 from pathlib import Path
-from typing import Union
 
 # ---------------------------------------------------------------------------
 # Optional loguru detection
@@ -36,10 +35,10 @@ _LOGURU_FMT = "{time:YYYY-MM-DD HH:mm:ss} | {name:<20} | {level:<8} | {message}"
 
 def get_logger(
     name: str,
-    level: Union[str, int] = "INFO",
-    log_file: Union[str, Path, None] = None,
-    fmt: Union[str, None] = None,
-    use_loguru: Union[bool, None] = None,
+    level: str | int = "INFO",
+    log_file: str | Path | None = None,
+    fmt: str | None = None,
+    use_loguru: bool | None = None,
 ):
     """Return a configured logger with no boilerplate required at the call site.
 

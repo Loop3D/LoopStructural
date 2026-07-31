@@ -1,20 +1,18 @@
 """Semi-variogram for estimating fold wavelengths from orientation data."""
 from __future__ import annotations
 
-from typing import List, Optional, Tuple
-
 import numpy as np
 from loop_common.logging import get_logger
 
 logger = get_logger(__name__)
 
 
-def find_peaks_and_troughs(x: np.ndarray, y: np.ndarray) -> Tuple[List, List]:
+def find_peaks_and_troughs(x: np.ndarray, y: np.ndarray) -> tuple[list, list]:
     """Return x/y positions of local maxima and minima using finite differences."""
     if len(x) != len(y):
         raise ValueError("x and y must have the same length")
-    pairsx: List = []
-    pairsy: List = []
+    pairsx: list = []
+    pairsy: list = []
     for i in range(len(x)):
         if i < 1 or i > len(x) - 2:
             if not np.isnan(y[i]):
@@ -42,11 +40,11 @@ class SVariogram:
         self.ydata = self.ydata[~mask]
         self.dist = np.abs(self.xdata[:, None] - self.xdata[None, :])
         self.variance_matrix = (self.ydata[:, None] - self.ydata[None, :]) ** 2
-        self.lags: Optional[np.ndarray] = None
-        self.variogram: Optional[np.ndarray] = None
-        self.wavelength_guesses: List = []
+        self.lags: np.ndarray | None = None
+        self.variogram: np.ndarray | None = None
+        self.wavelength_guesses: list = []
 
-    def initialise_lags(self, step: Optional[float] = None, nsteps: Optional[int] = None):
+    def initialise_lags(self, step: float | None = None, nsteps: int | None = None):
         if nsteps is not None and step is not None:
             self.lags = np.arange(step / 2.0, nsteps * step, step)
         elif step is not None:
@@ -67,9 +65,9 @@ class SVariogram:
 
     def calc_semivariogram(
         self,
-        step: Optional[float] = None,
-        nsteps: Optional[int] = None,
-        lags: Optional[np.ndarray] = None,
+        step: float | None = None,
+        nsteps: int | None = None,
+        lags: np.ndarray | None = None,
     ):
         if lags is not None:
             self.lags = lags
@@ -92,15 +90,15 @@ class SVariogram:
 
     def find_wavelengths(
         self,
-        step: Optional[float] = None,
-        nsteps: Optional[int] = None,
-        lags: Optional[np.ndarray] = None,
-    ) -> List:
+        step: float | None = None,
+        nsteps: int | None = None,
+        lags: np.ndarray | None = None,
+    ) -> list:
         h, var, _npairs = self.calc_semivariogram(step=step, nsteps=nsteps, lags=lags)
         px, py = find_peaks_and_troughs(h, var)
 
-        averagex: List = []
-        averagey: List = []
+        averagex: list = []
+        averagey: list = []
         for i in range(len(px) - 1):
             averagex.append((px[i] + px[i + 1]) / 2.0)
             averagey.append((py[i] + py[i + 1]) / 2.0)

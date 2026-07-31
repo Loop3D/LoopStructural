@@ -1,4 +1,3 @@
-from typing import List
 
 import numpy as np
 
@@ -15,7 +14,7 @@ class LineSet(LoopEntity):
     # Indices that mark the START of each new line segment
     offsets: NumpyArray  # Shape (M,) - e.g., [0, 5, 12]
 
-    def to_tangent_vectors(self) -> List[Orientation]:
+    def to_tangent_vectors(self) -> list[Orientation]:
         """Compute tangent vectors for each line segment."""
         tangents = []
         for start, end in zip(self.offsets[:-1], self.offsets[1:]):

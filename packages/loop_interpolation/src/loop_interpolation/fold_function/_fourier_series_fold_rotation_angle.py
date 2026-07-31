@@ -1,8 +1,6 @@
 """Fourier-series fold rotation-angle profile (Laurent et al., 2016)."""
 from __future__ import annotations
 
-from typing import List, Optional, Union
-
 import numpy as np
 import numpy.typing as npt
 from loop_common.logging import get_logger
@@ -20,8 +18,8 @@ class FourierSeriesFoldRotationAngleProfile(BaseFoldRotationAngleProfile):
 
     def __init__(
         self,
-        rotation_angle: Optional[npt.NDArray[np.float64]] = None,
-        fold_frame_coordinate: Optional[npt.NDArray[np.float64]] = None,
+        rotation_angle: npt.NDArray[np.float64] | None = None,
+        fold_frame_coordinate: npt.NDArray[np.float64] | None = None,
         c0: float = 0.0,
         c1: float = 0.0,
         c2: float = 0.0,
@@ -95,7 +93,7 @@ class FourierSeriesFoldRotationAngleProfile(BaseFoldRotationAngleProfile):
         self._w = params["w"]
         self.notify_observers()
 
-    def update_params(self, params: Union[List[float], npt.NDArray[np.float64]]) -> None:
+    def update_params(self, params: list[float] | npt.NDArray[np.float64]) -> None:
         if len(params) != 4:
             raise ValueError("params must have 4 elements: [c0, c1, c2, w]")
         self._c0 = params[0]
@@ -106,11 +104,13 @@ class FourierSeriesFoldRotationAngleProfile(BaseFoldRotationAngleProfile):
 
     def initial_guess(
         self,
-        wavelength: Optional[float] = None,
+        wavelength: float | None = None,
         calculate_wavelength: bool = True,
-        svariogram_parameters: dict = {},
+        svariogram_parameters: dict | None = None,
         reset: bool = False,
     ) -> np.ndarray:
+        if svariogram_parameters is None:
+            svariogram_parameters = {}
         if reset:
             # Clip to ±89° before tan to avoid singularities at ±90°.
             ang = np.clip(self.rotation_angle, -89.0, 89.0)

@@ -7,7 +7,7 @@ import logging
 from abc import abstractmethod
 from collections import defaultdict
 from time import perf_counter
-from typing import Callable, Optional, Union
+from typing import Callable
 
 import numpy as np
 from loop_common.logging import get_logger as getLogger
@@ -164,7 +164,7 @@ class DiscreteInterpolator(GeologicalInterpolator):
             self.up_to_date = False
             self.interpolation_weights[key] = weights[key]
 
-    def _apply_isotropic_regularisation_weight(self, value: Optional[float], keys: tuple[str, ...]):
+    def _apply_isotropic_regularisation_weight(self, value: float | None, keys: tuple[str, ...]):
         if value is None:
             return
         for key in keys:
@@ -512,7 +512,7 @@ class DiscreteInterpolator(GeologicalInterpolator):
         # check that we have added some points
         if points.shape[0] > 0:
             coords = points[:, : self.support.dimension]
-            vertices, a, element, inside = self.support.get_element_for_location(coords)
+            _vertices, a, element, inside = self.support.get_element_for_location(coords)
             a = a[inside]
             cols = self.support.elements[element[inside]]
             bounds = points[inside, self.support.dimension : self.support.dimension + 2]
@@ -523,7 +523,7 @@ class DiscreteInterpolator(GeologicalInterpolator):
         w: float = 1.0,
         upper_bound=1.0,  # np.finfo(float).eps,
         lower_bound=-np.inf,
-        pairs: Optional[list] = None,
+        pairs: list | None = None,
     ):
 
         points = self.get_inequality_pairs_constraints()
@@ -597,7 +597,7 @@ class DiscreteInterpolator(GeologicalInterpolator):
         self,
         feature: Callable[[np.ndarray], np.ndarray],
         lower: bool = True,
-        mask: Optional[np.ndarray] = None,
+        mask: np.ndarray | None = None,
     ):
         """Add an inequality constraint to the interpolator using an existing feature.
         This will make the interpolator greater than or less than the exising feature.
@@ -942,7 +942,7 @@ class DiscreteInterpolator(GeologicalInterpolator):
         solver_kwargs: dict,
         iterations: int,
         base_weight: float,
-        target_norm: Optional[float],
+        target_norm: float | None,
     ) -> None:
         if iterations <= 0 or base_weight <= 0.0:
             return
@@ -1006,7 +1006,7 @@ class DiscreteInterpolator(GeologicalInterpolator):
 
     def _normalise_solver_choice(
         self,
-        solver: Optional[Union[Callable[[sparse.csr_matrix, np.ndarray], np.ndarray], str]],
+        solver: Callable[[sparse.csr_matrix, np.ndarray], np.ndarray] | str | None,
     ):
         return _solver_strategy.resolve_solver_choice(solver, logger)
 
@@ -1018,7 +1018,7 @@ class DiscreteInterpolator(GeologicalInterpolator):
         A: sparse.spmatrix,
         b: np.ndarray,
         timing: dict,
-    ) -> tuple[sparse.spmatrix, np.ndarray, Optional[sparse.spmatrix]]:
+    ) -> tuple[sparse.spmatrix, np.ndarray, sparse.spmatrix | None]:
         return _solver_pipeline.preprocess_main_system(
             A=A,
             b=b,
@@ -1047,7 +1047,7 @@ class DiscreteInterpolator(GeologicalInterpolator):
         self,
         A: sparse.spmatrix,
         b: np.ndarray,
-        tol: Optional[float],
+        tol: float | None,
         solver_kwargs: dict,
         timing: dict,
     ) -> bool:
@@ -1079,7 +1079,7 @@ class DiscreteInterpolator(GeologicalInterpolator):
 
     def _solve_with_cg_fused_regularisation(
         self,
-        tol: Optional[float],
+        tol: float | None,
         solver_kwargs: dict,
         timing: dict,
     ) -> bool:
@@ -1159,7 +1159,7 @@ class DiscreteInterpolator(GeologicalInterpolator):
         self,
         A: sparse.spmatrix,
         b: np.ndarray,
-        tol: Optional[float],
+        tol: float | None,
         solver_kwargs: dict,
         timing: dict,
     ) -> bool:
@@ -1179,7 +1179,7 @@ class DiscreteInterpolator(GeologicalInterpolator):
         timing: dict,
         constant_norm_iterations: int,
         constant_norm_weight: float,
-        constant_norm_target: Optional[float],
+        constant_norm_target: float | None,
     ) -> bool:
         logger.info("Solving using admm")
 
@@ -1221,9 +1221,9 @@ class DiscreteInterpolator(GeologicalInterpolator):
 
     def solve_system(
         self,
-        solver: Optional[Union[Callable[[sparse.csr_matrix, np.ndarray], np.ndarray], str]] = None,
-        tol: Optional[float] = None,
-        solver_kwargs: Optional[dict] = None,
+        solver: Callable[[sparse.csr_matrix, np.ndarray], np.ndarray] | str | None = None,
+        tol: float | None = None,
+        solver_kwargs: dict | None = None,
     ) -> bool:
         """
         Main entry point to run the solver and update the node value

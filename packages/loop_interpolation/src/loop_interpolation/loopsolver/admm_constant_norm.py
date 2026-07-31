@@ -39,8 +39,10 @@ def admm_solve_constant_norm(
     x0: np.ndarray,
     admm_weight: float = 0.1,
     nmajor=200,
-    linsys_solver_kwargs={"maxiter": 100},
+    linsys_solver_kwargs=None,
 ):
+    if linsys_solver_kwargs is None:
+        linsys_solver_kwargs = {"maxiter": 100}
     if A.shape[1] != x0.shape[0]:
         raise ValueError("Number of columns in interpolation matrix does not match x0")
     if A.shape[1] != Q.shape[1]:

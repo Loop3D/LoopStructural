@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import logging
-from typing import ClassVar, Union
+from typing import ClassVar
 
 import numpy as np
 from loop_common.base import NumpyArray
@@ -113,7 +113,7 @@ class BaseConstraint(BaseModel):
         return filtered[:, : points.shape[1]], new_arrays, mask
 
 
-def _weights_to_column(weights: Union[float, np.ndarray], n_rows: int) -> np.ndarray:
+def _weights_to_column(weights: float | np.ndarray, n_rows: int) -> np.ndarray:
     if n_rows == 0:
         return np.empty((0, 1), dtype=float)
     if np.isscalar(weights):
@@ -129,7 +129,7 @@ class ValueConstraint(BaseConstraint):
     weight_name: ClassVar[str] = "Value constraint"
     points: NumpyArray = Field(default_factory=lambda: np.empty((0, 3), dtype=float))
     values: NumpyArray = Field(default_factory=lambda: np.empty((0,), dtype=float))
-    weights: Union[float, NumpyArray] = 1.0
+    weights: float | NumpyArray = 1.0
 
     @model_validator(mode="after")
     def check_shapes(self):
@@ -192,7 +192,7 @@ class GradientConstraint(BaseConstraint):
     weight_name: ClassVar[str] = "Gradient constraint"
     points: NumpyArray = Field(default_factory=lambda: np.empty((0, 3), dtype=float))
     vectors: NumpyArray = Field(default_factory=lambda: np.empty((0, 3), dtype=float))
-    weights: Union[float, NumpyArray] = 1.0
+    weights: float | NumpyArray = 1.0
     is_normal: bool = False
     drop_invalid_rows: bool = True
     @model_validator(mode="after")
@@ -291,7 +291,7 @@ class InequalityConstraint(BaseConstraint):
     weight_name: ClassVar[str] = "Inequality constraint"
     points: NumpyArray = Field(default_factory=lambda: np.empty((0, 3), dtype=float))
     bounds: NumpyArray = Field(default_factory=lambda: np.empty((0, 2), dtype=float))
-    weights: Union[float, NumpyArray] = 1.0
+    weights: float | NumpyArray = 1.0
 
     @model_validator(mode="after")
     def check_shapes(self):
@@ -355,7 +355,7 @@ class InequalityPair(BaseConstraint):
     weight_name: ClassVar[str] = "Inequality pairs constraint"
     points: NumpyArray = Field(default_factory=lambda: np.empty((0, 3), dtype=float))
     pair_ids: NumpyArray = Field(default_factory=lambda: np.empty((0,), dtype=float))
-    weights: Union[float, NumpyArray] = 1.0
+    weights: float | NumpyArray = 1.0
 
     @model_validator(mode="after")
     def check_shapes(self):
@@ -410,7 +410,7 @@ class InterfaceConstraint(BaseConstraint):
     weight_name: ClassVar[str] = "Interface constraint"
     points: NumpyArray = Field(default_factory=lambda: np.empty((0, 3), dtype=float))
     interface_ids: NumpyArray = Field(default_factory=lambda: np.empty((0,), dtype=float))
-    weights: Union[float, NumpyArray] = 1.0
+    weights: float | NumpyArray = 1.0
 
     @model_validator(mode="after")
     def check_shapes(self):

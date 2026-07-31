@@ -1,7 +1,5 @@
 from __future__ import annotations
 
-from typing import Optional
-
 import numpy as np
 
 from loop_common.supports import SupportType, support_map
@@ -38,7 +36,7 @@ class SupportFactory:
         bounding_box,
         nelements,
         element_volume=None,
-        buffer: Optional[float] = None,
+        buffer: float | None = None,
         local_coordinates: bool = True,
     ):
         if isinstance(support_type, str):

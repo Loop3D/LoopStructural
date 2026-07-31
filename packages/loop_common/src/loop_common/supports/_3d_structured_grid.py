@@ -3,7 +3,6 @@ Cartesian grid for fold interpolator
 
 """
 
-from typing import Dict, Tuple
 
 import numpy as np
 
@@ -487,7 +486,7 @@ class StructuredGrid(BaseStructuredSupport):
             **super().to_dict(),
         }
 
-    def get_operators(self, weights: Dict[str, float]) -> Dict[str, Tuple[np.ndarray, float]]:
+    def get_operators(self, weights: dict[str, float]) -> dict[str, tuple[np.ndarray, float]]:
         """Gets the operators specific to this support
 
         Parameters

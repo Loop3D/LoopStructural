@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Callable, Optional, Union
+from typing import Callable
 
 import numpy as np
 from loop_common.math import rng
@@ -58,7 +58,7 @@ class ConstantNormInterpolator:
         if self.random_subset:
             rng.shuffle(element_indices)
             element_indices = element_indices[: int(0.1 * self.support.elements.shape[0])]
-        vertices, gradient, elements, inside = self.support.get_element_gradient_for_location(
+        _vertices, gradient, elements, _inside = self.support.get_element_gradient_for_location(
             self.support.barycentre[element_indices]
         )
 
@@ -95,9 +95,9 @@ class ConstantNormInterpolator:
 
     def solve_system(
         self,
-        solver: Optional[Union[Callable[[sparse.csr_matrix, np.ndarray], np.ndarray], str]] = None,
-        tol: Optional[float] = None,
-        solver_kwargs: Optional[dict] = None,
+        solver: Callable[[sparse.csr_matrix, np.ndarray], np.ndarray] | str | None = None,
+        tol: float | None = None,
+        solver_kwargs: dict | None = None,
     ) -> bool:
         """Solve the system of equations iteratively for the constant norm interpolator.
 
@@ -158,9 +158,9 @@ class ConstantNormP1Interpolator(P1Interpolator, ConstantNormInterpolator):
 
     def solve_system(
         self,
-        solver: Optional[Union[Callable[[sparse.csr_matrix, np.ndarray], np.ndarray], str]] = None,
-        tol: Optional[float] = None,
-        solver_kwargs: Optional[dict] = None,
+        solver: Callable[[sparse.csr_matrix, np.ndarray], np.ndarray] | str | None = None,
+        tol: float | None = None,
+        solver_kwargs: dict | None = None,
     ) -> bool:
         """Solve the system of equations for the constant norm P1 interpolator.
 
@@ -207,9 +207,9 @@ class ConstantNormFDIInterpolator(FiniteDifferenceInterpolator, ConstantNormInte
 
     def solve_system(
         self,
-        solver: Optional[Union[Callable[[sparse.csr_matrix, np.ndarray], np.ndarray], str]] = None,
-        tol: Optional[float] = None,
-        solver_kwargs: Optional[dict] = None,
+        solver: Callable[[sparse.csr_matrix, np.ndarray], np.ndarray] | str | None = None,
+        tol: float | None = None,
+        solver_kwargs: dict | None = None,
     ) -> bool:
         """Solve the system of equations for the constant norm finite difference interpolator.
 

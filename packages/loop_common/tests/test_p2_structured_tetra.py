@@ -147,7 +147,7 @@ class TestP2TetMeshShapeFunctions:
         first_element_vertices = mesh.nodes[elements[0, :4]]
         centroid = np.mean(first_element_vertices, axis=0)
 
-        N, elem_ids, inside = mesh.evaluate_shape(centroid.reshape(1, 3))
+        N, _elem_ids, inside = mesh.evaluate_shape(centroid.reshape(1, 3))
 
         assert inside[0], "Test point should be inside first element"
         # Sum of shape functions should be 1
@@ -183,7 +183,7 @@ class TestP2TetMeshShapeFunctions:
         mesh = P2TetMesh(nsteps=np.array([3, 3, 3]))
 
         centroid = np.array([[1.0, 1.0, 1.0]])
-        dN, elem_ids = mesh.evaluate_shape_derivatives(centroid)
+        dN, _elem_ids = mesh.evaluate_shape_derivatives(centroid)
 
         # dN should have shape (n_points, 3, 10)
         assert dN.shape == (1, 3, 10)
@@ -193,7 +193,7 @@ class TestP2TetMeshShapeFunctions:
         mesh = P2TetMesh(nsteps=np.array([3, 3, 3]))
 
         # Get valid element indices
-        elements = mesh.get_elements()
+        mesh.get_elements()
         d2 = mesh.evaluate_shape_d2(np.array([0]))
 
         # d2 should have shape (n_elements, 6, 10)

@@ -4,7 +4,7 @@ Ported from LoopStructural/modelling/features/fold/_fold.py (Laurent et al., 201
 """
 from __future__ import annotations
 
-from typing import Callable, Optional
+from typing import Callable
 
 import numpy as np
 from loop_common.logging import get_logger
@@ -49,9 +49,9 @@ class FoldEvent:
     def __init__(
         self,
         foldframe,
-        fold_axis_rotation: Optional[Callable] = None,
-        fold_limb_rotation: Optional[Callable] = None,
-        fold_axis: Optional[np.ndarray] = None,
+        fold_axis_rotation: Callable | None = None,
+        fold_limb_rotation: Callable | None = None,
+        fold_axis: np.ndarray | None = None,
         invert_norm: bool = False,
         name: str = "Fold",
     ):

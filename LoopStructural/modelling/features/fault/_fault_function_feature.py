@@ -1,7 +1,5 @@
 from __future__ import annotations
 
-from typing import Optional
-
 from ....modelling.features import BaseFeature, StructuralFrame
 from ....utils import getLogger
 
@@ -133,7 +131,7 @@ class FaultDisplacementFeature(BaseFeature):
         d = self.displacement.evaluate(fault_displacement, fault_strike)
         return d
 
-    def get_data(self, value_map: Optional[dict] = None):
+    def get_data(self, value_map: dict | None = None):
         """Get data associated with this fault displacement feature.
 
         Parameters
@@ -146,7 +144,7 @@ class FaultDisplacementFeature(BaseFeature):
         This method is not yet implemented for fault displacement features.
         """
 
-    def copy(self, name: Optional[str] = None):
+    def copy(self, name: str | None = None):
         """Create a copy of this fault displacement feature.
 
         Parameters

@@ -144,7 +144,7 @@ def test_calc_semivariogram_uses_explicit_lags_when_given():
     sv = SVariogram(xdata, ydata)
 
     custom_lags = np.array([1.0, 2.0, 3.0])
-    lags, variogram, npairs = sv.calc_semivariogram(lags=custom_lags)
+    lags, _variogram, _npairs = sv.calc_semivariogram(lags=custom_lags)
 
     assert np.array_equal(lags, custom_lags)
     assert np.array_equal(sv.lags, custom_lags)

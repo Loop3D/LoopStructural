@@ -6,14 +6,14 @@ so interpolator classes can focus on orchestration and state management.
 from __future__ import annotations
 
 import inspect
-from typing import Callable, Optional, Union
+from typing import Callable
 
 import numpy as np
 from scipy import sparse
 
 
 def resolve_solver_choice(
-    solver: Optional[Union[Callable[[sparse.csr_matrix, np.ndarray], np.ndarray], str]], logger
+    solver: Callable[[sparse.csr_matrix, np.ndarray], np.ndarray] | str | None, logger
 ):
     if callable(solver):
         return solver
@@ -48,7 +48,7 @@ def solve_with_callable(
 def solve_with_cg(
     A: sparse.spmatrix,
     b: np.ndarray,
-    tol: Optional[float],
+    tol: float | None,
     solver_kwargs: dict,
     timing: dict,
     logger,
@@ -56,9 +56,8 @@ def solve_with_cg(
     from time import perf_counter
 
     logger.info("Solving using cg")
-    if "atol" not in solver_kwargs or "rtol" not in solver_kwargs:
-        if tol is not None:
-            solver_kwargs["atol"] = tol
+    if ("atol" not in solver_kwargs or "rtol" not in solver_kwargs) and tol is not None:
+        solver_kwargs["atol"] = tol
 
     logger.info(f"Solver kwargs: {solver_kwargs}")
     solve_step_started = perf_counter()
@@ -75,7 +74,7 @@ def solve_with_cg(
 def solve_with_cg_normal_equations(
     N,
     rhs: np.ndarray,
-    tol: Optional[float],
+    tol: float | None,
     solver_kwargs: dict,
     timing: dict,
     logger,
@@ -91,9 +90,8 @@ def solve_with_cg_normal_equations(
     from time import perf_counter
 
     logger.info("Solving using cg (matrix-free fused regularisation normal equations)")
-    if "atol" not in solver_kwargs or "rtol" not in solver_kwargs:
-        if tol is not None:
-            solver_kwargs["atol"] = tol
+    if ("atol" not in solver_kwargs or "rtol" not in solver_kwargs) and tol is not None:
+        solver_kwargs["atol"] = tol
 
     logger.info(f"Solver kwargs: {solver_kwargs}")
     solve_step_started = perf_counter()
@@ -110,7 +108,7 @@ def solve_with_cg_normal_equations(
 def solve_with_lsmr(
     A: sparse.spmatrix,
     b: np.ndarray,
-    tol: Optional[float],
+    tol: float | None,
     solver_kwargs: dict,
     timing: dict,
     logger,
@@ -118,11 +116,10 @@ def solve_with_lsmr(
     from time import perf_counter
 
     logger.info("Solving using lsmr")
-    if "btol" not in solver_kwargs:
-        if tol is not None:
-            solver_kwargs["btol"] = tol
-            solver_kwargs["atol"] = 0.0
-            logger.info(f"Setting lsmr btol to {tol}")
+    if "btol" not in solver_kwargs and tol is not None:
+        solver_kwargs["btol"] = tol
+        solver_kwargs["atol"] = 0.0
+        logger.info(f"Setting lsmr btol to {tol}")
     logger.info(f"Solver kwargs: {solver_kwargs}")
     solve_step_started = perf_counter()
     res = sparse.linalg.lsmr(A, b, **solver_kwargs)
@@ -189,7 +186,7 @@ def solve_with_admm(
     timing: dict,
     support,
     logger,
-) -> tuple[np.ndarray, Optional[list], bool]:
+) -> tuple[np.ndarray, list | None, bool]:
     from time import perf_counter
 
     from .loopsolver import admm_solve

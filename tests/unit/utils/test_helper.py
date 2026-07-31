@@ -49,7 +49,7 @@ def test_get_data_bounding_box_buffer_scaled_by_extent():
 
 def test_get_data_bounding_box_region_checks_all_axes():
     xyz = _cube_points()
-    bb, region = get_data_bounding_box(xyz, 0.0)
+    _bb, region = get_data_bounding_box(xyz, 0.0)
     # z just above the box should be excluded because get_data_bounding_box
     # applies the mask on all three axes
     outside_z = np.array([[0.5, 0.5, 2.0]])
@@ -68,7 +68,7 @@ def test_get_data_bounding_box_map_absolute_buffer():
 def test_get_data_bounding_box_map_region_ignores_z():
     xyz = _cube_points()
     # buffer of 0 means the region mask boundary sits exactly on the data extent
-    bb, region = get_data_bounding_box_map(xyz, 0.0)
+    _bb, region = get_data_bounding_box_map(xyz, 0.0)
     # region() from get_data_bounding_box_map only thresholds x and y, not z
     # so a point far outside in z but within x/y bounds is still "inside"
     far_z_but_within_xy = np.array([[0.5, 0.5, 100.0]])

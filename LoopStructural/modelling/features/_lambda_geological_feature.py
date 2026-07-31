@@ -3,7 +3,7 @@ Geological features
 """
 from __future__ import annotations
 
-from typing import Callable, Optional
+from typing import Callable
 
 import numpy as np
 
@@ -18,12 +18,12 @@ logger = getLogger(__name__)
 class LambdaGeologicalFeature(BaseFeature):
     def __init__(
         self,
-        function: Optional[Callable[[np.ndarray], np.ndarray]] = None,
+        function: Callable[[np.ndarray], np.ndarray] | None = None,
         name: str = "unnamed_lambda",
-        gradient_function: Optional[Callable[[np.ndarray], np.ndarray]] = None,
+        gradient_function: Callable[[np.ndarray], np.ndarray] | None = None,
         model=None,
-        regions: Optional[list] = None,
-        faults: Optional[list] = None,
+        regions: list | None = None,
+        faults: list | None = None,
         builder=None,
     ):
         """A lambda geological feature is a wrapper for a geological
@@ -176,10 +176,10 @@ class LambdaGeologicalFeature(BaseFeature):
             v[:, :] = self.gradient_function(pos)
         return v
 
-    def get_data(self, value_map: Optional[dict] = None):
+    def get_data(self, value_map: dict | None = None):
         return
 
-    def copy(self, name: Optional[str] = None):
+    def copy(self, name: str | None = None):
         return LambdaGeologicalFeature(
             self.function,
             name if name is not None else f'{self.name}_copy',
@@ -190,6 +190,4 @@ class LambdaGeologicalFeature(BaseFeature):
             self.builder,
         )
     def is_valid(self):
-        if self.function is None and self.gradient_function is None:
-            return False
-        return True
+        return not (self.function is None and self.gradient_function is None)

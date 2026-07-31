@@ -2,7 +2,6 @@
 Tetmesh based on cartesian grid for piecewise linear interpolation
 """
 
-from typing import Tuple
 
 import numpy as np
 from scipy.sparse import coo_matrix, csr_matrix, tril
@@ -336,7 +335,7 @@ class UnStructuredTetMesh(BaseSupport):
             inside = np.zeros(self.n_elements, dtype=bool)
             inside[elements] = True
         if elements is None:
-            verts, c, elements, inside = self.get_element_for_location(locations)
+            _verts, _c, elements, inside = self.get_element_for_location(locations)
             # elements = np.arange(0, self.n_elements, dtype=int)
         ps = self.nodes[self.elements, :]
         m = np.array(
@@ -373,7 +372,7 @@ class UnStructuredTetMesh(BaseSupport):
 
         """
         locations = np.array(locations)
-        verts, c, elements, inside = self.get_element_for_location(locations)
+        _verts, c, elements, inside = self.get_element_for_location(locations)
         return c, elements, inside
 
     def evaluate_value(self, pos, property_array):
@@ -393,7 +392,7 @@ class UnStructuredTetMesh(BaseSupport):
         """
         values = np.zeros(pos.shape[0])
         values[:] = np.nan
-        vertices, c, tetras, inside = self.get_element_for_location(pos)
+        _vertices, c, tetras, inside = self.get_element_for_location(pos)
         values[inside] = np.sum(
             c[inside, :] * property_array[self.elements[tetras[inside], :]], axis=1
         )
@@ -418,7 +417,7 @@ class UnStructuredTetMesh(BaseSupport):
         values = np.zeros(pos.shape)
         values[:] = np.nan
         (
-            vertices,
+            _vertices,
             element_gradients,
             tetras,
             inside,
@@ -448,7 +447,7 @@ class UnStructuredTetMesh(BaseSupport):
     def get_elements(self):
         return self.elements
 
-    def get_element_for_location(self, points: np.ndarray) -> Tuple:
+    def get_element_for_location(self, points: np.ndarray) -> tuple:
         """
         Determine the tetrahedron from a numpy array of points
 
@@ -590,7 +589,7 @@ class UnStructuredTetMesh(BaseSupport):
         -------
 
         """
-        vertices, bc, tetras, inside = self.get_element_for_location(pos)
+        vertices, _bc, tetras, inside = self.get_element_for_location(pos)
         ps = vertices
         m = np.array(
             [

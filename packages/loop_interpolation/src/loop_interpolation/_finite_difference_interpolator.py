@@ -3,8 +3,6 @@ FiniteDifference interpolator
 """
 from __future__ import annotations
 
-from typing import Optional
-
 import numpy as np
 from loop_common.logging import get_logger as getLogger
 from loop_common.math import get_vectors
@@ -366,9 +364,9 @@ class FiniteDifferenceInterpolator(DiscreteInterpolator):
             idc = np.asarray(node_idx, dtype=int)
 
             (
-                vertices,
+                _vertices,
                 T,
-                elements,
+                _elements,
                 inside_,
             ) = self.support.get_element_gradient_for_location(
                 points[inside, : self.support.dimension]
@@ -427,9 +425,9 @@ class FiniteDifferenceInterpolator(DiscreteInterpolator):
             # calculate unit vector for node gradients and their magnitudes
             # to preserve magnitude enforcement across the split 3-component constraint
             (
-                vertices,
+                _vertices,
                 T,
-                elements,
+                _elements,
                 inside_,
             ) = self.support.get_element_gradient_for_location(
                 points[inside, : self.support.dimension]
@@ -516,9 +514,9 @@ class FiniteDifferenceInterpolator(DiscreteInterpolator):
 
             # normalise element vector to unit vector for dot product
             (
-                vertices,
+                _vertices,
                 T,
-                elements,
+                _elements,
                 inside_,
             ) = self.support.get_element_gradient_for_location(
                 points[inside, : self.support.dimension]
@@ -699,7 +697,7 @@ class FiniteDifferenceInterpolator(DiscreteInterpolator):
         idc: np.ndarray,
         operator_values: np.ndarray,
         row_w,
-        centre_idc: Optional[np.ndarray] = None,
+        centre_idc: np.ndarray | None = None,
     ) -> None:
         """Record a matrix-free regularisation block for one stencil family.
 
@@ -851,7 +849,7 @@ class FiniteDifferenceInterpolator(DiscreteInterpolator):
             shape=(n_rows_total, dof), matvec=matvec, rmatvec=rmatvec, dtype=float
         )
 
-    def get_regularisation_linear_operator(self, names=None) -> Optional[LinearOperator]:
+    def get_regularisation_linear_operator(self, names=None) -> LinearOperator | None:
         """Return a matrix-free ``LinearOperator`` for the recorded regularisation blocks.
 
         Only populated after ``setup_interpolator(..., regularisation_matrix_free=True)``
@@ -883,7 +881,7 @@ class FiniteDifferenceInterpolator(DiscreteInterpolator):
             return None
         return self._matrix_free_operator_from_blocks(blocks)
 
-    def _build_fused_cg_regularisation_operator(self) -> Optional[LinearOperator]:
+    def _build_fused_cg_regularisation_operator(self) -> LinearOperator | None:
         """Return a ``LinearOperator`` computing ``R_reg^T @ R_reg @ x`` (the
         matrix-free regularisation block's contribution to the CG normal
         equations) using a fused single-kernel convolution for the six
@@ -934,7 +932,7 @@ class FiniteDifferenceInterpolator(DiscreteInterpolator):
 
         dof = self.dof
 
-        def _normal_operator_from_blocks(block_list) -> Optional[LinearOperator]:
+        def _normal_operator_from_blocks(block_list) -> LinearOperator | None:
             """Wrap the existing rectangular (rows x dof) matvec/rmatvec
             LinearOperator into a (dof x dof) normal-equations operator
             (``rmatvec(matvec(x))``), self-adjoint by construction. This is

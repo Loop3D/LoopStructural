@@ -3,7 +3,7 @@ from __future__ import annotations
 import uuid
 from datetime import datetime
 from pathlib import Path
-from typing import Annotated, Any, Optional
+from typing import Annotated, Any
 
 import numpy as np
 from pydantic import BaseModel, BeforeValidator, ConfigDict, Field, PlainSerializer
@@ -53,7 +53,7 @@ class LoopEntity(BaseModel):
         default_factory=lambda: str(uuid.uuid4()), description="Permanent unique identifier"
     )
 
-    name: Optional[str] = Field(default=None, description="Human-readable label")
+    name: str | None = Field(default=None, description="Human-readable label")
 
     last_modified: str = Field(
         default_factory=lambda: datetime.now().isoformat(),

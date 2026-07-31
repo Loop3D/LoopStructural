@@ -4,7 +4,6 @@ Tetmesh based on cartesian grid for piecewise linear interpolation
 from __future__ import annotations
 
 import logging
-from typing import Optional
 
 import numpy as np
 
@@ -20,13 +19,13 @@ class P1Unstructured2d(BaseUnstructured2d):
 
     def __init__(
         self,
-        elements: Optional[np.ndarray] = None,
-        vertices: Optional[np.ndarray] = None,
-        neighbours: Optional[np.ndarray] = None,
+        elements: np.ndarray | None = None,
+        vertices: np.ndarray | None = None,
+        neighbours: np.ndarray | None = None,
         aabb_nsteps=None,
-        origin: Optional[np.ndarray] = None,
-        step_vector: Optional[np.ndarray] = None,
-        nsteps: Optional[np.ndarray] = None,
+        origin: np.ndarray | None = None,
+        step_vector: np.ndarray | None = None,
+        nsteps: np.ndarray | None = None,
     ):
         if elements is None or vertices is None or neighbours is None:
             if origin is None or step_vector is None or nsteps is None:
@@ -92,7 +91,7 @@ class P1Unstructured2d(BaseUnstructured2d):
             inside[elements] = True
         locations = np.array(locations)
         if elements is None:
-            vertices, c, tri, inside = self.get_element_for_location(locations)
+            vertices, _c, tri, inside = self.get_element_for_location(locations)
         else:
             tri = elements
             M = np.ones((elements.shape[0], 3, 3))
@@ -125,7 +124,7 @@ class P1Unstructured2d(BaseUnstructured2d):
 
     def evaluate_shape(self, locations):
         locations = np.array(locations)
-        vertices, c, tri, inside = self.get_element_for_location(locations, return_verts=False)
+        _vertices, c, tri, inside = self.get_element_for_location(locations, return_verts=False)
         # c = np.dot(np.array([1,x,y]),np.linalg.inv(M)) # convert to barycentric coordinates
         # order of bary coord is (1-s-t,s,t)
         N = c  # np.zeros((c.shape[0],3)) #evaluate shape functions at barycentric coordinates

@@ -2,7 +2,6 @@ from __future__ import annotations
 
 import logging
 import os
-from typing import Dict, Optional, Union
 
 from loop_common.logging import (
     FileSink,
@@ -133,7 +132,7 @@ def log_to_console(level="warning"):
 
 @public_api(tier="provisional")
 def add_sink(
-    sink: Union[LogSink, LogCallable], *, loggers: Optional[Dict[str, logging.Logger]] = None
+    sink: LogSink | LogCallable, *, loggers: dict[str, logging.Logger] | None = None
 ) -> logging.Handler:
     """Attach a sink to every currently-registered LoopStructural logger.
 
@@ -166,7 +165,7 @@ def add_sink(
 
 @public_api(tier="provisional")
 def remove_sink(
-    handler: logging.Handler, *, loggers: Optional[Dict[str, logging.Logger]] = None
+    handler: logging.Handler, *, loggers: dict[str, logging.Logger] | None = None
 ) -> None:
     """Detach a handler previously returned by `add_sink`."""
     if handler in LoopStructural._extra_sinks:

@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 from abc import ABCMeta, abstractmethod
-from typing import List, Optional
 
 import numpy as np
 
@@ -33,7 +32,7 @@ class FaultProfileFunction(metaclass=ABCMeta):
         if ax is None:
             import matplotlib.pyplot as plt
 
-            fig, ax = plt.subplots()
+            _fig, ax = plt.subplots()
         x = np.linspace(-1, 1, 100)
         ax.plot(x, self(x), label="ones function")
 
@@ -311,11 +310,11 @@ class Zeros(FaultProfileFunction):
 class FaultDisplacement:
     def __init__(
         self,
-        hw: Optional[FaultProfileFunction] = None,
-        fw: Optional[FaultProfileFunction] = None,
-        gx: Optional[FaultProfileFunction] = None,
-        gy: Optional[FaultProfileFunction] = None,
-        gz: Optional[FaultProfileFunction] = None,
+        hw: FaultProfileFunction | None = None,
+        fw: FaultProfileFunction | None = None,
+        gx: FaultProfileFunction | None = None,
+        gy: FaultProfileFunction | None = None,
+        gz: FaultProfileFunction | None = None,
         scale=0.5,
     ):
         """Function for characterising the displacement of a fault in 3D space
@@ -376,12 +375,12 @@ class FaultDisplacement:
         gz = CubicFunction.from_dict(data["gz"])
         return cls(gx=gx, gy=gy, gz=gz)
 
-    def plot(self, range=(-1, 1), axs: Optional[List] = None):
+    def plot(self, range=(-1, 1), axs: list | None = None):
         try:
             import matplotlib.pyplot as plt
 
             if axs is None:
-                fig, ax = plt.subplots(1, 3, figsize=(15, 5))
+                _fig, ax = plt.subplots(1, 3, figsize=(15, 5))
             for i, (name, f) in enumerate(zip(["gx", "gy", "gz"], [self.gx, self.gy, self.gz])):
                 x = np.linspace(range[0], range[1], 100)
                 ax[i].plot(x, f(x), label=name)

@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import numpy as np
 import pytest
 from loop_common.interfaces.representation import BaseRepresentation
@@ -95,7 +97,9 @@ class _MinimalGeologicalInterpolator(GeologicalInterpolator):
     def setup_interpolator(self, **kwargs):
         return None
 
-    def solve_system(self, solver, solver_kwargs: dict = {}) -> bool:
+    def solve_system(self, solver, solver_kwargs: dict | None = None) -> bool:
+        if solver_kwargs is None:
+            solver_kwargs = {}
         return True
 
     def update(self) -> bool:
