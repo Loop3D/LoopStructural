@@ -207,7 +207,7 @@ class Surface:
         )
 
     @classmethod
-    def from_vtk(cls, vtk_surface: pv.PolyData | str):
+    def from_vtk(cls, vtk_surface: Union[pv.PolyData, str]):
         if isinstance(vtk_surface, str):
             import pyvista as pv
 
