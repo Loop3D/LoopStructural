@@ -8,7 +8,8 @@ from scipy.sparse import coo_matrix, csr_matrix, tril
 
 from loop_common.logging import get_logger as getLogger
 
-from . import StructuredGrid, SupportType
+from . import SupportType
+from ._3d_structured_grid import StructuredGrid
 from ._base_support import BaseSupport
 
 logger = getLogger(__name__)

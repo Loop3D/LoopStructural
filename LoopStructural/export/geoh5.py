@@ -65,14 +65,15 @@ def add_points_to_geoh5(filename, point, overwrite=True, groupname="Loop"):
         data = {}
         if point.properties is not None:
             for k, v in point.properties.items():
-                data[k] = {'association': "VERTEX", "values": v}
+                data[k] = {'association': "VERTEX", "values": np.asarray(v)}
         if isinstance(point, VectorPoints):
-            data['vx'] = {'association': "VERTEX", "values": point.vectors[:, 0]}
-            data['vy'] = {'association': "VERTEX", "values": point.vectors[:, 1]}
-            data['vz'] = {'association': "VERTEX", "values": point.vectors[:, 2]}
+            vectors = np.asarray(point.vectors)
+            data['vx'] = {'association': "VERTEX", "values": vectors[:, 0]}
+            data['vy'] = {'association': "VERTEX", "values": vectors[:, 1]}
+            data['vz'] = {'association': "VERTEX", "values": vectors[:, 2]}
 
         if isinstance(point, ValuePoints):
-            data['values'] = {'association': "VERTEX", "values": point.values}
+            data['values'] = {'association': "VERTEX", "values": np.asarray(point.values)}
         point = geoh5py.objects.Points.create(
             workspace,
             name=point.name,

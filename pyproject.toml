@@ -94,6 +94,10 @@ members = ["packages/*"]
 loop-common = { workspace = true }
 loop-interpolation = { workspace = true }
 
+[tool.pytest.ini_options]
+addopts = "--import-mode=importlib"
+testpaths = ["tests"]
+
 [tool.isort]
 profile = 'black'
 line_length = 100

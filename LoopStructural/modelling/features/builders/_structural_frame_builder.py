@@ -18,7 +18,8 @@ logger = getLogger(__name__)
 
 
 from ....modelling.features import StructuralFrame
-from ....modelling.features.builders import FoldedFeatureBuilder, GeologicalFeatureBuilder
+from ._folded_feature_builder import FoldedFeatureBuilder
+from ._geological_feature_builder import GeologicalFeatureBuilder
 from ._base_builder import BaseBuilder
 
 

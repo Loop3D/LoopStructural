@@ -7,7 +7,7 @@ import pandas as pd
 
 from ....interpolators import DiscreteInterpolator, GeologicalInterpolator, InterpolatorFactory
 from ....modelling.features import GeologicalFeature
-from ....modelling.features.builders import BaseBuilder
+from ._base_builder import BaseBuilder
 from ....utils import getLogger
 from ....utils._api_registry import public_api
 from ....utils.helper import (

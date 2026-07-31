@@ -10,7 +10,8 @@ import numpy as np
 from LoopStructural.utils.maths import gradient_from_tetrahedron, regular_tetraherdron_for_points
 
 from ...geometry import ValuePoints, VectorPoints
-from ...modelling.features import BaseFeature, FeatureType
+from ._base_geological_feature import BaseFeature
+from . import FeatureType
 from ...utils import LoopValueError, getLogger
 
 logger = getLogger(__name__)

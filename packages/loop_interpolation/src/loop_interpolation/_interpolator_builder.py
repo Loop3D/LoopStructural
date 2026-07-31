@@ -9,7 +9,8 @@ from __future__ import annotations
 import numpy as np
 from loop_common.geometry import BoundingBox
 
-from loop_interpolation import GeologicalInterpolator, InterpolatorFactory, InterpolatorType
+from ._interpolatortype import InterpolatorType
+from ._interpolator_factory import InterpolatorFactory
 
 
 class InterpolatorBuilder:

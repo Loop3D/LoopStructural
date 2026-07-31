@@ -2,7 +2,7 @@ import numpy as np
 import pandas as pd
 from sklearn.decomposition import PCA
 
-from LoopStructural.utils import getLogger
+from .logging import getLogger
 
 logger = getLogger(__name__)
 

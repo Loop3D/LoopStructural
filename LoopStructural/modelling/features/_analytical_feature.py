@@ -2,7 +2,8 @@ from __future__ import annotations
 
 import numpy as np
 
-from ...modelling.features import BaseFeature, FeatureType
+from ._base_geological_feature import BaseFeature
+from . import FeatureType
 from ...utils import getLogger
 
 logger = getLogger(__name__)

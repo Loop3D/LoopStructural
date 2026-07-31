@@ -1,6 +1,6 @@
 import numpy as np
 
-from . import getLogger
+from .logging import getLogger
 
 logger = getLogger(__name__)
 

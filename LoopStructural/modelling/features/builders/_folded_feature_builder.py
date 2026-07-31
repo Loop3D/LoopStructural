@@ -2,7 +2,7 @@ import numpy as np
 
 from ....geometry import BoundingBox
 from ....modelling.features import FeatureType
-from ....modelling.features.builders import GeologicalFeatureBuilder
+from ._geological_feature_builder import GeologicalFeatureBuilder
 from ....modelling.features.fold.fold_function import FoldRotationType, get_fold_rotation_profile
 from ....utils import InterpolatorError, getLogger
 from ....utils._api_registry import public_api

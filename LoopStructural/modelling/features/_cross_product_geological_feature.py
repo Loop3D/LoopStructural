@@ -3,7 +3,7 @@ from __future__ import annotations
 
 import numpy as np
 
-from ...modelling.features import BaseFeature
+from ._base_geological_feature import BaseFeature
 from ...utils import getLogger
 
 logger = getLogger(__name__)
