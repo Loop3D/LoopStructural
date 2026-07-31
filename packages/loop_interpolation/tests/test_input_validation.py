@@ -5,7 +5,6 @@ from loop_interpolation import _validation
 ValidationError = _validation.ValidationError
 ShapeError = _validation.ShapeError
 DtypeError = _validation.DtypeError
-VectorError = _validation.VectorError
 WeightError = _validation.WeightError
 
 
@@ -28,10 +27,10 @@ def test_value_constraint_non_numeric_rejected():
         _validation.validate_value_constraint(pts)
 
 
-def test_gradient_constraint_zero_vector_rejected():
+def test_gradient_constraint_zero_vector_skipped_by_default():
     pts = np.array([[0.0, 0.0, 0.0, 0.0, 0.0, 0.0]])
-    with pytest.raises(VectorError):
-        _validation.validate_gradient_constraint(pts)
+    out = _validation.validate_gradient_constraint(pts)
+    assert out.shape == (0, 6)
 
 
 def test_gradient_constraint_non_finite_rejected():
@@ -40,16 +39,16 @@ def test_gradient_constraint_non_finite_rejected():
     assert out.shape == (0, 6)
 
 
-def test_normal_constraint_zero_vector_rejected():
+def test_normal_constraint_zero_vector_skipped_by_default():
     pts = np.array([[0.0, 0.0, 0.0, 0.0, 0.0, 0.0]])
-    with pytest.raises(VectorError):
-        _validation.validate_normal_constraint(pts)
+    out = _validation.validate_normal_constraint(pts)
+    assert out.shape == (0, 6)
 
 
-def test_tangent_constraint_zero_vector_rejected():
+def test_tangent_constraint_zero_vector_skipped_by_default():
     pts = np.array([[0.0, 0.0, 0.0, 0.0, 0.0, 0.0]])
-    with pytest.raises(VectorError):
-        _validation.validate_tangent_constraint(pts)
+    out = _validation.validate_tangent_constraint(pts)
+    assert out.shape == (0, 6)
 
 
 def test_interface_constraint_bad_shape_rejected():

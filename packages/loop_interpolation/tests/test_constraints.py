@@ -94,7 +94,21 @@ def test_value_constraint_drops_non_finite_rows_and_repairs_nan_weights():
 
 
 def test_gradient_constraint_rejects_zero_vector_via_object_validation():
+    constraint = GradientConstraint(
+        points=np.array([[0.0, 0.0, 0.0]]),
+        vectors=np.array([[0.0, 0.0, 0.0]]),
+    )
+
+    assert constraint.points.shape == (0, 3)
+    assert constraint.vectors.shape == (0, 3)
+
+
+def test_gradient_constraint_rejects_zero_vector_in_strict_mode():
     with pytest.raises(Exception) as excinfo:
-        GradientConstraint(points=np.array([[0.0, 0.0, 0.0]]), vectors=np.array([[0.0, 0.0, 0.0]]))
+        GradientConstraint(
+            points=np.array([[0.0, 0.0, 0.0]]),
+            vectors=np.array([[0.0, 0.0, 0.0]]),
+            drop_invalid_rows=False,
+        )
 
     assert "zero or near-zero magnitude" in str(excinfo.value)
