@@ -1,22 +1,24 @@
-from ....modelling.features.builders import GeologicalFeatureBuilder
-from ....modelling.features.fold.fold_function import FoldRotationType, get_fold_rotation_profile
-from ....modelling.features import FeatureType
 import numpy as np
 
-from ....utils import getLogger, InterpolatorError
-from ....datatypes import BoundingBox
+from ....geometry import BoundingBox
+from ....modelling.features import FeatureType
+from ._geological_feature_builder import GeologicalFeatureBuilder
+from ....modelling.features.fold.fold_function import FoldRotationType, get_fold_rotation_profile
+from ....utils import InterpolatorError, getLogger
+from ....utils._api_registry import public_api
 
 logger = getLogger(__name__)
 
 
 class FoldedFeatureBuilder(GeologicalFeatureBuilder):
+    @public_api(tier="stable")
     def __init__(
         self,
         interpolatortype: str,
         bounding_box: BoundingBox,
         fold,
         nelements: int = 1000,
-        fold_weights={},
+        fold_weights=None,
         name="Feature",
         region=None,
         svario=True,
@@ -28,17 +30,21 @@ class FoldedFeatureBuilder(GeologicalFeatureBuilder):
 
         Parameters
         ----------
-        interpolator : GeologicalInterpolator
-            the interpolator to add the fold constraints to
+        interpolatortype : str
+            the type of interpolator to use to build the feature
+        bounding_box : BoundingBox
+            the bounding box for the interpolation support
         fold : FoldEvent
             a fold event object that contains the geometry of the fold
         fold_weights : dict, optional
             interpolation weights for the fold, by default {}
         name : str, optional
             name of the geological feature, by default "Feature"
-        region : _type_, optional
-            _description_, by default None
+        region : str, optional
+            name of the region to restrict the feature to, by default None
         """
+        if fold_weights is None:
+            fold_weights = {}
         # create the feature builder, this intialises the interpolator
         GeologicalFeatureBuilder.__init__(
             self,
@@ -153,12 +159,11 @@ class FoldedFeatureBuilder(GeologicalFeatureBuilder):
         # not setting the norm
 
         # Use norm constraints if the fold normalisation weight is 0.
-        if constrained is None:
-            if "fold_normalisation" in kwargs:
-                if kwargs["fold_normalisation"] == 0.0:
-                    constrained = False
-                else:
-                    constrained = True
+        if constrained is None and "fold_normalisation" in kwargs:
+            if kwargs["fold_normalisation"] == 0.0:
+                constrained = False
+            else:
+                constrained = True
         self.add_data_to_interpolator(constrained=constrained)
         if not self.fold.foldframe[0].is_valid():
             raise InterpolatorError("Fold frame main coordinate is not valid")
@@ -166,7 +171,7 @@ class FoldedFeatureBuilder(GeologicalFeatureBuilder):
             self.set_fold_axis()
         if self.fold.fold_limb_rotation is None:
             self.set_fold_limb_rotation()
-        logger.info("Adding fold to {}".format(self.name))
+        logger.info(f"Adding fold to {self.name}")
         self.interpolator.fold = self.fold
         # if we have fold weights use those, otherwise just use default
         # self.interpolator.add_fold_constraints(**self.fold_weights)

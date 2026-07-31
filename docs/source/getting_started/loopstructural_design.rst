@@ -150,7 +150,7 @@ For example a fixture to generate different discrete interpolators would be
 
     from LoopStructural.interpolators import FiniteDifferenceInterpolator as FDI, \
                                             PiecewiseLinearInterpolator as PLI
-    from LoopStructural.interpolators import StructuredGrid, TetMesh
+    from LoopStructural.interpolators import StructuredGridSupport, TetMesh
 
     import pytest
     import numpy as np
@@ -163,11 +163,11 @@ For example a fixture to generate different discrete interpolators would be
         nsteps = np.array([20,20,20])
         step_vector = (maximum-origin)/nsteps
         if interpolator == 'FDI':
-            grid = StructuredGrid(origin=origin,nsteps=nsteps,step_vector=step_vector)
+            grid = StructuredGridSupport(origin=origin,nsteps_cells=nsteps,step_vector=step_vector)
             interpolator = FDI(grid)
             return interpolator
         elif interpolator == 'PLI':
-            grid = TetMesh(origin=origin,nsteps=nsteps,step_vector=step_vector)
+            grid = TetMesh(origin=origin,nsteps_cells=nsteps,step_vector=step_vector)
             interpolator = PLI(grid)
             return interpolator
         else:

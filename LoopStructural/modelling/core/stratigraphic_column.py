@@ -1,7 +1,12 @@
+from __future__ import annotations
+
 import enum
-from typing import Dict, Optional, List, Tuple
+
 import numpy as np
-from LoopStructural.utils import rng, getLogger, Observable, random_colour
+
+from LoopStructural.utils import Observable, getLogger, random_colour, rng
+from LoopStructural.utils._api_registry import public_api
+
 logger = getLogger(__name__)
 logger.info("Imported LoopStructural Stratigraphic Column module")
 class UnconformityType(enum.Enum):
@@ -348,6 +353,7 @@ class StratigraphicColumn(Observable['StratigraphicColumn']):
         Mapping of groups to their constituent units
     """
 
+    @public_api(tier="stable")
     def __init__(self):
         """Initialize the StratigraphicColumn with basement and base unconformity."""
         super().__init__()
@@ -386,12 +392,10 @@ class StratigraphicColumn(Observable['StratigraphicColumn']):
         basement : bool, optional
             Whether to add basement after clearing, by default True
         """
-        if basement:
-            self.add_basement()
-            
-        
         self.order = []
         self.group_mapping = {}
+        if basement:
+            self.add_basement()
         self.notify('column_cleared')
     def add_unit(self, name,*, colour=None, thickness=None, where='top',id=None):
         if id is None:
@@ -404,7 +408,7 @@ class StratigraphicColumn(Observable['StratigraphicColumn']):
             self.order.insert(0, unit)
         else:
             raise ValueError("Invalid 'where' argument. Use 'top' or 'bottom'.")
-        unit.attach(self.update_unit_values,'unit/*')
+        unit.attach(self.update_unit_values)
         self.notify('unit_added', unit=unit)
         self.update_unit_values()  # Update min and max values after adding a unit
         return unit
@@ -471,7 +475,7 @@ class StratigraphicColumn(Observable['StratigraphicColumn']):
                 return element
         raise KeyError(f"No element found with uuid: {uuid}")
 
-    def get_group_for_unit_name(self, unit_name:str) -> Optional[StratigraphicGroup]:
+    def get_group_for_unit_name(self, unit_name:str) -> StratigraphicGroup | None:
         """
         Retrieves the group for a given unit name.
         """
@@ -499,9 +503,7 @@ class StratigraphicColumn(Observable['StratigraphicColumn']):
         i=0
         group = StratigraphicGroup(
             name=(
-                f'Group_{i}'
-                if f'Group_{i}' not in self.group_mapping
-                else self.group_mapping[f'Group_{i}']
+                self.group_mapping.get(f'Group_{i}', f'Group_{i}')
             )
         )
         for e in reversed(self.order):
@@ -513,15 +515,13 @@ class StratigraphicColumn(Observable['StratigraphicColumn']):
                     i+=1
                     group = StratigraphicGroup(
                         name=(
-                            f'Group_{i}'
-                            if f'Group_{i}' not in self.group_mapping
-                            else self.group_mapping[f'Group_{i}']
+                            self.group_mapping.get(f'Group_{i}', f'Group_{i}')
                         )
                     )
         if group:
             groups.append(group)
         return groups
-    def get_stratigraphic_ids(self) -> List[List[str]]:
+    def get_stratigraphic_ids(self) -> list[list[str]]:
         ids = []
         for group in self.get_groups():
             if group == "faults":
@@ -539,7 +539,7 @@ class StratigraphicColumn(Observable['StratigraphicColumn']):
             groups_list.append(group)
         return groups_list
 
-    def get_group_unit_pairs(self) -> List[Tuple[str,str]]:
+    def get_group_unit_pairs(self) -> list[tuple[str,str]]:
         """
         Returns a list of tuples containing group names and unit names.
         """
@@ -571,12 +571,20 @@ class StratigraphicColumn(Observable['StratigraphicColumn']):
         ]
         self.notify('order_updated', new_order=self.order)
         self.update_unit_values()  # Update min and max values after updating the order
-    def update_unit_values(self, *, observable: Optional["Observable"] = None, event: Optional[str]= None):
+    def update_unit_values(self, observable: Observable | None = None, event: str | None = None, **kwargs):
         """
         Updates the min and max values for each unit based on their position in the column.
+
+        Cumulative thickness resets at each unconformity, so that an infinite-thickness
+        unit (e.g. the basement) is contained within its own group and does not propagate
+        into the min/max range of units in the group above it.
+
+        `observable`/`event`/`**kwargs` accept the arguments `Observable.notify()` passes
+        to attached callbacks (`cb(observable, event, *args, **kwargs)`), so this method can
+        be used directly as a listener as well as called explicitly with no arguments.
         """
-        # If the event is not 'unit/*', skip the update
-        if event is not None and event != 'unit/*':
+        # Ignore notifications that aren't unit-namespaced events (e.g. column-level events)
+        if event is not None and not event.startswith('unit/'):
             return
         cumulative_thickness = 0
         for element in self.order:
@@ -584,8 +592,10 @@ class StratigraphicColumn(Observable['StratigraphicColumn']):
                 element.min_value = cumulative_thickness
                 element.max_value = cumulative_thickness + (element.thickness or 0)
                 cumulative_thickness = element.max_value
+            elif isinstance(element, StratigraphicUnconformity):
+                cumulative_thickness = 0
 
-    def update_element(self, unit_data: Dict):
+    def update_element(self, unit_data: dict):
         """
         Updates an existing element in the stratigraphic column with new data.
         :param unit_data: A dictionary containing the updated data for the element.
@@ -651,7 +661,7 @@ class StratigraphicColumn(Observable['StratigraphicColumn']):
             column.add_element(element)
         return column
 
-    def get_isovalues(self) -> Dict[str, float]:
+    def get_isovalues(self) -> dict[str, float]:
         """
         Returns a dictionary of isovalues for the stratigraphic units in the column.
         """
@@ -666,8 +676,8 @@ class StratigraphicColumn(Observable['StratigraphicColumn']):
     def plot(self,*, ax=None, **kwargs):
         import matplotlib.pyplot as plt
         from matplotlib import cm
-        from matplotlib.patches import Polygon
         from matplotlib.collections import PatchCollection
+        from matplotlib.patches import Polygon
         n_units = 0  # count how many discrete colours (number of stratigraphic units)
         xmin = 0
         ymin = 0
@@ -716,7 +726,7 @@ class StratigraphicColumn(Observable['StratigraphicColumn']):
                 ax.annotate(getattr(u, 'name', 'Unknown'), xy=(xmin+(xmax-xmin)/2, (ymax-ymin)/2+ymin), fontsize=8, ha='left')
 
         if 'cmap' not in kwargs:
-            import matplotlib.colors as colors
+            from matplotlib import colors
 
             colours = []
             boundaries = []
@@ -745,7 +755,7 @@ class StratigraphicColumn(Observable['StratigraphicColumn']):
     
     def cmap(self):
         try:
-            import matplotlib.colors as colors
+            from matplotlib import colors
 
             colours = []
             boundaries = []

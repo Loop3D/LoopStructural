@@ -1,8 +1,10 @@
-from ._base_fold_rotation_angle import BaseFoldRotationAngleProfile
+from __future__ import annotations
+
 import numpy as np
 import numpy.typing as npt
-from typing import Optional, List, Union
+
 from .....utils import getLogger
+from ._base_fold_rotation_angle import BaseFoldRotationAngleProfile
 
 logger = getLogger(__name__)
 
@@ -10,29 +12,30 @@ logger = getLogger(__name__)
 class FourierSeriesFoldRotationAngleProfile(BaseFoldRotationAngleProfile):
     def __init__(
         self,
-        rotation_angle: Optional[npt.NDArray[np.float64]] = None,
-        fold_frame_coordinate: Optional[npt.NDArray[np.float64]] = None,
+        rotation_angle: npt.NDArray[np.float64] | None = None,
+        fold_frame_coordinate: npt.NDArray[np.float64] | None = None,
         c0=0,
         c1=0,
         c2=0,
         w=1,
     ):
-        """_summary_
+        """Fold rotation angle profile defined by a truncated Fourier series
+        c0 + c1*cos(2*pi/w * x) + c2*sin(2*pi/w * x)
 
         Parameters
         ----------
         rotation_angle : Optional[npt.NDArray[np.float64]], optional
-            _description_, by default None
+            the calculated fold rotation angle from observations in degrees, by default None
         fold_frame_coordinate : Optional[npt.NDArray[np.float64]], optional
-            _description_, by default None
+            fold frame coordinate scalar field value, by default None
         c0 : int, optional
-            _description_, by default 0
+            mean value coefficient of the Fourier series, by default 0
         c1 : int, optional
-            _description_, by default 0
+            cosine coefficient of the Fourier series, by default 0
         c2 : int, optional
-            _description_, by default 0
+            sine coefficient of the Fourier series, by default 0
         w : int, optional
-            _description_, by default 1
+            wavelength of the Fourier series, by default 1
         """
         super().__init__(rotation_angle, fold_frame_coordinate)
         self._c0 = c0
@@ -80,19 +83,25 @@ class FourierSeriesFoldRotationAngleProfile(BaseFoldRotationAngleProfile):
 
     @staticmethod
     def _function(x, c0, c1, c2, w):
-        """
+        """Evaluate the Fourier series fold rotation angle function
 
         Parameters
         ----------
         x
+            fold frame coordinate to evaluate the function at
         c0
+            mean value coefficient of the Fourier series
         c1
+            cosine coefficient of the Fourier series
         c2
+            sine coefficient of the Fourier series
         w
+            wavelength of the Fourier series
 
         Returns
         -------
-
+        np.ndarray
+            value of the Fourier series at x
         """
         v = np.array(x.astype(float))
         # v.fill(c0)
@@ -101,11 +110,13 @@ class FourierSeriesFoldRotationAngleProfile(BaseFoldRotationAngleProfile):
 
     def initial_guess(
         self,
-        wavelength: Optional[float] = None,
+        wavelength: float | None = None,
         calculate_wavelength: bool = True,
-        svariogram_parameters: dict = {},
+        svariogram_parameters: dict | None = None,
         reset: bool = False,
     ):
+        if svariogram_parameters is None:
+            svariogram_parameters = {}
         # reset the fold paramters before fitting
         # otherwise use the current values to fit
         if reset:
@@ -132,16 +143,15 @@ class FourierSeriesFoldRotationAngleProfile(BaseFoldRotationAngleProfile):
     @params.setter
     def params(self, params):
         for key in params:
-            if key == 'w':
-                if params[key] <= 0:
-                    raise ValueError('wavelength must be greater than 0')
+            if key == 'w' and params[key] <= 0:
+                raise ValueError('wavelength must be greater than 0')
             setattr(self, key, params[key])
         self.c0 = params["c0"]
         self.c1 = params["c1"]
         self.c2 = params["c2"]
         self.w = params["w"]
 
-    def update_params(self, params: Union[List[float], npt.NDArray[np.float64]]):
+    def update_params(self, params: list[float] | npt.NDArray[np.float64]):
         if len(params) != 4:
             raise ValueError('params must have 4 elements')
         self.c0 = params[0]

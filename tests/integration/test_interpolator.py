@@ -1,6 +1,7 @@
+import numpy as np
+
 from LoopStructural import GeologicalModel
 from LoopStructural.datasets import load_claudius, load_horizontal
-import numpy as np
 
 
 def model_fit(model, data):
@@ -12,10 +13,10 @@ def model_fit(model, data):
 
 
 def test_create_model():
-    data, bb = load_claudius()
+    _data, bb = load_claudius()
     model = GeologicalModel(bb[0, :], bb[1, :])
-    assert np.all(np.isclose(model.bounding_box.global_origin, bb[0, :]))
-    assert np.all(np.isclose(model.bounding_box.global_maximum, bb[1, :]))
+    assert np.all(np.isclose(model.bounding_box.origin, bb[0, :]))
+    assert np.all(np.isclose(model.bounding_box.maximum, bb[1, :]))
 
 
 def test_add_data():

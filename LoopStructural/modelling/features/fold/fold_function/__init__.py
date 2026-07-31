@@ -1,9 +1,13 @@
-from ._trigo_fold_rotation_angle import TrigoFoldRotationAngleProfile
-from ._fourier_series_fold_rotation_angle import FourierSeriesFoldRotationAngleProfile
+from __future__ import annotations
+
 from enum import Enum
 from typing import Optional
-import numpy.typing as npt
+
 import numpy as np
+import numpy.typing as npt
+
+from ._fourier_series_fold_rotation_angle import FourierSeriesFoldRotationAngleProfile
+from ._trigo_fold_rotation_angle import TrigoFoldRotationAngleProfile
 
 
 class FoldRotationType(Enum):
@@ -20,8 +24,8 @@ class FoldRotationType(Enum):
 
 def get_fold_rotation_profile(
     fold_rotation_type,
-    rotation_angle: Optional[npt.NDArray[np.float64]] = None,
-    fold_frame_coordinate: Optional[npt.NDArray[np.float64]] = None,
+    rotation_angle: npt.NDArray[np.float64] | None = None,
+    fold_frame_coordinate: npt.NDArray[np.float64] | None = None,
     **kwargs,
 ):
     return fold_rotation_type.value(rotation_angle, fold_frame_coordinate, **kwargs)

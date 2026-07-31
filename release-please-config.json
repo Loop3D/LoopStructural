@@ -2,6 +2,14 @@
   "packages": {
     "LoopStructural": {
       "release-type": "python"
+    },
+    "packages/loop_common": {
+      "release-type": "python",
+      "component": "loop-common"
+    },
+    "packages/loop_interpolation": {
+      "release-type": "python",
+      "component": "loop-interpolation"
     }
   }
 }

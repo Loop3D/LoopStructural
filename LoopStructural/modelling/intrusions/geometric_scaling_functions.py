@@ -1,8 +1,7 @@
 # import scipy as sc
-import scipy.stats as sct
-
 import numpy as np
 import pandas as pd
+import scipy.stats as sct
 
 from ...utils import getLogger, rng
 
@@ -88,7 +87,7 @@ def thickness_from_geometric_scaling(length: float, intrusion_type: str) -> floa
     maxT[maxT < 0] = None
     mean_t = np.nanmean(maxT)
 
-    logger.info("Building intrusion of thickness {}".format(mean_t))
+    logger.info(f"Building intrusion of thickness {mean_t}")
 
     return mean_t
 

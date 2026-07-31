@@ -1,12 +1,14 @@
+from __future__ import annotations
+
 from abc import ABCMeta, abstractmethod
 from ast import List
-from typing import Union, Optional
+
 import numpy as np
 import numpy.typing as npt
-from .._svariogram import SVariogram
 from scipy.optimize import curve_fit
 
 from .....utils import getLogger
+from .._svariogram import SVariogram
 
 logger = getLogger(__name__)
 
@@ -14,8 +16,8 @@ logger = getLogger(__name__)
 class BaseFoldRotationAngleProfile(metaclass=ABCMeta):
     def __init__(
         self,
-        rotation_angle: Optional[npt.NDArray[np.float64]] = None,
-        fold_frame_coordinate: Optional[npt.NDArray[np.float64]] = None,
+        rotation_angle: npt.NDArray[np.float64] | None = None,
+        fold_frame_coordinate: npt.NDArray[np.float64] | None = None,
     ):
         """Base class for fold rotation angle functions
 
@@ -47,7 +49,7 @@ class BaseFoldRotationAngleProfile(metaclass=ABCMeta):
             self._svariogram = value
         else:
             logger.error("svario must be an instance of SVariogram")
-            raise ValueError("svario must be an instance of SVariogram")
+            raise TypeError("svario must be an instance of SVariogram")
 
     def add_observer(self, watcher):
         self._observers.append(watcher)
@@ -81,8 +83,8 @@ class BaseFoldRotationAngleProfile(metaclass=ABCMeta):
         )
 
     def estimate_wavelength(
-        self, svariogram_parameters: dict = {}, wavelength_number: int = 1
-    ) -> Union[float, np.ndarray]:
+        self, svariogram_parameters: dict | None = None, wavelength_number: int = 1
+    ) -> float | np.ndarray:
         """Estimate the wavelength of the fold profile using the svariogram parameters
 
         Parameters
@@ -95,6 +97,8 @@ class BaseFoldRotationAngleProfile(metaclass=ABCMeta):
         float
             estimated wavelength
         """
+        if svariogram_parameters is None:
+            svariogram_parameters = {}
         wl = self.svario.find_wavelengths(**svariogram_parameters)
         if wavelength_number == 1:
             return wl[0]
@@ -119,19 +123,24 @@ class BaseFoldRotationAngleProfile(metaclass=ABCMeta):
     def evaluation_points(self, value):
         self._evaluation_points = value
 
-    def fit(self, params: dict = {}) -> bool:
-        """
+    def fit(self, params: dict | None = None) -> bool:
+        """Fit the fold rotation angle function to the rotation angle and fold frame
+        coordinate observations using scipy curve_fit
 
         Parameters
         ----------
         params : dict, optional
-            _description_, by default {}
+            fitting parameters, may contain "guess", "wavelength", "reset",
+            "svariogram_parameters" and "calculate_wavelength" keys used to build the
+            initial guess, by default {}
 
         Returns
         -------
         bool
-            _description_
+            True if the curve was successfully fit, False otherwise
         """
+        if params is None:
+            params = {}
         if len(self.params) > 0:
             success = False
             if self.rotation_angle is None or self.fold_frame_coordinate is None:
@@ -164,18 +173,18 @@ class BaseFoldRotationAngleProfile(metaclass=ABCMeta):
                 guess = res[0]
                 logger.info(res[3])
                 success = True
-            except Exception as _e:
-                logger.error("Could not fit curve to S-Plot, check the wavelength")
+            except (RuntimeError, ValueError, TypeError) as _e:
+                logger.error(f"Could not fit curve to S-Plot, check the wavelength: {_e}")
             try:
                 self.update_params(guess)
-            except Exception as _e:
-                logger.error("Could not update parameters")
+            except (ValueError, TypeError, IndexError) as _e:
+                logger.error(f"Could not update parameters: {_e}")
                 return False
             return success
         return True
 
     @abstractmethod
-    def update_params(self, params: Union[List, npt.NDArray[np.float64]]) -> None:
+    def update_params(self, params: List | npt.NDArray[np.float64]) -> None:
         """Update the parameters of the fold rotation angle function
 
         Parameters
@@ -183,33 +192,37 @@ class BaseFoldRotationAngleProfile(metaclass=ABCMeta):
         params : dict
             parameters to update
         """
-        pass
 
     @abstractmethod
     def initial_guess(
         self,
-        wavelength: Optional[float] = None,
+        wavelength: float | None = None,
         calculate_wavelength: bool = True,
-        svariogram_parameters: dict = {},
+        svariogram_parameters: dict | None = None,
         reset: bool = False,
     ) -> np.ndarray:
-        """_summary_
+        """Calculate an initial guess for the parameters of the fold rotation angle function,
+        optionally using the wavelength estimated from the svariogram
 
         Parameters
         ----------
-        selfcalculate_wavelength : bool, optional
-            _description_, by default True
+        wavelength : float, optional
+            wavelength to use for the initial guess, if None it is estimated from the
+            svariogram when calculate_wavelength is True, by default None
+        calculate_wavelength : bool, optional
+            whether to estimate the wavelength from the svariogram, by default True
         svariogram_parameters : dict, optional
-            _description_, by default {}
+            parameters passed to the svariogram when estimating the wavelength, by default {}
         reset : bool, optional
-            _description_, by default False
+            whether to reset any previously fitted parameters before guessing, by default False
 
         Returns
         -------
         np.ndarray
-            _description_
+            initial guess of the parameters for the fold rotation angle function
         """
-        pass
+        if svariogram_parameters is None:
+            svariogram_parameters = {}
 
     @staticmethod
     @abstractmethod
@@ -221,28 +234,30 @@ class BaseFoldRotationAngleProfile(metaclass=ABCMeta):
         Parameters
         ----------
         s
+            fold frame coordinate to evaluate the function at
         *args
+            parameters of the fold rotation angle function
 
         Returns
         -------
-        _description_
+        np.ndarray
+            tan of the fold rotation angle in radians at s
         """
-        pass
 
     def plot(self, ax=None, show_data=True, **kwargs):
         """Plot the fold rotation angle function
 
         Parameters
         ----------
-        ax : _description_, optional
-            _description_, by default None
+        ax : matplotlib axes, optional
+            the axes to plot onto, a new figure and axes are created if None, by default None
         **kwargs
             passed to matplotlib plot
         """
         if ax is None:
             import matplotlib.pyplot as plt
 
-            fig, ax = plt.subplots()
+            _fig, ax = plt.subplots()
         if show_data:
             ax.scatter(self.fold_frame_coordinate, self.rotation_angle, c="r")
         ax.plot(self.evaluation_points, self(self.evaluation_points), **kwargs)

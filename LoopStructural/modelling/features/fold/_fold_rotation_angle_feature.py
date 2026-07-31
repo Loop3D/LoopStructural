@@ -13,8 +13,8 @@ class FoldRotationAngleFeature(BaseFeature):
         rotation,
         name="fold_rotation_angle",
         model=None,
-        faults=[],
-        regions=[],
+        faults=None,
+        regions=None,
         builder=None,
     ):
         """
@@ -24,6 +24,10 @@ class FoldRotationAngleFeature(BaseFeature):
         fold_frame
         rotation
         """
+        if faults is None:
+            faults = []
+        if regions is None:
+            regions = []
         BaseFeature.__init__(self, f"{name}_displacement", model, faults, regions, builder)
         self.fold_frame = fold_frame
         self.rotation = rotation
@@ -42,9 +46,16 @@ class FoldRotationAngleFeature(BaseFeature):
         s1 = self.fold_frame.features[0].evaluate_value(location)
         r = self.rotation(s1)
         return r
-    def copy(self, name = None):
-        raise NotImplementedError("FoldRotationAngleFeature cannot be copied directly, copy the fold frame and rotation function separately")
+
+    def copy(self, name=None):
+        raise NotImplementedError(
+            "FoldRotationAngleFeature cannot be copied directly, copy the fold frame and rotation function separately"
+        )
+
     def evaluate_gradient(self, pos, ignore_regions=False):
         raise NotImplementedError("FoldRotationAngleFeature does not have a gradient")
-    def get_data(self, value_map = None):
-        raise NotImplementedError("FoldRotationAngleFeature does not have data associated with it directly, get data from the fold frame and rotation function separately")
+
+    def get_data(self, value_map=None):
+        raise NotImplementedError(
+            "FoldRotationAngleFeature does not have data associated with it directly, get data from the fold frame and rotation function separately"
+        )

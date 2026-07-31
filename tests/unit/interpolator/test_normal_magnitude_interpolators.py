@@ -1,6 +1,8 @@
 import numpy as np
 import pytest
+
 from LoopStructural import GeologicalModel
+
 
 @pytest.mark.parametrize("interpolator_type", ["PLI", "FDI"])
 @pytest.mark.parametrize("magnitude", [0.1, 0.5, 1.0, 2.0, 5.0])

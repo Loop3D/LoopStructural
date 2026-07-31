@@ -20,18 +20,18 @@ def _normalise_voxet_property(values, property_name, nsteps):
         if flat_values.shape == expected_shape:
             flat_values = flat_values.reshape(-1, order="F")
         elif flat_values.ndim == 1 and flat_values.size == expected_size:
-            flat_values = flat_values
+            flat_values = flat_values.copy()
         else:
             raise ValueError(
                 f"Property '{property_name}' must have shape {expected_shape} or size {expected_size}"
             )
 
     if np.issubdtype(flat_values.dtype, np.integer):
-        if flat_values.size == 0:
-            export_dtype = np.int8
-            storage_type = "Octet"
-            element_size = 1
-        elif flat_values.min() >= np.iinfo(np.int8).min and flat_values.max() <= np.iinfo(np.int8).max:
+        if (
+            flat_values.size == 0
+            or flat_values.min() >= np.iinfo(np.int8).min
+            and flat_values.max() <= np.iinfo(np.int8).max
+        ):
             export_dtype = np.int8
             storage_type = "Octet"
             element_size = 1
@@ -226,8 +226,7 @@ TFACE
             if not np.isnan(vert[0]) and not np.isnan(vert[1]) and not np.isnan(vert[2]):
                 fd.write(f"VRTX {v_idx:} {vert[0]} {vert[1]} {vert[2]}")
                 if surf.properties:
-                    for value in surf.properties.values():
-                        fd.write(f" {value[idx]}")
+                    fd.writelines(f" {value[idx]}" for value in surf.properties.values())
                 fd.write("\n")
                 v_map[idx] = v_idx
                 v_idx += 1

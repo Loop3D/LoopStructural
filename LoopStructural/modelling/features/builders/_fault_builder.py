@@ -1,22 +1,26 @@
-from typing import Union
+from __future__ import annotations
 
-from LoopStructural.utils.maths import rotation
-from ._structural_frame_builder import StructuralFrameBuilder
-from .. import AnalyticalGeologicalFeature
 import numpy as np
 import pandas as pd
+
+from LoopStructural.utils.maths import rotation
+
+from ....geometry import BoundingBox
 from ....utils import getLogger
-from ....datatypes import BoundingBox
+from ....utils._api_registry import public_api
+from .. import AnalyticalGeologicalFeature
+from ._structural_frame_builder import StructuralFrameBuilder
 
 logger = getLogger(__name__)
 
 
 class FaultBuilder(StructuralFrameBuilder):
+    @public_api(tier="stable")
     def __init__(
         self,
-        interpolatortype: Union[str, list],
+        interpolatortype: str | list,
         bounding_box: BoundingBox,
-        nelements: Union[int, list] = 1000,
+        nelements: int | list = 1000,
         model=None,
         fault_bounding_box_buffer=0.2,
         **kwargs,
@@ -383,7 +387,7 @@ class FaultBuilder(StructuralFrameBuilder):
 
                 distance = np.linalg.norm(fault_trace[:, None, :] - fault_trace[None, :, :], axis=2)
                 if len(distance) == 0 or np.sum(distance) == 0:
-                    logger.warning("There is no fault trace for {}".format(self.name))
+                    logger.warning(f"There is no fault trace for {self.name}")
                     # this can mean there is only a single data point for
                     # the fault, its not critical
                     # but probably means the fault isn't well defined.

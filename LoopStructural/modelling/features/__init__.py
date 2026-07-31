@@ -20,14 +20,13 @@ class FeatureType(IntEnum):
 
 
 # from .builders._geological_feature_builder import GeologicalFeatureBuilder
+from ._analytical_feature import AnalyticalGeologicalFeature
 from ._base_geological_feature import BaseFeature
+from ._cross_product_geological_feature import CrossProductGeologicalFeature
 from ._geological_feature import GeologicalFeature
 from ._lambda_geological_feature import LambdaGeologicalFeature
+from ._projected_vector_feature import ProjectedVectorFeature
 
 # from .builders._geological_feature_builder import GeologicalFeatureBuilder
 from ._structural_frame import StructuralFrame
-from ._cross_product_geological_feature import CrossProductGeologicalFeature
-
 from ._unconformity_feature import UnconformityFeature
-from ._analytical_feature import AnalyticalGeologicalFeature
-from ._projected_vector_feature import ProjectedVectorFeature

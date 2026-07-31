@@ -1,12 +1,13 @@
-from typing import Optional
+from __future__ import annotations
+
 import numpy as np
 import pandas as pd
-from LoopStructural.modelling.features import BaseFeature
-from LoopStructural.modelling.features import FeatureType
+from scipy.interpolate import Rbf
+
+from LoopStructural.modelling.features import BaseFeature, FeatureType
 
 # import logging
 from ...utils import getLogger
-from scipy.interpolate import Rbf
 
 logger = getLogger(__name__)
 
@@ -260,7 +261,7 @@ class IntrusionFeature(BaseFeature):
             intrusion_coord2_pts,
         ]
 
-        thresholds, residuals, conceptual = self.interpolate_lateral_thresholds(
+        thresholds, _residuals, _conceptual = self.interpolate_lateral_thresholds(
             intrusion_coord1_pts
         )
 
@@ -272,7 +273,7 @@ class IntrusionFeature(BaseFeature):
             c2_minside_threshold = thresholds[0]
             c2_maxside_threshold = thresholds[1]
 
-        thresholds, residuals, conceptual = self.interpolate_vertical_thresholds(
+        thresholds, _residuals, _conceptual = self.interpolate_vertical_thresholds(
             intrusion_coord1_pts, intrusion_coord2_pts
         )
         c0_minside_threshold = thresholds[1]
@@ -358,7 +359,7 @@ class IntrusionFeature(BaseFeature):
             intrusion_coord2_pts,
         ]
 
-        thresholds, residuals, conceptual = self.interpolate_lateral_thresholds(
+        thresholds, _residuals, _conceptual = self.interpolate_lateral_thresholds(
             intrusion_coord1_pts
         )
 
@@ -370,7 +371,7 @@ class IntrusionFeature(BaseFeature):
             c2_minside_threshold = thresholds[0]
             c2_maxside_threshold = thresholds[1]
 
-        thresholds, residuals, conceptual = self.interpolate_vertical_thresholds(
+        thresholds, _residuals, _conceptual = self.interpolate_vertical_thresholds(
             intrusion_coord1_pts, intrusion_coord2_pts
         )
         c0_minside_threshold = thresholds[1]
@@ -406,7 +407,7 @@ class IntrusionFeature(BaseFeature):
 
         return intrusion_sf
 
-    def get_data(self, value_map: Optional[dict] = None):
+    def get_data(self, value_map: dict | None = None):
         pass
 
     def copy(self):

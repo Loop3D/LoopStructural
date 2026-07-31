@@ -55,7 +55,6 @@ def test_not_up_to_date():
     """test to make sure that the feature
     isn't interpolated when everything is set up
     """
-    pass
 
 
 def test_get_feature():

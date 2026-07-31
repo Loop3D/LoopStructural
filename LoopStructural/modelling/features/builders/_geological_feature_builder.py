@@ -5,33 +5,31 @@ Feature builder
 import numpy as np
 import pandas as pd
 
-from ....utils import getLogger
-
-
-from ....interpolators import GeologicalInterpolator
-from ....utils.helper import (
-    xyz_names,
-    val_name,
-    normal_vec_names,
-    weight_name,
-    gradient_vec_names,
-    tangent_vec_names,
-    interface_name,
-    inequality_name,
-    pairs_name,
-)
+from ....interpolators import DiscreteInterpolator, GeologicalInterpolator, InterpolatorFactory
 from ....modelling.features import GeologicalFeature
-from ....modelling.features.builders import BaseBuilder
+from ._base_builder import BaseBuilder
+from ....utils import getLogger
+from ....utils._api_registry import public_api
 from ....utils.helper import (
     get_data_bounding_box_map as get_data_bounding_box,
 )
-from ....interpolators import DiscreteInterpolator
-from ....interpolators import InterpolatorFactory
+from ....utils.helper import (
+    gradient_vec_names,
+    inequality_name,
+    interface_name,
+    normal_vec_names,
+    pairs_name,
+    tangent_vec_names,
+    val_name,
+    weight_name,
+    xyz_names,
+)
 
 logger = getLogger(__name__)
 
 
 class GeologicalFeatureBuilder(BaseBuilder):
+    @public_api(tier="stable")
     def __init__(
         self,
         interpolatortype: str,
@@ -62,7 +60,7 @@ class GeologicalFeatureBuilder(BaseBuilder):
         
         if not issubclass(type(interpolator), GeologicalInterpolator):
             raise TypeError(
-                "interpolator is {} and must be a GeologicalInterpolator".format(type(interpolator))
+                f"interpolator is {type(interpolator)} and must be a GeologicalInterpolator"
             )
         self._interpolator = interpolator
         self._up_to_date = self._interpolator.up_to_date
@@ -102,7 +100,7 @@ class GeologicalFeatureBuilder(BaseBuilder):
     def interpolator(self, interpolator):
         if not issubclass(type(interpolator), GeologicalInterpolator):
             raise TypeError(
-                "interpolator is {} and must be a GeologicalInterpolator".format(type(interpolator))
+                f"interpolator is {type(interpolator)} and must be a GeologicalInterpolator"
             )
 
     def add_data_from_data_frame(self, data_frame, overwrite=False):
@@ -147,7 +145,7 @@ class GeologicalFeatureBuilder(BaseBuilder):
         try:
             step = int(step)  # cast as int in case it was a float
         except ValueError:
-            logger.error("Cannot cast {} as integer, setting step to 1".format(step))
+            logger.error(f"Cannot cast {step} as integer, setting step to 1")
             step = 1
         self._orthogonal_features[feature.name] = [feature, w, region, step, B]
 
@@ -168,7 +166,7 @@ class GeologicalFeatureBuilder(BaseBuilder):
         -------
 
         """
-        logger.info('Adding data to interpolator for {}'.format(self.name))
+        logger.info(f'Adding data to interpolator for {self.name}')
         logger.info(f"Data shape: {self.data.shape}")
         logger.info(f'Constrained: {constrained}, force_constrained: {force_constrained}')
         if self.data_added:
@@ -295,7 +293,7 @@ class GeologicalFeatureBuilder(BaseBuilder):
     def install_gradient_constraint(self):
         if issubclass(type(self.interpolator), DiscreteInterpolator):
             for g in self._orthogonal_features.values():
-                feature, w, region, step, B = g
+                feature, w, _region, step, B = g
                 if w == 0:
                     continue
                 logger.info(f"Adding gradient orthogonal constraint {feature.name} to {self.name}")
@@ -336,9 +334,9 @@ class GeologicalFeatureBuilder(BaseBuilder):
                 val = e[0].evaluate_value(support.nodes[e[1](support.nodes), :])
                 mask = ~np.isnan(val)
                 self.interpolator.add_equality_constraints(idc[mask], val[mask] * e[2])
-            except BaseException as e:
+            except (AttributeError, TypeError, ValueError, RuntimeError) as exc:
                 logger.error(f"Could not add equality for {self.name}")
-                logger.error(f"Exception: {e}")
+                logger.error(f"Exception: {exc}")
 
     def get_value_constraints(self):
         """
@@ -456,6 +454,15 @@ class GeologicalFeatureBuilder(BaseBuilder):
         if np.any(np.isnan(maximum)):
             logger.warning("Maximum is NaN, not updating")
             return
+
+        # origin/maximum are given in world coordinates (e.g. straight from
+        # model.bounding_box or fault-frame data); project into the
+        # interpolator's local frame before writing to the support. Exact
+        # for translation-only transforms -- no code sets a non-identity
+        # rotation on the bounding box today.
+        if self.interpolator.bounding_box is not None:
+            origin = self.interpolator.bounding_box.project(origin)
+            maximum = self.interpolator.bounding_box.project(maximum)
 
         self.interpolator.support.origin = origin
         self.interpolator.support.maximum = maximum

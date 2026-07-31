@@ -1,17 +1,20 @@
 """
 Structural frames
 """
+from __future__ import annotations
 
-from ..features import BaseFeature, FeatureType
 import numpy as np
+
+from ...geometry import ValuePoints, VectorPoints
 from ...utils import getLogger
-from typing import Optional, List, Union
-from ...datatypes import ValuePoints, VectorPoints
+from ...utils._api_registry import public_api
+from ..features import BaseFeature, FeatureType
 
 logger = getLogger(__name__)
 
 
 class StructuralFrame(BaseFeature):
+    @public_api(tier="stable")
     def __init__(self, name: str, features: list, fold=None, model=None):
         """
         Structural frame is a curvilinear coordinate system defined by
@@ -154,7 +157,7 @@ class StructuralFrame(BaseFeature):
             return self.features[i].interpolator.evaluate_gradient(pos)
         return self.features[0].interpolator.evaluate_gradient(pos)            
 
-    def get_data(self, value_map: Optional[dict] = None) -> List[Union[ValuePoints, VectorPoints]]:
+    def get_data(self, value_map: dict | None = None) -> list[ValuePoints | VectorPoints]:
         """Return the data associated with the features in the
         structural frame
 
@@ -173,7 +176,7 @@ class StructuralFrame(BaseFeature):
             data.extend(f.get_data(value_map))
         return data
 
-    def copy(self, name: Optional[str] = None):
+    def copy(self, name: str | None = None):
         if name is None:
             name = f'{self.name}_copy'
         # !TODO check if this needs to be a deep copy

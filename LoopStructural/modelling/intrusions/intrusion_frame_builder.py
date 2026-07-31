@@ -1,10 +1,10 @@
+from __future__ import annotations
+
+from ...geometry import BoundingBox
 from ...modelling.features.builders import StructuralFrameBuilder
 from ...modelling.features.fault import FaultSegment
 from ...utils import getLogger, rng
-from ...datatypes import BoundingBox
-
-from typing import Union
-
+from .intrusion_frame import IntrusionFrame
 
 logger = getLogger(__name__)
 
@@ -13,17 +13,17 @@ import pandas as pd
 
 try:
     from sklearn.cluster import KMeans
-except ImportError as e:
+except ImportError:
     logger.error('Scikitlearn cannot be imported')
-    raise e
+    raise
 
 
 class IntrusionFrameBuilder(StructuralFrameBuilder):
     def __init__(
         self,
-        interpolatortype: Union[str, list],
+        interpolatortype: str | list,
         bounding_box: BoundingBox,
-        nelements: Union[int, list] = 1000,
+        nelements: int | list = 1000,
         model=None,
         **kwargs,
     ):
@@ -41,11 +41,18 @@ class IntrusionFrameBuilder(StructuralFrameBuilder):
             reference to the model containing the fault
         """
 
-        StructuralFrameBuilder.__init__(self, interpolatortype, bounding_box, nelements, **kwargs)
+        StructuralFrameBuilder.__init__(
+            self,
+            interpolatortype,
+            bounding_box,
+            nelements,
+            frame=IntrusionFrame,
+            model=model,
+            **kwargs,
+        )
 
         self.origin = np.array([np.nan, np.nan, np.nan])
         self.maximum = np.array([np.nan, np.nan, np.nan])
-        self.model = model
         self.minimum_origin = self.model.bounding_box[0, :]
         self.maximum_maximum = self.model.bounding_box[1, :]
         self.faults = []
@@ -174,7 +181,7 @@ class IntrusionFrameBuilder(StructuralFrameBuilder):
 
         return grid_points, spacing
 
-    def add_contact_anisotropies(self, series_list: list = [], **kwargs):
+    def add_contact_anisotropies(self, series_list: list | None = None, **kwargs):
         """
         Currently only used in 'Shortest path algorithm' (deprecated).
         Add to the intrusion network the anisotropies
@@ -200,6 +207,8 @@ class IntrusionFrameBuilder(StructuralFrameBuilder):
         [series_name, mean of scalar field vals, standar dev. of scalar field val]
 
         """
+        if series_list is None:
+            series_list = []
         if self.intrusion_network_type == "shortest path":
             n_clusters = self.number_of_contacts
 
@@ -230,7 +239,7 @@ class IntrusionFrameBuilder(StructuralFrameBuilder):
                 series_ij_vals = np.ma.compressed(y)
                 series_ij_mean = np.mean(series_ij_vals)
                 series_ij_std = np.std(series_ij_vals)
-                series_ij_name = f"{series.name}_{str(series_ij_mean)}"
+                series_ij_name = f"{series.name}_{series_ij_mean!s}"
 
                 series_parameters[series_ij_name] = [
                     series,
@@ -240,7 +249,7 @@ class IntrusionFrameBuilder(StructuralFrameBuilder):
 
             self.anisotropies_series_parameters = series_parameters
 
-    def add_faults_anisotropies(self, fault_list: list = []):
+    def add_faults_anisotropies(self, fault_list: list | None = None):
         """
         Add to the intrusion network the anisotropies likely
         exploited by the intrusion (fault-type geological features)
@@ -259,6 +268,8 @@ class IntrusionFrameBuilder(StructuralFrameBuilder):
         -------
 
         """
+        if fault_list is None:
+            fault_list = []
         if fault_list is not None:
             self.anisotropies_fault_list.append(fault_list)
 
@@ -477,7 +488,7 @@ class IntrusionFrameBuilder(StructuralFrameBuilder):
         )
         std_backup = 25
 
-        for fault_i in self.marginal_faults.keys():
+        for fault_i in self.marginal_faults:
             marginal_fault = self.marginal_faults[fault_i].get("structure")
             block = self.marginal_faults[fault_i].get("block")  # hanging wall or foot wall
             self.marginal_faults[fault_i].get("emplacement_mechanism")
@@ -551,7 +562,7 @@ class IntrusionFrameBuilder(StructuralFrameBuilder):
             self.set_intrusion_steps_parameters()  # function to compute steps parameters
 
             fault_anisotropies = []
-            for step in self.intrusion_steps.keys():
+            for step in self.intrusion_steps:
                 fault_anisotropies.append(self.intrusion_steps[step].get("structure"))
 
             self.add_faults_anisotropies(fault_anisotropies)
@@ -570,7 +581,7 @@ class IntrusionFrameBuilder(StructuralFrameBuilder):
             self.set_marginal_faults_parameters()
 
             fault_anisotropies = []
-            for fault in self.marginal_faults.keys():
+            for fault in self.marginal_faults:
                 fault_anisotropies.append(self.marginal_faults[fault].get("structure"))
 
                 self.add_faults_anisotropies(fault_anisotropies)
@@ -696,7 +707,7 @@ class IntrusionFrameBuilder(StructuralFrameBuilder):
 
         intrusion_reference_contact_points = inet_points_xyz
 
-        grid_points, spacing = self.create_grid_for_indicator_fxs()
+        grid_points, _spacing = self.create_grid_for_indicator_fxs()
 
         # --- more constraints if steps or marginal fault is present:
         if self.intrusion_steps is not None:
@@ -797,7 +808,7 @@ class IntrusionFrameBuilder(StructuralFrameBuilder):
                     splits_from_sill_steps = self.model.__getitem__(
                         splits_from_sill_name
                     ).intrusion_frame.builder.intrusion_steps
-                    for step_j in splits_from_sill_steps.keys():
+                    for step_j in splits_from_sill_steps:
                         step_j_hg_constraints = splits_from_sill_steps[step_j].get("constraints_hw")
                         intrusion_reference_contact_points = np.vstack(
                             [intrusion_reference_contact_points, step_j_hg_constraints]
@@ -813,7 +824,7 @@ class IntrusionFrameBuilder(StructuralFrameBuilder):
             If_sum = np.sum(If, axis=1)
 
             # evaluate grid points in series
-            for fault_i in self.marginal_faults.keys():
+            for fault_i in self.marginal_faults:
                 delta_contact = self.marginal_faults[fault_i].get("delta_c", 1)
                 marginal_fault = self.marginal_faults[fault_i].get("structure")
                 block = self.marginal_faults[fault_i].get("block")  # hanging wall or foot wall

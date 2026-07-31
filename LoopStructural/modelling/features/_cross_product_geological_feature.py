@@ -1,10 +1,9 @@
 """ """
+from __future__ import annotations
 
 import numpy as np
-from typing import Optional
 
-from ...modelling.features import BaseFeature
-
+from ._base_geological_feature import BaseFeature
 from ...utils import getLogger
 
 logger = getLogger(__name__)
@@ -95,10 +94,10 @@ class CrossProductGeologicalFeature(BaseFeature):
             return self.value_feature.max()
         return 0.0
 
-    def get_data(self, value_map: Optional[dict] = None):
+    def get_data(self, value_map: dict | None = None):
         return
 
-    def copy(self, name: Optional[str] = None):
+    def copy(self, name: str | None = None):
         if name is None:
             name = f'{self.name}_copy'
         return CrossProductGeologicalFeature(

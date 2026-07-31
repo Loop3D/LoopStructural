@@ -1,16 +1,40 @@
 from __future__ import annotations
 
 from abc import ABCMeta, abstractmethod
-from typing import Union, List, Optional
-from LoopStructural.modelling.features import FeatureType
-from LoopStructural.utils import getLogger
-from LoopStructural.utils.typing import NumericInput
-from LoopStructural.utils import LoopIsosurfacer, surface_list
-from LoopStructural.datatypes import VectorPoints
 
 import numpy as np
 
+from LoopStructural.geometry import StructuredGrid, VectorPoints
+from LoopStructural.modelling.features import FeatureType
+from LoopStructural.utils import LoopIsosurfacer, LoopValueError, getLogger, surface_list
+from LoopStructural.utils.typing import NumericInput
+
 logger = getLogger(__name__)
+
+
+def _reachable_features(start) -> dict:
+    """Walk the same edges evaluate_value/_apply_faults traverse at runtime and
+    return every feature reachable from `start`, keyed by id().
+
+    A feature can trigger evaluation of two kinds of dependency: the faults in
+    its own `faults` list, and -- for structural frames such as FaultSegment --
+    the coordinate features that make up the frame (evaluating the frame means
+    evaluating its components, which in turn apply their own faults). Mirroring
+    both edge types here means a cycle anywhere in that call graph is caught
+    before it can cause unbounded recursion at evaluation time.
+    """
+    seen = {}
+    stack = [start]
+    while stack:
+        current = stack.pop()
+        neighbours = list(getattr(current, '_faults', None) or [])
+        neighbours.extend(getattr(current, 'features', None) or [])
+        for neighbour in neighbours:
+            if neighbour is None or id(neighbour) in seen:
+                continue
+            seen[id(neighbour)] = neighbour
+            stack.append(neighbour)
+    return seen
 
 
 class BaseFeature(metaclass=ABCMeta):
@@ -18,7 +42,14 @@ class BaseFeature(metaclass=ABCMeta):
     Base class for geological features.
     """
 
-    def __init__(self, name: str, model=None, faults: list = [], regions: list = [], builder=None):
+    def __init__(
+        self,
+        name: str,
+        model=None,
+        faults: list | None = None,
+        regions: list | None = None,
+        builder=None,
+    ):
         """Base geological feature, this is a virtual class and should not be
         used directly. Inheret from this to implement a new type of geological
         feature or use one of the exisitng implementations
@@ -38,7 +69,7 @@ class BaseFeature(metaclass=ABCMeta):
         """
         self.name = name
         self.type = FeatureType.BASE
-        self.regions = regions
+        self.regions = list(regions) if regions else []
         self._faults = []
         if faults:
             self.faults = faults
@@ -65,6 +96,20 @@ class BaseFeature(metaclass=ABCMeta):
                 f'Faults must be a list of BaseFeature \n Trying to set using {type(faults)}'
             )
             raise TypeError("Faults must be a list of BaseFeature")
+
+        for f in _faults:
+            if f is self:
+                raise LoopValueError(
+                    f"Cannot add fault '{f.name}' to itself: a feature cannot be its own fault"
+                )
+            reachable = _reachable_features(f)
+            if id(self) in reachable:
+                raise LoopValueError(
+                    f"Adding fault '{f.name}' to '{self.name}' would create a circular "
+                    "fault dependency (evaluating it would eventually re-evaluate "
+                    f"'{self.name}' itself). Check the fault relationships between "
+                    f"'{self.name}' and '{f.name}'."
+                )
 
         self._faults = _faults
 
@@ -271,10 +316,10 @@ class BaseFeature(metaclass=ABCMeta):
 
     def surfaces(
         self,
-        value: Optional[Union[float, int, List[Union[float, int]]]] = None,
+        value: float | list[float | int] | None = None,
         bounding_box=None,
-        name: Optional[Union[List[str], str]] = None,
-        colours: Optional[Union[str, np.ndarray]] = None,
+        name: list[str] | str | None = None,
+        colours: str | np.ndarray | None = None,
     ) -> surface_list:
         """Find the surfaces of the geological feature at a given value
 
@@ -299,16 +344,12 @@ class BaseFeature(metaclass=ABCMeta):
                 r for r in self.regions if r.name != self.name and r.parent.name != self.name
             ]
 
-            callable = lambda xyz: (
-                self.evaluate_value(self.model.scale(xyz))
-                if self.model is not None
-                else self.evaluate_value(xyz)
-            )
+            callable = lambda xyz: self.evaluate_value(xyz)
             isosurfacer = LoopIsosurfacer(bounding_box, callable=callable)
             if name is None and self.name is not None:
                 name = self.name
             surfaces = isosurfacer.fit(value, name, colours=colours)
-        except Exception as e:
+        except (ValueError, RuntimeError, TypeError, IndexError, AttributeError) as e:
             logger.error(f"Failed to create surface for {self.name} at value {value}")
             logger.error(e)
             surfaces = []
@@ -334,17 +375,19 @@ class BaseFeature(metaclass=ABCMeta):
             if self.model is None:
                 raise ValueError("Must specify bounding box")
             bounding_box = self.model.bounding_box
-        grid = bounding_box.structured_grid(name=self.name)
+        # NOTE: bounding_box.structured_grid() returns loop_common's
+        # interpolation-support StructuredGrid (no properties dict); use
+        # LoopStructural's own geometry StructuredGrid for storing values.
+        grid = StructuredGrid(
+            origin=bounding_box.origin,
+            step_vector=bounding_box.step_vector,
+            nsteps=bounding_box.nsteps,
+            name=self.name,
+        )
         value = self.evaluate_value(bounding_box.regular_grid(local=False, order='F'))
-        if self.model is not None:
-
-            value = self.evaluate_value(
-                self.model.scale(bounding_box.regular_grid(local=False, order='F'))
-            )
-
         grid.properties[self.name] = value
 
-        value = self.evaluate_value(bounding_box.cell_centres(order='F'))
+        value = self.evaluate_value(bounding_box.reproject(bounding_box.cell_centres(order='F')))
         grid.cell_properties[self.name] = value
         return grid
 
@@ -365,22 +408,21 @@ class BaseFeature(metaclass=ABCMeta):
             if self.model is None:
                 raise ValueError("Must specify bounding box")
             bounding_box = self.model.bounding_box
-        grid = bounding_box.structured_grid(name=self.name)
+        grid = StructuredGrid(
+            origin=bounding_box.origin,
+            step_vector=bounding_box.step_vector,
+            nsteps=bounding_box.nsteps,
+            name=self.name,
+        )
         value = np.linalg.norm(
             self.evaluate_gradient(bounding_box.regular_grid(local=False, order='F')),
             axis=1,
         )
-        if self.model is not None:
-            value = np.linalg.norm(
-                self.evaluate_gradient(
-                    self.model.scale(bounding_box.regular_grid(local=False, order='F'))
-                ),
-                axis=1,
-            )
         grid.properties[self.name] = value
 
         value = np.linalg.norm(
-            self.evaluate_gradient(bounding_box.cell_centres(order='F')), axis=1
+            self.evaluate_gradient(bounding_box.reproject(bounding_box.cell_centres(order='F'))),
+            axis=1,
         )
         grid.cell_properties[self.name] = value
         return grid
@@ -401,14 +443,12 @@ class BaseFeature(metaclass=ABCMeta):
             if self.model is None:
                 raise ValueError("Must specify bounding box")
             bounding_box = self.model.bounding_box
-        points = bounding_box.cell_centres()
+        points = bounding_box.reproject(bounding_box.cell_centres())
         value = self.evaluate_gradient(points)
-        if self.model is not None:
-            points = self.model.rescale(points)
         return VectorPoints(points, value, self.name)
 
     @abstractmethod
-    def get_data(self, value_map: Optional[dict] = None):
+    def get_data(self, value_map: dict | None = None):
         """Get the data for the feature
 
         Parameters
@@ -424,7 +464,7 @@ class BaseFeature(metaclass=ABCMeta):
         raise NotImplementedError
 
     @abstractmethod
-    def copy(self, name: Optional[str] = None):
+    def copy(self, name: str | None = None):
         """Copy the feature
 
         Returns

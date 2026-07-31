@@ -1,7 +1,8 @@
-from LoopStructural.utils.typing import NumericInput
-import numpy as np
 import numbers
-from typing import Tuple
+
+import numpy as np
+
+from LoopStructural.utils.typing import NumericInput
 
 
 def strikedip2vector(strike: NumericInput, dip: NumericInput) -> np.ndarray:
@@ -9,15 +10,15 @@ def strikedip2vector(strike: NumericInput, dip: NumericInput) -> np.ndarray:
 
     Parameters
     ----------
-    strike : _type_
-        _description_
-    dip : _type_
-        _description_
+    strike : NumericInput
+        strike angle(s) in degrees, measured clockwise from North
+    dip : NumericInput
+        dip angle(s) in degrees, measured from the horizontal plane
 
     Returns
     -------
-    _type_
-        _description_
+    np.ndarray
+        nx3 array of unit vectors normal to the plane defined by strike and dip
     """
     if isinstance(strike, numbers.Number):
         strike = np.array([strike])
@@ -27,10 +28,10 @@ def strikedip2vector(strike: NumericInput, dip: NumericInput) -> np.ndarray:
         dip = np.array([dip])
     else:
         dip = np.array(dip)
-    
+
     vec = np.zeros((len(strike), 3))
     s_r = np.deg2rad(strike)
-    d_r = np.deg2rad((dip))
+    d_r = np.deg2rad(dip)
     vec[:, 0] = np.sin(d_r) * np.cos(s_r)
     vec[:, 1] = -np.sin(d_r) * np.sin(s_r)
     vec[:, 2] = np.cos(d_r)
@@ -41,17 +42,17 @@ def dipdipdirection2vector(dip_direction: NumericInput, dip: NumericInput, degre
 
     Parameters
     ----------
-    dip_direction : _type_
-        _description_
-    dip : _type_
-        _description_
+    dip_direction : NumericInput
+        dip direction angle(s) in degrees, measured clockwise from North
+    dip : NumericInput
+        dip angle(s) in degrees, measured from the horizontal plane
     degrees : bool, optional
-        _description_, by default True
+        whether the input angles are in degrees, by default True
 
     Returns
     -------
-    _type_
-        _description_
+    np.ndarray
+        nx3 array of unit vectors normal to the plane defined by dip direction and dip
     """
     if isinstance(dip_direction, numbers.Number):
         dip_direction = np.array([dip_direction])
@@ -206,7 +207,7 @@ def rotation(axis: NumericInput, angle: NumericInput) -> np.ndarray:
         3x3 rotation matrix
     """
     c = np.cos(np.deg2rad(angle))
-    s = np.sin((np.deg2rad(angle)))
+    s = np.sin(np.deg2rad(angle))
     C = 1.0 - c
     x = axis[:, 0]
     y = axis[:, 1]
@@ -265,7 +266,7 @@ def rotate(vector: NumericInput, axis: NumericInput, angle: NumericInput) -> np.
     # return vector
 
 
-def get_vectors(normal: NumericInput) -> Tuple[np.ndarray, np.ndarray]:
+def get_vectors(normal: NumericInput) -> tuple[np.ndarray, np.ndarray]:
     """Find strike and dip vectors for a normal vector.
     Makes assumption the strike vector is horizontal component and the dip is vertical.
     Found by calculating strike and and dip angle and then finding the appropriate vectors

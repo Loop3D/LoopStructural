@@ -1,6 +1,7 @@
 import numpy as np
 import pytest
-from LoopStructural.datatypes._bounding_box import BoundingBox
+
+from LoopStructural.geometry import BoundingBox
 
 
 def test_bounding_box_creation():
@@ -25,12 +26,17 @@ def test_bounding_box_fit():
     bbox.fit(locations)
     assert np.all(np.isclose(bbox.origin, expected_origin))
     assert np.all(np.isclose(bbox.maximum, expected_maximum))
-    assert np.all(np.isclose(bbox.maximum, expected_maximum))
-    assert np.all(np.isclose(bbox.global_origin, np.zeros(3)))
+    # origin/maximum are always world coordinates; without local_coordinate=True
+    # the local interpolation frame is anchored at zero (no shift).
+    assert np.all(np.isclose(bbox.local_origin, np.zeros(3)))
+
     bbox.fit(locations, local_coordinate=True)
-    assert np.all(np.isclose(bbox.origin, np.zeros(3)))
-    assert np.all(np.isclose(bbox.maximum, expected_maximum - expected_origin))
-    assert np.all(np.isclose(bbox.global_origin, expected_origin))
+    # origin/maximum stay in world coordinates; only the local interpolation
+    # frame's anchor moves to the fitted origin.
+    assert np.all(np.isclose(bbox.origin, expected_origin))
+    assert np.all(np.isclose(bbox.maximum, expected_maximum))
+    assert np.all(np.isclose(bbox.local_origin, expected_origin))
+    assert np.all(np.isclose(bbox.project(expected_origin), np.zeros(3)))
 
 
 def test_bounding_box_volume():
@@ -60,17 +66,24 @@ def test_bounding_box_is_inside():
     assert not np.any(bbox.is_inside(outside_points))
 
 
-def test_local_and_global_origin():
-    origin = np.array([0, 0, 0])
-    maximum = np.array([1, 1, 1])
+def test_origin_and_maximum_are_world_coordinates():
+    origin = np.array([10, 20, 30])
+    maximum = np.array([11, 21, 31])
     nsteps = np.array([10, 10, 10])
     step_vector = (maximum - origin) / nsteps
 
     bbox = BoundingBox(origin=origin, maximum=maximum, nsteps=nsteps, step_vector=step_vector)
-    assert np.all(np.isclose(bbox.global_origin, origin))
-    assert np.all(np.isclose(bbox.global_maximum, maximum))
-    assert np.all(np.isclose(bbox.origin, np.zeros(3)))
-    assert np.all(np.isclose(bbox.maximum, maximum - origin))
+    # No automatic local shift -- origin/maximum are always world coordinates.
+    assert np.all(np.isclose(bbox.origin, origin))
+    assert np.all(np.isclose(bbox.maximum, maximum))
+    assert np.all(np.isclose(bbox.local_origin, np.zeros(3)))
+
+    # Setting a local transform anchors project()/reproject() at that origin,
+    # without changing origin/maximum themselves.
+    bbox.set_local_transform(local_origin=origin)
+    assert np.all(np.isclose(bbox.origin, origin))
+    assert np.all(np.isclose(bbox.project(origin), np.zeros(3)))
+    assert np.all(np.isclose(bbox.reproject(np.zeros(3)), origin))
 
 
 def test_buffer():

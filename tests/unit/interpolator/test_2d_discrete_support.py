@@ -1,6 +1,7 @@
-from LoopStructural.interpolators import StructuredGrid2D
 import numpy as np
 import pytest
+
+from LoopStructural.interpolators import StructuredGrid2D
 
 
 ## structured grid 2d tests
@@ -42,7 +43,7 @@ def test_evaluate_gradient_2d():
 def test_get_element_2d():
     grid = StructuredGrid2D()
     point = grid.barycentre[[0], :]
-    idc, inside = grid.position_to_cell_corners(point)
+    idc, _inside = grid.position_to_cell_corners(point)
     bary = np.mean(grid.nodes[idc, :], axis=0)
     assert np.sum(point - bary) == 0
 
@@ -58,7 +59,7 @@ def test_global_to_local_coordinates2d():
 def test_get_element_outside2d():
     grid = StructuredGrid2D()
     point = np.array([grid.origin - np.ones(2)])
-    idc, inside = grid.position_to_cell_corners(point)
+    _idc, inside = grid.position_to_cell_corners(point)
     assert not inside[0]
 
 

@@ -1,12 +1,13 @@
 """
 Piecewise linear interpolator using folds
 """
+from __future__ import annotations
 
-from typing import Optional, Callable
+from typing import Callable
 
 import numpy as np
 
-from ..interpolators import PiecewiseLinearInterpolator, InterpolatorType
+from ..interpolators import InterpolatorType, PiecewiseLinearInterpolator
 from ..modelling.features.fold import FoldEvent
 from ..utils import getLogger, rng
 
@@ -16,7 +17,7 @@ logger = getLogger(__name__)
 class DiscreteFoldInterpolator(PiecewiseLinearInterpolator):
     """ """
 
-    def __init__(self, support, fold: Optional[FoldEvent] = None):
+    def __init__(self, support, fold: FoldEvent | None = None):
         """
         A piecewise linear interpolator that can also use fold constraints defined in Laurent et al., 2016
 
@@ -49,22 +50,21 @@ class DiscreteFoldInterpolator(PiecewiseLinearInterpolator):
 
     def setup_interpolator(self, **kwargs):
         if self.fold is None:
-            raise Exception("No fold event specified")
+            raise ValueError("No fold event specified")
         fold_weights = kwargs.get("fold_weights", {})
         super().setup_interpolator(**kwargs)
         self.add_fold_constraints(**fold_weights)
 
-        return
 
     def add_fold_constraints(
         self,
         fold_orientation=10.0,
         fold_axis_w=10.0,
-        fold_regularisation=[0.1, 0.01, 0.01],
+        fold_regularisation=None,
         fold_normalisation=1.0,
         fold_norm=1.0,
         step=2,
-        mask_fn: Optional[Callable] = None,
+        mask_fn: Callable | None = None,
     ):
         """
 
@@ -92,6 +92,8 @@ class DiscreteFoldInterpolator(PiecewiseLinearInterpolator):
         For more information about the fold weights see EPSL paper by Gautier Laurent 2016
 
         """
+        if fold_regularisation is None:
+            fold_regularisation = [0.1, 0.01, 0.01]
         # get the gradient of all of the elements of the mesh
         eg = self.support.get_element_gradients(np.arange(self.support.n_elements))
         # get array of all nodes for all elements N,4,3

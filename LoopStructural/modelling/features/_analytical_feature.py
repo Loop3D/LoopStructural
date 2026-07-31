@@ -1,8 +1,10 @@
+from __future__ import annotations
+
 import numpy as np
-from ...modelling.features import BaseFeature
+
+from ._base_geological_feature import BaseFeature
+from . import FeatureType
 from ...utils import getLogger
-from ...modelling.features import FeatureType
-from typing import Optional
 
 logger = getLogger(__name__)
 
@@ -33,11 +35,15 @@ class AnalyticalGeologicalFeature(BaseFeature):
         name: str,
         vector: np.ndarray,
         origin: np.ndarray,
-        regions=[],
-        faults=[],
+        regions=None,
+        faults=None,
         model=None,
         builder=None,
     ):
+        if regions is None:
+            regions = []
+        if faults is None:
+            faults = []
         BaseFeature.__init__(self, name, model, faults, regions, builder)
         try:
             self.vector = np.array(vector, dtype=float).reshape(3)
@@ -75,8 +81,16 @@ class AnalyticalGeologicalFeature(BaseFeature):
         xyz2[:] = pos[:]
         for f in self.faults:
             xyz2[:] = f.apply_to_points(pos)
-        if self.model is not None:
-            xyz2[:] = self.model.rescale(xyz2, inplace=False)
+        # NOTE: `pos` (and hence `xyz2`) is already expressed in world
+        # coordinates under the affine-transform bounding box contract, so no
+        # further local<->world conversion is required here. `self.model` is
+        # kept as an attribute for parity with other features (e.g. so
+        # `self.origin`/`self.vector` based calculations can be extended to
+        # use model-aware transforms in future), but calling
+        # `self.model.rescale` on already-world-space points would incorrectly
+        # apply the local->world transform a second time. See
+        # `evaluate_gradient` below, which likewise treats `pos`/direction as
+        # already being in world space and performs no rescale.
         xyz2[:] = xyz2 - self.origin
         normal = self.vector / np.linalg.norm(self.vector)
         distance = normal[0] * xyz2[:, 0] + normal[1] * xyz2[:, 1] + normal[2] * xyz2[:, 2]
@@ -92,10 +106,10 @@ class AnalyticalGeologicalFeature(BaseFeature):
         v[:, :] = self.vector[None, :]
         return v
 
-    def get_data(self, value_map: Optional[dict] = None):
+    def get_data(self, value_map: dict | None = None):
         return
 
-    def copy(self, name: Optional[str] = None):
+    def copy(self, name: str | None = None):
         if name is None:
             name = self.name
         return AnalyticalGeologicalFeature(

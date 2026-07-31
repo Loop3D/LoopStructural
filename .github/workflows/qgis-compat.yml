@@ -1,0 +1,62 @@
+name: "🔌 QGIS plugin compat"
+
+on:
+  push:
+    branches:
+      - master
+    paths:
+      - '**.py'
+      - .github/workflows/qgis-compat.yml
+  pull_request:
+    branches:
+      - master
+    paths:
+      - '**.py'
+      - .github/workflows/qgis-compat.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  qgis-plugin-compat:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout LoopStructural
+        uses: actions/checkout@v4
+        with:
+          path: LoopStructural
+
+      - name: Checkout LoopStructural QGIS plugin
+        uses: actions/checkout@v4
+        with:
+          repository: Loop3D/plugin_loopstructural
+          path: plugin_loopstructural
+
+      - name: Set up uv and Python
+        uses: astral-sh/setup-uv@v5
+        with:
+          python-version: "3.9"
+          enable-cache: true
+
+      - name: Install plugin's non-QGIS test requirements
+        run: |
+          uv pip install -r plugin_loopstructural/requirements/testing.txt
+          uv pip install pydantic eval-type-backport
+
+      - name: Install this branch's LoopStructural over the pinned version
+        run: |
+          uv pip install --no-deps -e ./LoopStructural/packages/loop_common
+          uv pip install --no-deps -e ./LoopStructural/packages/loop_interpolation
+          uv pip install --no-deps -e ./LoopStructural
+          uv pip install pytest
+
+      - name: Import/symbol smoke check on paths the plugin relies on
+        working-directory: LoopStructural
+        run: |
+          uv run pytest tests/unit/test_stable_api_surface.py -v
+
+      - name: Run plugin unit tests (non-QGIS) against this branch
+        working-directory: plugin_loopstructural
+        run: |
+          uv run pytest -p no:qgis tests/unit/

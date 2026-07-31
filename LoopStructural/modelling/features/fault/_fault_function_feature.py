@@ -1,5 +1,6 @@
+from __future__ import annotations
+
 from ....modelling.features import BaseFeature, StructuralFrame
-from typing import Optional
 from ....utils import getLogger
 
 logger = getLogger(__name__)
@@ -35,8 +36,8 @@ class FaultDisplacementFeature(BaseFeature):
         displacement,
         name="fault_displacement",
         model=None,
-        faults=[],
-        regions=[],
+        faults=None,
+        regions=None,
         builder=None,
     ):
         """Initialize the fault displacement feature.
@@ -58,6 +59,10 @@ class FaultDisplacementFeature(BaseFeature):
         builder : object, optional
             Builder object used to create this feature, by default None
         """
+        if faults is None:
+            faults = []
+        if regions is None:
+            regions = []
         BaseFeature.__init__(self, f"{name}_displacement", model, faults, regions, builder)
         self.fault_frame = StructuralFrame(
             f"{fault_frame.name}_displacementframe",
@@ -126,7 +131,7 @@ class FaultDisplacementFeature(BaseFeature):
         d = self.displacement.evaluate(fault_displacement, fault_strike)
         return d
 
-    def get_data(self, value_map: Optional[dict] = None):
+    def get_data(self, value_map: dict | None = None):
         """Get data associated with this fault displacement feature.
 
         Parameters
@@ -138,9 +143,8 @@ class FaultDisplacementFeature(BaseFeature):
         -----
         This method is not yet implemented for fault displacement features.
         """
-        pass
 
-    def copy(self, name: Optional[str] = None):
+    def copy(self, name: str | None = None):
         """Create a copy of this fault displacement feature.
 
         Parameters

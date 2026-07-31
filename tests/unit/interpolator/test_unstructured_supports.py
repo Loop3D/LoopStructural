@@ -1,20 +1,22 @@
+from os.path import dirname
+
 import numpy as np
+
 from LoopStructural.interpolators import UnStructuredTetMesh
 from LoopStructural.utils import rng
-from os.path import dirname
 
 file_path = dirname(__file__)
 
 
 def test_get_elements():
-    nodes = np.loadtxt("{}/nodes.txt".format(file_path))
-    elements = np.loadtxt("{}/elements.txt".format(file_path))
+    nodes = np.loadtxt(f"{file_path}/nodes.txt")
+    elements = np.loadtxt(f"{file_path}/elements.txt")
     elements = np.array(elements, dtype="int64")
-    neighbours = np.loadtxt("{}/neighbours.txt".format(file_path))
+    neighbours = np.loadtxt(f"{file_path}/neighbours.txt")
 
     mesh = UnStructuredTetMesh(nodes, elements, neighbours)
     points = rng.random((100, 3))
-    verts, c, tetra, inside = mesh.get_element_for_location(points)
+    _verts, c, tetra, _inside = mesh.get_element_for_location(points)
 
     vertices = nodes[elements, :]
     pos = points[:, :]
@@ -44,7 +46,7 @@ def test_get_elements():
     c[:, :, 2] = vc / v
 
     c[:, :, 3] = vd / v
-    row, col = np.where(np.all(c >= 0, axis=2))
+    _row, col = np.where(np.all(c >= 0, axis=2))
 
     tetra_idx = col
 

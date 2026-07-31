@@ -1,9 +1,11 @@
 from __future__ import annotations
 
-from typing import Optional, Union, Callable, List
 from collections.abc import Iterable
+from typing import Callable
+
 import numpy as np
 import numpy.typing as npt
+
 from LoopStructural.utils.logging import getLogger
 
 logger = getLogger(__name__)
@@ -14,9 +16,9 @@ except ImportError:
     from skimage.measure import marching_cubes_lewiner as marching_cubes
 
 # from LoopStructural.interpolators._geological_interpolator import GeologicalInterpolator
-from LoopStructural.datatypes import Surface, BoundingBox
+from LoopStructural.geometry import BoundingBox, Surface
 
-surface_list = List[Surface]
+surface_list = list[Surface]
 
 
 class LoopIsosurfacer:
@@ -24,7 +26,7 @@ class LoopIsosurfacer:
         self,
         bounding_box: BoundingBox,
         interpolator=None,
-        callable: Optional[Callable[[npt.ArrayLike], npt.ArrayLike]] = None,
+        callable: Callable[[npt.ArrayLike], npt.ArrayLike] | None = None,
     ):
         """Extract isosurfaces from a geological interpolator or a callable function.
 
@@ -32,7 +34,7 @@ class LoopIsosurfacer:
         Parameters
         ----------
         bounding_box : BoundingBox
-            _description_
+            bounding box defining the region over which to extract isosurfaces
         interpolator : Optional[GeologicalInterpolator], optional
             interpolator object, by default None
         callable : Optional[Callable[[npt.ArrayLike], npt.ArrayLike]], optional
@@ -41,11 +43,11 @@ class LoopIsosurfacer:
         Raises
         ------
         ValueError
-            _description_
+            if neither an interpolator nor a callable is provided
         ValueError
-            _description_
+            if both an interpolator and a callable are provided
         ValueError
-            _description_
+            if the callable could not be resolved from the interpolator or callable arguments
         """
         self.bounding_box = bounding_box
         self.callable = callable
@@ -61,10 +63,10 @@ class LoopIsosurfacer:
 
     def fit(
         self,
-        values: Optional[Union[list, int, float]],
-        name: Optional[Union[List[str], str]] = None,
+        values: list | float | None,
+        name: list[str] | str | None = None,
         local=False,
-        colours: Optional[List] = None,
+        colours: list | None = None,
     ) -> surface_list:
         """Extract isosurfaces from the interpolator
 
@@ -87,7 +89,7 @@ class LoopIsosurfacer:
         """
 
         if not callable(self.callable):
-            raise ValueError("No interpolator of callable function set")
+            raise TypeError("No interpolator of callable function set")
 
         surfaces = []
         all_values = self.callable(self.bounding_box.regular_grid(local=local, order='C'))
@@ -100,7 +102,7 @@ class LoopIsosurfacer:
             isovalues = [values]
         if isinstance(values, int) and values == 0:
             values = 0.0  # assume 0 isosurface is meant to be a float
-
+            isovalues = [values]
         elif isinstance(values, int) and values < 1:
             raise ValueError(
                 "Number of isosurfaces must be greater than 1. Either use a positive integer or provide a list or float for a specific isovalue."
@@ -128,7 +130,7 @@ class LoopIsosurfacer:
                 individual_names = True
         if colours is None:
             colours = [None] * len(isovalues)
-        for name, isovalue, colour in zip(names, isovalues, colours):
+        for surface_name, isovalue, colour in zip(names, isovalues, colours):
             try:
                 step_vector = (self.bounding_box.maximum - self.bounding_box.origin) / (
                     np.array(self.bounding_box.nsteps) - 1
@@ -148,15 +150,19 @@ class LoopIsosurfacer:
                 logger.warning(f"Failed to extract isosurface for {isovalue}")
                 continue
             values = np.zeros(verts.shape[0]) + isovalue
-            # need to add both global and local origin. If the bb is a buffer the local
-            # origin may not be 0
-            verts += self.bounding_box.global_origin+self.bounding_box.origin
+            # marching_cubes returns vertices relative to grid index (0,0,0),
+            # which is bounding_box.origin in whichever frame regular_grid(local=...)
+            # generated the grid in above.
+            grid_origin = self.bounding_box.origin
+            if local:
+                grid_origin = self.bounding_box.project(grid_origin)
+            verts += grid_origin
             surfaces.append(
                 Surface(
                     vertices=verts,
                     triangles=faces,
                     normals=normals,
-                    name=name if individual_names else f"{name}_{isovalue}",
+                    name=surface_name if individual_names else f"{surface_name}_{isovalue}",
                     values=values,
                     colour=colour,
                 )

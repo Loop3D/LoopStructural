@@ -18,17 +18,15 @@ notebook environment.
 # model building
 
 from LoopStructural import GeologicalModel
-from LoopStructural.visualisation import Loop3DView
-
 from LoopStructural.datasets import load_claudius  # demo data
-
+from LoopStructural.visualisation import Loop3DView
 
 #####################
 # Build the model
 # ~~~~~~~~~~~~~~~~~
 data, bb = load_claudius()
 model = GeologicalModel(bb[0, :], bb[1, :])
-model.set_model_data(data)
+model.data = data
 strati = model.create_and_add_foliation("strati",nelements=1e4)
 vals = [0, 60, 250, 330, 600]
 for i in range(len(vals) - 1):

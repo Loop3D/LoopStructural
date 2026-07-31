@@ -1,7 +1,7 @@
-from typing import TypeVar, Union, List
 import numbers
+from typing import TypeVar, Union
 
 T = TypeVar("T")
-Array = Union[List[T]]
+Array = Union[list[T]]
 
 NumericInput = Union[numbers.Number, Array[numbers.Number]]

@@ -1,7 +1,6 @@
-from ...modelling.features import GeologicalFeature
-from ...modelling.features import FeatureType
-
 import numpy as np
+
+from ...modelling.features import FeatureType, GeologicalFeature
 
 
 class UnconformityFeature(GeologicalFeature):
@@ -49,7 +48,7 @@ class UnconformityFeature(GeologicalFeature):
         Returns
         -------
         UnconformityFeature
-            _description_
+            a new unconformity feature with the sign of the unconformity reversed
         """
         uc = UnconformityFeature(
             self.parent,

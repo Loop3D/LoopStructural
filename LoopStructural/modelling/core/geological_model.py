@@ -1,44 +1,48 @@
 """
 Main entry point for creating a geological model
 """
+from __future__ import annotations
 
-from LoopStructural import LoopStructuralConfig
-from ...utils import getLogger
+import json
+import pathlib
 
 import numpy as np
 import pandas as pd
-from typing import List, Optional, Union, Dict
-import pathlib
-from ...modelling.features.fault import FaultSegment
 
-from ...modelling.features.builders import (
-    FaultBuilder,
-    GeologicalFeatureBuilder,
-    StructuralFrameBuilder,
-    FoldedFeatureBuilder,
-)
+from LoopStructural import LoopStructuralConfig
+
+from ...geometry import BoundingBox, StructuredGrid
 from ...modelling.features import (
-    UnconformityFeature,
-    StructuralFrame,
-    GeologicalFeature,
     BaseFeature,
     FeatureType,
+    GeologicalFeature,
+    StructuralFrame,
+    UnconformityFeature,
 )
+from ...modelling.features.builders import (
+    FaultBuilder,
+    FoldedFeatureBuilder,
+    GeologicalFeatureBuilder,
+    StructuralFrameBuilder,
+)
+from ...modelling.features.fault import FaultSegment
 from ...modelling.features.fold import (
     FoldEvent,
     FoldFrame,
 )
-
+from ...modelling.intrusions import IntrusionBuilder, IntrusionFrameBuilder
+from ...utils import LoopValueError, getLogger, public_api, strikedip2vector, timed_stage
 from ...utils.helper import (
     all_heading,
     gradient_vec_names,
 )
-from ...utils import strikedip2vector
-from ...datatypes import BoundingBox
-
-from ...modelling.intrusions import IntrusionBuilder
-
-from ...modelling.intrusions import IntrusionFrameBuilder
+from ..features._feature_converters import (
+    add_fold_to_feature as _add_fold_to_feature,
+)
+from ..features._feature_converters import (
+    convert_feature_to_structural_frame as _convert_feature_to_structural_frame,
+)
+from ._feature_registry import FeatureBuilderRegistry
 from .stratigraphic_column import StratigraphicColumn
 
 logger = getLogger(__name__)
@@ -108,6 +112,12 @@ class GeologicalModel:
             bounding_box = args[0]
             if not isinstance(bounding_box, BoundingBox):
                 raise ValueError("Must provide a bounding box")
+            # A pre-built BoundingBox already carries its own local transform
+            # (defaulted to a zero local_origin/identity rotation in
+            # BoundingBox.__init__, or explicitly configured by the caller via
+            # set_local_transform/from_dict/with_buffer), so we deliberately
+            # do not call set_local_transform again here -- doing so would
+            # override any anchoring the caller already set up.
             self.bounding_box = bounding_box
         if len(args) == 2:
             origin = np.array(args[0])
@@ -116,10 +126,13 @@ class GeologicalModel:
                 raise ValueError("Must provide origin and maximum as numpy arrays")
             self.bounding_box = BoundingBox(
                 dimensions=3,
-                origin=np.zeros(3),
-                maximum=maximum - origin,
-                global_origin=origin,
+                origin=origin,
+                maximum=maximum,
             )
+            # Anchor the interpolation frame near zero for numerical
+            # conditioning without leaking the shift into the public
+            # origin/maximum, which now stay in world coordinates.
+            self.bounding_box.set_local_transform(local_origin=origin)
         logger.info("Initialising geological model")
         self.features = []
         self.feature_name_index = {}
@@ -130,6 +143,7 @@ class GeologicalModel:
         self.tol = 1e-10 * np.max(self.bounding_box.maximum - self.bounding_box.origin)
         self._dtm = None
 
+    @public_api(tier="stable")
     def to_dict(self):
         """
         Convert the geological model to a json string
@@ -147,22 +161,237 @@ class GeologicalModel:
         # json["features"] = [f.to_json() for f in self.features]
         return json
 
+    @staticmethod
+    def _feature_recipe_kind(feature):
+        if isinstance(feature, GeologicalFeature):
+            return "foliation"
+        if isinstance(feature, StructuralFrame):
+            return "structural_frame"
+        if isinstance(feature, UnconformityFeature):
+            return "unconformity"
+        if isinstance(feature, FaultSegment):
+            return "fault"
+        return feature.__class__.__name__.lower()
+
+    @public_api(tier="provisional")
+    def to_recipe_dict(self, data_reference=None):
+        """Return a YAML/JSON-friendly recipe for rebuilding the model.
+
+        This captures the construction inputs needed for stage 3a: bounding
+        box, stratigraphic column, and either inline model data or a file
+        reference to it.
+        """
+        recipe = {
+            "schema": "LoopStructural.GeologicalModelRecipe",
+            "version": 1,
+            "model": {
+                "bounding_box": self.bounding_box.to_dict(),
+                "stratigraphic_column": self.stratigraphic_column.to_dict(),
+                "data_source": None,
+                "features": [],
+            },
+        }
+        for feature in self.features:
+            feature_entry = {
+                "name": feature.name,
+                "kind": self._feature_recipe_kind(feature),
+                "faults": [
+                    fault.name
+                    for fault in getattr(feature, "faults", [])
+                    if getattr(fault, "name", None)
+                ],
+                "regions": [],
+            }
+            recipe["model"]["features"].append(feature_entry)
+        if data_reference is not None:
+            recipe["model"]["data_source"] = {
+                "kind": "reference",
+                "path": str(pathlib.Path(data_reference)),
+            }
+        elif not self.data.empty:
+            recipe["model"]["data_source"] = {
+                "kind": "inline",
+                "dataframe": self.data.to_dict(orient="split"),
+            }
+        return recipe
+
+    @classmethod
+    @public_api(tier="provisional")
+    def from_recipe_dict(cls, recipe):
+        """Rebuild a geological model from a recipe dictionary."""
+        if not isinstance(recipe, dict):
+            raise TypeError("recipe must be a dictionary")
+
+        model_data = recipe.get("model", recipe)
+        bounding_box = model_data.get("bounding_box")
+        if isinstance(bounding_box, dict):
+            bounding_box = BoundingBox.from_dict(bounding_box)
+        if not isinstance(bounding_box, BoundingBox):
+            raise TypeError("recipe must include a bounding_box dictionary")
+
+        model = cls(bounding_box)
+
+        data_source = model_data.get("data_source")
+        if isinstance(data_source, dict):
+            kind = data_source.get("kind")
+            if kind == "reference":
+                model.data = pd.read_csv(pathlib.Path(data_source["path"]))
+            elif kind == "inline":
+                dataframe = data_source.get("dataframe")
+                if not isinstance(dataframe, dict):
+                    raise TypeError("inline data_source must include a dataframe dictionary")
+                model.data = pd.DataFrame(**dataframe)
+            elif kind is not None:
+                raise ValueError(f"Unsupported data_source kind: {kind}")
+        elif isinstance(data_source, str):
+            model.data = pd.read_csv(pathlib.Path(data_source))
+        elif data_source is not None:
+            raise TypeError("data_source must be a dictionary, string path, or None")
+
+        stratigraphic_column = model_data.get("stratigraphic_column")
+        if isinstance(stratigraphic_column, dict):
+            model.stratigraphic_column = StratigraphicColumn.from_dict(stratigraphic_column)
+        elif stratigraphic_column is not None:
+            raise TypeError("stratigraphic_column must be a dictionary or None")
+
+        features = model_data.get("features", [])
+        if features is None:
+            features = []
+        if not isinstance(features, list):
+            raise TypeError("features must be a list")
+
+        feature_map = {}
+        for feature_entry in features:
+            if not isinstance(feature_entry, dict):
+                raise TypeError("each feature entry must be a dictionary")
+            feature_name = feature_entry.get("name")
+            if not isinstance(feature_name, str):
+                raise TypeError("each feature entry must include a string name")
+            feature_data = model.data.loc[model.data["feature_name"] == feature_name].copy()
+            if feature_data.empty:
+                feature_data = None
+            feature = model.create_and_add_foliation(feature_name, data=feature_data)
+            if feature is None:
+                raise ValueError(f"Could not recreate feature '{feature_name}' from recipe")
+            feature_map[feature_name] = feature
+
+        for feature_entry in features:
+            feature_name = feature_entry.get("name")
+            fault_names = feature_entry.get("faults", [])
+            if not isinstance(fault_names, list):
+                raise TypeError("faults must be a list")
+            if fault_names:
+                feature = feature_map[feature_name]
+                feature.faults = [feature_map[name] for name in fault_names if name in feature_map]
+
+        return model
+
+    @public_api(tier="provisional")
+    def to_recipe_json(self, data_reference=None, indent=2):
+        """Return a JSON-formatted string of the recipe.
+
+        Parameters
+        ----------
+        data_reference : str, optional
+            Path to an external CSV file to reference instead of embedding
+            data inline in the JSON. If None, data is embedded.
+        indent : int, optional
+            JSON indentation level. Default is 2.
+
+        Returns
+        -------
+        str
+            JSON-formatted recipe string.
+        """
+        recipe = self.to_recipe_dict(data_reference=data_reference)
+        return json.dumps(recipe, indent=indent)
+
+    @classmethod
+    @public_api(tier="provisional")
+    def from_recipe_json(cls, json_str):
+        """Rebuild a geological model from a JSON-formatted recipe string.
+
+        Parameters
+        ----------
+        json_str : str
+            JSON-formatted recipe string.
+
+        Returns
+        -------
+        GeologicalModel
+            The reconstructed geological model.
+
+        Raises
+        ------
+        TypeError
+            If json_str is not a string or does not parse as valid JSON.
+        """
+        if not isinstance(json_str, str):
+            raise TypeError("json_str must be a string")
+        try:
+            recipe = json.loads(json_str)
+        except json.JSONDecodeError as e:
+            raise TypeError(f"json_str is not valid JSON: {e}")
+        return cls.from_recipe_dict(recipe)
+
+    @public_api(tier="provisional")
+    def save_recipe(self, filename, data_reference=None):
+        """Save the recipe to a JSON file.
+
+        Parameters
+        ----------
+        filename : str or Path
+            Path to the output JSON file.
+        data_reference : str, optional
+            Path to an external CSV file to reference instead of embedding
+            data inline in the JSON. If None, data is embedded.
+        """
+        filename = pathlib.Path(filename)
+        recipe = self.to_recipe_dict(data_reference=data_reference)
+        with open(filename, "w") as f:
+            json.dump(recipe, f, indent=2)
+        logger.info(f"Recipe saved to {filename}")
+
+    @classmethod
+    @public_api(tier="provisional")
+    def load_recipe(cls, filename):
+        """Load a geological model from a recipe JSON file.
+
+        Parameters
+        ----------
+        filename : str or Path
+            Path to the recipe JSON file.
+
+        Returns
+        -------
+        GeologicalModel
+            The reconstructed geological model.
+        """
+        filename = pathlib.Path(filename)
+        if not filename.exists():
+            raise FileNotFoundError(f"Recipe file not found: {filename}")
+        with open(filename, "r") as f:
+            recipe = json.load(f)
+        logger.info(f"Recipe loaded from {filename}")
+        return cls.from_recipe_dict(recipe)
+
     def __str__(self):
         return f"GeologicalModel with {len(self.features)} features"
 
     def _ipython_key_completions_(self):
         return self.feature_name_index.keys()
 
-    def prepare_data(self, data: pd.DataFrame, include_feature_name:bool=True) -> pd.DataFrame:
+    def prepare_data(self, data: pd.DataFrame, include_feature_name: bool = True) -> pd.DataFrame:
         data = data.copy()
-        data[['X', 'Y', 'Z']] = self.bounding_box.project(data[['X', 'Y', 'Z']].to_numpy())
+        # Data is kept in world coordinates end-to-end; the interpolator
+        # projects into its local frame when constraints are set.
 
         if "type" in data:
             logger.warning("'type' is deprecated replace with 'feature_name' \n")
             data.rename(columns={"type": "feature_name"}, inplace=True)
         if "feature_name" not in data and include_feature_name:
             logger.error("Data does not contain 'feature_name' column")
-            raise BaseException("Cannot load data")
+            raise ValueError("Cannot load data")
         for h in all_heading():
             if h not in data:
                 data[h] = np.nan
@@ -189,6 +418,7 @@ class GeologicalModel:
         return data
 
     @classmethod
+    @public_api(tier="stable")
     def from_processor(cls, processor):
         """Builds a model from a :class:`LoopStructural.modelling.input.ProcessInputData` object
         This object stores the observations and order of the geological features
@@ -221,20 +451,19 @@ class GeologicalModel:
                     logger.warning(f"Cannot add splay {edge[1]} or {edge[0]} are not in the model")
                     continue
                 splay = False
-                if "angle" in properties:
-                    if float(properties["angle"]) < 30 and (
-                        "dip_dir" not in processor.stratigraphic_column["faults"][edge[0]]
-                        or np.abs(
-                            processor.stratigraphic_column["faults"][edge[0]]["dip_dir"]
-                            - processor.stratigraphic_column["faults"][edge[1]]["dip_dir"]
-                        )
-                        < 90
-                    ):
-                        # splay
-                        region = model[edge[1]].builder.add_splay(model[edge[0]])
+                if "angle" in properties and float(properties["angle"]) < 30 and (
+                    "dip_dir" not in processor.stratigraphic_column["faults"][edge[0]]
+                    or np.abs(
+                        processor.stratigraphic_column["faults"][edge[0]]["dip_dir"]
+                        - processor.stratigraphic_column["faults"][edge[1]]["dip_dir"]
+                    )
+                    < 90
+                ):
+                    # splay
+                    region = model[edge[1]].builder.add_splay(model[edge[0]])
 
-                        model[edge[1]].splay[model[edge[0]].name] = region
-                        splay = True
+                    model[edge[1]].splay[model[edge[0]].name] = region
+                    splay = True
                 if splay is False:
                     positive = None
                     if "downthrow_dir" in processor.stratigraphic_column["faults"][edge[0]]:
@@ -249,7 +478,7 @@ class GeologicalModel:
                         model[edge[0]],
                         positive=positive,
                     )
-        for s in processor.stratigraphic_column.keys():
+        for s in processor.stratigraphic_column:
             if s != "faults":
                 faults = None
                 if processor.fault_stratigraphy is not None:
@@ -267,25 +496,71 @@ class GeologicalModel:
         return model
 
     @classmethod
-    def from_file(cls, file):
+    @public_api(tier="stable")
+    def from_file(cls, file, allow_pickle: bool = True):
         """Load a geological model from file
+
+        .. warning::
+            Model files are loaded using `dill` (an extension of `pickle`).
+            Unpickling data is **not safe** against maliciously constructed
+            data: loading a file from an untrusted or unauthenticated source
+            can execute arbitrary code on your machine. Only call
+            ``from_file`` on files you created yourself or that come from a
+            source you fully trust. If you need to load model definitions
+            from an untrusted source, use the JSON/dictionary-based
+            ``GeologicalModel.from_recipe_dict``/``to_recipe_dict`` recipe
+            format instead, or pass ``allow_pickle=False`` here to make sure
+            pickle-based loading is refused outright.
 
         Parameters
         ----------
         file : string
             path to the file
+        allow_pickle : bool, optional
+            whether to allow loading the file using `dill`/`pickle`, by
+            default True. Set to False to refuse pickle-based deserialisation
+            (e.g. when the file may come from an untrusted source) -- in that
+            case a :class:`LoopValueError` is raised instead of attempting to
+            unpickle the file. Use ``GeologicalModel.from_recipe_dict`` for a
+            safe, JSON-based alternative.
 
         Returns
         -------
         GeologicalModel
             the geological model object
         """
+        if not allow_pickle:
+            raise LoopValueError(
+                "Pickle-based loading is disabled (allow_pickle=False). "
+                f"Refusing to unpickle '{file}' because deserialising untrusted "
+                "pickle/dill data can execute arbitrary code. If you generated "
+                "this file yourself and trust its contents, call "
+                "GeologicalModel.from_file(file, allow_pickle=True). Otherwise, "
+                "use the JSON-based GeologicalModel.from_recipe_dict "
+                "(paired with GeologicalModel.to_recipe_dict) as a safe "
+                "alternative serialisation format."
+            )
+        logger.warning(
+            f"Loading GeologicalModel from '{file}' using dill/pickle. "
+            "Only load model files from trusted sources: deserialising a "
+            "pickle file can execute arbitrary code. Pass allow_pickle=False "
+            "to refuse pickle-based loading, or use "
+            "GeologicalModel.from_recipe_dict for untrusted/JSON-based input."
+        )
         try:
             import dill as pickle
         except ImportError:
             logger.error("Cannot import from file, dill not installed")
             return None
-        model = pickle.load(open(file, "rb"))
+        path = pathlib.Path(file)
+        if not path.is_file():
+            raise LoopValueError(f"Cannot load model, file does not exist: {file}")
+        try:
+            with open(path, "rb") as f:
+                model = pickle.load(f)
+        except Exception as e:
+            logger.error(f"Failed to load model from {file}: {e}")
+            raise LoopValueError(f"Failed to load model from {file}: {e}") from e
         if isinstance(model, GeologicalModel):
             logger.info("GeologicalModel initialised from file")
             return model
@@ -302,6 +577,7 @@ class GeologicalModel:
             name of the feature to return
         """
         return self.get_feature_by_name(feature_name)
+
     def __setitem__(self, feature_name, feature):
         """Set a feature in the model using feature_name_index
 
@@ -317,6 +593,7 @@ class GeologicalModel:
         if feature.name != feature_name:
             raise ValueError("feature name does not match key")
         self._add_feature(feature)
+
     def __contains__(self, feature_name):
         return feature_name in self.feature_name_index
 
@@ -337,9 +614,8 @@ class GeologicalModel:
 
         """
         if not callable(dtm):
-            raise BaseException("DTM must be a callable function \n")
-        else:
-            self._dtm = dtm
+            raise TypeError("DTM must be a callable function")
+        self._dtm = dtm
 
     @property
     def faults(self):
@@ -380,9 +656,11 @@ class GeologicalModel:
             displacements.append(f.displacement)
         return np.array(displacements)
 
+    @public_api(tier="stable")
     def feature_names(self):
         return self.feature_name_index.keys()
 
+    @public_api(tier="stable")
     def fault_names(self):
         """Get name of all faults in the model
 
@@ -393,6 +671,7 @@ class GeologicalModel:
         """
         return [f.name for f in self.faults]
 
+    @public_api(tier="stable")
     def to_file(self, file):
         """Save a model to a pickle file requires dill
 
@@ -408,11 +687,12 @@ class GeologicalModel:
             return
         try:
             logger.info(f"Writing GeologicalModel to: {file}")
-            pickle.dump(self, open(file, "wb"))
+            with open(file, "wb") as handle:
+                pickle.dump(self, handle)
         except pickle.PicklingError:
             logger.error("Error saving file")
 
-    def _add_feature(self, feature, index: Optional[int] = None):
+    def _add_feature(self, feature, index: int | None = None):
         """
         Add a feature to the model stack
 
@@ -435,8 +715,8 @@ class GeologicalModel:
                 self.features.insert(index, feature)
                 self.feature_name_index[feature.name] = index
                 logger.info(f"Adding {feature.name} to model at location {index}")
-                for index, feature in enumerate(self.features):
-                    self.feature_name_index[feature.name] = index
+                for feature_index, feature_in_list in enumerate(self.features):
+                    self.feature_name_index[feature_in_list.name] = feature_index
             else:
                 self.features.append(feature)
                 self.feature_name_index[feature.name] = len(self.features) - 1
@@ -491,9 +771,9 @@ class GeologicalModel:
             logger.warning("Data is not a pandas data frame, trying to read data frame " "from csv")
             try:
                 data = pd.read_csv(data)
-            except:
-                logger.error("Could not load pandas data frame from data")
-                raise BaseException("Cannot load data")
+            except (OSError, ValueError, pd.errors.ParserError) as e:
+                logger.error(f"Could not load pandas data frame from data: {e}")
+                raise LoopValueError("Cannot load data") from e
         logger.info(f"Adding data to GeologicalModel with {len(data)} data points")
         self._data = data.copy()
         # self._data[['X','Y','Z']] = self.bounding_box.project(self._data[['X','Y','Z']].to_numpy())
@@ -501,6 +781,7 @@ class GeologicalModel:
     def set_model_data(self, data):
         logger.warning("deprecated method. Model data can now be set using the data attribute")
         self.data = data.copy()
+
     @property
     def stratigraphic_column(self):
         """Get the stratigraphic column of the model
@@ -511,8 +792,9 @@ class GeologicalModel:
             the stratigraphic column of the model
         """
         return self._stratigraphic_column
+
     @stratigraphic_column.setter
-    def stratigraphic_column(self, stratigraphic_column: Union[StratigraphicColumn,Dict]):
+    def stratigraphic_column(self, stratigraphic_column: StratigraphicColumn | dict):
         """Set the stratigraphic column of the model
 
         Parameters
@@ -524,7 +806,7 @@ class GeologicalModel:
             self.set_stratigraphic_column(stratigraphic_column)
             return
         elif not isinstance(stratigraphic_column, StratigraphicColumn):
-            raise ValueError("stratigraphic_column must be a StratigraphicColumn object")
+            raise TypeError("stratigraphic_column must be a StratigraphicColumn object")
         self._stratigraphic_column = stratigraphic_column
 
     def set_stratigraphic_column(self, stratigraphic_column, cmap="tab20"):
@@ -552,14 +834,14 @@ class GeologicalModel:
         # if the colour for a unit hasn't been specified we can just sample from
         # a colour map e.g. tab20
         logger.info("Adding stratigraphic column to model")
-        DeprecationWarning(
+        raise DeprecationWarning(
             "set_stratigraphic_column is deprecated, use model.stratigraphic_column.add_units instead"
         )
         for i, g in enumerate(stratigraphic_column.keys()):
             if g == 'faults':
                 logger.info('Not adding faults to stratigraphic column')
                 continue
-            for u in stratigraphic_column[g].keys():
+            for u in stratigraphic_column[g]:
                 thickness = 0
                 if "min" in stratigraphic_column[g][u] and "max" in stratigraphic_column[g][u]:
                     min_val = stratigraphic_column[g][u]["min"]
@@ -578,16 +860,77 @@ class GeologicalModel:
                 )
 
             self.stratigraphic_column.add_unconformity(
-                name=''.join([g, 'unconformity']),
+                name=f"{g}unconformity",
             )
             self.stratigraphic_column.group_mapping[f'Group_{i}'] = g
 
+    @public_api(tier="provisional")
+    def create_and_add_feature(self, feature_type: str, name: str, **params):
+        """Create a feature of the given type and add it to the model.
+
+        Generic dispatch entry point backed by
+        :class:`LoopStructural.modelling.core._feature_registry.FeatureBuilderRegistry`
+        (see ``API.md``). The 7 built-in feature types (``foliation``,
+        ``fold_frame``, ``folded_foliation``, ``folded_fold_frame``,
+        ``intrusion``, ``domain_fault``, ``fault``) are registered against
+        the same builder logic the ``create_and_add_*`` convenience
+        methods use - this is the extension point for new feature types
+        without modifying ``GeologicalModel``.
+
+        Parameters
+        ----------
+        feature_type : str
+            registered feature type, see
+            :meth:`FeatureBuilderRegistry.registered_types`
+        name : str
+            corresponding to the feature_name in the data
+        **params
+            forwarded to the registered factory
+
+        Returns
+        -------
+        feature : BaseFeature
+            the created geological feature, or None if it could not be built
+        """
+        return FeatureBuilderRegistry.create(feature_type, self, name, **params)
+
+    @public_api(tier="stable")
     def create_and_add_foliation(
         self,
         series_surface_name: str,
         *,
-        index: Optional[int] = None,
-        data: Optional[pd.DataFrame] = None,
+        index: int | None = None,
+        data: pd.DataFrame | None = None,
+        interpolatortype: str = "FDI",
+        nelements: int = LoopStructuralConfig.nelements,
+        tol=None,
+        faults=None,
+        **kwargs,
+    ):
+        """Create a foliation feature and add it to the model.
+
+        See :meth:`_build_foliation` for parameter documentation. Thin
+        wrapper around :meth:`create_and_add_feature` (see ``API.md``);
+        kept as a stable, unchanged entry point.
+        """
+        return self.create_and_add_feature(
+            "foliation",
+            series_surface_name,
+            index=index,
+            data=data,
+            interpolatortype=interpolatortype,
+            nelements=nelements,
+            tol=tol,
+            faults=faults,
+            **kwargs,
+        )
+
+    def _build_foliation(
+        self,
+        series_surface_name: str,
+        *,
+        index: int | None = None,
+        data: pd.DataFrame | None = None,
         interpolatortype: str = "FDI",
         nelements: int = LoopStructuralConfig.nelements,
         tol=None,
@@ -659,14 +1002,45 @@ class GeologicalModel:
         # could just pass a regular grid of points - mask by any above unconformities??
 
         series_feature.type = FeatureType.INTERPOLATED
-        self._add_feature(series_feature,index=index)
+        self._add_feature(series_feature, index=index)
         return series_feature
 
+    @public_api(tier="stable")
     def create_and_add_fold_frame(
         self,
         fold_frame_name: str,
         *,
-        index: Optional[int] = None,
+        index: int | None = None,
+        data=None,
+        interpolatortype="FDI",
+        nelements=LoopStructuralConfig.nelements,
+        tol=None,
+        buffer=0.1,
+        **kwargs,
+    ):
+        """Create a fold frame and add it to the model.
+
+        See :meth:`_build_fold_frame` for parameter documentation. Thin
+        wrapper around :meth:`create_and_add_feature` (see ``API.md``);
+        kept as a stable, unchanged entry point.
+        """
+        return self.create_and_add_feature(
+            "fold_frame",
+            fold_frame_name,
+            index=index,
+            data=data,
+            interpolatortype=interpolatortype,
+            nelements=nelements,
+            tol=tol,
+            buffer=buffer,
+            **kwargs,
+        )
+
+    def _build_fold_frame(
+        self,
+        fold_frame_name: str,
+        *,
+        index: int | None = None,
         data=None,
         interpolatortype="FDI",
         nelements=LoopStructuralConfig.nelements,
@@ -722,25 +1096,64 @@ class GeologicalModel:
         if data.shape[0] == 0:
             logger.warning(f"No data for {fold_frame_name}, skipping")
             return
-        fold_frame_builder.add_data_from_data_frame(self.prepare_data(data, include_feature_name=False))
+        fold_frame_builder.add_data_from_data_frame(
+            self.prepare_data(data, include_feature_name=False)
+        )
         self._add_faults(fold_frame_builder[0])
         self._add_faults(fold_frame_builder[1])
         self._add_faults(fold_frame_builder[2])
         kwargs["tol"] = tol
-        fold_frame_builder.setup(**kwargs)
+        fold_frame_builder.build(**kwargs)
         fold_frame = fold_frame_builder.frame
 
         fold_frame.type = FeatureType.STRUCTURALFRAME
         fold_frame.builder = fold_frame_builder
-        self._add_feature(fold_frame,index=index)
+        self._add_feature(fold_frame, index=index)
 
         return fold_frame
 
+    @public_api(tier="stable")
     def create_and_add_folded_foliation(
         self,
         foliation_name,
         *,
-        index: Optional[int] = None,
+        index: int | None = None,
+        data=None,
+        interpolatortype="DFI",
+        nelements=LoopStructuralConfig.nelements,
+        buffer=0.1,
+        fold_frame=None,
+        svario=True,
+        tol=None,
+        invert_fold_norm=False,
+        **kwargs,
+    ):
+        """Create a folded foliation and add it to the model.
+
+        See :meth:`_build_folded_foliation` for parameter documentation.
+        Thin wrapper around :meth:`create_and_add_feature` (see
+        ``API.md``); kept as a stable, unchanged entry point.
+        """
+        return self.create_and_add_feature(
+            "folded_foliation",
+            foliation_name,
+            index=index,
+            data=data,
+            interpolatortype=interpolatortype,
+            nelements=nelements,
+            buffer=buffer,
+            fold_frame=fold_frame,
+            svario=svario,
+            tol=tol,
+            invert_fold_norm=invert_fold_norm,
+            **kwargs,
+        )
+
+    def _build_folded_foliation(
+        self,
+        foliation_name,
+        *,
+        index: int | None = None,
         data=None,
         interpolatortype="DFI",
         nelements=LoopStructuralConfig.nelements,
@@ -785,7 +1198,8 @@ class GeologicalModel:
         if fold_frame is None:
             logger.info("Using last feature as fold frame")
             fold_frame = self.features[-1]
-        assert isinstance(fold_frame, FoldFrame), "Please specify a FoldFrame"
+        if not isinstance(fold_frame, FoldFrame):
+            raise TypeError("Please specify a FoldFrame")
 
         fold = FoldEvent(fold_frame, name=f"Fold_{foliation_name}", invert_norm=invert_fold_norm)
 
@@ -821,15 +1235,46 @@ class GeologicalModel:
         series_feature.type = FeatureType.FOLDED
         series_feature.fold = fold
 
-        self._add_feature(series_feature,index)
+        self._add_feature(series_feature, index)
         return series_feature
 
+    @public_api(tier="stable")
     def create_and_add_folded_fold_frame(
         self,
         fold_frame_name: str,
         *,
-        index: Optional[int] = None,
-        data: Optional[pd.DataFrame] = None,
+        index: int | None = None,
+        data: pd.DataFrame | None = None,
+        interpolatortype="FDI",
+        nelements=LoopStructuralConfig.nelements,
+        fold_frame=None,
+        tol=None,
+        **kwargs,
+    ):
+        """Create a folded fold frame and add it to the model.
+
+        See :meth:`_build_folded_fold_frame` for parameter documentation.
+        Thin wrapper around :meth:`create_and_add_feature` (see
+        ``API.md``); kept as a stable, unchanged entry point.
+        """
+        return self.create_and_add_feature(
+            "folded_fold_frame",
+            fold_frame_name,
+            index=index,
+            data=data,
+            interpolatortype=interpolatortype,
+            nelements=nelements,
+            fold_frame=fold_frame,
+            tol=tol,
+            **kwargs,
+        )
+
+    def _build_folded_fold_frame(
+        self,
+        fold_frame_name: str,
+        *,
+        index: int | None = None,
+        data: pd.DataFrame | None = None,
         interpolatortype="FDI",
         nelements=LoopStructuralConfig.nelements,
         fold_frame=None,
@@ -883,7 +1328,8 @@ class GeologicalModel:
         if fold_frame is None:
             logger.info("Using last feature as fold frame")
             fold_frame = self.features[-1]
-        assert isinstance(fold_frame, FoldFrame), "Please specify a FoldFrame"
+        if not isinstance(fold_frame, FoldFrame):
+            raise TypeError("Please specify a FoldFrame")
         fold = FoldEvent(fold_frame, name=f"Fold_{fold_frame_name}")
 
         interpolatortypes = [
@@ -903,33 +1349,68 @@ class GeologicalModel:
         )
         if data is None:
             data = self.data[self.data["feature_name"] == fold_frame_name]
-        fold_frame_builder.add_data_from_data_frame(self.prepare_data(data, include_feature_name=False))
+        fold_frame_builder.add_data_from_data_frame(
+            self.prepare_data(data, include_feature_name=False)
+        )
 
         for i in range(3):
             self._add_faults(fold_frame_builder[i])
         # build feature
         kwargs["frame"] = FoldFrame
         kwargs["tol"] = tol
-        fold_frame_builder.setup(**kwargs)
+        fold_frame_builder.build(**kwargs)
         # fold_frame_builder.build_arguments = kwargs
         folded_fold_frame = fold_frame_builder.frame
         folded_fold_frame.builder = fold_frame_builder
 
         folded_fold_frame.type = FeatureType.STRUCTURALFRAME
 
-        self._add_feature(folded_fold_frame,index=index)
+        self._add_feature(folded_fold_frame, index=index)
 
         return folded_fold_frame
 
+    @public_api(tier="stable")
     def create_and_add_intrusion(
         self,
         intrusion_name,
         intrusion_frame_name,
         *,
-        intrusion_frame_parameters={},
+        intrusion_frame_parameters=None,
         intrusion_lateral_extent_model=None,
         intrusion_vertical_extent_model=None,
-        geometric_scaling_parameters={},
+        geometric_scaling_parameters=None,
+        **kwargs,
+    ):
+        """Create an intrusion and add it to the model.
+
+        See :meth:`_build_intrusion` for parameter documentation. Thin
+        wrapper around :meth:`create_and_add_feature` (see ``API.md``);
+        kept as a stable, unchanged entry point.
+        """
+        if intrusion_frame_parameters is None:
+            intrusion_frame_parameters = {}
+        if geometric_scaling_parameters is None:
+            geometric_scaling_parameters = {}
+        return self.create_and_add_feature(
+            "intrusion",
+            intrusion_name,
+            intrusion_frame_name=intrusion_frame_name,
+            intrusion_frame_parameters=intrusion_frame_parameters,
+            intrusion_lateral_extent_model=intrusion_lateral_extent_model,
+            intrusion_vertical_extent_model=intrusion_vertical_extent_model,
+            geometric_scaling_parameters=geometric_scaling_parameters,
+            **kwargs,
+        )
+
+    def _build_intrusion(
+        self,
+        intrusion_name,
+        intrusion_frame_name,
+        *,
+        intrusion_frame_parameters=None,
+        intrusion_lateral_extent_model=None,
+        intrusion_vertical_extent_model=None,
+        geometric_scaling_parameters=None,
         **kwargs,
     ):
         """
@@ -966,6 +1447,10 @@ class GeologicalModel:
         intrusion feature
 
         """
+        if intrusion_frame_parameters is None:
+            intrusion_frame_parameters = {}
+        if geometric_scaling_parameters is None:
+            geometric_scaling_parameters = {}
         # if intrusions is False:
         #     logger.error("Libraries not installed")
         #     raise Exception("Libraries not installed")
@@ -1007,7 +1492,7 @@ class GeologicalModel:
         intrusion_frame_builder.set_intrusion_frame_data(intrusion_frame_data)
 
         ## -- create intrusion frame
-        intrusion_frame_builder.setup(
+        intrusion_frame_builder.build(
             nelements=nelements,
             w2=weights[0],
             w1=weights[1],
@@ -1028,9 +1513,11 @@ class GeologicalModel:
         )
         intrusion_builder.set_data_for_extent_calculation(intrusion_data)
 
-        intrusion_builder.build_arguments = {
-            "geometric_scaling_parameters": geometric_scaling_parameters,
-        }
+        intrusion_builder.update_build_arguments(
+            {
+                "geometric_scaling_parameters": geometric_scaling_parameters,
+            }
+        )
 
         intrusion_feature = intrusion_builder.feature
         self._add_feature(intrusion_feature)
@@ -1076,7 +1563,7 @@ class GeologicalModel:
             if f.name == feature.name:
                 continue
             if f.type == "domain_fault":
-                feature.add_region(lambda pos: f.evaluate_value(pos) < 0)
+                feature.add_region(lambda pos, fault=f: fault.evaluate_value(pos) < 0)
                 break
 
     def _add_domain_fault_below(self, domain_fault):
@@ -1130,7 +1617,10 @@ class GeologicalModel:
                 feature.add_region(f)
                 break
 
-    def add_unconformity(self, feature: GeologicalFeature, value: float, index: Optional[int] = None) -> UnconformityFeature:
+    @public_api(tier="stable")
+    def add_unconformity(
+        self, feature: GeologicalFeature, value: float, index: int | None = None
+    ) -> UnconformityFeature:
         """
         Use an existing feature to add an unconformity to the model.
 
@@ -1167,10 +1657,13 @@ class GeologicalModel:
             else:
                 f.add_region(uc_feature)
         # now add the unconformity to the feature list
-        self._add_feature(uc_feature,index=index)
+        self._add_feature(uc_feature, index=index)
         return uc_feature
 
-    def add_onlap_unconformity(self, feature: GeologicalFeature, value: float, index: Optional[int] = None) -> GeologicalFeature:
+    @public_api(tier="stable")
+    def add_onlap_unconformity(
+        self, feature: GeologicalFeature, value: float, index: int | None = None
+    ) -> GeologicalFeature:
         """
         Use an existing feature to add an unconformity to the model.
 
@@ -1191,24 +1684,104 @@ class GeologicalModel:
         uc_feature = UnconformityFeature(feature, value, False, onlap=True)
         feature.add_region(uc_feature.inverse())
         for f in reversed(self.features):
-            if f.type == FeatureType.UNCONFORMITY:
-                # f.add_region(uc_feature)
-                continue
-            if f.type == FeatureType.FAULT:
+            if f.type in (FeatureType.UNCONFORMITY, FeatureType.ONLAPUNCONFORMITY):
+                logger.debug(f"Reached unconformity {f.name}")
+                break
+            if f.type == FeatureType.FAULT or f.type == FeatureType.INACTIVEFAULT:
                 continue
             if f != feature:
                 f.add_region(uc_feature)
-        self._add_feature(uc_feature.inverse(),index=index)
+        self._add_feature(uc_feature.inverse(), index=index)
 
         return uc_feature
 
+    @public_api(tier="provisional")
+    def add_fold_to_feature(
+        self, feature_name: str, fold_frame: FoldFrame, **kwargs
+    ) -> GeologicalFeature:
+        """Add a fold to an already-built feature, replacing it in the model.
+
+        Promoted (``API.md``) from the previously-private
+        ``LoopStructural.modelling.features._feature_converters.add_fold_to_feature``,
+        which the QGIS plugin imports directly today; that private module
+        is unchanged, this is a public, tested entry point for the same
+        behaviour.
+
+        Parameters
+        ----------
+        feature_name : str
+            name of an existing feature already in the model
+        fold_frame : FoldFrame
+            the fold frame to fold the feature around
+        **kwargs
+            forwarded to :class:`FoldEvent` / ``FoldedFeatureBuilder.from_feature_builder``
+
+        Returns
+        -------
+        feature : GeologicalFeature
+            the folded feature, replacing the original in the model
+        """
+        feature = self.get_feature_by_name(feature_name)
+        folded_feature = _add_fold_to_feature(feature, fold_frame, **kwargs)
+        self._add_feature(folded_feature)
+        return folded_feature
+
+    @public_api(tier="provisional")
+    def convert_feature_to_structural_frame(self, feature_name: str, **kwargs) -> StructuralFrame:
+        """Convert an already-built feature into a structural frame, replacing it in the model.
+
+        Promoted (``API.md``) from the previously-private
+        ``LoopStructural.modelling.features._feature_converters.convert_feature_to_structural_frame``.
+
+        Parameters
+        ----------
+        feature_name : str
+            name of an existing feature already in the model
+        **kwargs
+            forwarded to ``StructuralFrameBuilder.from_feature_builder``
+
+        Returns
+        -------
+        frame : StructuralFrame
+            the structural frame, replacing the original feature in the model
+        """
+        feature = self.get_feature_by_name(feature_name)
+        frame = _convert_feature_to_structural_frame(feature, **kwargs)
+        self._add_feature(frame)
+        return frame
+
+    @public_api(tier="stable")
     def create_and_add_domain_fault(
         self,
         fault_surface_data,
         *,
         nelements=LoopStructuralConfig.nelements,
         interpolatortype="FDI",
-        index: Optional[int] = None,
+        index: int | None = None,
+        **kwargs,
+    ):
+        """Create a domain fault and add it to the model.
+
+        See :meth:`_build_domain_fault` for parameter documentation. Thin
+        wrapper around :meth:`create_and_add_feature` (see ``API.md``);
+        kept as a stable, unchanged entry point.
+        """
+        return self.create_and_add_feature(
+            "domain_fault",
+            fault_surface_data,
+            nelements=nelements,
+            interpolatortype=interpolatortype,
+            index=index,
+            **kwargs,
+        )
+
+    def _build_domain_fault(
+        self,
+        fault_surface_data,
+        *,
+        nelements=LoopStructuralConfig.nelements,
+        interpolatortype="FDI",
+        index: int | None = None,
         **kwargs,
     ):
         """
@@ -1258,13 +1831,14 @@ class GeologicalModel:
         # so the feature is only evaluated where the unconformity is positive
         return domain_fault_uc
 
+    @public_api(tier="stable")
     def create_and_add_fault(
         self,
         fault_name: str,
         displacement: float,
         *,
-        index: Optional[int] = None,
-        data: Optional[pd.DataFrame] = None,
+        index: int | None = None,
+        data: pd.DataFrame | None = None,
         interpolatortype="FDI",
         tol=None,
         fault_slip_vector=None,
@@ -1274,7 +1848,67 @@ class GeologicalModel:
         minor_axis=None,
         intermediate_axis=None,
         faultfunction="BaseFault",
-        faults=[],
+        faults=None,
+        force_mesh_geometry: bool = False,
+        points: bool = False,
+        fault_buffer=0.2,
+        fault_trace_anisotropy=0.0,
+        fault_dip=90,
+        fault_dip_anisotropy=0.0,
+        fault_pitch=None,
+        **kwargs,
+    ):
+        """Create a fault and add it to the model.
+
+        See :meth:`_build_fault` for parameter documentation. Thin
+        wrapper around :meth:`create_and_add_feature` (see ``API.md``);
+        kept as a stable, unchanged entry point.
+        """
+        if faults is None:
+            faults = []
+        return self.create_and_add_feature(
+            "fault",
+            fault_name,
+            displacement=displacement,
+            index=index,
+            data=data,
+            interpolatortype=interpolatortype,
+            tol=tol,
+            fault_slip_vector=fault_slip_vector,
+            fault_normal_vector=fault_normal_vector,
+            fault_center=fault_center,
+            major_axis=major_axis,
+            minor_axis=minor_axis,
+            intermediate_axis=intermediate_axis,
+            faultfunction=faultfunction,
+            faults=faults,
+            force_mesh_geometry=force_mesh_geometry,
+            points=points,
+            fault_buffer=fault_buffer,
+            fault_trace_anisotropy=fault_trace_anisotropy,
+            fault_dip=fault_dip,
+            fault_dip_anisotropy=fault_dip_anisotropy,
+            fault_pitch=fault_pitch,
+            **kwargs,
+        )
+
+    def _build_fault(
+        self,
+        fault_name: str,
+        displacement: float,
+        *,
+        index: int | None = None,
+        data: pd.DataFrame | None = None,
+        interpolatortype="FDI",
+        tol=None,
+        fault_slip_vector=None,
+        fault_normal_vector=None,
+        fault_center=None,
+        major_axis=None,
+        minor_axis=None,
+        intermediate_axis=None,
+        faultfunction="BaseFault",
+        faults=None,
         force_mesh_geometry: bool = False,
         points: bool = False,
         fault_buffer=0.2,
@@ -1312,6 +1946,8 @@ class GeologicalModel:
         * :class:`LoopStructural.modelling.features.builders.FaultBuilder`
         * :meth:`LoopStructural.modelling.features.builders.FaultBuilder.setup`
         """
+        if faults is None:
+            faults = []
         if "fault_extent" in kwargs and major_axis is None:
             major_axis = kwargs["fault_extent"]
         if "fault_influence" in kwargs and minor_axis is None:
@@ -1369,12 +2005,8 @@ class GeologicalModel:
 
         if fault_center is not None and ~np.isnan(fault_center).any():
             fault_center = self.scale(fault_center, inplace=False)
-        if minor_axis:
-            minor_axis = minor_axis
-        if major_axis:
-            major_axis = major_axis
-        if intermediate_axis:
-            intermediate_axis = intermediate_axis
+        # Keep the supplied fault-axis values unchanged; the previous self-assignment
+        # was only present to satisfy a linter and did not affect behavior.
         fault_frame_builder.create_data_from_geometry(
             fault_frame_data=self.prepare_data(data, include_feature_name=False),
             fault_center=fault_center,
@@ -1397,7 +2029,7 @@ class GeologicalModel:
             fault_frame_builder.add_splay(kwargs["splay"], kwargs["splayregion"])
 
         kwargs["tol"] = tol
-        fault_frame_builder.setup(**kwargs)
+        fault_frame_builder.build(**kwargs)
         fault = fault_frame_builder.frame
         fault.displacement = displacement_scaled
         fault.faultfunction = faultfunction
@@ -1408,11 +2040,12 @@ class GeologicalModel:
                 break
         if displacement == 0:
             fault.type = FeatureType.INACTIVEFAULT
-        self._add_feature(fault,index=index)
+        self._add_feature(fault, index=index)
 
         return fault
 
     # TODO move rescale to bounding box/transformer
+    @public_api(tier="stable")
     def rescale(self, points: np.ndarray, *, inplace: bool = False) -> np.ndarray:
         """
         Convert from model scale to real world scale - in the future this
@@ -1433,6 +2066,7 @@ class GeologicalModel:
         return self.bounding_box.reproject(points, inplace=inplace)
 
     # TODO move scale to bounding box/transformer
+    @public_api(tier="stable")
     def scale(self, points: np.ndarray, *, inplace: bool = False) -> np.ndarray:
         """Take points in UTM coordinates and reproject
         into scaled model space
@@ -1450,6 +2084,7 @@ class GeologicalModel:
         """
         return self.bounding_box.project(np.array(points).astype(float), inplace=inplace)
 
+    @public_api(tier="stable")
     def regular_grid(self, *, nsteps=None, shuffle=True, rescale=False, order="C"):
         """
         Return a regular grid within the model bounding box
@@ -1462,10 +2097,13 @@ class GeologicalModel:
         Returns
         -------
         xyz : np.array((N,3),dtype=float)
-            locations of points in regular grid
+            locations of points in regular grid, in world coordinates
         """
-        return self.bounding_box.regular_grid(nsteps=nsteps, shuffle=shuffle, order=order)
+        return self.bounding_box.regular_grid(
+            nsteps=nsteps, shuffle=shuffle, order=order, local=False
+        )
 
+    @public_api(tier="stable")
     def evaluate_model(self, xyz: np.ndarray, *, scale: bool = True) -> np.ndarray:
         """Evaluate the stratigraphic id at each location
 
@@ -1515,9 +2153,11 @@ class GeologicalModel:
         >>> model.evaluate_model(xyz,scale=True)
 
         """
+        # `scale` is retained for API-signature compatibility only: features
+        # now project world -> local coordinates internally (via the
+        # interpolator's bounding_box), so xyz is always treated as world
+        # coordinates here.
         xyz = np.array(xyz)
-        if scale:
-            xyz = self.scale(xyz, inplace=False)
         strat_id = np.zeros(xyz.shape[0], dtype=int)
         # set strat id to -1 to identify which areas of the model aren't covered
         strat_id[:] = -1
@@ -1538,6 +2178,7 @@ class GeologicalModel:
 
         return strat_id
 
+    @public_api(tier="stable")
     def evaluate_model_gradient(self, points: np.ndarray, *, scale: bool = True) -> np.ndarray:
         """Evaluate the gradient of the stratigraphic column at each location
 
@@ -1553,9 +2194,9 @@ class GeologicalModel:
         np.ndarray
             N,3 array of gradient vectors
         """
+        # `scale` is retained for API-signature compatibility only -- see
+        # evaluate_model.
         xyz = np.array(points)
-        if scale:
-            xyz = self.scale(xyz, inplace=False)
         grad = np.zeros(xyz.shape)
         for g in reversed(self.stratigraphic_column.get_groups()):
             feature_id = self.feature_name_index.get(g.name, -1)
@@ -1567,24 +2208,25 @@ class GeologicalModel:
 
         return grad
 
+    @public_api(tier="stable")
     def evaluate_fault_displacements(self, points, scale=True):
         """Evaluate the fault displacement magnitude at each location
 
 
         Parameters
         ----------
-        xyz : np.array((N,3),dtype=float)
+        points : np.array((N,3),dtype=float)
             locations
         scale : bool
-            whether to rescale the xyz before evaluating model
+            whether to rescale the points before evaluating model
 
         Returns
         -------
         fault_displacement : np.array(N,dtype=float)
             the fault displacement magnitude
         """
-        if scale:
-            points = self.scale(points, inplace=False)
+        # `scale` is retained for API-signature compatibility only -- see
+        # evaluate_model.
         vals = np.zeros(points.shape[0])
         for f in self.features:
             if f.type == FeatureType.FAULT:
@@ -1592,6 +2234,7 @@ class GeologicalModel:
                 vals[~np.isnan(disp)] += disp[~np.isnan(disp)]
         return vals  # convert from restoration magnutude to displacement
 
+    @public_api(tier="stable")
     def get_feature_by_name(self, feature_name) -> GeologicalFeature:
         """Returns a feature from the mode given a name
 
@@ -1615,6 +2258,7 @@ class GeologicalModel:
         else:
             raise ValueError(f"{feature_name} does not exist!")
 
+    @public_api(tier="stable")
     def evaluate_feature_value(self, feature_name, xyz, scale=True):
         """Evaluate the scalar value of the geological feature given the name at locations
         xyz
@@ -1652,15 +2296,15 @@ class GeologicalModel:
         >>> model.evaluate_feature_vaue('feature',utm_xyz)
 
         """
+        # `scale` is retained for API-signature compatibility only -- see
+        # evaluate_model.
         feature = self.get_feature_by_name(feature_name)
         if feature:
-            scaled_xyz = xyz
-            if scale:
-                scaled_xyz = self.scale(xyz, inplace=False)
-            return feature.evaluate_value(scaled_xyz)
+            return feature.evaluate_value(xyz)
         else:
             return np.zeros(xyz.shape[0])
 
+    @public_api(tier="stable")
     def evaluate_feature_gradient(self, feature_name, xyz, scale=True):
         """Evaluate the gradient of the geological feature at a location
 
@@ -1678,15 +2322,15 @@ class GeologicalModel:
         results : np.array((N,3))
             gradient of the scalar field at the locations specified
         """
+        # `scale` is retained for API-signature compatibility only -- see
+        # evaluate_model.
         feature = self.get_feature_by_name(feature_name)
         if feature:
-            scaled_xyz = xyz
-            if scale:
-                scaled_xyz = self.scale(xyz, inplace=False)
-            return feature.evaluate_gradient(scaled_xyz)
+            return feature.evaluate_gradient(xyz)
         else:
             return np.zeros(xyz.shape[0])
 
+    @public_api(tier="stable")
     def update(self, verbose=False, progressbar=True):
         total_dof = 0
         nfeatures = 0
@@ -1704,27 +2348,29 @@ class GeologicalModel:
                 total_dof += f.interpolator.dof
                 continue
         if verbose:
-            print(
+            logger.info(
                 f"Updating geological model. There are: \n {nfeatures} \
                     geological features that need to be interpolated\n"
             )
 
-        if progressbar:
-            try:
-                from tqdm.auto import tqdm
+        with timed_stage(logger, "update", nfeatures=nfeatures, total_dof=total_dof):
+            if progressbar:
+                try:
+                    from tqdm.auto import tqdm
 
-                # Load tqdm with size counter instead of file counter
-                with tqdm(total=nfeatures) as pbar:
-                    for f in self.features:
-                        pbar.set_description(f"Interpolating {f.name}")
-                        f.builder.up_to_date(callback=pbar.update)
-                return
-            except ImportError:
-                logger.warning("Failed to import tqdm, disabling progress bar")
+                    # Load tqdm with size counter instead of file counter
+                    with tqdm(total=nfeatures) as pbar:
+                        for f in self.features:
+                            pbar.set_description(f"Interpolating {f.name}")
+                            f.builder.up_to_date(callback=pbar.update)
+                    return
+                except ImportError:
+                    logger.warning("Failed to import tqdm, disabling progress bar")
 
-        for f in self.features:
-            f.builder.up_to_date()
+            for f in self.features:
+                f.builder.up_to_date()
 
+    @public_api(tier="stable")
     def stratigraphic_ids(self):
         """Return a list of all stratigraphic ids in the model
 
@@ -1735,7 +2381,10 @@ class GeologicalModel:
         """
         return self.stratigraphic_column.get_stratigraphic_ids()
 
-    def get_fault_surfaces(self, faults: List[str] = []):
+    @public_api(tier="stable")
+    def get_fault_surfaces(self, faults: list[str] | None = None):
+        if faults is None:
+            faults = []
         surfaces = []
         if len(faults) == 0:
             faults = self.fault_names()
@@ -1744,7 +2393,10 @@ class GeologicalModel:
             surfaces.extend(self.get_feature_by_name(f).surfaces([0], self.bounding_box))
         return surfaces
 
-    def get_stratigraphic_surfaces(self, units: List[str] = [], bottoms: bool = True):
+    @public_api(tier="stable")
+    def get_stratigraphic_surfaces(self, units: list[str] | None = None, bottoms: bool = True):
+        if units is None:
+            units = []
         ## TODO change the stratigraphic column to its own class and have methods to get the relevant surfaces
         surfaces = []
         units = []
@@ -1771,14 +2423,24 @@ class GeologicalModel:
 
         return surfaces
 
+    @public_api(tier="stable")
     def get_block_model(self, name='block model'):
-        grid = self.bounding_box.structured_grid(name=name)
+        # NOTE: bounding_box.structured_grid() returns loop_common's
+        # interpolation-support StructuredGrid (no properties dict); use
+        # LoopStructural's own geometry StructuredGrid for storing values.
+        grid = StructuredGrid(
+            origin=self.bounding_box.origin,
+            step_vector=self.bounding_box.step_vector,
+            nsteps=self.bounding_box.nsteps,
+            name=name,
+        )
 
         grid.cell_properties['stratigraphy'] = self.evaluate_model(
             self.rescale(self.bounding_box.cell_centres())
         )
         return grid, self.stratigraphic_ids()
 
+    @public_api(tier="stable")
     def save(
         self,
         filename: str,
@@ -1807,21 +2469,20 @@ class GeologicalModel:
                 else:
                     s.save(f'{parent}/{name}_{s.name}{extension}')
         if block_model:
-            grid, ids = self.get_block_model()
+            grid, _ids = self.get_block_model()
             if extension == ".geoh5" or extension == '.omf':
                 grid.save(filename)
             else:
                 grid.save(f'{parent}/{name}_block_model{extension}')
-        if stratigraphic_data:
-            if self.stratigraphic_column is not None:
-                for group in self.stratigraphic_column.keys():
-                    if group == "faults":
-                        continue
-                    for data in self.__getitem__(group).get_data():
-                        if extension == ".geoh5" or extension == '.omf':
-                            data.save(filename)
-                        else:
-                            data.save(f'{parent}/{name}_{group}_data{extension}')
+        if stratigraphic_data and self.stratigraphic_column is not None:
+            for group in self.stratigraphic_column:
+                if group == "faults":
+                    continue
+                for data in self.__getitem__(group).get_data():
+                    if extension == ".geoh5" or extension == '.omf':
+                        data.save(filename)
+                    else:
+                        data.save(f'{parent}/{name}_{group}_data{extension}')
         if fault_data:
             for f in self.fault_names():
                 for d in self.__getitem__(f).get_data():
@@ -1830,3 +2491,37 @@ class GeologicalModel:
                         d.save(filename)
                     else:
                         d.save(f'{parent}/{name}_{group}{extension}')
+
+
+# Wire the built-in feature types up to GeologicalModel.create_and_add_feature
+# (see FeatureBuilderRegistry / API.md). Each factory reuses the existing
+# _build_* method unchanged; new feature types register here without
+# modifying GeologicalModel's source.
+FeatureBuilderRegistry.register(
+    "foliation", lambda model, name, **params: model._build_foliation(name, **params)
+)
+FeatureBuilderRegistry.register(
+    "fold_frame", lambda model, name, **params: model._build_fold_frame(name, **params)
+)
+FeatureBuilderRegistry.register(
+    "folded_foliation",
+    lambda model, name, **params: model._build_folded_foliation(name, **params),
+)
+FeatureBuilderRegistry.register(
+    "folded_fold_frame",
+    lambda model, name, **params: model._build_folded_fold_frame(name, **params),
+)
+FeatureBuilderRegistry.register(
+    "intrusion",
+    lambda model, name, **params: model._build_intrusion(
+        name, params.pop("intrusion_frame_name"), **params
+    ),
+)
+FeatureBuilderRegistry.register(
+    "domain_fault",
+    lambda model, name, **params: model._build_domain_fault(name, **params),
+)
+FeatureBuilderRegistry.register(
+    "fault",
+    lambda model, name, **params: model._build_fault(name, params.pop("displacement"), **params),
+)

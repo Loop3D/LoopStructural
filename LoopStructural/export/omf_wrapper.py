@@ -5,9 +5,10 @@ except ImportError:
         "You need to install the omf package to use this feature. "
         "You can install it with: pip install mira-omf"
     )
-import numpy as np
 import datetime
 import os
+
+import numpy as np
 
 
 def get_project(filename):
@@ -73,7 +74,7 @@ def add_surface_to_omf(surface, filename):
     project.elements += [surface]
     project.metadata = {
         "coordinate_reference_system": "epsg 3857",
-        "date_created": datetime.datetime.utcnow(),
+        "date_created": datetime.datetime.now(datetime.timezone.utc),
         "version": "v1.3",
         "revision": "10",
     }
@@ -97,8 +98,7 @@ def add_pointset_to_omf(points, filename):
 
 
 def add_structured_grid_to_omf(grid, filename):
-    print('Open Mining Format cannot store structured grids')
-    return
+    raise NotImplementedError("Open Mining Format cannot store structured grids")
     # attributes = []
     # attributes += get_cell_attributes(grid)
     # attributes += get_point_attributed(grid)

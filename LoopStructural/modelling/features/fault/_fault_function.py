@@ -1,7 +1,7 @@
 from __future__ import annotations
 
-from abc import abstractmethod, ABCMeta
-from typing import Optional, List
+from abc import ABCMeta, abstractmethod
+
 import numpy as np
 
 from ....utils import getLogger
@@ -15,10 +15,10 @@ def smooth_peak(x):
     v[mask] = x[mask] ** 4 - 2 * x[mask] ** 2 + 1
     return v
 
+
 class FaultProfileFunction(metaclass=ABCMeta):
     def __init__(self):
         self.lim = [-1, 1]
-        pass
 
     @abstractmethod
     def to_dict(self) -> dict:
@@ -32,7 +32,7 @@ class FaultProfileFunction(metaclass=ABCMeta):
         if ax is None:
             import matplotlib.pyplot as plt
 
-            fig, ax = plt.subplots()
+            _fig, ax = plt.subplots()
         x = np.linspace(-1, 1, 100)
         ax.plot(x, self(x), label="ones function")
 
@@ -100,20 +100,21 @@ class CubicFunction(FaultProfileFunction):
         self.min_v = min_v
 
     def set_lim(self, min_x: float, max_x: float):
-        """
+        """Set the limits of the fault frame coordinate outside of which the
+        function value is clamped to the value at the limit
 
         Parameters
         ----------
-        min_x : _type_
-            _description_
-        max_x : _type_
-            _description_
+        min_x : float
+            minimum value of the fault frame coordinate
+        max_x : float
+            maximum value of the fault frame coordinate
         """
         self.lim = [min_x, max_x]
 
     def check(self):
         if len(self.B) < 3:
-            print("underdetermined")
+            logger.error("underdetermined")
             raise ValueError("Underdetermined")
 
     def solve(self):
@@ -234,13 +235,14 @@ class Composite(FaultProfileFunction):
 
         Parameters
         ----------
-        data : _type_
-            _description_
+        data : dict
+            Dictionary containing "positive" and "negative" keys, each a dictionary
+            of CubicFunction parameters
 
         Returns
         -------
-        _type_
-            _description_
+        Composite
+            An initialised composite function given the dictionary parameters
         """
         positive = CubicFunction.from_dict(data["positive"])
         negative = CubicFunction.from_dict(data["negative"])
@@ -308,11 +310,11 @@ class Zeros(FaultProfileFunction):
 class FaultDisplacement:
     def __init__(
         self,
-        hw: Optional[FaultProfileFunction] = None,
-        fw: Optional[FaultProfileFunction] = None,
-        gx: Optional[FaultProfileFunction] = None,
-        gy: Optional[FaultProfileFunction] = None,
-        gz: Optional[FaultProfileFunction] = None,
+        hw: FaultProfileFunction | None = None,
+        fw: FaultProfileFunction | None = None,
+        gx: FaultProfileFunction | None = None,
+        gy: FaultProfileFunction | None = None,
+        gz: FaultProfileFunction | None = None,
         scale=0.5,
     ):
         """Function for characterising the displacement of a fault in 3D space
@@ -339,13 +341,13 @@ class FaultDisplacement:
         self.gz = gz
         self.scale = scale
         if self.gx is None:
-            print("Gx function none setting to ones")
+            logger.info("Gx function none setting to ones")
             self.gx = Ones()
         if self.gy is None:
-            print("Gy function none setting to ones")
+            logger.info("Gy function none setting to ones")
             self.gy = Ones()
         if self.gz is None:
-            print("Gz function none setting to ones")
+            logger.info("Gz function none setting to ones")
             self.gz = Ones()
 
         if self.gx is None:
@@ -373,12 +375,12 @@ class FaultDisplacement:
         gz = CubicFunction.from_dict(data["gz"])
         return cls(gx=gx, gy=gy, gz=gz)
 
-    def plot(self, range=(-1, 1), axs: Optional[List] = None):
+    def plot(self, range=(-1, 1), axs: list | None = None):
         try:
             import matplotlib.pyplot as plt
 
             if axs is None:
-                fig, ax = plt.subplots(1, 3, figsize=(15, 5))
+                _fig, ax = plt.subplots(1, 3, figsize=(15, 5))
             for i, (name, f) in enumerate(zip(["gx", "gy", "gz"], [self.gx, self.gy, self.gz])):
                 x = np.linspace(range[0], range[1], 100)
                 ax[i].plot(x, f(x), label=name)
@@ -392,7 +394,7 @@ class FaultDisplacement:
             return
 
 
-class BaseFault(object):
+class BaseFault:
     """ """
 
     hw = CubicFunction()
@@ -423,7 +425,7 @@ class BaseFault(object):
     fault_displacement = FaultDisplacement(gx=gxf, gy=gyf, gz=gzf)
 
 
-class BaseFault3D(object):
+class BaseFault3D:
     """ """
 
     hw = CubicFunction()

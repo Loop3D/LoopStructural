@@ -1,11 +1,14 @@
+import numpy as np
+import pytest
+
+from LoopStructural.geometry import BoundingBox
 from LoopStructural.interpolators import (
     FiniteDifferenceInterpolator as FDI,
+)
+from LoopStructural.interpolators import (
     PiecewiseLinearInterpolator as PLI,
 )
-from LoopStructural.interpolators import StructuredGrid, TetMesh
-from LoopStructural.datatypes import BoundingBox
-import pytest
-import numpy as np
+from LoopStructural.interpolators import StructuredGridSupport, TetMesh
 
 
 @pytest.fixture(params=["FDI", "PLI"])
@@ -16,11 +19,11 @@ def interpolator(request):
     nsteps = np.array([20, 20, 20])
     step_vector = (maximum - origin) / nsteps
     if interpolator == "FDI":
-        grid = StructuredGrid(origin=origin, nsteps=nsteps, step_vector=step_vector)
+        grid = StructuredGridSupport(origin=origin, nsteps_cells=nsteps, step_vector=step_vector)
         interpolator = FDI(grid)
         return interpolator
     elif interpolator == "PLI":
-        grid = TetMesh(origin=origin, nsteps=nsteps, step_vector=step_vector)
+        grid = TetMesh(origin=origin, nsteps_cells=nsteps, step_vector=step_vector)
         interpolator = PLI(grid)
         return interpolator
     else:
@@ -53,7 +56,7 @@ def interpolator_type(request):
 def support(request):
     support_type = request.param
     if support_type == "grid":
-        return StructuredGrid()
+        return StructuredGridSupport()
     if support_type == "tetra":
         return TetMesh()
 
@@ -62,7 +65,7 @@ def support(request):
 def support_class(request):
     support_type = request.param
     if support_type == "grid":
-        return StructuredGrid
+        return StructuredGridSupport
     if support_type == "tetra":
         return TetMesh
 

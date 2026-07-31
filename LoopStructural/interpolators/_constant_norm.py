@@ -1,11 +1,15 @@
-import numpy as np
+from __future__ import annotations
 
-from LoopStructural.interpolators._discrete_interpolator import DiscreteInterpolator
-from LoopStructural.interpolators._finite_difference_interpolator import FiniteDifferenceInterpolator
-from ._p1interpolator import P1Interpolator
-from typing import Optional, Union, Callable
+from typing import Callable
+
+import numpy as np
+from loop_interpolation import DiscreteInterpolator, FiniteDifferenceInterpolator, P1Interpolator
 from scipy import sparse
-from LoopStructural.utils import rng
+
+from LoopStructural.utils import getLogger, rng
+
+logger = getLogger(__name__)
+
 
 class ConstantNormInterpolator:
     """Adds a non linear constraint to an interpolator to constrain
@@ -13,10 +17,12 @@ class ConstantNormInterpolator:
 
     Returns
     -------
-    _type_
-        _description_
+    ConstantNormInterpolator
+        an interpolator mixin that iteratively re-weights a unit gradient norm constraint
+        into the least squares system of the wrapped discrete interpolator
     """
-    def __init__(self, interpolator: DiscreteInterpolator,basetype):
+
+    def __init__(self, interpolator: DiscreteInterpolator, basetype):
         """Initialise the constant norm inteprolator
         with a discrete interpolator.
 
@@ -32,9 +38,10 @@ class ConstantNormInterpolator:
         self.norm_length = 1.0
         self.n_iterations = 20
         self.store_solution_history = False
-        self.solution_history = []#np.zeros((self.n_iterations, self.support.n_nodes))
+        self.solution_history = []  # np.zeros((self.n_iterations, self.support.n_nodes))
         self.gradient_constraint_store = []
-    def add_constant_norm(self, w:float):
+
+    def add_constant_norm(self, w: float):
         """Add a constraint to the interpolator to constrain the norm of the gradient
         to be a set value
 
@@ -45,12 +52,12 @@ class ConstantNormInterpolator:
         """
         if "constant norm" in self.interpolator.constraints:
             _ = self.interpolator.constraints.pop("constant norm")
-        
+
         element_indices = np.arange(self.support.elements.shape[0])
         if self.random_subset:
             rng.shuffle(element_indices)
             element_indices = element_indices[: int(0.1 * self.support.elements.shape[0])]
-        vertices, gradient, elements, inside = self.support.get_element_gradient_for_location(
+        _vertices, gradient, elements, _inside = self.support.get_element_gradient_for_location(
             self.support.barycentre[element_indices]
         )
 
@@ -62,12 +69,24 @@ class ConstantNormInterpolator:
             self.interpolator.c[self.support.elements[elements]],
         )
 
-        v_t = v_t / np.linalg.norm(v_t, axis=1)[:, np.newaxis]
-        self.gradient_constraint_store.append(np.hstack([self.support.barycentre[element_indices],v_t]))
+        norm = np.linalg.norm(v_t, axis=1)
+        valid = norm > 0
+        if not np.all(valid):
+            logger.warning(
+                f"Skipping {np.sum(~valid)} elements with zero gradient norm "
+                "when adding constant norm constraint"
+            )
+        t_g = t_g[valid]
+        v_t = v_t[valid] / norm[valid, np.newaxis]
+        elements = elements[valid]
+        element_indices = element_indices[valid]
+        self.gradient_constraint_store.append(
+            np.hstack([self.support.barycentre[element_indices], v_t])
+        )
         A1 = np.einsum("ij,ijk->ik", v_t, t_g)
         volume = self.support.element_size[element_indices]
         A1 = A1 / volume[:, np.newaxis]  # normalise by element size
-        
+
         b = np.zeros(A1.shape[0]) + self.norm_length
         b = b / volume  # normalise by element size
         idc = np.hstack(
@@ -79,9 +98,9 @@ class ConstantNormInterpolator:
 
     def solve_system(
         self,
-        solver: Optional[Union[Callable[[sparse.csr_matrix, np.ndarray], np.ndarray], str]] = None,
-        tol: Optional[float] = None,
-        solver_kwargs: dict = {},
+        solver: Callable[[sparse.csr_matrix, np.ndarray], np.ndarray] | str | None = None,
+        tol: float | None = None,
+        solver_kwargs: dict | None = None,
     ) -> bool:
         """Solve the system of equations iteratively for the constant norm interpolator.
 
@@ -99,13 +118,17 @@ class ConstantNormInterpolator:
         bool
             Success status of the solver
         """
+        if solver_kwargs is None:
+            solver_kwargs = {}
         success = True
         for i in range(self.n_iterations):
             if i > 0:
                 self.add_constant_norm(w=(0.1 * i) ** 2 + 0.01)
             # Ensure the interpolator is cast to P1Interpolator before calling solve_system
             if isinstance(self.interpolator, self.basetype):
-                success = self.basetype.solve_system(self.interpolator, solver=solver, tol=tol, solver_kwargs=solver_kwargs)
+                success = self.basetype.solve_system(
+                    self.interpolator, solver=solver, tol=tol, solver_kwargs=solver_kwargs
+                )
                 if self.store_solution_history:
 
                     self.solution_history.append(self.interpolator.c)
@@ -114,6 +137,7 @@ class ConstantNormInterpolator:
             if not success:
                 break
         return success
+
 
 class ConstantNormP1Interpolator(P1Interpolator, ConstantNormInterpolator):
     """Constant norm interpolator using P1 base interpolator
@@ -125,22 +149,23 @@ class ConstantNormP1Interpolator(P1Interpolator, ConstantNormInterpolator):
     ConstantNormInterpolator : class
         The ConstantNormInterpolator class.
     """
+
     def __init__(self, support):
         """Initialise the constant norm P1 interpolator.
 
         Parameters
         ----------
-        support : _type_
-            _description_
+        support : support object
+            the mesh/support object that the base interpolator is built on
         """
         P1Interpolator.__init__(self, support)
         ConstantNormInterpolator.__init__(self, self, P1Interpolator)
 
     def solve_system(
         self,
-        solver: Optional[Union[Callable[[sparse.csr_matrix, np.ndarray], np.ndarray], str]] = None,
-        tol: Optional[float] = None,
-        solver_kwargs: dict = {},
+        solver: Callable[[sparse.csr_matrix, np.ndarray], np.ndarray] | str | None = None,
+        tol: float | None = None,
+        solver_kwargs: dict | None = None,
     ) -> bool:
         """Solve the system of equations for the constant norm P1 interpolator.
 
@@ -158,7 +183,12 @@ class ConstantNormP1Interpolator(P1Interpolator, ConstantNormInterpolator):
         bool
             Success status of the solver
         """
-        return ConstantNormInterpolator.solve_system(self, solver=solver, tol=tol, solver_kwargs=solver_kwargs)
+        if solver_kwargs is None:
+            solver_kwargs = {}
+        return ConstantNormInterpolator.solve_system(
+            self, solver=solver, tol=tol, solver_kwargs=solver_kwargs
+        )
+
 
 class ConstantNormFDIInterpolator(FiniteDifferenceInterpolator, ConstantNormInterpolator):
     """Constant norm interpolator using finite difference base interpolator
@@ -170,21 +200,23 @@ class ConstantNormFDIInterpolator(FiniteDifferenceInterpolator, ConstantNormInte
     ConstantNormInterpolator : class
         The ConstantNormInterpolator class.
     """
+
     def __init__(self, support):
         """Initialise the constant norm finite difference interpolator.
 
         Parameters
         ----------
-        support : _type_
-            _description_
+        support : support object
+            the mesh/support object that the base interpolator is built on
         """
         FiniteDifferenceInterpolator.__init__(self, support)
         ConstantNormInterpolator.__init__(self, self, FiniteDifferenceInterpolator)
+
     def solve_system(
         self,
-        solver: Optional[Union[Callable[[sparse.csr_matrix, np.ndarray], np.ndarray], str]] = None,
-        tol: Optional[float] = None,
-        solver_kwargs: dict = {},
+        solver: Callable[[sparse.csr_matrix, np.ndarray], np.ndarray] | str | None = None,
+        tol: float | None = None,
+        solver_kwargs: dict | None = None,
     ) -> bool:
         """Solve the system of equations for the constant norm finite difference interpolator.
 
@@ -202,4 +234,8 @@ class ConstantNormFDIInterpolator(FiniteDifferenceInterpolator, ConstantNormInte
         bool
             Success status of the solver
         """
-        return ConstantNormInterpolator.solve_system(self, solver=solver, tol=tol, solver_kwargs=solver_kwargs)
+        if solver_kwargs is None:
+            solver_kwargs = {}
+        return ConstantNormInterpolator.solve_system(
+            self, solver=solver, tol=tol, solver_kwargs=solver_kwargs
+        )

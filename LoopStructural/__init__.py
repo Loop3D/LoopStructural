@@ -5,14 +5,35 @@ LoopStructural
 """
 
 import logging
+from dataclasses import dataclass
 from logging.config import dictConfig
 
-from dataclasses import dataclass
-
-
-__all__ = ["GeologicalModel"]
+__all__ = [
+    "BoundingBox",
+    "FaultTopology",
+    "FileSink",
+    "GeologicalModel",
+    "InterpolatorBuilder",
+    "LogSink",
+    "LoopInterpolator",
+    "LoopStructuralConfig",
+    "SqliteSink",
+    "StratigraphicColumn",
+    "StreamSink",
+    "add_sink",
+    "getLogger",
+    "get_levels",
+    "log_to_console",
+    "log_to_file",
+    "remove_sink",
+    "rng",
+    "setLogging",
+    "timed",
+    "timed_stage",
+]
 import tempfile
 from pathlib import Path
+
 from .version import __version__
 
 experimental = False
@@ -21,6 +42,11 @@ formatter = logging.Formatter("%(levelname)s: %(asctime)s: %(filename)s:%(lineno
 ch.setFormatter(formatter)
 ch.setLevel(logging.WARNING)
 loggers = {}
+# Handlers attached via LoopStructural.utils.add_sink(); replayed onto every
+# logger getLogger() creates from here on, in addition to the default `ch`.
+_extra_sinks = []
+
+
 @dataclass
 class LoopStructuralConfig:
     """Configuration for LoopStructural package.
@@ -42,13 +68,27 @@ class LoopStructuralConfig:
    
     nelements: int = 10_000
 
+from .geometry import BoundingBox
+from .interpolators import InterpolatorBuilder
+from .interpolators._api import LoopInterpolator
+from .modelling.core.fault_topology import FaultTopology
 from .modelling.core.geological_model import GeologicalModel
 from .modelling.core.stratigraphic_column import StratigraphicColumn
-from .modelling.core.fault_topology import FaultTopology
-from .interpolators._api import LoopInterpolator
-from .interpolators import InterpolatorBuilder
-from .datatypes import BoundingBox
-from .utils import log_to_console, log_to_file, getLogger, rng, get_levels
+from .utils import (
+    FileSink,
+    LogSink,
+    SqliteSink,
+    StreamSink,
+    add_sink,
+    get_levels,
+    getLogger,
+    log_to_console,
+    log_to_file,
+    remove_sink,
+    rng,
+    timed,
+    timed_stage,
+)
 
 logger = getLogger(__name__)
 logger.info("Imported LoopStructural")

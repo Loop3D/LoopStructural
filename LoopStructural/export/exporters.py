@@ -3,14 +3,15 @@ Routines to export geological model data to file in a variety of formats
 """
 
 import os
-from pyevtk.hl import unstructuredGridToVTK, pointsToVTK
-from pyevtk.vtk import VtkTriangle
+
 import numpy as np
+from pyevtk.hl import pointsToVTK, unstructuredGridToVTK
+from pyevtk.vtk import VtkTriangle
 from skimage.measure import marching_cubes
 
-from LoopStructural.utils.helper import create_box
 from LoopStructural.export.file_formats import FileFormat
-from LoopStructural.datatypes import Surface
+from LoopStructural.geometry import Surface
+from LoopStructural.utils.helper import create_box
 
 from ..utils import getLogger
 
@@ -193,7 +194,7 @@ def _write_feat_surfs_evtk(surf, file_name):
             cell_types=cell_types,
             pointData={"values": pointData},
         )
-    except Exception as e:
+    except (OSError, ValueError) as e:
         logger.warning(f"Cannot export fault surface to VTK file {file_name}: {e}")
         return False
 
@@ -396,7 +397,7 @@ def _write_cubeface_evtk(model, file_name, data_label, nsteps, real_coords=True)
             cellData=None,
             pointData={data_label: val},
         )
-    except Exception as e:
+    except (OSError, ValueError) as e:
         logger.warning(f"Cannot export cuboid surface to VTK file {file_name}: {e}")
         return False
     return True
@@ -422,8 +423,9 @@ def _write_vol_evtk(model, file_name, data_label, nsteps, real_coords=True):
     True if successful
 
     """
-    # Define grid spacing
-    xyz = model.bounding_box.regular_grid(nsteps=nsteps)
+    # Define grid spacing (world coordinates -- evaluate_model/features now
+    # project world -> local internally)
+    xyz = model.bounding_box.regular_grid(nsteps=nsteps, local=False)
     vals = model.evaluate_model(xyz, scale=False)
     if real_coords:
         model.rescale(xyz)
@@ -438,7 +440,7 @@ def _write_vol_evtk(model, file_name, data_label, nsteps, real_coords=True):
     # Write to grid
     try:
         pointsToVTK(file_name, x, y, z, data={data_label: vals})
-    except Exception as e:
+    except (OSError, ValueError) as e:
         logger.warning(f"Cannot export volume to VTK file {file_name}: {e}")
         return False
     return True
@@ -464,8 +466,9 @@ def _write_vol_gocad(model, file_name, data_label, nsteps, real_coords=True):
     True if successful
 
     """
-    # Define grid spacing in model scale coords
-    xyz = model.bounding_box.regular_grid(nsteps=nsteps)
+    # Define grid spacing (world coordinates -- evaluate_model/features now
+    # project world -> local internally)
+    xyz = model.bounding_box.regular_grid(nsteps=nsteps, local=False)
 
     vals = model.evaluate_model(xyz, scale=False)
     # Use FORTRAN style indexing for GOCAD VOXET
@@ -539,7 +542,7 @@ PROP_OFFSET 1 0
 PROP_FILE 1 {data_filename}
 END\n"""
             )
-    except IOError as exc:
+    except OSError as exc:
         logger.warning(f"Cannot export volume to GOCAD VOXET file {vo_filename}: {exc}")
         return False
 
@@ -548,7 +551,7 @@ END\n"""
     try:
         with open(data_filename, "wb") as fp:
             export_vals.tofile(fp)
-    except IOError as exc:
+    except OSError as exc:
         logger.warning(f"Cannot export volume to GOCAD VOXET data file {data_filename}: {exc}")
         return False
     return True

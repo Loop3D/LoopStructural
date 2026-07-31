@@ -1,6 +1,8 @@
-from LoopStructural.interpolators import StructuredGrid
 import numpy as np
 import pytest
+
+from LoopStructural.interpolators import StructuredGridSupport
+
 
 ## structured grid tests
 def test_create_support(support):
@@ -17,7 +19,7 @@ def test_create_support(support):
 def test_create_support_origin_nsteps(support_class):
     grid = support_class(
         origin=np.zeros(3),
-        nsteps=np.array([10, 10, 10]),
+        nsteps_cells=np.array([10, 10, 10]),
         step_vector=np.array([0.1, 0.1, 0.1]),
     )
     assert np.sum(grid.step_vector - np.array([0.1, 0.1, 0.1])) == 0
@@ -42,7 +44,7 @@ def test_evaluate_value(support):
 
 @pytest.mark.parametrize('steps',[10,20,100])
 def test_evaluate_gradient(support_class,steps):
-    support = support_class(nsteps=[steps]*3)
+    support = support_class(nsteps_cells=[steps]*3)
     # test by setting the scalar field to the y coordinate
     vector = support.evaluate_gradient(support.barycentre, support.nodes[:, 1])
     assert np.sum(vector - np.array([0, 1, 0])) == 0
@@ -95,14 +97,14 @@ def test_evaluate_gradient2(support_class, seed):
 def test_get_element(support):
     point = support.barycentre[[0], :]
     # point[0, 0] += 0.1
-    vertices, dof, idc, inside = support.get_element_for_location(point)
+    vertices, _dof, _idc, _inside = support.get_element_for_location(point)
     # vertices = vertices.reshape(-1, 3)
     bary = np.mean(vertices, axis=1)
     assert np.isclose(np.sum(point - bary), 0)
 
 
 def test_global_to_local_coordinates():
-    grid = StructuredGrid()
+    grid = StructuredGridSupport()
     point = np.array([[1.2, 1.5, 1.7]])
     local_coords = grid.position_to_local_coordinates(point)
     assert np.isclose(local_coords[0, 0], 0.2)
@@ -112,7 +114,7 @@ def test_global_to_local_coordinates():
 
 def test_get_element_outside(support):
     point = np.array([support.origin - np.ones(3)])
-    idc, inside = support.position_to_cell_corners(point)
+    _idc, inside = support.position_to_cell_corners(point)
     assert not inside[0]
 
 

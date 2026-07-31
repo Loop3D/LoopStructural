@@ -1,13 +1,10 @@
 import numpy as np
 import pandas as pd
 
-from ...utils import getLogger
-from .intrusion_feature import IntrusionFeature
-
-
+from ...utils import getLogger, rng
 from ..features.builders import BaseBuilder
-from ...utils import rng
 from .geometric_scaling_functions import *
+from .intrusion_feature import IntrusionFeature
 
 logger = getLogger(__name__)
 
@@ -132,25 +129,21 @@ class IntrusionBuilder(BaseBuilder):
 
         if intrusion_length is None and thickness is None:
             raise ValueError(
-                "No {} data. Add intrusion_type and intrusion_length (or thickness) to geometric_scaling_parameters dictionary".format(
-                    self.intrusion_frame.builder.intrusion_other_contact
-                )
+                f"No {self.intrusion_frame.builder.intrusion_other_contact} data. Add intrusion_type and intrusion_length (or thickness) to geometric_scaling_parameters dictionary"
             )
 
         else:  # -- create synthetic data to constrain interpolation using geometric scaling
             estimated_thickness = thickness
             if estimated_thickness is None:
-                raise Exception('Not implemented')
+                raise NotImplementedError("Not implemented")
                 # estimated_thickness = thickness_from_geometric_scaling(
                 #     intrusion_length, intrusion_type
                 # )
 
-            print(
-                "Building tabular intrusion using geometric scaling parameters: estimated thicknes = {} meters".format(
-                    round(estimated_thickness)
-                )
+            logger.info(
+                f"Building tabular intrusion using geometric scaling parameters: estimated thicknes = {round(estimated_thickness)} meters"
             )
-            raise Exception('Not implemented')
+            raise NotImplementedError("Not implemented")
             # (
             #     other_contact_data_temp,
             #     other_contact_data_xyz_temp,
@@ -277,7 +270,7 @@ class IntrusionBuilder(BaseBuilder):
 
         """
         if not callable(self.lateral_extent_model) or not callable(self.vertical_extent_model):
-            raise ValueError("lateral_extent_model and vertical_extent_model must be functions")
+            raise TypeError("lateral_extent_model and vertical_extent_model must be functions")
 
         grid_points_coord1 = self.evaluation_grid[2]
 
@@ -370,7 +363,7 @@ class IntrusionBuilder(BaseBuilder):
         maxL = self.conceptual_model_parameters.get("maxL")
 
         if self.width_data[0] is False:  # i.e., no lateral data for side L<0
-            print(
+            logger.info(
                 "Not enought lateral data to constrain side L<0. Conceptual model will be used to constrain lateral extent"
             )
 
@@ -431,7 +424,7 @@ class IntrusionBuilder(BaseBuilder):
             # data_for_min_L.loc[:, "ref_coord"] = 0
 
         if not self.width_data[1]:  # i.e., no lateral data for side L>0
-            print(
+            logger.info(
                 "Not enought lateral data to constrain side L>0. Conceptual model will be used to constrain lateral extent"
             )
 
@@ -530,7 +523,7 @@ class IntrusionBuilder(BaseBuilder):
         )
 
         if len(data_for_min_L_) > 0 and self.constrain_sides_with_rooffloor_data:
-            print("adding data from roof/floor to constrain L<0")
+            logger.info("adding data from roof/floor to constrain L<0")
             data_for_min_L = pd.concat([data_for_min_L, data_for_min_L_])
 
         data_maxL_temp = vertical_data[vertical_data["coord2"] >= 0].copy()
@@ -559,7 +552,7 @@ class IntrusionBuilder(BaseBuilder):
         )
 
         if len(data_for_max_L_) > 0 and self.constrain_sides_with_rooffloor_data:
-            print("adding data from roof/floor to constrain L>0")
+            logger.info("adding data from roof/floor to constrain L>0")
             data_for_max_L = pd.concat([data_for_max_L, data_for_max_L_])
 
         data_for_min_L["l_residual"] = data_for_min_L["l_residual"].astype(float)
@@ -651,7 +644,7 @@ class IntrusionBuilder(BaseBuilder):
     def build(
         self,
         # parameters_for_extent_sgs={},
-        geometric_scaling_parameters={},
+        geometric_scaling_parameters=None,
         **kwargs,
     ):
         """Main building function for intrusion.
@@ -665,8 +658,26 @@ class IntrusionBuilder(BaseBuilder):
         lateral_extent_sgs_parameters : dict, optional
             parameters for the vertical sequential gaussian simulation, by default {}
         """
+        if geometric_scaling_parameters is None:
+            geometric_scaling_parameters = {}
         self.prepare_data(geometric_scaling_parameters)
         self.create_grid_for_evaluation()
 
         self.set_data_for_lateral_thresholds()
         self.set_data_for_vertical_thresholds()
+        self._up_to_date = True
+
+    def up_to_date(self, callback=None):
+        """
+        IntrusionBuilder doesn't own a single interpolator (its geometry is
+        derived from the intrusion frame's builders), so unlike BaseBuilder
+        it can't check `self._interpolator.up_to_date` -- just rebuild when
+        the `_up_to_date` flag has been cleared.
+        """
+        if not self._up_to_date:
+            self.update()
+            if callable(callback):
+                callback(1)
+            return
+        if callable(callback):
+            callback(1)

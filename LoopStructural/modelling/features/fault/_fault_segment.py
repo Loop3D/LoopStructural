@@ -1,14 +1,15 @@
-from LoopStructural.utils.maths import regular_tetraherdron_for_points, gradient_from_tetrahedron
+from concurrent.futures import ThreadPoolExecutor
+
+import numpy as np
+
+from LoopStructural.utils.maths import gradient_from_tetrahedron, regular_tetraherdron_for_points
+
+from ....modelling.features import FeatureType, StructuralFrame
+from ....modelling.features.fault._fault_function import BaseFault, BaseFault3D, FaultDisplacement
 from ....modelling.features.fault._fault_function_feature import (
     FaultDisplacementFeature,
 )
-from ....modelling.features import FeatureType
-from ....modelling.features.fault._fault_function import BaseFault, BaseFault3D, FaultDisplacement
-from ....utils import getLogger, NegativeRegion, PositiveRegion
-from ....modelling.features import StructuralFrame
-
-from concurrent.futures import ThreadPoolExecutor
-import numpy as np
+from ....utils import NegativeRegion, PositiveRegion, getLogger
 
 logger = getLogger(__name__)
 
@@ -270,8 +271,8 @@ class FaultSegment(StructuralFrame):
         for r in self.regions:
             try:
                 mask = np.logical_and(mask, r(locations))
-            except:
-                logger.error("nan slicing ")
+            except (ValueError, IndexError) as e:
+                logger.error(f"nan slicing: {e}")
         # need to scale with fault displacement
         v[mask, :] = self.__getitem__(1).evaluate_gradient(locations[mask, :])
         v[mask, :] /= np.linalg.norm(v[mask, :], axis=1)[:, None]

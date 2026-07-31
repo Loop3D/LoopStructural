@@ -1,11 +1,15 @@
+from ..utils import getLogger
+
+logger = getLogger(__name__)
+
 try:
     from loopstructuralvisualisation import (
+        Loop2DView,
         Loop3DView,
         RotationAnglePlotter,
-        Loop2DView,
         StratigraphicColumnView,
     )
-except ImportError as e:
-    print("Please install the loopstructuralvisualisation package")
-    print("pip install loopstructuralvisualisation")
-    raise e
+except ImportError:
+    logger.error("Please install the loopstructuralvisualisation package")
+    logger.error("pip install loopstructuralvisualisation")
+    raise

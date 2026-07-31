@@ -1,6 +1,7 @@
-import numpy as np
 from abc import ABC, abstractmethod
-from typing import Tuple
+
+import numpy as np
+
 
 class BaseRegion(ABC):
     @abstractmethod
@@ -14,7 +15,6 @@ class BaseRegion(ABC):
     @abstractmethod
     def __call__(self, xyz) -> np.ndarray:
         """Evaluate the region based on the input coordinates."""
-        pass
 
 
 class RegionEverywhere(BaseRegion):
@@ -45,7 +45,7 @@ class BaseSignRegion(BaseRegion):
         self.name = 'PositiveRegion'
         self.parent = feature
 
-    def _calculate_value_and_distance(self, xyz, precomputed_val=None)-> Tuple[np.ndarray, np.ndarray]:
+    def _calculate_value_and_distance(self, xyz, precomputed_val=None)-> tuple[np.ndarray, np.ndarray]:
         val = precomputed_val if precomputed_val is not None else self.feature.evaluate_value(xyz)
         # find a point on/near 0 isosurface — compute once and cache on self
         if self.point is None:

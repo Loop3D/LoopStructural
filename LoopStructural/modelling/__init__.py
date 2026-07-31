@@ -5,18 +5,17 @@ Geological modelling classes and functions
 
 __all__ = [
     "GeologicalModel",
-    "ProcessInputData",
-    "Map2LoopProcessor",
     "LoopProjectfileProcessor",
+    "Map2LoopProcessor",
+    "ProcessInputData",
 ]
-from ..utils import getLogger
-from ..utils import LoopImportError
+from ..utils import LoopImportError, getLogger
 from .core.geological_model import GeologicalModel
 
 logger = getLogger(__name__)
 from ..modelling.input import (
-    ProcessInputData,
     Map2LoopProcessor,
+    ProcessInputData,
 )
 
 try:

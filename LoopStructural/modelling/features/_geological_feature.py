@@ -3,23 +3,23 @@
 This module contains classes for representing geometrical elements in geological
 models such as foliations, fault planes, and fold rotation angles.
 """
+from __future__ import annotations
 
-from LoopStructural.utils.maths import regular_tetraherdron_for_points, gradient_from_tetrahedron
-from ...modelling.features import BaseFeature
-from ...utils import getLogger
-from ...modelling.features import FeatureType
 import numpy as np
-from typing import Optional, List, Union
-from ...datatypes import ValuePoints, VectorPoints
 
-from ...utils import LoopValueError
+from LoopStructural.utils.maths import gradient_from_tetrahedron, regular_tetraherdron_for_points
+
+from ...geometry import ValuePoints, VectorPoints
+from ._base_geological_feature import BaseFeature
+from . import FeatureType
+from ...utils import LoopValueError, getLogger
 
 logger = getLogger(__name__)
 
 
 class GeologicalFeature(BaseFeature):
     """A geological feature representing a geometrical element in a geological model.
-    
+
     This class provides the foundation for representing various geological structures
     such as foliations, fault planes, fold rotation angles, and other geometrical
     elements within a geological model.
@@ -55,8 +55,8 @@ class GeologicalFeature(BaseFeature):
         self,
         name: str,
         builder,
-        regions: list = [],
-        faults: list = [],
+        regions: list | None = None,
+        faults: list | None = None,
         interpolator=None,
         model=None,
     ):
@@ -77,6 +77,10 @@ class GeologicalFeature(BaseFeature):
         model : GeologicalModel, optional
             The geological model containing this feature, by default None
         """
+        if regions is None:
+            regions = []
+        if faults is None:
+            faults = []
         BaseFeature.__init__(self, name, model, faults, regions, builder)
         self.name = name
         self.builder = builder
@@ -93,10 +97,10 @@ class GeologicalFeature(BaseFeature):
             including interpolator configuration
         """
         json = super().to_json()
-        print(self.name, json)
+        logger.debug("%s %s", self.name, json)
         json["interpolator"] = self.interpolator.to_json()
         return json
-    
+
     def is_valid(self):
         return self.interpolator.valid
 
@@ -116,7 +120,7 @@ class GeologicalFeature(BaseFeature):
 
         Parameters
         ----------
-        evaluation_points : np.ndarray
+        pos : np.ndarray
             location to evaluate the scalar value
 
         Returns
@@ -144,7 +148,7 @@ class GeologicalFeature(BaseFeature):
         else:
             v[mask] = self.interpolator.evaluate_value(evaluation_points[mask, :])
         if fillnan == 'nearest':
-            import scipy.spatial as spatial
+            from scipy import spatial
 
             nanmask = np.isnan(v)
             tree = spatial.cKDTree(evaluation_points[~nanmask, :])
@@ -182,7 +186,8 @@ class GeologicalFeature(BaseFeature):
                 logger.error("element_scale_parameter must be a float")
                 element_scale_parameter = 1
 
-        self.builder.up_to_date()
+        if self.builder is not None:
+            self.builder.up_to_date()
 
         v = np.zeros(pos.shape)
         v[:] = np.nan
@@ -196,7 +201,7 @@ class GeologicalFeature(BaseFeature):
             resolved = False
             tetrahedron = regular_tetraherdron_for_points(pos, element_scale_parameter)
 
-            while resolved:
+            while not resolved:
                 for f in self.faults:
                     v = (
                         f[0]
@@ -239,19 +244,26 @@ class GeologicalFeature(BaseFeature):
         misfit : np.array(N,dtype=double)
             dot product between interpolated gradient and constraints
         """
-        self.builder.up_to_date()
+        if self.builder is not None:
+            self.builder.up_to_date()
         grad = self.interpolator.get_gradient_constraints()
         norm = self.interpolator.get_norm_constraints()
 
         dot = []
         if grad.shape[0] > 0:
             grad /= np.linalg.norm(grad, axis=1)[:, None]
-            model_grad = self.evaluate_gradient(grad[:, :3])
+            positions = grad[:, :3]
+            if self.interpolator.bounding_box is not None:
+                positions = self.interpolator.bounding_box.reproject(positions)
+            model_grad = self.evaluate_gradient(positions)
             dot.append(np.einsum("ij,ij->i", model_grad, grad[:, :3:6]).tolist())
 
         if norm.shape[0] > 0:
             norm /= np.linalg.norm(norm, axis=1)[:, None]
-            model_norm = self.evaluate_gradient(norm[:, :3])
+            positions = norm[:, :3]
+            if self.interpolator.bounding_box is not None:
+                positions = self.interpolator.bounding_box.reproject(positions)
+            model_norm = self.evaluate_gradient(positions)
             dot.append(np.einsum("ij,ij->i", model_norm, norm[:, :3:6]))
 
         return np.array(dot)
@@ -264,10 +276,14 @@ class GeologicalFeature(BaseFeature):
         misfit : np.array(N,dtype=double)
             difference between interpolated scalar field and value constraints
         """
-        self.builder.up_to_date()
+        if self.builder is not None:
+            self.builder.up_to_date()
 
         locations = self.interpolator.get_value_constraints()
-        diff = np.abs(locations[:, 3] - self.evaluate_value(locations[:, :3]))
+        positions = locations[:, :3]
+        if self.interpolator.bounding_box is not None:
+            positions = self.interpolator.bounding_box.reproject(positions)
+        diff = np.abs(locations[:, 3] - self.evaluate_value(positions))
         diff /= self.max() - self.min()
         return diff
 
@@ -283,7 +299,7 @@ class GeologicalFeature(BaseFeature):
         )
         return feature
 
-    def get_data(self, value_map: Optional[dict] = None) -> List[Union[ValuePoints, VectorPoints]]:
+    def get_data(self, value_map: dict | None = None) -> list[ValuePoints | VectorPoints]:
         """Return the data associated with this geological feature
 
         Parameters

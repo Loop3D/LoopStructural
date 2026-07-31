@@ -1,9 +1,10 @@
+from ..utils import getLogger
+
+logger = getLogger(__name__)
+
 vis = True
-try:
-    pass
-except:
-    print("No visualisation")
-    vis = False
+
+# Visualization is optional for this module and is enabled by default.
 
 
 def _build_claudius():

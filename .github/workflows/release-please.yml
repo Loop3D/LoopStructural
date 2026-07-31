@@ -18,9 +18,16 @@ jobs:
         id: release
         with:
           path: LoopStructural
-          
+
     outputs:
+      # true if ANY configured component (LoopStructural, loop_common,
+      # loop_interpolation) released -- gates the pypi.yml trigger, since a
+      # solo loop_common/loop_interpolation bump still needs publishing.
       release_created: ${{ steps.release.outputs.releases_created }}
+      # true only when the LoopStructural component itself released --
+      # gates conda/docs builds, which are LoopStructural-specific and
+      # shouldn't re-run for a workspace-package-only release.
+      loopstructural_release_created: ${{ steps.release.outputs['LoopStructural--release_created'] }}
   package:
     needs: release-please
     if: ${{ needs.release-please.outputs.release_created == 'true'}}
@@ -34,6 +41,7 @@ jobs:
           https://api.github.com/repos/Loop3d/${{env.PACKAGE_NAME}}/actions/workflows/pypi.yml/dispatches \
           -d '{"ref":"master"}'
       - name: Trigger build for conda and upload
+        if: ${{ needs.release-please.outputs.loopstructural_release_created == 'true' }}
         run: |
           curl -X POST \
           -H "Authorization: token ${{ secrets.GH_PAT }}" \
@@ -42,9 +50,10 @@ jobs:
           -d '{"ref":"master"}'
 
       - name: Trigger build documentation
+        if: ${{ needs.release-please.outputs.loopstructural_release_created == 'true' }}
         run: |
           curl -X POST \
           -H "Authorization: token ${{ secrets.GH_PAT }}" \
           -H "Accept: application/vnd.github.v3+json" \
           https://api.github.com/repos/Loop3d/${{env.PACKAGE_NAME}}/actions/workflows/documentation.yml/dispatches \
-          -d '{"ref":"master"}'  
+          -d '{"ref":"master"}'

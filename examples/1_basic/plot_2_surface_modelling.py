@@ -9,7 +9,7 @@ location observations.
 Implicit surface representation involves finding an unknown function
 where :math:`f(x,y,z)` matches observations of the surface geometry. We
 generate a scalar field where the scalar value is the distance away from
-a reference horizon. The reference horizon is arbritary and can either
+a reference horizon. The reference horizon is arbitrary and can either
 be:
 
 -  a single geological surface where the scalar field would represent
@@ -20,13 +20,13 @@ be:
    the layers is used to determine the relative scalar value for each
    surface
 
-This tutorial will demonstrate both of these approaches for modelling a
-number of horizons picked from seismic data sets, by following the next
-steps: 1. Creation of a geological model, which includes: \*
-Presentation and visualization of the data \* Addition of a geological
-feature, which in this case is the stratigraphy of the model. 2.
-Visualization of the scalar field.
+This tutorial demonstrates both of these approaches for modelling a
+number of horizons picked from seismic data, by:
 
+1. creating a geological model, which includes presenting/visualising the
+   data and adding a geological feature (here, the stratigraphy of the
+   model), then
+2. visualising the resulting scalar field.
 """
 
 #########################################################################
@@ -35,12 +35,11 @@ Visualization of the scalar field.
 # Import the required objects from LoopStructural for visualisation and
 # model building
 
-from LoopStructural import GeologicalModel
-from LoopStructural.modelling.core.stratigraphic_column import StratigraphicColumn
-from LoopStructural.visualisation import Loop3DView
-from LoopStructural.datasets import load_claudius  # demo data
-
 import numpy as np
+
+from LoopStructural import GeologicalModel
+from LoopStructural.datasets import load_claudius  # demo data
+from LoopStructural.visualisation import Loop3DView
 
 ######################################################################
 # Load Example Data
@@ -89,7 +88,7 @@ viewer.add_arrows(
 viewer.display()
 
 # Link the data to the geological model
-model.set_model_data(data)
+model.data = data
 
 ######################################################################
 # Add Geological Features
@@ -103,10 +102,10 @@ vals = [0, 60, 250, 330, 600]
 for i in range(len(vals) - 1):
     model.stratigraphic_column.add_unit(
         f"unit_{i}",
-        thickness= vals[i + 1] - vals[i],
+        thickness=vals[i + 1] - vals[i],
         id=i,
     )
-model.stratigraphic_column.group_mapping['Group_0'] ='strati'
+model.stratigraphic_column.group_mapping['Group_0'] = 'strati'
 # Add a foliation to the model
 strati = model.create_and_add_foliation(
     "strati",

@@ -14,7 +14,6 @@ def test_region(interpolator, data, region_func):
 
 def test_add_constraint_to_least_squares(interpolator):
     """make sure that when incorrect sized arrays are passed it doesn't get added"""
-    pass
 
 
 def test_update_interpolator():

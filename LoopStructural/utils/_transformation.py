@@ -1,5 +1,6 @@
 import numpy as np
-from . import getLogger
+
+from .logging import getLogger
 
 logger = getLogger(__name__)
 
@@ -9,7 +10,7 @@ class EuclideanTransformation:
         self,
         dimensions: int = 2,
         angle: float = 0,
-        translation: np.ndarray = np.zeros(3),
+        translation: np.ndarray = None,
         fit_rotation: bool = True,
     ):
         """Transforms points into a new coordinate
@@ -24,6 +25,8 @@ class EuclideanTransformation:
         translation : np.ndarray, default zeros
             Translation to apply to the points, by default
         """
+        if translation is None:
+            translation = np.zeros(3)
         self.translation = translation[:dimensions]
         self.dimensions = dimensions
         self.angle = angle
@@ -47,7 +50,7 @@ class EuclideanTransformation:
             return
         points = np.array(points)
         if points.shape[1] < self.dimensions:
-            raise ValueError("Points must have at least {} dimensions".format(self.dimensions))
+            raise ValueError(f"Points must have at least {self.dimensions} dimensions")
         # standardise the points so that centre is 0
         # self.translation = np.zeros(3)
         self.translation = np.mean(points[:, : self.dimensions], axis=0)
@@ -100,7 +103,7 @@ class EuclideanTransformation:
         """
         points = np.array(points)
         if points.shape[1] < self.dimensions:
-            raise ValueError("Points must have at least {} dimensions".format(self.dimensions))
+            raise ValueError(f"Points must have at least {self.dimensions} dimensions")
         centred = points[:, : self.dimensions] - self.translation[None, :]
         rotated = np.einsum(
             'ik,jk->ij',
@@ -161,7 +164,7 @@ class EuclideanTransformation:
         """
         Provides an HTML representation of the TransRotator.
         """
-        html_str = """
+        html_str = f"""
         <div class="collapsible">
           <button class="collapsible-button">{self.__class__.__name__}</button>
           <div class="content">
@@ -169,7 +172,5 @@ class EuclideanTransformation:
             <p>Rotation Angle: {self.angle} degrees</p>
           </div>
         </div>
-        """.format(
-            self=self
-        )
+        """
         return html_str

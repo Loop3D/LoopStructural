@@ -1,7 +1,8 @@
-import pandas as pd
 import numpy as np
-from .fault_network import FaultNetwork
+import pandas as pd
+
 from ...utils import getLogger, rng, strikedip2vector
+from .fault_network import FaultNetwork
 
 logger = getLogger(__name__)
 
@@ -271,7 +272,7 @@ class ProcessInputData:
         if self.stratigraphic_order is None:
             return
         if foliation_properties is None:
-            for k in self.stratigraphic_column.keys():
+            for k in self.stratigraphic_column:
                 if k != "faults":
                     self._foliation_properties[k] = {}
         else:
@@ -432,8 +433,7 @@ class ProcessInputData:
         if self.stratigraphic_order is None:
             return names
         for _name, sg in self.stratigraphic_order:
-            for g in sg:
-                names.append(g)
+            names.extend(sg)
         return names
 
     def _stratigraphic_value(self):
@@ -500,7 +500,7 @@ class ProcessInputData:
         if not self._use_thickness:
             contacts["interface"] = np.nan
             interface_val = 0
-            for k in self._stratigraphic_value().keys():
+            for k in self._stratigraphic_value():
                 contacts.loc[contacts["name"] == k, "interface"] = interface_val
             contacts = contacts.loc[
                 ~np.isnan(contacts["interface"]),
