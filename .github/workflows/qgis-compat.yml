@@ -42,6 +42,7 @@ jobs:
       - name: Install plugin's non-QGIS test requirements
         run: |
           uv pip install -r plugin_loopstructural/requirements/testing.txt
+          uv pip install pydantic
 
       - name: Install this branch's LoopStructural over the pinned version
         run: |
