@@ -1,6 +1,5 @@
 {
-  "LoopStructural": "1.6.28",
-  "packages/loop_common": "0.1.0",
-  "packages/loop_interpolation": "0.1.0"
-
+  "LoopStructural": "1.7.0",
+  "packages/loop_common": "1.6.5",
+  "packages/loop_interpolation": "1.6.5"
 }
