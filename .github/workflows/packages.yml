@@ -4,7 +4,8 @@ name: "📦 Workspace packages"
 # packages/ as independent uv-workspace members so the interpolation code is
 # usable outside the LoopStructural framework. This job installs and tests
 # them on their own, separately from the root LoopStructural test suite in
-# tester.yml, so each half can fail/soak independently.
+# tester.yml. loopstructural-test waits on packages-test (needs:) so the root
+# suite only runs once loop_common/loop_interpolation are confirmed working.
 
 on:
   push:
@@ -52,3 +53,30 @@ jobs:
       - name: pytest
         run: |
           uv run pytest packages/${{ matrix.package }}/tests
+  loopstructural-test:
+    name: LoopStructural (python ${{ matrix.python-version }})
+    needs: packages-test
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: ${{ fromJSON(vars.BUILD_OS)}}
+        python-version: ${{ fromJSON(vars.PYTHON_VERSIONS)}}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up uv
+        uses: astral-sh/setup-uv@v3
+        with:
+          version: "latest"
+
+      - name: Set up Python ${{ matrix.python-version }}
+        run: uv python install ${{ matrix.python-version }}
+
+      - name: Install package with test extras
+        run: |
+          uv sync --extra tests --python ${{ matrix.python-version }}
+
+      - name: pytest
+        run: |
+          uv run pytest tests
