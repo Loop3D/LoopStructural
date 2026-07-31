@@ -17,11 +17,11 @@ using an accurate parameterisation of fold geometry, by:
 # Imports
 # -------
 
+import pandas as pd
+
 from LoopStructural import GeologicalModel
 from LoopStructural.datasets import load_noddy_single_fold
 from LoopStructural.visualisation import Loop3DView, RotationAnglePlotter
-import pandas as pd
-
 
 ######################################################################
 # Structural geology of folds

@@ -1,9 +1,8 @@
 import logging
 
 import numpy as np
-from scipy import sparse
-
 from loop_interpolation import _solver_strategy as strategy
+from scipy import sparse
 
 
 def test_resolve_solver_choice_fallbacks_to_cg_for_unknown_name():
@@ -90,7 +89,7 @@ def test_solve_with_admm_passes_x0_and_returns_history(monkeypatch):
         captured["return_history"] = return_history
         return np.array([0.25, 0.75]), [{"iteration": 1}]
 
-    import loop_interpolation.loopsolver as loopsolver
+    from loop_interpolation import loopsolver
 
     monkeypatch.setattr(loopsolver, "admm_solve", fake_admm_solve)
 

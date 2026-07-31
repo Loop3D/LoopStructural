@@ -1,5 +1,8 @@
-from ....modelling.features import BaseFeature, StructuralFrame
+from __future__ import annotations
+
 from typing import Optional
+
+from ....modelling.features import BaseFeature, StructuralFrame
 from ....utils import getLogger
 
 logger = getLogger(__name__)
@@ -142,7 +145,6 @@ class FaultDisplacementFeature(BaseFeature):
         -----
         This method is not yet implemented for fault displacement features.
         """
-        pass
 
     def copy(self, name: Optional[str] = None):
         """Create a copy of this fault displacement feature.

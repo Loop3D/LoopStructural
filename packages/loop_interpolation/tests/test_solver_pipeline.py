@@ -1,9 +1,8 @@
 import logging
 
 import numpy as np
-from scipy import sparse
-
 from loop_interpolation import _solver_pipeline as pipeline
+from scipy import sparse
 
 
 class _DummyScaling:

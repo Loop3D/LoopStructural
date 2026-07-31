@@ -3,16 +3,17 @@
 This module contains classes for representing geometrical elements in geological
 models such as foliations, fault planes, and fold rotation angles.
 """
+from __future__ import annotations
 
-from LoopStructural.utils.maths import regular_tetraherdron_for_points, gradient_from_tetrahedron
-from ...modelling.features import BaseFeature
-from ...utils import getLogger
-from ...modelling.features import FeatureType
+from typing import List, Optional, Union
+
 import numpy as np
-from typing import Optional, List, Union
-from ...geometry import ValuePoints, VectorPoints
 
-from ...utils import LoopValueError
+from LoopStructural.utils.maths import gradient_from_tetrahedron, regular_tetraherdron_for_points
+
+from ...geometry import ValuePoints, VectorPoints
+from ...modelling.features import BaseFeature, FeatureType
+from ...utils import LoopValueError, getLogger
 
 logger = getLogger(__name__)
 
@@ -148,7 +149,7 @@ class GeologicalFeature(BaseFeature):
         else:
             v[mask] = self.interpolator.evaluate_value(evaluation_points[mask, :])
         if fillnan == 'nearest':
-            import scipy.spatial as spatial
+            from scipy import spatial
 
             nanmask = np.isnan(v)
             tree = spatial.cKDTree(evaluation_points[~nanmask, :])

@@ -1,12 +1,10 @@
 import numpy as np
-import pytest
-
-from loop_common.observations.pointset import PointSet
+from loop_common.observations.lineset import LineSet
 from loop_common.observations.orientation import (
     OrientationObservation,
     OrientationType,
 )
-from loop_common.observations.lineset import LineSet
+from loop_common.observations.pointset import PointSet
 
 
 def test_pointset_coords_and_json_roundtrip():

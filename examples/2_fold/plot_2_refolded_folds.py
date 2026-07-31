@@ -16,10 +16,11 @@ the Laurent et al. (2016) synthetic refolded-fold dataset:
 * ``s0`` - the original bedding, folded within ``s1``
 """
 
-from LoopStructural import GeologicalModel
-from LoopStructural.visualisation import Loop3DView, RotationAnglePlotter
-from LoopStructural.datasets import load_laurent2016
 import pandas as pd
+
+from LoopStructural import GeologicalModel
+from LoopStructural.datasets import load_laurent2016
+from LoopStructural.visualisation import Loop3DView, RotationAnglePlotter
 
 data, bb = load_laurent2016()
 data.head()

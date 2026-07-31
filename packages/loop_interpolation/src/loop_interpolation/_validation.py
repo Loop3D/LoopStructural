@@ -13,9 +13,11 @@ NaN handling contract
   warning.  This preserves backward-compatible behaviour where constraints
   that fall outside the model or contain missing values are ignored.
 """
+from __future__ import annotations
 
 import logging
 from typing import Tuple, Union
+
 import numpy as np
 
 _logger = logging.getLogger(__name__)
@@ -87,43 +89,36 @@ def _drop_nan_data_rows(points: np.ndarray, data_cols: slice, name: str) -> np.n
 class ValidationError(ValueError):
     """Base exception for constraint validation errors."""
 
-    pass
 
 
 class ShapeError(ValidationError):
     """Exception for shape mismatches in constraint arrays."""
 
-    pass
 
 
 class DtypeError(ValidationError):
     """Exception for data type mismatches in constraint arrays."""
 
-    pass
 
 
 class FiniteValueError(ValidationError):
     """Exception for non-finite values in constraint arrays."""
 
-    pass
 
 
 class VectorError(ValidationError):
     """Exception for invalid vector/direction constraints."""
 
-    pass
 
 
 class WeightError(ValidationError):
     """Exception for invalid weight values."""
 
-    pass
 
 
 class UnsupportedCombinationError(ValidationError):
     """Exception for unsupported constraint combinations."""
 
-    pass
 
 
 def _ensure_float_array(arr: np.ndarray, name: str = "array") -> np.ndarray:

@@ -1,14 +1,15 @@
 """Abstract base class for fold rotation-angle profiles."""
+from __future__ import annotations
 
 from abc import ABCMeta, abstractmethod
-from typing import List, Union, Optional
+from typing import List, Optional, Union
 
 import numpy as np
 import numpy.typing as npt
+from loop_common.logging import get_logger
 from scipy.optimize import curve_fit
 
 from .._svariogram import SVariogram
-from loop_common.logging import get_logger
 
 logger = get_logger(__name__)
 

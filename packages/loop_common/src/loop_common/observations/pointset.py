@@ -1,4 +1,3 @@
-import numpy as np
 
 from loop_common.base import LoopEntity, NumpyArray
 

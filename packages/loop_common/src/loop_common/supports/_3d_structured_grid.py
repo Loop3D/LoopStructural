@@ -3,15 +3,15 @@ Cartesian grid for fold interpolator
 
 """
 
+from typing import Dict, Tuple
+
 import numpy as np
 
-from ..math.finite_difference_stencil import Operator
-
-from ._3d_base_structured import BaseStructuredSupport
-from typing import Dict, Tuple
-from . import SupportType
-
 from loop_common.logging import get_logger as getLogger
+
+from ..math.finite_difference_stencil import Operator
+from . import SupportType
+from ._3d_base_structured import BaseStructuredSupport
 
 logger = getLogger(__name__)
 
@@ -63,7 +63,6 @@ class StructuredGrid(BaseStructuredSupport):
     def onGeometryChange(self):
         if self.interpolator is not None:
             self.interpolator.reset()
-        pass
 
     @property
     def barycentre(self):
@@ -311,9 +310,7 @@ class StructuredGrid(BaseStructuredSupport):
         if property_array.shape[0] != self.n_nodes:
             logger.error("Property array does not match grid")
             raise ValueError(
-                "cannot assign {} vlaues to array of shape {}".format(
-                    property_array.shape[0], self.n_nodes
-                )
+                f"cannot assign {property_array.shape[0]} vlaues to array of shape {self.n_nodes}"
             )
         idc, inside = self.position_to_cell_corners(evaluation_points)
         # print(idc[inside,:], self.n_nodes,inside)
@@ -353,9 +350,7 @@ class StructuredGrid(BaseStructuredSupport):
         if property_array.shape[0] != self.n_nodes:
             logger.error("Property array does not match grid")
             raise ValueError(
-                "cannot assign {} vlaues to array of shape {}".format(
-                    property_array.shape[0], self.n_nodes
-                )
+                f"cannot assign {property_array.shape[0]} vlaues to array of shape {self.n_nodes}"
             )
 
         idc, inside = self.position_to_cell_corners(evaluation_points)

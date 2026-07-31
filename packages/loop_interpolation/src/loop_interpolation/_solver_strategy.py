@@ -3,9 +3,10 @@
 This module centralises backend-specific solve behavior (CG, LSMR, ADMM)
 so interpolator classes can focus on orchestration and state management.
 """
+from __future__ import annotations
 
-from typing import Callable, Optional, Union
 import inspect
+from typing import Callable, Optional, Union
 
 import numpy as np
 from scipy import sparse

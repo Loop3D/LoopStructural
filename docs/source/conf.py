@@ -100,7 +100,7 @@ html_theme_options = {
     ],
     "header_links_before_dropdown": 4,
     "logo": {
-        "text": "LoopStructural - {}".format(release),
+        "text": f"LoopStructural - {release}",
         "image_light": "_static/infinity_loop_icon.svg",
         "image_dark": "_static/infinity_loop_icon.svg",
     },
@@ -127,8 +127,8 @@ autosummary_mock_imports = [
 ]
 # Sphinx gallery examples
 # from LoopStructural.visualisation.sphinx_scraper import Scraper as LoopScraper
-from sphinx_gallery.sorting import ExampleTitleSortKey
 import pyvista
+from sphinx_gallery.sorting import ExampleTitleSortKey
 
 pyvista.BUILDING_GALLERY = True
 

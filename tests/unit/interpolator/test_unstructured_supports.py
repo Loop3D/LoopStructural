@@ -1,16 +1,18 @@
+from os.path import dirname
+
 import numpy as np
+
 from LoopStructural.interpolators import UnStructuredTetMesh
 from LoopStructural.utils import rng
-from os.path import dirname
 
 file_path = dirname(__file__)
 
 
 def test_get_elements():
-    nodes = np.loadtxt("{}/nodes.txt".format(file_path))
-    elements = np.loadtxt("{}/elements.txt".format(file_path))
+    nodes = np.loadtxt(f"{file_path}/nodes.txt")
+    elements = np.loadtxt(f"{file_path}/elements.txt")
     elements = np.array(elements, dtype="int64")
-    neighbours = np.loadtxt("{}/neighbours.txt".format(file_path))
+    neighbours = np.loadtxt(f"{file_path}/neighbours.txt")
 
     mesh = UnStructuredTetMesh(nodes, elements, neighbours)
     points = rng.random((100, 3))

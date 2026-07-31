@@ -1,14 +1,13 @@
 # Loop library
 from LoopStructural import GeologicalModel
-from LoopStructural.modelling.intrusions import IntrusionFrameBuilder
-from LoopStructural.modelling.intrusions import IntrusionBuilder
+from LoopStructural.datasets import load_tabular_intrusion
 from LoopStructural.modelling.features import StructuralFrame
 from LoopStructural.modelling.intrusions import (
-    ellipse_function,
+    IntrusionBuilder,
+    IntrusionFrameBuilder,
     constant_function,
+    ellipse_function,
 )
-
-from LoopStructural.datasets import load_tabular_intrusion
 
 data, boundary_points = load_tabular_intrusion()
 

@@ -1,13 +1,15 @@
 from __future__ import annotations
-from typing import Optional, Union, Dict
+
+import copy
+from typing import Dict, Optional, Union
+
+import numpy as np
+
+from loop_common.logging import get_logger as getLogger
 
 # from LoopStructural.utils.exceptions import LoopValueError
 from loop_common.math import rng
 from loop_common.supports import StructuredGrid
-import numpy as np
-import copy
-
-from loop_common.logging import get_logger as getLogger
 
 logger = getLogger(__name__)
 
@@ -15,7 +17,6 @@ logger = getLogger(__name__)
 class LoopValueError(ValueError):
     """Custom error for invalid values in LoopStructural."""
 
-    pass
 
 
 class BoundingBox:
@@ -305,7 +306,7 @@ class BoundingBox:
         return np.array([self.origin, self.maximum])
 
     @nelements.setter
-    def nelements(self, nelements: Union[int, float]):
+    def nelements(self, nelements: float):
         """Update the number of elements in the associated grid
         This is for visualisation, not for the interpolation
         When set it will update the nsteps/step vector for cubic
@@ -607,7 +608,7 @@ class BoundingBox:
         }
 
     @classmethod
-    def from_dict(cls, data: dict) -> "BoundingBox":
+    def from_dict(cls, data: dict) -> BoundingBox:
         """Create a bounding box from a dictionary
 
         Parameters
@@ -729,7 +730,7 @@ class BoundingBox:
         return projected[0] if is_vector else projected
 
     def scale_by_projection_factor(self, value):
-        return value / np.max((self.maximum - self.origin))
+        return value / np.max(self.maximum - self.origin)
 
     def reproject(self, xyz, inplace=False):
         """Reproject a point from the bounding box to the global space

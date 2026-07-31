@@ -1,10 +1,12 @@
-import numpy as np
+from __future__ import annotations
 
+from typing import Callable, Optional, Union
+
+import numpy as np
 from loop_interpolation import DiscreteInterpolator, FiniteDifferenceInterpolator, P1Interpolator
-from typing import Optional, Union, Callable
 from scipy import sparse
-from LoopStructural.utils import rng
-from LoopStructural.utils import getLogger
+
+from LoopStructural.utils import getLogger, rng
 
 logger = getLogger(__name__)
 

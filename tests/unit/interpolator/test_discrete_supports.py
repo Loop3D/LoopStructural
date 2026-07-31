@@ -1,6 +1,8 @@
-from LoopStructural.interpolators import StructuredGridSupport
 import numpy as np
 import pytest
+
+from LoopStructural.interpolators import StructuredGridSupport
+
 
 ## structured grid tests
 def test_create_support(support):

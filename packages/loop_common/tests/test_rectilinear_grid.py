@@ -6,7 +6,6 @@ import numpy as np
 import pytest
 from loop_common.supports import RectilinearGrid
 
-
 # ---------------------------------------------------------------------------
 # Fixtures
 # ---------------------------------------------------------------------------
@@ -297,7 +296,7 @@ def test_global_indices_in_range(nonuniform_grid):
 
 
 def test_get_operators_returns_none_masks(nonuniform_grid):
-    weights = {k: 1.0 for k in ["dxx", "dyy", "dzz", "dxy", "dyz", "dxz"]}
+    weights = dict.fromkeys(["dxx", "dyy", "dzz", "dxy", "dyz", "dxz"], 1.0)
     ops = nonuniform_grid.get_operators(weights)
     assert set(ops.keys()) == {"dxx", "dyy", "dzz", "dxy", "dyz", "dxz"}
     for name, (mask, _) in ops.items():

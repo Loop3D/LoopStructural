@@ -2,14 +2,14 @@
 
 from __future__ import annotations
 
-from collections.abc import Callable
-from contextlib import contextmanager
-from typing import Any, Generic, Protocol, TypeVar, runtime_checkable
 import inspect
 import threading
 import weakref
+from collections.abc import Callable
+from contextlib import contextmanager
+from typing import Any, Generic, Protocol, TypeVar, runtime_checkable
 
-__all__ = ["Observer", "Observable", "Disposable"]
+__all__ = ["Disposable", "Observable", "Observer"]
 
 
 @runtime_checkable
@@ -20,7 +20,7 @@ class Observer(Protocol):
     will be called when observed events occur.
     """
 
-    def update(self, observable: "Observable", event: str, *args: Any, **kwargs: Any) -> None:
+    def update(self, observable: Observable, event: str, *args: Any, **kwargs: Any) -> None:
         """Receive a notification from an observable object.
 
         Parameters
@@ -63,7 +63,7 @@ class Disposable:
         self._detach()
 
     # Allow use as a context‑manager for temporary subscriptions
-    def __enter__(self) -> "Disposable":
+    def __enter__(self) -> Disposable:
         return self
 
     def __exit__(self, exc_type, exc, tb):
@@ -209,7 +209,7 @@ class Observable(Generic[T]):
         self._frozen = 0
 
     # ‑‑‑ notification api --------------------------------------------------
-    def notify(self: T, event: str, *args: Any, **kwargs: Any) -> None:
+    def notify(self, event: str, *args: Any, **kwargs: Any) -> None:
         """Notify all observers that an event has occurred.
 
         Parameters

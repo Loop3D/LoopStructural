@@ -22,9 +22,9 @@ evaluating those spurious regions also evaluated the fault restoration.
 import time
 import types
 
+import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
-import matplotlib.pyplot as plt
 
 from LoopStructural import GeologicalModel
 from LoopStructural.modelling.features import FeatureType, UnconformityFeature

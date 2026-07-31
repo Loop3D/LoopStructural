@@ -61,14 +61,14 @@ rng = np.random.default_rng()
 
 
 __all__ = [
-    "getLogger",
-    "log_to_file",
-    "log_to_console",
-    "get_levels",
-    "rng",
+    "InterpolatorError",
     "LoopException",
     "LoopImportError",
-    "InterpolatorError",
     "LoopTypeError",
     "LoopValueError",
+    "getLogger",
+    "get_levels",
+    "log_to_console",
+    "log_to_file",
+    "rng",
 ]

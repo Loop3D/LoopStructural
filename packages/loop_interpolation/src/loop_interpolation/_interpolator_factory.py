@@ -7,19 +7,20 @@ InterpolatorFactory is the single place that knows how to:
 
 Higher-level fluent APIs should delegate construction to this module.
 """
+from __future__ import annotations
 
 from typing import Optional, Union
 
+import numpy as np
 from loop_common.geometry import BoundingBox
 from loop_common.supports import SupportFactory
 
 from . import (
-    interpolator_map,
     InterpolatorType,
-    support_interpolator_map,
+    interpolator_map,
     interpolator_string_map,
+    support_interpolator_map,
 )
-import numpy as np
 
 
 class InterpolatorFactory:

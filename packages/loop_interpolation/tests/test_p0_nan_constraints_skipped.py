@@ -1,9 +1,8 @@
 """Regression test for NaN constraints being skipped (P0 fix)."""
 
-import pytest
-import numpy as np
 from unittest.mock import Mock, patch
 
+import numpy as np
 from loop_interpolation._discrete_interpolator import DiscreteInterpolator
 
 

@@ -1,14 +1,15 @@
 """
 Piecewise quadratic interpolator
 """
+from __future__ import annotations
 
 import logging
-from typing import Optional, Callable
+from typing import Callable, Optional
 
 import numpy as np
 
-from ._discrete_interpolator import DiscreteInterpolator
 from . import InterpolatorType
+from ._discrete_interpolator import DiscreteInterpolator
 
 logger = logging.getLogger(__name__)
 

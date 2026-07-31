@@ -1,6 +1,8 @@
-from typing import Dict
-import numpy as np
 from dataclasses import dataclass, field
+from typing import Dict
+
+import numpy as np
+
 from loop_common.logging import get_logger as getLogger
 
 logger = getLogger(__name__)

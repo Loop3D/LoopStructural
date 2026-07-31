@@ -6,75 +6,74 @@ and radial basis function interpolators.
 """
 
 __all__ = [
-    "InterpolatorType",
-    "GeologicalInterpolator",
-    "DiscreteInterpolator",
-    "FiniteDifferenceInterpolator",
-    "PiecewiseLinearInterpolator",
-    "DiscreteFoldInterpolator",
-    "FDFoldInterpolator",
-    "SurfeRBFInterpolator",
-    "P1Interpolator",
-    "P2Interpolator",
-    "TetMesh",
-    "StructuredGrid",
-    "UnStructuredTetMesh",
-    "P1Unstructured2d",
-    "P2Unstructured2d",
-    "StructuredGrid2D",
-    "P2UnstructuredTetMesh",
-    "ConstantNormP1Interpolator",
     "ConstantNormFDIInterpolator",
+    "ConstantNormP1Interpolator",
     "ConstraintDiagnosticsReport",
     "ConstraintFamilyDiagnostics",
-    "RegionCoverageDiagnostics",
     "DirectionalRegularisation",
-    "RegularisationConfig",
+    "DiscreteFoldInterpolator",
+    "DiscreteInterpolator",
+    "FDFoldInterpolator",
+    "FiniteDifferenceInterpolator",
     "FoldEvent",
-    "FourierSeriesFoldRotationAngleProfile",
-    "LambdaFoldRotationAngleProfile",
     "FoldRotationType",
+    "FourierSeriesFoldRotationAngleProfile",
+    "GeologicalInterpolator",
+    "InterpolatorType",
+    "LambdaFoldRotationAngleProfile",
+    "P1Interpolator",
+    "P1Unstructured2d",
+    "P2Interpolator",
+    "P2Unstructured2d",
+    "P2UnstructuredTetMesh",
+    "PiecewiseLinearInterpolator",
+    "RegionCoverageDiagnostics",
+    "RegularisationConfig",
+    "StructuredGrid",
+    "StructuredGrid2D",
+    "SurfeRBFInterpolator",
+    "TetMesh",
+    "UnStructuredTetMesh",
     "get_fold_rotation_profile",
 ]
-from ._interpolatortype import InterpolatorType
-
 from loop_common.logging import get_logger as getLogger
+
+from ._interpolatortype import InterpolatorType
 
 logger = getLogger(__name__)
 
-from ._geological_interpolator import GeologicalInterpolator
-from ._discrete_interpolator import DiscreteInterpolator
+from loop_common.supports import (
+    P1Unstructured2d,
+    P2Unstructured2d,
+    P2UnstructuredTetMesh,
+    StructuredGrid,
+    StructuredGrid2D,
+    SupportType,
+    TetMesh,
+    UnStructuredTetMesh,
+)
+
+from ._constant_norm import ConstantNormFDIInterpolator, ConstantNormP1Interpolator
 from ._diagnostics import (
     ConstraintDiagnosticsReport,
     ConstraintFamilyDiagnostics,
     RegionCoverageDiagnostics,
 )
-from ._regularisation import DirectionalRegularisation, RegularisationConfig
-from loop_common.supports import (
-    TetMesh,
-    StructuredGrid,
-    UnStructuredTetMesh,
-    P1Unstructured2d,
-    P2Unstructured2d,
-    StructuredGrid2D,
-    P2UnstructuredTetMesh,
-    SupportType,
-)
-
-
-from ._finite_difference_interpolator import (
-    FiniteDifferenceInterpolator,
-)
-from ._p1interpolator import (
-    P1Interpolator as PiecewiseLinearInterpolator,
-)
 from ._discrete_fold_interpolator import (
     DiscreteFoldInterpolator,
 )
+from ._discrete_interpolator import DiscreteInterpolator
 from ._fd_fold_interpolator import FDFoldInterpolator
-from ._p2interpolator import P2Interpolator
+from ._finite_difference_interpolator import (
+    FiniteDifferenceInterpolator,
+)
+from ._geological_interpolator import GeologicalInterpolator
 from ._p1interpolator import P1Interpolator
-from ._constant_norm import ConstantNormP1Interpolator, ConstantNormFDIInterpolator
+from ._p1interpolator import (
+    P1Interpolator as PiecewiseLinearInterpolator,
+)
+from ._p2interpolator import P2Interpolator
+from ._regularisation import DirectionalRegularisation, RegularisationConfig
 
 try:
     from ._surfe_wrapper import SurfeRBFInterpolator
@@ -146,12 +145,12 @@ support_interpolator_map = {
     },
 }
 
-from ._interpolator_factory import InterpolatorFactory
-from ._interpolator_builder import InterpolatorBuilder
 from ._fold_event import FoldEvent
+from ._interpolator_builder import InterpolatorBuilder
+from ._interpolator_factory import InterpolatorFactory
 from .fold_function import (
+    FoldRotationType,
     FourierSeriesFoldRotationAngleProfile,
     LambdaFoldRotationAngleProfile,
-    FoldRotationType,
     get_fold_rotation_profile,
 )

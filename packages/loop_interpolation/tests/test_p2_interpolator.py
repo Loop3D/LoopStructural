@@ -11,8 +11,7 @@ interpolator, including:
 
 import numpy as np
 import pytest
-
-from loop_interpolation import P2Interpolator, P1Interpolator, TetMesh
+from loop_interpolation import P1Interpolator, P2Interpolator, TetMesh
 
 
 class TestP2InterpolatorBasics:

@@ -8,4 +8,3 @@ class IntrusionFrame(StructuralFrame):
     FaultBuilder produces a FaultSegment).
     """
 
-    pass

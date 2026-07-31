@@ -1,9 +1,11 @@
-from LoopStructural import GeologicalModel
-from LoopStructural.datasets import load_claudius
+import json
+
 import numpy as np
 import pandas as pd
 import pytest
-import json
+
+from LoopStructural import GeologicalModel
+from LoopStructural.datasets import load_claudius
 
 
 @pytest.mark.parametrize("origin, maximum", [([0, 0, 0], [5, 5, 5]), ([10, 10, 10], [15, 15, 15])])

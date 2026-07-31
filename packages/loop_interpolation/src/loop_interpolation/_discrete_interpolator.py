@@ -1,28 +1,28 @@
 """
 Discrete interpolator base for least squares
 """
+from __future__ import annotations
 
+import logging
 from abc import abstractmethod
 from collections import defaultdict
-from typing import Callable, Optional, Union
-import logging
 from time import perf_counter
+from typing import Callable, Optional, Union
 
 import numpy as np
+from loop_common.logging import get_logger as getLogger
 from scipy import sparse  # import sparse.coo_matrix, sparse.bmat, sparse.eye
 from scipy.sparse.linalg import LinearOperator
+
+from . import _solver_pipeline, _solver_strategy
+from ._diagnostics import ConstraintDiagnosticsReport, ConstraintFamilyDiagnostics
+from ._geological_interpolator import GeologicalInterpolator
 from ._interpolatortype import InterpolatorType
 from ._regularisation import (
     DirectionalRegularisation,
     RegularisationConfig,
     coerce_regularisation_config,
 )
-
-from ._diagnostics import ConstraintDiagnosticsReport, ConstraintFamilyDiagnostics
-from ._geological_interpolator import GeologicalInterpolator
-from . import _solver_strategy
-from . import _solver_pipeline
-from loop_common.logging import get_logger as getLogger
 
 logger = getLogger(__name__)
 
@@ -72,7 +72,7 @@ class DiscreteInterpolator(GeologicalInterpolator):
         self.non_linear_constraints = []
         self.constraints = {}
         self.interpolation_weights = {}
-        logger.info("Creating discrete interpolator with {} degrees of freedom".format(self.dof))
+        logger.info(f"Creating discrete interpolator with {self.dof} degrees of freedom")
         self.type = InterpolatorType.BASE_DISCRETE
         self.apply_scaling_matrix = True
         self.add_ridge_regulatisation = True
@@ -350,13 +350,13 @@ class DiscreteInterpolator(GeologicalInterpolator):
                 w = np.tile(w, (A.shape[1]))
             A = A.reshape((A.shape[0] * A.shape[1], A.shape[2]))
             idc = idc.reshape((idc.shape[0] * idc.shape[1], idc.shape[2]))
-            B = B.reshape((A.shape[0]))
+            B = B.reshape(A.shape[0])
             # w = w.reshape((A.shape[0]))
 
         # Check for nan before any row normalisation, which would otherwise
         # zero out nan rows in A and mask this check further down.
         if np.any(np.isnan(idc)) or np.any(np.isnan(A)) or np.any(np.isnan(B)):
-            logger.warning("Constraints contain nan not adding constraints: {}".format(name))
+            logger.warning(f"Constraints contain nan not adding constraints: {name}")
             return
 
         # normalise by rows of A
@@ -378,7 +378,7 @@ class DiscreteInterpolator(GeologicalInterpolator):
             count = 0
             if "_" in name:
                 count = int(name.split("_")[1]) + 1
-            name = base_name + "_{}".format(count)
+            name = base_name + f"_{count}"
 
         rows = np.tile(rows, (A.shape[-1], 1)).T
         self.constraints[name] = {
@@ -667,7 +667,7 @@ class DiscreteInterpolator(GeologicalInterpolator):
         self.eq_const_c += idc[inside].shape[0]
 
     def add_tangent_constraints(self, w=1.0):
-        """Adds the constraints :math:`f(X)\cdotT=0`
+        r"""Adds the constraints :math:`f(X)\cdotT=0`
 
         Parameters
         ----------

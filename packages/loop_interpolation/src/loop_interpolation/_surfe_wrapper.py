@@ -1,15 +1,16 @@
 """
 Wrapper for using surfepy
 """
+from __future__ import annotations
 
-from loop_common.math import get_vectors
-from ._geological_interpolator import GeologicalInterpolator
+from typing import Optional
 
 import numpy as np
-
-from loop_common.logging import get_logger as getLogger
 import surfepy
-from typing import Optional
+from loop_common.logging import get_logger as getLogger
+from loop_common.math import get_vectors
+
+from ._geological_interpolator import GeologicalInterpolator
 
 logger = getLogger(__name__)
 

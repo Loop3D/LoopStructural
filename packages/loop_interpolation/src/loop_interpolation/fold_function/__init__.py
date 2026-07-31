@@ -1,4 +1,5 @@
 """Fold rotation-angle profile implementations."""
+from __future__ import annotations
 
 from enum import Enum
 from typing import Optional
@@ -12,9 +13,9 @@ from ._lambda_fold_rotation_angle import LambdaFoldRotationAngleProfile
 
 __all__ = [
     "BaseFoldRotationAngleProfile",
+    "FoldRotationType",
     "FourierSeriesFoldRotationAngleProfile",
     "LambdaFoldRotationAngleProfile",
-    "FoldRotationType",
     "get_fold_rotation_profile",
 ]
 

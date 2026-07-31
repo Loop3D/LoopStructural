@@ -1,7 +1,9 @@
 """Pure 3D regular grid geometry: origin/nsteps/step_vector indexing."""
 
 from typing import Tuple
+
 import numpy as np
+
 from loop_common.logging import get_logger as getLogger
 from loop_common.utils import LoopException
 
@@ -85,7 +87,7 @@ class StructuredGrid3DGeometry:
             rotation_xy = np.array([[np.cos(np.deg2rad(rotation_xy)), -np.sin(np.deg2rad(rotation_xy)), 0], [np.sin(np.deg2rad(rotation_xy)), np.cos(np.deg2rad(rotation_xy)), 0], [0, 0, 1]])
         rotation_xy = np.array(rotation_xy)
         if rotation_xy.shape != (3, 3):
-            raise ValueError("Rotation matrix should be 3x3, not {}".format(rotation_xy.shape))
+            raise ValueError(f"Rotation matrix should be 3x3, not {rotation_xy.shape}")
         self._rotation_xy = rotation_xy
 
     @property
@@ -147,25 +149,11 @@ class StructuredGrid3DGeometry:
     def __str__(self):
         return (
             "LoopStructural grid geometry:  \n"
-            "Origin: {} {} {} \n"
-            "Maximum: {} {} {} \n"
-            "Step Vector: {} {} {} \n"
-            "Number of Steps: {} {} {} \n"
-            "Degrees of freedon {}".format(
-                self.origin[0],
-                self.origin[1],
-                self.origin[2],
-                self.maximum[0],
-                self.maximum[1],
-                self.maximum[2],
-                self.step_vector[0],
-                self.step_vector[1],
-                self.step_vector[2],
-                self.nsteps[0],
-                self.nsteps[1],
-                self.nsteps[2],
-                self.n_nodes,
-            )
+            f"Origin: {self.origin[0]} {self.origin[1]} {self.origin[2]} \n"
+            f"Maximum: {self.maximum[0]} {self.maximum[1]} {self.maximum[2]} \n"
+            f"Step Vector: {self.step_vector[0]} {self.step_vector[1]} {self.step_vector[2]} \n"
+            f"Number of Steps: {self.nsteps[0]} {self.nsteps[1]} {self.nsteps[2]} \n"
+            f"Degrees of freedon {self.n_nodes}"
         )
 
     @property

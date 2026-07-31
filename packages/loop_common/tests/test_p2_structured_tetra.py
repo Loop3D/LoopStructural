@@ -2,8 +2,8 @@
 
 import numpy as np
 import pytest
-from loop_common.supports._p2_structured_tetra import P2TetMesh
 from loop_common.supports._3d_structured_tetra import TetMesh
+from loop_common.supports._p2_structured_tetra import P2TetMesh
 
 
 class TestP2TetMeshConstruction:

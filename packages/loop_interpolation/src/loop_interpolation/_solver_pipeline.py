@@ -8,7 +8,6 @@ This module owns solve-stage orchestration primitives that are backend-agnostic:
 """
 
 from time import perf_counter
-from typing import Optional
 
 import numpy as np
 from scipy import sparse

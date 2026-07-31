@@ -1,10 +1,11 @@
 """ """
+from __future__ import annotations
 
-import numpy as np
 from typing import Optional
 
-from ...modelling.features import BaseFeature
+import numpy as np
 
+from ...modelling.features import BaseFeature
 from ...utils import getLogger
 
 logger = getLogger(__name__)

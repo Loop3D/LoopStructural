@@ -5,10 +5,8 @@ from datetime import datetime
 import numpy as np
 import pytest
 import yaml
-from pydantic import ConfigDict, TypeAdapter, ValidationError
-
 from loop_common.base import LoopEntity, NumpyArray
-
+from pydantic import ConfigDict, TypeAdapter, ValidationError
 
 # --- construction / defaults ---
 

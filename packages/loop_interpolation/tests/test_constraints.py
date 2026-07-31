@@ -1,11 +1,11 @@
 import numpy as np
 import pytest
 from loop_interpolation.constraints import (
-    ValueConstraint,
     GradientConstraint,
     InequalityConstraint,
     InequalityPair,
     InterfaceConstraint,
+    ValueConstraint,
 )
 
 

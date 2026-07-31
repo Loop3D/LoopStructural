@@ -2,10 +2,10 @@ import numpy as np
 import pytest
 
 from LoopStructural.utils.regions import (
+    NegativeRegion,
+    PositiveRegion,
     RegionEverywhere,
     RegionFunction,
-    PositiveRegion,
-    NegativeRegion,
 )
 
 

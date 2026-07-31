@@ -182,6 +182,7 @@ extend-select = [
     "PGH004",
     "RSE",
     "RUF100",
+    "FA",
 ]
 
 [tool.ruff.lint.pydocstyle]

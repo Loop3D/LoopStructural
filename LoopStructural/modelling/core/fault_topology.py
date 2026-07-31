@@ -1,9 +1,13 @@
-from ..features.fault import FaultSegment
+import enum
+
+import numpy as np
+
 from ...utils import Observable
 from ...utils._api_registry import public_api
+from ..features.fault import FaultSegment
 from .stratigraphic_column import StratigraphicColumn
-import enum
-import numpy as np
+
+
 class FaultRelationshipType(enum.Enum):
     ABUTTING = "abutting"
     FAULTED = "faulted"

@@ -1,19 +1,20 @@
 """
 FiniteDifference interpolator
 """
+from __future__ import annotations
 
 from typing import Optional
 
 import numpy as np
-
+from loop_common.logging import get_logger as getLogger
 from loop_common.math import get_vectors
+from scipy import ndimage, signal
+from scipy.sparse.linalg import LinearOperator
+from scipy.spatial import KDTree
+
 from ._discrete_interpolator import DiscreteInterpolator
 from ._interpolatortype import InterpolatorType
 from ._operator import Operator
-from scipy.spatial import KDTree
-from scipy import ndimage, signal
-from scipy.sparse.linalg import LinearOperator
-from loop_common.logging import get_logger as getLogger
 
 logger = getLogger(__name__)
 
@@ -337,7 +338,7 @@ class FiniteDifferenceInterpolator(DiscreteInterpolator):
                     np.zeros(interface_A.shape[0]),
                     interface_idc,
                     w=w,
-                    name="interface_{}".format(unique_id),
+                    name=f"interface_{unique_id}",
                 )
 
     def add_gradient_constraints(self, w=1.0):

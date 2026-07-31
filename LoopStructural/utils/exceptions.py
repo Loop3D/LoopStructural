@@ -1,17 +1,17 @@
 """Compatibility re-export: LoopStructural's exception hierarchy now lives in loop_common."""
 
 from loop_common.utils import (
+    InterpolatorError,
     LoopException,
     LoopImportError,
-    InterpolatorError,
     LoopTypeError,
     LoopValueError,
 )
 
 __all__ = [
+    "InterpolatorError",
     "LoopException",
     "LoopImportError",
-    "InterpolatorError",
     "LoopTypeError",
     "LoopValueError",
 ]

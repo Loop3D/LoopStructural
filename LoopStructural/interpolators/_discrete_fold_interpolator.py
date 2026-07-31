@@ -1,12 +1,13 @@
 """
 Piecewise linear interpolator using folds
 """
+from __future__ import annotations
 
-from typing import Optional, Callable
+from typing import Callable, Optional
 
 import numpy as np
 
-from ..interpolators import PiecewiseLinearInterpolator, InterpolatorType
+from ..interpolators import InterpolatorType, PiecewiseLinearInterpolator
 from ..modelling.features.fold import FoldEvent
 from ..utils import getLogger, rng
 
@@ -54,7 +55,6 @@ class DiscreteFoldInterpolator(PiecewiseLinearInterpolator):
         super().setup_interpolator(**kwargs)
         self.add_fold_constraints(**fold_weights)
 
-        return
 
     def add_fold_constraints(
         self,

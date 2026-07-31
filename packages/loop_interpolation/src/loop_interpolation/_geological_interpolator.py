@@ -3,30 +3,32 @@
 This module contains the abstract base class for all geological interpolators
 used in LoopStructural geological modelling framework.
 """
+from __future__ import annotations
 
-from abc import ABCMeta, abstractmethod
-from ._interpolatortype import InterpolatorType
-import numpy as np
 import json
-
+from abc import ABCMeta, abstractmethod
 from typing import Dict, Optional, Union
+
+import numpy as np
 from loop_common.interfaces.representation import BaseRepresentation
 from loop_common.logging import get_logger as getLogger
+
 from ._diagnostics import (
     ConstraintDiagnosticsReport,
     ConstraintFamilyDiagnostics,
     RegionCoverageDiagnostics,
 )
+from ._interpolatortype import InterpolatorType
+from ._validation import (
+    ValidationError,
+    check_unsupported_combinations,
+)
 from .constraints import (
-    ValueConstraint,
     GradientConstraint,
-    InterfaceConstraint,
     InequalityConstraint,
     InequalityPair,
-)
-from ._validation import (
-    check_unsupported_combinations,
-    ValidationError,
+    InterfaceConstraint,
+    ValueConstraint,
 )
 
 logger = getLogger(__name__)
@@ -128,7 +130,6 @@ class GeologicalInterpolator(BaseRepresentation, metaclass=ABCMeta):
         The actual number of elements may differ from the requested number
         depending on the interpolator's constraints.
         """
-        pass
 
     @property
     @abstractmethod
@@ -144,7 +145,6 @@ class GeologicalInterpolator(BaseRepresentation, metaclass=ABCMeta):
         -----
         This is an abstract property that must be implemented by subclasses.
         """
-        pass
 
     @property
     def data(self):
@@ -300,7 +300,6 @@ class GeologicalInterpolator(BaseRepresentation, metaclass=ABCMeta):
         This is an abstract method that must be implemented by subclasses.
         The specific parameters depend on the interpolator type.
         """
-        pass
 
     def set_value_constraints(self, points: Union[np.ndarray, ValueConstraint]):
         """Set value constraints for the interpolation.
@@ -717,7 +716,6 @@ class GeologicalInterpolator(BaseRepresentation, metaclass=ABCMeta):
         """
         Solves the interpolation equations
         """
-        pass
 
     @abstractmethod
     def update(self) -> bool:
@@ -836,7 +834,7 @@ class GeologicalInterpolator(BaseRepresentation, metaclass=ABCMeta):
         return json.dumps(self.to_dict(), indent=indent)
 
     @classmethod
-    def from_json(cls, json_str: str) -> "GeologicalInterpolator":
+    def from_json(cls, json_str: str) -> GeologicalInterpolator:
         return cls.from_dict(json.loads(json_str))
 
     def to_yaml(self, file_path: Optional[str] = None) -> None | str:
@@ -850,7 +848,7 @@ class GeologicalInterpolator(BaseRepresentation, metaclass=ABCMeta):
             yaml.safe_dump(self.to_dict(), f, sort_keys=False, allow_unicode=True)
 
     @classmethod
-    def from_yaml(cls, yaml_str: str) -> "GeologicalInterpolator":
+    def from_yaml(cls, yaml_str: str) -> GeologicalInterpolator:
         try:
             import yaml
         except ImportError as exc:

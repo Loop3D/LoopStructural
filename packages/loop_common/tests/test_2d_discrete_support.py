@@ -1,5 +1,5 @@
-from loop_common.supports import StructuredGrid2D
 import numpy as np
+from loop_common.supports import StructuredGrid2D
 
 
 ## structured grid 2d tests

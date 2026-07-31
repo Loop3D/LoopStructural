@@ -1,7 +1,9 @@
-from LoopStructural.utils.typing import NumericInput
-import numpy as np
 import numbers
 from typing import Tuple
+
+import numpy as np
+
+from LoopStructural.utils.typing import NumericInput
 
 
 def strikedip2vector(strike: NumericInput, dip: NumericInput) -> np.ndarray:
@@ -30,7 +32,7 @@ def strikedip2vector(strike: NumericInput, dip: NumericInput) -> np.ndarray:
 
     vec = np.zeros((len(strike), 3))
     s_r = np.deg2rad(strike)
-    d_r = np.deg2rad((dip))
+    d_r = np.deg2rad(dip)
     vec[:, 0] = np.sin(d_r) * np.cos(s_r)
     vec[:, 1] = -np.sin(d_r) * np.sin(s_r)
     vec[:, 2] = np.cos(d_r)
@@ -206,7 +208,7 @@ def rotation(axis: NumericInput, angle: NumericInput) -> np.ndarray:
         3x3 rotation matrix
     """
     c = np.cos(np.deg2rad(angle))
-    s = np.sin((np.deg2rad(angle)))
+    s = np.sin(np.deg2rad(angle))
     C = 1.0 - c
     x = axis[:, 0]
     y = axis[:, 1]

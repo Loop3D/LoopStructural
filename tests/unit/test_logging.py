@@ -12,8 +12,8 @@ from LoopStructural.utils import (
     SqliteSink,
     StreamSink,
     add_sink,
-    getLogger,
     get_levels,
+    getLogger,
     remove_sink,
     timed,
     timed_stage,
@@ -176,9 +176,8 @@ def test_timed_stage_logs_start_and_end_even_on_exception():
     logger = getLogger("loopstructural.test.timed_stage_exception")
     logger.setLevel(logging.INFO)
 
-    with pytest.raises(ValueError):
-        with timed_stage(logger, "failing_stage"):
-            raise ValueError("boom")
+    with pytest.raises(ValueError), timed_stage(logger, "failing_stage"):
+        raise ValueError("boom")
 
     assert received == ["start", "end"]
     remove_sink(handler)

@@ -111,7 +111,7 @@ def get_data_bounding_box(xyz, buffer):
 
 
 def create_surface(bounding_box, nstep):
-    x = np.linspace(bounding_box[0, 0], bounding_box[1, 0], nstep[0])  #
+    x = np.linspace(bounding_box[0, 0], bounding_box[1, 0], nstep[0])
     y = np.linspace(bounding_box[0, 1], bounding_box[1, 1], nstep[1])
     xx, yy = np.meshgrid(x, y, indexing="xy")
 
@@ -193,7 +193,7 @@ def create_box(bounding_box, nsteps):
     zz = np.hstack([zz, z])
     yy = np.hstack([yy, y])
 
-    points = np.zeros((len(xx), 3))  #
+    points = np.zeros((len(xx), 3))
     points[:, 0] = xx
     points[:, 1] = yy
     points[:, 2] = zz

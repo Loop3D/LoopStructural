@@ -17,10 +17,11 @@ they are added matters: unconformities and faults only affect features
 that are added *after* them.
 """
 
+import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
+
 from LoopStructural import GeologicalModel
-import matplotlib.pyplot as plt
 
 # a single data point (with a normal vector) defines each foliation, plus
 # one point on the fault surface with its slip direction (nx, ny, nz) and

@@ -1,14 +1,16 @@
 """
 Tetmesh based on cartesian grid for piecewise linear interpolation
 """
+from __future__ import annotations
 
 import logging
 from typing import Optional
 
 import numpy as np
+
+from . import SupportType
 from ._2d_base_unstructured import BaseUnstructured2d
 from ._2d_p1_unstructured import P1Unstructured2d
-from . import SupportType
 
 logger = logging.getLogger(__name__)
 

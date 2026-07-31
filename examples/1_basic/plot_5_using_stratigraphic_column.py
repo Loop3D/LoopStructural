@@ -13,11 +13,11 @@ This example reuses the two-group model from the previous tutorial and
 defines a stratigraphic column for it.
 """
 
+import numpy as np
+
 from LoopStructural import GeologicalModel
 from LoopStructural.datasets import load_claudius
 from LoopStructural.visualisation import Loop3DView
-
-import numpy as np
 
 data, bb = load_claudius()
 data = data.reset_index()

@@ -1,7 +1,8 @@
 from __future__ import annotations
 
-from abc import abstractmethod, ABCMeta
-from typing import Optional, List
+from abc import ABCMeta, abstractmethod
+from typing import List, Optional
+
 import numpy as np
 
 from ....utils import getLogger
@@ -19,7 +20,6 @@ def smooth_peak(x):
 class FaultProfileFunction(metaclass=ABCMeta):
     def __init__(self):
         self.lim = [-1, 1]
-        pass
 
     @abstractmethod
     def to_dict(self) -> dict:
@@ -395,7 +395,7 @@ class FaultDisplacement:
             return
 
 
-class BaseFault(object):
+class BaseFault:
     """ """
 
     hw = CubicFunction()
@@ -426,7 +426,7 @@ class BaseFault(object):
     fault_displacement = FaultDisplacement(gx=gxf, gy=gyf, gz=gzf)
 
 
-class BaseFault3D(object):
+class BaseFault3D:
     """ """
 
     hw = CubicFunction()

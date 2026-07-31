@@ -4,12 +4,13 @@ Cartesian grid for fold interpolator
 """
 
 import logging
+from typing import Dict, Tuple
 
 import numpy as np
+
+from ..math.finite_difference_stencil import Operator
 from . import SupportType
 from ._base_support import BaseSupport
-from typing import Dict, Tuple
-from ..math.finite_difference_stencil import Operator
 
 logger = logging.getLogger(__name__)
 

@@ -1,5 +1,6 @@
-from LoopStructural.geometry import BoundingBox
 import numpy as np
+
+from LoopStructural.geometry import BoundingBox
 
 
 def test_create_bounding_box():

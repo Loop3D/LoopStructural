@@ -1,8 +1,10 @@
+from __future__ import annotations
+
+from collections.abc import Sequence
 from dataclasses import dataclass
-from typing import Callable, Optional, Sequence, Tuple, Union
+from typing import Callable, Optional, Tuple, Union
 
 import numpy as np
-
 
 DirectionProvider = Union[np.ndarray, Callable[[np.ndarray], np.ndarray]]
 

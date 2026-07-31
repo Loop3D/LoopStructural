@@ -1,10 +1,13 @@
 import pytest
-geoh5py = pytest.importorskip("geoh5py")
-from LoopStructural.export.geoh5 import add_group_to_geoh5, add_points_to_geoh5, add_points_from_df
 
+geoh5py = pytest.importorskip("geoh5py")
 from pathlib import Path
-from LoopStructural.geometry import ValuePoints, VectorPoints
+
 import numpy as np
+
+from LoopStructural.export.geoh5 import add_group_to_geoh5, add_points_from_df, add_points_to_geoh5
+from LoopStructural.geometry import ValuePoints, VectorPoints
+
 
 @pytest.fixture
 def tmp_path():

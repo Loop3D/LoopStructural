@@ -1,6 +1,7 @@
+import numpy as np
+
 from LoopStructural import GeologicalModel
 from LoopStructural.datasets import load_claudius, load_horizontal
-import numpy as np
 
 
 def model_fit(model, data):

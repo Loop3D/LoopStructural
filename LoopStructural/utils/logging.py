@@ -1,33 +1,36 @@
+from __future__ import annotations
+
 import logging
 import os
 from typing import Dict, Optional, Union
 
-import LoopStructural
 from loop_common.logging import (
-    LogSink,
-    StreamSink,
     FileSink,
+    LogSink,
     SqliteSink,
-    timed_stage,
+    StreamSink,
     timed,
+    timed_stage,
 )
 from loop_common.logging.sinks import LogCallable, _CallableHandler
+
+import LoopStructural
 
 from ._api_registry import public_api
 
 __all__ = [
-    "getLogger",
-    "log_to_file",
-    "log_to_console",
-    "get_levels",
-    "LogSink",
-    "StreamSink",
     "FileSink",
+    "LogSink",
     "SqliteSink",
+    "StreamSink",
     "add_sink",
+    "getLogger",
+    "get_levels",
+    "log_to_console",
+    "log_to_file",
     "remove_sink",
-    "timed_stage",
     "timed",
+    "timed_stage",
 ]
 
 

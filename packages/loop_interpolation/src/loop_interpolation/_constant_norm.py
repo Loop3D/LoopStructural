@@ -1,13 +1,16 @@
+from __future__ import annotations
+
+from typing import Callable, Optional, Union
+
 import numpy as np
+from loop_common.math import rng
+from scipy import sparse
 
 from ._discrete_interpolator import DiscreteInterpolator
 from ._finite_difference_interpolator import (
     FiniteDifferenceInterpolator,
 )
 from ._p1interpolator import P1Interpolator
-from typing import Optional, Union, Callable
-from scipy import sparse
-from loop_common.math import rng
 
 
 class ConstantNormInterpolator:

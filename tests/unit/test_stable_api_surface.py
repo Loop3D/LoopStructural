@@ -35,8 +35,8 @@ def test_plugin_relied_on_module_path_importable(module_path):
 
 def test_plugin_relied_on_top_level_symbols_importable():
     from LoopStructural import (  # noqa: F401
-        GeologicalModel,
         FaultTopology,
+        GeologicalModel,
         StratigraphicColumn,
         getLogger,
     )
@@ -44,6 +44,12 @@ def test_plugin_relied_on_top_level_symbols_importable():
 
 def test_documented_stable_classes_importable():
     """Classes API.md lists as stable regardless of GeologicalModel usage."""
+    from LoopStructural.geometry import (  # noqa: F401
+        BoundingBox,
+        Surface,
+        ValuePoints,
+        VectorPoints,
+    )
     from LoopStructural.modelling.core.fault_topology import (  # noqa: F401
         FaultRelationshipType,
     )
@@ -54,19 +60,13 @@ def test_documented_stable_classes_importable():
         FeatureType,
         StructuralFrame,
     )
-    from LoopStructural.modelling.features.fold import FoldFrame  # noqa: F401
     from LoopStructural.modelling.features.builders import (  # noqa: F401
-        StructuralFrameBuilder,
         FaultBuilder,
-        GeologicalFeatureBuilder,
         FoldedFeatureBuilder,
+        GeologicalFeatureBuilder,
+        StructuralFrameBuilder,
     )
-    from LoopStructural.geometry import (  # noqa: F401
-        BoundingBox,
-        Surface,
-        ValuePoints,
-        VectorPoints,
-    )
+    from LoopStructural.modelling.features.fold import FoldFrame  # noqa: F401
     from LoopStructural.utils.observer import Observable  # noqa: F401
 
 

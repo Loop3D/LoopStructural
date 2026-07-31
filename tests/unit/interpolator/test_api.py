@@ -1,6 +1,5 @@
 import numpy as np
 import pytest
-
 from loop_interpolation import FiniteDifferenceInterpolator, P1Interpolator
 
 from LoopStructural.geometry import BoundingBox

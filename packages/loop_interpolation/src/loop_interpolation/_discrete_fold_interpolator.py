@@ -1,20 +1,20 @@
 """
 Piecewise linear interpolator using folds
 """
+from __future__ import annotations
 
-from typing import Optional, Callable
+from typing import Callable, Optional
 
 import numpy as np
-
-from ._p1interpolator import P1Interpolator as PiecewiseLinearInterpolator
-from ._interpolatortype import InterpolatorType
-from ._regularisation import DirectionalRegularisation
-from ._fold_setup import setup_with_fold_constraints
-from ._fold_norm_alignment import resolve_fold_norm_target
-
 from loop_common.logging import get_logger as getLogger
 from loop_common.math import rng
-from ._fold_event import FoldEvent  # noqa: F401  (re-exported for convenience)
+
+from ._fold_event import FoldEvent
+from ._fold_norm_alignment import resolve_fold_norm_target
+from ._fold_setup import setup_with_fold_constraints
+from ._interpolatortype import InterpolatorType
+from ._p1interpolator import P1Interpolator as PiecewiseLinearInterpolator
+from ._regularisation import DirectionalRegularisation
 
 logger = getLogger(__name__)
 

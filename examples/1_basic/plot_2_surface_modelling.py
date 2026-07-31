@@ -35,11 +35,11 @@ number of horizons picked from seismic data, by:
 # Import the required objects from LoopStructural for visualisation and
 # model building
 
-from LoopStructural import GeologicalModel
-from LoopStructural.visualisation import Loop3DView
-from LoopStructural.datasets import load_claudius  # demo data
-
 import numpy as np
+
+from LoopStructural import GeologicalModel
+from LoopStructural.datasets import load_claudius  # demo data
+from LoopStructural.visualisation import Loop3DView
 
 ######################################################################
 # Load Example Data

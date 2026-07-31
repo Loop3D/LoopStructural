@@ -1,8 +1,11 @@
+from typing import List
+
+import numpy as np
+
+from loop_common.base import LoopEntity, NumpyArray
+
 from .orientation import Orientation, OrientationType
 from .pointset import PointSet
-import numpy as np
-from typing import List
-from loop_common.base import LoopEntity, NumpyArray
 
 
 class LineSet(LoopEntity):

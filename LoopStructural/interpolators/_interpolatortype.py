@@ -1,5 +1,6 @@
 from enum import Enum
 
+
 class InterpolatorType(Enum):
     """
     Enum for the different interpolator types

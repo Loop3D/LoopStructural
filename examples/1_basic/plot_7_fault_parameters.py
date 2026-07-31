@@ -17,10 +17,11 @@ The model-building code is wrapped in a function so that it can be called
 multiple times with different fault parameters to compare the results.
 """
 
+import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
+
 from LoopStructural import GeologicalModel
-import matplotlib.pyplot as plt
 
 data = pd.DataFrame(
     [

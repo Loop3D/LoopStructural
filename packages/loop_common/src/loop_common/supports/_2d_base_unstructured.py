@@ -2,16 +2,17 @@
 Tetmesh based on cartesian grid for piecewise linear interpolation
 """
 
-from abc import abstractmethod
 import logging
+from abc import abstractmethod
 from typing import Tuple
+
 import numpy as np
 from scipy import sparse
 
 from . import SupportType
 from ._2d_structured_grid import StructuredGrid2D
-from ._base_support import BaseSupport
 from ._aabb import _initialise_aabb
+from ._base_support import BaseSupport
 from ._face_table import _init_face_table
 
 logger = logging.getLogger(__name__)
@@ -190,7 +191,6 @@ class BaseUnstructured2d(BaseSupport):
         -------
 
         """
-        pass
 
     def element_area(self, elements):
         tri_points = self.nodes[self.elements[elements, :], :]
@@ -318,7 +318,7 @@ class BaseUnstructured2d(BaseSupport):
             tetras[npts : npts + npts_step][row[mask]] = col[mask]
             inside[npts : npts + npts_step][row[mask]] = True
             npts += npts_step
-        tetra_return = np.zeros((points.shape[0])).astype(int)
+        tetra_return = np.zeros(points.shape[0]).astype(int)
         tetra_return[:] = -1
         tetra_return[inside] = tetras[inside]
         return verts, bc, tetra_return, inside

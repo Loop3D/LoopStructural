@@ -1,5 +1,6 @@
 ## Support Functions for intrusion network simulated as the shortest path, and for simulations in general
 import numpy as np
+
 from ...utils import getLogger
 
 logger = getLogger(__name__)
@@ -51,8 +52,7 @@ def findMinDiff(arr, n):
     pairwise_diff = np.abs(values[:, None] - values[None, :])
     np.fill_diagonal(pairwise_diff, np.inf)
     min_diff = pairwise_diff.min()
-    if min_diff < diff:
-        diff = min_diff
+    diff = min(diff, min_diff)
 
     return diff
 

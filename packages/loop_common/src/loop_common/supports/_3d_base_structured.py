@@ -1,8 +1,11 @@
 from abc import abstractmethod
-import numpy as np
-from loop_common.logging import get_logger as getLogger
-from . import SupportType
 from typing import Tuple
+
+import numpy as np
+
+from loop_common.logging import get_logger as getLogger
+
+from . import SupportType
 
 logger = getLogger(__name__)
 
@@ -12,7 +15,6 @@ from ._base_support import BaseSupport
 class LoopException(Exception):
     """Custom exception for LoopStructural errors."""
 
-    pass
 
 
 class BaseStructuredSupport(BaseSupport):
@@ -95,7 +97,6 @@ class BaseStructuredSupport(BaseSupport):
     @abstractmethod
     def onGeometryChange(self):
         """Function to be called when the geometry of the support changes"""
-        pass
 
     def associateInterpolator(self, interpolator):
         self.interpolator = interpolator
@@ -142,7 +143,7 @@ class BaseStructuredSupport(BaseSupport):
             )
         rotation_xy = np.array(rotation_xy)
         if rotation_xy.shape != (3, 3):
-            raise ValueError("Rotation matrix should be 3x3, not {}".format(rotation_xy.shape))
+            raise ValueError(f"Rotation matrix should be 3x3, not {rotation_xy.shape}")
         self._rotation_xy = rotation_xy
 
     @property
@@ -216,27 +217,12 @@ class BaseStructuredSupport(BaseSupport):
 
     def __str__(self):
         return (
-            "LoopStructural interpolation support:  {} \n"
-            "Origin: {} {} {} \n"
-            "Maximum: {} {} {} \n"
-            "Step Vector: {} {} {} \n"
-            "Number of Steps: {} {} {} \n"
-            "Degrees of freedon {}".format(
-                self.supporttype,
-                self.origin[0],
-                self.origin[1],
-                self.origin[2],
-                self.maximum[0],
-                self.maximum[1],
-                self.maximum[2],
-                self.step_vector[0],
-                self.step_vector[1],
-                self.step_vector[2],
-                self.nsteps[0],
-                self.nsteps[1],
-                self.nsteps[2],
-                self.n_nodes,
-            )
+            f"LoopStructural interpolation support:  {self.supporttype} \n"
+            f"Origin: {self.origin[0]} {self.origin[1]} {self.origin[2]} \n"
+            f"Maximum: {self.maximum[0]} {self.maximum[1]} {self.maximum[2]} \n"
+            f"Step Vector: {self.step_vector[0]} {self.step_vector[1]} {self.step_vector[2]} \n"
+            f"Number of Steps: {self.nsteps[0]} {self.nsteps[1]} {self.nsteps[2]} \n"
+            f"Degrees of freedon {self.n_nodes}"
         )
 
     @property
@@ -486,7 +472,7 @@ class BaseStructuredSupport(BaseSupport):
         # remainder when dividing by nx = i
         # remained when dividing modulus of nx by ny is j
         original_shape = global_index.shape
-        global_index = global_index.reshape((-1))
+        global_index = global_index.reshape(-1)
         local_indexes = np.zeros((global_index.shape[0], 3), dtype=int)
         local_indexes[:, 0] = global_index % self.nsteps[0, None]
         local_indexes[:, 1] = global_index // self.nsteps[0, None] % self.nsteps[1, None]

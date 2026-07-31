@@ -2,11 +2,11 @@
 
 Ported from LoopStructural/modelling/features/fold/_fold.py (Laurent et al., 2016).
 """
+from __future__ import annotations
 
 from typing import Callable, Optional
 
 import numpy as np
-
 from loop_common.logging import get_logger
 
 logger = get_logger(__name__)

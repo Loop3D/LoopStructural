@@ -1,14 +1,15 @@
-from LoopStructural.utils.maths import regular_tetraherdron_for_points, gradient_from_tetrahedron
+from concurrent.futures import ThreadPoolExecutor
+
+import numpy as np
+
+from LoopStructural.utils.maths import gradient_from_tetrahedron, regular_tetraherdron_for_points
+
+from ....modelling.features import FeatureType, StructuralFrame
+from ....modelling.features.fault._fault_function import BaseFault, BaseFault3D, FaultDisplacement
 from ....modelling.features.fault._fault_function_feature import (
     FaultDisplacementFeature,
 )
-from ....modelling.features import FeatureType
-from ....modelling.features.fault._fault_function import BaseFault, BaseFault3D, FaultDisplacement
-from ....utils import getLogger, NegativeRegion, PositiveRegion
-from ....modelling.features import StructuralFrame
-
-from concurrent.futures import ThreadPoolExecutor
-import numpy as np
+from ....utils import NegativeRegion, PositiveRegion, getLogger
 
 logger = getLogger(__name__)
 

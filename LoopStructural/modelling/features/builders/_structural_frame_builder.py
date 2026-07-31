@@ -1,26 +1,26 @@
 """
 structural frame builder
 """
+from __future__ import annotations
 
+import copy
 import warnings
 from typing import Union
 
+import numpy as np
+
 from LoopStructural.utils.exceptions import LoopException
 
-import numpy as np
-import copy
-
+from ....geometry import BoundingBox
 from ....utils import getLogger
 from ....utils._api_registry import public_api
-from ....geometry import BoundingBox
 
 logger = getLogger(__name__)
 
 
-from ._base_builder import BaseBuilder
-from ....modelling.features.builders import GeologicalFeatureBuilder
-from ....modelling.features.builders import FoldedFeatureBuilder
 from ....modelling.features import StructuralFrame
+from ....modelling.features.builders import FoldedFeatureBuilder, GeologicalFeatureBuilder
+from ._base_builder import BaseBuilder
 
 
 class StructuralFrameBuilder(BaseBuilder):

@@ -1,6 +1,8 @@
-import numpy as np
 from abc import ABC, abstractmethod
 from typing import Tuple
+
+import numpy as np
+
 
 class BaseRegion(ABC):
     @abstractmethod
@@ -14,7 +16,6 @@ class BaseRegion(ABC):
     @abstractmethod
     def __call__(self, xyz) -> np.ndarray:
         """Evaluate the region based on the input coordinates."""
-        pass
 
 
 class RegionEverywhere(BaseRegion):

@@ -22,11 +22,10 @@ as well as the end-to-end solve comparison.
 
 import numpy as np
 import pytest
-from scipy import sparse
-from scipy.sparse.linalg import LinearOperator
-
 from loop_interpolation import FiniteDifferenceInterpolator, StructuredGrid
 from loop_interpolation._operator import Operator
+from scipy import sparse
+from scipy.sparse.linalg import LinearOperator
 
 INTERIOR_OPERATORS = {
     "dxx": Operator.Dxx_mask,

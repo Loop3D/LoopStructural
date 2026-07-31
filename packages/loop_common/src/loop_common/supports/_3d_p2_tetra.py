@@ -1,10 +1,12 @@
+from __future__ import annotations
+
 from typing import Optional
 
-from ._3d_unstructured_tetra import UnStructuredTetMesh
-from ._3d_structured_tetra import TetMesh
-
 import numpy as np
+
 from . import SupportType
+from ._3d_structured_tetra import TetMesh
+from ._3d_unstructured_tetra import UnStructuredTetMesh
 
 
 class P2UnstructuredTetMesh(UnStructuredTetMesh):

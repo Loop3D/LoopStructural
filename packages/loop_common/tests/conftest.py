@@ -1,5 +1,4 @@
 import pytest
-
 from loop_common.supports import StructuredGrid, TetMesh
 
 

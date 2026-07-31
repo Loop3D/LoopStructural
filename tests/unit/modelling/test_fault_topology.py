@@ -1,6 +1,6 @@
 import pytest
 
-from LoopStructural.modelling.core.fault_topology import FaultTopology, FaultRelationshipType
+from LoopStructural.modelling.core.fault_topology import FaultRelationshipType, FaultTopology
 from LoopStructural.modelling.core.stratigraphic_column import StratigraphicColumn
 
 

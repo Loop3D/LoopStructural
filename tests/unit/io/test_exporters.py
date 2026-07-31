@@ -3,11 +3,10 @@ import pytest
 
 pyevtk = pytest.importorskip("pyevtk")
 
-from LoopStructural.geometry import BoundingBox, Surface
 from LoopStructural.export import exporters
 from LoopStructural.export.file_formats import FileFormat
+from LoopStructural.geometry import BoundingBox, Surface
 from LoopStructural.utils.exceptions import LoopValueError
-
 
 # ---------------------------------------------------------------------------
 # Lightweight fakes standing in for a GeologicalModel/BoundingBox, so these

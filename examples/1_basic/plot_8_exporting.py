@@ -14,8 +14,8 @@ whole model (surfaces, block model and data) in a single file; the
 geoh5 writer additionally requires the optional ``geoh5py`` package.
 """
 
-import tempfile
 import pathlib
+import tempfile
 
 from LoopStructural import GeologicalModel
 from LoopStructural.datasets import load_claudius

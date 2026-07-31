@@ -3,10 +3,12 @@ Tetmesh based on cartesian grid for piecewise linear interpolation
 """
 
 import numpy as np
-from ._3d_base_structured import BaseStructuredSupport
-from . import SupportType
 from scipy.sparse import coo_matrix, tril
+
 from loop_common.logging import get_logger as getLogger
+
+from . import SupportType
+from ._3d_base_structured import BaseStructuredSupport
 
 logger = getLogger(__name__)
 
@@ -354,7 +356,7 @@ class TetMesh(BaseStructuredSupport):
         c_return = np.zeros((pos.shape[0], 4))
         c_return[:] = np.nan
         c_return[inside] = c[mask]
-        tetra_return = np.zeros((pos.shape[0])).astype(int)
+        tetra_return = np.zeros(pos.shape[0]).astype(int)
         tetra_return[:] = -1
         local_tetra_index = np.tile(np.arange(0, 5)[None, :], (mask.shape[0], 1))
         local_tetra_index = local_tetra_index[mask]

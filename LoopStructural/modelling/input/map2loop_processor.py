@@ -1,9 +1,9 @@
-from .process_data import ProcessInputData
+import networkx
 import numpy as np
 import pandas as pd
-import networkx
 
 from ...utils import getLogger
+from .process_data import ProcessInputData
 
 logger = getLogger(__name__)
 
@@ -76,7 +76,7 @@ class Map2LoopProcessor(ProcessInputData):
 
                 i = 0
                 for g in line.strip(",\n").split(","):
-                    supergroups[g] = "supergroup_{}".format(i)
+                    supergroups[g] = f"supergroup_{i}"
                 i += 1
         if "supergroup" not in groups.columns:
             groups["supergroup"] = "none"
@@ -162,4 +162,3 @@ class Map2LoopProcessor(ProcessInputData):
                 fault_properties.loc[fname, "dip_dir"] -= 180
 
 
-#

@@ -1,6 +1,5 @@
 import numpy as np
 import pytest
-
 from loop_interpolation import _validation
 
 ValidationError = _validation.ValidationError

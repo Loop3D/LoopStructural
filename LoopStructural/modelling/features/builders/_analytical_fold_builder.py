@@ -1,6 +1,7 @@
-from ._base_builder import BaseBuilder
-from .._lambda_geological_feature import LambdaGeologicalFeature
 import numpy as np
+
+from .._lambda_geological_feature import LambdaGeologicalFeature
+from ._base_builder import BaseBuilder
 
 
 class AnalyticalFoldBuilder(BaseBuilder):

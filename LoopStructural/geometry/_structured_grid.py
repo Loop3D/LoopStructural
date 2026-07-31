@@ -1,6 +1,8 @@
-from typing import Dict
-import numpy as np
 from dataclasses import dataclass, field
+from typing import Dict
+
+import numpy as np
+
 from LoopStructural.utils import getLogger
 
 logger = getLogger(__name__)

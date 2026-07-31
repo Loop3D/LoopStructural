@@ -1,13 +1,11 @@
 """Tests for DiscreteFoldInterpolator."""
 
+
 import numpy as np
 import pytest
-from unittest.mock import Mock, MagicMock
-
+from loop_common.supports._3d_structured_tetra import TetMesh
 from loop_interpolation._discrete_fold_interpolator import DiscreteFoldInterpolator
 from loop_interpolation._p1interpolator import P1Interpolator
-from loop_common.supports import SupportType
-from loop_common.supports._3d_structured_tetra import TetMesh
 
 
 class MockFoldEvent:

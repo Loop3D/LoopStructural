@@ -1,13 +1,16 @@
 """
 Geological features
 """
-from LoopStructural.utils.maths import regular_tetraherdron_for_points, gradient_from_tetrahedron
-from ...modelling.features import BaseFeature
-from ...utils import getLogger
-from ...modelling.features import FeatureType
-import numpy as np
+from __future__ import annotations
+
 from typing import Callable, Optional
-from ...utils import LoopValueError
+
+import numpy as np
+
+from LoopStructural.utils.maths import gradient_from_tetrahedron, regular_tetraherdron_for_points
+
+from ...modelling.features import BaseFeature, FeatureType
+from ...utils import LoopValueError, getLogger
 
 logger = getLogger(__name__)
 
@@ -68,7 +71,7 @@ class LambdaGeologicalFeature(BaseFeature):
         np.ndarray
             value of the feature at each location, nan where outside of the regions
         """
-        v = np.zeros((pos.shape[0]))
+        v = np.zeros(pos.shape[0])
         v[:] = np.nan
 
         # Precompute each fault's scalar value (gx = fault.__getitem__(0).evaluate_value)

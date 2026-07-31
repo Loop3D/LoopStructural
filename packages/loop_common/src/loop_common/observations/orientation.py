@@ -1,8 +1,12 @@
-import numpy as np
-from loop_common.base import LoopEntity, NumpyArray
-from loop_common.math import strikedip2vector, dipdipdirection2vector, plungeazimuth2vector
-from pydantic import model_validator
+from __future__ import annotations
+
 from enum import Enum
+
+import numpy as np
+from pydantic import model_validator
+
+from loop_common.base import LoopEntity, NumpyArray
+from loop_common.math import dipdipdirection2vector, plungeazimuth2vector, strikedip2vector
 
 
 class OrientationType(str, Enum):

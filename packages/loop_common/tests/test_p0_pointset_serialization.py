@@ -1,9 +1,8 @@
 """Regression test for PointSet JSON/YAML serialization (P0 fix)."""
 
-import pytest
-import numpy as np
 import json
 
+import numpy as np
 from loop_common.observations import PointSet
 
 

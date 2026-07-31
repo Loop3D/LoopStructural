@@ -1,11 +1,14 @@
+import numpy as np
+import pytest
+
+from LoopStructural.geometry import BoundingBox
 from LoopStructural.interpolators import (
     FiniteDifferenceInterpolator as FDI,
+)
+from LoopStructural.interpolators import (
     PiecewiseLinearInterpolator as PLI,
 )
 from LoopStructural.interpolators import StructuredGridSupport, TetMesh
-from LoopStructural.geometry import BoundingBox
-import pytest
-import numpy as np
 
 
 @pytest.fixture(params=["FDI", "PLI"])

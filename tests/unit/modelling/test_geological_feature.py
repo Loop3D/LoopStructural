@@ -1,9 +1,10 @@
+import numpy as np
+
 from LoopStructural.modelling.features import (
-    GeologicalFeature,
     AnalyticalGeologicalFeature,
     FeatureType,
+    GeologicalFeature,
 )
-import numpy as np
 
 
 def test_constructors():
@@ -39,6 +40,7 @@ def test_toggle_faults():
 def test_tojson():
     base_feature = GeologicalFeature("test", None, [], [], None)
     import json
+
     from LoopStructural.utils import LoopJSONEncoder
 
     json.dumps(base_feature, cls=LoopJSONEncoder)

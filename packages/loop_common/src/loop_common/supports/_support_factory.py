@@ -1,6 +1,10 @@
-from loop_common.supports import support_map, SupportType
-import numpy as np
+from __future__ import annotations
+
 from typing import Optional
+
+import numpy as np
+
+from loop_common.supports import SupportType, support_map
 
 
 class SupportFactory:

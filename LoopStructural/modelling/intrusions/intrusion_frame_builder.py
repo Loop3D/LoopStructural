@@ -1,11 +1,12 @@
-from ...modelling.features.builders import StructuralFrameBuilder
-from ...modelling.features.fault import FaultSegment
-from .intrusion_frame import IntrusionFrame
-from ...utils import getLogger, rng
-from ...geometry import BoundingBox
+from __future__ import annotations
 
 from typing import Union
 
+from ...geometry import BoundingBox
+from ...modelling.features.builders import StructuralFrameBuilder
+from ...modelling.features.fault import FaultSegment
+from ...utils import getLogger, rng
+from .intrusion_frame import IntrusionFrame
 
 logger = getLogger(__name__)
 
@@ -240,7 +241,7 @@ class IntrusionFrameBuilder(StructuralFrameBuilder):
                 series_ij_vals = np.ma.compressed(y)
                 series_ij_mean = np.mean(series_ij_vals)
                 series_ij_std = np.std(series_ij_vals)
-                series_ij_name = f"{series.name}_{str(series_ij_mean)}"
+                series_ij_name = f"{series.name}_{series_ij_mean!s}"
 
                 series_parameters[series_ij_name] = [
                     series,

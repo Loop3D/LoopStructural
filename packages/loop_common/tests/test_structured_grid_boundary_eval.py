@@ -1,5 +1,4 @@
 import numpy as np
-
 from loop_common.supports import StructuredGrid
 
 

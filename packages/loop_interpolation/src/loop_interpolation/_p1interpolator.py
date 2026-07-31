@@ -7,9 +7,8 @@ import logging
 import numpy as np
 from scipy.spatial import KDTree
 
-
-from ._discrete_interpolator import DiscreteInterpolator
 from . import InterpolatorType
+from ._discrete_interpolator import DiscreteInterpolator
 
 logger = logging.getLogger(__name__)
 
@@ -95,7 +94,6 @@ class P1Interpolator(DiscreteInterpolator):
                 name="norm",
             )
             self.up_to_date = False
-        pass
 
     def add_value_constraints(self, w=1.0):
         points = self.get_value_constraints()

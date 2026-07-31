@@ -1,5 +1,6 @@
 import numpy as np
 import pytest
+
 from LoopStructural.geometry._structured_grid import StructuredGrid
 from LoopStructural.utils import rng
 

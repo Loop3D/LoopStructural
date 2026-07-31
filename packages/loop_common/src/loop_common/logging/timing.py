@@ -17,7 +17,7 @@ import uuid
 from contextlib import contextmanager
 from typing import Callable, Optional
 
-__all__ = ["timed_stage", "timed"]
+__all__ = ["timed", "timed_stage"]
 
 
 @contextmanager

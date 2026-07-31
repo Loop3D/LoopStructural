@@ -4,12 +4,13 @@ This class intentionally stays thin: it delegates object creation to
 InterpolatorFactory and provides a chainable API for adding constraints,
 configuring setup options, and solving.
 """
+from __future__ import annotations
 
 from typing import Optional, Union
 
 import numpy as np
-
 from loop_common.geometry import BoundingBox
+
 from loop_interpolation import GeologicalInterpolator, InterpolatorFactory, InterpolatorType
 
 
@@ -54,7 +55,7 @@ class InterpolatorBuilder:
             **self.kwargs,
         )
 
-    def use_solver(self, solver: str, **solver_kwargs) -> "InterpolatorBuilder":
+    def use_solver(self, solver: str, **solver_kwargs) -> InterpolatorBuilder:
         """Configure the solver used when calling solve().
 
         Parameters
@@ -80,7 +81,7 @@ class InterpolatorBuilder:
         solver: Optional[str] = None,
         tol: Optional[float] = None,
         **solver_kwargs,
-    ) -> "InterpolatorBuilder":
+    ) -> InterpolatorBuilder:
         """Solve the configured interpolator system.
 
         Parameters
@@ -108,7 +109,7 @@ class InterpolatorBuilder:
             )
         return self
 
-    def use_regularisation_weight_scale(self, enabled: bool = True) -> "InterpolatorBuilder":
+    def use_regularisation_weight_scale(self, enabled: bool = True) -> InterpolatorBuilder:
         """Configure whether regularisation terms use spatial weighting.
 
         Parameters
@@ -125,7 +126,7 @@ class InterpolatorBuilder:
         self.setup_kwargs["use_regularisation_weight_scale"] = bool(enabled)
         return self
 
-    def regularisation_weight_sigma(self, sigma: float) -> "InterpolatorBuilder":
+    def regularisation_weight_sigma(self, sigma: float) -> InterpolatorBuilder:
         """Configure spatial decay sigma for regularisation weight scaling.
 
         Parameters
@@ -142,13 +143,13 @@ class InterpolatorBuilder:
         self.setup_kwargs["regularisation_weight_sigma"] = float(sigma)
         return self
 
-    def _set_constraint(self, setter_name: str, values: np.ndarray) -> "InterpolatorBuilder":
+    def _set_constraint(self, setter_name: str, values: np.ndarray) -> InterpolatorBuilder:
         """Forward constraint arrays to the underlying interpolator."""
         if self.interpolator:
             getattr(self.interpolator, setter_name)(values)
         return self
 
-    def add_value_constraints(self, value_constraints: np.ndarray) -> "InterpolatorBuilder":
+    def add_value_constraints(self, value_constraints: np.ndarray) -> InterpolatorBuilder:
         """Add value constraints to the interpolator
 
         Parameters
@@ -163,7 +164,7 @@ class InterpolatorBuilder:
         """
         return self._set_constraint("set_value_constraints", value_constraints)
 
-    def add_gradient_constraints(self, gradient_constraints: np.ndarray) -> "InterpolatorBuilder":
+    def add_gradient_constraints(self, gradient_constraints: np.ndarray) -> InterpolatorBuilder:
         """Add gradient constraints to the interpolator.
 
         Where g1 and g2 are two vectors that are orthogonal to the gradient:
@@ -182,7 +183,7 @@ class InterpolatorBuilder:
 
         return self._set_constraint("set_gradient_constraints", gradient_constraints)
 
-    def add_normal_constraints(self, normal_constraints: np.ndarray) -> "InterpolatorBuilder":
+    def add_normal_constraints(self, normal_constraints: np.ndarray) -> InterpolatorBuilder:
         """Add normal constraints to the interpolator
         Where n is the normal vector to the surface
         $f'(X).dx = nx$
@@ -200,7 +201,7 @@ class InterpolatorBuilder:
         """
         return self._set_constraint("set_normal_constraints", normal_constraints)
 
-    def add_tangent_constraints(self, tangent_constraints: np.ndarray) -> "InterpolatorBuilder":
+    def add_tangent_constraints(self, tangent_constraints: np.ndarray) -> InterpolatorBuilder:
         """Add tangent constraints to the interpolator.
 
         Parameters
@@ -218,15 +219,15 @@ class InterpolatorBuilder:
 
     def add_inequality_constraints(
         self, inequality_constraints: np.ndarray
-    ) -> "InterpolatorBuilder":
+    ) -> InterpolatorBuilder:
         return self._set_constraint("set_value_inequality_constraints", inequality_constraints)
 
     def add_inequality_pair_constraints(
         self, inequality_pair_constraints: np.ndarray
-    ) -> "InterpolatorBuilder":
+    ) -> InterpolatorBuilder:
         return self._set_constraint("set_inequality_pairs_constraints", inequality_pair_constraints)
 
-    def setup_interpolator(self, **kwargs) -> "InterpolatorBuilder":
+    def setup_interpolator(self, **kwargs) -> InterpolatorBuilder:
         """This adds all of the constraints to the interpolator and
         sets the regularisation constraints
 

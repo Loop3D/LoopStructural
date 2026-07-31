@@ -1,12 +1,15 @@
+from __future__ import annotations
+
 from typing import Optional
+
 import numpy as np
 import pandas as pd
-from LoopStructural.modelling.features import BaseFeature
-from LoopStructural.modelling.features import FeatureType
+from scipy.interpolate import Rbf
+
+from LoopStructural.modelling.features import BaseFeature, FeatureType
 
 # import logging
 from ...utils import getLogger
-from scipy.interpolate import Rbf
 
 logger = getLogger(__name__)
 

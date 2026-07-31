@@ -1,6 +1,5 @@
 import numpy as np
 import pytest
-
 from loop_interpolation import (
     DirectionalRegularisation,
     DiscreteFoldInterpolator,

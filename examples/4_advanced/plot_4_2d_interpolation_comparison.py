@@ -15,8 +15,8 @@ produce a continuous scalar field - the classic scattered-data
 interpolation problem - but they make very different trade-offs.
 """
 
-import numpy as np
 import matplotlib.pyplot as plt
+import numpy as np
 from scipy.interpolate import RBFInterpolator
 
 from LoopStructural.geometry import BoundingBox

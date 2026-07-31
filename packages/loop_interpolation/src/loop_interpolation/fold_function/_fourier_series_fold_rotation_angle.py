@@ -1,12 +1,13 @@
 """Fourier-series fold rotation-angle profile (Laurent et al., 2016)."""
+from __future__ import annotations
 
 from typing import List, Optional, Union
 
 import numpy as np
 import numpy.typing as npt
+from loop_common.logging import get_logger
 
 from ._base_fold_rotation_angle import BaseFoldRotationAngleProfile
-from loop_common.logging import get_logger
 
 logger = get_logger(__name__)
 

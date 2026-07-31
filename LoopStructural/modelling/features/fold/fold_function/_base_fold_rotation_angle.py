@@ -1,12 +1,15 @@
+from __future__ import annotations
+
 from abc import ABCMeta, abstractmethod
 from ast import List
-from typing import Union, Optional
+from typing import Optional, Union
+
 import numpy as np
 import numpy.typing as npt
-from .._svariogram import SVariogram
 from scipy.optimize import curve_fit
 
 from .....utils import getLogger
+from .._svariogram import SVariogram
 
 logger = getLogger(__name__)
 
@@ -190,7 +193,6 @@ class BaseFoldRotationAngleProfile(metaclass=ABCMeta):
         params : dict
             parameters to update
         """
-        pass
 
     @abstractmethod
     def initial_guess(
@@ -222,7 +224,6 @@ class BaseFoldRotationAngleProfile(metaclass=ABCMeta):
         """
         if svariogram_parameters is None:
             svariogram_parameters = {}
-        pass
 
     @staticmethod
     @abstractmethod
@@ -243,7 +244,6 @@ class BaseFoldRotationAngleProfile(metaclass=ABCMeta):
         np.ndarray
             tan of the fold rotation angle in radians at s
         """
-        pass
 
     def plot(self, ax=None, show_data=True, **kwargs):
         """Plot the fold rotation angle function

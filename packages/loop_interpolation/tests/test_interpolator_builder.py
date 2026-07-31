@@ -1,5 +1,5 @@
-import pytest
 import numpy as np
+import pytest
 from loop_common.geometry import BoundingBox
 from loop_interpolation import InterpolatorBuilder, InterpolatorType
 

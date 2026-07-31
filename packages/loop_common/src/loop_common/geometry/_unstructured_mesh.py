@@ -2,10 +2,11 @@
 
 import numpy as np
 from scipy import sparse
+
 from ._aabb import _initialise_aabb
 from ._face_table import _init_face_table
-from ._structured_grid_3d import StructuredGrid3DGeometry
 from ._structured_grid_2d import StructuredGrid2DGeometry
+from ._structured_grid_3d import StructuredGrid3DGeometry
 
 
 class UnstructuredMeshGeometry:

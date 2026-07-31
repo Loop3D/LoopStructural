@@ -1,13 +1,21 @@
 import importlib
 
 import pytest
-
-from loop_interpolation._discrete_interpolator import DiscreteInterpolator as LoopDiscreteInterpolator
-from loop_interpolation._geological_interpolator import GeologicalInterpolator as LoopGeologicalInterpolator
+from loop_interpolation._discrete_interpolator import (
+    DiscreteInterpolator as LoopDiscreteInterpolator,
+)
+from loop_interpolation._geological_interpolator import (
+    GeologicalInterpolator as LoopGeologicalInterpolator,
+)
 from loop_interpolation._operator import Operator as LoopOperator
 from loop_interpolation._p1interpolator import P1Interpolator as LoopP1Interpolator
 
-from LoopStructural.interpolators import DiscreteInterpolator, GeologicalInterpolator, Operator, P1Interpolator
+from LoopStructural.interpolators import (
+    DiscreteInterpolator,
+    GeologicalInterpolator,
+    Operator,
+    P1Interpolator,
+)
 
 
 def test_public_api_reexports_loop_interpolation_classes():

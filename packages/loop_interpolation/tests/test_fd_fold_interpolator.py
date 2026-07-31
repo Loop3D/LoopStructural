@@ -20,10 +20,8 @@ Coverage
 
 import numpy as np
 import pytest
-
-from loop_interpolation import FDFoldInterpolator, FiniteDifferenceInterpolator, StructuredGrid
 from loop_common.supports import RectilinearGrid
-
+from loop_interpolation import FDFoldInterpolator, FiniteDifferenceInterpolator, StructuredGrid
 
 # ---------------------------------------------------------------------------
 # Helpers

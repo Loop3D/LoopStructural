@@ -1,6 +1,6 @@
-from loop_common.supports import StructuredGrid
 import numpy as np
 import pytest
+from loop_common.supports import StructuredGrid
 
 
 ## structured grid tests

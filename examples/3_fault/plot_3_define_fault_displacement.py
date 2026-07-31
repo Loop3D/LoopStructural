@@ -15,6 +15,7 @@ profile and uses it to build a drag fault.
 
 import numpy as np
 import pandas as pd
+
 import LoopStructural as LS
 
 # A minimal dataset for a single vertical fault (two points defining its
@@ -95,8 +96,8 @@ model['fault'].faultfunction.plot()
 # full drag on the footwall side.
 
 from LoopStructural.modelling.features.fault._fault_function import (
-    FaultDisplacement,
     CubicFunction,
+    FaultDisplacement,
     Ones,
 )
 

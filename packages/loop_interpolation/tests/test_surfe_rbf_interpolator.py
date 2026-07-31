@@ -1,8 +1,8 @@
 """Comprehensive tests for SurfeRBFInterpolator."""
 
-import pytest
+
 import numpy as np
-from unittest.mock import Mock, patch, MagicMock
+import pytest
 
 try:
     import surfepy  # noqa: F401

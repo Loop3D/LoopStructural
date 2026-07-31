@@ -1,17 +1,18 @@
 """
 Finite difference interpolator with fold constraints.
 """
+from __future__ import annotations
 
 from typing import Callable, Optional
 
 import numpy as np
+from loop_common.logging import get_logger as getLogger
 
 from ._finite_difference_interpolator import FiniteDifferenceInterpolator
+from ._fold_norm_alignment import resolve_fold_norm_target
+from ._fold_setup import setup_with_fold_constraints
 from ._interpolatortype import InterpolatorType
 from ._regularisation import DirectionalRegularisation
-from ._fold_setup import setup_with_fold_constraints
-from ._fold_norm_alignment import resolve_fold_norm_target
-from loop_common.logging import get_logger as getLogger
 
 logger = getLogger(__name__)
 
@@ -19,7 +20,7 @@ logger = getLogger(__name__)
 _DEFAULT_FOLD_REGULARISATION = object()
 
 
-from ._fold_event import FoldEvent  # noqa: F401  (re-exported for convenience)
+from ._fold_event import FoldEvent
 
 
 class FDFoldInterpolator(FiniteDifferenceInterpolator):

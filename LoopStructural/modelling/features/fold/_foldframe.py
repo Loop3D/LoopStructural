@@ -1,7 +1,6 @@
 import numpy as np
 
 from ....modelling.features._structural_frame import StructuralFrame
-
 from ....utils import getLogger
 from ....utils._api_registry import public_api
 
@@ -161,7 +160,7 @@ class FoldFrame(StructuralFrame):
             )
             projected_s0 /= np.linalg.norm(projected_s0, axis=1)[:, None]
             projected_s1 /= np.linalg.norm(projected_s1, axis=1)[:, None]
-            r2 = np.einsum("ij,ij->i", projected_s1, projected_s0)  #
+            r2 = np.einsum("ij,ij->i", projected_s1, projected_s0)
             # adjust the fold rotation angle so that its always between -90
             # and 90
             # vv = np.cross(s1g, s0g, axisa=1, axisb=1)
@@ -201,7 +200,7 @@ class FoldFrame(StructuralFrame):
             points.append(npoints)
         if len(points) == 0:
             logger.error("No points to calculate intersection lineation")
-            raise ValueError("No data points associated with {}".format(feature_builder.name))
+            raise ValueError(f"No data points associated with {feature_builder.name}")
         points = np.vstack(points)
         s1g = self.features[0].evaluate_gradient(points[:, :3])
         s1g /= np.linalg.norm(points[:, :3], axis=1)[:, None]

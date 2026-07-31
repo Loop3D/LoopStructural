@@ -1,9 +1,9 @@
 import numpy as np
 
-from LoopStructural.modelling.features._region import Region
 from LoopStructural.modelling.features._analytical_feature import (
     AnalyticalGeologicalFeature,
 )
+from LoopStructural.modelling.features._region import Region
 
 
 class PlaneFeature:

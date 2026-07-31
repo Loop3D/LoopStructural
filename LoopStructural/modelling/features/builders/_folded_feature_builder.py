@@ -1,11 +1,11 @@
-from ....modelling.features.builders import GeologicalFeatureBuilder
-from ....modelling.features.fold.fold_function import FoldRotationType, get_fold_rotation_profile
-from ....modelling.features import FeatureType
 import numpy as np
 
-from ....utils import getLogger, InterpolatorError
-from ....utils._api_registry import public_api
 from ....geometry import BoundingBox
+from ....modelling.features import FeatureType
+from ....modelling.features.builders import GeologicalFeatureBuilder
+from ....modelling.features.fold.fold_function import FoldRotationType, get_fold_rotation_profile
+from ....utils import InterpolatorError, getLogger
+from ....utils._api_registry import public_api
 
 logger = getLogger(__name__)
 
@@ -172,7 +172,7 @@ class FoldedFeatureBuilder(GeologicalFeatureBuilder):
             self.set_fold_axis()
         if self.fold.fold_limb_rotation is None:
             self.set_fold_limb_rotation()
-        logger.info("Adding fold to {}".format(self.name))
+        logger.info(f"Adding fold to {self.name}")
         self.interpolator.fold = self.fold
         # if we have fold weights use those, otherwise just use default
         # self.interpolator.add_fold_constraints(**self.fold_weights)

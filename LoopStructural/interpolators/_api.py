@@ -1,12 +1,15 @@
-import numpy as np
+from __future__ import annotations
 
 from typing import Optional
+
+import numpy as np
+
+from LoopStructural.geometry import BoundingBox
 from LoopStructural.interpolators import (
     GeologicalInterpolator,
     InterpolatorFactory,
     InterpolatorType,
 )
-from LoopStructural.geometry import BoundingBox
 from LoopStructural.utils import getLogger
 
 logger = getLogger(__name__)

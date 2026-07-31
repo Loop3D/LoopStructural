@@ -4,9 +4,8 @@ Integration tests for FiniteDifferenceInterpolator used with RectilinearGrid.
 
 import numpy as np
 import pytest
-from loop_interpolation import FiniteDifferenceInterpolator
 from loop_common.supports import RectilinearGrid
-
+from loop_interpolation import FiniteDifferenceInterpolator
 
 # ---------------------------------------------------------------------------
 # Fixtures

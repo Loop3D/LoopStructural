@@ -3,7 +3,7 @@ import pickle
 
 import pytest
 
-from LoopStructural.utils.observer import Observable, Disposable
+from LoopStructural.utils.observer import Disposable, Observable
 
 
 class Recorder:
@@ -132,9 +132,8 @@ def test_disposable_context_manager_does_not_swallow_exceptions():
     obs = Observable()
     recorder = Recorder()
 
-    with pytest.raises(ValueError):
-        with obs.attach(recorder):
-            raise ValueError("boom")
+    with pytest.raises(ValueError), obs.attach(recorder):
+        raise ValueError("boom")
 
 
 def test_multiple_observers_all_notified():
@@ -214,9 +213,8 @@ def test_freeze_notifications_with_no_pending_events_bug():
     about the usage was incorrect.
     """
     obs = Observable()
-    with pytest.raises(UnboundLocalError):
-        with obs.freeze_notifications():
-            pass
+    with pytest.raises(UnboundLocalError), obs.freeze_notifications():
+        pass
 
 
 def test_nested_freeze_notifications_bug():
@@ -226,10 +224,9 @@ def test_nested_freeze_notifications_bug():
     assigned, even though a notification did occur.
     """
     obs = Observable()
-    with pytest.raises(UnboundLocalError):
+    with pytest.raises(UnboundLocalError), obs.freeze_notifications():
         with obs.freeze_notifications():
-            with obs.freeze_notifications():
-                obs.notify("nested")
+            obs.notify("nested")
 
 
 def test_weakref_callback_stops_receiving_after_garbage_collection():

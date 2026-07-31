@@ -1,10 +1,14 @@
-import numpy as np
+from __future__ import annotations
+
 import importlib
 import inspect
-from .admm_method import ADMM
 from dataclasses import dataclass
-from scipy.sparse.linalg import lsmr, lsqr, cg, LinearOperator
-from scipy.sparse import vstack, csr_matrix, diags
+
+import numpy as np
+from scipy.sparse import csr_matrix, diags, vstack
+from scipy.sparse.linalg import LinearOperator, cg, lsmr, lsqr
+
+from .admm_method import ADMM
 
 
 @dataclass

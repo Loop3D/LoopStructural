@@ -1,7 +1,7 @@
 """Regression tests for SurfeRBFInterpolator NaN-handling bugs (P0 fixes)."""
 
-import pytest
 import numpy as np
+import pytest
 
 pytest.importorskip("surfe", minversion=None)
 

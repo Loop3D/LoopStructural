@@ -1,53 +1,49 @@
 """
 Main entry point for creating a geological model
 """
+from __future__ import annotations
 
-from LoopStructural import LoopStructuralConfig
-from ...utils import getLogger
-from ...utils import LoopValueError
-from ...utils import public_api
-from ...utils import timed_stage
-from ._feature_registry import FeatureBuilderRegistry
-from ..features._feature_converters import (
-    add_fold_to_feature as _add_fold_to_feature,
-    convert_feature_to_structural_frame as _convert_feature_to_structural_frame,
-)
+import json
+import pathlib
+from typing import Dict, List, Optional, Union
 
 import numpy as np
 import pandas as pd
-from typing import List, Optional, Union, Dict
-import pathlib
-import json
-from ...modelling.features.fault import FaultSegment
 
-from ...modelling.features.builders import (
-    FaultBuilder,
-    GeologicalFeatureBuilder,
-    StructuralFrameBuilder,
-    FoldedFeatureBuilder,
-)
+from LoopStructural import LoopStructuralConfig
+
+from ...geometry import BoundingBox, StructuredGrid
 from ...modelling.features import (
-    UnconformityFeature,
-    StructuralFrame,
-    GeologicalFeature,
     BaseFeature,
     FeatureType,
+    GeologicalFeature,
+    StructuralFrame,
+    UnconformityFeature,
 )
+from ...modelling.features.builders import (
+    FaultBuilder,
+    FoldedFeatureBuilder,
+    GeologicalFeatureBuilder,
+    StructuralFrameBuilder,
+)
+from ...modelling.features.fault import FaultSegment
 from ...modelling.features.fold import (
     FoldEvent,
     FoldFrame,
 )
-
+from ...modelling.intrusions import IntrusionBuilder, IntrusionFrameBuilder
+from ...utils import LoopValueError, getLogger, public_api, strikedip2vector, timed_stage
 from ...utils.helper import (
     all_heading,
     gradient_vec_names,
 )
-from ...utils import strikedip2vector
-from ...geometry import BoundingBox, StructuredGrid
-
-from ...modelling.intrusions import IntrusionBuilder
-
-from ...modelling.intrusions import IntrusionFrameBuilder
+from ..features._feature_converters import (
+    add_fold_to_feature as _add_fold_to_feature,
+)
+from ..features._feature_converters import (
+    convert_feature_to_structural_frame as _convert_feature_to_structural_frame,
+)
+from ._feature_registry import FeatureBuilderRegistry
 from .stratigraphic_column import StratigraphicColumn
 
 logger = getLogger(__name__)

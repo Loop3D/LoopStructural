@@ -1,9 +1,8 @@
 import numpy as np
 import pytest
-
 from loop_common.interfaces.representation import BaseRepresentation
 from loop_interpolation import GeologicalInterpolator
-from loop_interpolation.constraints import ValueConstraint, GradientConstraint
+from loop_interpolation.constraints import GradientConstraint, ValueConstraint
 
 
 def test_get_data_locations(interpolator, data):

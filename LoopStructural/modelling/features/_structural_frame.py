@@ -1,13 +1,16 @@
 """
 Structural frames
 """
+from __future__ import annotations
 
-from ..features import BaseFeature, FeatureType
+from typing import List, Optional, Union
+
 import numpy as np
+
+from ...geometry import ValuePoints, VectorPoints
 from ...utils import getLogger
 from ...utils._api_registry import public_api
-from typing import Optional, List, Union
-from ...geometry import ValuePoints, VectorPoints
+from ..features import BaseFeature, FeatureType
 
 logger = getLogger(__name__)
 

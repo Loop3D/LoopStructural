@@ -1,7 +1,8 @@
-import numpy as np
-from loop_common.supports import UnStructuredTetMesh
-from loop_common.math import rng
 from os.path import dirname
+
+import numpy as np
+from loop_common.math import rng
+from loop_common.supports import UnStructuredTetMesh
 
 file_path = dirname(__file__)
 
@@ -36,10 +37,10 @@ def _brute_force_tetra(nodes, elements, points):
 
 
 def _load_mesh():
-    nodes = np.loadtxt("{}/nodes.txt".format(file_path))
-    elements = np.loadtxt("{}/elements.txt".format(file_path))
+    nodes = np.loadtxt(f"{file_path}/nodes.txt")
+    elements = np.loadtxt(f"{file_path}/elements.txt")
     elements = np.array(elements, dtype="int64")
-    neighbours = np.loadtxt("{}/neighbours.txt".format(file_path))
+    neighbours = np.loadtxt(f"{file_path}/neighbours.txt")
     return nodes, elements, neighbours
 
 

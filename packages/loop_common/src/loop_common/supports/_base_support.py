@@ -1,6 +1,7 @@
 from abc import ABCMeta, abstractmethod
-import numpy as np
 from typing import Tuple
+
+import numpy as np
 
 
 class BaseSupport(metaclass=ABCMeta):
@@ -25,28 +26,24 @@ class BaseSupport(metaclass=ABCMeta):
         """
         Evaluate the value of the support at the evaluation points
         """
-        pass
 
     @abstractmethod
     def evaluate_gradient(self, evaluation_points: np.ndarray, property_array: np.ndarray):
         """
         Evaluate the gradient of the support at the evaluation points
         """
-        pass
 
     @abstractmethod
     def inside(self, pos):
         """
         Check if a position is inside the support
         """
-        pass
 
     @abstractmethod
     def onGeometryChange(self):
         """
         Called when the geometry changes
         """
-        pass
 
     @abstractmethod
     def get_element_for_location(
@@ -55,7 +52,6 @@ class BaseSupport(metaclass=ABCMeta):
         """
         Get the element for a location
         """
-        pass
 
     @abstractmethod
     def get_element_gradient_for_location(
@@ -69,7 +65,6 @@ class BaseSupport(metaclass=ABCMeta):
         """
         Return the elements
         """
-        pass
 
     @property
     @abstractmethod
@@ -77,7 +72,6 @@ class BaseSupport(metaclass=ABCMeta):
         """
         Return the number of elements
         """
-        pass
 
     @property
     @abstractmethod
@@ -85,7 +79,6 @@ class BaseSupport(metaclass=ABCMeta):
         """
         Return the number of points
         """
-        pass
 
     @property
     @abstractmethod
@@ -93,7 +86,6 @@ class BaseSupport(metaclass=ABCMeta):
         """
         Return the nodes
         """
-        pass
 
     @property
     @abstractmethod
@@ -101,7 +93,6 @@ class BaseSupport(metaclass=ABCMeta):
         """
         Return the number of dimensions
         """
-        pass
 
     @property
     @abstractmethod
@@ -109,7 +100,6 @@ class BaseSupport(metaclass=ABCMeta):
         """
         Return the number of dimensions
         """
-        pass
 
     @property
     @abstractmethod
@@ -117,14 +107,12 @@ class BaseSupport(metaclass=ABCMeta):
         """
         Return the element size
         """
-        pass
 
     @abstractmethod
     def vtk(self, node_properties=None, cell_properties=None):
         """
         Return a vtk object
         """
-        pass
 
     @abstractmethod
     def set_nelements(self, nelements) -> int:

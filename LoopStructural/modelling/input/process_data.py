@@ -1,7 +1,8 @@
-import pandas as pd
 import numpy as np
-from .fault_network import FaultNetwork
+import pandas as pd
+
 from ...utils import getLogger, rng, strikedip2vector
+from .fault_network import FaultNetwork
 
 logger = getLogger(__name__)
 

@@ -1,4 +1,5 @@
 """Lambda (arbitrary callable) fold rotation-angle profile."""
+from __future__ import annotations
 
 from typing import Callable, Optional
 

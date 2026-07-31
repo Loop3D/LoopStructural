@@ -1,15 +1,14 @@
 from __future__ import annotations
 
 from abc import ABCMeta, abstractmethod
-from typing import Union, List, Optional
-from LoopStructural.modelling.features import FeatureType
-from LoopStructural.utils import getLogger
-from LoopStructural.utils import LoopValueError
-from LoopStructural.utils.typing import NumericInput
-from LoopStructural.utils import LoopIsosurfacer, surface_list
-from LoopStructural.geometry import VectorPoints, StructuredGrid
+from typing import List, Optional, Union
 
 import numpy as np
+
+from LoopStructural.geometry import StructuredGrid, VectorPoints
+from LoopStructural.modelling.features import FeatureType
+from LoopStructural.utils import LoopIsosurfacer, LoopValueError, getLogger, surface_list
+from LoopStructural.utils.typing import NumericInput
 
 logger = getLogger(__name__)
 

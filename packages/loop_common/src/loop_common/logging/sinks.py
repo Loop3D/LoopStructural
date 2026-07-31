@@ -26,10 +26,10 @@ from typing import Callable, Dict, List, Optional, Union
 LogCallable = Callable[[logging.LogRecord], None]
 
 __all__ = [
-    "LogSink",
-    "StreamSink",
     "FileSink",
+    "LogSink",
     "SqliteSink",
+    "StreamSink",
     "default_formatter",
 ]
 

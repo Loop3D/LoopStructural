@@ -1,5 +1,7 @@
-from LoopStructural.modelling.features.fold import FoldEvent, FoldFrame
 from LoopStructural.modelling.features.builders import FoldedFeatureBuilder, StructuralFrameBuilder
+from LoopStructural.modelling.features.fold import FoldEvent, FoldFrame
+
+
 def add_fold_to_feature(feature, fold_frame,**kwargs):
     if not isinstance(fold_frame, FoldFrame):
         raise ValueError("fold_frame must be a FoldFrame instance")

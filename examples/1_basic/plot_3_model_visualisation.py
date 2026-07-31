@@ -18,10 +18,8 @@ notebook environment.
 # model building
 
 from LoopStructural import GeologicalModel
-from LoopStructural.visualisation import Loop3DView
-
 from LoopStructural.datasets import load_claudius  # demo data
-
+from LoopStructural.visualisation import Loop3DView
 
 #####################
 # Build the model

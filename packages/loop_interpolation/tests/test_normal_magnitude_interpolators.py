@@ -1,7 +1,7 @@
 import numpy as np
 import pytest
-from loop_interpolation import InterpolatorBuilder, InterpolatorType
 from loop_common.geometry import BoundingBox
+from loop_interpolation import InterpolatorBuilder, InterpolatorType
 
 
 @pytest.mark.parametrize("interpolator_type", ["PLI", "FDI"])

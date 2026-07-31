@@ -1,23 +1,22 @@
+from __future__ import annotations
+
 import logging
 from typing import ClassVar, Union
 
 import numpy as np
+from loop_common.base import NumpyArray
 from pydantic import BaseModel, ConfigDict, Field, model_validator
 from pydantic import ValidationError as PydanticValidationError
 
-from loop_common.base import NumpyArray
 from ._validation import (
     DtypeError,
-    FiniteValueError,
     ShapeError,
     ValidationError,
     VectorError,
     _check_finite,
     _drop_nan_data_rows,
     _ensure_float_array,
-    _fill_nan_weights,
 )
-
 
 _logger = logging.getLogger(__name__)
 
@@ -171,7 +170,7 @@ class ValueConstraint(BaseConstraint):
         return np.hstack([self.points, self.values.reshape(-1, 1), weights])
 
     @classmethod
-    def from_array(cls, points: np.ndarray, dimensions: int = 3) -> "ValueConstraint":
+    def from_array(cls, points: np.ndarray, dimensions: int = 3) -> ValueConstraint:
         pts = _to_float_array(points, "Value constraint array")
         if pts.ndim != 2:
             raise ShapeError("Value constraint array must be 2D")
@@ -263,7 +262,7 @@ class GradientConstraint(BaseConstraint):
     @classmethod
     def from_array(
         cls, points: np.ndarray, dimensions: int = 3, is_normal: bool = False
-    ) -> "GradientConstraint":
+    ) -> GradientConstraint:
         pts = _to_float_array(points, "Gradient constraint array")
         if pts.ndim != 2:
             raise ShapeError("Gradient constraint array must be 2D")
@@ -330,7 +329,7 @@ class InequalityConstraint(BaseConstraint):
         return np.hstack([self.points, self.bounds, weights])
 
     @classmethod
-    def from_array(cls, points: np.ndarray, dimensions: int = 3) -> "InequalityConstraint":
+    def from_array(cls, points: np.ndarray, dimensions: int = 3) -> InequalityConstraint:
         pts = _to_float_array(points, "Inequality constraint array")
         if pts.ndim != 2:
             raise ShapeError("Inequality constraint array must be 2D")
@@ -387,7 +386,7 @@ class InequalityPair(BaseConstraint):
         return np.hstack([self.points, self.pair_ids.reshape(-1, 1), weights])
 
     @classmethod
-    def from_array(cls, points: np.ndarray, dimensions: int = 3) -> "InequalityPair":
+    def from_array(cls, points: np.ndarray, dimensions: int = 3) -> InequalityPair:
         pts = _to_float_array(points, "Inequality pair constraint array")
         if pts.ndim != 2:
             raise ShapeError("Inequality pair constraint array must be 2D")
@@ -454,7 +453,7 @@ class InterfaceConstraint(BaseConstraint):
         return np.hstack([self.points, self.interface_ids.reshape(-1, 1), weights])
 
     @classmethod
-    def from_array(cls, points: np.ndarray, dimensions: int = 3) -> "InterfaceConstraint":
+    def from_array(cls, points: np.ndarray, dimensions: int = 3) -> InterfaceConstraint:
         pts = _to_float_array(points, "Interface constraint array")
         if pts.ndim != 2:
             raise ShapeError("Interface constraint array must be 2D")

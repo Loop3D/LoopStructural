@@ -9,7 +9,7 @@ from ..logging import get_logger
 logger = get_logger(__name__)
 
 
-class Operator(object):
+class Operator:
     """
     Finite difference masks for adding constraints for the derivatives and second derivatives
     Operator.Dx_mask gives derivative in x direction

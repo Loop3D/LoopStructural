@@ -8,12 +8,13 @@ specified explicitly as monotonically increasing 1-D arrays.
 
 from __future__ import annotations
 
-import numpy as np
 from typing import Dict, Tuple
 
-from ._3d_structured_grid import StructuredGrid
-from . import SupportType
+import numpy as np
+
 from ..logging import get_logger as getLogger
+from . import SupportType
+from ._3d_structured_grid import StructuredGrid
 
 logger = getLogger(__name__)
 

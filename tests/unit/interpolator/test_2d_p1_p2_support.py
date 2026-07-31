@@ -1,5 +1,6 @@
 import numpy as np
 import pytest
+from loop_common.supports import P1Unstructured2d, P2Unstructured2d
 
 from LoopStructural.geometry import BoundingBox
 from LoopStructural.interpolators import (
@@ -7,7 +8,6 @@ from LoopStructural.interpolators import (
     P1Interpolator,
     P2Interpolator,
 )
-from loop_common.supports import P1Unstructured2d, P2Unstructured2d
 
 
 def _bbox_2d():

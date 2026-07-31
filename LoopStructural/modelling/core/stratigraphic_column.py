@@ -1,8 +1,13 @@
+from __future__ import annotations
+
 import enum
-from typing import Dict, Optional, List, Tuple
+from typing import Dict, List, Optional, Tuple
+
 import numpy as np
-from LoopStructural.utils import rng, getLogger, Observable, random_colour
+
+from LoopStructural.utils import Observable, getLogger, random_colour, rng
 from LoopStructural.utils._api_registry import public_api
+
 logger = getLogger(__name__)
 logger.info("Imported LoopStructural Stratigraphic Column module")
 class UnconformityType(enum.Enum):
@@ -571,7 +576,7 @@ class StratigraphicColumn(Observable['StratigraphicColumn']):
         ]
         self.notify('order_updated', new_order=self.order)
         self.update_unit_values()  # Update min and max values after updating the order
-    def update_unit_values(self, observable: Optional["Observable"] = None, event: Optional[str] = None, **kwargs):
+    def update_unit_values(self, observable: Optional[Observable] = None, event: Optional[str] = None, **kwargs):
         """
         Updates the min and max values for each unit based on their position in the column.
 
@@ -676,8 +681,8 @@ class StratigraphicColumn(Observable['StratigraphicColumn']):
     def plot(self,*, ax=None, **kwargs):
         import matplotlib.pyplot as plt
         from matplotlib import cm
-        from matplotlib.patches import Polygon
         from matplotlib.collections import PatchCollection
+        from matplotlib.patches import Polygon
         n_units = 0  # count how many discrete colours (number of stratigraphic units)
         xmin = 0
         ymin = 0
@@ -726,7 +731,7 @@ class StratigraphicColumn(Observable['StratigraphicColumn']):
                 ax.annotate(getattr(u, 'name', 'Unknown'), xy=(xmin+(xmax-xmin)/2, (ymax-ymin)/2+ymin), fontsize=8, ha='left')
 
         if 'cmap' not in kwargs:
-            import matplotlib.colors as colors
+            from matplotlib import colors
 
             colours = []
             boundaries = []
@@ -755,7 +760,7 @@ class StratigraphicColumn(Observable['StratigraphicColumn']):
     
     def cmap(self):
         try:
-            import matplotlib.colors as colors
+            from matplotlib import colors
 
             colours = []
             boundaries = []

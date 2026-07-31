@@ -23,10 +23,9 @@ or a file of your choosing via :code:`log_to_file`.
 Let's have a look at the logging from the Claudius model.
 """
 
-from LoopStructural import GeologicalModel
-from LoopStructural.visualisation import Loop3DView
+from LoopStructural import GeologicalModel, log_to_console, log_to_file
 from LoopStructural.datasets import load_claudius  # demo data
-from LoopStructural import log_to_file, log_to_console
+from LoopStructural.visualisation import Loop3DView
 
 
 def build_claudius_model():

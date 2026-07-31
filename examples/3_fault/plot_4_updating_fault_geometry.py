@@ -17,6 +17,7 @@ This example builds a faulted model once, then changes the fault's
 
 import numpy as np
 import pandas as pd
+
 import LoopStructural as LS
 import LoopStructural.visualisation as vis
 

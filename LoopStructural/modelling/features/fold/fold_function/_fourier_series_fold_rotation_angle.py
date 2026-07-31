@@ -1,8 +1,12 @@
-from ._base_fold_rotation_angle import BaseFoldRotationAngleProfile
+from __future__ import annotations
+
+from typing import List, Optional, Union
+
 import numpy as np
 import numpy.typing as npt
-from typing import Optional, List, Union
+
 from .....utils import getLogger
+from ._base_fold_rotation_angle import BaseFoldRotationAngleProfile
 
 logger = getLogger(__name__)
 

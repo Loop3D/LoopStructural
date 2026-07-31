@@ -3,24 +3,24 @@ import pandas as pd
 
 from LoopStructural.geometry import BoundingBox
 from LoopStructural.utils.helper import (
+    all_heading,
+    coord_name,
+    create_box,
+    create_surface,
+    empty_dataframe,
+    feature_name,
     get_data_bounding_box,
     get_data_bounding_box_map,
-    create_surface,
-    create_box,
-    xyz_names,
-    normal_vec_names,
-    tangent_vec_names,
     gradient_vec_names,
-    weight_name,
-    val_name,
-    coord_name,
-    interface_name,
     inequality_name,
-    feature_name,
-    polarity_name,
+    interface_name,
+    normal_vec_names,
     pairs_name,
-    all_heading,
-    empty_dataframe,
+    polarity_name,
+    tangent_vec_names,
+    val_name,
+    weight_name,
+    xyz_names,
 )
 
 

@@ -1,13 +1,10 @@
 import numpy as np
 import pandas as pd
 
-from ...utils import getLogger
-from .intrusion_feature import IntrusionFeature
-
-
+from ...utils import getLogger, rng
 from ..features.builders import BaseBuilder
-from ...utils import rng
 from .geometric_scaling_functions import *
+from .intrusion_feature import IntrusionFeature
 
 logger = getLogger(__name__)
 
@@ -132,9 +129,7 @@ class IntrusionBuilder(BaseBuilder):
 
         if intrusion_length is None and thickness is None:
             raise ValueError(
-                "No {} data. Add intrusion_type and intrusion_length (or thickness) to geometric_scaling_parameters dictionary".format(
-                    self.intrusion_frame.builder.intrusion_other_contact
-                )
+                f"No {self.intrusion_frame.builder.intrusion_other_contact} data. Add intrusion_type and intrusion_length (or thickness) to geometric_scaling_parameters dictionary"
             )
 
         else:  # -- create synthetic data to constrain interpolation using geometric scaling
@@ -146,9 +141,7 @@ class IntrusionBuilder(BaseBuilder):
                 # )
 
             logger.info(
-                "Building tabular intrusion using geometric scaling parameters: estimated thicknes = {} meters".format(
-                    round(estimated_thickness)
-                )
+                f"Building tabular intrusion using geometric scaling parameters: estimated thicknes = {round(estimated_thickness)} meters"
             )
             raise Exception('Not implemented')
             # (

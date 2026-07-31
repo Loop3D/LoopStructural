@@ -1,14 +1,14 @@
 from .logger import get_logger
-from .sinks import LogSink, StreamSink, FileSink, SqliteSink, default_formatter
-from .timing import timed_stage, timed
+from .sinks import FileSink, LogSink, SqliteSink, StreamSink, default_formatter
+from .timing import timed, timed_stage
 
 __all__ = [
-    "get_logger",
-    "LogSink",
-    "StreamSink",
     "FileSink",
+    "LogSink",
     "SqliteSink",
+    "StreamSink",
     "default_formatter",
-    "timed_stage",
+    "get_logger",
     "timed",
+    "timed_stage",
 ]

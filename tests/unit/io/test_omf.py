@@ -3,7 +3,6 @@ import pytest
 
 omf = pytest.importorskip("omf")
 
-from LoopStructural.geometry import Surface, ValuePoints
 from LoopStructural.export.omf_wrapper import (
     add_pointset_to_omf,
     add_structured_grid_to_omf,
@@ -12,6 +11,7 @@ from LoopStructural.export.omf_wrapper import (
     get_point_attributed,
     get_project,
 )
+from LoopStructural.geometry import Surface, ValuePoints
 
 
 class _FakeLoopObject:

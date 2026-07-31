@@ -7,16 +7,14 @@ against the opt-in ``matrix_free=True`` path.
 """
 
 import numpy as np
-import pytest
-from scipy import sparse
-from scipy.sparse.linalg import LinearOperator
-
 from loop_interpolation.loopsolver import admm_solve
 from loop_interpolation.loopsolver import admm_solver as admm_solver_module
 from loop_interpolation.loopsolver.admm_solver import (
     _normal_equations_diagonal,
     _normal_equations_operator,
 )
+from scipy import sparse
+from scipy.sparse.linalg import LinearOperator
 
 
 def _build_inequality_problem(seed=42):

@@ -1,8 +1,12 @@
+from __future__ import annotations
+
+import io
 from dataclasses import dataclass, field
 from typing import Optional, Union
+
 import numpy as np
-import io
 import pyvista as pv
+
 from loop_common.logging import get_logger as getLogger
 
 logger = getLogger(__name__)
