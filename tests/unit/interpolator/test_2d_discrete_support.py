@@ -80,3 +80,44 @@ def test_structured_grid2d_vtk_assigns_quad_cell_types():
     triangulated = vtk_grid.triangulate()
 
     assert triangulated.n_cells == grid.n_elements * 2
+
+
+def test_evaluate_gradient_2d_world_units():
+    """
+    Gradient must be returned in world units, independent of the cell size.
+
+    Regression test for #289: get_element_gradient_for_location returned the
+    shape-function derivatives with respect to local (0-1) cell coordinates,
+    so gradients were inflated by step_vector on each axis.
+    """
+    grid = StructuredGrid2D(
+        origin=np.zeros(2), nsteps=np.array([10, 10]), step_vector=np.array([2.5, 0.5])
+    )
+    # f(x, y) = x and f(x, y) = y have unit gradients regardless of cell size
+    gradient_x = np.mean(grid.evaluate_gradient(grid.barycentre, grid.nodes[:, 0]), axis=0)
+    gradient_y = np.mean(grid.evaluate_gradient(grid.barycentre, grid.nodes[:, 1]), axis=0)
+    assert np.allclose(gradient_x, np.array([1.0, 0.0]))
+    assert np.allclose(gradient_y, np.array([0.0, 1.0]))
+
+
+def test_fdi_2d_gradient_resolution_independent():
+    """
+    The interpolated gradient magnitude must not depend on nelements (#289).
+    """
+    from LoopStructural.geometry import BoundingBox
+    from LoopStructural.interpolators import InterpolatorFactory
+
+    sqrt2 = np.sqrt(2.0)
+    bbox = BoundingBox(dimensions=2, origin=np.array([0.0, 0.0]), maximum=np.array([100.0, 100.0]))
+    points = np.random.default_rng(0).uniform(10, 90, size=(60, 2))
+    for nelements in (1e3, 4e3):
+        interpolator = InterpolatorFactory.create_interpolator(
+            interpolatortype="FDI", boundingbox=bbox, nelements=nelements
+        )
+        interpolator.set_value_constraints(
+            np.column_stack([points, (points[:, 0] + points[:, 1]) / sqrt2])
+        )
+        interpolator.setup_interpolator()
+        interpolator.solve_system(solver="cg")
+        gradient_norm = np.linalg.norm(interpolator.evaluate_gradient(np.array([[50.0, 50.0]]))[0])
+        assert np.isclose(gradient_norm, 1.0, atol=0.05)
