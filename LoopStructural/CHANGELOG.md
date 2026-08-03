@@ -1,5 +1,62 @@
 # Changelog
 
+## [1.7.0](https://github.com/Loop3D/LoopStructural/compare/v1.6.28...v1.7.0) (2026-08-03)
+
+
+### Features
+
+* add api registry ([847634f](https://github.com/Loop3D/LoopStructural/commit/847634ff42692d348fdfcda2d7885506e7b28f6e))
+* add recipe serialization methods to GeologicalModel and corresponding tests ([6a56793](https://github.com/Loop3D/LoopStructural/commit/6a5679320549f2ffbaaf2ed46c350ba296f544b6))
+* enhance API stability by registering external symbols and adding stability checks ([c13d11b](https://github.com/Loop3D/LoopStructural/commit/c13d11b3b6287a1675103e5206a7ad32a40c21cc))
+* implement fault cycle detection in geological features ([228a0aa](https://github.com/Loop3D/LoopStructural/commit/228a0aa53a1ffeba11f5dfe77594f0d209b466e4))
+* implement JSON serialization for GeologicalModel with recipe methods and tests ([ca9cab6](https://github.com/Loop3D/LoopStructural/commit/ca9cab6f546eeb1596c0164efae91ac8ed964260))
+* restructuring loopstructural  ([eaedc35](https://github.com/Loop3D/LoopStructural/commit/eaedc35a6234efa3ee695a91f53c8716031eedaf))
+* upgrade bounding box to use origin/maximum and affine transformation ([12f34f1](https://github.com/Loop3D/LoopStructural/commit/12f34f101e83d7159dc489fca227cc6cdb49b799))
+
+
+### Bug Fixes
+
+* add datatypes deprecation ([719763a](https://github.com/Loop3D/LoopStructural/commit/719763a0d334685da2b32a4a427216dbf4c9a32f))
+* build P1Unstructured2d from a bounding box, not just explicit arrays ([758cc8e](https://github.com/Loop3D/LoopStructural/commit/758cc8ef3474483bb5307a0a233ab78a9aae5556))
+* build P2Unstructured2d from a bounding box and add proper value/gradient evaluation ([2197255](https://github.com/Loop3D/LoopStructural/commit/2197255abb534480ce0d6a4f4c1b5ae3229a85f2))
+* build P2UnstructuredTetMesh from a bounding box, not just explicit arrays ([0c8133f](https://github.com/Loop3D/LoopStructural/commit/0c8133f46f7daa0a4e05bffa093e7c3dd960b75e))
+* change TypeError to ValueError for fold_frame validation ([d3aac52](https://github.com/Loop3D/LoopStructural/commit/d3aac52de15ff8879d49439c9574b7cfef5869c1))
+* cleaning up PR ([af7385e](https://github.com/Loop3D/LoopStructural/commit/af7385e62211f440966b9275743428e437eeb25d))
+* **codestyle:** enforcing/checking coding style ([01bcef5](https://github.com/Loop3D/LoopStructural/commit/01bcef59e0df1b19ee1da911d6394949536ef777))
+* correct barycentric coordinate columns and chunking bug in 2D unstructured meshes ([52e0740](https://github.com/Loop3D/LoopStructural/commit/52e0740a30946d0e09bad48012f07de872364e09))
+* correct FaultTopology adjacency bookkeeping and dict round-trip ([fc8bb8b](https://github.com/Loop3D/LoopStructural/commit/fc8bb8b91659856d0cae1111417db90a02facd50))
+* correct get_quadrature_points array shape in P2Unstructured2d ([8ca6b7b](https://github.com/Loop3D/LoopStructural/commit/8ca6b7b9b9b14a3370915eae09bb34c397770a72))
+* correct P2 interpolator gradient constraint indexing and NaN check ([f7047ac](https://github.com/Loop3D/LoopStructural/commit/f7047ac7f50fedb6db7b4a34edff102be4c15f78))
+* don't drop single-point value constraints in P1/P2 interpolators ([38c4f8e](https://github.com/Loop3D/LoopStructural/commit/38c4f8e6b82e1c8b478a66648f5b05206f22d683))
+* ensure isovalues are correctly set for zero input in LoopIsosurfacer.fit() ([2b703ac](https://github.com/Loop3D/LoopStructural/commit/2b703acebbf5123cca06e87e574ca01864af2e57))
+* guard against divide-by-zero in constant norm constraint ([8314164](https://github.com/Loop3D/LoopStructural/commit/8314164b745df97102722614fc9df4f450c9b8e1))
+* harden exception handling and unsafe model deserialization ([e5bece7](https://github.com/Loop3D/LoopStructural/commit/e5bece7f1a8068541fb0fcef01d8f6a96403dcea))
+* implement P2Unstructured2d.evaluate_shape_d2 using self.hessian ([c9c8a8a](https://github.com/Loop3D/LoopStructural/commit/c9c8a8a652ea19d9d26b72c153281f34eb2da129))
+* process disjoint chunks in tetra get_element_for_location ([16c803c](https://github.com/Loop3D/LoopStructural/commit/16c803cf2eb6bedd4d45137e5124876a9ff76b8f))
+* raise clear error for unimplemented GOCAD VSet point export ([2d17fef](https://github.com/Loop3D/LoopStructural/commit/2d17fef62e7a8c03ddda6f678db981e00f4ac2a4))
+* raise instead of silently no-op on unsupported OMF structured grid export ([3d9c1b7](https://github.com/Loop3D/LoopStructural/commit/3d9c1b7572d5dbf5675b36af609930241c6654b0))
+* raise ValueError instead of bare except + BaseException in data setter ([15e1f15](https://github.com/Loop3D/LoopStructural/commit/15e1f15220ebb711bbe148e6f7e5af5ef0fabd2f))
+* reject nan/inf constraints and stop leaking solver_kwargs state ([d16cc38](https://github.com/Loop3D/LoopStructural/commit/d16cc38d3244b1ac12f2488188bd5b1cb2ab6d9b))
+* resolve basement handling in StratigraphicColumn.clear() and improve observer method tracking ([50b207d](https://github.com/Loop3D/LoopStructural/commit/50b207d94af51996107bae043f82ca1acdbfaf97))
+* ruff error fixes ([b9ff94d](https://github.com/Loop3D/LoopStructural/commit/b9ff94d5acaa5855cf1037838a20ba6bab93c565))
+* stop sharing BaseFeature.regions list across instances ([4f1608f](https://github.com/Loop3D/LoopStructural/commit/4f1608fd2ce7ccfb66a6c19c007cd8c2cac0f175))
+* sync __all__ with LoopStructural's actual public API ([b7ce574](https://github.com/Loop3D/LoopStructural/commit/b7ce574dc34adef8e96c27f6b95212f767e68f9e))
+* update parameter name from 'group' to 'groupname' in add_surface_to_geoh5 function ([a0daa26](https://github.com/Loop3D/LoopStructural/commit/a0daa2678da9f42e4202e56e2fe688206b7a8a65))
+* update unconformity handling in GeologicalModel and add performance example for evaluation ([0226b5c](https://github.com/Loop3D/LoopStructural/commit/0226b5cf408df11d002ab51de27e1764924354d5))
+* updating imports for testing ([27c0836](https://github.com/Loop3D/LoopStructural/commit/27c08361a70cafdc6cb81ebe582a475cdfd8a57e))
+* use self.dimensions instead of hardcoded 3D column slicing in P1/P2 constraints ([c9448bc](https://github.com/Loop3D/LoopStructural/commit/c9448bc8da01f3952c21f00d417535aea67d1eda))
+
+
+### Performance Improvements
+
+* vectorize identified per-row Python loops in intrusion and svariogram helpers ([33099f2](https://github.com/Loop3D/LoopStructural/commit/33099f29d1b50323e71761a165643f20b1e97752))
+
+
+### Documentation
+
+* fill placeholder docstrings, fix stale param names, wire utils into API ([2c47646](https://github.com/Loop3D/LoopStructural/commit/2c47646a721917dbe870d5c6ca3fb99336cf320d))
+* update compatibility shims and roadmap for extracted package integration ([3939bb6](https://github.com/Loop3D/LoopStructural/commit/3939bb6be0b7d6036f433b60cd04c22b2e6fb2e4))
+
 ## [1.6.28](https://github.com/Loop3D/LoopStructural/compare/v1.6.27...v1.6.28) (2026-06-03)
 
 
