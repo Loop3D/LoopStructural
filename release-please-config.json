@@ -5,11 +5,13 @@
     },
     "packages/loop_common": {
       "release-type": "python",
-      "component": "loop-common"
+      "component": "loop-common",
+      "release-as": "0.0.1"
     },
     "packages/loop_interpolation": {
       "release-type": "python",
-      "component": "loop-interpolation"
+      "component": "loop-interpolation",
+      "release-as": "0.0.1"
     }
   }
 }
