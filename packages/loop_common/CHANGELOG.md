@@ -1,14 +1,5 @@
 # Changelog
 
-## [0.0.1](https://github.com/Loop3D/LoopStructural/compare/loop-common-v0.0.1...loop-common-v0.0.1) (2026-08-04)
-
-
-### Bug Fixes
-
-* apply chain rule in StructuredGrid2D element gradient ([08e2e19](https://github.com/Loop3D/LoopStructural/commit/08e2e193fa0de78e1cdaed9ef01c7ce90c4b7ce9))
-* apply chain rule in StructuredGrid2D element gradient ([08e2e19](https://github.com/Loop3D/LoopStructural/commit/08e2e193fa0de78e1cdaed9ef01c7ce90c4b7ce9))
-* apply chain rule in StructuredGrid2D element gradient ([3d43f5c](https://github.com/Loop3D/LoopStructural/commit/3d43f5ce1b0de3830ec93b814175414820867f4e)), closes [#289](https://github.com/Loop3D/LoopStructural/issues/289)
-
 ## [0.0.1](https://github.com/Loop3D/LoopStructural/compare/loop-common-v0.0.1...loop-common-v0.0.1) (2026-08-03)
 
 
