@@ -460,6 +460,8 @@ class StructuredGrid2D(BaseSupport):
         T[:, 1, 2] = 1 - local_coords[:, 0]
         T[:, 1, 3] = local_coords[:, 0]
 
+        T[:, 0, :] /= self.step_vector[None, 0]
+        T[:, 1, :] /= self.step_vector[None, 1]
         return vertices, T, elements, inside
 
     def get_element_for_location(
