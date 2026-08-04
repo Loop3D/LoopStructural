@@ -1,7 +1,8 @@
 {
   "packages": {
     "LoopStructural": {
-      "release-type": "python"
+      "release-type": "python",
+      "release-as": "1.7.1"
     },
     "packages/loop_common": {
       "release-type": "python",
