@@ -32,8 +32,8 @@ classifiers = [
     'Programming Language :: Python :: 3.12',
 ]
 dependencies = [
-    "loop-common>=0.1.0,<0.2.0",
-    "loop-interpolation>=0.1.0,<0.2.0",
+    "loop-common>=0.0.1,<0.1.0",
+    "loop-interpolation>=0.0.1,<0.1.0",
     "numpy>=1.18",
     "pandas",
     "scipy",
