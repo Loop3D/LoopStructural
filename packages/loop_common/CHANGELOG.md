@@ -1,5 +1,15 @@
 # Changelog
 
+## [0.0.2](https://github.com/Loop3D/LoopStructural/compare/loop-common-v0.0.1...loop-common-v0.0.2) (2026-08-04)
+
+
+### Bug Fixes
+
+* apply chain rule in StructuredGrid2D element gradient ([08e2e19](https://github.com/Loop3D/LoopStructural/commit/08e2e193fa0de78e1cdaed9ef01c7ce90c4b7ce9))
+* apply chain rule in StructuredGrid2D element gradient ([08e2e19](https://github.com/Loop3D/LoopStructural/commit/08e2e193fa0de78e1cdaed9ef01c7ce90c4b7ce9))
+* apply chain rule in StructuredGrid2D element gradient ([3d43f5c](https://github.com/Loop3D/LoopStructural/commit/3d43f5ce1b0de3830ec93b814175414820867f4e)), closes [#289](https://github.com/Loop3D/LoopStructural/issues/289)
+* remove release-as pin now that loop-common/loop-interpolation have released ([b7f2109](https://github.com/Loop3D/LoopStructural/commit/b7f21093f9e6bdd9001a347c14d1c20ef26f1d57))
+
 ## [0.0.1](https://github.com/Loop3D/LoopStructural/compare/loop-common-v0.0.1...loop-common-v0.0.1) (2026-08-03)
 
 
