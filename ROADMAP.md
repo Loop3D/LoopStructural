@@ -422,6 +422,61 @@ just at release time.
     Closed in hybrid form: core fold interpolation stack now lives in
     `loop_interpolation`, while the QGIS-sensitive `LoopStructural` fold
     module path remains stable as the compatibility entrypoint.
+    **Revised (2026-08-04):** the hybrid form baked fold vocabulary
+    (`FoldEvent`, `fold_orientation`/`fold_axis_w`/…, `fold_function/`)
+    into `loop_interpolation`, a package meant to be generic interpolation
+    math. Split it: `FoldEvent` and `fold_function/` were deleted from
+    `loop_interpolation` in favour of the pre-existing
+    `LoopStructural.modelling.features.fold` originals (never actually
+    superseded — `_folded_feature_builder.py` always imported its
+    `fold_function` from there).
+    First pass introduced `AnisotropicFDInterpolator`/`AnisotropicP1Interpolator`
+    interpolator subclasses for the direction-provider-driven constraints;
+    on review most of what they did (gradient-orthogonality, norm target,
+    directional regularisation) already existed as generic methods on
+    `FiniteDifferenceInterpolator`/`P1Interpolator`
+    (`add_gradient_orthogonal_constraints`, `add_directional_regularisation`),
+    so the subclasses were replaced with plain functions —
+    `add_fd_anisotropy_constraints`/`add_element_anisotropy_constraints` in
+    `loop_interpolation/_anisotropy.py` — that just evaluate a direction
+    provider (`get_directions(points) -> (primary, secondary, normal)`) at
+    the right points and call those existing generic methods; no new
+    interpolator classes or `InterpolatorType` coupling in `loop_interpolation`
+    at all. `LoopStructural/modelling/features/fold/_fold_interpolators.py`
+    adapts `FoldEvent` to the generic direction-provider protocol and
+    defines `DiscreteFoldInterpolator` (a plain `P1Interpolator` subclass
+    keeping the old `fold_weights` vocabulary, calling
+    `add_element_anisotropy_constraints` internally), re-registering it into
+    `loop_interpolation`'s `interpolator_map` so
+    `InterpolatorFactory.create_interpolator("DFI", ...)` still produces a
+    fold-aware interpolator. `LoopStructural.interpolators.DiscreteFoldInterpolator`
+    is resolved lazily (module `__getattr__`) from `modelling.features.fold`
+    to avoid a `LoopStructural.interpolators` <-> `LoopStructural.modelling`
+    import cycle.
+    Known cost: `P1Interpolator.add_gradient_orthogonal_constraints` locates
+    each constraint point's owning element via point-in-mesh search, where
+    the old fold-interpolator code used already-known element indices
+    directly; delegating to it for every element barycentre measurably slows
+    fold-model building (~40% slower full local test suite: ~440s -> ~607s)
+    even though results are unchanged. Not addressed here — would need
+    `add_gradient_orthogonal_constraints` to accept a pre-known `elements`
+    index array to skip the search.
+    **Extended to P2 (2026-08-05):** renamed `add_p1_anisotropy_constraints`
+    to `add_element_anisotropy_constraints` and made it work for
+    `P2Interpolator` too, since both are element/mesh-based (as opposed to
+    `FiniteDifferenceInterpolator`'s node-based grid). This required two
+    real bug fixes in `P2Interpolator`, found because
+    `_geological_feature_builder.py:312` already called
+    `add_gradient_orthogonal_constraints(..., b=B, name=...)` — a signature
+    P2 didn't have: (1) `add_gradient_orthogonal_constraints`'s `B`/target
+    parameter was silently ignored (always forced to zero) and there was no
+    `name` parameter at all — any orthogonal-feature constraint applied to a
+    P2Interpolator would have raised `TypeError`; (2) P2Interpolator never
+    implemented `get_regularisation_sample_points`/
+    `_add_directional_regularisation`, so `add_directional_regularisation`
+    with a non-empty config raised `NotImplementedError` — now backed by
+    `minimise_edge_jumps` (given a `name` parameter too) sampled at shared-face
+    centroids.
   - [x] **2c-12.** Add `DeprecationWarning` re-export shims (pattern:
     `LoopStructural/datatypes/__init__.py`) at every old path whose
     implementation moved, each with a regression test asserting the old

@@ -192,8 +192,8 @@ class DiscreteInterpolator(GeologicalInterpolator):
             return "inequality_value"
         if name.startswith("inequality_pairs"):
             return "inequality_pairs"
-        if name.startswith("fold"):
-            return "fold"
+        if name.startswith("anisotropy"):
+            return "anisotropy"
         if name.startswith("d") and len(name) in (3, 4, 5, 6, 7, 8):
             return "regularisation"
         if inequality:

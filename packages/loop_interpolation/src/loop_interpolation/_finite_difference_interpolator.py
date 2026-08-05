@@ -1234,9 +1234,9 @@ class FiniteDifferenceInterpolator(DiscreteInterpolator):
             Base regularisation weight.
         vector : np.ndarray, shape (n_nodes, 3)
             Direction field evaluated at every grid node
-            (``self.support.nodes``).  Typically the fold normal, fold axis,
-            or deformed-orientation vector returned by
-            ``FoldEvent.get_deformed_orientation``.
+            (``self.support.nodes``), e.g. one of the ``(primary, secondary,
+            normal)`` directions returned by an anisotropy direction
+            provider's ``get_directions`` method.
         name : str
             Label stored with these constraints.
         """

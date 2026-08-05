@@ -27,6 +27,8 @@ __all__ = [
     "SurfeRBFInterpolator",
     "TetMesh",
     "UnStructuredTetMesh",
+    "add_element_anisotropy_constraints",
+    "add_fd_anisotropy_constraints",
 ]
 from loop_common.supports import (
     P1Unstructured2d,
@@ -41,7 +43,6 @@ from loop_common.supports import (
 from loop_interpolation import (
     ConstantNormFDIInterpolator,
     ConstantNormP1Interpolator,
-    DiscreteFoldInterpolator,
     DiscreteInterpolator,
     FiniteDifferenceInterpolator,
     GeologicalInterpolator,
@@ -52,6 +53,8 @@ from loop_interpolation import (
     P2Interpolator,
     PiecewiseLinearInterpolator,
     SurfeRBFInterpolator,
+    add_element_anisotropy_constraints,
+    add_fd_anisotropy_constraints,
     interpolator_map,
     interpolator_string_map,
     support_interpolator_map,
@@ -64,3 +67,16 @@ logger = getLogger(__name__)
 
 # Legacy LoopStructural name kept for backwards compatibility.
 StructuredGridSupport = StructuredGrid
+
+
+def __getattr__(name):
+    # Deferred to avoid a LoopStructural.interpolators <-> LoopStructural.modelling
+    # import cycle: DiscreteFoldInterpolator (the fold-aware P1Interpolator
+    # subclass) lives in modelling.features.fold, which itself depends on
+    # modelling being importable. Resolving it lazily here means this module
+    # can still be imported first, as LoopStructural/__init__.py does.
+    if name == "DiscreteFoldInterpolator":
+        from ..modelling.features.fold import DiscreteFoldInterpolator
+
+        return DiscreteFoldInterpolator
+    raise AttributeError(f"module {__name__!r} has no attribute {name!r}")

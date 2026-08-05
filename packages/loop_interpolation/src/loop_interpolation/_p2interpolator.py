@@ -122,17 +122,24 @@ class P2Interpolator(DiscreteInterpolator):
             self.add_constraints_to_least_squares(A * wt[:, None], B, elements, name="gradient")
 
     def add_gradient_orthogonal_constraints(
-        self, points: np.ndarray, vector: np.ndarray, w=1.0, B=0
+        self,
+        points: np.ndarray,
+        vectors: np.ndarray,
+        w: float = 1.0,
+        b: float = 0,
+        name: str = "gradient orthogonal",
     ):
         """
         Constraints scalar field to be orthogonal to a given vector
 
         Parameters
         ----------
-        position
-        normals
-        w
-        B
+        points : np.darray
+            location to add gradient orthogonal constraint
+        vectors : np.darray
+            vector to be orthogonal to, should be the same shape as points
+        w : double
+        b : np.array
 
         Returns
         -------
@@ -144,12 +151,10 @@ class P2Interpolator(DiscreteInterpolator):
             area = self.support.element_size[elements[inside]]
             wt = np.ones(area.shape[0])
             wt *= w * area
-            A = np.einsum("ijk,ij->ik", grad[inside, :], vector[inside, :])
-            B = np.zeros(A.shape[0])
+            A = np.einsum("ijk,ij->ik", grad[inside, :], vectors[inside, :])
+            B = np.zeros(A.shape[0]) + b
             elements = self.support.elements[elements[inside]]
-            self.add_constraints_to_least_squares(
-                A * wt[:, None], B, elements, name="gradient orthogonal"
-            )
+            self.add_constraints_to_least_squares(A * wt[:, None], B, elements, name=name)
 
     def add_norm_constraints(self, w: float = 1.0):
         points = self.get_norm_constraints()
@@ -232,6 +237,7 @@ class P2Interpolator(DiscreteInterpolator):
         wtfunc: Callable[[np.ndarray], np.ndarray] | None = None,
         vector_func: Callable[[np.ndarray], np.ndarray] | None = None,
         quadrature_points: int | None = None,
+        name: str = "shared element jump",
     ):
         """_summary_
 
@@ -243,6 +249,9 @@ class P2Interpolator(DiscreteInterpolator):
             _description_, by default None
         vector_func : callable, optional
             _description_, by default None
+        name : str, optional
+            label stored with these constraints (suffixed per quadrature
+            point), by default "shared element jump"
         """
         # NOTE: imposes \phi_T1(xi)-\phi_T2(xi) dot n =0
         # iterate over all triangles
@@ -278,8 +287,20 @@ class P2Interpolator(DiscreteInterpolator):
                 np.zeros(const_cp.shape[0]),
                 tri_cp,
                 w=wt,
-                name=f"shared element jump cp{i}",
+                name=f"{name} cp{i}",
             )
+
+    def get_regularisation_sample_points(self) -> np.ndarray:
+        cp, _weight = self.support.get_quadrature_points(npts=1)
+        return cp[:, 0, :]
+
+    def _add_directional_regularisation(
+        self,
+        weight: float,
+        vectors: np.ndarray,
+        name: str = "directional regularisation",
+    ):
+        self.minimise_edge_jumps(w=weight, vector_func=lambda _pts: vectors, name=name)
 
     def evaluate_d2(self, evaluation_points: np.ndarray) -> np.ndarray:
         """Evaluate second derivatives of the interpolant at given points.

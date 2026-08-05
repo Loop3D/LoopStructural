@@ -2868,7 +2868,7 @@ wheels = [
 
 [[package]]
 name = "loop-common"
-version = "0.1.0"
+version = "0.0.2"
 source = { editable = "packages/loop_common" }
 dependencies = [
     { name = "numpy", version = "2.0.2", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.10'" },
@@ -2906,7 +2906,7 @@ provides-extras = ["tests"]
 
 [[package]]
 name = "loop-interpolation"
-version = "0.1.0"
+version = "0.0.1"
 source = { editable = "packages/loop_interpolation" }
 dependencies = [
     { name = "loop-common" },

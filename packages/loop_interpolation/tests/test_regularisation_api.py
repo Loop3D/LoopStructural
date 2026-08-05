@@ -2,12 +2,12 @@ import numpy as np
 import pytest
 from loop_interpolation import (
     DirectionalRegularisation,
-    DiscreteFoldInterpolator,
     FiniteDifferenceInterpolator,
     PiecewiseLinearInterpolator,
     RegularisationConfig,
     StructuredGrid,
     TetMesh,
+    add_element_anisotropy_constraints,
 )
 
 
@@ -99,15 +99,15 @@ def test_shared_directional_regularisation_config_object_is_accepted():
     assert any(name.startswith("config object smoothing") for name in interpolator.constraints)
 
 
-def test_discrete_fold_regularisation_uses_shared_directional_api():
-    class _FoldStub:
-        def get_deformed_orientation(self, points):
-            deformed = _constant_direction(points, direction=(1.0, 0.0, 0.0))
-            axis = _constant_direction(points, direction=(0.0, 1.0, 0.0))
+def test_anisotropic_p1_regularisation_uses_shared_directional_api():
+    class _AnisotropyStub:
+        def get_directions(self, points):
+            primary = _constant_direction(points, direction=(1.0, 0.0, 0.0))
+            secondary = _constant_direction(points, direction=(0.0, 1.0, 0.0))
             normal = _constant_direction(points, direction=(0.0, 0.0, 1.0))
-            return deformed, axis, normal
+            return primary, secondary, normal
 
-    interpolator = DiscreteFoldInterpolator(_make_tet_mesh(), fold=_FoldStub())
+    interpolator = PiecewiseLinearInterpolator(_make_tet_mesh())
     interpolator.setup_interpolator(
         cgw=0.0,
         cpw=0.0,
@@ -115,15 +115,17 @@ def test_discrete_fold_regularisation_uses_shared_directional_api():
         npw=0.0,
         tpw=0.0,
         ipw=0.0,
-        fold_weights={
-            "fold_orientation": None,
-            "fold_axis_w": None,
-            "fold_normalisation": None,
-            "fold_regularisation": [0.1, 0.01, 0.01],
-        },
+    )
+    add_element_anisotropy_constraints(
+        interpolator,
+        _AnisotropyStub(),
+        primary_w=None,
+        secondary_w=None,
+        normal_w=None,
+        regularisation_weights=[0.1, 0.01, 0.01],
     )
 
-    matching = [name for name in interpolator.constraints if "fold regularisation" in name]
+    matching = [name for name in interpolator.constraints if "anisotropy regularisation" in name]
     assert matching
     assert all(interpolator.constraints[name]["matrix"].shape[0] > 0 for name in matching)
 

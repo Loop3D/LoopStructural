@@ -7,6 +7,7 @@ import numpy as np
 import numpy.typing as npt
 
 from ._fourier_series_fold_rotation_angle import FourierSeriesFoldRotationAngleProfile
+from ._lambda_fold_rotation_angle import LambdaFoldRotationAngleProfile
 from ._trigo_fold_rotation_angle import TrigoFoldRotationAngleProfile
 
 

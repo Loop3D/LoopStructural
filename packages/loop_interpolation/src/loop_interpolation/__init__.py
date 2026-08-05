@@ -11,16 +11,10 @@ __all__ = [
     "ConstraintDiagnosticsReport",
     "ConstraintFamilyDiagnostics",
     "DirectionalRegularisation",
-    "DiscreteFoldInterpolator",
     "DiscreteInterpolator",
-    "FDFoldInterpolator",
     "FiniteDifferenceInterpolator",
-    "FoldEvent",
-    "FoldRotationType",
-    "FourierSeriesFoldRotationAngleProfile",
     "GeologicalInterpolator",
     "InterpolatorType",
-    "LambdaFoldRotationAngleProfile",
     "P1Interpolator",
     "P1Unstructured2d",
     "P2Interpolator",
@@ -34,7 +28,9 @@ __all__ = [
     "SurfeRBFInterpolator",
     "TetMesh",
     "UnStructuredTetMesh",
-    "get_fold_rotation_profile",
+    "add_element_anisotropy_constraints",
+    "add_fd_anisotropy_constraints",
+    "resolve_anisotropy_norm_target",
 ]
 from loop_common.logging import get_logger as getLogger
 
@@ -53,17 +49,18 @@ from loop_common.supports import (
     UnStructuredTetMesh,
 )
 
+from ._anisotropy import (
+    add_element_anisotropy_constraints,
+    add_fd_anisotropy_constraints,
+    resolve_anisotropy_norm_target,
+)
 from ._constant_norm import ConstantNormFDIInterpolator, ConstantNormP1Interpolator
 from ._diagnostics import (
     ConstraintDiagnosticsReport,
     ConstraintFamilyDiagnostics,
     RegionCoverageDiagnostics,
 )
-from ._discrete_fold_interpolator import (
-    DiscreteFoldInterpolator,
-)
 from ._discrete_interpolator import DiscreteInterpolator
-from ._fd_fold_interpolator import FDFoldInterpolator
 from ._finite_difference_interpolator import (
     FiniteDifferenceInterpolator,
 )
@@ -107,7 +104,7 @@ interpolator_map = {
     InterpolatorType.BASE: GeologicalInterpolator,
     InterpolatorType.BASE_DISCRETE: DiscreteInterpolator,
     InterpolatorType.FINITE_DIFFERENCE: FiniteDifferenceInterpolator,
-    InterpolatorType.DISCRETE_FOLD: DiscreteFoldInterpolator,
+    InterpolatorType.DISCRETE_FOLD: P1Interpolator,
     InterpolatorType.PIECEWISE_LINEAR: P1Interpolator,
     InterpolatorType.PIECEWISE_QUADRATIC: P2Interpolator,
     InterpolatorType.BASE_DATA_SUPPORTED: GeologicalInterpolator,
@@ -141,12 +138,5 @@ support_interpolator_map = {
     },
 }
 
-from ._fold_event import FoldEvent
 from ._interpolator_builder import InterpolatorBuilder
 from ._interpolator_factory import InterpolatorFactory
-from .fold_function import (
-    FoldRotationType,
-    FourierSeriesFoldRotationAngleProfile,
-    LambdaFoldRotationAngleProfile,
-    get_fold_rotation_profile,
-)

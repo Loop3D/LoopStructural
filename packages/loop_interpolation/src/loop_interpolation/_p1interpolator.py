@@ -193,7 +193,7 @@ class P1Interpolator(DiscreteInterpolator):
         -------
 
         """
-        # can't reset here, clears fold constraints
+        # can't reset here, clears anisotropy constraints
         self.reset()
         regularisation_config = self.resolve_regularisation_config(
             regularisation=kwargs.get("regularisation", None),
