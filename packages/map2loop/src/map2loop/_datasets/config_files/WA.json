@@ -1,0 +1,49 @@
+{
+  "structure": {
+    "orientation_type": "strike",
+    "dipdir_column": "strike",
+    "dip_column": "dip",
+    "description_column": "feature",
+    "bedding_text": "Bed",
+    "overturned_column": "structypei",
+    "overturned_text": "BEOI",
+    "objectid_column": "objectid"
+  },
+  "geology": {
+    "unitname_column": "unitname",
+    "alt_unitname_column": "code",
+    "group_column": "group_",
+    "supergroup_column": "supersuite",
+    "description_column": "descriptn",
+    "minage_column": "min_age_ma",
+    "maxage_column": "max_age_ma",
+    "rocktype_column": "rocktype1",
+    "alt_rocktype_column": "rocktype2",
+    "sill_text": "is a sill",
+    "intrusive_text": "intrusive",
+    "volcanic_text": "volcanic",
+    "objectid_column": "ID",
+    "ignore_lithology_codes": ["cover"]
+  },
+  "fault": {
+    "structtype_column": "feature",
+    "fault_text": "Fault",
+    "dip_null_value": "0",
+    "dipdir_flag": "num",
+    "dipdir_column": "dip_dir",
+    "dip_column": "dip",
+    "orientation_type": "dip direction",
+    "dipestimate_column": "dip_est",
+    "dipestimate_text": "gentle,moderate,steep",
+    "name_column": "name",
+    "objectid_column": "objectid"
+  },
+  "fold": {
+    "structtype_column": "feature",
+    "fold_text": "Fold axial trace",
+    "description_column": "type",
+    "synform_text": "syncline",
+    "foldname_column": "NAME",
+    "objectid_column": "objectid"
+  }
+}
