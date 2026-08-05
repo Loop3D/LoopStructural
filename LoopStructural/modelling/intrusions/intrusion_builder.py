@@ -3,7 +3,6 @@ import pandas as pd
 
 from ...utils import getLogger, rng
 from ..features.builders import BaseBuilder
-from .geometric_scaling_functions import *
 from .intrusion_feature import IntrusionFeature
 
 logger = getLogger(__name__)
@@ -113,45 +112,25 @@ class IntrusionBuilder(BaseBuilder):
     def create_geometry_using_geometric_scaling(
         self, geometric_scaling_parameters, reference_contact_data
     ):
+        """Not currently implemented.
 
-        geometric_scaling_parameters.get("intrusion_type", None)
-        intrusion_length = geometric_scaling_parameters.get("intrusion_length", None)
-        geometric_scaling_parameters.get("inflation_vector", np.array([[0, 0, 1]]))
-        thickness = geometric_scaling_parameters.get("thickness", None)
-
-        if (
-            self.intrusion_frame.builder.intrusion_network_contact == "floor"
-            or self.intrusion_frame.builder.intrusion_network_contact == "base"
-        ):
-            geometric_scaling_parameters.get("inflation_vector", np.array([[0, 0, 1]]))
-        else:
-            geometric_scaling_parameters.get("inflation_vector", np.array([[0, 0, -1]]))
-
-        if intrusion_length is None and thickness is None:
-            raise ValueError(
-                f"No {self.intrusion_frame.builder.intrusion_other_contact} data. Add intrusion_type and intrusion_length (or thickness) to geometric_scaling_parameters dictionary"
-            )
-
-        else:  # -- create synthetic data to constrain interpolation using geometric scaling
-            estimated_thickness = thickness
-            if estimated_thickness is None:
-                raise NotImplementedError("Not implemented")
-                # estimated_thickness = thickness_from_geometric_scaling(
-                #     intrusion_length, intrusion_type
-                # )
-
-            logger.info(
-                f"Building tabular intrusion using geometric scaling parameters: estimated thicknes = {round(estimated_thickness)} meters"
-            )
-            raise NotImplementedError("Not implemented")
-            # (
-            #     other_contact_data_temp,
-            #     other_contact_data_xyz_temp,
-            # ) = contact_pts_using_geometric_scaling(
-            #     estimated_thickness, reference_contact_data, inflation_vector
-            # )
-
-            # return other_contact_data_temp
+        This is meant to synthesise the missing contact (roof or floor) from
+        an estimated thickness (either given directly or derived from
+        empirical length/thickness scaling laws, see
+        ``geometric_scaling_functions.thickness_from_geometric_scaling``) and
+        an inflation vector, via
+        ``geometric_scaling_functions.contact_pts_using_geometric_scaling``.
+        That wiring was never completed, so every call path here always
+        raised ``NotImplementedError`` regardless of what was passed in
+        (see ``INTRUSIONS.md`` finding 2). Raising immediately, rather than
+        after partially validating parameters, makes that unambiguous.
+        """
+        raise NotImplementedError(
+            "geometric_scaling_parameters is not currently supported: "
+            f"'{self.intrusion_frame.builder.intrusion_other_contact}' contact "
+            "has no data, and synthesising it from geometric scaling is not "
+            "implemented. Provide explicit data for both contacts instead."
+        )
 
     def prepare_data(self, geometric_scaling_parameters):
         """Prepare the data to compute distance thresholds along the frame coordinates.

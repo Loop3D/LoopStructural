@@ -17,6 +17,12 @@ except ImportError:
     logger.error('Scikitlearn cannot be imported')
     raise
 
+# Fixed (not derived from the shared `rng`) so that repeated builds of the
+# same intrusion produce the same contact/fault clustering: `loop_common`'s
+# shared `rng` is a fresh, unseeded `np.random.default_rng()` per process, so
+# routing this through it would make cluster labels vary run-to-run instead.
+_KMEANS_RANDOM_STATE = 0
+
 
 class IntrusionFrameBuilder(StructuralFrameBuilder):
     def __init__(
@@ -228,10 +234,9 @@ class IntrusionFrameBuilder(StructuralFrameBuilder):
 
             # -- use scalar field values to find different contacts
             series_i_vals_mod = series_i_vals.reshape(len(series_i_vals), 1)
-            # TODO create global loopstructural random state variable
-            contact_clustering = KMeans(n_clusters=n_contacts, random_state=0).fit(
-                series_i_vals_mod
-            )
+            contact_clustering = KMeans(
+                n_clusters=n_contacts, random_state=_KMEANS_RANDOM_STATE
+            ).fit(series_i_vals_mod)
 
             for j in range(n_contacts):
                 z = np.ma.masked_not_equal(contact_clustering.labels_, j)
@@ -358,7 +363,9 @@ class IntrusionFrameBuilder(StructuralFrameBuilder):
                 )
                 series_values = series_from_name.evaluate_value(data_points_xyz)
                 series_values_mod = series_values.reshape(len(series_values), 1)
-                contact_clustering = KMeans(n_clusters=2, random_state=0).fit(series_values_mod)
+                contact_clustering = KMeans(
+                    n_clusters=2, random_state=_KMEANS_RANDOM_STATE
+                ).fit(series_values_mod)
 
                 # contact 0
                 z = np.ma.masked_not_equal(contact_clustering.labels_, 0)
@@ -491,7 +498,6 @@ class IntrusionFrameBuilder(StructuralFrameBuilder):
         for fault_i in self.marginal_faults:
             marginal_fault = self.marginal_faults[fault_i].get("structure")
             block = self.marginal_faults[fault_i].get("block")  # hanging wall or foot wall
-            self.marginal_faults[fault_i].get("emplacement_mechanism")
             series_name = self.marginal_faults[fault_i].get("series")
 
             series_values_temp = series_name.evaluate_value(intrusion_frame_c0_data_xyz)
@@ -828,7 +834,6 @@ class IntrusionFrameBuilder(StructuralFrameBuilder):
                 delta_contact = self.marginal_faults[fault_i].get("delta_c", 1)
                 marginal_fault = self.marginal_faults[fault_i].get("structure")
                 block = self.marginal_faults[fault_i].get("block")  # hanging wall or foot wall
-                self.marginal_faults[fault_i].get("emplacement_mechanism")
                 series_name = self.marginal_faults[fault_i].get("series")
 
                 fault_gridpoints_vals = marginal_fault[0].evaluate_value(grid_points)
@@ -976,7 +981,3 @@ class IntrusionFrameBuilder(StructuralFrameBuilder):
 
         self.add_data_from_data_frame(intrusion_frame_data_complete)
         self.update_geometry(intrusion_frame_data_complete[["X", "Y", "Z"]].to_numpy())
-
-    def update(self):
-        for i in range(3):
-            self.builders[i].update()
