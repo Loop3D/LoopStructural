@@ -1,0 +1,50 @@
+{
+    "structure": {
+        "orientation_type": "dip direction",
+        "dipdir_column": "azimuth",
+        "dip_column": "inclinatn",
+        "description_column": "DESCRIPTION",
+        "bedding_text": "bed",
+        "overturned_column": "no_col",
+        "overturned_text": "blah",
+        "objectid_column": "geographic",
+        "desciption_column": "sub_type"
+    },
+    "geology": {
+        "unitname_column": "formatted_",
+        "alt_unitname_column": "abbreviate",
+        "group_column": "no_col",
+        "supergroup_column": "interpreta",
+        "description_column": "text_descr",
+        "minage_column": "no_col",
+        "maxage_column": "no_col",
+        "rocktype_column": "rank",
+        "alt_rocktype_column": "type",
+        "sill_text": "sill",
+        "intrusive_text": "intrusion",
+        "volcanic_text": "volc",
+        "objectid_column": "ID",
+        "ignore_lithology_codes": ["cover"]
+    },
+    "fault": {
+        "structtype_column": "featuretyp",
+        "fault_text": "s",
+        "dip_null_value": "0",
+        "dipdir_flag": "num",
+        "dipdir_column": "no_col",
+        "dip_column": "no_col",
+        "orientation_type": "dip direction",
+        "dipestimate_column": "no_col",
+        "dipestimate_text": "no_col",
+        "name_column": "no_col",
+        "objectid_column": "geographic"
+    },
+    "fold": {
+        "structtype_column": "featuretyp",
+        "fold_text": "fold",
+        "description_column": "no_col",
+        "synform_text": "syn",
+        "foldname_column": "NAME",
+        "objectid_column": "geographic"
+    }
+}

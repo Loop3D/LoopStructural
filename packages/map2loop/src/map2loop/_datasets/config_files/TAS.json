@@ -1,0 +1,50 @@
+{
+    "structure": {
+        "orientation_type": "dip direction",
+        "dipdir_column": "AZIMUTH",
+        "dip_column": "DIP",
+        "description_column": "DESCRIPTION",
+        "bedding_text": "bedding",
+        "overturned_column": "DESCRIPT",
+        "overturned_text": "overturned",
+        "objectid_column": "No_col",
+        "desciption_column": "DESCRIPT"
+    },
+    "geology": {
+        "unitname_column": "SYMBOL",
+        "alt_unitname_column": "SYMBOL",
+        "group_column": "SUPERGROUP",
+        "supergroup_column": "GRP",
+        "description_column": "DESCRIPT",
+        "minage_column": "MINAGE",
+        "maxage_column": "MAXAGE",
+        "rocktype_column": "No_col",
+        "alt_rocktype_column": "No_col",
+        "sill_text": "sill",
+        "intrusive_text": "granit",
+        "volcanic_text": "volc",
+        "objectid_column": "ID",
+        "ignore_lithology_codes": ["cover"]
+    },
+    "fault": {
+        "structtype_column": "TYPE",
+        "fault_text": "ault",
+        "dip_null_value": "0",
+        "dipdir_flag": "num",
+        "dipdir_column": "No_col",
+        "dip_column": "No_col",
+        "orientation_type": "dip direction",
+        "dipestimate_column": "No_col",
+        "dipestimate_text": "No_col",
+        "name_column": "No_col",
+        "objectid_column": "No_col"
+    },
+    "fold": {
+        "structtype_column": "TYPE",
+        "fold_text": "form",
+        "description_column": "TYPE",
+        "synform_text": "syn",
+        "foldname_column": "NAME",
+        "objectid_column": "No_col"
+    }
+}
