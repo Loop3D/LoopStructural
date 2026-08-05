@@ -6,16 +6,21 @@ permissions:
   contents: read
 
 jobs:
-  # loop_common/loop_interpolation (ROADMAP.md Stage 2) are workspace-local
-  # deps of LoopStructural (see [tool.uv.sources] in pyproject.toml). They
-  # must land on PyPI before the LoopStructural sdist below is uploaded, or
-  # `pip install LoopStructural` breaks for anyone not using uv.
+  # loop_common/loop_interpolation/loopstructural_visualisation are
+  # workspace-local deps of LoopStructural (see [tool.uv.sources] in
+  # pyproject.toml) — loop_common/loop_interpolation are runtime deps,
+  # loopstructural_visualisation backs the `visualisation`/`docs` extras.
+  # They must land on PyPI before the LoopStructural sdist below is
+  # uploaded, or `pip install LoopStructural[...]` breaks for anyone not
+  # using uv. map2loop (ROADMAP.md Stage 4, outcome 7) has no such reverse
+  # dependency — it rides in the same matrix purely for its own independent
+  # PyPI publishing, not for a gating reason.
   make_sdist_packages:
     name: Make SDist (${{ matrix.package }})
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        package: [loop_common, loop_interpolation]
+        package: [loop_common, loop_interpolation, map2loop, loopstructural_visualisation]
     steps:
       - uses: actions/checkout@v4
 
@@ -36,7 +41,7 @@ jobs:
     runs-on: "ubuntu-latest"
     strategy:
       matrix:
-        package: [loop_common, loop_interpolation]
+        package: [loop_common, loop_interpolation, map2loop, loopstructural_visualisation]
     steps:
       - uses: actions/download-artifact@v4
         with:

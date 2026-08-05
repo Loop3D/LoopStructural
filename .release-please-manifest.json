@@ -1,5 +1,7 @@
 {
   "LoopStructural": "1.7.0",
   "packages/loop_common": "0.0.2",
-  "packages/loop_interpolation": "0.0.1"
+  "packages/loop_interpolation": "0.0.1",
+  "packages/map2loop": "3.3.1",
+  "packages/loopstructural_visualisation": "0.1.17"
 }
