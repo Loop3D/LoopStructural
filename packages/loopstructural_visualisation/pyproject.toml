@@ -1,0 +1,50 @@
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "loopstructuralvisualisation"
+description = "3D geological modelling visualisation for LoopStructural"
+dynamic = ["version"]
+requires-python = ">=3.9"
+authors = [{ name = "Lachlan Grose", email = "lachlan.grose@monash.edu" }]
+readme = "README.md"
+license = { text = "MIT" }
+keywords = [
+    "earth sciences",
+    "geology",
+    "3-D modelling",
+    "structural geology",
+    "uncertainty",
+]
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "Intended Audience :: Science/Research",
+    "Topic :: Scientific/Engineering :: Information Analysis",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: Microsoft :: Windows",
+    "Operating System :: POSIX",
+    "Operating System :: MacOS",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+]
+dependencies = ["numpy>=1.18", "pyvista>=0.42", "LoopStructural>=1.6.17"]
+
+[project.optional-dependencies]
+jupyter = ["pyvista[jupyter]"]
+all = ["pyvista[all]"]
+tests = ["pytest"]
+
+[project.urls]
+Documentation = "https://Loop3d.org/LoopStructural/"
+"Bug Tracker" = "https://github.com/loop3d/loopstructural-visualisation/issues"
+"Source Code" = "https://github.com/loop3d/loopstructural-visualisation"
+
+[tool.setuptools.dynamic]
+version = { attr = "loopstructuralvisualisation.version.__version__" }
+
+[tool.setuptools.packages.find]
+where = ["src"]
+include = ["loopstructuralvisualisation", "loopstructuralvisualisation.*"]
