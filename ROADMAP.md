@@ -457,7 +457,28 @@ just at release time.
   using the Stage 3 YAML schema as the serialization contract and the
   `GeologicalModel` API as a compat facade.
 - [ ] **Stage 6 — Intrusion workflow (outcome 8).** Dedicated design
-  discussion once the graph backend lands.
+  discussion once the graph backend lands. `INTRUSIONS.md` (added
+  2026-08-05) is the input for that discussion: a full review of the
+  current module (bugs, dead code, design smells), a user guide for the
+  data/parameters it actually requires, and a phased hardening plan
+  (A: fix/delete dead code, B: validate the data contract, C: cover
+  `intrusion_steps`/`marginal_faults` with tests before touching them,
+  D: the larger simplification — split the god-object builder, fix the
+  conceptual-model calling convention, decide the fate of the shortest-path
+  method). **Phases A-C done 2026-08-05** (didn't need to wait for Stage 5):
+  fixed a silently-dropped build weight (`gxygz`/`gyxgz` typo), deleted
+  confirmed dead code, made `geometric_scaling_parameters` fail fast with a
+  clear message, added data-contract validation at the
+  `create_and_add_intrusion` boundary, and added the first-ever test/example
+  for `marginal_faults`. Attempting the same for `intrusion_steps` surfaced
+  a real regression: it no longer works at all against the current
+  `StratigraphicColumn` object (an unrelated earlier refactor moved that API
+  from a nested dict to an object with different lookup semantics, and
+  nothing updated the intrusions module to match) — pinned by a test rather
+  than fixed, since fixing it for real is a Phase D design decision, not a
+  mechanical patch. Full detail in `INTRUSIONS.md`'s finding 1 and its
+  Phase A-C status notes. Phase D remains the open item for the dedicated
+  discussion.
 
 ## Status log
 
