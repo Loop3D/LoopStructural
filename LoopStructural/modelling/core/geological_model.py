@@ -1402,6 +1402,50 @@ class GeologicalModel:
             **kwargs,
         )
 
+    def _validate_intrusion_inputs(
+        self,
+        intrusion_name,
+        intrusion_frame_name,
+        intrusion_data,
+        intrusion_frame_data,
+        intrusion_frame_parameters,
+    ):
+        """Fail fast, at the `create_and_add_intrusion` boundary, with a clear
+        message naming the missing piece -- instead of a bare `KeyError`
+        several calls deep inside `IntrusionFrameBuilder`/`IntrusionBuilder`
+        once building has already started. See ``INTRUSIONS.md`` finding 4.
+        """
+        if intrusion_data.empty:
+            raise ValueError(
+                f"No data found for intrusion '{intrusion_name}': check that "
+                "model.data contains rows with feature_name == "
+                f"'{intrusion_name}'"
+            )
+        if intrusion_frame_data.empty:
+            raise ValueError(
+                f"No data found for intrusion frame '{intrusion_frame_name}': "
+                "check that model.data contains rows with feature_name == "
+                f"'{intrusion_frame_name}'"
+            )
+        required_columns = ["intrusion_contact_type", "intrusion_side"]
+        missing_columns = [c for c in required_columns if c not in intrusion_data.columns]
+        if missing_columns:
+            raise ValueError(
+                f"Intrusion data for '{intrusion_name}' is missing required "
+                f"column(s) {missing_columns}: 'intrusion_contact_type' marks "
+                "each point as 'roof'/'top' or 'floor'/'base', and "
+                "'intrusion_side' (boolean) marks points used to constrain "
+                "the lateral extent"
+            )
+        contact_anisotropies = intrusion_frame_parameters.get("contact_anisotropies")
+        if not contact_anisotropies:
+            raise ValueError(
+                "intrusion_frame_parameters['contact_anisotropies'] is "
+                "required: provide a non-empty list of series-type features "
+                "to use as the inflation-gradient proxy for the intrusion "
+                "frame's coordinate 0"
+            )
+
     def _build_intrusion(
         self,
         intrusion_name,
@@ -1458,6 +1502,14 @@ class GeologicalModel:
         intrusion_data = self.data[self.data["feature_name"] == intrusion_name].copy()
         intrusion_frame_data = self.data[self.data["feature_name"] == intrusion_frame_name].copy()
 
+        self._validate_intrusion_inputs(
+            intrusion_name,
+            intrusion_frame_name,
+            intrusion_data,
+            intrusion_frame_data,
+            intrusion_frame_parameters,
+        )
+
         # -- get variables for intrusion frame interpolation
         gxxgz = kwargs.get("gxxgz", 0)
         gxxgy = kwargs.get("gxxgy", 0)
@@ -1496,7 +1548,7 @@ class GeologicalModel:
             nelements=nelements,
             w2=weights[0],
             w1=weights[1],
-            gxygz=weights[2],
+            gyxgz=weights[2],
         )
 
         intrusion_frame = intrusion_frame_builder.frame

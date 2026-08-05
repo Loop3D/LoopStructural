@@ -285,7 +285,6 @@ allow-dict-calls-with-keyword-arguments = true
 "LoopStructural/modelling/intrusions/intrusion_feature.py" = ["D", "ANN"]
 "LoopStructural/modelling/intrusions/intrusion_frame.py" = ["D", "ANN"]
 "LoopStructural/modelling/intrusions/intrusion_frame_builder.py" = ["D", "ANN"]
-"LoopStructural/modelling/intrusions/intrusion_support_functions.py" = ["D", "ANN"]
 "LoopStructural/utils/__init__.py" = ["D", "ANN"]
 "LoopStructural/utils/_api_registry.py" = ["D", "ANN"]
 "LoopStructural/utils/_log_sinks.py" = ["D", "ANN"]
