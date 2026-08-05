@@ -1,0 +1,50 @@
+{
+    "structure": {
+        "orientation_type": "dip direction",
+        "dipdir_column": "azimuth",
+        "dip_column": "dip_plunge",
+        "description_column": "DESCRIPTION",
+        "bedding_text": "BEDDING",
+        "overturned_column": "facing",
+        "overturned_text": "DOWN",
+        "objectid_column": "Feature ID",
+        "desciption_column": "structure"
+    },
+    "geology": {
+        "unitname_column": "stratigrap",
+        "alt_unitname_column": "ru_name",
+        "group_column": "parent_na",
+        "supergroup_column": "parent_na",
+        "description_column": "rock_type",
+        "minage_column": "top_minim",
+        "maxage_column": "base_maxi",
+        "rocktype_column": "intrusive",
+        "alt_rocktype_column": "lith_summ",
+        "sill_text": "sill",
+        "intrusive_text": "Y",
+        "volcanic_text": "VOLCANIC",
+        "objectid_column": "ID",
+        "ignore_lithology_codes": ["cover"]
+    },
+    "fault": {
+        "structtype_column": "type",
+        "fault_text": "Fault",
+        "dip_null_value": "0",
+        "dipdir_flag": "num",
+        "dipdir_column": "dip_dir",
+        "dip_column": "dip",
+        "orientation_type": "dip direction",
+        "dipestimate_column": "dip_est",
+        "dipestimate_text": "gentle,moderate,steep",
+        "name_column": "name",
+        "objectid_column": "Feature ID"
+    },
+    "fold": {
+        "structtype_column": "type",
+        "fold_text": "Fold",
+        "description_column": "id_desc",
+        "synform_text": "Syncline",
+        "foldname_column": "NAME",
+        "objectid_column": "Feature ID"
+    }
+}
