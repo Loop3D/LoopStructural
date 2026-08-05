@@ -451,8 +451,77 @@ just at release time.
   - [x] **3c — Serialization API + fixtures.** Add read/write helpers and
     golden tests that prove both 3a and 3b stay aligned with the current
     `GeologicalModel` API.
-- [ ] **Stage 4 — Bring in `loopresources` + `map2loop` (outcomes 5, 7).**
-  Workspace packages, now that the pattern is proven internally in Stage 2.
+- [x] **Stage 4 — Bring in `map2loop` + `loopstructural-visualisation`
+  (outcomes 5, 7).** Workspace packages, now that the pattern is proven
+  internally in Stage 2. `loopresources` was already attempted on branch
+  `lachlan/add-loop-resources` (commit `db67e6c0`) but that branch was never
+  merged to `master` — a prior status-log note here incorrectly claimed it
+  was done; corrected 2026-08-05. `packages/loopresources` on disk currently
+  contains only stray `__pycache__`/`.egg-info` left over from checking that
+  branch out and back, with zero tracked source — landing it for real is
+  follow-up work, not done in this pass.
+  - `packages/map2loop`: ported from `Loop3D/map2loop` (`master`,
+    commit `078f8a6d`), src-layout, own test suite brought over (78 passed
+    locally where GDAL bindings aren't needed). Hard-depends on `osgeo`/GDAL
+    at import time, which has no pip-installable wheel on Windows/macOS
+    (confirmed: PyPI `gdal` sdist fails to build without system headers) —
+    upstream itself only tests via conda for this reason. Given
+    `.github/workflows/packages.yml` is uv/pip-based, `map2loop` gets its
+    own CI job (`map2loop-test`) scoped to `ubuntu-latest` with an
+    apt-installed `libgdal-dev`, rather than joining the cross-platform
+    `packages-test` matrix. Does not depend on `LoopStructural`/`loop_common`
+    (confirmed standalone) — no `[tool.uv.sources]` entry needed. `loop_common`
+    type-reuse audit: no swap made. Its `bounding_box` is a plain geographic
+    extent `dict`, architecturally unrelated to `loop_common.geometry
+    .BoundingBox` (an interpolation-mesh local/global-frame transform
+    object); its structural-measurement data stays in GeoDataFrame columns,
+    no custom point/orientation class to swap; its ad-hoc `print()` calls
+    sit alongside its own already-used `map2loop.logging` module, so routing
+    through `loop_common.logging` instead would mean adding `loop-common` as
+    a new hard dependency for a cosmetic swap — not made.
+  - `packages/loopstructural_visualisation`: ported from
+    `Loop3D/loopstructural-visualisation` (`main`, commit `df79dc5`),
+    moved to this repo's `src`-layout convention (import name
+    `loopstructuralvisualisation` unchanged). Added to `[tool.uv.sources]`
+    as `loopstructuralvisualisation = { workspace = true }` (it already backs
+    root `pyproject.toml`'s `visualisation`/`docs` extras) — this in turn
+    required adding `LoopStructural = { workspace = true }` too, since the
+    package depends on `LoopStructural` itself and uv treats the workspace
+    root as an implicit member once any member depends on it by name (same
+    fix already recorded, unmerged, on the `lachlan/add-loop-resources`
+    branch). Had **zero existing tests upstream**; added a minimal
+    import-smoke test (`tests/test_import.py`) rather than leaving the CI
+    matrix step with nothing to run — real behavioral coverage is still a
+    gap. `loop_common` audit: one real swap (a bare `print()` in the
+    trame-UI import guard now goes through `LoopStructural.utils.getLogger`);
+    two flagged-not-forced items — `_3d_viewer.py` keeps importing
+    `BoundingBox`/`ValuePoints`/`VectorPoints` via the deprecated
+    `LoopStructural.datatypes` shim rather than `.geometry` directly, since
+    `.geometry` doesn't exist in any published `LoopStructural` release yet
+    and the package's declared floor is `>=1.6.17` (cosmetic cost: an extra
+    deprecation-warning hop within this workspace, confirmed harmless);
+    `_2d_viewer.py`'s `np.zeros((2, 2))` 2D map-extent representation was
+    left alone rather than forced into `loop_common.geometry.BoundingBox`,
+    which is documented elsewhere in this file as 3D-only.
+  - Wired both into `.github/workflows/pypi.yml` (sdist build + PyPI
+    upload — `loopstructural_visualisation` for the same "must land before
+    the root sdist" reason `loop_common`/`loop_interpolation` are there;
+    `map2loop` rides along for its own independent publishing, no gating
+    relationship), `release-please-config.json` +
+    `.release-please-manifest.json` (new components `map2loop` and
+    `loopstructuralvisualisation`, the latter using release-please's
+    `extra-files` mechanism to bump `version.py`'s `__version__` since that
+    package uses `dynamic = ["version"]` rather than a static pyproject
+    version field), and `pyproject.toml`'s ruff `per-file-ignores` (D/ANN
+    grandfathered for both, matching the loop_common/loop_interpolation
+    precedent — `ruff check` on both surfaced ~272 default-ruleset findings,
+    mostly import-sort/pyupgrade noise typical of freshly-ported external
+    code; `linter.yml` runs with `--fix --exit-zero` and opens an auto-PR
+    rather than blocking, so this isn't a merge blocker, just a known
+    pile left for that auto-PR / a future dedicated pass, same as Stage 2's
+    equivalent note).
+  - Full `tests/unit` re-run after all of the above: 695 passed, 4 skipped,
+    zero regressions.
 - [ ] **Stage 5 — Graph backend (outcome 4).** The `2.0` breaking change,
   using the Stage 3 YAML schema as the serialization contract and the
   `GeologicalModel` API as a compat facade.
@@ -750,3 +819,14 @@ just at release time.
   baseline via `git stash`. This is a large improvement on the
   192-failed/458-passed baseline noted above, since most of those failures
   were exactly this `BoundingBox.global_origin` attribute gap.
+- **2026-08-05:** Stage 4 done for `map2loop`/`loopstructural-visualisation`
+  (branch `stage4-map2loop-visualisation`); `loopresources` remains
+  unmerged (see Stage 4 bullet above for the correction to a prior,
+  inaccurate "done" claim about it). Full detail in the Stage 4 bullet
+  above: package ports, the GDAL/CI special-casing `map2loop` needed, the
+  `[tool.uv.sources]` wiring `loopstructural_visualisation` needed (and why
+  it also required adding a `LoopStructural = { workspace = true }` entry),
+  the `loop_common` type-reuse audit outcome for each (one real swap in
+  `loopstructuralvisualisation`, none warranted in `map2loop`), and the
+  release-please/PyPI/ruff wiring. `tests/unit`: 695 passed/4 skipped, zero
+  regressions.

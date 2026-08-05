@@ -2,10 +2,16 @@ name: "📦 Workspace packages"
 
 # Stage 2 of ROADMAP.md (outcome 2): loop_common/loop_interpolation live under
 # packages/ as independent uv-workspace members so the interpolation code is
-# usable outside the LoopStructural framework. This job installs and tests
-# them on their own, separately from the root LoopStructural test suite in
-# tester.yml. loopstructural-test waits on packages-test (needs:) so the root
-# suite only runs once loop_common/loop_interpolation are confirmed working.
+# usable outside the LoopStructural framework. Stage 4 (outcomes 5, 7) added
+# loopstructural_visualisation (packages-test matrix, below) and map2loop
+# (map2loop-test, its own job: map2loop hard-depends on GDAL bindings, which
+# aren't pip-installable on Windows/macOS the way this matrix installs
+# everything else, so it only runs on ubuntu with an apt-installed libgdal —
+# matching map2loop's own upstream CI, which uses conda for the same reason).
+# This job installs and tests packages on their own, separately from the root
+# LoopStructural test suite in tester.yml. loopstructural-test waits on both
+# jobs (needs:) so the root suite only runs once every workspace package is
+# confirmed working.
 
 on:
   push:
@@ -32,7 +38,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        package: [loop_common, loop_interpolation]
+        package: [loop_common, loop_interpolation, loopstructuralvisualisation]
         os: ${{ fromJSON(vars.BUILD_OS)}}
         python-version: ${{ fromJSON(vars.PYTHON_VERSIONS)}}
     steps:
@@ -52,10 +58,54 @@ jobs:
 
       - name: pytest
         run: |
-          uv run pytest packages/${{ matrix.package }}/tests
+          uv run --package ${{ matrix.package }} pytest packages/${{ matrix.package }}/tests
+
+  map2loop-test:
+    # Separate job (not part of the packages-test matrix above): map2loop
+    # imports osgeo/gdal at module load time, which has no pip-installable
+    # wheel on Windows/macOS (confirmed: building GDAL from the PyPI sdist
+    # fails without system libgdal headers). Scoped to ubuntu-latest only,
+    # installing libgdal via apt, mirroring how map2loop's own upstream CI
+    # special-cases GDAL per-OS (it uses conda-forge everywhere). Revisit
+    # widening the OS matrix if/when a reliable cross-platform GDAL install
+    # path is found.
+    name: map2loop (python ${{ matrix.python-version }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ${{ fromJSON(vars.PYTHON_VERSIONS) }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install GDAL system libraries
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y gdal-bin libgdal-dev
+          echo "CPLUS_INCLUDE_PATH=/usr/include/gdal" >> "$GITHUB_ENV"
+          echo "C_INCLUDE_PATH=/usr/include/gdal" >> "$GITHUB_ENV"
+
+      - name: Set up uv
+        uses: astral-sh/setup-uv@v3
+        with:
+          version: "latest"
+
+      - name: Set up Python ${{ matrix.python-version }}
+        run: uv python install ${{ matrix.python-version }}
+
+      - name: Install package with test extras
+        run: |
+          uv sync --package map2loop --extra tests --python ${{ matrix.python-version }}
+          GDAL_VERSION=$(gdal-config --version)
+          uv pip install "gdal==${GDAL_VERSION}"
+
+      - name: pytest
+        run: |
+          uv run --package map2loop pytest packages/map2loop/tests
+
   loopstructural-test:
     name: LoopStructural (python ${{ matrix.python-version }})
-    needs: packages-test
+    needs: [packages-test, map2loop-test]
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
