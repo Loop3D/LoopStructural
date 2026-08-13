@@ -3,7 +3,6 @@ Main entry point for creating a geological model
 """
 from __future__ import annotations
 
-import pathlib
 import warnings
 
 import numpy as np
@@ -11,7 +10,7 @@ import pandas as pd
 
 from LoopStructural import LoopStructuralConfig
 
-from ...geometry import BoundingBox, StructuredGrid
+from ...geometry import BoundingBox
 from ...modelling.features import (
     BaseFeature,
     FeatureType,
@@ -43,6 +42,7 @@ from ..features._feature_converters import (
     convert_feature_to_structural_frame as _convert_feature_to_structural_frame,
 )
 from ._feature_registry import FeatureBuilderRegistry
+from ._model_exporter import ModelExporter
 from ._model_serializer import ModelSerializer
 from .stratigraphic_column import StratigraphicColumn
 
@@ -2259,62 +2259,15 @@ class GeologicalModel:
 
     @public_api(tier="stable")
     def get_fault_surfaces(self, faults: list[str] | None = None):
-        if faults is None:
-            faults = []
-        surfaces = []
-        if len(faults) == 0:
-            faults = self.fault_names()
-
-        for f in faults:
-            surfaces.extend(self.get_feature_by_name(f).surfaces([0], self.bounding_box))
-        return surfaces
+        return ModelExporter.get_fault_surfaces(self, faults=faults)
 
     @public_api(tier="stable")
     def get_stratigraphic_surfaces(self, units: list[str] | None = None, bottoms: bool = True):
-        if units is None:
-            units = []
-        ## TODO change the stratigraphic column to its own class and have methods to get the relevant surfaces
-        surfaces = []
-        units = []
-        if self.stratigraphic_column is None:
-            return []
-        units = self.stratigraphic_column.get_isovalues()
-        units_for_group = {}
-        for name, u in units.items():
-            if u['group'] not in self:
-                logger.warning(f"Group {u['group']} not found in model")
-                continue
-            if u['group'] not in units_for_group:
-                units_for_group[u['group']] = []
-            u['name'] = name
-            units_for_group[u['group']].append(u)
-        for group, us in units_for_group.items():
-            feature = self.get_feature_by_name(group)
-            values = [u['value'] for u in us]
-            colours = [u['colour'] for u in us]
-            names = [u['name'] for u in us]
-            surfaces.extend(
-                feature.surfaces(values, self.bounding_box, name=names, colours=colours)
-            )
-
-        return surfaces
+        return ModelExporter.get_stratigraphic_surfaces(self, units=units, bottoms=bottoms)
 
     @public_api(tier="stable")
     def get_block_model(self, name='block model'):
-        # NOTE: bounding_box.structured_grid() returns loop_common's
-        # interpolation-support StructuredGrid (no properties dict); use
-        # LoopStructural's own geometry StructuredGrid for storing values.
-        grid = StructuredGrid(
-            origin=self.bounding_box.origin,
-            step_vector=self.bounding_box.step_vector,
-            nsteps=self.bounding_box.nsteps,
-            name=name,
-        )
-
-        grid.cell_properties['stratigraphy'] = self.evaluate_model(
-            self.rescale(self.bounding_box.cell_centres())
-        )
-        return grid, self.stratigraphic_ids()
+        return ModelExporter.get_block_model(self, name=name)
 
     @public_api(tier="stable")
     def save(
@@ -2326,47 +2279,15 @@ class GeologicalModel:
         stratigraphic_data=True,
         fault_data=True,
     ):
-        path = pathlib.Path(filename)
-        extension = path.suffix
-        parent = path.parent
-        name = path.stem
-        stratigraphic_surfaces = self.get_stratigraphic_surfaces()
-        if fault_surfaces:
-            for s in self.get_fault_surfaces():
-                ## geoh5 can save everything into the same file
-                if extension == ".geoh5" or extension == '.omf':
-                    s.save(filename)
-                else:
-                    s.save(f'{parent}/{name}_{s.name}{extension}')
-        if stratigraphic_surfaces:
-            for s in self.get_stratigraphic_surfaces():
-                if extension == ".geoh5" or extension == '.omf':
-                    s.save(filename)
-                else:
-                    s.save(f'{parent}/{name}_{s.name}{extension}')
-        if block_model:
-            grid, _ids = self.get_block_model()
-            if extension == ".geoh5" or extension == '.omf':
-                grid.save(filename)
-            else:
-                grid.save(f'{parent}/{name}_block_model{extension}')
-        if stratigraphic_data and self.stratigraphic_column is not None:
-            for group in self.stratigraphic_column:
-                if group == "faults":
-                    continue
-                for data in self.__getitem__(group).get_data():
-                    if extension == ".geoh5" or extension == '.omf':
-                        data.save(filename)
-                    else:
-                        data.save(f'{parent}/{name}_{group}_data{extension}')
-        if fault_data:
-            for f in self.fault_names():
-                for d in self.__getitem__(f).get_data():
-                    if extension == ".geoh5" or extension == '.omf':
-
-                        d.save(filename)
-                    else:
-                        d.save(f'{parent}/{name}_{group}{extension}')
+        ModelExporter.save(
+            self,
+            filename,
+            block_model=block_model,
+            stratigraphic_surfaces=stratigraphic_surfaces,
+            fault_surfaces=fault_surfaces,
+            stratigraphic_data=stratigraphic_data,
+            fault_data=fault_data,
+        )
 
 
 # Wire the built-in feature types up to GeologicalModel.create_and_add_feature
