@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.7.3](https://github.com/Loop3D/LoopStructural/compare/v1.7.2...v1.7.3) (2026-08-14)
+
+
+### Bug Fixes
+
+* remove loopsolver/version.py resurrected by release-please ([#315](https://github.com/Loop3D/LoopStructural/issues/315)) ([ae12958](https://github.com/Loop3D/LoopStructural/commit/ae1295880a3080b965e30e6066987f7d2684edff))
+
 ## [1.7.2](https://github.com/Loop3D/LoopStructural/compare/v1.7.1...v1.7.2) (2026-08-14)
 
 
