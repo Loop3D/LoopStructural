@@ -90,6 +90,9 @@ members = ["packages/*"]
 [tool.uv.sources]
 loop-common = { workspace = true }
 loop-interpolation = { workspace = true }
+loopstructuralvisualisation = { workspace = true }
+map2loop = { workspace = true }
+LoopStructural = { workspace = true }
 
 [tool.pytest.ini_options]
 addopts = "--import-mode=importlib"
