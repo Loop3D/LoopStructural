@@ -202,6 +202,7 @@ class GeologicalFeature(BaseFeature):
             tetrahedron = regular_tetraherdron_for_points(pos, element_scale_parameter)
 
             while not resolved:
+                resolved = True
                 for f in self.faults:
                     v = (
                         f[0]
@@ -215,8 +216,7 @@ class GeologicalFeature(BaseFeature):
                         )
                         element_scale_parameter *= 0.5
                         tetrahedron = regular_tetraherdron_for_points(pos, element_scale_parameter)
-
-                resolved = True
+                        resolved = False
 
             tetrahedron_faulted = self._apply_faults(np.array(tetrahedron.reshape(-1, 3))).reshape(
                 tetrahedron.shape

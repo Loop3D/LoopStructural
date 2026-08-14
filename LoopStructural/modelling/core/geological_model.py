@@ -5,6 +5,7 @@ from __future__ import annotations
 
 import json
 import pathlib
+import warnings
 
 import numpy as np
 import pandas as pd
@@ -830,13 +831,15 @@ class GeologicalModel:
         }
 
         """
+        warnings.warn(
+            "set_stratigraphic_column is deprecated, use model.stratigraphic_column.add_units instead",
+            DeprecationWarning,
+            stacklevel=2,
+        )
         self.stratigraphic_column.clear(basement=False)
         # if the colour for a unit hasn't been specified we can just sample from
         # a colour map e.g. tab20
         logger.info("Adding stratigraphic column to model")
-        raise DeprecationWarning(
-            "set_stratigraphic_column is deprecated, use model.stratigraphic_column.add_units instead"
-        )
         for i, g in enumerate(stratigraphic_column.keys()):
             if g == 'faults':
                 logger.info('Not adding faults to stratigraphic column')
