@@ -1,5 +1,15 @@
 # Changelog
 
+## [1.7.2](https://github.com/Loop3D/LoopStructural/compare/v1.7.1...v1.7.2) (2026-08-14)
+
+
+### Bug Fixes
+
+* keep unprefixed v* tags for the LoopStructural release-please component ([006ae79](https://github.com/Loop3D/LoopStructural/commit/006ae792b561ec0afa3533362c14fb0976479371))
+* keep unprefixed v* tags for the LoopStructural release-please component ([1a038f6](https://github.com/Loop3D/LoopStructural/commit/1a038f6edf4a59bf93a9ee4b2a7299efd51769c3))
+* track LoopStructural version in pyproject.toml instead of version.py ([449f38d](https://github.com/Loop3D/LoopStructural/commit/449f38d2f66dd8da3f47a4c5c1826131c45c9d6f))
+* track LoopStructural version in pyproject.toml instead of version.py ([b90babb](https://github.com/Loop3D/LoopStructural/commit/b90babb1e5b0f0175d4bcda8510de8980144e0de))
+
 ## [1.7.1](https://github.com/Loop3D/LoopStructural/compare/v1.7.0...v1.7.1) (2026-08-14)
 
 
