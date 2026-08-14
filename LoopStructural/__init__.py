@@ -32,9 +32,10 @@ __all__ = [
     "timed_stage",
 ]
 import tempfile
+from importlib.metadata import version
 from pathlib import Path
 
-from .version import __version__
+__version__ = version("LoopStructural")
 
 experimental = False
 ch = logging.StreamHandler()
