@@ -4,6 +4,7 @@ build-backend = 'setuptools.build_meta'
 
 [project]
 name = 'LoopStructural'
+version = '1.7.1'
 description = '3D geological modelling'
 authors = [{ name = 'Lachlan Grose', email = 'lachlan.grose@monash.edu' }]
 readme = 'README.md'
@@ -40,7 +41,6 @@ dependencies = [
     "scikit-image",
     "scikit-learn",
 ]
-dynamic = ['version']
 
 [project.optional-dependencies]
 all = ['loopstructural[inequalities]', 'tqdm']
@@ -71,9 +71,6 @@ docs = [
 Documentation = 'https://Loop3d.org/LoopStructural/'
 "Bug Tracker" = 'https://github.com/loop3d/loopstructural/issues'
 "Source Code" = 'https://github.com/loop3d/loopstructural'
-
-[tool.setuptools.dynamic]
-version = { attr = 'LoopStructural.version.__version__' }
 
 [tool.setuptools.packages.find]
 include = ['LoopStructural', 'LoopStructural.*']
@@ -306,7 +303,6 @@ allow-dict-calls-with-keyword-arguments = true
 "LoopStructural/utils/regions.py" = ["D", "ANN"]
 "LoopStructural/utils/typing.py" = ["D", "ANN"]
 "LoopStructural/utils/utils.py" = ["D", "ANN"]
-"LoopStructural/version.py" = ["D", "ANN"]
 "LoopStructural/visualisation/__init__.py" = ["D", "ANN"]
 # D/ANN are not enforced outside the library package.
 "tests/*" = ["D", "ANN"]
