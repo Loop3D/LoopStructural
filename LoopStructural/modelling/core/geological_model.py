@@ -43,6 +43,7 @@ from ..features._feature_converters import (
 )
 from ._feature_registry import FeatureBuilderRegistry
 from ._model_exporter import ModelExporter
+from ._model_relationships import FeatureRelationshipManager
 from ._model_serializer import ModelSerializer
 from .stratigraphic_column import StratigraphicColumn
 
@@ -543,9 +544,9 @@ class GeologicalModel:
                 self.features.append(feature)
                 self.feature_name_index[feature.name] = len(self.features) - 1
                 logger.info(f"Adding {feature.name} to model at location {len(self.features)}")
-        self._add_domain_fault_above(feature)
+        FeatureRelationshipManager.add_domain_fault_above(self, feature)
         if feature.type == FeatureType.INTERPOLATED:
-            self._add_unconformity_above(feature)
+            FeatureRelationshipManager.add_unconformity_above(self, feature)
         feature.model = self
 
     def data_for_feature(self, feature_name: str) -> pd.DataFrame:
@@ -1413,34 +1414,7 @@ class GeologicalModel:
         -------
 
         """
-        if features is None:
-            features = self.features
-        for f in reversed(features):
-            if isinstance(f, str):
-                f = self.__getitem__(f)
-            if f.type == FeatureType.FAULT:
-                feature_builder.add_fault(f)
-
-    def _add_domain_fault_above(self, feature):
-        """
-        Looks through the feature list and adds any domain faults to the feature. The domain fault masks everything
-        where the fault scalar field is < 0 as being active when added to feature.
-
-        Parameters
-        ----------
-        feature : GeologicalFeatureBuilder
-            the feature being added to the model where domain faults should be added
-
-        Returns
-        -------
-
-        """
-        for f in reversed(self.features):
-            if f.name == feature.name:
-                continue
-            if f.type == "domain_fault":
-                feature.add_region(lambda pos, fault=f: fault.evaluate_value(pos) < 0)
-                break
+        FeatureRelationshipManager.add_faults(self, feature_builder, features=features)
 
     def _add_domain_fault_below(self, domain_fault):
         """
@@ -1458,40 +1432,7 @@ class GeologicalModel:
         -------
 
         """
-        for f in reversed(self.features):
-            if f.name == domain_fault.name:
-                continue
-            f.add_region(lambda pos: domain_fault.evaluate_value(pos) > 0)
-            if f.type == FeatureType.UNCONFORMITY:
-                break
-
-    def _add_unconformity_above(self, feature):
-        """
-
-        Adds a region to the feature to prevent the value from being
-        interpolated where the unconformities exists above e.g.
-        if there is another feature above and the unconformity is at 0
-        then the features added below (after) will only be visible where the
-        uncomformity is <0
-
-        Parameters
-        ----------
-        feature - GeologicalFeature
-
-        Returns
-        -------
-
-        """
-
-        if feature.type == FeatureType.FAULT:
-            return
-        for f in reversed(self.features):
-            if f.type == FeatureType.UNCONFORMITY and f.name != feature.name:
-                logger.info(f"Adding {f.name} as unconformity to {feature.name}")
-                feature.add_region(f)
-            if f.type == FeatureType.ONLAPUNCONFORMITY and f.name != feature.name:
-                feature.add_region(f)
-                break
+        FeatureRelationshipManager.add_domain_fault_below(self, domain_fault)
 
     @public_api(tier="stable")
     def add_unconformity(
@@ -1513,28 +1454,7 @@ class GeologicalModel:
             unconformity feature
 
         """
-        logger.debug(f"Adding {feature.name} as unconformity at {value}")
-        if feature is None:
-            logger.warning("Cannot add unconformtiy, base feature is None")
-            return
-        # look backwards through features and add the unconformity as a region until
-        # we get to an unconformity
-        uc_feature = UnconformityFeature(feature, value)
-        feature.add_region(uc_feature.inverse())
-        for f in reversed(self.features):
-            if f.type == FeatureType.UNCONFORMITY:
-                logger.debug(f"Reached unconformity {f.name}")
-                break
-            logger.debug(f"Adding {uc_feature.name} as unconformity to {f.name}")
-            if f.type == FeatureType.FAULT or f.type == FeatureType.INACTIVEFAULT:
-                continue
-            if f == feature:
-                continue
-            else:
-                f.add_region(uc_feature)
-        # now add the unconformity to the feature list
-        self._add_feature(uc_feature, index=index)
-        return uc_feature
+        return FeatureRelationshipManager.add_unconformity(self, feature, value, index=index)
 
     @public_api(tier="stable")
     def add_onlap_unconformity(
@@ -1556,20 +1476,7 @@ class GeologicalModel:
             the created unconformity
 
         """
-        feature.regions = []
-        uc_feature = UnconformityFeature(feature, value, False, onlap=True)
-        feature.add_region(uc_feature.inverse())
-        for f in reversed(self.features):
-            if f.type in (FeatureType.UNCONFORMITY, FeatureType.ONLAPUNCONFORMITY):
-                logger.debug(f"Reached unconformity {f.name}")
-                break
-            if f.type == FeatureType.FAULT or f.type == FeatureType.INACTIVEFAULT:
-                continue
-            if f != feature:
-                f.add_region(uc_feature)
-        self._add_feature(uc_feature.inverse(), index=index)
-
-        return uc_feature
+        return FeatureRelationshipManager.add_onlap_unconformity(self, feature, value, index=index)
 
     @public_api(tier="provisional")
     def add_fold_to_feature(
