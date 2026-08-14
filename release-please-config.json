@@ -2,7 +2,8 @@
   "packages": {
     ".": {
       "release-type": "python",
-      "component": "LoopStructural"
+      "component": "LoopStructural",
+      "include-component-in-tag": false
     },
     "packages/loop_common": {
       "release-type": "python",
