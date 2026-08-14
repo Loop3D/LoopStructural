@@ -18,13 +18,7 @@
     },
     "packages/loopstructural_visualisation": {
       "release-type": "python",
-      "component": "loopstructuralvisualisation",
-      "extra-files": [
-        {
-          "type": "generic",
-          "path": "src/loopstructuralvisualisation/version.py"
-        }
-      ]
+      "component": "loopstructuralvisualisation"
     }
   }
 }
