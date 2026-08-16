@@ -11,6 +11,8 @@ the CI-checked stable API surface -- and dispatch through
 bottom of ``geological_model.py``).
 """
 
+from __future__ import annotations
+
 import numpy as np
 import pandas as pd
 
