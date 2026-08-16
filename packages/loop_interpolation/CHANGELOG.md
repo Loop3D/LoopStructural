@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.0.2](https://github.com/Loop3D/LoopStructural/compare/loop-interpolation-v0.0.1...loop-interpolation-v0.0.2) (2026-08-14)
+
+
+### Bug Fixes
+
+* remove loopsolver/version.py resurrected by release-please ([#315](https://github.com/Loop3D/LoopStructural/issues/315)) ([ae12958](https://github.com/Loop3D/LoopStructural/commit/ae1295880a3080b965e30e6066987f7d2684edff))
+
 ## [0.0.1](https://github.com/Loop3D/LoopStructural/compare/loop-interpolation-v0.0.1...loop-interpolation-v0.0.1) (2026-08-03)
 
 

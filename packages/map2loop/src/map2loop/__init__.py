@@ -1,10 +1,8 @@
 import logging
-from importlib.metadata import version
 from map2loop.logging import loggers, ch
 
 from .project import Project
-
-__version__ = version("map2loop")
+from .version import __version__
 
 import warnings  # TODO: convert warnings to logging
 from packaging import (
