@@ -38,7 +38,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        package: [loop_common, loop_interpolation, loopstructuralvisualisation]
+        package: [loop_common, loop_interpolation, loopstructural_visualisation]
         os: ${{ fromJSON(vars.BUILD_OS)}}
         python-version: ${{ fromJSON(vars.PYTHON_VERSIONS)}}
     steps:
