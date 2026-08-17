@@ -1,5 +1,19 @@
 # Changelog
 
+## [0.2.0](https://github.com/Loop3D/LoopStructural/compare/loopstructuralvisualisation-v0.1.17...loopstructuralvisualisation-v0.2.0) (2026-08-17)
+
+
+### Features
+
+* add loopstructural-visualisation as packages/loopstructural_visualisation workspace package ([#301](https://github.com/Loop3D/LoopStructural/issues/301)) ([c26d59a](https://github.com/Loop3D/LoopStructural/commit/c26d59a17a5dcd87404f69566d42a7e1e6a8a9cc))
+* wire map2loop and loopstructural_visualisation into the workspace ([#303](https://github.com/Loop3D/LoopStructural/issues/303)) ([4b61825](https://github.com/Loop3D/LoopStructural/commit/4b61825c3bdaa7f9c348817044b279a47a7b2f0e))
+
+
+### Miscellaneous Chores
+
+* release 1.6.4 ([f06616f](https://github.com/Loop3D/LoopStructural/commit/f06616f8fac0ca3cfc58377524245952f56e686b))
+* release 1.6.5 ([246e48d](https://github.com/Loop3D/LoopStructural/commit/246e48d86a99e9d1e96ab9a2d9567374ffcf8622))
+
 ## [0.1.17](https://github.com/Loop3D/loopstructural-visualisation/compare/v0.1.16...v0.1.17) (2025-08-14)
 
 
