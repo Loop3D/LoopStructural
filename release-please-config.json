@@ -15,11 +15,13 @@
     },
     "packages/map2loop": {
       "release-type": "python",
-      "component": "map2loop"
+      "component": "map2loop",
+      "release-as": "3.4.0"
     },
     "packages/loopstructural_visualisation": {
       "release-type": "python",
-      "component": "loopstructuralvisualisation"
+      "component": "loopstructuralvisualisation",
+      "release-as": "0.2.0"
     }
   }
 }
