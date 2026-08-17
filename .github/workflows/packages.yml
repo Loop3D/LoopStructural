@@ -33,12 +33,21 @@ permissions:
 
 jobs:
   packages-test:
-    name: ${{ matrix.package }} (python ${{ matrix.python-version }})
+    # matrix.package.name is the uv/PyPI package name (as declared in each
+    # package's pyproject.toml `[project] name`); matrix.package.dir is its
+    # directory under packages/. These differ for loopstructuralvisualisation:
+    # its published/import name has no separator, but its directory uses an
+    # underscore, and `uv --package` matches on the declared name (with only
+    # hyphen/underscore treated as equivalent, not a missing separator).
+    name: ${{ matrix.package.name }} (python ${{ matrix.python-version }})
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
       matrix:
-        package: [loop_common, loop_interpolation, loopstructural_visualisation]
+        package:
+          - { name: loop_common, dir: loop_common }
+          - { name: loop_interpolation, dir: loop_interpolation }
+          - { name: loopstructuralvisualisation, dir: loopstructural_visualisation }
         os: ${{ fromJSON(vars.BUILD_OS)}}
         python-version: ${{ fromJSON(vars.PYTHON_VERSIONS)}}
     steps:
@@ -54,11 +63,11 @@ jobs:
 
       - name: Install package with test extras
         run: |
-          uv sync --package ${{ matrix.package }} --extra tests --python ${{ matrix.python-version }}
+          uv sync --package ${{ matrix.package.name }} --extra tests --python ${{ matrix.python-version }}
 
       - name: pytest
         run: |
-          uv run --package ${{ matrix.package }} pytest packages/${{ matrix.package }}/tests
+          uv run --package ${{ matrix.package.name }} pytest packages/${{ matrix.package.dir }}/tests
 
   map2loop-test:
     # Separate job (not part of the packages-test matrix above): map2loop
