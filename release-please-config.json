@@ -12,6 +12,14 @@
     "packages/loop_interpolation": {
       "release-type": "python",
       "component": "loop-interpolation"
+    },
+    "packages/map2loop": {
+      "release-type": "python",
+      "component": "map2loop"
+    },
+    "packages/loopstructural_visualisation": {
+      "release-type": "python",
+      "component": "loopstructuralvisualisation"
     }
   }
 }
