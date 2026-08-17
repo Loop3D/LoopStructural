@@ -668,7 +668,7 @@ class StratigraphicColumn(Observable['StratigraphicColumn']):
         surface_values = {}
         for g in reversed(self.get_groups()):
             v = 0
-            for u in g.units:
+            for u in reversed(g.units):
                 surface_values[u.name] = {'value':v,'group':g.name,'colour':u.colour}
                 v += u.thickness
         return surface_values
