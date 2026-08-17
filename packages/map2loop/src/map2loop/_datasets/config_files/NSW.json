@@ -1,0 +1,49 @@
+{
+    "structure": {
+        "orientation_type": "dip direction",
+        "dipdir_column": "azimuth",
+        "dip_column": "dip",
+        "description_column": "DESCRIPTION",
+        "bedding_text": "bedding",
+        "overturned_column": "deform",
+        "overturned_text": "BEOI",
+        "objectid_column": "unique_id",
+        "desciption_column": "codedescpt"
+    },
+    "geology": {
+        "unitname_column": "unit_name",
+        "alt_unitname_column": "nsw_code",
+        "group_column": "sub_provin",
+        "supergroup_column": "province",
+        "description_column": "deposition",
+        "minage_column": "top_end_ag",
+        "maxage_column": "base_start",
+        "rocktype_column": "class",
+        "alt_rocktype_column": "igneous_ty",
+        "sill_text": "sill",
+        "intrusive_text": "intrusive",
+        "volcanic_text": "volcanic",
+        "objectid_column": "ID",
+        "ignore_lithology_codes": ["cover"]},
+    "fault": {
+        "structtype_column": "boundaryty",
+        "fault_text": "Fault",
+        "dip_null_value": "0",
+        "dipdir_flag": "num",
+        "dipdir_column": "faultdipdi",
+        "dip_column": "dip",
+        "orientation_type": "dip direction",
+        "dipestimate_column": "faultdipan",
+        "dipestimate_text": "Moderate,Listric,Steep,Vertical",
+        "name_column": "name",
+        "objectid_column": "unique_id", 
+    },
+    "fold": {
+        "structtype_column": "codedescpt",
+        "fold_text": "cline",
+        "description_column": "codedescpt",
+        "synform_text": "Syncline",
+        "foldname_column": "NAME",
+        "objectid_column": "unique_id"
+    }
+}

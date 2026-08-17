@@ -1,0 +1,58 @@
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "map2loop"
+description = "Generate 3D model data from 2D maps."
+version = "3.3.1"
+requires-python = ">=3.8"
+authors = [{ name = "Loop team" }]
+readme = "README.md"
+license = { text = "MIT" }
+keywords = [
+    "earth sciences",
+    "geology",
+    "3-D modelling",
+    "structural geology",
+    "uncertainty",
+]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Science/Research",
+    "Natural Language :: English",
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Topic :: Scientific/Engineering",
+    "Topic :: Scientific/Engineering :: GIS",
+]
+dependencies = [
+    "numpy",
+    "scipy",
+    "pandas",
+    "geopandas",
+    "shapely>=2",
+    "networkx",
+    "owslib",
+    "loopprojectfile==0.2.2",
+    "beartype",
+    "scikit-learn",
+    "packaging",
+]
+
+[project.urls]
+Documentation = "https://Loop3d.org/map2loop/"
+"Bug Tracker" = "https://github.com/Loop3D/map2loop/issues"
+"Source Code" = "https://github.com/Loop3D/map2loop"
+
+[project.optional-dependencies]
+tests = ["pytest"]
+
+[tool.setuptools.packages.find]
+where = ["src"]
+include = ["map2loop", "map2loop.*"]
+
+[tool.setuptools.package-data]
+map2loop = ["_datasets/geodata_files/hamersley/*"]

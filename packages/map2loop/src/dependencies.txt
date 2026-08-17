@@ -1,0 +1,11 @@
+numpy
+scipy
+pandas
+geopandas
+shapely>=2
+networkx
+owslib
+loopprojectfile==0.2.2
+beartype
+scikit-learn
+packaging
