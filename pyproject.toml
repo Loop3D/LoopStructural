@@ -94,13 +94,6 @@ loopstructuralvisualisation = { workspace = true }
 map2loop = { workspace = true }
 LoopStructural = { workspace = true }
 
-[tool.uv.extra-build-dependencies]
-# gdal is installed with --no-build-isolation-package (see packages.yml) so
-# its setup.py can see the venv's numpy and build the _gdal_array extension;
-# that also means it no longer gets setuptools for free from an isolated
-# build env, so it must be declared here.
-gdal = ["setuptools"]
-
 [tool.pytest.ini_options]
 addopts = "--import-mode=importlib"
 testpaths = ["tests"]

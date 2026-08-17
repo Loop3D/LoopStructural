@@ -106,6 +106,7 @@ jobs:
         run: |
           uv sync --package map2loop --extra tests --python ${{ matrix.python-version }}
           GDAL_VERSION=$(gdal-config --version)
+          uv pip install setuptools
           uv pip install "gdal==${GDAL_VERSION}" --no-build-isolation-package gdal
 
       - name: pytest
