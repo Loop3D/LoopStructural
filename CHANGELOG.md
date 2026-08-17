@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.8.1](https://github.com/Loop3D/LoopStructural/compare/v1.8.0...v1.8.1) (2026-08-17)
+
+
+### Bug Fixes
+
+* make stratigraphic order consistent between methods and add unit test ([#320](https://github.com/Loop3D/LoopStructural/issues/320)) ([f9cf0be](https://github.com/Loop3D/LoopStructural/commit/f9cf0be2dd33f25432ec426ccd2bcf5ebbdaf9d2))
+
 ## [1.8.0](https://github.com/Loop3D/LoopStructural/compare/v1.7.3...v1.8.0) (2026-08-17)
 
 
