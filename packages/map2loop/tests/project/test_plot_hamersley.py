@@ -57,9 +57,12 @@ def test_project_execution():
 def test_timeout_handling():
     # Mock `openURL` in `owslib.util` to raise a ReadTimeout directly
     with patch("owslib.util.openURL"):
-        # Run `test_project_execution` and check if the skip occurs
+        # Run `test_project_execution` and check if the skip occurs. Scoped to
+        # this file so the nested run collects only this test, rather than
+        # falling back to the root pyproject.toml's `testpaths = ["tests"]`
+        # and colliding with the top-level tests/ package of the same name.
         result = pytest.main(
-            ["-q", "--tb=short", "--disable-warnings", "-k", "test_project_execution"]
+            ["-q", "--tb=short", "--disable-warnings", "-k", "test_project_execution", __file__]
         )
         assert (
             result.value == pytest.ExitCode.OK
