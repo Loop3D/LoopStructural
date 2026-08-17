@@ -430,6 +430,20 @@ class TestGroupsAndSummaries:
         assert isovalues["B"]["value"] == 0
         assert isovalues["B"]["group"] == "Group_0"
 
+    def test_get_isovalues_multi_unit_group(self):
+        # Isovalues must match update_unit_values: the base of the oldest
+        # unit in a group is 0, and each unit's thickness gives the base
+        # value of the next (younger) unit.
+        column = StratigraphicColumn()
+        column.clear(basement=False)
+        column.add_unit("A", thickness=10, id=0)
+        column.add_unit("B", thickness=5, id=1)
+        column.add_unit("C", thickness=3, id=2)
+        isovalues = column.get_isovalues()
+        assert isovalues["A"]["value"] == 0
+        assert isovalues["B"]["value"] == 10
+        assert isovalues["C"]["value"] == 15
+
 
 class TestOrderingAndUpdates:
     def test_update_order_reorders_elements(self):
