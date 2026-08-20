@@ -340,8 +340,17 @@ class BaseFeature(metaclass=ABCMeta):
         regions = self.regions
         
         try:
+            # A region can also be a plain callable (e.g. the lambdas
+            # add_domain_fault_below/above attach for a domain-fault crop),
+            # not just another BaseFeature -- those have no .name/.parent,
+            # so getattr(..., None) rather than direct attribute access,
+            # or this raises AttributeError and silently drops every
+            # surface for any feature cropped by a domain fault.
             self.regions = [
-                r for r in self.regions if r.name != self.name and r.parent.name != self.name
+                r
+                for r in self.regions
+                if getattr(r, 'name', None) != self.name
+                and getattr(getattr(r, 'parent', None), 'name', None) != self.name
             ]
 
             callable = lambda xyz: self.evaluate_value(xyz)

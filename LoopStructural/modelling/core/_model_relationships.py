@@ -52,8 +52,14 @@ class FeatureRelationshipManager:
         for f in reversed(model.features):
             if f.name == feature.name:
                 continue
-            if f.type == "domain_fault":
-                feature.add_region(lambda pos, fault=f: fault.evaluate_value(pos) < 0)
+            if f.type == FeatureType.DOMAINFAULT:
+                # A proper Feature-like region (name/parent), not a bare
+                # lambda -- code that walks `self.regions` expecting
+                # Feature-like objects (e.g. BaseFeature.surfaces) would
+                # otherwise raise AttributeError on this region and
+                # silently produce no surfaces for anything a domain fault
+                # crops.
+                feature.add_region(UnconformityFeature(f, 0, sign=True))
                 break
 
     @staticmethod
@@ -70,10 +76,11 @@ class FeatureRelationshipManager:
         domain_fault : GeologicalFeatureBuilder
             the feature being added to the model where domain faults should be added
         """
+        region = UnconformityFeature(domain_fault, 0, sign=False)
         for f in reversed(model.features):
             if f.name == domain_fault.name:
                 continue
-            f.add_region(lambda pos: domain_fault.evaluate_value(pos) > 0)
+            f.add_region(region)
             if f.type == FeatureType.UNCONFORMITY:
                 break
 
@@ -129,8 +136,13 @@ class FeatureRelationshipManager:
         uc_feature = UnconformityFeature(feature, value)
         feature.add_region(uc_feature.inverse())
         for f in reversed(model.features):
-            if f.type == FeatureType.UNCONFORMITY:
-                logger.debug(f"Reached unconformity {f.name}")
+            if f.type == FeatureType.UNCONFORMITY or f.type == FeatureType.DOMAINFAULT:
+                # A domain fault is itself a boundary that already separates
+                # everything below it from what's built afterwards (see
+                # add_domain_fault_below/above) -- so it's a stopping point
+                # here too, the same as an unconformity, rather than
+                # something this unrelated unconformity should crop.
+                logger.debug(f"Reached unconformity/domain fault {f.name}")
                 break
             logger.debug(f"Adding {uc_feature.name} as unconformity to {f.name}")
             if f.type == FeatureType.FAULT or f.type == FeatureType.INACTIVEFAULT:
@@ -165,7 +177,11 @@ class FeatureRelationshipManager:
         uc_feature = UnconformityFeature(feature, value, False, onlap=True)
         feature.add_region(uc_feature.inverse())
         for f in reversed(model.features):
-            if f.type in (FeatureType.UNCONFORMITY, FeatureType.ONLAPUNCONFORMITY):
+            if f.type in (
+                FeatureType.UNCONFORMITY,
+                FeatureType.ONLAPUNCONFORMITY,
+                FeatureType.DOMAINFAULT,
+            ):
                 logger.debug(f"Reached unconformity {f.name}")
                 break
             if f.type == FeatureType.FAULT or f.type == FeatureType.INACTIVEFAULT:
