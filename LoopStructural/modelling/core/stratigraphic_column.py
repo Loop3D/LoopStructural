@@ -661,16 +661,29 @@ class StratigraphicColumn(Observable['StratigraphicColumn']):
             column.add_element(element)
         return column
 
-    def get_isovalues(self) -> dict[str, float]:
+    def get_isovalues(self, where: str = 'bottom') -> dict[str, float]:
         """
         Returns a dictionary of isovalues for the stratigraphic units in the column.
+
+        Parameters
+        ----------
+        where : str, optional
+            'bottom' (default) returns the value at the base of each unit.
+            'top' returns the value at the top of each unit.
         """
+        if where not in ('top', 'bottom'):
+            raise ValueError("Invalid 'where' argument. Use 'top' or 'bottom'.")
         surface_values = {}
         for g in reversed(self.get_groups()):
             v = 0
             for u in reversed(g.units):
-                surface_values[u.name] = {'value':v,'group':g.name,'colour':u.colour}
+                base = v
                 v += u.thickness
+                surface_values[u.name] = {
+                    'value': v if where == 'top' else base,
+                    'group': g.name,
+                    'colour': u.colour,
+                }
         return surface_values
 
     def plot(self,*, ax=None, **kwargs):

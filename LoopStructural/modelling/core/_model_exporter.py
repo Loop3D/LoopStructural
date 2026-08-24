@@ -38,7 +38,7 @@ class ModelExporter:
         units = []
         if model.stratigraphic_column is None:
             return []
-        units = model.stratigraphic_column.get_isovalues()
+        units = model.stratigraphic_column.get_isovalues(where='bottom' if bottoms else 'top')
         units_for_group = {}
         for name, u in units.items():
             if u['group'] not in model:

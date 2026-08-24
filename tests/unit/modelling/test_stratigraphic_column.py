@@ -444,6 +444,25 @@ class TestGroupsAndSummaries:
         assert isovalues["B"]["value"] == 10
         assert isovalues["C"]["value"] == 15
 
+    def test_get_isovalues_where_top_returns_unit_top(self):
+        # where='top' must give each unit's top, i.e. base + thickness --
+        # the same value that where='bottom' (default) gives the next
+        # (younger) unit as its base.
+        column = StratigraphicColumn()
+        column.clear(basement=False)
+        column.add_unit("A", thickness=10, id=0)
+        column.add_unit("B", thickness=5, id=1)
+        column.add_unit("C", thickness=3, id=2)
+        isovalues = column.get_isovalues(where='top')
+        assert isovalues["A"]["value"] == 10
+        assert isovalues["B"]["value"] == 15
+        assert isovalues["C"]["value"] == 18
+
+    def test_get_isovalues_invalid_where_raises(self):
+        column = self._build_two_group_column()
+        with pytest.raises(ValueError):
+            column.get_isovalues(where="middle")
+
 
 class TestOrderingAndUpdates:
     def test_update_order_reorders_elements(self):
