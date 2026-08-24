@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.8.1](https://github.com/Loop3D/LoopStructural/compare/v1.8.0...v1.8.1) (2026-08-24)
+
+
+### Bug Fixes
+
+* make stratigraphic order consistent between methods and add unit test ([#320](https://github.com/Loop3D/LoopStructural/issues/320)) ([f9cf0be](https://github.com/Loop3D/LoopStructural/commit/f9cf0be2dd33f25432ec426ccd2bcf5ebbdaf9d2))
+* update get_isovalues to get top or bottom value ([#322](https://github.com/Loop3D/LoopStructural/issues/322)) ([a0be2d7](https://github.com/Loop3D/LoopStructural/commit/a0be2d71b2a7223746b93c5425535aa73ed686f8))
+
 ## [1.8.0](https://github.com/Loop3D/LoopStructural/compare/v1.7.3...v1.8.0) (2026-08-17)
 
 
