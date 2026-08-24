@@ -1,5 +1,19 @@
 # Changelog
 
+## [3.4.0](https://github.com/Loop3D/LoopStructural/compare/map2loop-v3.3.1...map2loop-v3.4.0) (2026-08-17)
+
+
+### Features
+
+* add map2loop as packages/map2loop workspace package ([#302](https://github.com/Loop3D/LoopStructural/issues/302)) ([e5baa2b](https://github.com/Loop3D/LoopStructural/commit/e5baa2b4beb8e1b7ee861d3641847fe4b2b4a14a))
+* wire map2loop and loopstructural_visualisation into the workspace ([#303](https://github.com/Loop3D/LoopStructural/issues/303)) ([4b61825](https://github.com/Loop3D/LoopStructural/commit/4b61825c3bdaa7f9c348817044b279a47a7b2f0e))
+
+
+### Miscellaneous Chores
+
+* release 1.6.4 ([f06616f](https://github.com/Loop3D/LoopStructural/commit/f06616f8fac0ca3cfc58377524245952f56e686b))
+* release 1.6.5 ([246e48d](https://github.com/Loop3D/LoopStructural/commit/246e48d86a99e9d1e96ab9a2d9567374ffcf8622))
+
 ## [3.3.1](https://github.com/Loop3D/map2loop/compare/v3.3.0...v3.3.1) (2026-01-31)
 
 
