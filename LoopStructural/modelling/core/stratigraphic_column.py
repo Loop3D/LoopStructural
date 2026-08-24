@@ -9,9 +9,11 @@ from LoopStructural.utils._api_registry import public_api
 
 logger = getLogger(__name__)
 logger.info("Imported LoopStructural Stratigraphic Column module")
+
+
 class UnconformityType(enum.Enum):
     """Enumeration for different types of unconformities in a stratigraphic column.
-    
+
     Attributes
     ----------
     ERODE : str
@@ -26,7 +28,7 @@ class UnconformityType(enum.Enum):
 
 class StratigraphicColumnElementType(enum.Enum):
     """Enumeration for different types of elements in a stratigraphic column.
-    
+
     Attributes
     ----------
     UNIT : str
@@ -41,8 +43,8 @@ class StratigraphicColumnElementType(enum.Enum):
 
 class StratigraphicColumnElement:
     """Base class for elements in a stratigraphic column.
-    
-    This class represents a generic element that can be either a stratigraphic unit 
+
+    This class represents a generic element that can be either a stratigraphic unit
     or a topological object such as an unconformity.
 
     Parameters
@@ -132,6 +134,7 @@ class StratigraphicUnit(StratigraphicColumnElement, Observable['StratigraphicUni
         self.id = id
         self.min_value = None  # Minimum scalar field value for the unit
         self.max_value = None  # Maximum scalar field value for the unit
+
     @property
     def id(self):
         """Get the numeric identifier of the unit.
@@ -142,7 +145,7 @@ class StratigraphicUnit(StratigraphicColumnElement, Observable['StratigraphicUni
             The numeric identifier
         """
         return self._id
-    
+
     @property
     def thickness(self):
         """Get the thickness of the unit.
@@ -153,7 +156,7 @@ class StratigraphicUnit(StratigraphicColumnElement, Observable['StratigraphicUni
             The thickness value
         """
         return self._thickness
-    
+
     @thickness.setter
     def thickness(self, value):
         """Set the thickness of the unit and notify observers.
@@ -165,7 +168,7 @@ class StratigraphicUnit(StratigraphicColumnElement, Observable['StratigraphicUni
         """
         self._thickness = value
         self.notify('unit/thickness_updated', unit=self)
-    
+
     @id.setter
     def id(self, value):
         """Set the ID of the unit and notify observers.
@@ -179,6 +182,7 @@ class StratigraphicUnit(StratigraphicColumnElement, Observable['StratigraphicUni
             raise TypeError("ID must be an integer")
         self._id = value
         self.notify('unit/id_updated', unit=self)
+
     def min(self):
         """Return the minimum scalar field value of the unit.
 
@@ -188,7 +192,7 @@ class StratigraphicUnit(StratigraphicColumnElement, Observable['StratigraphicUni
             Minimum value, or 0 if not set
         """
         return self.min_value if self.min_value is not None else 0
-    
+
     def max(self):
         """Return the maximum scalar field value of the unit.
 
@@ -198,7 +202,7 @@ class StratigraphicUnit(StratigraphicColumnElement, Observable['StratigraphicUni
             Maximum value, or infinity if not set
         """
         return self.max_value if self.max_value is not None else np.inf
-    
+
     def to_dict(self):
         """Convert the stratigraphic unit to a dictionary representation.
 
@@ -210,7 +214,13 @@ class StratigraphicUnit(StratigraphicColumnElement, Observable['StratigraphicUni
         colour = self.colour
         if isinstance(colour, np.ndarray):
             colour = colour.astype(float).tolist()
-        return {"name": self.name, "colour": colour, "thickness": self.thickness, 'uuid': self.uuid, 'id': self.id}
+        return {
+            "name": self.name,
+            "colour": colour,
+            "thickness": self.thickness,
+            'uuid': self.uuid,
+            'id': self.id,
+        }
 
     @classmethod
     def from_dict(cls, data):
@@ -237,7 +247,9 @@ class StratigraphicUnit(StratigraphicColumnElement, Observable['StratigraphicUni
         colour = data.get("colour")
         thickness = data.get("thickness", None)
         uuid = data.get("uuid", None)
-        return cls(uuid=uuid, name=name, colour=colour, thickness=thickness, id=data.get("id", None))
+        return cls(
+            uuid=uuid, name=name, colour=colour, thickness=thickness, id=data.get("id", None)
+        )
 
     def __str__(self):
         """Return a string representation of the stratigraphic unit.
@@ -303,9 +315,11 @@ class StratigraphicUnconformity(StratigraphicColumnElement):
         )
         uuid = data.get("uuid", None)
         return cls(uuid=uuid, name=name, unconformity_type=unconformity_type)
+
+
 class StratigraphicGroup:
     """A class representing a group of stratigraphic units.
-    
+
     This class serves as a container for related stratigraphic units and provides
     a placeholder for future group-level functionality.
 
@@ -340,9 +354,9 @@ class StratigraphicGroup:
 
 class StratigraphicColumn(Observable['StratigraphicColumn']):
     """A class representing a stratigraphic column.
-    
-    The stratigraphic column represents a vertical section of the Earth's crust 
-    showing the sequence of rock layers and their relationships, including 
+
+    The stratigraphic column represents a vertical section of the Earth's crust
+    showing the sequence of rock layers and their relationships, including
     unconformities and basement rock.
 
     Attributes
@@ -372,18 +386,16 @@ class StratigraphicColumn(Observable['StratigraphicColumn']):
         if not self.order:
             return 0
         return max([u.id for u in self.order if isinstance(u, StratigraphicUnit)], default=0) + 1
-    
+
     def add_basement(self):
         """Add basement unit and base unconformity to the stratigraphic column.
-        
+
         This method adds the fundamental basement unit with infinite thickness
         and an erosional unconformity at the base of the column.
         """
         self.add_unit(name='Basement', colour='grey', thickness=np.inf)
-        self.add_unconformity(
-            name='Base Unconformity', unconformity_type=UnconformityType.ERODE
-        )
-    
+        self.add_unconformity(name='Base Unconformity', unconformity_type=UnconformityType.ERODE)
+
     def clear(self, basement=True):
         """Clear the stratigraphic column, removing all elements.
 
@@ -397,7 +409,8 @@ class StratigraphicColumn(Observable['StratigraphicColumn']):
         if basement:
             self.add_basement()
         self.notify('column_cleared')
-    def add_unit(self, name,*, colour=None, thickness=None, where='top',id=None):
+
+    def add_unit(self, name, *, colour=None, thickness=None, where='top', id=None):
         if id is None:
             id = self.get_new_id()
         unit = StratigraphicUnit(name=name, colour=colour, thickness=thickness, id=id)
@@ -425,7 +438,7 @@ class StratigraphicColumn(Observable['StratigraphicColumn']):
 
         return False
 
-    def add_unconformity(self, name, *, unconformity_type=UnconformityType.ERODE, where='top' ):
+    def add_unconformity(self, name, *, unconformity_type=UnconformityType.ERODE, where='top'):
         unconformity = StratigraphicUnconformity(
             uuid=None, name=name, unconformity_type=unconformity_type
         )
@@ -466,6 +479,7 @@ class StratigraphicColumn(Observable['StratigraphicColumn']):
                 return unconformity
 
         return None
+
     def get_element_by_uuid(self, uuid):
         """
         Retrieves an element by its uuid from the stratigraphic column.
@@ -475,7 +489,7 @@ class StratigraphicColumn(Observable['StratigraphicColumn']):
                 return element
         raise KeyError(f"No element found with uuid: {uuid}")
 
-    def get_group_for_unit_name(self, unit_name:str) -> StratigraphicGroup | None:
+    def get_group_for_unit_name(self, unit_name: str) -> StratigraphicGroup | None:
         """
         Retrieves the group for a given unit name.
         """
@@ -483,6 +497,7 @@ class StratigraphicColumn(Observable['StratigraphicColumn']):
             if any(unit.name == unit_name for unit in group.units):
                 return group
         return None
+
     def add_element(self, element):
         """
         Adds a StratigraphicColumnElement to the stratigraphic column.
@@ -500,27 +515,22 @@ class StratigraphicColumn(Observable['StratigraphicColumn']):
 
     def get_groups(self):
         groups = []
-        i=0
-        group = StratigraphicGroup(
-            name=(
-                self.group_mapping.get(f'Group_{i}', f'Group_{i}')
-            )
-        )
+        i = 0
+        group = StratigraphicGroup(name=(self.group_mapping.get(f'Group_{i}', f'Group_{i}')))
         for e in reversed(self.order):
             if isinstance(e, StratigraphicUnit):
                 group.units.append(e)
             else:
                 if group.units:
                     groups.append(group)
-                    i+=1
+                    i += 1
                     group = StratigraphicGroup(
-                        name=(
-                            self.group_mapping.get(f'Group_{i}', f'Group_{i}')
-                        )
+                        name=(self.group_mapping.get(f'Group_{i}', f'Group_{i}'))
                     )
         if group:
             groups.append(group)
         return groups
+
     def get_stratigraphic_ids(self) -> list[list[str]]:
         ids = []
         for group in self.get_groups():
@@ -530,6 +540,7 @@ class StratigraphicColumn(Observable['StratigraphicColumn']):
             for unit in group.units:
                 ids.append([unit.id, group, unit.name, unit.min(), unit.max()])
         return ids
+
     def get_unitname_groups(self):
         groups = self.get_groups()
         groups_list = []
@@ -539,7 +550,7 @@ class StratigraphicColumn(Observable['StratigraphicColumn']):
             groups_list.append(group)
         return groups_list
 
-    def get_group_unit_pairs(self) -> list[tuple[str,str]]:
+    def get_group_unit_pairs(self) -> list[tuple[str, str]]:
         """
         Returns a list of tuples containing group names and unit names.
         """
@@ -571,7 +582,10 @@ class StratigraphicColumn(Observable['StratigraphicColumn']):
         ]
         self.notify('order_updated', new_order=self.order)
         self.update_unit_values()  # Update min and max values after updating the order
-    def update_unit_values(self, observable: Observable | None = None, event: str | None = None, **kwargs):
+
+    def update_unit_values(
+        self, observable: Observable | None = None, event: str | None = None, **kwargs
+    ):
         """
         Updates the min and max values for each unit based on their position in the column.
 
@@ -628,6 +642,7 @@ class StratigraphicColumn(Observable['StratigraphicColumn']):
         return {
             "elements": [element.to_dict() for element in self.order],
         }
+
     def update_from_dict(self, data):
         """
         Updates the stratigraphic column from a dictionary representation.
@@ -643,6 +658,7 @@ class StratigraphicColumn(Observable['StratigraphicColumn']):
                 else:
                     element = StratigraphicUnit.from_dict(element_data)
                 self.add_element(element)
+
     @classmethod
     def from_dict(cls, data):
         """
@@ -669,15 +685,16 @@ class StratigraphicColumn(Observable['StratigraphicColumn']):
         for g in reversed(self.get_groups()):
             v = 0
             for u in reversed(g.units):
-                surface_values[u.name] = {'value':v,'group':g.name,'colour':u.colour}
+                surface_values[u.name] = {'value': v, 'group': g.name, 'colour': u.colour}
                 v += u.thickness
         return surface_values
 
-    def plot(self,*, ax=None, **kwargs):
+    def plot(self, *, ax=None, **kwargs):
         import matplotlib.pyplot as plt
         from matplotlib import cm
         from matplotlib.collections import PatchCollection
         from matplotlib.patches import Polygon
+
         n_units = 0  # count how many discrete colours (number of stratigraphic units)
         xmin = 0
         ymin = 0
@@ -712,7 +729,17 @@ class StratigraphicColumn(Observable['StratigraphicColumn']):
                 n_units += 1
 
                 ymax = total_height
-                ymin = ymax - (getattr(u, 'thickness', np.nan) if not np.isinf(getattr(u, 'thickness', np.nan)) else np.nanmean([getattr(e, 'thickness', np.nan) for e in self.order if not np.isinf(getattr(e, 'thickness', np.nan))]))
+                ymin = ymax - (
+                    getattr(u, 'thickness', np.nan)
+                    if not np.isinf(getattr(u, 'thickness', np.nan))
+                    else np.nanmean(
+                        [
+                            getattr(e, 'thickness', np.nan)
+                            for e in self.order
+                            if not np.isinf(getattr(e, 'thickness', np.nan))
+                        ]
+                    )
+                )
 
                 if not np.isfinite(ymin):
                     ymin = prev_coords[1] - (prev_coords[1] - prev_coords[0]) * (1 + rng.random())
@@ -723,7 +750,12 @@ class StratigraphicColumn(Observable['StratigraphicColumn']):
 
                 polygon_points = np.array([[xmin, ymin], [xmax, ymin], [xmax, ymax], [xmin, ymax]])
                 patches.append(Polygon(polygon_points))
-                ax.annotate(getattr(u, 'name', 'Unknown'), xy=(xmin+(xmax-xmin)/2, (ymax-ymin)/2+ymin), fontsize=8, ha='left')
+                ax.annotate(
+                    getattr(u, 'name', 'Unknown'),
+                    xy=(xmin + (xmax - xmin) / 2, (ymax - ymin) / 2 + ymin),
+                    fontsize=8,
+                    ha='left',
+                )
 
         if 'cmap' not in kwargs:
             from matplotlib import colors
@@ -752,7 +784,7 @@ class StratigraphicColumn(Observable['StratigraphicColumn']):
         ax.axis("off")
 
         return fig
-    
+
     def cmap(self):
         try:
             from matplotlib import colors
@@ -772,7 +804,7 @@ class StratigraphicColumn(Observable['StratigraphicColumn']):
                     data.append((u.id, u.colour))
                     colours.append(u.colour)
                     boundaries.append(u.id)
-             # print(u,v)
+            # print(u,v)
             cmap = colors.ListedColormap(colours)
         except ImportError:
             logger.warning("Cannot use predefined colours as I can't import matplotlib")

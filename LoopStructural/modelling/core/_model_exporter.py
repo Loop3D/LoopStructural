@@ -8,17 +8,23 @@ of the CI-checked stable API surface -- and delegate to the staticmethods
 here.
 """
 
+from __future__ import annotations
+
 import pathlib
+from typing import TYPE_CHECKING
 
 from ...geometry import StructuredGrid
-from ...utils import getLogger
+from ...utils import getLogger, surface_list
+
+if TYPE_CHECKING:
+    from .geological_model import GeologicalModel
 
 logger = getLogger(__name__)
 
 
 class ModelExporter:
     @staticmethod
-    def get_fault_surfaces(model, faults=None):
+    def get_fault_surfaces(model: GeologicalModel, faults: list[str] | None = None) -> surface_list:
         if faults is None:
             faults = []
         surfaces = []
@@ -30,7 +36,9 @@ class ModelExporter:
         return surfaces
 
     @staticmethod
-    def get_stratigraphic_surfaces(model, units=None, bottoms=True):
+    def get_stratigraphic_surfaces(
+        model: GeologicalModel, units: list[str] | None = None, bottoms: bool = True
+    ) -> surface_list:
         if units is None:
             units = []
         ## TODO change the stratigraphic column to its own class and have methods to get the relevant surfaces
@@ -60,7 +68,9 @@ class ModelExporter:
         return surfaces
 
     @staticmethod
-    def get_block_model(model, name='block model'):
+    def get_block_model(
+        model: GeologicalModel, name: str = 'block model'
+    ) -> tuple[StructuredGrid, list]:
         # NOTE: bounding_box.structured_grid() returns loop_common's
         # interpolation-support StructuredGrid (no properties dict); use
         # LoopStructural's own geometry StructuredGrid for storing values.
@@ -78,14 +88,14 @@ class ModelExporter:
 
     @staticmethod
     def save(
-        model,
+        model: GeologicalModel,
         filename: str,
         block_model: bool = True,
-        stratigraphic_surfaces=True,
-        fault_surfaces=True,
-        stratigraphic_data=True,
-        fault_data=True,
-    ):
+        stratigraphic_surfaces: bool = True,
+        fault_surfaces: bool = True,
+        stratigraphic_data: bool = True,
+        fault_data: bool = True,
+    ) -> None:
         path = pathlib.Path(filename)
         extension = path.suffix
         parent = path.parent
