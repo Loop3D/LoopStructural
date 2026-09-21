@@ -11,7 +11,21 @@ import pandas
 from .utils import strike_dip_vector, generate_grid
 
 from .logging import getLogger
-logger = getLogger(__name__)  
+logger = getLogger(__name__)
+
+
+def _circular_mean_degrees(angles_degrees) -> float:
+    """
+    Mean of a set of compass bearings in degrees (e.g. dip direction), correctly
+    handling wraparound. A plain arithmetic mean of 350 and 10 degrees gives 180
+    (the opposite direction); this gives 0, the correct answer.
+    """
+    radians = numpy.deg2rad(numpy.asarray(angles_degrees, dtype=float))
+    mean_angle = numpy.degrees(
+        numpy.arctan2(numpy.mean(numpy.sin(radians)), numpy.mean(numpy.cos(radians)))
+    )
+    return float(mean_angle % 360)
+
 
 class Interpolator(ABC):
     """
@@ -362,10 +376,17 @@ class DipDipDirectionInterpolator(Interpolator):
                 f"Detected {len(collocated_clusters)} collocated point clusters. Aggregating these points.\n " 
             )
 
-        # Aggregate data for collocated points by taking the mean of X, Y, DIP, and DIPDIR within each cluster
+        # Aggregate data for collocated points by taking the mean of X, Y and DIP, and the
+        # circular mean of DIPDIR (a compass bearing, so a plain mean is wrong near due north)
+        # within each cluster
         aggregated_data = (
             structure_data.groupby("cluster")
-            .agg({"X": "mean", "Y": "mean", "DIP": "mean", "DIPDIR": "mean"})
+            .agg(
+                X=("X", "mean"),
+                Y=("Y", "mean"),
+                DIP=("DIP", "mean"),
+                DIPDIR=("DIPDIR", _circular_mean_degrees),
+            )
             .reset_index(drop=True)
         )
 
