@@ -1,9 +1,9 @@
 from abc import ABC, abstractmethod
-from typing import Any, Union
+from typing import Any, Optional, Union
 import beartype
 import numpy
 from numpy import ndarray
-from scipy.interpolate import Rbf, LinearNDInterpolator
+from scipy.interpolate import Rbf, LinearNDInterpolator, RBFInterpolator
 from sklearn.cluster import DBSCAN
 import pandas
 
@@ -317,9 +317,17 @@ class DipDipDirectionInterpolator(Interpolator):
         Interpolator(ABC): Derived from Abstract Base Class
     """
 
-    def __init__(self, data_type=None):
+    def __init__(self, data_type=None, neighbors: Optional[int] = None):
         """
         Initialiser of for IDWInterpolator
+
+        Args:
+            data_type: which of "dip"/"dipdir" to interpolate, defaults to both
+            neighbors: if set, and RBFInterpolator is requested via interpolate(),
+                restrict each grid point's fit to its `neighbors` nearest data
+                points instead of blending every measurement across the whole
+                map. This keeps a fold hinge or fault-bounded change in dip from
+                being smoothed into neighbouring, structurally unrelated areas.
         """
         if data_type is None:
             self.data_type = ["dip", "dipdir"]
@@ -332,6 +340,7 @@ class DipDipDirectionInterpolator(Interpolator):
         self.dip = None
         self.dipdir = None
         self.cell_size = None
+        self.neighbors = neighbors
         self.interpolator_label = "DipDipDirectionInterpolator"
 
     def type(self):
@@ -413,7 +422,10 @@ class DipDipDirectionInterpolator(Interpolator):
 
         Args:
             ni (int): value to interpolate
-            interpolator: type of interpolator to use by default SciPy Rbf interpolator
+            interpolator: type of interpolator to use by default SciPy Rbf interpolator.
+                Pass scipy.interpolate.RBFInterpolator to fit each grid point using only
+                its `self.neighbors` nearest data points (a local radial basis function)
+                instead of a single surface fit to every point across the whole map.
 
         Returns:
             Rbf: radial basis function object
@@ -421,6 +433,16 @@ class DipDipDirectionInterpolator(Interpolator):
         if interpolator is Rbf:
             rbf = Rbf(self.x, self.y, ni, function="linear")
             return rbf(self.xi, self.yi)
+
+        if interpolator is RBFInterpolator:
+            points = numpy.column_stack([self.x, self.y])
+            query_points = numpy.column_stack([self.xi, self.yi])
+            # neighbors=None (the RBFInterpolator default) fits one global surface,
+            # equivalent in spirit to Rbf; a finite value restricts each query point's
+            # fit to its nearest neighbours, keeping the interpolation local.
+            neighbors = self.neighbors if self.neighbors is None else min(self.neighbors, len(self.x))
+            rbf = RBFInterpolator(points, numpy.asarray(ni), neighbors=neighbors, kernel="linear")
+            return rbf(query_points)
 
         if interpolator is LinearNDInterpolator:
             lnd_interpolator = LinearNDInterpolator(list(zip(self.x, self.y)), ni)
@@ -436,7 +458,8 @@ class DipDipDirectionInterpolator(Interpolator):
         Args:
             bounding_box (dict): a dictionary containing the bounding box of the map data
             structure_data (pandas.DataFrame): sampled structural data
-            interpolator (Union[Rbf, LinearNDInterpolator]): type of interpolator to use by default SciPy Rbf interpolator
+            interpolator (Union[Rbf, RBFInterpolator, LinearNDInterpolator]): type of interpolator to
+                use, by default SciPy Rbf interpolator
 
         Returns:
             numpy.ndarray: interpolated dip and dip direction values

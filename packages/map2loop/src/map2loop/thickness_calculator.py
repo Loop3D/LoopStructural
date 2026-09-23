@@ -239,18 +239,29 @@ class InterpolatedStructure(ThicknessCalculator):
     """
 
     def __init__(
-        self, 
-        dtm_data: Optional[gdal.Dataset] = None, 
-        bounding_box: Optional[dict] = None, 
+        self,
+        dtm_data: Optional[gdal.Dataset] = None,
+        bounding_box: Optional[dict] = None,
         max_line_length: Optional[float] = None,
-        is_strike: Optional[bool] = False
+        is_strike: Optional[bool] = False,
+        local_interpolation_neighbors: Optional[int] = None,
         ):
         """
         Initialiser for interpolated structure version of the thickness calculator
+
+        Args:
+            local_interpolation_neighbors: if set, interpolate dip using a local
+                radial basis function fit from only this many nearest structure
+                points per grid location, instead of one surface fit to every
+                structure point across the whole map. This avoids smoothing dip
+                across fold hinges, faults or unrelated structural domains, at
+                the cost of a less smooth interpolated surface. Defaults to None
+                (whole-map interpolation, matching previous behaviour).
         """
         super().__init__(dtm_data, bounding_box, max_line_length, is_strike)
         self.thickness_calculator_label = "InterpolatedStructure"
         self.lines = None
+        self.local_interpolation_neighbors = local_interpolation_neighbors
 
     @beartype.beartype
     def compute(
@@ -327,9 +338,15 @@ class InterpolatedStructure(ThicknessCalculator):
         if 'Z' in contacts.columns:
             contacts = contacts[["X", "Y", "Z", "geometry", "basal_unit"]].copy()
         # Interpolate the dip of the contacts
-        interpolator = DipDipDirectionInterpolator(data_type="dip")
-        # Interpolate the dip of the contacts
-        dip = interpolator(self.bounding_box, structure_data, interpolator=scipy.interpolate.Rbf)
+        interpolator = DipDipDirectionInterpolator(
+            data_type="dip", neighbors=self.local_interpolation_neighbors
+        )
+        if self.local_interpolation_neighbors is not None:
+            dip = interpolator(
+                self.bounding_box, structure_data, interpolator=scipy.interpolate.RBFInterpolator
+            )
+        else:
+            dip = interpolator(self.bounding_box, structure_data, interpolator=scipy.interpolate.Rbf)
         # create a GeoDataFrame of the interpolated orientations
         interpolated_orientations = geopandas.GeoDataFrame()
         # add the dip and dip direction to the GeoDataFrame
