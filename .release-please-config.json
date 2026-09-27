@@ -3,7 +3,13 @@
     ".": {
       "release-type": "python",
       "component": "LoopStructural",
-      "include-component-in-tag": false
+      "include-component-in-tag": false,
+      "exclude-paths": [
+        "packages/loop_common",
+        "packages/loop_interpolation",
+        "packages/map2loop",
+        "packages/loopstructural_visualisation"
+      ]
     },
     "packages/loop_common": {
       "release-type": "python",
