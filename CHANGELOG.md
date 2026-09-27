@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.8.2](https://github.com/Loop3D/LoopStructural/compare/v1.8.1...v1.8.2) (2026-09-27)
+
+
+### Bug Fixes
+
+* exclude workspace sub-packages from root LoopStructural release scoping ([dc3d4e8](https://github.com/Loop3D/LoopStructural/commit/dc3d4e85a2a61485d591751fef1cfe5e88f07af1))
+* remove stale release-as pins for map2loop and loopstructural_visualisation ([#333](https://github.com/Loop3D/LoopStructural/issues/333)) ([26c98d0](https://github.com/Loop3D/LoopStructural/commit/26c98d09caffb4a5b9bbb8311a5b5f55e1d2f71d))
+
 ## [1.8.1](https://github.com/Loop3D/LoopStructural/compare/v1.8.0...v1.8.1) (2026-08-24)
 
 

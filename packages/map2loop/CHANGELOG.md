@@ -1,5 +1,19 @@
 # Changelog
 
+## [3.5.0](https://github.com/Loop3D/LoopStructural/compare/map2loop-v3.4.0...map2loop-v3.5.0) (2026-09-27)
+
+
+### Features
+
+* opt-in local-radius RBF for dip interpolation in InterpolatedStructure ([#329](https://github.com/Loop3D/LoopStructural/issues/329)) ([8ea497b](https://github.com/Loop3D/LoopStructural/commit/8ea497bc9152b777008ba7b2b9665e6e04ec2b1b))
+
+
+### Bug Fixes
+
+* bump version ([aee81a2](https://github.com/Loop3D/LoopStructural/commit/aee81a24338a85af62d2bb233f59195d4d2e67dd))
+* correct InterpolatedStructure contact/dip selection and StructuralPoint strike wraparound ([#327](https://github.com/Loop3D/LoopStructural/issues/327)) ([12ccdde](https://github.com/Loop3D/LoopStructural/commit/12ccddef43b8116a9f39fae773610ab4a3257058))
+* use circular mean when aggregating collocated dip direction measurements ([#328](https://github.com/Loop3D/LoopStructural/issues/328)) ([21f0390](https://github.com/Loop3D/LoopStructural/commit/21f03903c83c70a208fcf5cca40d315e9d4685c2))
+
 ## [3.4.0](https://github.com/Loop3D/LoopStructural/compare/map2loop-v3.3.1...map2loop-v3.4.0) (2026-08-17)
 
 
