@@ -301,11 +301,8 @@ class InterpolatedStructure(ThicknessCalculator):
         basal_contacts = basal_contacts[basal_contacts["type"] == "BASAL"].copy()
 
         thicknesses = units.copy()
-        # Set default value
-        # thicknesses["ThicknessMedian"] is the median thickness of the unit
         thicknesses["ThicknessMedian"] = -1.0
         thicknesses['ThicknessMean'] = -1.0
-        # thicknesses["ThicknessStdDev"] is the standard deviation of the thickness of the unit
         thicknesses["ThicknessStdDev"] = -1.0
         thicknesses['ThicknessStdDev'] = thicknesses['ThicknessStdDev'].astype('float64')
         basal_unit_list = basal_contacts["basal_unit"].to_list()
