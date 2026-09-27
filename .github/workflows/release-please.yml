@@ -18,7 +18,8 @@ jobs:
       - uses: GoogleCloudPlatform/release-please-action@v4
         id: release
         with:
-          path: LoopStructural
+          config-file: .release-please-config.json
+          manifest-file: .release-please-manifest.json
 
     outputs:
       # true if ANY configured component (LoopStructural, loop_common,
