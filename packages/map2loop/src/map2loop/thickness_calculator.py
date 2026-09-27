@@ -34,6 +34,16 @@ import math
 from osgeo import gdal
 from shapely.errors import UnsupportedGEOSVersionError
 
+
+def _angular_difference(angle_a: float, angle_b: float) -> float:
+    """
+    Smallest difference between two compass bearings (0-360 degrees), correctly
+    handling wraparound e.g. the difference between 350 and 5 degrees is 15, not 345.
+    """
+    diff = abs(angle_a - angle_b) % 360
+    return min(diff, 360 - diff)
+
+
 class ThicknessCalculator(ABC):
     """
     Base Class of Thickness Calculator used to force structure of ThicknessCalculator
@@ -229,18 +239,29 @@ class InterpolatedStructure(ThicknessCalculator):
     """
 
     def __init__(
-        self, 
-        dtm_data: Optional[gdal.Dataset] = None, 
-        bounding_box: Optional[dict] = None, 
+        self,
+        dtm_data: Optional[gdal.Dataset] = None,
+        bounding_box: Optional[dict] = None,
         max_line_length: Optional[float] = None,
-        is_strike: Optional[bool] = False
+        is_strike: Optional[bool] = False,
+        local_interpolation_neighbors: Optional[int] = None,
         ):
         """
         Initialiser for interpolated structure version of the thickness calculator
+
+        Args:
+            local_interpolation_neighbors: if set, interpolate dip using a local
+                radial basis function fit from only this many nearest structure
+                points per grid location, instead of one surface fit to every
+                structure point across the whole map. This avoids smoothing dip
+                across fold hinges, faults or unrelated structural domains, at
+                the cost of a less smooth interpolated surface. Defaults to None
+                (whole-map interpolation, matching previous behaviour).
         """
         super().__init__(dtm_data, bounding_box, max_line_length, is_strike)
         self.thickness_calculator_label = "InterpolatedStructure"
         self.lines = None
+        self.local_interpolation_neighbors = local_interpolation_neighbors
 
     @beartype.beartype
     def compute(
@@ -317,9 +338,15 @@ class InterpolatedStructure(ThicknessCalculator):
         if 'Z' in contacts.columns:
             contacts = contacts[["X", "Y", "Z", "geometry", "basal_unit"]].copy()
         # Interpolate the dip of the contacts
-        interpolator = DipDipDirectionInterpolator(data_type="dip")
-        # Interpolate the dip of the contacts
-        dip = interpolator(self.bounding_box, structure_data, interpolator=scipy.interpolate.Rbf)
+        interpolator = DipDipDirectionInterpolator(
+            data_type="dip", neighbors=self.local_interpolation_neighbors
+        )
+        if self.local_interpolation_neighbors is not None:
+            dip = interpolator(
+                self.bounding_box, structure_data, interpolator=scipy.interpolate.RBFInterpolator
+            )
+        else:
+            dip = interpolator(self.bounding_box, structure_data, interpolator=scipy.interpolate.Rbf)
         # create a GeoDataFrame of the interpolated orientations
         interpolated_orientations = geopandas.GeoDataFrame()
         # add the dip and dip direction to the GeoDataFrame
@@ -368,20 +395,32 @@ class InterpolatedStructure(ThicknessCalculator):
                     shapely.geometry.shape(geom.__geo_interface__) for geom in top_contact.geometry
                 ]
                 if basal_contact is not None and top_contact is not None:
+                    # dip is sampled from the unit whose thickness is being measured
+                    # (stratigraphic_order[i + 1], bounded above by basal_contact and
+                    # below by top_contact), not from the overlying unit.
                     interp_points = interpolated_orientations.loc[
-                        interpolated_orientations["UNITNAME"] == stratigraphic_order[i], "geometry"
+                        interpolated_orientations["UNITNAME"] == stratigraphic_order[i + 1], "geometry"
                     ].copy()
                     dip = interpolated_orientations.loc[
-                        interpolated_orientations["UNITNAME"] == stratigraphic_order[i], "dip"
+                        interpolated_orientations["UNITNAME"] == stratigraphic_order[i + 1], "dip"
                     ].to_numpy()
 
                     _thickness = []
 
                     for _, row in basal_contact.iterrows():
-                        # find the shortest line between the basal contact points and top contact points
-                        short_line = shapely.shortest_line(row.geometry, top_contact_geometry)
+                        # find the shortest line between the basal contact point and every
+                        # top contact geometry, then keep the globally shortest one. shapely
+                        # broadcasts a scalar point against a list of geometries and returns
+                        # one line per list entry, so a single geometry cannot simply be
+                        # indexed out without checking which candidate is actually nearest.
+                        short_line_candidates = numpy.atleast_1d(
+                            shapely.shortest_line(row.geometry, top_contact_geometry)
+                        )
+                        short_line = short_line_candidates[
+                            numpy.argmin(shapely.length(short_line_candidates))
+                        ]
                         # check if the short line is
-                        if self.max_line_length is not None and short_line[0].length > self.max_line_length:
+                        if self.max_line_length is not None and short_line.length > self.max_line_length:
                             continue
                         if self.dtm_data is not None:
                             inv_geotransform = gdal.InvGeoTransform(self.dtm_data.GetGeoTransform())
@@ -389,15 +428,15 @@ class InterpolatedStructure(ThicknessCalculator):
 
                         # extract the end points of the shortest line
                         p1 = numpy.zeros(3)
-                        p1[0] = numpy.asarray(short_line[0].coords[0][0])
-                        p1[1] = numpy.asarray(short_line[0].coords[0][1])
+                        p1[0] = numpy.asarray(short_line.coords[0][0])
+                        p1[1] = numpy.asarray(short_line.coords[0][1])
                         if self.dtm_data is not None:
                             # get the elevation Z of the end point p1
                             p1[2] = value_from_raster(inv_geotransform, data_array, p1[0], p1[1])
                         # create array to store xyz coordinates of the end point p2
                         p2 = numpy.zeros(3)
-                        p2[0] = numpy.asarray(short_line[0].coords[-1][0])
-                        p2[1] = numpy.asarray(short_line[0].coords[-1][1])
+                        p2[0] = numpy.asarray(short_line.coords[-1][0])
+                        p2[1] = numpy.asarray(short_line.coords[-1][1])
                         if self.dtm_data is not None:
                             # get the elevation Z of the end point p2
                             p2[2] = value_from_raster(inv_geotransform, data_array, p2[0], p2[1])
@@ -406,13 +445,13 @@ class InterpolatedStructure(ThicknessCalculator):
                         # find the indices of the points that are within 5% of the length of the shortest line
                         try:
                             # GEOS 3.10.0+
-                            indices = shapely.dwithin(short_line[0], interp_points, line_length * 0.25)
+                            indices = shapely.dwithin(short_line, interp_points, line_length * 0.25)
                         except UnsupportedGEOSVersionError:
-                            indices= numpy.array([shapely.distance(short_line[0],point)<= (line_length * 0.25) for point in interp_points])
+                            indices= numpy.array([shapely.distance(short_line,point)<= (line_length * 0.25) for point in interp_points])
                         # get the dip of the points that are within
                         _dip = numpy.deg2rad(dip[indices])
                         if len(_dip) > 0:
-                            _lines.extend([short_line[0]]*len(_dip))
+                            _lines.extend([short_line]*len(_dip))
                             _dips.extend(_dip)
                         # calculate the true thickness t = L * sin(dip)
                         thickness = line_length * numpy.sin(_dip)
@@ -699,9 +738,13 @@ class StructuralPoint(ThicknessCalculator):
             strike1 = find_segment_strike_from_pt(seg1, int_pt1, measurement)
             strike2 = find_segment_strike_from_pt(seg2, int_pt2, measurement)
 
-            # check to see if the strike of the stratigraphic measurement is within the strike allowance of the strike of the geological contact
-            b_s = strike - self.strike_allowance, strike + self.strike_allowance
-            if not (b_s[0] < strike1 < b_s[1] and b_s[0] < strike2 < b_s[1]):
+            # check to see if the strike of the stratigraphic measurement is within the strike allowance
+            # of the strike of the geological contact. Strike is a compass bearing (wraps at 360 degrees),
+            # so the comparison must use angular difference rather than a plain numeric range.
+            if (
+                _angular_difference(strike, strike1) > self.strike_allowance
+                or _angular_difference(strike, strike2) > self.strike_allowance
+            ):
                 continue
 
             # build the debug info

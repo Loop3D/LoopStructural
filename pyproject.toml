@@ -4,7 +4,7 @@ build-backend = 'setuptools.build_meta'
 
 [project]
 name = 'LoopStructural'
-version = "1.8.0"
+version = "1.8.1"
 description = '3D geological modelling'
 authors = [{ name = 'Lachlan Grose', email = 'lachlan.grose@monash.edu' }]
 readme = 'README.md'
