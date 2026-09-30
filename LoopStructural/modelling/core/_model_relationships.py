@@ -66,7 +66,8 @@ class FeatureRelationshipManager:
     def add_domain_fault_below(model, domain_fault):
         """
         Looks through the feature list and adds any the domain_fault to the features
-        that already exist in the stack until an unconformity is reached. domain faults
+        that already exist in the stack until an unconformity or another domain
+        fault is reached (that boundary is not cropped). domain faults
         to the feature. The domain fault masks everything where the fault scalar field
          is < 0 as being active when added to feature.
 
@@ -80,9 +81,15 @@ class FeatureRelationshipManager:
         for f in reversed(model.features):
             if f.name == domain_fault.name:
                 continue
-            f.add_region(region)
-            if f.type == FeatureType.UNCONFORMITY:
+            if f.type == FeatureType.UNCONFORMITY or f.type == FeatureType.DOMAINFAULT:
+                # An unconformity or domain fault added before this one is
+                # the boundary above the features this domain fault crops.
+                # It is a stopping point and is not itself cropped, else the
+                # boundary surface is removed on one side of this fault.
+                # This matches add_unconformity, which also stops before it
+                # crops.
                 break
+            f.add_region(region)
 
     @staticmethod
     def add_unconformity_above(model, feature):
