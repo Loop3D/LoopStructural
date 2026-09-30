@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.8.3](https://github.com/Loop3D/LoopStructural/compare/v1.8.2...v1.8.3) (2026-09-30)
+
+
+### Bug Fixes
+
+* domain fault no longer crops the unconformity above it ([1544b4e](https://github.com/Loop3D/LoopStructural/commit/1544b4eeac6fa2428c730051a1bc54b811868874))
+
 ## [1.8.2](https://github.com/Loop3D/LoopStructural/compare/v1.8.1...v1.8.2) (2026-09-27)
 
 
