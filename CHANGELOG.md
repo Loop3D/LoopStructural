@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.8.4](https://github.com/Loop3D/LoopStructural/compare/v1.8.3...v1.8.4) (2026-10-05)
+
+
+### Bug Fixes
+
+* normalise fold direction by its length and keep dgz shape when inverting ([#337](https://github.com/Loop3D/LoopStructural/issues/337)) ([954d65f](https://github.com/Loop3D/LoopStructural/commit/954d65f22053f862c8eb099d484786d9e1a36efd))
+* stop root releases from changing package versions and tag single-package release PRs ([#338](https://github.com/Loop3D/LoopStructural/issues/338)) ([a10065a](https://github.com/Loop3D/LoopStructural/commit/a10065a68e9c14928112591f2603320b2f8f7375))
+
 ## [1.8.3](https://github.com/Loop3D/LoopStructural/compare/v1.8.2...v1.8.3) (2026-09-30)
 
 
