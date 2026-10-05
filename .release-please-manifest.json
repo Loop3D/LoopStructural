@@ -2,6 +2,6 @@
   ".": "1.8.4",
   "packages/loop_common": "0.0.2",
   "packages/loop_interpolation": "0.0.2",
-  "packages/map2loop": "3.5.0",
+  "packages/map2loop": "3.5.1",
   "packages/loopstructural_visualisation": "0.2.1"
 }
