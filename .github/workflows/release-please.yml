@@ -28,8 +28,9 @@ jobs:
       release_created: ${{ steps.release.outputs.releases_created }}
       # true only when the LoopStructural component itself released --
       # gates conda/docs builds, which are LoopStructural-specific and
-      # shouldn't re-run for a workspace-package-only release.
-      loopstructural_release_created: ${{ steps.release.outputs['LoopStructural--release_created'] }}
+      # shouldn't re-run for a workspace-package-only release. The root path
+      # (".") outputs have no "<path>--" prefix.
+      loopstructural_release_created: ${{ steps.release.outputs.release_created }}
   package:
     needs: release-please
     if: ${{ needs.release-please.outputs.release_created == 'true'}}

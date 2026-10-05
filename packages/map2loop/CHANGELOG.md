@@ -1,5 +1,12 @@
 # Changelog
 
+## [3.5.1](https://github.com/Loop3D/LoopStructural/compare/map2loop-v3.5.0...map2loop-v3.5.1) (2026-10-05)
+
+
+### Bug Fixes
+
+* stop root releases from changing package versions and tag single-package release PRs ([#338](https://github.com/Loop3D/LoopStructural/issues/338)) ([a10065a](https://github.com/Loop3D/LoopStructural/commit/a10065a68e9c14928112591f2603320b2f8f7375))
+
 ## [3.5.0](https://github.com/Loop3D/LoopStructural/compare/map2loop-v3.4.0...map2loop-v3.5.0) (2026-09-27)
 
 
