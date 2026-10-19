@@ -302,52 +302,49 @@ class TestDiscreteFoldInterpolatorConstraintWeighting:
         assert True
 
 
-class TestDiscreteFoldInterpolatorStepParameter:
-    """Test the step parameter for constraint sampling."""
+class TestDiscreteFoldInterpolatorAllElements:
+    """Fold constraints use every element, in mesh order, with no random subsampling."""
 
-    def test_fold_constraints_with_step_parameter(self):
-        """Test that step parameter subsamples constraints."""
-        support = TetMesh(nsteps=np.array([5, 5, 5]))
-        fold = MockFoldEvent()
+    FAMILIES = ("fold orientation", "fold axis", "fold normalisation")
 
-        interpolator = DiscreteFoldInterpolator(support, fold=fold)
-        interpolator.setup_interpolator(
-            data_points=np.array([[2.0, 2.0, 2.0]]),
-            data_values=np.array([1.0]),
-        )
+    @staticmethod
+    def _built(nsteps=5):
+        support = TetMesh(nsteps=np.array([nsteps, nsteps, nsteps]))
+        # no setup_interpolator() here: it would already add a default set of fold constraints
+        interpolator = DiscreteFoldInterpolator(support, fold=MockFoldEvent())
+        interpolator.add_fold_constraints(fold_regularisation=None)
+        return support, interpolator
 
-        # With step=2, should use every other element
-        interpolator.add_fold_constraints(
-            fold_orientation=10.0,
-            fold_axis_w=None,
+    def test_fold_constraints_use_all_elements(self):
+        support, interpolator = self._built()
+        for name in self.FAMILIES:
+            assert interpolator.constraints[name]["matrix"].shape[0] == support.n_elements
+
+    def test_fold_constraints_are_repeatable(self):
+        """Two builds with identical inputs give identical constraint matrices (no random element selection)."""
+        _, first = self._built()
+        _, second = self._built()
+        for name in self.FAMILIES:
+            a, b = first.constraints[name], second.constraints[name]
+            assert np.array_equal(a["matrix"].toarray(), b["matrix"].toarray())
+            assert np.array_equal(np.asarray(a["b"]), np.asarray(b["b"]))
+            assert np.array_equal(np.asarray(a["w"]), np.asarray(b["w"]))
+
+    def test_mask_function_zeroes_weights_in_mesh_order(self):
+        support, interpolator = self._built(nsteps=3)
+        masked = DiscreteFoldInterpolator(support, fold=MockFoldEvent())
+        masked.add_fold_constraints(
             fold_regularisation=None,
-            step=2,
+            mask_fn=lambda xyz: xyz[:, 0] < 1.0,
         )
+        w = np.asarray(masked.constraints["fold orientation"]["w"])
+        expected = np.where(support.barycentre[:, 0] < 1.0, 0.0, 10.0)
+        assert np.array_equal(w, expected)
 
-        # With step=1, should use all elements
-        interpolator.add_fold_constraints(
-            fold_orientation=10.0,
-            fold_axis_w=None,
-            fold_regularisation=None,
-            step=1,
-        )
-
-    def test_fold_constraints_with_large_step(self):
-        """Test that step parameter larger than n_elements works."""
-        support = TetMesh(nsteps=np.array([3, 3, 3]))
-        fold = MockFoldEvent()
-
-        interpolator = DiscreteFoldInterpolator(support, fold=fold)
-        interpolator.setup_interpolator(
-            data_points=np.array([[1.0, 1.0, 1.0]]),
-            data_values=np.array([1.0]),
-        )
-
-        # With step larger than n_elements, should still work (selects first element or none)
-        interpolator.add_fold_constraints(
-            fold_orientation=10.0,
-            step=1000,
-        )
+    def test_step_parameter_has_been_removed(self):
+        _, interpolator = self._built(nsteps=3)
+        with pytest.raises(TypeError):
+            interpolator.add_fold_constraints(fold_orientation=10.0, step=2)
 
 
 class TestDiscreteFoldInterpolatorFoldNorm:

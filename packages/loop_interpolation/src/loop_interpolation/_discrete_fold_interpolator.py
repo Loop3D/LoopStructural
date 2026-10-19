@@ -7,7 +7,6 @@ from typing import Callable
 
 import numpy as np
 from loop_common.logging import get_logger as getLogger
-from loop_common.math import rng
 
 from ._fold_event import FoldEvent
 from ._fold_norm_alignment import resolve_fold_norm_target
@@ -71,7 +70,6 @@ class DiscreteFoldInterpolator(PiecewiseLinearInterpolator):
         fold_normalisation=1.0,
         fold_norm=-1.0,
         dgz_alignment="warn",
-        step=2,
         mask_fn: Callable | None = None,
     ):
         """
@@ -92,8 +90,8 @@ class DiscreteFoldInterpolator(PiecewiseLinearInterpolator):
             How to handle detected sign mismatch between ``dgz`` and normal
             constraints (if present). ``warn`` logs only, ``correct`` flips
             the effective ``fold_norm`` sign, and ``none`` skips checks.
-        step: int
-            array step for adding constraints
+        mask_fn : callable, optional
+            called with the element barycentres; elements for which it returns True get zero weight
 
 
         Returns
@@ -112,8 +110,6 @@ class DiscreteFoldInterpolator(PiecewiseLinearInterpolator):
         deformed_orientation, fold_axis, dgz = self.fold.get_deformed_orientation(
             self.support.barycentre
         )
-        element_idx = np.arange(self.support.n_elements)
-        rng.shuffle(element_idx)
         # calculate element volume for weighting
         vecs = nodes[:, 1:, :] - nodes[:, 0, None, :]
         vol = np.abs(np.linalg.det(vecs)) / 6
@@ -124,23 +120,20 @@ class DiscreteFoldInterpolator(PiecewiseLinearInterpolator):
             """
             dot product between vector in deformed ori plane = 0
             """
-            rng.shuffle(element_idx)
-
             logger.info(f"Adding fold orientation constraint to w = {fold_orientation}")
-            selected_idx = element_idx[::step]
             A = np.einsum(
                 "ij,ijk->ik",
-                deformed_orientation[selected_idx, :],
-                eg[selected_idx, :, :],
+                deformed_orientation,
+                eg,
             )
-            A *= vol[selected_idx, None]
+            A *= vol[:, None]
             B = np.zeros(A.shape[0])
-            idc = self.support.get_elements()[selected_idx, :]
+            idc = self.support.get_elements()
             self.add_constraints_to_least_squares(
                 A,
                 B,
                 idc,
-                w=weight[selected_idx] * fold_orientation,
+                w=weight * fold_orientation,
                 name="fold orientation",
             )
 
@@ -148,24 +141,21 @@ class DiscreteFoldInterpolator(PiecewiseLinearInterpolator):
             """
             dot product between axis and gradient should be 0
             """
-            rng.shuffle(element_idx)
-
             logger.info(f"Adding fold axis constraint to  w = {fold_axis_w}")
-            selected_idx = element_idx[::step]
             A = np.einsum(
                 "ij,ijk->ik",
-                fold_axis[selected_idx, :],
-                eg[selected_idx, :, :],
+                fold_axis,
+                eg,
             )
-            A *= vol[selected_idx, None]
+            A *= vol[:, None]
             B = np.zeros(A.shape[0]).tolist()
-            idc = self.support.get_elements()[selected_idx, :]
+            idc = self.support.get_elements()
 
             self.add_constraints_to_least_squares(
                 A,
                 B,
                 idc,
-                w=weight[selected_idx] * fold_axis_w,
+                w=weight * fold_axis_w,
                 name="fold axis",
             )
 
@@ -173,12 +163,9 @@ class DiscreteFoldInterpolator(PiecewiseLinearInterpolator):
             """
             specify scalar norm in X direction
             """
-            rng.shuffle(element_idx)
-
             logger.info(f"Adding fold normalisation constraint to  w = {fold_normalisation}")
-            selected_idx = element_idx[::step]
-            A = np.einsum("ij,ijk->ik", dgz[selected_idx, :], eg[selected_idx, :, :])
-            A *= vol[selected_idx, None]
+            A = np.einsum("ij,ijk->ik", dgz, eg)
+            A *= vol[:, None]
 
             target_norm = resolve_fold_norm_target(
                 fold=self.fold,
@@ -190,14 +177,14 @@ class DiscreteFoldInterpolator(PiecewiseLinearInterpolator):
             )
             B = np.ones(A.shape[0]) * target_norm
             B *= fold_normalisation
-            B *= vol[selected_idx]
-            idc = self.support.get_elements()[selected_idx, :]
+            B *= vol
+            idc = self.support.get_elements()
 
             self.add_constraints_to_least_squares(
                 A,
                 B,
                 idc,
-                w=weight[selected_idx] * fold_normalisation,
+                w=weight * fold_normalisation,
                 name="fold normalisation",
             )
 
