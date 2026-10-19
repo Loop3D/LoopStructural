@@ -207,7 +207,7 @@ class P2Interpolator(DiscreteInterpolator):
         elements = np.arange(0, len(self.support.elements))
         mask = np.ones(self.support.neighbours.shape[0], dtype=bool)
         if not maskall:
-            mask[:] = np.all(self.support.neighbours > 3, axis=1)
+            mask[:] = np.all(self.support.neighbours >= 0, axis=1)
 
         d2 = self.support.evaluate_shape_d2(elements[mask])
         # d2 shape is [ele_idx, deriv, node]
