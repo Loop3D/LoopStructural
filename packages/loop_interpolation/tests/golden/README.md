@@ -65,20 +65,22 @@ and by how much, against the golden file. A failing constraint test names the fa
 
 ## Findings from building these tests (all confirmed by running code)
 
-Known bugs from the review that the suite now demonstrates (`test_known_*`, strict xfail):
+Bugs from the review that the suite demonstrated. The tests are now normal tests (`test_default_solve_is_converged`,
+`test_p2_normal_weight_has_effect`, `test_update_keeps_fold_weights`, `test_dfi_is_repeatable_*`).
 
-| Test | Review item | Observed |
+| Test | Review item | Status |
 |---|---|---|
-| `test_known_default_solve_is_converged` | bug 3 | Default CG on P2 `planar_dip` is wrong by up to 0.64 in a unit box. It still returns `True`. P1 is off by about 2e-3. |
-| `test_known_p2_normal_weight_has_effect` | bug 4 | P2: changing `npw` from 1 to 100 moves the field by 1e-7. P1 moves by 7e-4, FD by 9e-3. |
-| `test_known_update_keeps_fold_weights` | bug 11 | After `update()` the fold orientation weight goes from 50 back to 10. The field moves by 0.28. DFI and FDFold. |
-| `test_known_dfi_is_repeatable` | section 3, item 6 | Two unseeded DFI builds differ by 6.6e-3. The harness reseeds `loop_common.math.rng`. |
+| `test_default_solve_is_converged` | bug 3 | Fixed (Phase 0.4). CG returns `False` at the iteration limit. Default `rtol` is 1e-8: P2 `planar_dip` error 0.65 -> 2.5e-4, P1 1.8e-2 -> 5e-7. |
+| `test_p2_normal_weight_has_effect` | bug 4 | Fixed (Phase 0.3). `npw` 1 -> 100 moves the P2 field by 7.4e-4 (was 1e-7). |
+| `test_update_keeps_fold_weights` | bug 11 | Fixed (Phase 0.5). `update()` replays the kwargs of the last `setup_interpolator` call. |
+| `test_dfi_is_repeatable_without_reseed` | section 3, item 6 | Fixed. DFI no longer shuffles rows. |
+| (no golden test; see `test_p0_nan_constraints_skipped.py`) | bug 6 | Fixed (Phase 0.6). NaN rows are dropped, not the whole family. |
+| `TestP2GradSteepnessMask` (`test_p2_interpolator.py`) | bug 5 | Fixed (Phase 0.2). Mask is `neighbours >= 0`. P2 fields moved by at most 2.3e-3. |
 
 New findings, not in the review:
 
-- **F1.** `P2UnstructuredTetMesh(origin=..., step_vector=..., nsteps_cells=...)` never stores those attributes.
-  `P2Interpolator.setup_interpolator` then raises `AttributeError: ... has no attribute 'origin'` from
-  `inside()` in the diagnostics report. `engines.py` sets them by hand. Remove that workaround when fixed.
+- **F1.** (Fixed, Phase 0.1.) `P2UnstructuredTetMesh(origin=..., step_vector=..., nsteps_cells=...)` did not store those
+  attributes, so `inside()` and the diagnostics report raised `AttributeError`.
 - **F2.** `TetMesh` (P1 and DFI) returns NaN for points on the lower x, y or z faces (strict `>` in `inside`).
   631 of 3375 probe points. FD and P2 return values. The golden files keep the NaN. Metrics use the inner box.
 - **F3.** Fold amplitude is damped. The median ratio of solved to true gradient magnitude is 0.66 (`fold_section`),
