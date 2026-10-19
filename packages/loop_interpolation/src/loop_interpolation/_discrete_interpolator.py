@@ -26,6 +26,23 @@ from ._regularisation import (
 logger = getLogger(__name__)
 
 
+def _drop_nan_rows(A, B, idc, w, name):
+    """Remove constraint rows with a nan in A, B or idc, and log how many were dropped.
+
+    A, B, idc are 2d, 1d, 2d with one row per constraint. ``w`` is filtered
+    too when it is a per-row array.
+    """
+    bad = np.isnan(A).any(axis=1) | np.isnan(B) | np.isnan(idc).any(axis=1)
+    n_bad = int(bad.sum())
+    if n_bad == 0:
+        return A, B, idc, w
+    logger.warning(f"Dropping {n_bad} of {bad.shape[0]} constraint rows containing nan: {name}")
+    keep = ~bad
+    if isinstance(w, np.ndarray) and w.shape[0] == bad.shape[0]:
+        w = w[keep]
+    return A[keep], B[keep], idc[keep], w
+
+
 class DiscreteInterpolator(GeologicalInterpolator):
     """ """
 
@@ -353,11 +370,12 @@ class DiscreteInterpolator(GeologicalInterpolator):
             B = B.reshape(A.shape[0])
             # w = w.reshape((A.shape[0]))
 
-        # Check for nan before any row normalisation, which would otherwise
+        # Drop nan rows before any row normalisation, which would otherwise
         # zero out nan rows in A and mask this check further down.
-        if np.any(np.isnan(idc)) or np.any(np.isnan(A)) or np.any(np.isnan(B)):
-            logger.warning(f"Constraints contain nan not adding constraints: {name}")
+        A, B, idc, w = _drop_nan_rows(A, B, idc, w, name)
+        if A.shape[0] == 0:
             return
+        n_rows = A.shape[0]
 
         # normalise by rows of A
         # Should this be done? It should make the solution more stable
