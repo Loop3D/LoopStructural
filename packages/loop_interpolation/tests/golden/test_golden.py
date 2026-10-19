@@ -171,9 +171,8 @@ def test_matches_golden_constraints(case, engine, request):
 # then run --update-golden and review the diff figures.
 
 
-@pytest.mark.xfail(strict=True, reason="review bug 3: CG hits its iteration limit, warns, returns True")
 @pytest.mark.parametrize("engine", ["P1", "P2"])
-def test_known_default_solve_is_converged(engine):
+def test_default_solve_is_converged(engine):
     default, converged = result("planar_dip", engine, True), result("planar_dip", engine)
     assert np.nanmax(np.abs(default["value"] - converged["value"])) < 1e-3
 

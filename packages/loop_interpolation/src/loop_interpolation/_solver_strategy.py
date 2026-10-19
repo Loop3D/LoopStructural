@@ -11,6 +11,9 @@ from typing import Callable
 import numpy as np
 from scipy import sparse
 
+# scipy's default rtol (1e-5) stops P2 solves up to 0.6 from the converged field
+DEFAULT_CG_RTOL = 1e-8
+
 
 def resolve_solver_choice(
     solver: Callable[[sparse.csr_matrix, np.ndarray], np.ndarray] | str | None, logger
@@ -58,6 +61,8 @@ def solve_with_cg(
     logger.info("Solving using cg")
     if ("atol" not in solver_kwargs or "rtol" not in solver_kwargs) and tol is not None:
         solver_kwargs["atol"] = tol
+    elif tol is None and "rtol" not in solver_kwargs and "atol" not in solver_kwargs:
+        solver_kwargs["rtol"] = DEFAULT_CG_RTOL
 
     logger.info(f"Solver kwargs: {solver_kwargs}")
     solve_step_started = perf_counter()
@@ -68,7 +73,7 @@ def solve_with_cg(
             "CG reached iteration limit (%s) and did not converge; using last iteration",
             res[1],
         )
-    return np.asarray(res[0]), True
+    return np.asarray(res[0]), res[1] == 0
 
 
 def solve_with_cg_normal_equations(
@@ -92,6 +97,8 @@ def solve_with_cg_normal_equations(
     logger.info("Solving using cg (matrix-free fused regularisation normal equations)")
     if ("atol" not in solver_kwargs or "rtol" not in solver_kwargs) and tol is not None:
         solver_kwargs["atol"] = tol
+    elif tol is None and "rtol" not in solver_kwargs and "atol" not in solver_kwargs:
+        solver_kwargs["rtol"] = DEFAULT_CG_RTOL
 
     logger.info(f"Solver kwargs: {solver_kwargs}")
     solve_step_started = perf_counter()
@@ -102,7 +109,7 @@ def solve_with_cg_normal_equations(
             "CG reached iteration limit (%s) and did not converge; using last iteration",
             res[1],
         )
-    return np.asarray(res[0]), True
+    return np.asarray(res[0]), res[1] == 0
 
 
 def solve_with_lsmr(

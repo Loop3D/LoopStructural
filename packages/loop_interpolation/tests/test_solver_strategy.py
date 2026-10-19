@@ -129,3 +129,19 @@ def test_solve_with_admm_passes_x0_and_returns_history(monkeypatch):
     assert captured["linsys_solver"] == "lsmr"
     assert captured["return_history"] is True
     assert "solve_seconds" in timing
+
+
+def test_cg_iteration_limit_reports_not_converged():
+    import logging
+
+    import numpy as np
+    from loop_interpolation import _solver_strategy
+    from scipy import sparse
+
+    rng = np.random.default_rng(0)
+    A = sparse.csr_matrix(rng.normal(size=(60, 30)))
+    b = rng.normal(size=60)
+    _, ok = _solver_strategy.solve_with_cg(A, b, None, {"maxiter": 2}, {}, logging.getLogger())
+    assert ok is False
+    _, ok = _solver_strategy.solve_with_cg(A, b, None, {"maxiter": 500}, {}, logging.getLogger())
+    assert ok is True
