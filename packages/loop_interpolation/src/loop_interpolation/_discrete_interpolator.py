@@ -41,6 +41,7 @@ class DiscreteInterpolator(GeologicalInterpolator):
         """
         GeologicalInterpolator.__init__(self, data=data, up_to_date=up_to_date)
         self.B = []
+        self._setup_kwargs = {}
         self.support = support
         self.dimensions = support.dimension
         self.c = (
@@ -1334,7 +1335,7 @@ class DiscreteInterpolator(GeologicalInterpolator):
             logger.debug("Cannot rerun interpolator")
             return False
         if not self.up_to_date:
-            self.setup_interpolator()
+            self.setup_interpolator(**self._setup_kwargs)
             self.up_to_date = self.solve_system(self.solver)
             return self.up_to_date
         return bool(self.up_to_date)

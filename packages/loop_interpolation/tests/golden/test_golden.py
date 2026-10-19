@@ -190,9 +190,8 @@ def test_p2_normal_weight_has_effect():
     assert np.nanmax(np.abs(out[0] - out[1])) > 1e-4
 
 
-@pytest.mark.xfail(strict=True, reason="review bug 11: update() calls setup_interpolator() without fold_weights")
 @pytest.mark.parametrize("engine", ["DFI", "FDFold"])
-def test_known_update_keeps_fold_weights(engine):
+def test_update_keeps_fold_weights(engine):
     case = geomodels.build("fold_sparse")
     engines.reseed()
     it = engines.make_interpolator(engine, case)

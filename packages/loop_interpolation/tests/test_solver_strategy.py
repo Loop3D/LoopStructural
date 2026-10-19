@@ -145,3 +145,19 @@ def test_cg_iteration_limit_reports_not_converged():
     assert ok is False
     _, ok = _solver_strategy.solve_with_cg(A, b, None, {"maxiter": 500}, {}, logging.getLogger())
     assert ok is True
+
+
+def test_update_reuses_setup_kwargs():
+    import numpy as np
+    from loop_interpolation import P1Interpolator, TetMesh
+
+    mesh = TetMesh(origin=np.zeros(3), nsteps=np.full(3, 4), step_vector=np.ones(3))
+    interp = P1Interpolator(mesh)
+    interp.set_value_constraints(np.array([[1.0, 1.0, 1.0, 0.5, 1.0], [2.0, 2.0, 2.0, 1.0, 1.0]]))
+    interp.setup_interpolator(regularisation=3.0)
+    interp.solve_system("cg")
+    before = {k: float(np.mean(v["w"])) for k, v in interp.constraints.items()}
+    interp.up_to_date = False
+    interp.update()
+    after = {k: float(np.mean(v["w"])) for k, v in interp.constraints.items()}
+    assert before == after

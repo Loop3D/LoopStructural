@@ -193,6 +193,8 @@ class P1Interpolator(DiscreteInterpolator):
         -------
 
         """
+        # kept so that update() can rebuild the system with the same options
+        self._setup_kwargs = dict(kwargs)
         # can't reset here, clears fold constraints
         self.reset()
         regularisation_config = self.resolve_regularisation_config(
