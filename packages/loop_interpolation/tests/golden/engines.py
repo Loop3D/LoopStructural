@@ -72,11 +72,6 @@ def make_interpolator(engine: str, case):
         return DiscreteFoldInterpolator(mesh, fold=make_fold_event(case))
     if engine == "P2":
         mesh = P2UnstructuredTetMesh(origin=origin, step_vector=np.full(3, 1.0 / P2_CELLS), nsteps_cells=np.full(3, P2_CELLS))
-        # KNOWN BUG (golden finding F1): a bbox-built P2 mesh never stores these, so
-        # `inside()` and the setup diagnostics raise AttributeError. Set them here.
-        for attr, val in (("origin", origin), ("step_vector", np.full(3, 1.0 / P2_CELLS)), ("nsteps_cells", np.full(3, P2_CELLS))):
-            if not hasattr(mesh, attr):
-                setattr(mesh, attr, val)
         return P2Interpolator(mesh)
     raise ValueError(engine)
 

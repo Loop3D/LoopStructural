@@ -411,3 +411,20 @@ class TestP2InterpolatorIntegration:
 
         assert p2_copy.interpolator_type == p2_original.interpolator_type
         assert p2_copy.dof == p2_original.dof
+
+
+class TestP2MeshBboxAttributes:
+    """A bbox-built P2 mesh keeps the grid description it was built from."""
+
+    def test_bbox_mesh_stores_grid_attributes(self):
+        from loop_interpolation import P2UnstructuredTetMesh
+
+        origin = np.array([1.0, 2.0, 3.0])
+        step = np.array([0.5, 0.5, 0.25])
+        nsteps = np.array([2, 3, 4])
+        mesh = P2UnstructuredTetMesh(origin=origin, step_vector=step, nsteps_cells=nsteps)
+        np.testing.assert_array_equal(mesh.origin, origin)
+        np.testing.assert_array_equal(mesh.step_vector, step)
+        np.testing.assert_array_equal(mesh.nsteps_cells, nsteps)
+        inside = mesh.inside(np.array([[1.5, 3.0, 3.5], [10.0, 3.0, 3.5]]))
+        assert inside.tolist() == [True, False]

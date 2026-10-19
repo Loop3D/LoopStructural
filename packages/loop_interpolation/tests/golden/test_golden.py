@@ -226,8 +226,7 @@ def test_dfi_is_repeatable_with_reseed():
     assert np.allclose(a["value"], b["value"], atol=1e-9, equal_nan=True)
 
 
-@pytest.mark.xfail(strict=True, reason="new finding F1: a bbox-built P2UnstructuredTetMesh has no origin/step_vector")
-def test_known_p2_mesh_stores_its_geometry():
+def test_p2_mesh_stores_its_geometry():
     from loop_common.supports import P2UnstructuredTetMesh
 
     mesh = P2UnstructuredTetMesh(origin=np.zeros(3), step_vector=np.ones(3) / 4, nsteps_cells=np.full(3, 4))
