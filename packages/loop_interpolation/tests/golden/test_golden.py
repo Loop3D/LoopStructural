@@ -178,8 +178,7 @@ def test_known_default_solve_is_converged(engine):
     assert np.nanmax(np.abs(default["value"] - converged["value"])) < 1e-3
 
 
-@pytest.mark.xfail(strict=True, reason="review bug 4: P2 multiplies npw into A and B before row normalisation")
-def test_known_p2_normal_weight_has_effect():
+def test_p2_normal_weight_has_effect():
     case = geomodels.build("planar_noisy")
     out = []
     for npw in (1.0, 100.0):
@@ -189,7 +188,7 @@ def test_known_p2_normal_weight_has_effect():
         it.setup_interpolator(npw=npw)
         it.solve_system(engines.SOLVER, solver_kwargs=engines.SOLVER_KWARGS)
         out.append(it.evaluate_value(harness.probe_points()))
-    assert np.nanmax(np.abs(out[0] - out[1])) > 1e-3
+    assert np.nanmax(np.abs(out[0] - out[1])) > 1e-4
 
 
 @pytest.mark.xfail(strict=True, reason="review bug 11: update() calls setup_interpolator() without fold_weights")

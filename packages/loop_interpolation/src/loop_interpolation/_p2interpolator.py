@@ -109,9 +109,8 @@ class P2Interpolator(DiscreteInterpolator):
         if points.shape[0] > 0:
             grad, elements = self.support.evaluate_shape_derivatives(points[:, : self.dimensions])
             inside = elements > -1
-            area = self.support.element_size[elements[inside]]
-            wt = np.ones(area.shape[0])
-            wt *= w * area
+            # element size cancels in the row normalisation, w is applied after it
+            wt = np.full(int(np.sum(inside)), float(w))
             A = np.einsum(
                 "ikj,ij->ik",
                 grad[inside, :],
@@ -119,7 +118,7 @@ class P2Interpolator(DiscreteInterpolator):
             )
             B = np.zeros(A.shape[0])
             elements = self.support.elements[elements[inside]]
-            self.add_constraints_to_least_squares(A * wt[:, None], B, elements, name="gradient")
+            self.add_constraints_to_least_squares(A, B, elements, w=wt, name="gradient")
 
     def add_gradient_orthogonal_constraints(
         self, points: np.ndarray, vector: np.ndarray, w=1.0, B=0
@@ -141,14 +140,12 @@ class P2Interpolator(DiscreteInterpolator):
         if points.shape[0] > 0:
             grad, elements = self.support.evaluate_shape_derivatives(points[:, : self.dimensions])
             inside = elements > -1
-            area = self.support.element_size[elements[inside]]
-            wt = np.ones(area.shape[0])
-            wt *= w * area
+            wt = np.full(int(np.sum(inside)), float(w))
             A = np.einsum("ijk,ij->ik", grad[inside, :], vector[inside, :])
             B = np.zeros(A.shape[0])
             elements = self.support.elements[elements[inside]]
             self.add_constraints_to_least_squares(
-                A * wt[:, None], B, elements, name="gradient orthogonal"
+                A, B, elements, w=wt, name="gradient orthogonal"
             )
 
     def add_norm_constraints(self, w: float = 1.0):
@@ -156,15 +153,14 @@ class P2Interpolator(DiscreteInterpolator):
         if points.shape[0] > 0:
             grad, elements = self.support.evaluate_shape_derivatives(points[:, : self.dimensions])
             inside = elements > -1
-            area = self.support.element_size[elements[inside]]
-            wt = np.ones(area.shape[0])
-            wt *= w * area
+            wt = np.full(int(np.sum(inside)), float(w))
             elements = np.tile(self.support.elements[elements[inside]], (self.dimensions, 1, 1))
             elements = elements.swapaxes(0, 1)
             self.add_constraints_to_least_squares(
-                grad[inside, :, :] * wt[:, None, None],
-                points[inside, self.dimensions : self.dimensions * 2] * wt[:, None],
+                grad[inside, :, :],
+                points[inside, self.dimensions : self.dimensions * 2],
                 elements,
+                w=wt,
                 name="norm",
             )
 
