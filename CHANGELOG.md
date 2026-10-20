@@ -1,5 +1,15 @@
 # Changelog
 
+## [1.9.0](https://github.com/Loop3D/LoopStructural/compare/v1.8.4...v1.9.0) (2026-10-20)
+
+
+### Features
+
+* **folds:** validate P2Fold on Bermagui and document gauss4 ([#349](https://github.com/Loop3D/LoopStructural/issues/349)) ([4bf2de1](https://github.com/Loop3D/LoopStructural/commit/4bf2de13bbd261db11d77dd7077654438c83f6ef))
+* **interp:** add P2Fold golden and accuracy regression coverage ([b1ca2cd](https://github.com/Loop3D/LoopStructural/commit/b1ca2cd7165ac1a0c0c7be2073225b73a62e2fd1))
+* **interpolation:** P2 phase 1 - P2FoldInterpolator ([#346](https://github.com/Loop3D/LoopStructural/issues/346)) ([a1cae84](https://github.com/Loop3D/LoopStructural/commit/a1cae847a0f9ef31cdf499a93a89d9e2742654d7))
+* **modelling:** allow P2Fold for folded foliations and fold frames ([388f34a](https://github.com/Loop3D/LoopStructural/commit/388f34a9920c0e2c4933d6c010c45ddbe9b287de))
+
 ## [1.8.4](https://github.com/Loop3D/LoopStructural/compare/v1.8.3...v1.8.4) (2026-10-05)
 
 

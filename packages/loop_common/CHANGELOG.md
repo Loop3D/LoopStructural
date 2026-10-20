@@ -1,5 +1,18 @@
 # Changelog
 
+## [0.1.0](https://github.com/Loop3D/LoopStructural/compare/loop-common-v0.0.2...loop-common-v0.1.0) (2026-10-20)
+
+
+### Features
+
+* **interpolation:** P2 phase 1 - P2FoldInterpolator ([#346](https://github.com/Loop3D/LoopStructural/issues/346)) ([a1cae84](https://github.com/Loop3D/LoopStructural/commit/a1cae847a0f9ef31cdf499a93a89d9e2742654d7))
+
+
+### Bug Fixes
+
+* **interpolation:** P2 phase 0 prerequisites (bugs 3, 4, 5, 6, 11, F1) ([#345](https://github.com/Loop3D/LoopStructural/issues/345)) ([4194616](https://github.com/Loop3D/LoopStructural/commit/41946168b2f60d48508037743d0fc9f98cf7d979))
+* **supports:** add to_dict to P2UnstructuredTetMesh so P2 interpolators serialise ([a37895d](https://github.com/Loop3D/LoopStructural/commit/a37895dbf669ce52ba565e8423a32a267bcd0813))
+
 ## [0.0.2](https://github.com/Loop3D/LoopStructural/compare/loop-common-v0.0.1...loop-common-v0.0.2) (2026-08-04)
 
 

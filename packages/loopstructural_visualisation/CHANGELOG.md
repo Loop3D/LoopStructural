@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.2.2](https://github.com/Loop3D/LoopStructural/compare/loopstructuralvisualisation-v0.2.1...loopstructuralvisualisation-v0.2.2) (2026-10-20)
+
+
+### Bug Fixes
+
+* **visualisation:** upgrade visualisation dependencies ([#350](https://github.com/Loop3D/LoopStructural/issues/350)) ([be1b760](https://github.com/Loop3D/LoopStructural/commit/be1b7600113053f6bbe1bba8e3d6f3327ebade42))
+
 ## [0.2.1](https://github.com/Loop3D/LoopStructural/compare/loopstructuralvisualisation-v0.2.0...loopstructuralvisualisation-v0.2.1) (2026-10-05)
 
 
