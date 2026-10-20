@@ -30,6 +30,7 @@ from loop_common.logging import get_logger as getLogger
 from ._fold_event import FoldEvent
 from ._fold_norm_alignment import resolve_fold_norm_target
 from ._fold_setup import setup_with_fold_constraints
+from ._interpolatortype import InterpolatorType
 from ._p2interpolator import P2Interpolator
 from ._quadrature import tet_quadrature_points
 
@@ -39,11 +40,22 @@ _SAMPLE_RULES = ("centroid", "gauss4")
 
 
 class P2FoldInterpolator(P2Interpolator):
-    """P2 interpolator with fold constraints (Laurent et al., 2016)."""
+    """P2 interpolator with fold constraints (Laurent et al., 2016).
+
+    ``nelements`` (when built through ``InterpolatorFactory``) is the number of
+    tetrahedra. P2 has a node on every edge, so 1e4 gives about 56k tets and 86k
+    unknowns, and 1e5 gives about 526k tets and 765k unknowns (solve about 2.5 min).
+    The mesh is larger than the model box because of the buffer.
+    """
 
     def __init__(self, support, fold: FoldEvent | None = None):
         P2Interpolator.__init__(self, support)
+        self.type = InterpolatorType.PIECEWISE_QUADRATIC_FOLD
         self.fold = fold
+        logger.info(
+            f"P2Fold support: {support.elements.shape[0]} tets, {support.nodes.shape[0]} unknowns. "
+            "nelements counts tets for P2, so cost grows quickly with it"
+        )
 
     def copy(self):
         return P2FoldInterpolator(self.support, fold=self.fold)

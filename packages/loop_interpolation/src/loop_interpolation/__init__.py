@@ -23,6 +23,7 @@ __all__ = [
     "LambdaFoldRotationAngleProfile",
     "P1Interpolator",
     "P1Unstructured2d",
+    "P2FoldInterpolator",
     "P2Interpolator",
     "P2Unstructured2d",
     "P2UnstructuredTetMesh",
@@ -72,6 +73,7 @@ from ._p1interpolator import P1Interpolator
 from ._p1interpolator import (
     P1Interpolator as PiecewiseLinearInterpolator,
 )
+from ._p2_fold_interpolator import P2FoldInterpolator
 from ._p2interpolator import P2Interpolator
 from ._regularisation import DirectionalRegularisation, RegularisationConfig
 
@@ -96,6 +98,7 @@ interpolator_string_map = {
     "PLI": InterpolatorType.PIECEWISE_LINEAR,
     "P2": InterpolatorType.PIECEWISE_QUADRATIC,
     "P1": InterpolatorType.PIECEWISE_LINEAR,
+    "P2Fold": InterpolatorType.PIECEWISE_QUADRATIC_FOLD,
     "DFI": InterpolatorType.DISCRETE_FOLD,
     "surfe": InterpolatorType.SURFE,
     "FDI_CN": InterpolatorType.FINITE_DIFFERENCE_CONSTANT_NORM,
@@ -110,6 +113,7 @@ interpolator_map = {
     InterpolatorType.DISCRETE_FOLD: DiscreteFoldInterpolator,
     InterpolatorType.PIECEWISE_LINEAR: P1Interpolator,
     InterpolatorType.PIECEWISE_QUADRATIC: P2Interpolator,
+    InterpolatorType.PIECEWISE_QUADRATIC_FOLD: P2FoldInterpolator,
     InterpolatorType.BASE_DATA_SUPPORTED: GeologicalInterpolator,
     InterpolatorType.SURFE: SurfeRBFInterpolator,
     InterpolatorType.PIECEWISE_LINEAR_CONSTANT_NORM: ConstantNormP1Interpolator,
@@ -126,6 +130,9 @@ support_interpolator_map = {
     InterpolatorType.PIECEWISE_QUADRATIC: {
         3: SupportType.P2UnstructuredTetMesh,
         2: SupportType.P2Unstructured2d,
+    },
+    InterpolatorType.PIECEWISE_QUADRATIC_FOLD: {
+        3: SupportType.P2UnstructuredTetMesh,
     },
     InterpolatorType.SURFE: {
         3: SupportType.DataSupported,
