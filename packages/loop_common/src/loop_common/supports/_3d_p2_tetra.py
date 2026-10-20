@@ -25,7 +25,14 @@ class P2UnstructuredTetMesh(UnStructuredTetMesh):
                     "neighbours arrays, or origin/step_vector/nsteps_cells to build a "
                     "quadratic tetrahedral mesh over a bounding box"
                 )
+            origin = np.asarray(origin, dtype=float)
+            step_vector = np.asarray(step_vector, dtype=float)
+            nsteps_cells = np.asarray(nsteps_cells)
             nodes, elements, neighbours = self._build_from_bbox(origin, step_vector, nsteps_cells)
+            # kept so that inside() and the setup diagnostics work on a bbox-built mesh
+            self.origin = origin
+            self.step_vector = step_vector
+            self.nsteps_cells = nsteps_cells
         UnStructuredTetMesh.__init__(self, nodes, elements, neighbours, aabb_nsteps)
         self.type = SupportType.P2UnstructuredTetMesh
         if self.elements.shape[1] != 10:

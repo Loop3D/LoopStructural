@@ -186,8 +186,11 @@ class UnStructuredTetMesh(BaseSupport):
         )
         shared_faces = faces[np.array(np.sum(faces, axis=1) == 3).flatten(), :]
         row, col = shared_faces.nonzero()
-        row = row[row.argsort()]
-        col = col[row.argsort()]
+        # one stable sort for both arrays: the default sort is not stable, so ties
+        # (three nodes per face) came out in a numpy/CPU dependent order
+        order = row.argsort(kind="stable")
+        row = row[order]
+        col = col[order]
         shared_face_index = np.zeros((shared_faces.shape[0], 3), dtype=int)
         shared_face_index[:] = -1
         shared_face_index[row.reshape(-1, 3)[:, 0], :] = col.reshape(-1, 3)

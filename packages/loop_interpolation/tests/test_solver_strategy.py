@@ -129,3 +129,35 @@ def test_solve_with_admm_passes_x0_and_returns_history(monkeypatch):
     assert captured["linsys_solver"] == "lsmr"
     assert captured["return_history"] is True
     assert "solve_seconds" in timing
+
+
+def test_cg_iteration_limit_reports_not_converged():
+    import logging
+
+    import numpy as np
+    from loop_interpolation import _solver_strategy
+    from scipy import sparse
+
+    rng = np.random.default_rng(0)
+    A = sparse.csr_matrix(rng.normal(size=(60, 30)))
+    b = rng.normal(size=60)
+    _, ok = _solver_strategy.solve_with_cg(A, b, None, {"maxiter": 2}, {}, logging.getLogger())
+    assert ok is False
+    _, ok = _solver_strategy.solve_with_cg(A, b, None, {"maxiter": 500}, {}, logging.getLogger())
+    assert ok is True
+
+
+def test_update_reuses_setup_kwargs():
+    import numpy as np
+    from loop_interpolation import P1Interpolator, TetMesh
+
+    mesh = TetMesh(origin=np.zeros(3), nsteps=np.full(3, 4), step_vector=np.ones(3))
+    interp = P1Interpolator(mesh)
+    interp.set_value_constraints(np.array([[1.0, 1.0, 1.0, 0.5, 1.0], [2.0, 2.0, 2.0, 1.0, 1.0]]))
+    interp.setup_interpolator(regularisation=3.0)
+    interp.solve_system("cg")
+    before = {k: float(np.mean(v["w"])) for k, v in interp.constraints.items()}
+    interp.up_to_date = False
+    interp.update()
+    after = {k: float(np.mean(v["w"])) for k, v in interp.constraints.items()}
+    assert before == after

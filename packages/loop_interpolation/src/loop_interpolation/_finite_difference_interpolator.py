@@ -156,6 +156,8 @@ class FiniteDifferenceInterpolator(DiscreteInterpolator):
         -------
 
         """
+        # kept so that update() can rebuild the system with the same options
+        self._setup_kwargs = dict(kwargs)
         self.reset()
         regularisation_config = self.resolve_regularisation_config(
             regularisation=kwargs.get("regularisation", None),
