@@ -54,7 +54,7 @@ class P2FoldInterpolator(P2Interpolator):
         self.fold = fold
         logger.info(
             f"P2Fold support: {support.elements.shape[0]} tets, {support.nodes.shape[0]} unknowns. "
-            "nelements counts tets for P2, so cost grows quickly with it"
+            "factory nelements requests grid cells; inspect actual tet and unknown counts"
         )
 
     def copy(self):

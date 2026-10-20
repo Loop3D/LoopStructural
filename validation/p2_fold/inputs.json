@@ -1,0 +1,26 @@
+{
+  "commit": "b1ca2cd7165ac1a0c0c7be2073225b73a62e2fd1",
+  "input_sha256": {
+    "S0": "8db96e4812dbdf49cab3fdc2ed25a02d70fe1b3cf8c06f9fb3cec605761a4e7d",
+    "S2": "f005e17d29c1fd71adbbfffc7fd9f28a0263092def389c149f79b24a3e2d07d0",
+    "S3": "da5cbf5415af9b3507971c46785b8d8e28fe295d8f8434dabb7a66bed3850df8",
+    "S4": "77c8b01092bf605d311ee329dd01d80a54d32703bcfa418831ef7b2375abafb4"
+  },
+  "maximum": [
+    238500.0,
+    5965250.0,
+    50.0
+  ],
+  "origin": [
+    238275.0,
+    5965000.0,
+    -50.0
+  ],
+  "seed": 12345,
+  "solver": "cg",
+  "solver_kwargs": {
+    "maxiter": 20000,
+    "rtol": 1e-08
+  },
+  "target_buffer": 0.0
+}
