@@ -223,8 +223,9 @@ class ModelFeatureFactory:
             ``"DFI"`` (default, piecewise linear) or ``"P2Fold"`` (piecewise quadratic).
             Other values are replaced by ``"DFI"`` with a warning.
         nelements : int
-            number of elements in the support. For ``"P2Fold"`` this is the number
-            of tetrahedra, e.g. 1e4 gives about 56k tets and 86k unknowns
+            requested structured-grid cell budget. Each cell splits into five
+            tetrahedra. For ``"P2Fold"``, a request of 1e4 gave about 56k tets
+            and 86k unknowns in the Bermagui validation; inspect the actual counts
         kwargs
             additional kwargs to be passed through to other functions
 
@@ -315,7 +316,8 @@ class ModelFeatureFactory:
         interpolatortype : str
             ``"DFI"`` or ``"P2Fold"`` sets the interpolator of the first (fold) coordinate.
             Any other value gives ``"DFI"``. The other two coordinates always use FDI.
-            For ``"P2Fold"``, ``nelements`` is the number of tetrahedra.
+            ``nelements`` is a structured-grid cell budget, not a literal
+            tetrahedron count. P2 adds edge nodes; inspect the actual dof.
         fold_frame : StructuralFrame, optional
             the fold frame for the fold if not specified uses last feature added
         nelements : int
