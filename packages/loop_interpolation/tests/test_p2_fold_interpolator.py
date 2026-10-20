@@ -178,3 +178,82 @@ def test_per_row_weight_with_3d_input_is_repeated_not_tiled(mesh):
     idc = np.tile(np.array([[0, 1]]), (2, 3, 1))
     i.add_constraints_to_least_squares(A, np.ones((2, 3)), idc, w=np.array([1.0, 2.0]), name="t3")
     np.testing.assert_allclose(i.constraints["t3"]["w"], [1, 1, 1, 2, 2, 2])
+
+
+@pytest.mark.parametrize("family", ["fold orientation", "fold axis", "fold normalisation"])
+def test_quadrature_preserves_total_family_energy(mesh, family):
+    # Rows are normalised before weighting. The squared Frobenius norm is
+    # E[||WAx||^2] for an isotropic unit-variance nodal field x, so this tests
+    # the family energy without assuming identical residuals at different points.
+    energies = []
+    for rule in ("centroid", "gauss4"):
+        c = _setup(mesh, sample_rule=rule).constraints[family]
+        WA = c["matrix"].multiply(c["w"][:, None])
+        energies.append(float(WA.multiply(WA).sum()))
+    np.testing.assert_allclose(energies[0], energies[1], rtol=1e-12)
+
+
+def test_nan_fold_rows_build_and_log_count(mesh, caplog):
+    class PartialFold(SimpleFold):
+        def get_deformed_orientation(self, points):
+            ori, axis, dgz = super().get_deformed_orientation(points)
+            ori[points[:, 0] < 1.0] = np.nan
+            return ori, axis, dgz
+
+    i = P2FoldInterpolator(mesh, fold=PartialFold())
+    pts, _, _ = tet_quadrature_points(mesh.nodes, mesh.elements, "gauss4")
+    dropped = int(np.sum(pts[:, 0] < 1.0))
+    i.setup_interpolator()
+    assert i.constraints["fold orientation"]["matrix"].shape[0] == len(pts) - dropped
+    assert i.constraints["fold axis"]["matrix"].shape[0] == len(pts)
+    assert f"Dropped {dropped} non-finite rows from fold orientation" in caplog.text
+    assert i.solve_system("cg")
+    assert np.isfinite(i.evaluate_value(np.array([[0.5, 0.5, 0.5]]))).all()
+
+
+@pytest.mark.parametrize("alignment,expected_sign", [("none", -1), ("warn", -1), ("correct", 1)])
+def test_fold_norm_sign_matches_dfi(mesh, alignment, expected_sign):
+    from loop_interpolation import DiscreteFoldInterpolator, TetMesh
+    from loop_interpolation._fold_norm_alignment import resolve_fold_norm_target
+    from unittest.mock import Mock
+
+    normals = np.array([[0.5, 0.5, 0.5, -1., 0., 0.]])
+    target = resolve_fold_norm_target(
+        fold=SimpleFold(), normal_constraints=normals, fold_norm=-1.,
+        dgz_alignment=alignment, logger=Mock(),
+    )
+    assert np.sign(target) == expected_sign
+    dfi = DiscreteFoldInterpolator(
+        TetMesh(origin=np.zeros(3), step_vector=np.ones(3), nsteps=np.full(3, 3)),
+        fold=SimpleFold(),
+    )
+    for i in (_interp(mesh), dfi):
+        i.set_normal_constraints(normals)
+        i.setup_interpolator(fold_weights={"dgz_alignment": alignment})
+        assert np.all(np.sign(i.constraints["fold normalisation"]["b"]) == np.sign(target))
+
+
+@pytest.mark.parametrize("angle", [0.0, 30.0])
+def test_constant_fold_without_orientation_data(mesh, angle):
+    theta = np.deg2rad(angle)
+    orientation = np.array([np.sin(theta), 0., np.cos(theta)])
+    dgz = np.array([np.cos(theta), 0., -np.sin(theta)])
+    expected = -dgz  # normalisation target -1
+
+    class ConstantAngleFold:
+        def get_deformed_orientation(self, points):
+            return tuple(np.tile(v, (len(points), 1)) for v in
+                         (orientation, np.array([0., 1., 0.]), dgz))
+
+    i = P2FoldInterpolator(mesh, fold=ConstantAngleFold())
+    contacts = np.array([[0.5, 0.5, 0.5], [1.5, 1.5, 1.5]])
+    i.set_value_constraints(np.c_[contacts, contacts @ expected])
+    i.setup_interpolator()
+    assert i.solve_system("cg")
+    points = np.random.default_rng(83).uniform(0.1, 1.9, (100, 3))
+    gradient = i.evaluate_gradient(points)
+    assert np.isfinite(gradient).all()
+    angles = np.degrees(np.arccos(np.clip(
+        gradient @ expected / np.linalg.norm(gradient, axis=1), -1., 1.
+    )))
+    assert np.median(angles) < 1.0

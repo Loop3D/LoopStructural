@@ -113,6 +113,9 @@ class P2FoldInterpolator(P2Interpolator):
 
         def _add(vectors, target, w, name):
             v = valid & np.all(np.isfinite(vectors), axis=1)
+            dropped = int(np.count_nonzero(~v))
+            if dropped:
+                logger.warning("Dropped %d non-finite rows from %s", dropped, name)
             # no volume factor: row normalisation would cancel it
             A = np.einsum("ij,ijk->ik", vectors[v], dN[v])
             B = np.full(A.shape[0], float(target))
