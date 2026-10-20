@@ -140,3 +140,6 @@ conda/win-64
 sandbox/*
 # Local validation outputs
 /validation/
+
+# codebase-graph
+.codebaseGraph/
