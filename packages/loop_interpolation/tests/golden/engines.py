@@ -11,6 +11,7 @@ from loop_interpolation import (
     FiniteDifferenceInterpolator,
     FoldEvent,
     P1Interpolator,
+    P2FoldInterpolator,
     P2Interpolator,
     P2UnstructuredTetMesh,
     StructuredGrid,
@@ -19,7 +20,7 @@ from loop_interpolation import (
 
 N_NODES = 17  # nodes per axis for FD and P1 (16 cells)
 P2_CELLS = 8  # P2 has ~8 nodes per cell: 8 cells gives ~4k unknowns, similar to FD/P1
-ENGINES = ("FD", "P1", "P2", "DFI", "FDFold")
+ENGINES = ("FD", "P1", "P2", "DFI", "FDFold", "P2Fold")
 # Pinned. The default CG stops early and still returns True (review bug 3), so the golden
 # fields use a converged solve. `solve_default` below reproduces what a user gets today.
 SOLVER = "cg"
@@ -70,8 +71,10 @@ def make_interpolator(engine: str, case):
         if engine == "P1":
             return P1Interpolator(mesh)
         return DiscreteFoldInterpolator(mesh, fold=make_fold_event(case))
-    if engine == "P2":
+    if engine in ("P2", "P2Fold"):
         mesh = P2UnstructuredTetMesh(origin=origin, step_vector=np.full(3, 1.0 / P2_CELLS), nsteps_cells=np.full(3, P2_CELLS))
+        if engine == "P2Fold":
+            return P2FoldInterpolator(mesh, fold=make_fold_event(case))
         return P2Interpolator(mesh)
     raise ValueError(engine)
 
@@ -84,7 +87,7 @@ def add_data(interp, case):
 
 
 def setup_kwargs(engine: str) -> dict:
-    if engine in ("DFI", "FDFold"):
+    if engine in ("DFI", "FDFold", "P2Fold"):
         return {}
     return {}
 

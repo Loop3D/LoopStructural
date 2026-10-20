@@ -22,10 +22,10 @@ import time  # noqa: E402
 
 _RECORDS: list[dict] = []
 
-_FOLD_FOUR = [("fold_sparse", e, False) for e in ("FD", "P1", "DFI", "FDFold")]
+_FOLD_ENGINES = [("fold_sparse", e, False) for e in ("FD", "P1", "DFI", "FDFold", "P2Fold")]
 _BY_NAME = {
-    "test_fold_constraints_help": _FOLD_FOUR,
-    "test_refolded_fold_constraints_help": [("refolded_sparse", e, False) for e in ("FD", "P1", "DFI", "FDFold")],
+    "test_fold_constraints_help": _FOLD_ENGINES,
+    "test_refolded_fold_constraints_help": [("refolded_sparse", e, False) for e in ("FD", "P1", "DFI", "FDFold", "P2Fold")],
     "test_p2_not_worse_than_p1_on_smooth_dome": [("dome", "P1", False), ("dome", "P2", False)],
     "test_known_p2_normal_weight_has_effect": [("planar_noisy", "P2", False)],
     "test_dfi_is_repeatable_with_reseed": [("fold_sparse", "DFI", False)],

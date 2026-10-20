@@ -26,10 +26,10 @@ python -m tests.golden.run --case fold_sparse --engine DFI --vti   # one run + a
 | `planar_noisy` | same plane | z +-0.01, normals +-3 deg | smoothing versus over-fitting |
 | `dome` | Gaussian dome, relief 0.2 | 3 horizons, 9 boreholes, 5 normals | crest flattening, curved horizons |
 | `fold_section` | cylindrical fold (wavelength 0.6, amplitude 0.12) | one cross-section at y = 0.5 | plain interpolation along the fold axis |
-| `fold_sparse` | same fold | 2 value points + 1 normal | fold constraints (`DFI`, `FDFold`) against none (`FD`, `P1`, `P2`) |
+| `fold_sparse` | same fold | 2 value points + 1 normal | fold constraints (`DFI`, `FDFold`, `P2Fold`) against none (`FD`, `P1`, `P2`) |
 | `refolded_sparse` | F2 fold (axis y) refolded by F3 (axis x): dome and basin, `s = z - A sin(k2 x) - B sin(k3 y)` | 3 contacts + 6 normals | the `fold_axis_rotation` path: the hinge plunge changes along the axis (as at Bermagui) |
 
-Engines: `FD` (17^3 nodes), `P1` (17^3 nodes), `P2` (8^3 cells, 4.4k unknowns), `DFI` (P1 + fold), `FDFold` (FD + fold).
+Engines: `FD` (17^3 nodes), `P1` (17^3 nodes), `P2` (8^3 cells, 4.4k unknowns), `DFI` (P1 + fold), `FDFold` (FD + fold), `P2Fold` (P2 + fold, 8^3 cells / 4401 unknowns).
 Fold frame is analytic (gx = x, gy = y), fold axis (0, -1, 0). With that axis `dgz` points against the
 normals, which is the library convention (`fold_norm = -1`).
 
@@ -99,5 +99,60 @@ Choose bounds in `test_golden.py::BOUNDS` about 1.5x above what the code gives.
 ## Not covered yet
 
 Faults (equality constraints, review bug 1), inequality constraints (bug 2), tangent and interface
-constraints, regularisation variants, `fold_weights` options, P2 fold (no class yet),
+constraints, regularisation variants, additional `fold_weights` options,
 `mask_fn`, and meshes that are not unit cubes. DFI on a cube mesh only: no graded or unstructured mesh.
+
+
+## P2 fold coverage (Phase 3)
+
+P2Fold is pinned on `fold_sparse` and `refolded_sparse`, including fields,
+gradients and all constraint-family fingerprints. Only the four new P2Fold
+baseline files were generated; existing golden files were preserved.
+The figures were reviewed: fold shape and gradient directions agree well, with
+a remaining vertical offset in the refolded section and spatially varying value
+error. Neither gauss4 result has inverted gradients in the inner evaluation box.
+Bounds are approximately 1.5 times the observed RMS and median direction errors;
+the refolded bound stays above the fold event's approximately 2 degree model floor.
+
+| Case | Rule | Value RMS | Median gradient error | P90 gradient error |
+|---|---|---:|---:|---:|
+| fold_sparse | centroid | 0.00329 | 1.364 deg | 5.303 deg |
+| fold_sparse | gauss4 | 0.01652 | 0.856 deg | 2.124 deg |
+| refolded_sparse | centroid | 0.03068 | 4.422 deg | 12.571 deg |
+| refolded_sparse | gauss4 | 0.05507 | 2.179 deg | 5.795 deg |
+
+These comparisons use the same fixed seed, explicit unit-cube mesh bounds
+(zero buffer), data, solver tolerance and 4401 unknowns. Gauss4 improves gradient
+direction in both cases, now checked by a regression test. It does **not** improve
+value RMS or fit to the sparse normals; no universal accuracy claim is made.
+Centroid also has one inverted inner probe on the refolded case.
+The DFI comparison uses a separate budget-matched mesh with 15 x 15 x 16
+cells (4352 unknowns) versus P2Fold's 4401, a 1.13% difference. These mesh
+families do not have identical node counts. Both supports have explicit unit-cube
+bounds and no buffer, asserted in the test, and use the same fixed seed. The
+existing, larger DFI golden mesh and its baseline are unchanged.
+
+Unit tests pin total weighted operator energy (squared Frobenius norm) for each
+fold family between quadrature rules, weight sensitivity (10 to 50), fold norm
+sign against DFI and `resolve_fold_norm_target`, update persistence, constant-angle
+folds without orientation data, and dropped NaN row counts. The energy test does
+not assert equal energy for every field: normalising the shape-derivative rows
+changes the residual at different sample locations. There is no LinearOperator
+path here, so the optional adjoint test does not apply.
+Model integration checks folded-fold-frame construction without DFI fallback and
+preservation of the P2Fold interpolator type after save/load.
+
+
+Validation on Windows / Python 3.13 (shared environment, source paths explicitly
+pointed at this worktree): interpolation package **577 passed, 34 skipped,
+2 xfailed in 56.82 s**; golden suite **143 passed, 9 skipped, 2 xfailed in
+27.92 s**; P2Fold model integration **5 passed in 11.55 s**. The final golden run was standalone; the package and integration runs overlapped
+with the root suite. These are wall-clock observations rather than a benchmark.
+For sandboxed runs, pass `--basetemp=<worktree-local-directory>` when the default
+pytest temporary directory is inaccessible. Existing lower-boundary NaNs remain
+strict expected failures. The new P2Fold cases add two small 8^3-cell solves,
+plus weight-sensitivity, quadrature-comparison and budget-matched DFI checks.
+
+The full root suite also passed: **727 passed, 3 skipped, 21 warnings in
+407.56 s (6 min 48 s)**, using a worktree-local pytest temporary directory.
+No test failures remain.

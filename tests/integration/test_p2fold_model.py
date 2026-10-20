@@ -60,10 +60,11 @@ def test_p2fold_save_load(tmp_path):
     path = tmp_path / "p2fold.pkl"
     model.to_file(str(path))
     loaded = GeologicalModel.from_file(str(path))
+    assert type(loaded["s0"].builder.interpolator) is P2FoldInterpolator
     assert np.allclose(loaded["s0"].evaluate_value(xyz), v, equal_nan=True)
 
 
-def test_p2fold_folded_fold_frame():
+def test_p2fold_folded_fold_frame(caplog):
     mdata = data
     model = GeologicalModel(boundary_points[0, :], boundary_points[1, :])
     model.set_model_data(mdata)
@@ -76,4 +77,5 @@ def test_p2fold_folded_fold_frame():
         fold_axis=[-6.51626577e-06, -5.00013645e-01, -8.66017526e-01],
         limb_wl=1,
     )
-    assert isinstance(frame[0].builder.interpolator, P2FoldInterpolator)
+    assert type(frame[0].builder.interpolator) is P2FoldInterpolator
+    assert not any("DFI" in r.message and r.levelname == "WARNING" for r in caplog.records)

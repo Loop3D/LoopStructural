@@ -41,6 +41,8 @@ BOUNDS = {
     ("planar_noisy", "*"): (0.03, 3.0),
     ("dome", "*"): (0.09, 17.0),
     ("fold_section", "*"): (0.12, 32.0),
+    ("fold_sparse", "P2Fold"): (0.025, 1.3),
+    ("refolded_sparse", "P2Fold"): (0.083, 3.3),
     ("fold_sparse", "DFI"): (0.15, 6.0),
     ("fold_sparse", "FDFold"): (0.20, 15.0),
     ("refolded_sparse", "DFI"): (0.20, 8.0),
@@ -193,7 +195,7 @@ def test_p2_normal_weight_has_effect():
     assert np.nanmax(np.abs(out[0] - out[1])) > 1e-4
 
 
-@pytest.mark.parametrize("engine", ["DFI", "FDFold"])
+@pytest.mark.parametrize("engine", ["DFI", "FDFold", "P2Fold"])
 def test_update_keeps_fold_weights(engine):
     case = geomodels.build("fold_sparse")
     engines.reseed()
@@ -240,3 +242,57 @@ def test_known_points_on_lower_boundary_are_finite(engine):
     r = result(case, engine)
     on_lower = np.any(np.isclose(r["points"], 0.0), axis=1)
     assert np.all(np.isfinite(r["value"][on_lower]))
+
+
+def test_p2_fold_weights_move_field():
+    case = geomodels.build("fold_sparse")
+    fields = []
+    for weight in (10., 50.):
+        engines.reseed()
+        it = engines.make_interpolator("P2Fold", case)
+        engines.add_data(it, case)
+        it.setup_interpolator(fold_weights={"fold_orientation": weight, "fold_axis_w": weight})
+        assert it.solve_system(engines.SOLVER, solver_kwargs=dict(engines.SOLVER_KWARGS))
+        fields.append(it.evaluate_value(harness.probe_points()))
+    assert np.isfinite(fields).all()
+    assert np.max(np.abs(fields[0] - fields[1])) > 1e-4
+
+
+def test_p2_fold_direction_not_worse_than_dfi():
+    from loop_interpolation import DiscreteFoldInterpolator, TetMesh
+
+    # Explicit identical bounds, zero buffer, fixed seed, and a nodal budget
+    # matched within 1.2% (4401 vs 4352). Do not reuse the larger golden DFI mesh.
+    case = geomodels.build("fold_sparse")
+    cells = np.array([15, 15, 16])
+    mesh = TetMesh(origin=np.zeros(3), nsteps_cells=cells, step_vector=1. / cells)
+    engines.reseed()
+    dfi = DiscreteFoldInterpolator(mesh, fold=engines.make_fold_event(case))
+    engines.add_data(dfi, case)
+    dfi.setup_interpolator()
+    assert dfi.solve_system(engines.SOLVER, solver_kwargs=dict(engines.SOLVER_KWARGS))
+    p2 = result("fold_sparse", "P2Fold")
+    assert abs(p2["info"]["dof"] / dfi.dof - 1) < 0.012
+    for support in (dfi.support, p2["interp"].support):
+        np.testing.assert_allclose(support.nodes.min(axis=0), 0.)
+        np.testing.assert_allclose(support.nodes.max(axis=0), 1.)
+    points = harness.probe_points()
+    points = points[harness.eval_mask(points, case)]
+    angles = harness.angle_deg(dfi.evaluate_gradient(points), case.truth_grad(points))
+    assert np.isfinite(angles).all()
+    assert p2["metrics"]["angle_median"] <= np.median(angles)
+
+
+@pytest.mark.parametrize("case_name", ["fold_sparse", "refolded_sparse"])
+def test_p2_gauss4_improves_gradient_direction(case_name):
+    case = geomodels.build(case_name)
+    engines.reseed()
+    it = engines.make_interpolator("P2Fold", case)
+    engines.add_data(it, case)
+    it.setup_interpolator(fold_weights={"sample_rule": "centroid"})
+    assert it.solve_system(engines.SOLVER, solver_kwargs=dict(engines.SOLVER_KWARGS))
+    points = harness.probe_points()
+    mask = harness.eval_mask(points, case)
+    angles = harness.angle_deg(it.evaluate_gradient(points[mask]), case.truth_grad(points[mask]))
+    assert np.isfinite(angles).all()
+    assert result(case_name, "P2Fold")["metrics"]["angle_median"] < np.median(angles)

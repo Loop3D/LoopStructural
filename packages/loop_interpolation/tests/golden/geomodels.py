@@ -203,7 +203,7 @@ def fold_sparse() -> Case:
         "The Bermagui situation: little data, strong fold. The fold constraints must supply the "
         "gradient direction everywhere. The FD and P1 columns have no fold constraint and show "
         "what is gained. A drop in DFI/FDFold accuracy is a fold-constraint regression.",
-        s, g, values, np.c_[p, g(p)], fold=fold, engines=("FD", "P1", "P2", "DFI", "FDFold"),
+        s, g, values, np.c_[p, g(p)], fold=fold, engines=("FD", "P1", "P2", "DFI", "FDFold", "P2Fold"),
     )
 
 
@@ -245,7 +245,7 @@ def refolded_sparse() -> Case:
         "The Bermagui geometry in miniature: the hinge plunge changes along the axis, so a constant "
         "axis is wrong. Tests the fold_axis_rotation path of the fold interpolators (DFI, FDFold). "
         "FD, P1 and P2 have no fold constraint and show what the fold event adds.",
-        s, g, values, np.c_[p, g(p)], fold=fold, engines=("FD", "P1", "P2", "DFI", "FDFold"),
+        s, g, values, np.c_[p, g(p)], fold=fold, engines=("FD", "P1", "P2", "DFI", "FDFold", "P2Fold"),
     )
 
 
