@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "loopstructuralvisualisation"
 description = "3D geological modelling visualisation for LoopStructural"
-version = "0.2.1"
+version = "0.2.2"
 requires-python = ">=3.9"
 authors = [{ name = "Lachlan Grose", email = "lachlan.grose@monash.edu" }]
 readme = "README.md"
@@ -30,7 +30,7 @@ classifiers = [
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
 ]
-dependencies = ["numpy>=1.18", "pyvista>=0.42", "LoopStructural>=1.6.17"]
+dependencies = ["numpy>=1.18", "matplotlib>=3.6", "pyvista>=0.44", "LoopStructural>=1.8.0"]
 
 [project.optional-dependencies]
 jupyter = ["pyvista[jupyter]"]

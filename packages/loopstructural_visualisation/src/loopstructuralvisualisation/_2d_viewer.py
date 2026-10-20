@@ -10,7 +10,7 @@ from LoopStructural.modelling.features import FeatureType
 class Loop2DView:
     """ """
 
-    def __init__(self, model=None, bounding_box=np.zeros((2, 2)), nsteps=None, ax=None, **kwargs):
+    def __init__(self, model=None, bounding_box=None, nsteps=None, ax=None, **kwargs):
         """
 
         Parameters
@@ -23,8 +23,9 @@ class Loop2DView:
 
         self.xx = None
         self.yy = None
+        self._model = None
 
-        self._bounding_box = bounding_box
+        self._bounding_box = np.zeros((2, 2)) if bounding_box is None else bounding_box
         self._nsteps = nsteps
         if self._nsteps is not None and self._bounding_box is not None:
             self._update_grid()
@@ -50,9 +51,9 @@ class Loop2DView:
     @model.setter
     def model(self, model):
         if model is not None:
-            bb = np.array([model.origin[:2], model.maximum[:2]])
+            bb = np.array([model.bounding_box.origin[:2], model.bounding_box.maximum[:2]])
             self.bounding_box = bb  # model.bounding_box
-            self.nsteps = model.nsteps[:2]
+            self.nsteps = model.bounding_box.nsteps[:2]
             self._model = model
             self._update_grid()
 
@@ -171,7 +172,6 @@ class Loop2DView:
             if unfault:
                 value_data = np.copy(feature.interpolator.get_value_constraints())
 
-            value_data[:, :3] = self.model.rescale(value_data[:, :3], inplace=False)
             point_colour = kwargs.pop("point_colour", None)
             if point_colour is None:
                 self.ax.scatter(
@@ -184,11 +184,10 @@ class Loop2DView:
                 )
             if point_colour is not None:
                 self.ax.scatter(value_data[:, 0], value_data[:, 1], c=point_colour)
-        if grad:
+        if grad and ori_data:
             symb_colour = kwargs.pop("symb_colour", "black")
             symb_scale = kwargs.pop("symb_scale", 1.0)
-            gradient_data = np.hstack(ori_data)
-            gradient_data[:, :3] = self.model.rescale(gradient_data[:, :3], inplace=False)
+            gradient_data = np.vstack(ori_data).copy()
             gradient_data[:, 3:5] /= np.linalg.norm(gradient_data[:, 3:5], axis=1)[:, None]
             t = gradient_data[:, [4, 3]] * np.array([1, -1]).T
             n = gradient_data[:, 3:5]
@@ -209,18 +208,19 @@ class Loop2DView:
     def add_fault_ellipse(self, faults=None, **kwargs):
         from matplotlib.patches import Ellipse
 
-        for f in self.model.stratigraphic_column["faults"].values():
-            center = self.model.rescale(f["FaultCenter"])
+        if faults is None:
+            faults = self.model.faults
+        for fault in faults:
+            center = fault.fault_centre
+            strike = fault.fault_strike_vector
             e = Ellipse(
                 (center[0], center[1]),
-                f["HorizontalRadius"] * 2,
-                f["InfluenceDistance"] * 2,
-                360 - f["FaultDipDirection"],
-                facecolor="None",
-                edgecolor="k",
+                fault.fault_major_axis * 2,
+                fault.fault_minor_axis * 2,
+                angle=np.degrees(np.arctan2(strike[1], strike[0])),
+                **({'facecolor': 'none', 'edgecolor': 'k'} | kwargs),
             )
-
-        self.ax.add_patch(e)
+            self.ax.add_patch(e)
 
     def add_scalar_field(self, feature, z=0, **kwargs):
         """
@@ -240,9 +240,7 @@ class Loop2DView:
         """
         zz = np.zeros(self.xx.shape)
         zz[:] = z
-        v = feature.evaluate_value(
-            self.model.scale(np.array([self.xx, self.yy, zz]).T, inplace=False)
-        )
+        v = feature.evaluate_value(np.array([self.xx, self.yy, zz]).T)
         return self.ax.imshow(
             v.reshape(self.nsteps).T,
             extent=[
@@ -271,11 +269,10 @@ class Loop2DView:
         """
         zz = np.zeros(self.xx.shape)
         zz[:] = z
-        v = feature.evaluate_value(
-            self.model.scale(np.array([self.xx, self.yy, zz]).T, inplace=False)
-        )
+        points = np.array([self.xx, self.yy, zz]).T
+        v = feature.evaluate_value(points)
         if mask:
-            maskv = mask(self.model.scale(np.array([self.xx, self.yy, zz]).T, inplace=False))
+            maskv = mask(points)
             v[~maskv] = np.nan
         return self.ax.contour(
             v.reshape(self.nsteps).T,
@@ -300,27 +297,14 @@ class Loop2DView:
         cmap : str/matplotlib colourmap, optional
             specify a colour map, by default 'tab20'
         """
-        if cmap is None:
-            import matplotlib.colors as colors
-
-            colours = []
-            boundaries = []
-            data = []
-            for g in self.model.stratigraphic_column.keys():
-                if g == "faults":
-                    continue
-                for v in self.model.stratigraphic_column[g].values():
-                    data.append((v["id"], v["colour"]))
-                    colours.append(v["colour"])
-                    boundaries.append(v["id"])  # print(u,v)
-            cmap = colors.ListedColormap(colours)
-
         zz = np.zeros_like(self.xx)
         zz[:] = z  # self.bounding_box[1,2]
         pts = np.vstack([self.xx.flatten(), self.yy.flatten(), zz.flatten()])
         if self.model is None:
             logger.error("Mapview needs a model assigned to plot model on map")
             return
+        if cmap is None:
+            cmap = self.model.stratigraphic_column.cmap()
         vals = self.model.evaluate_model(pts.T, scale=True)
         return self.ax.imshow(
             vals.reshape(self.nsteps).T,
