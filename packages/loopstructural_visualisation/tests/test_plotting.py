@@ -1,5 +1,7 @@
 """Exercise real VTK pipelines against the workspace LoopStructural API."""
 
+import os
+import sys
 from types import SimpleNamespace
 
 import matplotlib
@@ -17,6 +19,13 @@ from LoopStructural.geometry import ValuePoints, VectorPoints
 from LoopStructural.modelling.features import AnalyticalGeologicalFeature, StructuralFrame
 from LoopStructural.modelling.features.fault import FaultSegment
 
+
+# Windows CI runners have no OpenGL context; VTK then crashes with an access
+# violation, which cannot be caught, so rendering tests are skipped there.
+requires_gl = pytest.mark.skipif(
+    sys.platform == "win32" and os.environ.get("CI") == "true",
+    reason="no OpenGL context on Windows CI runners",
+)
 
 @pytest.fixture
 def model():
@@ -111,6 +120,7 @@ def test_plot_data_names_and_frame(view, model, monkeypatch):
     assert "normals_vectors" in view.actors
 
 
+@requires_gl
 def test_offscreen_render(view, model):
     view.plot_surface(model["strati"], value=[4.0])
     image = view.screenshot(return_img=True)
@@ -118,6 +128,7 @@ def test_offscreen_render(view, model):
     assert np.any(image != image[0, 0])
 
 
+@requires_gl
 def test_block_model_api_screenshot(model, tmp_path, monkeypatch):
     from loopstructuralvisualisation.api import plot_block_model
 
