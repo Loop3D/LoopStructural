@@ -364,7 +364,8 @@ class DiscreteInterpolator(GeologicalInterpolator):
         if len(A.shape) > 2:
             n_rows = A.shape[0] * A.shape[1]
             if isinstance(w, np.ndarray):
-                w = np.tile(w, (A.shape[1]))
+                # reshape below puts row (i, j) at i * A.shape[1] + j, so repeat, not tile
+                w = np.repeat(w, A.shape[1])
             A = A.reshape((A.shape[0] * A.shape[1], A.shape[2]))
             idc = idc.reshape((idc.shape[0] * idc.shape[1], idc.shape[2]))
             B = B.reshape(A.shape[0])
