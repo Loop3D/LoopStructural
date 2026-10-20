@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "loopstructuralvisualisation"
 description = "3D geological modelling visualisation for LoopStructural"
-version = "0.2.1"
+version = "0.2.2"
 requires-python = ">=3.9"
 authors = [{ name = "Lachlan Grose", email = "lachlan.grose@monash.edu" }]
 readme = "README.md"
