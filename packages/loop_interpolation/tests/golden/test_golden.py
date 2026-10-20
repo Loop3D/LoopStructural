@@ -141,7 +141,10 @@ def _compare_family(name, now, ref):
         if now[key] != ref[key]:
             problems.append(f"{name}.{key}: {ref[key]} -> {now[key]}")
     for key in ("A_sum", "A_fro", "b_sum", "b_norm", "w_min", "w_max", "WA_fro", "A_rowmoment"):
-        if not np.isclose(now[key], ref[key], rtol=1e-8, atol=1e-10):
+        # A_rowmoment is a signed sum that cancels to about 1e-9, so it carries
+        # platform noise (numpy/BLAS ordering). A real row reorder moves it by far more.
+        atol = 1e-6 if key == "A_rowmoment" else 1e-10
+        if not np.isclose(now[key], ref[key], rtol=1e-8, atol=atol):
             problems.append(f"{name}.{key}: {ref[key]:.10g} -> {now[key]:.10g}")
     return problems
 
