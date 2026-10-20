@@ -14,7 +14,10 @@ from trame.ui.vuetify3 import SinglePageWithDrawerLayout
 from trame.widgets import vuetify3 as vuetify
 
 import pyvista
-from pyvista.trame.ui.vuetify3 import Viewer
+try:
+    from trame_pyvista.ui.vuetify3 import Viewer
+except ImportError:
+    from pyvista.trame.ui.vuetify3 import Viewer
 
 
 if TYPE_CHECKING:  # pragma: no cover
