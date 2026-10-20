@@ -83,8 +83,9 @@ between DFI and P2Fold. For the Bermagui box with ``buffer=0.0``:
 The largest gauss4 S0 case took about 93 seconds in ``solve_system`` and used
 about 6.6 GiB peak resident memory on the validation machine. These are single
 measurements, not runtime or memory guarantees. The
-`Bermagui validation report <https://github.com/Loop3D/LoopStructural/blob/master/validation/p2_fold/README.md>`_
-contains the complete protocol, corrected table, figures and reproduction script.
+`Bermagui handoff <https://github.com/Loop3D/LoopStructural/blob/master/agent/HANDOFF_p2_fold.md>`_
+records the corrected comparison summary and limitations. The scripts in
+``scripts/validation`` reproduce the detailed results and figures locally.
 
 Interpreting the result
 -----------------------

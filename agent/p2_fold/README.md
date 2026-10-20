@@ -42,7 +42,7 @@ Each folder has `plan.md` (why and how) and `tasks.md` (checklist).
 Phases 0-3 are on master. Phase 4 measurements and the decision gate are complete:
 S2 gauss4 4.69 deg / 9,711 unknowns versus DFI 6.15 deg / 12,992; S0 gauss4
 11.14 deg / 85,673 versus DFI 20.63 deg / 112,560. See the
-[full table and limitations](../../validation/p2_fold/README.md).
+[summary and limitations](../HANDOFF_p2_fold.md).
 The old prototype weighting and "nelements is tets" statements are superseded.
 The API note and bundled-data example are in [PR #349](https://github.com/Loop3D/LoopStructural/pull/349). Post-merge
 release scoping and Phase 5 remain pending; this phase does not change buffer

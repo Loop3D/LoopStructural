@@ -264,7 +264,7 @@ def worker(args):
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--project", type=Path, required=True)
-    parser.add_argument("--out", type=Path, default=Path("validation/p2_fold/runtime"))
+    parser.add_argument("--out", type=Path, default=Path(".pytest_cache/p2_fold/runtime"))
     parser.add_argument("--buffer", type=float, default=0.0)
     parser.add_argument("--mode", choices=("prepare", "worker", "all"), default="all")
     parser.add_argument("--target", choices=("S2", "S0"), default="S2")

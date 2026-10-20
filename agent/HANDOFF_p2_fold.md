@@ -4,7 +4,7 @@
 
 Phases 0-3 are implemented on `master`. The original prototype narrative below
 is retained as historical context and is **superseded** for current results and
-weighting rules by [the corrected validation report](../validation/p2_fold/README.md).
+weighting rules by the corrected measurements in this section.
 The library class and factory registration are in use; an engine swap is no
 longer required.
 
@@ -19,7 +19,7 @@ frames, seed 12345, explicit target buffer 0, pinned CG settings, and S0
 | S0 | DFI | 112,560 | 20.63 | 37.282 |
 | S0 | P2Fold gauss4 | 85,673 | 11.14 | 19.379 |
 
-The report also records the requested full P2 meshes (S2 1e4, S0 1e5), both
+The comparison also covers the requested full P2 meshes (S2 1e4, S0 1e5), both
 sampling rules, tets, solve time, peak resident memory, input hashes and figures.
 The full S0 gauss4 run has 765,347 unknowns, median 8.69 deg, 16.1% above 30 deg,
 92.5 s solve time and about 6.6 GiB peak RSS. The remaining S0 error tail matters.

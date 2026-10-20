@@ -150,7 +150,7 @@ def render(runtime, output, rows):
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("runtime", type=Path)
-    parser.add_argument("--output", type=Path, default=Path("validation/p2_fold"))
+    parser.add_argument("--output", type=Path, default=Path(".pytest_cache/p2_fold"))
     args = parser.parse_args()
     rows = [json.loads(p.read_text()) for p in sorted(args.runtime.glob("S*.json"))]
     outcome = decision(rows)

@@ -31,8 +31,8 @@ Worktree: `.claude/worktrees/p2-phase4`, branch `p2-phase4-validation`, based on
 `C:/Users/lachl/scratch/bonnie/Honours_model23.09`.
 
 All ten candidate solves completed with finite inner probes. The
-[validation report](../../../validation/p2_fold/README.md) contains the complete
-corrected table, protocol, costs, input hashes, historical comparison and figures.
+[handoff](../../HANDOFF_p2_fold.md) records the corrected summary and limitations.
+Detailed results, input hashes and figures are generated locally by the comparison scripts.
 The code uses the library factory; no engine swap or prototype class is used.
 Extra smaller P2 cases make the unknown-budget decision gate meaningful.
 S0 uses a fixed DFI S2 driver for every candidate; this is documented explicitly.
@@ -58,3 +58,13 @@ package path scoping, which currently passes. No release/version PR is merged
 by this validation task.
 
 PR: [#349](https://github.com/Loop3D/LoopStructural/pull/349). Merge and tasks 4.12-4.13 remain pending.
+
+
+Detailed validation artifacts are local outputs and are excluded from the PR.
+The scripts default to the ignored `.pytest_cache/p2_fold` directory. Reproduce
+from the repository root with workspace source packages on `PYTHONPATH`:
+
+```powershell
+python scripts/validation/p2_fold_bermagui.py --project 'C:/Users/lachl/scratch/bonnie/Honours_model23.09'
+python scripts/validation/summarise_p2_fold.py .pytest_cache/p2_fold/runtime
+```

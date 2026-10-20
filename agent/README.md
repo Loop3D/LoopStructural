@@ -10,7 +10,7 @@ Working notes for `loop_interpolation`. Plans and reviews, not user documentatio
 Golden tests: `packages/loop_interpolation/tests/golden/README.md`.
 
 
-Phase 4: [corrected Bermagui validation](../validation/p2_fold/README.md),
+Phase 4: [corrected Bermagui validation](HANDOFF_p2_fold.md),
 [execution checklist](p2_fold/phase4_validation/tasks.md), and
 [usage documentation](../docs/source/user_guide/fold_modelling.rst).
 Both gauss4 gates passed at fewer unknowns. S0 retains a material error tail;
