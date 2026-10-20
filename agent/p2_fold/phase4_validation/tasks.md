@@ -19,7 +19,7 @@ Needs Phase 3 done.
 
 ## Release
 - [x] 4.10 Check all commits have correct prefixes and no Co-Authored-By line
-- [ ] 4.11 Open a PR. Describe the Phase 0 fixes and the new class
+- [x] 4.11 Open a PR. Describe the Phase 0 fixes and the new class
 - [ ] 4.12 After merge, check the release-please PR bumps only the right packages (see the release-please path scoping memory)
 - [ ] 4.13 Start Phase 5
 
@@ -56,3 +56,5 @@ and loop-interpolation are `<0.1.0`, excluding the pending 0.1.0 releases. They
 must be aligned before publishing the new root release. This is separate from
 package path scoping, which currently passes. No release/version PR is merged
 by this validation task.
+
+PR: [#349](https://github.com/Loop3D/LoopStructural/pull/349). Merge and tasks 4.12-4.13 remain pending.

@@ -178,3 +178,6 @@ requirements and the lockfile with the new package releases before publishing
 the root release; the workspace-based validation does not prove compatibility
 of the published dependency set. This phase does not manually bump package
 versions or merge release PRs. Post-merge release readiness remains incomplete.
+
+Phase 4 documentation and validation PR: [#349](https://github.com/Loop3D/LoopStructural/pull/349).
+Merge and post-merge release checks remain pending.
