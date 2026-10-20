@@ -793,7 +793,8 @@ class GeologicalModel:
         """Create a folded foliation and add it to the model.
 
         See :meth:`~._model_feature_factory.ModelFeatureFactory.build_folded_foliation`
-        for parameter documentation.
+        for parameter documentation. ``interpolatortype`` is ``"DFI"`` (default)
+        or ``"P2Fold"``.
         Thin wrapper around :meth:`create_and_add_feature` (see
         ``API.md``); kept as a stable, unchanged entry point.
         """

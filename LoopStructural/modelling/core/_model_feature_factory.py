@@ -31,6 +31,9 @@ from ...utils import getLogger
 
 logger = getLogger(__name__)
 
+# interpolator types that implement fold constraints
+FOLD_INTERPOLATOR_TYPES = ("DFI", "P2Fold")
+
 
 class ModelFeatureFactory:
     @staticmethod
@@ -216,6 +219,12 @@ class ModelFeatureFactory:
         fold_frame :  FoldFrame
         svario  : Boolean
             whether to calculate svariograms, saves time if avoided
+        interpolatortype : str
+            ``"DFI"`` (default, piecewise linear) or ``"P2Fold"`` (piecewise quadratic).
+            Other values are replaced by ``"DFI"`` with a warning.
+        nelements : int
+            number of elements in the support. For ``"P2Fold"`` this is the number
+            of tetrahedra, e.g. 1e4 gives about 56k tets and 86k unknowns
         kwargs
             additional kwargs to be passed through to other functions
 
@@ -227,6 +236,7 @@ class ModelFeatureFactory:
         Notes
         -----
 
+        - The P2 mesh is larger than the model box because of ``buffer``.
         - Building a folded foliation uses the fold interpolation code from Laurent et al., 2016
         and fold profile fitting from Grose et al., 2017. For more information about the fold modelling
         see :class:`LoopStructural.modelling.features.fold.FoldEvent`,
@@ -245,8 +255,11 @@ class ModelFeatureFactory:
 
         fold = FoldEvent(fold_frame, name=f"Fold_{foliation_name}", invert_norm=invert_fold_norm)
 
-        if interpolatortype != "DFI":
-            logger.warning("Folded foliation only supports DFI interpolator, changing to DFI")
+        if interpolatortype not in FOLD_INTERPOLATOR_TYPES:
+            logger.warning(
+                f"Folded foliation only supports {FOLD_INTERPOLATOR_TYPES} interpolators, "
+                f"changing {interpolatortype} to DFI"
+            )
             interpolatortype = "DFI"
         series_builder = FoldedFeatureBuilder(
             interpolatortype=interpolatortype,
@@ -300,7 +313,9 @@ class ModelFeatureFactory:
         fold_frame_data : pandas data frame, optional
             data frame containing the fold frame data, if not specified uses the model data
         interpolatortype : str
-            the type of interpolator to use, default is 'FDI' (unused) 5/6/2025
+            ``"DFI"`` or ``"P2Fold"`` sets the interpolator of the first (fold) coordinate.
+            Any other value gives ``"DFI"``. The other two coordinates always use FDI.
+            For ``"P2Fold"``, ``nelements`` is the number of tetrahedra.
         fold_frame : StructuralFrame, optional
             the fold frame for the fold if not specified uses last feature added
         nelements : int
@@ -342,8 +357,9 @@ class ModelFeatureFactory:
             raise TypeError("Please specify a FoldFrame")
         fold = FoldEvent(fold_frame, name=f"Fold_{fold_frame_name}")
 
+        # the first coordinate carries the fold constraints, the others are plain FDI
         interpolatortypes = [
-            "DFI",
+            interpolatortype if interpolatortype in FOLD_INTERPOLATOR_TYPES else "DFI",
             "FDI",
             "FDI",
         ]

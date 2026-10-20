@@ -1,6 +1,7 @@
 import numpy as np
 
 from ....geometry import BoundingBox
+from ....interpolators import InterpolatorType
 from ....modelling.features import FeatureType
 from ._geological_feature_builder import GeologicalFeatureBuilder
 from ....modelling.features.fold.fold_function import FoldRotationType, get_fold_rotation_profile
@@ -71,8 +72,13 @@ class FoldedFeatureBuilder(GeologicalFeatureBuilder):
         if not isinstance(feature_builder, GeologicalFeatureBuilder):
             logger.error(f'Feature builder is {type(feature_builder)} not GeologicalFeatureBuilder')
             raise TypeError("feature_builder must be an instance of GeologicalFeatureBuilder")
+        # keep the fold type of the source builder, DFI otherwise
+        source_type = getattr(feature_builder.interpolator, "type", None)
+        interpolatortype = (
+            'P2Fold' if source_type == InterpolatorType.PIECEWISE_QUADRATIC_FOLD else 'DFI'
+        )
         builder = cls(
-            interpolatortype='DFI',
+            interpolatortype=interpolatortype,
             bounding_box=feature_builder.model.bounding_box,
             fold=fold,
             nelements=feature_builder.interpolator.n_elements,
