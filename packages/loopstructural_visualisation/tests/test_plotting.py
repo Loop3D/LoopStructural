@@ -1,7 +1,6 @@
 """Exercise real VTK pipelines against the workspace LoopStructural API."""
 
 import os
-import sys
 from types import SimpleNamespace
 
 import matplotlib
@@ -20,11 +19,11 @@ from LoopStructural.modelling.features import AnalyticalGeologicalFeature, Struc
 from LoopStructural.modelling.features.fault import FaultSegment
 
 
-# Windows CI runners have no OpenGL context; VTK then crashes with an access
-# violation, which cannot be caught, so rendering tests are skipped there.
+# CI runners have no display or OpenGL context; VTK then crashes with a segfault
+# or access violation, which cannot be caught, so rendering tests are skipped there.
 requires_gl = pytest.mark.skipif(
-    sys.platform == "win32" and os.environ.get("CI") == "true",
-    reason="no OpenGL context on Windows CI runners",
+    os.environ.get("CI") == "true",
+    reason="no OpenGL context on CI runners",
 )
 
 @pytest.fixture
