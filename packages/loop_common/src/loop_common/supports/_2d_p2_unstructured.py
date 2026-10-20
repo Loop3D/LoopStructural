@@ -211,7 +211,31 @@ class P2Unstructured2d(BaseUnstructured2d):
                 ii += 1
         return d2
 
-    def evaluate_shape_derivatives(self, locations, elements=None):
+    def evaluate_shape_derivatives(self, locations: np.ndarray, elements=None):
+        """Evaluate P2 shape derivatives in global coordinates.
+
+        Returns
+        -------
+        dN, elements, inside
+            dN has shape (n, 2, n_nodes_per_element). Points outside the mesh
+            have element index -1, ``inside`` False and NaN rows in dN. They do
+            not affect other points in the batch.
+        """
+        locations = np.asarray(locations)
+        if elements is None:
+            _verts, _c, elements, inside = self.get_element_for_location(locations)
+            elements = np.asarray(elements)
+            valid = (elements >= 0) & np.asarray(inside, dtype=bool)
+        else:
+            elements = np.asarray(elements)
+            valid = elements >= 0
+        out_elements = np.where(valid, elements, -1)
+        dN = np.full((locations.shape[0], 2, self.elements.shape[1]), np.nan)
+        if np.any(valid):
+            dN[valid], _ = self._evaluate_shape_derivatives_valid(locations[valid], elements[valid])
+        return dN, out_elements, valid
+
+    def _evaluate_shape_derivatives_valid(self, locations, elements=None):
         """
         Compute dN/ds (1st row), dN/dt(2nd row)
         """
@@ -221,7 +245,7 @@ class P2Unstructured2d(BaseUnstructured2d):
         else:
             tri = elements
             M = np.ones((elements.shape[0], 3, 3))
-            M[:, :, 1:] = self.vertices[self.elements[elements], :][:, :3, :]
+            M[:, :, 1:] = self.nodes[self.elements[elements], :][:, :3, :]
             points_ = np.ones((locations.shape[0], 3))
             points_[:, 1:] = locations
             minv = np.linalg.inv(M)
@@ -334,8 +358,7 @@ class P2Unstructured2d(BaseUnstructured2d):
             raise ValueError("property array must have same length as nodes")
         values = np.zeros(pos.shape)
         values[:] = np.nan
-        element_gradients, tri = self.evaluate_shape_derivatives(pos[:, :2])
-        inside = tri >= 0
+        element_gradients, tri, inside = self.evaluate_shape_derivatives(pos[:, :2])
         values[inside, :] = (
             element_gradients[inside, :, :] * property_array[self.elements[tri[inside], None, :]]
         ).sum(2)

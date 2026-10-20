@@ -23,7 +23,7 @@ class FakeP2Support:
         n = points.shape[0]
         grad = np.ones((n, self.elements.shape[1], 3))
         elements = np.zeros(n, dtype=int)
-        return grad, elements
+        return grad, elements, np.ones(n, dtype=bool)
 
     def evaluate_shape(self, points):
         n = points.shape[0]

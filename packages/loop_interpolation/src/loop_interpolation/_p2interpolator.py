@@ -109,8 +109,9 @@ class P2Interpolator(DiscreteInterpolator):
     def add_gradient_constraints(self, w: float = 1.0):
         points = self.get_gradient_constraints()
         if points.shape[0] > 0:
-            grad, elements = self.support.evaluate_shape_derivatives(points[:, : self.dimensions])
-            inside = elements > -1
+            grad, elements, inside = self.support.evaluate_shape_derivatives(
+                points[:, : self.dimensions]
+            )
             # element size cancels in the row normalisation, w is applied after it
             wt = np.full(int(np.sum(inside)), float(w))
             A = np.einsum(
@@ -140,8 +141,9 @@ class P2Interpolator(DiscreteInterpolator):
 
         """
         if points.shape[0] > 0:
-            grad, elements = self.support.evaluate_shape_derivatives(points[:, : self.dimensions])
-            inside = elements > -1
+            grad, elements, inside = self.support.evaluate_shape_derivatives(
+                points[:, : self.dimensions]
+            )
             wt = np.full(int(np.sum(inside)), float(w))
             A = np.einsum("ijk,ij->ik", grad[inside, :], vector[inside, :])
             B = np.zeros(A.shape[0])
@@ -153,8 +155,9 @@ class P2Interpolator(DiscreteInterpolator):
     def add_norm_constraints(self, w: float = 1.0):
         points = self.get_norm_constraints()
         if points.shape[0] > 0:
-            grad, elements = self.support.evaluate_shape_derivatives(points[:, : self.dimensions])
-            inside = elements > -1
+            grad, elements, inside = self.support.evaluate_shape_derivatives(
+                points[:, : self.dimensions]
+            )
             wt = np.full(int(np.sum(inside)), float(w))
             elements = np.tile(self.support.elements[elements[inside]], (self.dimensions, 1, 1))
             elements = elements.swapaxes(0, 1)
@@ -255,10 +258,10 @@ class P2Interpolator(DiscreteInterpolator):
             if callable(vector_func):
                 norm = vector_func(cp[:, i, :])
             # evaluate the shape function for the edges for each neighbouring triangle
-            cp_Dt, cp_tri1 = self.support.evaluate_shape_derivatives(
+            cp_Dt, cp_tri1, _inside1 = self.support.evaluate_shape_derivatives(
                 cp[:, i, :], elements=self.support.shared_element_relationships[:, 0]
             )
-            cp_Dn, cp_tri2 = self.support.evaluate_shape_derivatives(
+            cp_Dn, cp_tri2, _inside2 = self.support.evaluate_shape_derivatives(
                 cp[:, i, :], elements=self.support.shared_element_relationships[:, 1]
             )
             # constraint for each cp is triangle - neighbour create a Nx12 matrix

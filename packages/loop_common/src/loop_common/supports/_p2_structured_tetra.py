@@ -260,6 +260,30 @@ class P2TetMesh(BaseStructuredSupport):
         return N, elements, inside
 
     def evaluate_shape_derivatives(self, locations: np.ndarray, elements=None):
+        """Evaluate P2 shape derivatives in global coordinates.
+
+        Returns
+        -------
+        dN, elements, inside
+            dN has shape (n, 3, n_nodes_per_element). Points outside the mesh
+            have element index -1, ``inside`` False and NaN rows in dN. They do
+            not affect other points in the batch.
+        """
+        locations = np.asarray(locations)
+        if elements is None:
+            _verts, _c, elements, inside = self.get_element_for_location(locations)
+            elements = np.asarray(elements)
+            valid = (elements >= 0) & np.asarray(inside, dtype=bool)
+        else:
+            elements = np.asarray(elements)
+            valid = elements >= 0
+        out_elements = np.where(valid, elements, -1)
+        dN = np.full((locations.shape[0], 3, self.elements.shape[1]), np.nan)
+        if np.any(valid):
+            dN[valid], _ = self._evaluate_shape_derivatives_valid(locations[valid], elements[valid])
+        return dN, out_elements, valid
+
+    def _evaluate_shape_derivatives_valid(self, locations: np.ndarray, elements=None):
         """Evaluate quadratic tetrahedral shape derivatives at locations."""
         locations = np.array(locations)
         if elements is None:
@@ -480,8 +504,7 @@ class P2TetMesh(BaseStructuredSupport):
         values = np.zeros(pos.shape)
         values[:] = np.nan
 
-        element_gradients, tetras = self.evaluate_shape_derivatives(pos)
-        _, _, inside = self.evaluate_shape(pos)
+        element_gradients, tetras, inside = self.evaluate_shape_derivatives(pos)
         values[inside, :] = np.einsum(
             "ijk,ik->ij",
             element_gradients[inside, :, :],
