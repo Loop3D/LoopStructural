@@ -33,6 +33,11 @@ class P2UnstructuredTetMesh(UnStructuredTetMesh):
             self.origin = origin
             self.step_vector = step_vector
             self.nsteps_cells = nsteps_cells
+        elif origin is not None and step_vector is not None and nsteps_cells is not None:
+            # explicit arrays (e.g. from to_dict) keep the grid description
+            self.origin = np.asarray(origin, dtype=float)
+            self.step_vector = np.asarray(step_vector, dtype=float)
+            self.nsteps_cells = np.asarray(nsteps_cells)
         UnStructuredTetMesh.__init__(self, nodes, elements, neighbours, aabb_nsteps)
         self.type = SupportType.P2UnstructuredTetMesh
         if self.elements.shape[1] != 10:
@@ -56,6 +61,20 @@ class P2UnstructuredTetMesh(UnStructuredTetMesh):
                 ],
             ]
         )
+
+    def to_dict(self):
+        """Serialise as explicit arrays, SupportFactory.from_dict reads this back."""
+        d = {
+            "type": self.type.numerator,
+            "nodes": self.nodes,
+            "elements": self.elements,
+            "neighbours": self.neighbours,
+        }
+        if hasattr(self, "origin"):
+            d["origin"] = self.origin
+            d["step_vector"] = self.step_vector
+            d["nsteps_cells"] = self.nsteps_cells
+        return d
 
     @staticmethod
     def _build_from_bbox(origin: np.ndarray, step_vector: np.ndarray, nsteps_cells: np.ndarray):
