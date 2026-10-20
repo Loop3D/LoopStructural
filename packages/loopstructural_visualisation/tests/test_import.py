@@ -1,11 +1,4 @@
-"""Import smoke test.
-
-Upstream loopstructural-visualisation ships with no test suite at all; this
-is a minimal placeholder so the package has real CI coverage (packages.yml
-runs `pytest packages/<package>/tests`, which needs a tests dir to exist)
-rather than skipping it entirely. Extend with real behavioral tests as a
-follow-up.
-"""
+"""Public import smoke tests; plotting and notebook behavior have separate suites."""
 
 import loopstructuralvisualisation
 

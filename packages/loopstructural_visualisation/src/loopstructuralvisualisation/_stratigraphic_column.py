@@ -1,6 +1,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
-from matplotlib import cm
+from matplotlib import colormaps
 from matplotlib.patches import Polygon
 from matplotlib.collections import PatchCollection
 from LoopStructural.utils import rng
@@ -66,7 +66,7 @@ class StratigraphicColumnView:
                     boundaries.append(u.id)  # print(u,v)
             cmap = colors.ListedColormap(colours)
         else:
-            cmap = cm.get_cmap(self.cmap, n_units - 1)
+            cmap = colormaps.get_cmap(self.cmap).resampled(max(n_units, 1))
         p = PatchCollection(patches, cmap=cmap)
 
         colors = np.arange(len(patches))
