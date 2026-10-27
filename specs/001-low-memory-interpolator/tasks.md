@@ -342,7 +342,7 @@ Phase D of the plan. It needs only phases 3 to 5. The Python tests skip when the
   - Needs: T027, T028, T029, T034, T005
   - Wave: 15
   - Done when: `python -c "import ast,sys; ast.parse(open('packages/loop_interpolation/src/loop_interpolation/_native.py').read())"` exits 0 and the module imports with no core installed (the core import is inside the function `solve`).
-- [ ] T036 [P] [US6] [M] Add the `native` branch to `solve_system` and the late-solver warning.
+- [x] T036 [P] [US6] [M] Add the `native` branch to `solve_system` and the late-solver warning.
   - Do: In `solve_system`, after `_normalise_solver_choice`: if `solver_choice == "native"`, call `_native.check_supported`, then `_native.solve`, set `self.up_to_date`, set `latest_solve_timing` through `_solver_pipeline.finalize_timing`, and return. Do not call `_assemble_main_system`.
   - Do: If rows were already built (`self.constraints` is not empty), log one warning: `solver="native" saves memory only when it is set before setup`.
   - Files: `packages/loop_interpolation/src/loop_interpolation/_discrete_interpolator.py`
@@ -446,7 +446,7 @@ Phase E of the plan (was F). It changes the vector type, not the algorithm.
   - Needs: T046
   - Wave: 15
   - Done when: `cargo test --manifest-path packages/loop_interpolation_core/Cargo.toml` passes (all `f64` results unchanged).
-- [ ] T048 [P] [US5] [M] Make the regularisation operator of `interpolator.rs` generic over `Scalar`.
+- [x] T048 [P] [US5] [M] Make the regularisation operator of `interpolator.rs` generic over `Scalar`.
   - Do: Generic: `forward_all_families_into`, `adjoint_all_families_accumulate_into`, `fused_interior_regularisation_into`, `shell_regularisation_correction_into`, the border and directional passes. Keep the `f64` wrappers used by the ported tests.
   - Files: `packages/loop_interpolation_core/src/interpolator.rs`
   - Needs: T047

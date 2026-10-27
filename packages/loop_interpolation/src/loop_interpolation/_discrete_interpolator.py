@@ -1267,6 +1267,28 @@ class DiscreteInterpolator(GeologicalInterpolator):
 
         solve_started = perf_counter()
         solver_choice = self._normalise_solver_choice(solver)
+        if solver_choice == "native":
+            # Import here. The core is not loaded when the package is imported.
+            from . import _native
+
+            # Keep the raw kwargs. The native check must see every key.
+            raw_solver_kwargs = dict(solver_kwargs or {})
+            _native.check_supported(
+                self, getattr(self, "_setup_kwargs", {}), raw_solver_kwargs
+            )
+            if len(self.constraints) > 0:
+                logger.warning(
+                    'solver="native" saves memory only when it is set before setup'
+                )
+            converged = _native.solve(self, tol, raw_solver_kwargs)
+            self.up_to_date = bool(converged)
+            # _native.solve sets the timing with a "total" key. Keep it.
+            timing_native = dict(getattr(self, "latest_solve_timing", None) or {})
+            timing_native.setdefault("solver", "native")
+            timing_native.setdefault("total", perf_counter() - solve_started)
+            timing_native["up_to_date"] = self.up_to_date
+            self.latest_solve_timing = timing_native
+            return self.up_to_date
         solver_kwargs = dict(solver_kwargs or {})
         constant_norm_iterations, constant_norm_weight, constant_norm_target = (
             _solver_pipeline.extract_constant_norm_options(solver_kwargs, logger)

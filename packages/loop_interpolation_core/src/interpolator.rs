@@ -57,6 +57,7 @@ use crate::error::CoreError;
 use crate::grid::StructuredGrid3D;
 use crate::memory::MemTracker;
 use crate::par::*;
+use crate::scalar::Scalar;
 use crate::stencil::{
     EdgeStencil, Stencil, dxx, dxy, dxz, dyy, dyz, dzz, edge_backward, edge_forward,
 };
@@ -1621,7 +1622,7 @@ impl FiniteDifferenceInterpolator {
     /// call) instead of six separate `Stencil::forward_into` dispatches.
     /// `scratch` is laid out as `dof` contiguous chunks of `N_FAMILIES`,
     /// i.e. `scratch[node * N_FAMILIES + family]`.
-    fn forward_all_families_into(&self, x: &[f64], scratch: &mut [f64]) {
+    fn forward_all_families_into<S: Scalar>(&self, x: &[S], scratch: &mut [S]) {
         let grid = &self.grid;
         let nx = grid.nsteps[0];
         let ny = grid.nsteps[1];
@@ -1634,19 +1635,23 @@ impl FiniteDifferenceInterpolator {
                 let j = (flat / nx) % ny;
                 let k = flat / (nx * ny);
                 for (slot, (stencil, _weight)) in chunk.iter_mut().zip(self.stencils.iter()) {
+                    // The sum runs in f64. Only the stored value is S.
                     *slot = if stencil.is_row_active(grid, i, j, k) {
-                        stencil
-                            .offsets
-                            .iter()
-                            .zip(stencil.coeffs.iter())
-                            .map(|(d, c)| {
-                                c * x[grid
-                                    .neighbour_index(i, j, k, *d)
-                                    .expect("row within margin")]
-                            })
-                            .sum()
+                        S::from_f64(
+                            stencil
+                                .offsets
+                                .iter()
+                                .zip(stencil.coeffs.iter())
+                                .map(|(d, c)| {
+                                    c * x[grid
+                                        .neighbour_index(i, j, k, *d)
+                                        .expect("row within margin")]
+                                    .to_f64()
+                                })
+                                .sum::<f64>(),
+                        )
                     } else {
-                        0.0
+                        S::default()
                     };
                 }
             });
@@ -1656,7 +1661,7 @@ impl FiniteDifferenceInterpolator {
     /// forward pass's output and fusing all six families' adjoint
     /// (correlation-with-flipped-stencil) contributions into one parallel
     /// pass over grid nodes as well.
-    fn adjoint_all_families_accumulate_into(&self, scratch: &[f64], out: &mut [f64]) {
+    fn adjoint_all_families_accumulate_into<S: Scalar>(&self, scratch: &[S], out: &mut [S]) {
         let grid = &self.grid;
         let nx = grid.nsteps[0];
         let ny = grid.nsteps[1];
@@ -1691,7 +1696,7 @@ impl FiniteDifferenceInterpolator {
                                     let sj = (j as i64 + flipped.1 as i64) as usize;
                                     let sk = (k as i64 + flipped.2 as i64) as usize;
                                     if stencil.is_row_active(grid, si, sj, sk) {
-                                        c * scratch[src * N_FAMILIES + family]
+                                        c * scratch[src * N_FAMILIES + family].to_f64()
                                     } else {
                                         0.0
                                     }
@@ -1702,7 +1707,7 @@ impl FiniteDifferenceInterpolator {
                         .sum();
                     acc += weight * weight * value;
                 }
-                *o += acc;
+                *o += S::from_f64(acc);
             });
     }
 
@@ -1733,7 +1738,7 @@ impl FiniteDifferenceInterpolator {
     /// stays in bounds on every axis, the kernel taps can be applied via
     /// direct (unchecked) flat-index arithmetic instead of
     /// `grid.neighbour_index`'s bounds-checked lookup.
-    fn fused_interior_regularisation_into(&self, x: &[f64], out: &mut [f64]) {
+    fn fused_interior_regularisation_into<S: Scalar>(&self, x: &[S], out: &mut [S]) {
         let kernel = self.kernel();
         if kernel.is_empty() {
             return;
@@ -1756,9 +1761,9 @@ impl FiniteDifferenceInterpolator {
                     let flat_i = flat as i64;
                     let mut acc = 0.0;
                     for (flat_offset, coeff) in kernel.iter() {
-                        acc += coeff * x[(flat_i + flat_offset) as usize];
+                        acc += coeff * x[(flat_i + flat_offset) as usize].to_f64();
                     }
-                    *o += acc;
+                    *o += S::from_f64(acc);
                 }
             });
     }
@@ -1779,11 +1784,11 @@ impl FiniteDifferenceInterpolator {
     /// using `shell_row_lookup` instead of a dense `flat * N_FAMILIES`
     /// offset to find a row's scratch slot -- so this produces bit-for-bit
     /// identical values to the unfused computation at every shell node.
-    fn shell_regularisation_correction_into(
+    fn shell_regularisation_correction_into<S: Scalar>(
         &self,
-        x: &[f64],
-        shell_scratch: &mut [f64],
-        out: &mut [f64],
+        x: &[S],
+        shell_scratch: &mut [S],
+        out: &mut [S],
     ) {
         let shell = self.shell();
         if shell.rows.is_empty() {
@@ -1799,18 +1804,21 @@ impl FiniteDifferenceInterpolator {
                 let (i, j, k) = grid.node_ijk(flat as usize);
                 for (slot, (stencil, weight)) in chunk.iter_mut().zip(self.stencils.iter()) {
                     *slot = if *weight != 0.0 && stencil.is_row_active(grid, i, j, k) {
-                        stencil
-                            .offsets
-                            .iter()
-                            .zip(stencil.coeffs.iter())
-                            .map(|(d, c)| {
-                                c * x[grid
-                                    .neighbour_index(i, j, k, *d)
-                                    .expect("row within margin")]
-                            })
-                            .sum()
+                        S::from_f64(
+                            stencil
+                                .offsets
+                                .iter()
+                                .zip(stencil.coeffs.iter())
+                                .map(|(d, c)| {
+                                    c * x[grid
+                                        .neighbour_index(i, j, k, *d)
+                                        .expect("row within margin")]
+                                    .to_f64()
+                                })
+                                .sum::<f64>(),
+                        )
                     } else {
-                        0.0
+                        S::default()
                     };
                 }
             });
@@ -1844,6 +1852,7 @@ impl FiniteDifferenceInterpolator {
                                             "shell adjoint referenced a row outside the precomputed shell row set"
                                         );
                                         c * shell_scratch[pos as usize * N_FAMILIES + family]
+                                            .to_f64()
                                     } else {
                                         0.0
                                     }
@@ -1859,7 +1868,7 @@ impl FiniteDifferenceInterpolator {
             .collect();
 
         for (&flat, value) in shell.outputs.iter().zip(contributions.iter()) {
-            out[flat as usize] += value;
+            out[flat as usize] += S::from_f64(*value);
         }
     }
 
@@ -1900,9 +1909,7 @@ impl FiniteDifferenceInterpolator {
             scratch.split_at_mut(self.shell().rows.len() * N_FAMILIES);
         self.fused_interior_regularisation_into(x, out);
         self.shell_regularisation_correction_into(x, shell_scratch, out);
-        for (stencil, weight) in &self.border_stencils {
-            stencil.accumulate_normal_into(&self.grid, x, *weight, border_scratch, out);
-        }
+        self.accumulate_border_normal_into(x, border_scratch, out);
         self.accumulate_directional_normal_into(x, border_scratch, out);
     }
 
@@ -1914,12 +1921,38 @@ impl FiniteDifferenceInterpolator {
     /// `A x` buffer -- safe because `Stencil::forward_into` (unlike
     /// `EdgeStencil::forward_into`) always overwrites every entry of its
     /// output, so no stale data can leak between families.
-    fn accumulate_directional_normal_into(&self, x: &[f64], scratch: &mut [f64], out: &mut [f64]) {
+    fn accumulate_directional_normal_into<S: Scalar>(
+        &self,
+        x: &[S],
+        scratch: &mut [S],
+        out: &mut [S],
+    ) {
         let Some(weight2) = &self.directional_weight2 else {
             return;
         };
         for (family, (stencil, _)) in self.stencils.iter().enumerate() {
-            stencil.accumulate_normal_weighted_into(&self.grid, x, &weight2[family], scratch, out);
+            // Same steps as `Stencil::accumulate_normal_weighted_into`,
+            // but for any vector element type S. Sums run in f64.
+            stencil.forward_into(&self.grid, x, scratch);
+            scratch
+                .par_iter_mut()
+                .zip(weight2[family].par_iter())
+                .with_min_len(PAR_MIN_LEN)
+                .for_each(|(s, w2)| *s = S::from_f64(s.to_f64() * w2));
+            stencil.adjoint_accumulate_into(&self.grid, scratch, 1.0, out);
+        }
+    }
+
+    /// `out += sum_border w_border^2 B^T B x`. `scratch` holds each
+    /// border stencil's `B x` in turn. Same steps as
+    /// `EdgeStencil::accumulate_normal_into`, for any vector element type S.
+    fn accumulate_border_normal_into<S: Scalar>(&self, x: &[S], scratch: &mut [S], out: &mut [S]) {
+        for (stencil, weight) in &self.border_stencils {
+            if *weight == 0.0 {
+                continue;
+            }
+            stencil.forward_into(&self.grid, x, scratch);
+            stencil.adjoint_accumulate_into(&self.grid, scratch, weight * weight, out);
         }
     }
 
@@ -1955,9 +1988,7 @@ impl FiniteDifferenceInterpolator {
         let (family_scratch, border_scratch) = scratch.split_at_mut(self.dof() * N_FAMILIES);
         self.forward_all_families_into(x, family_scratch);
         self.adjoint_all_families_accumulate_into(family_scratch, out);
-        for (stencil, weight) in &self.border_stencils {
-            stencil.accumulate_normal_into(&self.grid, x, *weight, border_scratch, out);
-        }
+        self.accumulate_border_normal_into(x, border_scratch, out);
         self.accumulate_directional_normal_into(x, border_scratch, out);
     }
 
