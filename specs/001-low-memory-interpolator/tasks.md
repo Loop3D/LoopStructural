@@ -213,7 +213,7 @@ Phase B of the plan, first part. Tests before code.
 
 Phase B, second part. The active-set polish is not in this plan (see plan.md D5).
 
-- [ ] T021 [P] [US2] [M] Test: inequality constraints hold, inactive constraints change nothing, infeasible problems report 20 rows (story 2, FR-004, FR-015).
+- [x] T021 [P] [US2] [M] Test: inequality constraints hold, inactive constraints change nothing, infeasible problems report 20 rows (story 2, FR-004, FR-015).
   - Do: Problem: 20^3 with data that makes the free answer break the order.
   - Do: (1) Value bound: violation at most 1e-4 of the range (SC-004). (2) Pair bound `A - B >= d`: same. (5) Lower and upper bound on one row: both hold.
   - Do: (4) A bound that is not active: the field differs from the field without it by at most 1e-8 of the range.
@@ -245,7 +245,7 @@ Phase B, second part. The active-set polish is not in this plan (see plan.md D5)
 
 These tasks edit files that ADMM also edits, so they follow Phase 4.
 
-- [ ] T024 [P] [US1] [M] Test: tangent and interface properties, point evaluation, large origin, thread count (story 1 scenarios 5, 7, 8, 9; FR-007, FR-016, FR-024).
+- [x] T024 [P] [US1] [M] Test: tangent and interface properties, point evaluation, large origin, thread count (story 1 scenarios 5, 7, 8, 9; FR-007, FR-016, FR-024).
   - Do: (5) Tangent vectors: the dot product of each tangent with the field gradient at its point, divided by the gradient length, is below 1e-3. Interface pairs: the two field values differ by at most 1e-4 of the range.
   - Do: (8) `Field::evaluate` at the nodes equals the field. `evaluate_gradient` matches central differences of `evaluate` within 1e-3 of the largest gradient. A point outside the grid gives `PointOutsideGrid`.
   - Do: (9) Shift the grid origin and all points by 5 000 000 in each axis: the field differs from the unshifted field by at most 1e-6 of the range.
