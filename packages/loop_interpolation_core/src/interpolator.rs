@@ -1374,10 +1374,30 @@ impl FiniteDifferenceInterpolator {
         (lower, upper)
     }
 
+    /// Per row: the factor that turns a row violation into field units.
+    /// A row is stored with `scale = weight / norm`. The first 8 coefficients
+    /// of every row are trilinear weights times `scale`, and trilinear weights
+    /// sum to 1. So the sum of the first 8 coefficients is `scale`. The
+    /// result is `1 / scale`. Row order is the same as `inequality_bounds`.
+    pub(crate) fn inequality_inverse_scales(&self) -> Vec<f64> {
+        let inv = |first8: &[f64]| {
+            let s: f64 = first8.iter().sum();
+            if s > 0.0 { 1.0 / s } else { 1.0 }
+        };
+        let mut out = Vec::with_capacity(self.n_inequality_constraints());
+        for c in &self.value_inequality_constraints {
+            out.push(inv(&c.coefs[..8]));
+        }
+        for c in &self.pair_inequality_constraints {
+            out.push(inv(&c.coefs[..8]));
+        }
+        out
+    }
+
     /// `out += rho * Q^T y`, `y` given in the same row order as
     /// [`apply_inequality_operator`](Self::apply_inequality_operator). Used
     /// for `solve_admm`'s x-update rhs term `rho * Q^T (z - u)`.
-    fn accumulate_inequality_transpose(&self, y: &[f64], rho: f64, out: &mut [f64]) {
+    pub(crate) fn accumulate_inequality_transpose(&self, y: &[f64], rho: f64, out: &mut [f64]) {
         let mut idx = 0usize;
         for c in &self.value_inequality_constraints {
             let s = rho * y[idx];
@@ -1399,7 +1419,7 @@ impl FiniteDifferenceInterpolator {
     /// outer product `coefs (coefs . x[indices])`, so this needs no
     /// intermediate `Q x` buffer) -- the inequality-constraint contribution
     /// to `solve_admm`'s x-update operator `N + rho * Q^T Q`.
-    fn accumulate_inequality_normal(&self, x: &[f64], rho: f64, out: &mut [f64]) {
+    pub(crate) fn accumulate_inequality_normal(&self, x: &[f64], rho: f64, out: &mut [f64]) {
         for c in &self.value_inequality_constraints {
             let s = rho * ineq_point_row_value(c, x);
             for k in 0..8 {
@@ -1428,6 +1448,21 @@ impl FiniteDifferenceInterpolator {
             }
         }
         diag
+    }
+
+    /// `diag += rho * diag(Q^T Q)`. As `inequality_diagonal`, but it adds
+    /// into `diag` and allocates no new full-size vector.
+    pub(crate) fn add_inequality_diagonal(&self, rho: f64, diag: &mut [f64]) {
+        for c in &self.value_inequality_constraints {
+            for k in 0..8 {
+                diag[c.indices[k]] += rho * c.coefs[k] * c.coefs[k];
+            }
+        }
+        for c in &self.pair_inequality_constraints {
+            for k in 0..16 {
+                diag[c.indices[k]] += rho * c.coefs[k] * c.coefs[k];
+            }
+        }
     }
 
     /// Row `k`'s `(indices, coefs)`, in the flattened value-then-pair order

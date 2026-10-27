@@ -224,7 +224,7 @@ Phase B, second part. The active-set polish is not in this plan (see plan.md D5)
   - Needs: T020
   - Wave: 11
   - Done when: `cargo test --manifest-path packages/loop_interpolation_core/Cargo.toml --test session_admm` compiles and fails.
-- [ ] T022 [P] [US2] [M] Implement ADMM as a state machine over the CG state. Add stall detection for infeasible problems.
+- [x] T022 [P] [US2] [M] Implement ADMM as a state machine over the CG state. Add stall detection for infeasible problems.
   - Do: Port `solve_admm` of `interpolator.rs` into `admm.rs`: outer loop `z = clip(Q x + u, lower, upper)`, `u += Q x - z`, inner CG on `N + rho Q^T Q`. The state holds `z` and `u` (one entry per inequality row) and one full-size vector for the right-hand side. No dense matrix.
   - Do: Make the helper methods the state needs `pub(crate)` in `interpolator.rs` (`accumulate_inequality_normal`, `accumulate_inequality_transpose`, `inequality_diagonal`, `inequality_bounds`).
   - Do: `session.rs`: if the problem has inequality rows, the session runs ADMM; else plain CG. Stage `CheckConstraints` is reported at each outer iteration end.

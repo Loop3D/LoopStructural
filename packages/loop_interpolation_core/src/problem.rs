@@ -517,11 +517,6 @@ impl Problem {
         if self.n_constraints() == 0 {
             return Err(CoreError::NoConstraints);
         }
-        if self.interp().n_inequality_constraints() > 0 {
-            return Err(CoreError::Unsupported {
-                setting: "inequality constraints (ADMM not implemented yet)".into(),
-            });
-        }
         if s.precision != Precision::F64 {
             return Err(CoreError::Unsupported {
                 setting: "f32 precision".into(),
