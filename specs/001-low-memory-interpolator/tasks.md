@@ -169,7 +169,7 @@ Phase B of the plan, first part. Tests before code.
   - Needs: T013, T009, T015
   - Wave: 8
   - Done when: `cargo test --manifest-path packages/loop_interpolation_core/Cargo.toml --test memory_estimate` compiles and fails.
-- [ ] T017 [P] [US4] [M] Implement the memory estimate, the budget check and `max_grid_for_budget`.
+- [x] T017 [P] [US4] [M] Implement the memory estimate, the budget check and `max_grid_for_budget`.
   - Do: `memory.rs`: `pub fn estimate(counts: &ProblemCounts, s: &Settings) -> MemoryEstimate` with arithmetic from the table in `plan.md` D4. Add 10 percent margin. `ProblemCounts` holds `dof`, counts of each constraint family, `uses_directional`.
   - Do: `pub fn max_grid_for_budget(counts: &ProblemCounts, s: &Settings, budget: u64) -> usize`: largest `n` such that an `n x n x n` grid fits. Binary search. No allocation.
   - Do: `Problem::estimate_memory` fills `ProblemCounts` and calls `estimate`. `Problem::start` calls it first and returns `OverBudget` when `budget_bytes` is set and the total is above it.
@@ -177,7 +177,7 @@ Phase B of the plan, first part. Tests before code.
   - Needs: T016
   - Wave: 9
   - Done when: `cargo test --manifest-path packages/loop_interpolation_core/Cargo.toml --test memory_estimate` passes.
-- [ ] T018 [P] [US4] [M] Build the grid tables lazily and through `MemTracker`, not in the constructor.
+- [x] T018 [P] [US4] [M] Build the grid tables lazily and through `MemTracker`, not in the constructor.
   - Do: `FiniteDifferenceInterpolator::new` must not allocate any `dof`-sized vector. Move `build_shell_indices` and the combined kernel to `pub(crate) fn prepare(&mut self, tracker: &mut MemTracker) -> Result<(), CoreError>`. Call `prepare` at the start of `solve_with` in the ported code so the ported tests still pass.
   - Do: Change every `vec![0.0; dof]`-type allocation in `rhs`, `diagonal`, `scratch` and the border buffers to `tracker.try_zeroed`. Keep the old infallible methods as thin wrappers for the ported tests.
   - Files: `packages/loop_interpolation_core/src/interpolator.rs`

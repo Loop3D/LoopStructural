@@ -74,17 +74,18 @@ fn estimate_100_cubed_is_in_range() {
     );
 }
 
-// The estimate grows in a straight line with the node count.
-// 60^3 has 8 times the nodes of 30^3.
+// The estimate grows in a straight line with the problem size.
+// 60^3 has 8 times the nodes of 30^3. It also has 8 times the rows
+// (the same density), because the constraint records are part of the estimate.
 #[test]
 fn estimate_scales_in_a_straight_line() {
     let _guard = lock();
     let s = Settings::default();
-    let small = r1_problem(30, 2000, 500)
+    let small = r1_problem(30, 250, 64)
         .estimate_memory(&s)
         .expect("estimate must succeed")
         .total;
-    let large = r1_problem(60, 2000, 500)
+    let large = r1_problem(60, 2000, 512)
         .estimate_memory(&s)
         .expect("estimate must succeed")
         .total;

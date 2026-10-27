@@ -9,6 +9,7 @@ use crate::grid::StructuredGrid3D;
 use crate::interpolator::{
     BorderRegularisationWeights, FiniteDifferenceInterpolator, RegularisationWeights,
 };
+use crate::memory::{ProblemCounts, estimate, max_grid_for_budget};
 use crate::report::{MemoryEstimate, SolveReport};
 use crate::session::SolveSession;
 use crate::settings::Settings;
@@ -125,6 +126,8 @@ pub struct Problem {
     seen_values: Option<HashMap<[u64; 3], f64>>,
     /// Number of value rows seen, also the dropped ones.
     value_rows: usize,
+    /// True after `add_directional_regularisation`.
+    uses_directional: bool,
 }
 
 impl fmt::Debug for Problem {
@@ -221,6 +224,7 @@ impl Problem {
             warnings,
             seen_values: Some(HashMap::new()),
             value_rows: 0,
+            uses_directional: false,
         })
     }
 
@@ -397,6 +401,7 @@ impl Problem {
         let dirs: Vec<[f64; 3]> = (0..dof).map(|i| row3(directions, i)).collect();
         self.interp_mut()
             .add_directional_regularisation(&dirs, weight);
+        self.uses_directional = true;
         Ok(())
     }
 
@@ -477,8 +482,24 @@ impl Problem {
         &self.warnings
     }
 
-    pub fn estimate_memory(&self, _s: &Settings) -> Result<MemoryEstimate, CoreError> {
-        ni()
+    /// Fill the counts of the problem. This allocates nothing.
+    fn counts(&self) -> ProblemCounts {
+        let i = self.interp();
+        ProblemCounts {
+            dof: i.dof() as u64,
+            n_value: i.n_value_constraints() as u64,
+            n_gradient: i.n_gradient_constraints() as u64,
+            n_normal: i.n_norm_constraints() as u64,
+            n_tangent: i.n_tangent_constraints() as u64,
+            n_interface: i.n_interface_constraints() as u64,
+            n_pair_bound: i.n_inequality_pair_constraints() as u64,
+            n_value_bound: i.n_value_inequality_constraints() as u64,
+            uses_directional: self.uses_directional,
+        }
+    }
+
+    pub fn estimate_memory(&self, s: &Settings) -> Result<MemoryEstimate, CoreError> {
+        Ok(estimate(&self.counts(), s))
     }
 
     pub fn residual_f64(&self, _field: &Field) -> f64 {
@@ -486,7 +507,19 @@ impl Problem {
     }
 
     /// Start a solve session. This consumes the problem.
-    pub fn start(self, _s: Settings) -> Result<SolveSession, CoreError> {
+    pub fn start(self, s: Settings) -> Result<SolveSession, CoreError> {
+        // Check the budget first. Nothing is allocated here.
+        if let Some(budget) = s.budget_bytes {
+            let counts = self.counts();
+            let e = estimate(&counts, &s);
+            if e.total > budget {
+                return Err(CoreError::OverBudget {
+                    estimate_bytes: e.total,
+                    budget_bytes: budget,
+                    max_nodes_per_axis: max_grid_for_budget(&counts, &s, budget),
+                });
+            }
+        }
         if self.n_constraints() == 0 {
             return Err(CoreError::NoConstraints);
         }

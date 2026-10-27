@@ -53,12 +53,15 @@
 
 use crate::PAR_MIN_LEN;
 use crate::cg::{CgResult, conjugate_gradient_preconditioned};
+use crate::error::CoreError;
 use crate::grid::StructuredGrid3D;
+use crate::memory::MemTracker;
 use crate::par::*;
 use crate::stencil::{
     EdgeStencil, Stencil, dxx, dxy, dxz, dyy, dyz, dzz, edge_backward, edge_forward,
 };
 use std::collections::HashMap;
+use std::sync::OnceLock;
 
 /// Number of curvature-regularisation stencil families (dxx, dyy, dzz, dxy,
 /// dxz, dyz). `apply_normal_operator_into` computes all six per grid node in
@@ -590,7 +593,10 @@ fn dist_to_true_edge(nsteps: &[usize; 3], i: usize, j: usize, k: usize) -> usize
 ///
 /// All three tables hold `u32` values to use 4 bytes per entry. The top
 /// value `u32::MAX` is the empty marker.
-fn build_shell_indices(grid: &StructuredGrid3D) -> (Vec<u32>, Vec<u32>, Vec<u32>) {
+fn build_shell_indices(
+    grid: &StructuredGrid3D,
+    tracker: &mut MemTracker,
+) -> Result<ShellTables, CoreError> {
     let dof = grid.n_nodes();
     assert!(
         dof < u32::MAX as usize,
@@ -608,11 +614,27 @@ fn build_shell_indices(grid: &StructuredGrid3D) -> (Vec<u32>, Vec<u32>, Vec<u32>
             shell_outputs.push(flat as u32);
         }
     }
-    let mut lookup = vec![u32::MAX; dof];
+    // The lookup is the only table of size dof. The tracker counts it.
+    let mut lookup: Vec<u32> = tracker.try_zeroed(dof)?;
+    lookup.fill(u32::MAX);
     for (pos, &flat) in shell_rows.iter().enumerate() {
         lookup[flat as usize] = pos as u32;
     }
-    (shell_rows, shell_outputs, lookup)
+    Ok(ShellTables {
+        rows: shell_rows,
+        outputs: shell_outputs,
+        lookup,
+    })
+}
+
+/// The three shell tables (see `build_shell_indices`).
+struct ShellTables {
+    /// Flat indices of the nodes at distance <= 2 from the true edge.
+    rows: Vec<u32>,
+    /// Flat indices of the nodes at distance < 2.
+    outputs: Vec<u32>,
+    /// Inverse of `rows`: flat index to position, `u32::MAX` if not a row.
+    lookup: Vec<u32>,
 }
 
 /// Build the fused single-kernel regularisation's combined (5,5,5)-radius
@@ -822,13 +844,13 @@ pub struct FiniteDifferenceInterpolator {
     /// Fused single-kernel regularisation's combined kernel (see
     /// `build_combined_kernel`/`fused_interior_regularisation_into`);
     /// rebuilt whenever `stencils`'/weights change (`with_regularisation`).
-    combined_kernel: Vec<KernelTap>,
+    /// The table is empty until `prepare` (or the first use) builds it.
+    combined_kernel: OnceLock<Vec<KernelTap>>,
     /// Row centres (dist to true edge <= 2) / output nodes (dist < 2) / the
     /// former's flat-index inverse -- grid-shape-only, built once (see
-    /// `build_shell_indices`).
-    shell_row_indices: Vec<u32>,
-    shell_output_indices: Vec<u32>,
-    shell_row_lookup: Vec<u32>,
+    /// `build_shell_indices`). The tables are empty until `prepare` (or the
+    /// first use) builds them. `new` does not allocate them.
+    shell: OnceLock<ShellTables>,
     /// Per-node squared weight for each of the six curvature families
     /// (`[dxx, dyy, dzz, dxy, dxz, dyz]`), accumulated across every
     /// [`add_directional_regularisation`](Self::add_directional_regularisation)
@@ -856,9 +878,6 @@ impl FiniteDifferenceInterpolator {
             (dyz(), regularisation.dyz),
         ];
         let border_stencils = build_border_stencils(&grid, border_regularisation);
-        let combined_kernel = build_combined_kernel(&stencils, &grid);
-        let (shell_row_indices, shell_output_indices, shell_row_lookup) =
-            build_shell_indices(&grid);
         Self {
             grid,
             regularisation,
@@ -873,10 +892,8 @@ impl FiniteDifferenceInterpolator {
             pair_inequality_constraints: Vec::new(),
             stencils,
             border_stencils,
-            combined_kernel,
-            shell_row_indices,
-            shell_output_indices,
-            shell_row_lookup,
+            combined_kernel: OnceLock::new(),
+            shell: OnceLock::new(),
             directional_weight2: None,
         }
     }
@@ -891,8 +908,42 @@ impl FiniteDifferenceInterpolator {
             (dxz(), weights.dxz),
             (dyz(), weights.dyz),
         ];
-        self.combined_kernel = build_combined_kernel(&self.stencils, &self.grid);
+        // The weights changed, so the old kernel is not valid. Drop it.
+        self.combined_kernel = OnceLock::new();
         self
+    }
+
+    /// Build the shell tables and the combined kernel. Call it once before a
+    /// solve. A second call does nothing. The grid-sized shell lookup is
+    /// counted by `tracker`.
+    #[allow(dead_code)]
+    pub(crate) fn prepare(&mut self, tracker: &mut MemTracker) -> Result<(), CoreError> {
+        self.ensure_tables(tracker)
+    }
+
+    /// As `prepare`, but it takes `&self`. The tables use `OnceLock`.
+    fn ensure_tables(&self, tracker: &mut MemTracker) -> Result<(), CoreError> {
+        if self.shell.get().is_none() {
+            let tables = build_shell_indices(&self.grid, tracker)?;
+            // If another thread set the tables first, keep that value.
+            let _ = self.shell.set(tables);
+        }
+        self.kernel();
+        Ok(())
+    }
+
+    /// The shell tables. Built without a budget if `prepare` did not run.
+    fn shell(&self) -> &ShellTables {
+        self.shell.get_or_init(|| {
+            build_shell_indices(&self.grid, &mut MemTracker::new(None))
+                .expect("shell tables must fit in memory")
+        })
+    }
+
+    /// The combined kernel. Built on first use.
+    fn kernel(&self) -> &[KernelTap] {
+        self.combined_kernel
+            .get_or_init(|| build_combined_kernel(&self.stencils, &self.grid))
     }
 
     pub fn with_border_regularisation(mut self, weights: BorderRegularisationWeights) -> Self {
@@ -915,11 +966,16 @@ impl FiniteDifferenceInterpolator {
             .as_ref()
             .map_or(0, |w| w.iter().map(|v| v.capacity()).sum::<usize>())
             * std::mem::size_of::<f64>();
-        self.shell_row_lookup.capacity() * std::mem::size_of::<u32>()
-            + self.shell_row_indices.capacity() * std::mem::size_of::<u32>()
-            + self.shell_output_indices.capacity() * std::mem::size_of::<u32>()
-            + directional
-            + self.combined_kernel.capacity() * std::mem::size_of::<KernelTap>()
+        // Before `prepare` the tables are not built, so they count 0 bytes.
+        let shell = self.shell.get().map_or(0, |s| {
+            (s.lookup.capacity() + s.rows.capacity() + s.outputs.capacity())
+                * std::mem::size_of::<u32>()
+        });
+        let kernel = self
+            .combined_kernel
+            .get()
+            .map_or(0, |k| k.capacity() * std::mem::size_of::<KernelTap>());
+        shell + directional + kernel
     }
 
     /// Add a scalar value observation at `point` with weight `weight`.
@@ -1457,13 +1513,13 @@ impl FiniteDifferenceInterpolator {
     /// nonzero target; gradient/tangent/interface constraints always target
     /// zero, so including them here is harmless and kept for symmetry with
     /// `accumulate_data_normal`/`diagonal`).
-    fn data_rhs(&self) -> Vec<f64> {
-        let mut out = vec![0.0; self.dof()];
+    fn data_rhs(&self, tracker: &mut MemTracker) -> Result<Vec<f64>, CoreError> {
+        let mut out: Vec<f64> = tracker.try_zeroed(self.dof())?;
         point_constraints_rhs(&self.value_constraints, &mut out);
         point_constraints_rhs(&self.gradient_constraints, &mut out);
         point_constraints_rhs(&self.norm_constraints, &mut out);
         point_constraints_rhs(&self.tangent_constraints, &mut out);
-        out
+        Ok(out)
     }
 
     /// Required length of the `scratch` buffer passed to
@@ -1473,7 +1529,7 @@ impl FiniteDifferenceInterpolator {
     /// handled by the fused single-kernel pass), plus one dof-length buffer
     /// shared (reused sequentially) across the border stencils.
     pub fn scratch_len(&self) -> usize {
-        self.shell_row_indices.len() * N_FAMILIES + self.dof()
+        self.shell().rows.len() * N_FAMILIES + self.dof()
     }
 
     /// As [`scratch_len`], but for [`apply_normal_operator_into_unfused`]
@@ -1602,14 +1658,14 @@ impl FiniteDifferenceInterpolator {
     /// direct (unchecked) flat-index arithmetic instead of
     /// `grid.neighbour_index`'s bounds-checked lookup.
     fn fused_interior_regularisation_into(&self, x: &[f64], out: &mut [f64]) {
-        if self.combined_kernel.is_empty() {
+        let kernel = self.kernel();
+        if kernel.is_empty() {
             return;
         }
         let grid = &self.grid;
         let nx = grid.nsteps[0];
         let ny = grid.nsteps[1];
         let nz = grid.nsteps[2];
-        let kernel = &self.combined_kernel;
         out.par_iter_mut()
             .enumerate()
             .with_min_len(PAR_MIN_LEN)
@@ -1653,14 +1709,15 @@ impl FiniteDifferenceInterpolator {
         shell_scratch: &mut [f64],
         out: &mut [f64],
     ) {
-        if self.shell_row_indices.is_empty() {
+        let shell = self.shell();
+        if shell.rows.is_empty() {
             return;
         }
         let grid = &self.grid;
 
         shell_scratch
             .par_chunks_mut(N_FAMILIES)
-            .zip(self.shell_row_indices.par_iter())
+            .zip(shell.rows.par_iter())
             .with_min_len(PAR_MIN_LEN)
             .for_each(|(chunk, &flat)| {
                 let (i, j, k) = grid.node_ijk(flat as usize);
@@ -1682,8 +1739,8 @@ impl FiniteDifferenceInterpolator {
                 }
             });
 
-        let contributions: Vec<f64> = self
-            .shell_output_indices
+        let contributions: Vec<f64> = shell
+            .outputs
             .par_iter()
             .with_min_len(PAR_MIN_LEN)
             .map(|&flat| {
@@ -1705,7 +1762,7 @@ impl FiniteDifferenceInterpolator {
                                     let sj = (j as i64 + flipped.1 as i64) as usize;
                                     let sk = (k as i64 + flipped.2 as i64) as usize;
                                     if stencil.is_row_active(grid, si, sj, sk) {
-                                        let pos = self.shell_row_lookup[src];
+                                        let pos = shell.lookup[src];
                                         debug_assert!(
                                             pos != u32::MAX,
                                             "shell adjoint referenced a row outside the precomputed shell row set"
@@ -1725,7 +1782,7 @@ impl FiniteDifferenceInterpolator {
             })
             .collect();
 
-        for (&flat, value) in self.shell_output_indices.iter().zip(contributions.iter()) {
+        for (&flat, value) in shell.outputs.iter().zip(contributions.iter()) {
             out[flat as usize] += value;
         }
     }
@@ -1764,7 +1821,7 @@ impl FiniteDifferenceInterpolator {
         }
         self.accumulate_data_normal(x, out);
         let (shell_scratch, border_scratch) =
-            scratch.split_at_mut(self.shell_row_indices.len() * N_FAMILIES);
+            scratch.split_at_mut(self.shell().rows.len() * N_FAMILIES);
         self.fused_interior_regularisation_into(x, out);
         self.shell_regularisation_correction_into(x, shell_scratch, out);
         for (stencil, weight) in &self.border_stencils {
@@ -1849,13 +1906,25 @@ impl FiniteDifferenceInterpolator {
     }
 
     pub fn rhs(&self) -> Vec<f64> {
-        self.data_rhs()
+        self.try_rhs(&mut MemTracker::new(None))
+            .expect("rhs must fit in memory")
+    }
+
+    /// As [`rhs`](Self::rhs). The vector is counted by `tracker`.
+    pub(crate) fn try_rhs(&self, tracker: &mut MemTracker) -> Result<Vec<f64>, CoreError> {
+        self.data_rhs(tracker)
     }
 
     /// `diag(N)`, the normal operator's diagonal, computed directly (no `N`
     /// ever assembled) for use as a Jacobi preconditioner.
     pub fn diagonal(&self) -> Vec<f64> {
-        let mut diag = vec![0.0; self.dof()];
+        self.try_diagonal(&mut MemTracker::new(None))
+            .expect("diagonal must fit in memory")
+    }
+
+    /// As [`diagonal`](Self::diagonal). The vector is counted by `tracker`.
+    pub(crate) fn try_diagonal(&self, tracker: &mut MemTracker) -> Result<Vec<f64>, CoreError> {
+        let mut diag: Vec<f64> = tracker.try_zeroed(self.dof())?;
         point_constraints_diagonal(&self.value_constraints, &mut diag);
         point_constraints_diagonal(&self.gradient_constraints, &mut diag);
         point_constraints_diagonal(&self.norm_constraints, &mut diag);
@@ -1895,7 +1964,7 @@ impl FiniteDifferenceInterpolator {
                 *o += r2;
             }
         }
-        diag
+        Ok(diag)
     }
 
     /// The exact contribution of the `dxx` family plus any x-axis border
@@ -2004,9 +2073,25 @@ impl FiniteDifferenceInterpolator {
     /// if that variant is requested), and conjugate gradient's own five
     /// `dof`-length vectors; nothing is (re)allocated per iteration.
     pub fn solve_with(&self, max_iter: usize, tol: f64, kind: PreconditionerKind) -> CgResult {
-        let rhs = self.rhs();
-        let diag = self.diagonal();
-        let mut scratch = vec![0.0; self.scratch_len()];
+        self.solve_with_tracked(max_iter, tol, kind, &mut MemTracker::new(None))
+            .expect("solve must fit in memory")
+    }
+
+    /// As [`solve_with`](Self::solve_with). It builds the tables first (like
+    /// `prepare`) and counts the rhs, diagonal, scratch and line buffers with
+    /// `tracker`. It returns an error, not an abort, if a buffer is too big.
+    pub(crate) fn solve_with_tracked(
+        &self,
+        max_iter: usize,
+        tol: f64,
+        kind: PreconditionerKind,
+        tracker: &mut MemTracker,
+    ) -> Result<CgResult, CoreError> {
+        // This function takes `&self`, so it uses the `OnceLock` path of `prepare`.
+        self.ensure_tables(tracker)?;
+        let rhs = self.try_rhs(tracker)?;
+        let diag = self.try_diagonal(tracker)?;
+        let mut scratch: Vec<f64> = tracker.try_zeroed(self.scratch_len())?;
 
         let apply = |x: &[f64], out: &mut [f64]| {
             self.apply_normal_operator_into(x, &mut scratch, out);
@@ -2023,12 +2108,19 @@ impl FiniteDifferenceInterpolator {
                             *o = if *di > 0.0 { ri / di } else { *ri };
                         });
                 };
-                conjugate_gradient_preconditioned(apply, precondition, &rhs, None, max_iter, tol)
+                Ok(conjugate_gradient_preconditioned(
+                    apply,
+                    precondition,
+                    &rhs,
+                    None,
+                    max_iter,
+                    tol,
+                ))
             }
             PreconditionerKind::BlockJacobiX => {
                 let nx = self.grid.nsteps[0];
                 let offdiag = self.dxx_and_border_dx_offdiagonal();
-                let mut cprime = vec![0.0; self.dof()];
+                let mut cprime: Vec<f64> = tracker.try_zeroed(self.dof())?;
                 let precondition = |r: &[f64], out: &mut [f64]| {
                     out.par_chunks_mut(nx)
                         .zip(cprime.par_chunks_mut(nx))
@@ -2048,7 +2140,14 @@ impl FiniteDifferenceInterpolator {
                             );
                         });
                 };
-                conjugate_gradient_preconditioned(apply, precondition, &rhs, None, max_iter, tol)
+                Ok(conjugate_gradient_preconditioned(
+                    apply,
+                    precondition,
+                    &rhs,
+                    None,
+                    max_iter,
+                    tol,
+                ))
             }
         }
     }

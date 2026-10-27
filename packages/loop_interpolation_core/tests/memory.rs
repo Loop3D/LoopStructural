@@ -77,13 +77,17 @@ fn baseline_small() {
 }
 
 /// The tables of the interpolator use at most 12 bytes per dof (40^3 grid).
-/// The constructor builds all tables, so no solve is needed.
+/// The tables are built on first use, so the test does one short solve first.
 #[test]
 fn table_bytes_within_12_per_dof() {
     let grid = StructuredGrid3D::new([0.0, 0.0, 0.0], [40, 40, 40], [1.0, 1.0, 1.0]);
-    let interp = FiniteDifferenceInterpolator::new(grid);
+    let mut interp = FiniteDifferenceInterpolator::new(grid);
+    interp.add_value_constraint([20.0, 20.0, 20.0], 1.0, 1.0);
     let dof = interp.dof();
+    assert_eq!(interp.table_bytes(), 0, "tables must be lazy");
+    let _ = interp.solve(1, 1e-8);
     let bytes = interp.table_bytes();
+    assert!(bytes > 0, "the solve must build the tables");
     println!(
         "table_bytes={} per_dof={}",
         bytes,
