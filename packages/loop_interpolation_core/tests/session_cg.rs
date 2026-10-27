@@ -11,6 +11,8 @@ use loop_interpolation_core::{
 };
 
 /// The tests that read the allocator counters must not run at the same time.
+/// Every test takes this lock. The allocator counters are global, so a test that
+/// runs at the same time would change the memory level of another test.
 static MEM_LOCK: Mutex<()> = Mutex::new(());
 
 const N: usize = 30;
@@ -122,6 +124,7 @@ fn run_to_done(s: &mut SolveSession, k: usize) -> loop_interpolation_core::Solve
 /// (1) The session field equals the one-shot field.
 #[test]
 fn session_equals_one_shot() {
+    let _g = MEM_LOCK.lock().unwrap_or_else(|e| e.into_inner());
     let d = data(N, 300, 60);
     let want = reference(N, &d);
     assert!(want.converged);
@@ -148,6 +151,7 @@ fn session_equals_one_shot() {
 /// (2) Progress: stage Solve, growing iteration, falling residual.
 #[test]
 fn progress_is_reported() {
+    let _g = MEM_LOCK.lock().unwrap_or_else(|e| e.into_inner());
     let d = data(N, 300, 60);
     let mut s = problem(N, &d).start(settings(1e-10, 5000)).unwrap();
     let mut seen = Vec::new();
@@ -220,6 +224,7 @@ fn drop_after_start_frees_memory() {
 /// `best_so_far()` gives the same.
 #[test]
 fn finish_early_is_not_converged() {
+    let _g = MEM_LOCK.lock().unwrap_or_else(|e| e.into_inner());
     let d = data(N, 300, 60);
     let mut s = problem(N, &d).start(settings(1e-10, 5000)).unwrap();
     for _ in 0..3 {
@@ -239,6 +244,7 @@ fn finish_early_is_not_converged() {
 /// (6) `max_iter = 3` gives `Done` with `converged == false` and a residual.
 #[test]
 fn max_iter_stops_not_converged() {
+    let _g = MEM_LOCK.lock().unwrap_or_else(|e| e.into_inner());
     let d = data(N, 300, 60);
     let mut s = problem(N, &d).start(settings(1e-10, 3)).unwrap();
     let r = run_to_done(&mut s, 7);
@@ -250,6 +256,7 @@ fn max_iter_stops_not_converged() {
 /// (7) The report has `peak_bytes > 0` and the true count of iterations.
 #[test]
 fn report_has_peak_and_iterations() {
+    let _g = MEM_LOCK.lock().unwrap_or_else(|e| e.into_inner());
     let d = data(N, 300, 60);
     let want = reference(N, &d);
     let mut s = problem(N, &d).start(settings(1e-10, 5000)).unwrap();

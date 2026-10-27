@@ -10,15 +10,9 @@ use crate::interpolator::{
     BorderRegularisationWeights, FiniteDifferenceInterpolator, RegularisationWeights,
 };
 use crate::memory::{ProblemCounts, estimate, max_grid_for_budget};
-use crate::report::{MemoryEstimate, SolveReport};
+use crate::report::{MemoryEstimate, SolveReport, Step};
 use crate::session::SolveSession;
-use crate::settings::Settings;
-
-fn ni<T>() -> Result<T, CoreError> {
-    Err(CoreError::Unsupported {
-        setting: "not implemented".into(),
-    })
-}
+use crate::settings::{Precision, Settings};
 
 /// The most nodes that a grid can have: `isize::MAX / 8` (FR-018).
 const MAX_NODES: u64 = isize::MAX as u64 / 8;
@@ -523,11 +517,35 @@ impl Problem {
         if self.n_constraints() == 0 {
             return Err(CoreError::NoConstraints);
         }
-        ni()
+        if self.interp().n_inequality_constraints() > 0 {
+            return Err(CoreError::Unsupported {
+                setting: "inequality constraints (ADMM not implemented yet)".into(),
+            });
+        }
+        if s.precision != Precision::F64 {
+            return Err(CoreError::Unsupported {
+                setting: "f32 precision".into(),
+            });
+        }
+        SolveSession::new(self, &s)
+    }
+
+    /// The interpolator, for the solve session.
+    pub(crate) fn interpolator(&self) -> &FiniteDifferenceInterpolator {
+        self.interp()
+    }
+
+    /// The interpolator, for the solve session (setup).
+    pub(crate) fn interpolator_mut(&mut self) -> &mut FiniteDifferenceInterpolator {
+        self.interp_mut()
     }
 
     /// Solve in one call: a loop over `step`.
-    pub fn solve(self, _s: Settings) -> Result<(Field, SolveReport), CoreError> {
-        ni()
+    pub fn solve(self, s: Settings) -> Result<(Field, SolveReport), CoreError> {
+        let mut session = self.start(s)?;
+        // One step is large, so the loop has few turns. The CG state stops
+        // at `max_iter` by itself.
+        while let Step::Running(_) = session.step(1 << 20)? {}
+        session.finish()
     }
 }

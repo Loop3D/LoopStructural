@@ -26,7 +26,10 @@ fn not_implemented() -> CoreError {
 impl Field {
     /// Return the values as `f64`.
     pub fn values_f64(&self) -> Vec<f64> {
-        unimplemented!()
+        match &self.data {
+            FieldData::F64(v) => v.clone(),
+            FieldData::F32(_) => unimplemented!(),
+        }
     }
 
     /// Evaluate the field. `points` has 3m values. The result has m values.

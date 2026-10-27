@@ -1,36 +1,117 @@
 //! Solve session: a state machine that gives control back often.
 
+use crate::cg::{CgState, CgStatus};
 use crate::error::CoreError;
-use crate::field::Field;
+use crate::field::{Field, FieldData};
+use crate::memory::MemTracker;
 use crate::problem::Problem;
-use crate::report::{SolveReport, Step};
+use crate::report::{Progress, SolveReport, Stage, Step};
+use crate::settings::Settings;
 
 /// A running solve. The session owns the problem. Drop it to cancel.
 #[derive(Debug)]
 pub struct SolveSession {
-    #[allow(dead_code)]
-    pub(crate) problem: Problem,
-}
-
-fn ni<T>() -> Result<T, CoreError> {
-    Err(CoreError::Unsupported {
-        setting: "not implemented".into(),
-    })
+    problem: Problem,
+    cg: CgState,
+    /// Scratch of the normal operator. It is allocated once.
+    scratch: Vec<f64>,
+    tracker: MemTracker,
+    stage: Stage,
+    /// Set when the solve has ended: true if it converged.
+    done: Option<bool>,
 }
 
 impl SolveSession {
+    /// Set up the solve. The stage is `Setup` until the first `step`.
+    pub(crate) fn new(mut problem: Problem, s: &Settings) -> Result<Self, CoreError> {
+        let mut tracker = MemTracker::new(s.budget_bytes);
+        problem.interpolator_mut().prepare(&mut tracker)?;
+        let (rhs, diag, scratch_len) = {
+            let interp = problem.interpolator();
+            // `rhs` becomes `r` in the CG state. It is not copied.
+            let rhs = interp.try_rhs(&mut tracker)?;
+            let diag = interp.try_diagonal(&mut tracker)?;
+            (rhs, diag, interp.scratch_len())
+        };
+        let scratch: Vec<f64> = tracker.try_zeroed(scratch_len)?;
+        let cg = CgState::new(&mut tracker, rhs, diag, s.tol, s.max_iter)?;
+        Ok(Self {
+            problem,
+            cg,
+            scratch,
+            tracker,
+            stage: Stage::Setup,
+            done: None,
+        })
+    }
+
+    fn report(&self, converged: bool) -> SolveReport {
+        SolveReport {
+            converged,
+            iterations: self.cg.iterations(),
+            residual: self.cg.residual(),
+            max_violation: 0.0,
+            peak_bytes: self.tracker.peak(),
+            warnings: self.problem.warnings.clone(),
+        }
+    }
+
     /// Run at most `max_iters` iterations.
-    pub fn step(&mut self, _max_iters: usize) -> Result<Step, CoreError> {
-        ni()
+    pub fn step(&mut self, max_iters: usize) -> Result<Step, CoreError> {
+        if let Some(converged) = self.done {
+            return Ok(Step::Done(self.report(converged)));
+        }
+        self.stage = Stage::Solve;
+        let interp = self.problem.interpolator();
+        let scratch = &mut self.scratch;
+        let mut op = |v: &[f64], out: &mut [f64]| {
+            interp.apply_normal_operator_into(v, scratch, out);
+        };
+        let status = self.cg.step(&mut op, max_iters);
+        match status {
+            CgStatus::Running {
+                iteration,
+                residual,
+            } => Ok(Step::Running(Progress {
+                stage: self.stage.clone(),
+                iteration,
+                residual,
+                max_violation: 0.0,
+            })),
+            CgStatus::Converged => {
+                self.done = Some(true);
+                Ok(Step::Done(self.report(true)))
+            }
+            CgStatus::MaxIter | CgStatus::Breakdown => {
+                self.done = Some(false);
+                Ok(Step::Done(self.report(false)))
+            }
+        }
     }
 
     /// Return the current field. `converged` is false until `Done`.
     pub fn best_so_far(&self) -> Result<(Field, SolveReport), CoreError> {
-        ni()
+        let mut x: Vec<f64> = Vec::new();
+        x.try_reserve_exact(self.cg.x.len())
+            .map_err(|_| CoreError::OutOfMemory {
+                requested_bytes: (self.cg.x.len() as u64).saturating_mul(8),
+            })?;
+        x.extend_from_slice(&self.cg.x);
+        let field = Field {
+            grid: self.problem.interpolator().grid,
+            data: FieldData::F64(x),
+        };
+        Ok((field, self.report(self.done == Some(true))))
     }
 
     /// Move the field out.
     pub fn finish(self) -> Result<(Field, SolveReport), CoreError> {
-        ni()
+        let report = self.report(self.done == Some(true));
+        let grid = self.problem.interpolator().grid;
+        let field = Field {
+            grid,
+            data: FieldData::F64(self.cg.x),
+        };
+        Ok((field, report))
     }
 }

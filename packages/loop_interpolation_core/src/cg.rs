@@ -9,6 +9,8 @@
 //! fresh vectors, so this is the difference between a solver that's
 //! actually fast and one that merely looks matrix-free on paper.
 
+use crate::error::CoreError;
+use crate::memory::MemTracker;
 use crate::par::*;
 
 use crate::PAR_MIN_LEN;
@@ -71,8 +73,9 @@ where
     let n = rhs.len();
     let mut x = x0.unwrap_or_else(|| vec![0.0; n]);
     let mut r = vec![0.0; n];
-    let mut z = vec![0.0; n];
     let mut p = vec![0.0; n];
+    // `ap` also holds `z`: `ap` is free between the update of `r` and the
+    // next operator call, so no fifth work vector is needed.
     let mut ap = vec![0.0; n];
 
     apply(&x, &mut ap); // ap = N x0
@@ -81,9 +84,9 @@ where
         .zip(ap.par_iter())
         .with_min_len(PAR_MIN_LEN)
         .for_each(|((ri, b), a)| *ri = b - a);
-    precondition(&r, &mut z);
-    p.copy_from_slice(&z);
-    let mut rz_old = dot(&r, &z);
+    precondition(&r, &mut ap); // ap is z here
+    p.copy_from_slice(&ap);
+    let mut rz_old = dot(&r, &ap);
 
     let rhs_norm = dot(rhs, rhs).sqrt().max(1e-300);
     let mut iterations = 0usize;
@@ -111,11 +114,11 @@ where
             converged = true;
             break;
         }
-        precondition(&r, &mut z);
-        let rz_new = dot(&r, &z);
+        precondition(&r, &mut ap); // ap is z here
+        let rz_new = dot(&r, &ap);
         let beta = rz_new / rz_old;
         p.par_iter_mut()
-            .zip(z.par_iter())
+            .zip(ap.par_iter())
             .with_min_len(PAR_MIN_LEN)
             .for_each(|(pi, zi)| *pi = zi + beta * *pi);
         rz_old = rz_new;
@@ -127,6 +130,171 @@ where
         residual_norm: dot(&r, &r).sqrt(),
         converged,
     }
+}
+
+/// State of a CG run that is done: why it stopped.
+#[derive(Debug, Clone, Copy, PartialEq)]
+pub enum CgStatus {
+    /// More iterations are possible. `residual` is relative to `|rhs|`.
+    Running { iteration: usize, residual: f64 },
+    /// The relative residual is at or below the tolerance.
+    Converged,
+    /// The total iteration limit is reached.
+    MaxIter,
+    /// `p.Ap` is zero. The solve cannot go on.
+    Breakdown,
+}
+
+/// Preconditioned CG (Jacobi) as a state machine.
+///
+/// Full vectors: `x`, `r`, `p`, `ap` and `inv_diag` (5 x 8 bytes per dof).
+/// There is no `z` and no `rhs`: `r` starts as `rhs` (the start value `x0`
+/// is zero) and `rz = sum(r * r * inv_diag)`.
+#[derive(Debug)]
+pub struct CgState {
+    pub x: Vec<f64>,
+    pub r: Vec<f64>,
+    pub p: Vec<f64>,
+    pub ap: Vec<f64>,
+    pub inv_diag: Vec<f64>,
+    rz: f64,
+    rhs_norm: f64,
+    residual: f64,
+    tol: f64,
+    max_iter: usize,
+    iterations: usize,
+    done: Option<CgStatus>,
+}
+
+impl CgState {
+    /// Make the state. `rhs` becomes `r` (no copy). `diag` becomes
+    /// `inv_diag` in place. `x`, `p` and `ap` come from `tracker`.
+    pub fn new(
+        tracker: &mut MemTracker,
+        rhs: Vec<f64>,
+        mut diag: Vec<f64>,
+        tol: f64,
+        max_iter: usize,
+    ) -> Result<Self, CoreError> {
+        let n = rhs.len();
+        let x: Vec<f64> = tracker.try_zeroed(n)?;
+        let mut p: Vec<f64> = tracker.try_zeroed(n)?;
+        let ap: Vec<f64> = tracker.try_zeroed(n)?;
+
+        // Jacobi: a diagonal value of zero or less gives no scaling.
+        diag.par_iter_mut()
+            .with_min_len(PAR_MIN_LEN)
+            .for_each(|d| *d = if *d > 0.0 { 1.0 / *d } else { 1.0 });
+        let inv_diag = diag;
+        let r = rhs;
+
+        p.par_iter_mut()
+            .zip(r.par_iter())
+            .zip(inv_diag.par_iter())
+            .with_min_len(PAR_MIN_LEN)
+            .for_each(|((pi, ri), di)| *pi = ri * di);
+        let rz = weighted_dot(&r, &inv_diag);
+        let r_norm = dot(&r, &r).sqrt();
+        let rhs_norm = r_norm.max(1e-300);
+        let residual = r_norm / rhs_norm;
+
+        let done = if residual <= tol {
+            Some(CgStatus::Converged)
+        } else if max_iter == 0 {
+            Some(CgStatus::MaxIter)
+        } else {
+            None
+        };
+        Ok(Self {
+            x,
+            r,
+            p,
+            ap,
+            inv_diag,
+            rz,
+            rhs_norm,
+            residual,
+            tol,
+            max_iter,
+            iterations: 0,
+            done,
+        })
+    }
+
+    /// Number of CG iterations done.
+    pub fn iterations(&self) -> usize {
+        self.iterations
+    }
+
+    /// Relative residual `|r| / |rhs|`.
+    pub fn residual(&self) -> f64 {
+        self.residual
+    }
+
+    /// Run at most `iters` iterations. `op(v, out)` must write `out = N v`.
+    pub fn step(&mut self, op: &mut dyn FnMut(&[f64], &mut [f64]), iters: usize) -> CgStatus {
+        if let Some(status) = self.done {
+            return status;
+        }
+        let mut left = iters;
+        while left > 0 {
+            if self.iterations >= self.max_iter {
+                self.done = Some(CgStatus::MaxIter);
+                return CgStatus::MaxIter;
+            }
+            op(&self.p, &mut self.ap); // ap = N p
+            let p_ap = dot(&self.p, &self.ap);
+            if p_ap.abs() < 1e-300 {
+                self.done = Some(CgStatus::Breakdown);
+                return CgStatus::Breakdown;
+            }
+            let alpha = self.rz / p_ap;
+            self.x
+                .par_iter_mut()
+                .zip(self.p.par_iter())
+                .with_min_len(PAR_MIN_LEN)
+                .for_each(|(xi, pi)| *xi += alpha * pi);
+            self.r
+                .par_iter_mut()
+                .zip(self.ap.par_iter())
+                .with_min_len(PAR_MIN_LEN)
+                .for_each(|(ri, api)| *ri -= alpha * api);
+            self.iterations += 1;
+            left -= 1;
+            self.residual = dot(&self.r, &self.r).sqrt() / self.rhs_norm;
+            if self.residual <= self.tol {
+                self.done = Some(CgStatus::Converged);
+                return CgStatus::Converged;
+            }
+            let rz_new = weighted_dot(&self.r, &self.inv_diag);
+            let beta = rz_new / self.rz;
+            self.p
+                .par_iter_mut()
+                .zip(self.r.par_iter())
+                .zip(self.inv_diag.par_iter())
+                .with_min_len(PAR_MIN_LEN)
+                .for_each(|((pi, ri), di)| *pi = ri * di + beta * *pi);
+            self.rz = rz_new;
+        }
+        if self.iterations >= self.max_iter {
+            self.done = Some(CgStatus::MaxIter);
+            return CgStatus::MaxIter;
+        }
+        CgStatus::Running {
+            iteration: self.iterations,
+            residual: self.residual,
+        }
+    }
+}
+
+/// `sum(r * r * w)`, added in `f64`.
+#[inline]
+fn weighted_dot(r: &[f64], w: &[f64]) -> f64 {
+    r.par_iter()
+        .zip(w.par_iter())
+        .with_min_len(PAR_MIN_LEN)
+        .map(|(ri, wi)| ri * ri * wi)
+        .sum()
 }
 
 #[cfg(test)]

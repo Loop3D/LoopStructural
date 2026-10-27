@@ -197,7 +197,7 @@ Phase B of the plan, first part. Tests before code.
   - Needs: T013, T009, T015
   - Wave: 8
   - Done when: `cargo test --manifest-path packages/loop_interpolation_core/Cargo.toml --test session_cg` compiles and fails.
-- [ ] T020 [US1] [M] Implement the CG state machine and `SolveSession` (`start`, `step`, `best_so_far`, `finish`). Keep 4 full vectors plus the inverse diagonal.
+- [x] T020 [US1] [M] Implement the CG state machine and `SolveSession` (`start`, `step`, `best_so_far`, `finish`). Keep 4 full vectors plus the inverse diagonal.
   - Do: Read `plan.md` D3, D4 and D8.
   - Do: `cg.rs`: `pub struct CgState { x, r, p, ap, inv_diag }` and `pub fn step(&mut self, op: &mut dyn FnMut(&[f64], &mut [f64]), iters: usize) -> CgStatus`. Do not store `z`: use `r.z = sum(r*r*inv_diag)`. Do not store `rhs`: build `r = rhs - N x0` straight into `r`. Dot products add in `f64`.
   - Do: `session.rs`: `SolveSession` owns the `Problem` (so it needs no lifetime). `Problem::start(self, s)` checks the budget, calls `prepare`, allocates through `MemTracker`, returns the session in stage `Setup`.
