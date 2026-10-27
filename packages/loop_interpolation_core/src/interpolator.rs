@@ -584,26 +584,33 @@ fn dist_to_true_edge(nsteps: &[usize; 3], i: usize, j: usize, k: usize) -> usize
 /// - `shell_output_indices`: flat indices at distance < 2 -- the output
 ///   nodes `fused_interior_regularisation_into` deliberately skips and that
 ///   `shell_regularisation_correction_into` must fix up exactly.
-/// - the former's flat-index inverse (`flat -> position`, `usize::MAX` for
+/// - the former's flat-index inverse (`flat -> position`, `u32::MAX` for
 ///   non-shell-row nodes), so the adjoint half of the shell correction can
 ///   find a row's forward value by flat index in O(1).
-fn build_shell_indices(grid: &StructuredGrid3D) -> (Vec<usize>, Vec<usize>, Vec<usize>) {
+///
+/// All three tables hold `u32` values to use 4 bytes per entry. The top
+/// value `u32::MAX` is the empty marker.
+fn build_shell_indices(grid: &StructuredGrid3D) -> (Vec<u32>, Vec<u32>, Vec<u32>) {
     let dof = grid.n_nodes();
+    assert!(
+        dof < u32::MAX as usize,
+        "grid has too many nodes for the u32 shell tables"
+    );
     let mut shell_rows = Vec::new();
     let mut shell_outputs = Vec::new();
     for flat in 0..dof {
         let (i, j, k) = grid.node_ijk(flat);
         let d = dist_to_true_edge(&grid.nsteps, i, j, k);
         if d <= 2 {
-            shell_rows.push(flat);
+            shell_rows.push(flat as u32);
         }
         if d < 2 {
-            shell_outputs.push(flat);
+            shell_outputs.push(flat as u32);
         }
     }
-    let mut lookup = vec![usize::MAX; dof];
+    let mut lookup = vec![u32::MAX; dof];
     for (pos, &flat) in shell_rows.iter().enumerate() {
-        lookup[flat] = pos;
+        lookup[flat as usize] = pos as u32;
     }
     (shell_rows, shell_outputs, lookup)
 }
@@ -819,9 +826,9 @@ pub struct FiniteDifferenceInterpolator {
     /// Row centres (dist to true edge <= 2) / output nodes (dist < 2) / the
     /// former's flat-index inverse -- grid-shape-only, built once (see
     /// `build_shell_indices`).
-    shell_row_indices: Vec<usize>,
-    shell_output_indices: Vec<usize>,
-    shell_row_lookup: Vec<usize>,
+    shell_row_indices: Vec<u32>,
+    shell_output_indices: Vec<u32>,
+    shell_row_lookup: Vec<u32>,
     /// Per-node squared weight for each of the six curvature families
     /// (`[dxx, dyy, dzz, dxy, dxz, dyz]`), accumulated across every
     /// [`add_directional_regularisation`](Self::add_directional_regularisation)
@@ -896,6 +903,23 @@ impl FiniteDifferenceInterpolator {
 
     pub fn dof(&self) -> usize {
         self.grid.n_nodes()
+    }
+
+    /// Bytes held by the interpolator's own tables: the shell lookup, the
+    /// shell index lists, the directional weights (if any) and the combined
+    /// kernel. It counts the capacity of each table. It does not count the
+    /// constraint records or the vectors made during a solve.
+    pub fn table_bytes(&self) -> usize {
+        let directional = self
+            .directional_weight2
+            .as_ref()
+            .map_or(0, |w| w.iter().map(|v| v.capacity()).sum::<usize>())
+            * std::mem::size_of::<f64>();
+        self.shell_row_lookup.capacity() * std::mem::size_of::<u32>()
+            + self.shell_row_indices.capacity() * std::mem::size_of::<u32>()
+            + self.shell_output_indices.capacity() * std::mem::size_of::<u32>()
+            + directional
+            + self.combined_kernel.capacity() * std::mem::size_of::<KernelTap>()
     }
 
     /// Add a scalar value observation at `point` with weight `weight`.
@@ -1639,7 +1663,7 @@ impl FiniteDifferenceInterpolator {
             .zip(self.shell_row_indices.par_iter())
             .with_min_len(PAR_MIN_LEN)
             .for_each(|(chunk, &flat)| {
-                let (i, j, k) = grid.node_ijk(flat);
+                let (i, j, k) = grid.node_ijk(flat as usize);
                 for (slot, (stencil, weight)) in chunk.iter_mut().zip(self.stencils.iter()) {
                     *slot = if *weight != 0.0 && stencil.is_row_active(grid, i, j, k) {
                         stencil
@@ -1663,7 +1687,7 @@ impl FiniteDifferenceInterpolator {
             .par_iter()
             .with_min_len(PAR_MIN_LEN)
             .map(|&flat| {
-                let (i, j, k) = grid.node_ijk(flat);
+                let (i, j, k) = grid.node_ijk(flat as usize);
                 let mut acc = 0.0;
                 for (family, (stencil, weight)) in self.stencils.iter().enumerate() {
                     if *weight == 0.0 {
@@ -1683,10 +1707,10 @@ impl FiniteDifferenceInterpolator {
                                     if stencil.is_row_active(grid, si, sj, sk) {
                                         let pos = self.shell_row_lookup[src];
                                         debug_assert!(
-                                            pos != usize::MAX,
+                                            pos != u32::MAX,
                                             "shell adjoint referenced a row outside the precomputed shell row set"
                                         );
-                                        c * shell_scratch[pos * N_FAMILIES + family]
+                                        c * shell_scratch[pos as usize * N_FAMILIES + family]
                                     } else {
                                         0.0
                                     }
@@ -1702,7 +1726,7 @@ impl FiniteDifferenceInterpolator {
             .collect();
 
         for (&flat, value) in self.shell_output_indices.iter().zip(contributions.iter()) {
-            out[flat] += value;
+            out[flat as usize] += value;
         }
     }
 

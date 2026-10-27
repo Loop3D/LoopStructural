@@ -108,7 +108,7 @@ Phase A of the plan. Source: `~/dev/loop-rs/crates/interpolation-fd` at commit b
   - Needs: T008
   - Wave: 5
   - Done when: `cargo test --manifest-path packages/loop_interpolation_core/Cargo.toml --release --test memory -- --ignored --nocapture baseline_r1` prints `bytes_per_dof=` and the same value is in `specs/001-low-memory-interpolator/measurements.md` under the heading `Baseline`.
-- [ ] T010 [P] [Found] [M] Apply the table cuts of D4 inside `interpolator.rs`. Add `table_bytes()` (FR-001, FR-023).
+- [x] T010 [P] [Found] [M] Apply the table cuts of D4 inside `interpolator.rs`. Add `table_bytes()` (FR-001, FR-023).
   - Do: Store `shell_row_lookup`, `shell_row_indices` and `shell_output_indices` as `u32` (the top value is the empty marker).
   - Do: Add `pub fn table_bytes(&self) -> usize`: the bytes held by the interpolator's own tables (lookup, indices, directional weights, combined kernel). Add a test in `tests/memory.rs` that asserts `table_bytes() <= 12 * dof` for a 40^3 grid.
   - Do: Add the heading `After table cuts` to `measurements.md` with the new value. Do not change the CG code here (T020 rewrites it).
@@ -129,7 +129,7 @@ Phase A of the plan. Source: `~/dev/loop-rs/crates/interpolation-fd` at commit b
 
 Phase B of the plan, first part. Tests before code.
 
-- [ ] T012 [P] [US1] [M] Test: bad input gives an error that names the constraint (FR-018, story 1 scenario 10, edge cases).
+- [x] T012 [P] [US1] [M] Test: bad input gives an error that names the constraint (FR-018, story 1 scenario 10, edge cases).
   - Do: One test for each case. Each case builds a `Problem` and calls one `add_*` method. Check the error variant and that `constraint` is like `value[3]` (family name and row).
   - Do: Cases: NaN in a point; infinite value; array of the wrong length; zero-length vector for `add_gradient`, `add_normal`, `add_tangent`; weight 0 and weight -1; `lower > upper` for `add_value_bound` and `add_pair_bound`; grid with 2 nodes on one axis (`GridTooSmall`); grid whose node count is above `MAX_NODES` (`GridTooLarge`, no allocation); `start` with zero constraints (`NoConstraints`).
   - Do: Warnings (not errors): a point outside the grid is dropped and `warnings()` has one text with the count; two value constraints at one point with different values give a warning with the count; a step ratio above 100 gives a warning.
@@ -146,7 +146,7 @@ Phase B of the plan, first part. Tests before code.
   - Needs: T012
   - Wave: 7
   - Done when: `cargo test --manifest-path packages/loop_interpolation_core/Cargo.toml --test input_validation` passes.
-- [ ] T014 [P] [Found] [S] Test: `MemTracker` counts bytes, tracks the peak, and refuses over budget.
+- [x] T014 [P] [Found] [S] Test: `MemTracker` counts bytes, tracks the peak, and refuses over budget.
   - Do: Add `#[cfg(test)] mod tests` to `memory.rs` (the stub body stays).
   - Do: Tests: `try_zeroed::<f64>(10)` raises `current` by 80 and `peak` to 80; `release(80)` sets `current` to 0 and keeps `peak` 80; with `budget = Some(79)` a request for 80 bytes gives `OverBudget` and nothing is allocated; `try_zeroed::<f64>(usize::MAX / 16)` gives `OutOfMemory`, not an abort.
   - Files: `packages/loop_interpolation_core/src/memory.rs`

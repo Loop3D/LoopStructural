@@ -75,3 +75,19 @@ fn baseline_small() {
     let (peak, dof) = run(30, 200, 50);
     println!("small bytes_per_dof={}", peak as f64 / dof as f64);
 }
+
+/// The tables of the interpolator use at most 12 bytes per dof (40^3 grid).
+/// The constructor builds all tables, so no solve is needed.
+#[test]
+fn table_bytes_within_12_per_dof() {
+    let grid = StructuredGrid3D::new([0.0, 0.0, 0.0], [40, 40, 40], [1.0, 1.0, 1.0]);
+    let interp = FiniteDifferenceInterpolator::new(grid);
+    let dof = interp.dof();
+    let bytes = interp.table_bytes();
+    println!(
+        "table_bytes={} per_dof={}",
+        bytes,
+        bytes as f64 / dof as f64
+    );
+    assert!(bytes <= 12 * dof, "table_bytes={bytes} dof={dof}");
+}
