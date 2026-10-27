@@ -357,7 +357,7 @@ Phase D of the plan. It needs only phases 3 to 5. The Python tests skip when the
   - Needs: T030, T032
   - Wave: 3
   - Done when: `python -m pytest packages/loop_interpolation/tests/test_native_no_rows.py -q` shows no failure (skips allowed).
-- [ ] T038 [US6] [M] Build the wheel into a clean venv and run all Python tests (story 6, FR-017, FR-019).
+- [x] T038 [US6] [M] Build the wheel into a clean venv and run all Python tests (story 6, FR-017, FR-019).
   - Do: Install `maturin` with `uv pip install maturin` in a venv in the scratchpad. Do not put the venv in the repository.
   - Do: Fix failures only in the four files of the Files list. If a fix needs another file, stop and report it.
   - Files: `packages/loop_interpolation/src/loop_interpolation/_native.py`, `packages/loop_interpolation/src/loop_interpolation/_discrete_interpolator.py`, `packages/loop_interpolation/src/loop_interpolation/_finite_difference_interpolator.py`, `packages/loop_interpolation_core/src/python.rs`

@@ -21,6 +21,23 @@ FIELD_TOL = 1e-3  # fraction of the field range
 PAIR_UPPER_BOUND = 1e-6  # value for setup kwarg inequality_pair_upper_bound
 
 
+# Settings for each solver. Both use tight ADMM tolerances,
+# so that the bounds are met to the limit of this test.
+SOLVER_KWARGS = {
+    "native": {"maxiter": 50000, "admm_abs_tol": 1e-7, "admm_rel_tol": 1e-7},
+    # Weight 1.0 makes the bound penalty strong enough for the Python ADMM.
+    "admm": {
+        "nmajor": 500,
+        "admm_weight": 1.0,
+        "admm_abs_tol": 1e-7,
+        "admm_rel_tol": 1e-7,
+        "atol": 1e-10,
+        "btol": 1e-10,
+        "maxiter": 5000,
+    },
+}
+
+
 def _make_interpolator(solver):
     """Make a 20^3 structured grid interpolator that uses the given solver."""
     origin = np.array([-0.1, -0.1, -0.1])
@@ -30,25 +47,35 @@ def _make_interpolator(solver):
     interpolator = FDI(grid)
     # Set the solver before setup, so the native path can skip the sparse rows.
     interpolator.solver = solver
+    # The Python path scales the columns of the main matrix but not the bound matrix,
+    # so the bounds would apply to scaled values. Switch the scaling off for a fair oracle.
+    interpolator.apply_scaling_matrix = False
     return interpolator
 
 
 def _add_ramp_data(interpolator):
-    """Add data for a field that rises with z, from 0 at z=0.1 to 1 at z=0.9."""
+    """Add 60 value rows from a smooth field that rises with z (about 0 to 1).
+
+    The many rows make the unbounded field well determined,
+    so both solvers can reach the bounds.
+    """
     rng = np.random.default_rng(0)
-    xy = rng.uniform(0.2, 0.8, size=(6, 2))
-    low = np.column_stack([xy[:3], np.full(3, 0.1), np.zeros(3), np.ones(3)])
-    high = np.column_stack([xy[3:], np.full(3, 0.9), np.ones(3), np.ones(3)])
-    interpolator.set_value_constraints(np.vstack([low, high]))
-    # Columns: X, Y, Z, gx, gy, gz, weight
-    gradient = np.array([[0.5, 0.5, 0.5, 0.0, 0.0, 1.0, 1.0]])
-    interpolator.set_normal_constraints(gradient)
+    xyz = rng.uniform(0.1, 0.9, size=(60, 3))
+    values = xyz[:, 2] + 0.1 * np.sin(2.0 * xyz[:, 0]) * xyz[:, 1]
+    interpolator.set_value_constraints(np.column_stack([xyz, values, np.ones(60)]))
 
 
 def _evaluation_points():
     """Points on a regular grid in the unit cube, used to measure the field."""
     axis = np.linspace(0.05, 0.95, 12)
     return np.array(np.meshgrid(axis, axis, axis, indexing="ij")).reshape(3, -1).T
+
+
+def _check_converged(interpolator, solver):
+    """The native core must report convergence."""
+    if solver == "native":
+        report = interpolator.latest_native_report
+        assert report["converged"], f"native did not converge: {report}"
 
 
 def _solve_value_bounds(solver):
@@ -64,7 +91,8 @@ def _solve_value_bounds(solver):
     )
     interpolator.set_value_inequality_constraints(bounds)
     interpolator.setup()
-    interpolator.solve_system(solver=solver)
+    interpolator.solve_system(solver=solver, solver_kwargs=dict(SOLVER_KWARGS[solver]))
+    _check_converged(interpolator, solver)
     return interpolator, bound_xyz
 
 
@@ -88,7 +116,8 @@ def _solve_pair_bounds(solver):
         inequality_pair_upper_bound=PAIR_UPPER_BOUND,
         inequality_pair_lower_bound=-np.inf,
     )
-    interpolator.solve_system(solver=solver)
+    interpolator.solve_system(solver=solver, solver_kwargs=dict(SOLVER_KWARGS[solver]))
+    _check_converged(interpolator, solver)
     return interpolator, rock0, rock1
 
 

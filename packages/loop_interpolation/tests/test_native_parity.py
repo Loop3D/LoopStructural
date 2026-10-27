@@ -20,7 +20,9 @@ from loop_interpolation import InterpolatorBuilder, InterpolatorType, Structured
 N_NODES = 30
 SEED = 20240607
 REL_TOL = 1e-6
-CG_KWARGS = {"rtol": 1e-10, "atol": 1e-10, "maxiter": 50000}
+CG_KWARGS = {"rtol": 1e-12, "atol": 1e-12, "maxiter": 200000}
+# The native solver gets the same tolerance and iteration limit as the reference.
+NATIVE_KWARGS = {"tol": 1e-12, "maxiter": 50000}
 
 # Small background weight for the regularisation terms that are not under test.
 # It keeps the problem well posed when one term is tested alone.
@@ -95,7 +97,7 @@ def _build(solver: str, data: dict, setup_kwargs: dict) -> np.ndarray:
         support=_make_grid(),
     )
     if solver == "native":
-        builder.use_solver("native")
+        builder.use_solver("native", **NATIVE_KWARGS)
     else:
         builder.use_solver(solver, **CG_KWARGS)
     for method, array in data.items():
@@ -181,7 +183,7 @@ def test_native_node_order_matches_matrix_solver():
             support=grid,
         )
         if solver == "native":
-            builder.use_solver("native")
+            builder.use_solver("native", **NATIVE_KWARGS)
         else:
             builder.use_solver(solver, **CG_KWARGS)
         builder.add_value_constraints(data).setup_interpolator(**setup).solve()
