@@ -38,7 +38,7 @@ fn bad_input(family: &str, reason: &str) -> CoreError {
 
 /// Check that a flat array holds 3 values for each point. Return the count.
 fn count_points(family: &str, name: &str, flat: &[f64]) -> Result<usize, CoreError> {
-    if flat.len() % 3 != 0 {
+    if !flat.len().is_multiple_of(3) {
         return Err(bad_input(
             family,
             &format!("{name} length {} is not a multiple of 3", flat.len()),
@@ -304,10 +304,10 @@ impl Problem {
         let n = count_points(family, "points", points)?;
         check_len(family, "vectors", vectors.len(), 3 * n)?;
         check_len(family, "weights", weights.len(), n)?;
-        for i in 0..n {
+        for (i, &w) in weights.iter().enumerate() {
             check_finite3(family, points, i, "point")?;
             check_vector(family, vectors, i)?;
-            check_weight(family, i, weights[i])?;
+            check_weight(family, i, w)?;
         }
         let outside = self.count_outside(points);
         // Reserve exactly for the rows that are in the grid.
@@ -318,13 +318,8 @@ impl Problem {
             "tangent" => self.interp_mut().reserve_tangent(valid),
             _ => {}
         }
-        for i in 0..n {
-            add(
-                self.interp_mut(),
-                row3(points, i),
-                row3(vectors, i),
-                weights[i],
-            );
+        for (i, &w) in weights.iter().enumerate() {
+            add(self.interp_mut(), row3(points, i), row3(vectors, i), w);
         }
         self.warn_outside(family, outside);
         Ok(())

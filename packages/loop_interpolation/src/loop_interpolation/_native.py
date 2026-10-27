@@ -347,7 +347,7 @@ def solve(interpolator, tol, solver_kwargs) -> bool:
     check_supported(interpolator, setup_kwargs, solver_kwargs)
 
     try:
-        import loop_interpolation_core as core  # noqa: PLC0415
+        import loop_interpolation_core as core
     except ImportError as err:
         raise ImportError(_INSTALL_HINT) from err
 

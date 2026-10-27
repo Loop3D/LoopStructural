@@ -389,19 +389,19 @@ impl<S: Scalar> AdmmState<S> {
         let mut z2 = 0.0f64;
         let mut u2 = 0.0f64;
         let mut max_violation = 0.0f64;
-        for i in 0..m {
-            let v = qx[i] + self.u[i];
+        for (i, &q) in qx.iter().enumerate().take(m) {
+            let v = q + self.u[i];
             let z_new = v.max(self.lower[i]).min(self.upper[i]);
             dual2 += (z_new - self.z[i]).powi(2);
             self.z[i] = z_new;
-            self.u[i] += qx[i] - z_new;
-            primal2 += (qx[i] - z_new).powi(2);
-            qx2 += qx[i] * qx[i];
+            self.u[i] += q - z_new;
+            primal2 += (q - z_new).powi(2);
+            qx2 += q * q;
             z2 += z_new * z_new;
             u2 += self.u[i] * self.u[i];
             // Field units: undo the row scaling.
-            max_violation = max_violation
-                .max(violation(qx[i], self.lower[i], self.upper[i]) * self.inv_scale[i]);
+            max_violation =
+                max_violation.max(violation(q, self.lower[i], self.upper[i]) * self.inv_scale[i]);
         }
         self.max_violation = max_violation;
         let limit = VIOLATION_LIMIT * self.field_range();

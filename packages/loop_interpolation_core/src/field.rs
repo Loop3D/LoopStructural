@@ -20,7 +20,7 @@ pub struct Field {
 /// Check the length of the points and that each point is inside the grid.
 /// Return the points as 3-value arrays.
 fn check_points(grid: &StructuredGrid3D, points: &[f64]) -> Result<Vec<[f64; 3]>, CoreError> {
-    if points.len() % 3 != 0 {
+    if !points.len().is_multiple_of(3) {
         return Err(CoreError::InvalidInput {
             constraint: "points".into(),
             reason: format!("length {} is not a multiple of 3", points.len()),
