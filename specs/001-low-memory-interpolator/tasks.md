@@ -76,7 +76,7 @@ Package scaffold, release and workspace settings. Rust is new in this repository
 
 Phase A of the plan. Source: `~/dev/loop-rs/crates/interpolation-fd` at commit bff51342da8ebff7ca3c87e07c1d4fbd31279c8b. All tasks use the ported unit tests as the safety net.
 
-- [ ] T006 [P] [Found] [M] Copy `cg.rs`, `grid.rs`, `stencil.rs`, `interpolator.rs` and `tests/edge_cases.rs` from loop-rs. Declare the modules in `lib.rs`.
+- [x] T006 [P] [Found] [M] Copy `cg.rs`, `grid.rs`, `stencil.rs`, `interpolator.rs` and `tests/edge_cases.rs` from loop-rs. Declare the modules in `lib.rs`.
   - Do: Copy the files unchanged. Do not copy `main.rs`, `python.rs`, `tests_python/`, `Inequalities.md`, or build output (`*.pyd`, `__pycache__`).
   - Do: In `lib.rs` declare `pub mod cg; pub mod grid; pub mod interpolator; pub mod stencil;`, copy the `PAR_MIN_LEN` constant and the `pub use` lines. Use the crate name `loop_interpolation_core` in `tests/edge_cases.rs`.
   - Do: Keep `rayon` in these files for now (feature `parallel`). T008 removes it.
@@ -272,7 +272,7 @@ These tasks edit files that ADMM also edits, so they follow Phase 4.
 
 Phase D of the plan. It needs only phases 3 to 5. The Python tests skip when the core is not installed.
 
-- [ ] T027 [P] [US6] [M] Test: parity with the matrix solver for each constraint family, each regularisation, and node order (story 6 scenario 1, FR-025, SC-003).
+- [x] T027 [P] [US6] [M] Test: parity with the matrix solver for each constraint family, each regularisation, and node order (story 6 scenario 1, FR-025, SC-003).
   - Do: Start the file with `pytest.importorskip("loop_interpolation_core")`.
   - Do: On a 30^3 `StructuredGrid` problem, for value, gradient, normal, tangent, interface, `dxx`, `dyy`, `dzz`, `dxy`, `dxz`, `dyz`, border, and directional regularisation, one family at a time: solve with `solver="cg"` and with `solver="native"`. The fields differ by at most 1e-6 of the range.
   - Do: A node-order test: a field `f(x,y,z) = x + 2y + 3z` fixed with value constraints gives the same `interpolator.c` order as the matrix solver.
@@ -281,20 +281,20 @@ Phase D of the plan. It needs only phases 3 to 5. The Python tests skip when the
   - Needs: T004
   - Wave: 2
   - Done when: `python -m pytest packages/loop_interpolation/tests/test_native_parity.py -q` collects the tests and skips all (reason: core not installed). After T038 it passes with 0 skipped.
-- [ ] T028 [P] [US6] [M] Test: inequality problems agree with the Python ADMM solver (story 6 scenario 1, SC-004).
+- [x] T028 [P] [US6] [M] Test: inequality problems agree with the Python ADMM solver (story 6 scenario 1, SC-004).
   - Do: Start with `pytest.importorskip`. Compare `solver="native"` with `solver="admm"` on a 20^3 problem with value bounds and with pair bounds (use `inequality_pairs`). The constraint violation is at most 1e-4 of the range in both, and the two fields differ by at most 1e-3 of the range.
   - Files: `packages/loop_interpolation/tests/test_native_inequality.py`
   - Needs: T004
   - Wave: 2
   - Done when: `python -m pytest packages/loop_interpolation/tests/test_native_inequality.py -q` collects the tests and skips all.
-- [ ] T029 [P] [US6] [S] Test: unsupported settings fail with their name; a missing core gives an install hint (story 6 scenario 3, FR-026).
+- [x] T029 [P] [US6] [S] Test: unsupported settings fail with their name; a missing core gives an install hint (story 6 scenario 3, FR-026).
   - Do: Table test over: region mask, column scaling (`apply_scaling_matrix=True`), `use_regularisation_weight_scale=True`, constant-norm iterations (`constant_norm_iterations`), `interface_pair_mode="all"`, `regularisation_matrix_free=True`. Each with `solver="native"` raises `NotImplementedError` and the message contains the setting name.
   - Do: A test that monkeypatches the import of `loop_interpolation_core` to fail: choosing `"native"` raises `ImportError` with the text `pip install loop-interpolation[native]`. This test does not need the core.
   - Files: `packages/loop_interpolation/tests/test_native_errors.py`
   - Needs: T004
   - Wave: 2
   - Done when: `python -m pytest packages/loop_interpolation/tests/test_native_errors.py -q` collects the tests.
-- [ ] T030 [P] [US6] [M] Test: with `native` set before setup no sparse rows are built; set after setup it still works with a warning (FR-019, plan D7.2).
+- [x] T030 [P] [US6] [M] Test: with `native` set before setup no sparse rows are built; set after setup it still works with a warning (FR-019, plan D7.2).
   - Do: (a) Create the interpolator with `solver="native"`, set constraints, call `setup()`: `interpolator.constraints` is empty (no rows) and the diagnostics report exists.
   - Do: (b) Call `setup()` with `solver="cg"`, then `solve_system("native")`: rows exist, the field is correct, and one warning about memory is logged (`caplog`).
   - Do: (c) `update()` after (a) does not raise and the field is the same.
@@ -309,7 +309,7 @@ Phase D of the plan. It needs only phases 3 to 5. The Python tests skip when the
   - Needs: none
   - Wave: 1
   - Done when: `python -m pytest packages/loop_interpolation/tests/test_solver_strategy.py -q -k native` fails.
-- [ ] T032 [P] [US6] [S] Accept `"native"` in `resolve_solver_choice`.
+- [x] T032 [P] [US6] [S] Accept `"native"` in `resolve_solver_choice`.
   - Do: Add `"native"` to the list `["cg", "lsmr", "admm", None]`.
   - Files: `packages/loop_interpolation/src/loop_interpolation/_solver_strategy.py`
   - Needs: T031

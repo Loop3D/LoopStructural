@@ -21,7 +21,7 @@ def resolve_solver_choice(
     if callable(solver):
         return solver
     if isinstance(solver, str) or solver is None:
-        if solver not in ["cg", "lsmr", "admm", None]:
+        if solver not in ["cg", "lsmr", "admm", "native", None]:
             logger.warning(
                 "Unknown solver %s using cg. Available solvers are cg, lsmr, admm or a custom callable",
                 solver,
