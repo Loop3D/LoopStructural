@@ -467,7 +467,7 @@ Phase E of the plan (was F). It changes the vector type, not the algorithm.
 
 ## Phase 9: Finish - measurement, CI, docs, checks
 
-- [ ] T051 [Finish] [M] Add the reference problem tests (SC-001, SC-008, SC-009, SC-012). Record the numbers.
+- [x] T051 [Finish] [M] Add the reference problem tests (SC-001, SC-008, SC-009, SC-012). Record the numbers.
   - Do: CI test: for 10 grid sizes from 10^3 to 100^3 the estimate is at least the peak and at most 1.25 times the peak (SC-009). Ignored test extends to 200^3.
   - Do: CI test: peak against dof for 50^3, 100^3, 150^3 fits a line with R^2 at least 0.99 (SC-012; 150^3 is `#[ignore]`d, CI uses 30^3, 45^3, 60^3).
   - Do: Ignored: R1 peak at most 100 MB (SC-001); 250^3 `F32` with `budget_bytes = 2_000_000_000` peak at most 1.5 GB (SC-008); time of R1 is printed (SC-007, report only).

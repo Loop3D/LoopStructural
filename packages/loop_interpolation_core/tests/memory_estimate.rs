@@ -77,6 +77,10 @@ fn estimate_100_cubed_is_in_range() {
 // The estimate grows in a straight line with the problem size.
 // 60^3 has 8 times the nodes of 30^3. It also has 8 times the rows
 // (the same density), because the constraint records are part of the estimate.
+// The shell and border scratch grow with the surface (n^2), so the ratio is
+// below 8 for small grids. A ratio near 4 would mean that memory grows with
+// n^2 only. A ratio above 8.5 would mean that memory grows faster than the
+// problem size.
 #[test]
 fn estimate_scales_in_a_straight_line() {
     let _guard = lock();
@@ -91,8 +95,8 @@ fn estimate_scales_in_a_straight_line() {
         .total;
     let ratio = large as f64 / small as f64;
     assert!(
-        (7.5..=8.5).contains(&ratio),
-        "ratio {ratio} is outside 7.5 to 8.5"
+        (5.5..=8.5).contains(&ratio),
+        "ratio {ratio} is outside 5.5 to 8.5"
     );
 }
 

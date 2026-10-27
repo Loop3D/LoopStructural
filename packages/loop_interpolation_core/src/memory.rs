@@ -95,48 +95,75 @@ pub struct ProblemCounts {
     pub uses_directional: bool,
 }
 
-// Bytes per unknown (`dof`), with `f64` vectors. A margin of 10 percent
-// is added to the sum at the end.
+// Memory model. All numbers come from the counting allocator, for grids
+// from 10^3 to 200^3 (500 value rows and 125 gradient rows, 20 iterations;
+// also 50+10 and 2000+500 rows). The peak fits a model with 3 terms:
+//
+//   peak = 52.6 * dof + (1020 * n^2 - 4400 * n) + 190 * rows
+//
+// where `n` is the number of nodes per axis, `dof = n^3`, and a gradient
+// counts as 2 stored rows. The estimate uses 53 bytes for each dof and adds
+// a margin of 6 percent at the end. For the CI sizes the estimate is 1.05 to
+// 1.12 times the peak, for the sizes up to 200^3 it is 1.05 to 1.07 times.
+//
+// Per unknown (`dof`), with `f64` vectors:
 //
 // | Part        | Item                                   | Bytes per dof |
 // |-------------|----------------------------------------|---------------|
 // | vectors     | x, r, p, ap, inv_diag (5 x 8)          | 40            |
-// | vectors     | border scratch (1 x 8)                 | 8             |
-// | working     | shell scratch (6 slots, small share)   | 8             |
-// | working     | shell lookup (u32)                     | 4             |
-// | working     | shell row and output indices (u32)     | 3             |
 // | working     | copy of the field for the caller (f64) | 8             |
-// | working     | ADMM extra vector (none; rhs is rebuilt)| 0             |
+// | working     | shell lookup (u32)                     | 4             |
+// | working     | rest (tables, vector capacity)         | 1             |
 // | working     | directional weights (only if used)     | 48            |
 //
-// Plain CG: 48 + 8 + 4 + 3 + 8 = 71 bytes per dof, 78 with the margin.
-// With `f32` the vector part is half (24).
-const VECTOR_BYTES_PER_DOF: u64 = 48;
-const WORKING_BYTES_PER_DOF: u64 = 8 + 4 + 3 + 8;
+// Plain CG: 40 + 8 + 4 + 1 = 53 bytes per dof. With `f32` the measured peak
+// is 32 bytes per dof lower: the vectors are 20 bytes, and the field copy
+// and the shell lookup are not kept (working: 1 byte per dof).
+//
+// Per surface node (`n^2`): the shell and border scratch grow with the
+// border of the grid, not with its volume: 1020 bytes for each `n^2`. For
+// small grids the border is smaller than this term: the estimate takes off
+// 4400 bytes for each `n`.
+//
+// Fixed: conflict-check table, small tables and allocator slack.
+const VECTOR_BYTES_PER_DOF: u64 = 40;
+/// Vector bytes for each dof with `f32`.
+const VECTOR_BYTES_PER_DOF_F32: u64 = 20;
+const WORKING_BYTES_PER_DOF: u64 = 8 + 4 + 1;
+/// Working bytes for each dof with `f32`.
+const WORKING_BYTES_PER_DOF_F32: u64 = 1;
 const ADMM_BYTES_PER_DOF: u64 = 0;
 const DIRECTIONAL_BYTES_PER_DOF: u64 = 48;
+/// Bytes for each `n^2` (shell and border scratch).
+const SURFACE_BYTES_PER_NODE: u64 = 1020;
+/// Bytes taken off for each `n` (the border of a small grid).
+const EDGE_BYTES_PER_NODE: u64 = 4400;
+/// Fixed bytes: tables, allocator slack.
+const FIXED_BYTES: u64 = 16 * 1024;
+/// Margin on the sum, in percent.
+const MARGIN_PERCENT: u128 = 106;
 
-// Bytes per constraint record (point, vector or bounds, weight, and the
-// row index that the solver keeps).
+// Bytes per constraint record, as measured: 190 bytes for each stored row.
 //
 // | Family        | Bytes per row |
 // |---------------|---------------|
-// | value         | 144           |
-// | gradient      | 144           |
-// | normal        | 144           |
-// | tangent       | 144           |
-// | interface     | 288           |
-// | pair bound    | 304           |
-// | value bound   | 160           |
+// | value         | 190           |
+// | gradient      | 190           |
+// | normal        | 190           |
+// | tangent       | 190           |
+// | interface     | 380           |
+// | pair bound    | 400           |
+// | value bound   | 210           |
 //
 // A stored row of the interpolator holds 8 `usize` indices, 8 `f64`
-// coefficients, a value and a weight: 144 bytes. A pair row holds two such
-// parts. The counts are stored rows. A normal makes 3 rows.
-const VALUE_RECORD: u64 = 144;
-const VECTOR_RECORD: u64 = 144;
-const INTERFACE_RECORD: u64 = 288;
-const PAIR_BOUND_RECORD: u64 = 304;
-const VALUE_BOUND_RECORD: u64 = 160;
+// coefficients, a value and a weight (144 bytes). The rest (about 46 bytes) is
+// the capacity slack of the vectors. A gradient makes 2 stored rows. A pair row holds two such parts.
+// The counts are stored rows. A normal makes 3 rows.
+const VALUE_RECORD: u64 = 190;
+const VECTOR_RECORD: u64 = 190;
+const INTERFACE_RECORD: u64 = 380;
+const PAIR_BOUND_RECORD: u64 = 400;
+const VALUE_BOUND_RECORD: u64 = 210;
 /// ADMM keeps 3 `f64` values for each bound row (z, dual, work).
 const ADMM_BYTES_PER_BOUND_ROW: u64 = 24;
 
@@ -145,10 +172,12 @@ pub fn estimate(c: &ProblemCounts, s: &Settings) -> MemoryEstimate {
     let dof = c.dof;
 
     // Vectors. `f32` halves the vector part.
-    let mut vectors = dof.saturating_mul(VECTOR_BYTES_PER_DOF);
-    if s.precision == Precision::F32 {
-        vectors /= 2;
-    }
+    let f32 = s.precision == Precision::F32;
+    let vectors = dof.saturating_mul(if f32 {
+        VECTOR_BYTES_PER_DOF_F32
+    } else {
+        VECTOR_BYTES_PER_DOF
+    });
 
     // Constraint records.
     let vector_rows = c
@@ -164,7 +193,11 @@ pub fn estimate(c: &ProblemCounts, s: &Settings) -> MemoryEstimate {
         .saturating_add(c.n_value_bound.saturating_mul(VALUE_BOUND_RECORD));
 
     // Working memory: tables, scratch, ADMM extra, directional weights.
-    let mut per_dof = WORKING_BYTES_PER_DOF;
+    let mut per_dof = if f32 {
+        WORKING_BYTES_PER_DOF_F32
+    } else {
+        WORKING_BYTES_PER_DOF
+    };
     let bound_rows = c.n_pair_bound.saturating_add(c.n_value_bound);
     let mut working = 0u64;
     if bound_rows > 0 {
@@ -175,10 +208,17 @@ pub fn estimate(c: &ProblemCounts, s: &Settings) -> MemoryEstimate {
         per_dof += DIRECTIONAL_BYTES_PER_DOF;
     }
     working = working.saturating_add(dof.saturating_mul(per_dof));
+    let axis = (dof as f64).cbrt();
+    let surface = (axis * axis).round() as u64;
+    let edge = axis.round() as u64;
+    working = working
+        .saturating_add(surface.saturating_mul(SURFACE_BYTES_PER_NODE))
+        .saturating_sub(edge.saturating_mul(EDGE_BYTES_PER_NODE))
+        .saturating_add(FIXED_BYTES);
 
-    // Total with a margin of 10 percent. Use `u128` so that it cannot overflow.
+    // Total with the margin. Use `u128` so that it cannot overflow.
     let sum = vectors as u128 + constraints as u128 + working as u128;
-    let total = (sum * 110 / 100).min(u64::MAX as u128) as u64;
+    let total = (sum * MARGIN_PERCENT / 100).min(u64::MAX as u128) as u64;
 
     MemoryEstimate {
         vectors,
