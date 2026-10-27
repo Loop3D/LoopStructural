@@ -452,7 +452,7 @@ Phase E of the plan (was F). It changes the vector type, not the algorithm.
   - Needs: T047
   - Wave: 16
   - Done when: `cargo test --manifest-path packages/loop_interpolation_core/Cargo.toml` passes (all `f64` results unchanged).
-- [ ] T049 [P] [US5] [M] Make the data and inequality operator parts generic over `Scalar`. Add `residual_f64`.
+- [x] T049 [P] [US5] [M] Make the data and inequality operator parts generic over `Scalar`. Add `residual_f64`.
   - Do: Generic: `accumulate_data_normal`, `data_rhs`, `diagonal`, `apply_normal_operator_into`, the inequality accumulators. Add `pub fn residual_f64(&self, field: &Field) -> f64` that recomputes `|N x - rhs|` in `f64` with a streaming pass.
   - Files: `packages/loop_interpolation_core/src/interpolator.rs`
   - Needs: T048

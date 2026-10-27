@@ -100,28 +100,31 @@ struct PairConstraint {
     weight: f64,
 }
 
-fn accumulate_point_constraints_normal(
+// The sums run in f64. Only the stored vector values use the type S.
+fn accumulate_point_constraints_normal<S: Scalar>(
     constraints: &[PointConstraint],
-    x: &[f64],
-    out: &mut [f64],
+    x: &[S],
+    out: &mut [S],
 ) {
     for c in constraints {
         let mut row_value = 0.0;
         for k in 0..8 {
-            row_value += c.coefs[k] * x[c.indices[k]];
+            row_value += c.coefs[k] * x[c.indices[k]].to_f64();
         }
         let scaled = c.weight * c.weight * row_value;
         for k in 0..8 {
-            out[c.indices[k]] += scaled * c.coefs[k];
+            let o = &mut out[c.indices[k]];
+            *o = S::from_f64(o.to_f64() + scaled * c.coefs[k]);
         }
     }
 }
 
-fn point_constraints_rhs(constraints: &[PointConstraint], out: &mut [f64]) {
+fn point_constraints_rhs<S: Scalar>(constraints: &[PointConstraint], out: &mut [S]) {
     for c in constraints {
         let scaled = c.weight * c.weight * c.value;
         for k in 0..8 {
-            out[c.indices[k]] += scaled * c.coefs[k];
+            let o = &mut out[c.indices[k]];
+            *o = S::from_f64(o.to_f64() + scaled * c.coefs[k]);
         }
     }
 }
@@ -135,15 +138,20 @@ fn point_constraints_diagonal(constraints: &[PointConstraint], diag: &mut [f64])
     }
 }
 
-fn accumulate_pair_constraints_normal(constraints: &[PairConstraint], x: &[f64], out: &mut [f64]) {
+fn accumulate_pair_constraints_normal<S: Scalar>(
+    constraints: &[PairConstraint],
+    x: &[S],
+    out: &mut [S],
+) {
     for c in constraints {
         let mut row_value = 0.0;
         for k in 0..16 {
-            row_value += c.coefs[k] * x[c.indices[k]];
+            row_value += c.coefs[k] * x[c.indices[k]].to_f64();
         }
         let scaled = c.weight * c.weight * row_value;
         for k in 0..16 {
-            out[c.indices[k]] += scaled * c.coefs[k];
+            let o = &mut out[c.indices[k]];
+            *o = S::from_f64(o.to_f64() + scaled * c.coefs[k]);
         }
     }
 }
@@ -199,19 +207,19 @@ struct InequalityPairConstraint {
 }
 
 #[inline]
-fn ineq_point_row_value(c: &InequalityPointConstraint, x: &[f64]) -> f64 {
+fn ineq_point_row_value<S: Scalar>(c: &InequalityPointConstraint, x: &[S]) -> f64 {
     let mut v = 0.0;
     for k in 0..8 {
-        v += c.coefs[k] * x[c.indices[k]];
+        v += c.coefs[k] * x[c.indices[k]].to_f64();
     }
     v
 }
 
 #[inline]
-fn ineq_pair_row_value(c: &InequalityPairConstraint, x: &[f64]) -> f64 {
+fn ineq_pair_row_value<S: Scalar>(c: &InequalityPairConstraint, x: &[S]) -> f64 {
     let mut v = 0.0;
     for k in 0..16 {
-        v += c.coefs[k] * x[c.indices[k]];
+        v += c.coefs[k] * x[c.indices[k]].to_f64();
     }
     v
 }
@@ -1347,7 +1355,7 @@ impl FiniteDifferenceInterpolator {
     /// value-bound rows (in add order) then pairwise-ordering rows (in add
     /// order) -- the same order [`inequality_bounds`](Self::inequality_bounds)
     /// and `solve_admm`'s internal `z`/`u` ADMM state vectors use.
-    pub fn apply_inequality_operator(&self, x: &[f64]) -> Vec<f64> {
+    pub fn apply_inequality_operator<S: Scalar>(&self, x: &[S]) -> Vec<f64> {
         let mut out = Vec::with_capacity(self.n_inequality_constraints());
         for c in &self.value_inequality_constraints {
             out.push(ineq_point_row_value(c, x));
@@ -1398,19 +1406,26 @@ impl FiniteDifferenceInterpolator {
     /// `out += rho * Q^T y`, `y` given in the same row order as
     /// [`apply_inequality_operator`](Self::apply_inequality_operator). Used
     /// for `solve_admm`'s x-update rhs term `rho * Q^T (z - u)`.
-    pub(crate) fn accumulate_inequality_transpose(&self, y: &[f64], rho: f64, out: &mut [f64]) {
+    pub(crate) fn accumulate_inequality_transpose<S: Scalar>(
+        &self,
+        y: &[f64],
+        rho: f64,
+        out: &mut [S],
+    ) {
         let mut idx = 0usize;
         for c in &self.value_inequality_constraints {
             let s = rho * y[idx];
             for k in 0..8 {
-                out[c.indices[k]] += s * c.coefs[k];
+                let o = &mut out[c.indices[k]];
+                *o = S::from_f64(o.to_f64() + s * c.coefs[k]);
             }
             idx += 1;
         }
         for c in &self.pair_inequality_constraints {
             let s = rho * y[idx];
             for k in 0..16 {
-                out[c.indices[k]] += s * c.coefs[k];
+                let o = &mut out[c.indices[k]];
+                *o = S::from_f64(o.to_f64() + s * c.coefs[k]);
             }
             idx += 1;
         }
@@ -1420,17 +1435,19 @@ impl FiniteDifferenceInterpolator {
     /// outer product `coefs (coefs . x[indices])`, so this needs no
     /// intermediate `Q x` buffer) -- the inequality-constraint contribution
     /// to `solve_admm`'s x-update operator `N + rho * Q^T Q`.
-    pub(crate) fn accumulate_inequality_normal(&self, x: &[f64], rho: f64, out: &mut [f64]) {
+    pub(crate) fn accumulate_inequality_normal<S: Scalar>(&self, x: &[S], rho: f64, out: &mut [S]) {
         for c in &self.value_inequality_constraints {
             let s = rho * ineq_point_row_value(c, x);
             for k in 0..8 {
-                out[c.indices[k]] += s * c.coefs[k];
+                let o = &mut out[c.indices[k]];
+                *o = S::from_f64(o.to_f64() + s * c.coefs[k]);
             }
         }
         for c in &self.pair_inequality_constraints {
             let s = rho * ineq_pair_row_value(c, x);
             for k in 0..16 {
-                out[c.indices[k]] += s * c.coefs[k];
+                let o = &mut out[c.indices[k]];
+                *o = S::from_f64(o.to_f64() + s * c.coefs[k]);
             }
         }
     }
@@ -1535,7 +1552,7 @@ impl FiniteDifferenceInterpolator {
     /// trilinear rows -- there are normally far fewer constraints than grid
     /// nodes, so a plain scatter loop (no parallelism, no sparse matrix) is
     /// both simplest and fastest here.
-    fn accumulate_data_normal(&self, x: &[f64], out: &mut [f64]) {
+    fn accumulate_data_normal<S: Scalar>(&self, x: &[S], out: &mut [S]) {
         accumulate_point_constraints_normal(&self.value_constraints, x, out);
         accumulate_point_constraints_normal(&self.gradient_constraints, x, out);
         accumulate_point_constraints_normal(&self.norm_constraints, x, out);
@@ -1549,15 +1566,15 @@ impl FiniteDifferenceInterpolator {
     /// `accumulate_data_normal`/`diagonal`).
     fn data_rhs(&self, tracker: &mut MemTracker) -> Result<Vec<f64>, CoreError> {
         let mut out: Vec<f64> = tracker.try_zeroed(self.dof())?;
-        self.write_data_rhs(&mut out);
+        self.write_data_rhs::<f64>(&mut out);
         Ok(out)
     }
 
     /// Write the data right-hand side of `N` into `out`.
     /// The function sets `out` to zero first. It makes no new vector.
     /// `out` must have `dof()` entries.
-    pub(crate) fn write_data_rhs(&self, out: &mut [f64]) {
-        out.iter_mut().for_each(|v| *v = 0.0);
+    pub(crate) fn write_data_rhs<S: Scalar>(&self, out: &mut [S]) {
+        out.iter_mut().for_each(|v| *v = S::from_f64(0.0));
         point_constraints_rhs(&self.value_constraints, out);
         point_constraints_rhs(&self.gradient_constraints, out);
         point_constraints_rhs(&self.norm_constraints, out);
@@ -1892,17 +1909,17 @@ impl FiniteDifferenceInterpolator {
     /// parallel pass (`out[i] = ridge^2 * x[i]`, or zero if there's no ridge
     /// damping) rather than a serial zero pass followed by a separate
     /// serial ridge pass at the end.
-    pub fn apply_normal_operator_into(&self, x: &[f64], scratch: &mut [f64], out: &mut [f64]) {
+    pub fn apply_normal_operator_into<S: Scalar>(&self, x: &[S], scratch: &mut [S], out: &mut [S]) {
         if self.ridge_factor != 0.0 {
             let r2 = self.ridge_factor * self.ridge_factor;
             out.par_iter_mut()
                 .zip(x.par_iter())
                 .with_min_len(PAR_MIN_LEN)
-                .for_each(|(o, xi)| *o = r2 * xi);
+                .for_each(|(o, xi)| *o = S::from_f64(r2 * xi.to_f64()));
         } else {
             out.par_iter_mut()
                 .with_min_len(PAR_MIN_LEN)
-                .for_each(|o| *o = 0.0);
+                .for_each(|o| *o = S::from_f64(0.0));
         }
         self.accumulate_data_normal(x, out);
         let (shell_scratch, border_scratch) =
@@ -1967,22 +1984,22 @@ impl FiniteDifferenceInterpolator {
     /// equivalent (see the `fused_matches_unfused_*` tests) and for
     /// before/after profiling (see `profile_apply_1e6`/`profile_apply_1e6_unfused`);
     /// not used by `solve()`.
-    pub fn apply_normal_operator_into_unfused(
+    pub fn apply_normal_operator_into_unfused<S: Scalar>(
         &self,
-        x: &[f64],
-        scratch: &mut [f64],
-        out: &mut [f64],
+        x: &[S],
+        scratch: &mut [S],
+        out: &mut [S],
     ) {
         if self.ridge_factor != 0.0 {
             let r2 = self.ridge_factor * self.ridge_factor;
             out.par_iter_mut()
                 .zip(x.par_iter())
                 .with_min_len(PAR_MIN_LEN)
-                .for_each(|(o, xi)| *o = r2 * xi);
+                .for_each(|(o, xi)| *o = S::from_f64(r2 * xi.to_f64()));
         } else {
             out.par_iter_mut()
                 .with_min_len(PAR_MIN_LEN)
-                .for_each(|o| *o = 0.0);
+                .for_each(|o| *o = S::from_f64(0.0));
         }
         self.accumulate_data_normal(x, out);
         let (family_scratch, border_scratch) = scratch.split_at_mut(self.dof() * N_FAMILIES);
@@ -2010,6 +2027,37 @@ impl FiniteDifferenceInterpolator {
         let mut scratch = vec![0.0; self.scratch_len_unfused()];
         self.apply_normal_operator_into_unfused(x, &mut scratch, &mut out);
         out
+    }
+
+    /// Relative residual `|rhs - N x| / |rhs|`, computed in f64.
+    /// This is the same value that the CG reports: `rhs` is the data
+    /// right-hand side, `N` has the regularisation and data terms, and
+    /// the inequality term is not included. The norm in the divisor has
+    /// the floor `1e-300`, as in `cg.rs`. The function allocates one
+    /// output vector and one scratch buffer (the same size as for one
+    /// operator apply). The scratch buffer also holds `rhs` after the
+    /// apply. The function builds no matrix.
+    pub(crate) fn residual_f64_of(&self, x: &[f64]) -> f64 {
+        let n = self.dof();
+        let mut out = vec![0.0_f64; n];
+        let mut scratch = vec![0.0_f64; self.scratch_len()];
+        self.apply_normal_operator_into(x, &mut scratch, &mut out);
+        // The scratch buffer has at least `n` entries. Reuse it for rhs.
+        let rhs = &mut scratch[..n];
+        self.write_data_rhs::<f64>(rhs);
+        let mut r2 = 0.0_f64;
+        let mut b2 = 0.0_f64;
+        for (b, nx) in rhs.iter().zip(out.iter()) {
+            let d = b - nx;
+            r2 += d * d;
+            b2 += b * b;
+        }
+        r2.sqrt() / b2.sqrt().max(1e-300)
+    }
+
+    /// Public name for [`residual_f64_of`](Self::residual_f64_of).
+    pub fn residual_f64(&self, x: &[f64]) -> f64 {
+        self.residual_f64_of(x)
     }
 
     pub fn rhs(&self) -> Vec<f64> {

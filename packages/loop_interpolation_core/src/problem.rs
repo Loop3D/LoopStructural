@@ -510,8 +510,10 @@ impl Problem {
         Ok(estimate(&self.counts(), s))
     }
 
-    pub fn residual_f64(&self, _field: &Field) -> f64 {
-        unimplemented!()
+    /// Recompute the relative residual of `field` in double precision.
+    /// The check is independent of the precision of the solve.
+    pub fn residual_f64(&self, field: &Field) -> f64 {
+        self.interp().residual_f64_of(&field.values_f64())
     }
 
     /// Start a solve session. This consumes the problem.
