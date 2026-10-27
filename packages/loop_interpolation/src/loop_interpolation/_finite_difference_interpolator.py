@@ -179,6 +179,23 @@ class FiniteDifferenceInterpolator(DiscreteInterpolator):
         self.use_regularisation_weight_scale = kwargs.get("use_regularisation_weight_scale", False)
         self.regularisation_weight_sigma = kwargs.get("regularisation_weight_sigma", None)
         self.matrix_free_regularisation_blocks = {}
+        self.interface_pair_mode = kwargs.get("interface_pair_mode", self.interface_pair_mode)
+        self.interface_pair_threshold = int(
+            kwargs.get("interface_pair_threshold", self.interface_pair_threshold)
+        )
+        self.interface_pair_fallback = kwargs.get(
+            "interface_pair_fallback", self.interface_pair_fallback
+        )
+        if self.solver == "native":
+            # The native solver reads the raw data (get_*_constraints) and the
+            # stored weights. It does not use sparse rows, so we do not build
+            # them. This saves Python memory (plan D7.2).
+            # The weights and kwargs are stored above. This branch is safe to
+            # run again from update(): reset() already cleared the rows.
+            self.matrix_free_regularisation_blocks = {}
+            self.regularisation_matrix_free = False
+            # The report uses the raw data, not the rows, so it is still valid.
+            return self.finalize_setup_diagnostics_report()
         self.regularisation_matrix_free = bool(kwargs.get("regularisation_matrix_free", False))
         if self.regularisation_matrix_free and self.apply_scaling_matrix:
             logger.warning(
@@ -201,13 +218,6 @@ class FiniteDifferenceInterpolator(DiscreteInterpolator):
                 "consume a LinearOperator and will fall back to explicit regularisation assembly "
                 "(with a warning) for that solve."
             )
-        self.interface_pair_mode = kwargs.get("interface_pair_mode", self.interface_pair_mode)
-        self.interface_pair_threshold = int(
-            kwargs.get("interface_pair_threshold", self.interface_pair_threshold)
-        )
-        self.interface_pair_fallback = kwargs.get(
-            "interface_pair_fallback", self.interface_pair_fallback
-        )
         self.add_norm_constraints(self.interpolation_weights["npw"])
         self.add_gradient_constraints(self.interpolation_weights["gpw"])
         self.add_value_constraints(self.interpolation_weights["cpw"])

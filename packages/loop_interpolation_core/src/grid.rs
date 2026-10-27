@@ -6,29 +6,10 @@
 //! the Python side for cross-checking.
 
 #[derive(Debug, Clone, Copy)]
-#[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 pub struct StructuredGrid3D {
     pub origin: [f64; 3],
     pub nsteps: [usize; 3],
     pub step_vector: [f64; 3],
-    /// Optional rotation carrying the grid's local (axis-aligned) frame into
-    /// world space: `world = origin + R * (local - origin)`. `None` means
-    /// identity (the common, unrotated case) and is handled as a fast path
-    /// that skips the matrix multiply entirely.
-    ///
-    /// Mirrors the Python `StructuredGrid`'s `rotation_xy` (a 3x3 matrix, or
-    /// a single XY-plane angle in degrees via the setter -- see
-    /// [`with_rotation_xy_degrees`](Self::with_rotation_xy_degrees)). Note:
-    /// `BaseStructuredSupport.rotate()` is dead code on the Python side (grep
-    /// confirms it is never called), so there is no numeric Python reference
-    /// behaviour to match bit-for-bit here -- this implements the
-    /// geometrically standard convention described above: the grid box is
-    /// defined in its own unrotated local frame and then rotated about
-    /// `origin` into world space, so any world-space point/direction must be
-    /// rotated *back* (via the inverse, i.e. transpose, rotation) before the
-    /// axis-aligned trilinear math runs. See [`to_local`](Self::to_local) /
-    /// [`direction_to_local`](Self::direction_to_local).
-    pub rotation: Option<[[f64; 3]; 3]>,
 }
 
 impl StructuredGrid3D {
@@ -37,25 +18,7 @@ impl StructuredGrid3D {
             origin,
             nsteps,
             step_vector,
-            rotation: None,
         }
-    }
-
-    /// Attach an explicit 3x3 rotation matrix (local -> world).
-    pub fn with_rotation_matrix(mut self, matrix: [[f64; 3]; 3]) -> Self {
-        self.rotation = Some(matrix);
-        self
-    }
-
-    /// Attach an XY-plane rotation given as an angle in degrees, matching the
-    /// Python `rotation_xy` setter's scalar-angle overload: a standard
-    /// counter-clockwise rotation about the Z axis,
-    /// `[[cos,-sin,0],[sin,cos,0],[0,0,1]]`.
-    pub fn with_rotation_xy_degrees(mut self, degrees: f64) -> Self {
-        let radians = degrees.to_radians();
-        let (s, c) = radians.sin_cos();
-        self.rotation = Some([[c, -s, 0.0], [s, c, 0.0], [0.0, 0.0, 1.0]]);
-        self
     }
 
     #[inline]
@@ -105,52 +68,6 @@ impl StructuredGrid3D {
         }
     }
 
-    /// World-space point -> the grid's own local (unrotated) frame:
-    /// `local = origin + R^T (world - origin)`. Identity (returns `world`
-    /// unchanged) when `rotation` is `None`. Every position-based lookup
-    /// (`trilinear_coeffs`, `trilinear_gradient`) routes world-space input
-    /// through this first so the rest of their axis-aligned math never has
-    /// to know about rotation at all.
-    pub fn to_local(&self, world: [f64; 3]) -> [f64; 3] {
-        match &self.rotation {
-            None => world,
-            Some(r) => {
-                let d = [
-                    world[0] - self.origin[0],
-                    world[1] - self.origin[1],
-                    world[2] - self.origin[2],
-                ];
-                let mut local = self.origin;
-                for i in 0..3 {
-                    // (R^T d)[i] = sum_j R[j][i] * d[j]
-                    local[i] += r[0][i] * d[0] + r[1][i] * d[1] + r[2][i] * d[2];
-                }
-                local
-            }
-        }
-    }
-
-    /// World-space *direction* -> local frame (rotation only, no
-    /// translation): `local_dir = R^T world_dir`. Used to bring
-    /// orientation-data vectors (gradient/tangent/norm targets, naturally
-    /// specified in world space) into the same local frame that
-    /// [`trilinear_gradient`](Self::trilinear_gradient) computes derivatives
-    /// in, so that `v_world . grad_world(f) == direction_to_local(v_world) .
-    /// grad_local(f)` for any field `f`.
-    pub fn direction_to_local(&self, world_dir: [f64; 3]) -> [f64; 3] {
-        match &self.rotation {
-            None => world_dir,
-            Some(r) => {
-                let mut local = [0.0; 3];
-                for i in 0..3 {
-                    local[i] =
-                        r[0][i] * world_dir[0] + r[1][i] * world_dir[1] + r[2][i] * world_dir[2];
-                }
-                local
-            }
-        }
-    }
-
     /// Shared local-frame cell lookup used by both `trilinear_coeffs` and
     /// `trilinear_gradient`: given an already-local-frame point, returns the
     /// lower-corner cell index `i0` and the fractional local coordinates `t`
@@ -197,10 +114,8 @@ impl StructuredGrid3D {
     /// Trilinear interpolation coefficients for a point: the 8 corner node
     /// indices of the containing cell and their weights (summing to 1).
     /// Returns `None` if the point lies outside the grid bounding box.
-    /// `point` is in world space; internally transformed to the grid's local
-    /// frame first (a no-op unless a `rotation` is set).
+    /// `point` is in world space.
     pub fn trilinear_coeffs(&self, point: [f64; 3]) -> Option<([usize; 8], [f64; 8])> {
-        let point = self.to_local(point);
         let (i0, t) = self.cell_and_local_coords(point)?;
 
         let mut indices = [0usize; 8];
@@ -229,14 +144,8 @@ impl StructuredGrid3D {
     /// `step_vector`. This is the Rust analogue of the Python
     /// `StructuredGrid.get_element_gradient_for_location`'s `T` matrix
     /// (shape `(3, 8)` per point; here returned per-corner as `[f64; 3]` for
-    /// cache-friendliness). `point` is in world space; internally
-    /// transformed to the grid's local frame first, so the returned
-    /// gradient components are also in the grid's local axes -- callers
-    /// combining this with a world-space direction vector (gradient/norm/
-    /// tangent constraints) must first rotate that vector into the local
-    /// frame via [`direction_to_local`](Self::direction_to_local).
+    /// cache-friendliness). `point` is in world space.
     pub fn trilinear_gradient(&self, point: [f64; 3]) -> Option<([usize; 8], [[f64; 3]; 8])> {
-        let point = self.to_local(point);
         let (i0, t) = self.cell_and_local_coords(point)?;
 
         let mut indices = [0usize; 8];
@@ -358,39 +267,6 @@ mod tests {
                     "axis={axis} fd={fd} analytic={analytic}"
                 );
             }
-        }
-    }
-
-    #[test]
-    fn rotated_grid_matches_unrotated_grid_at_local_frame_point() {
-        // A grid rotated 37 degrees about its origin, queried at a
-        // world-space point, should produce exactly the coefficients/indices
-        // an *unrotated* grid (same origin/nsteps/step_vector) would produce
-        // at the corresponding local-frame point.
-        let origin = [1.0, 2.0, 0.0];
-        let unrotated = StructuredGrid3D::new(origin, [5, 5, 5], [1.0, 1.0, 1.0]);
-        let rotated = unrotated.with_rotation_xy_degrees(37.0);
-
-        let local_point = [2.4, 3.1, 1.7];
-        let angle = 37f64.to_radians();
-        let (s, c) = angle.sin_cos();
-        let d = [
-            local_point[0] - origin[0],
-            local_point[1] - origin[1],
-            local_point[2] - origin[2],
-        ];
-        // world = origin + R * d
-        let world = [
-            origin[0] + c * d[0] - s * d[1],
-            origin[1] + s * d[0] + c * d[1],
-            origin[2] + d[2],
-        ];
-
-        let expected = unrotated.trilinear_coeffs(local_point).unwrap();
-        let actual = rotated.trilinear_coeffs(world).unwrap();
-        assert_eq!(expected.0, actual.0);
-        for (e, a) in expected.1.iter().zip(actual.1.iter()) {
-            assert!((e - a).abs() < 1e-9, "expected={e} actual={a}");
         }
     }
 }

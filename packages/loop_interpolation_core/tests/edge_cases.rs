@@ -12,7 +12,7 @@
 //!
 //! This is a Cargo *integration* test: it only uses the crate's public API
 //! (`loop_interpolation_core::{...}`), deliberately kept disjoint from the
-//! new constraint-type/rotated-grid work landing concurrently on another
+//! new constraint-type work landing concurrently on another
 //! branch in `src/grid.rs` / `src/stencil.rs` / `src/interpolator.rs`.
 
 use loop_interpolation_core::interpolator::BorderRegularisationWeights;

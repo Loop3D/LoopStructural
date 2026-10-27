@@ -84,7 +84,7 @@ Phase A of the plan. Source: `~/dev/loop-rs/crates/interpolation-fd` at commit b
   - Needs: T003
   - Wave: 2
   - Done when: `cargo test --manifest-path packages/loop_interpolation_core/Cargo.toml --features parallel` passes (all ported unit tests and `edge_cases`).
-- [ ] T007 [P] [Found] [M] Remove grid rotation and the `serde` attribute (FR-020).
+- [x] T007 [P] [Found] [M] Remove grid rotation and the `serde` attribute (FR-020).
   - Do: Delete field `rotation`, `with_rotation_matrix`, `with_rotation_xy_degrees`, `to_local`, `direction_to_local`, the `serde` `cfg_attr` line, and every test or call site that uses them.
   - Do: Do not change any other behaviour.
   - Files: `packages/loop_interpolation_core/src/grid.rs`, `packages/loop_interpolation_core/src/interpolator.rs`, `packages/loop_interpolation_core/tests/edge_cases.rs`
@@ -349,7 +349,7 @@ Phase D of the plan. It needs only phases 3 to 5. The Python tests skip when the
   - Needs: T035, T032, T030
   - Wave: 16
   - Done when: `python -m pytest packages/loop_interpolation/tests/test_native_no_rows.py packages/loop_interpolation/tests/test_solver_strategy.py -q` shows no failure (skips allowed until T038).
-- [ ] T037 [P] [US6] [M] Skip row assembly in `setup_interpolator` when `self.solver == "native"`.
+- [x] T037 [P] [US6] [M] Skip row assembly in `setup_interpolator` when `self.solver == "native"`.
   - Do: After the resolve of weights and the regularisation config, if `self.solver == "native"`: store the weights and the setup kwargs (keep `self._setup_kwargs`), skip the `add_*` calls, `assemble_inner`, `add_directional_regularisation` and `assemble_borders`, and return `finalize_setup_diagnostics_report()`.
   - Do: Check that `finalize_setup_diagnostics_report` does not need the rows. If it does, change only the report to use the stored data when the solver is native.
   - Do: The branch must be safe to run twice (`update()`).

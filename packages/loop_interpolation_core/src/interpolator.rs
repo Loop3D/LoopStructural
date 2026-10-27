@@ -3,7 +3,7 @@
 //! Ports the ingredients that make the original interesting to reimplement
 //! in Rust -- trilinear value/gradient/norm/tangent/interface constraints,
 //! isotropic curvature regularisation, one-sided border regularisation,
-//! anisotropic directional regularisation, and rotated grids -- on a
+//! anisotropic directional regularisation -- on a
 //! `StructuredGrid`, and solves the resulting weighted least squares system
 //! with conjugate gradient on the normal equations, entirely through
 //! [`Stencil`]/[`EdgeStencil`] operators (see `stencil.rs`) and dense
@@ -928,8 +928,7 @@ impl FiniteDifferenceInterpolator {
     /// both reduce to "one row constraining the field gradient at `point` to
     /// be orthogonal to `vector`", i.e. the Python
     /// `add_gradient_orthogonal_constraints`. `vector` is given in world
-    /// space and normalised (after being rotated into the grid's local
-    /// frame) before being dotted with the local-frame trilinear gradient
+    /// space and normalised before being dotted with the trilinear gradient
     /// shape function; `None` if `point` is outside the grid or `vector` is
     /// (numerically) zero.
     fn build_orthogonal_constraint(
@@ -939,7 +938,7 @@ impl FiniteDifferenceInterpolator {
         weight: f64,
     ) -> Option<PointConstraint> {
         let (indices, grad) = self.grid.trilinear_gradient(point)?;
-        let v_local = self.grid.direction_to_local(vector);
+        let v_local = vector;
         let v_norm = norm3(v_local);
         if v_norm <= 0.0 {
             return None;
@@ -1007,8 +1006,7 @@ impl FiniteDifferenceInterpolator {
 
     /// Add a norm constraint at `point`: constrains each of the 3 gradient
     /// components directly to the corresponding component of
-    /// `target_gradient` (given in world space; rotated into the grid's
-    /// local frame internally), one row per axis. Unlike
+    /// `target_gradient` (given in world space), one row per axis. Unlike
     /// [`add_gradient_constraint`](Self::add_gradient_constraint), this is
     /// non-homogeneous (targets an actual value, not just "= 0"), so it
     /// constrains gradient *magnitude* as well as direction. Points outside
@@ -1017,7 +1015,7 @@ impl FiniteDifferenceInterpolator {
         let Some((indices, grad)) = self.grid.trilinear_gradient(point) else {
             return;
         };
-        let target_local = self.grid.direction_to_local(target_gradient);
+        let target_local = target_gradient;
         for axis in 0..3 {
             let mut raw_coefs = [0.0; 8];
             for c in 0..8 {
@@ -1127,11 +1125,8 @@ impl FiniteDifferenceInterpolator {
     /// running per-node squared-weight total, exactly as if each call were
     /// its own independent least-squares row set.
     ///
-    /// `directions` are rotated into the grid's local frame via
-    /// `grid.direction_to_local` before use (consistent with every other
-    /// world-space direction input -- `add_gradient_constraint`,
-    /// `add_tangent_constraint`, `add_norm_constraint`), and used raw
-    /// (un-renormalised) beyond that, matching the Python original.
+    /// `directions` are used raw (not renormalised), matching the Python
+    /// original.
     ///
     /// Unlike the uniform-weight `stencils`, these per-node weights cannot
     /// use the fused single-kernel regularisation fast path (see
@@ -1147,7 +1142,7 @@ impl FiniteDifferenceInterpolator {
             .directional_weight2
             .get_or_insert_with(|| std::array::from_fn(|_| vec![0.0; dof]));
         for (c, dir) in directions.iter().enumerate() {
-            let [vx, vy, vz] = self.grid.direction_to_local(*dir);
+            let [vx, vy, vz] = *dir;
             let comp_w = [
                 vx * vx,
                 vy * vy,
@@ -2774,9 +2769,7 @@ impl FiniteDifferenceInterpolator {
 
     /// Evaluate the solved field's gradient at arbitrary (world-space)
     /// points via the trilinear gradient shape function. Points outside the
-    /// grid are returned as `[NaN; 3]`. The returned gradient is in *world*
-    /// space (`R * grad_local`), i.e. it accounts for the grid's rotation
-    /// the same way `evaluate` accounts for it via `trilinear_coeffs`.
+    /// grid are returned as `[NaN; 3]`.
     pub fn evaluate_gradient(&self, c: &[f64], points: &[[f64; 3]]) -> Vec<[f64; 3]> {
         points
             .iter()
@@ -2790,17 +2783,7 @@ impl FiniteDifferenceInterpolator {
                             .map(|(i, g)| c[*i] * g[axis])
                             .sum();
                     }
-                    match &self.grid.rotation {
-                        None => local,
-                        Some(r) => {
-                            let mut world = [0.0; 3];
-                            for i in 0..3 {
-                                world[i] =
-                                    r[i][0] * local[0] + r[i][1] * local[1] + r[i][2] * local[2];
-                            }
-                            world
-                        }
-                    }
+                    local
                 }
                 None => [f64::NAN; 3],
             })
@@ -4470,52 +4453,6 @@ mod tests {
         let twice_out = twice.apply_normal_operator(&x);
         for (a, b) in once_out.iter().zip(twice_out.iter()) {
             assert!((a - b).abs() < 1e-9, "once={a} twice={b}");
-        }
-    }
-
-    /// A direction given in world space on a rotated grid must produce the
-    /// same normal-operator contribution as the equivalent local-frame
-    /// direction on an unrotated grid -- confirms
-    /// `add_directional_regularisation` rotates its input via
-    /// `grid.direction_to_local`, consistent with every other world-space
-    /// direction input (`add_gradient_constraint`/`add_tangent_constraint`/
-    /// `add_norm_constraint`).
-    #[test]
-    fn directional_regularisation_rotates_world_space_direction_into_local_frame() {
-        let origin = [0.0, 0.0, 0.0];
-        let unrotated_grid = StructuredGrid3D::new(origin, [9, 9, 9], [1.0, 1.0, 1.0]);
-        let rotated_grid = unrotated_grid.with_rotation_xy_degrees(90.0);
-        let n = unrotated_grid.n_nodes();
-
-        // Local-frame direction (1, 0, 0); a 90-degree rotation about Z maps
-        // local (1,0,0) to world (0,1,0) (R = [[0,-1,0],[1,0,0],[0,0,1]]).
-        let local_direction = [1.0, 0.0, 0.0];
-        let world_direction = [0.0, 1.0, 0.0];
-
-        // No data constraints here on purpose: rotation only affects
-        // world<->local position/direction mapping (`to_local`/
-        // `direction_to_local`), not the index-space stencil math the
-        // regularisation operator applies, so comparing bare
-        // `apply_normal_operator` output (regularisation + ridge damping
-        // only) isolates exactly what this test is about -- whether
-        // `add_directional_regularisation` converts its input via
-        // `direction_to_local` -- without a data-constraint point's world
-        // coordinates confounding the comparison (a rotation about the grid
-        // corner `origin` can easily rotate an in-bounds point out of the
-        // grid's bounding box).
-        let mut unrotated = FiniteDifferenceInterpolator::new(unrotated_grid);
-        unrotated.add_directional_regularisation(&vec![local_direction; n], 0.4);
-
-        let mut rotated = FiniteDifferenceInterpolator::new(rotated_grid);
-        rotated.add_directional_regularisation(&vec![world_direction; n], 0.4);
-
-        let x: Vec<f64> = (0..n)
-            .map(|i| ((i * 31 + 3) % 101) as f64 / 101.0)
-            .collect();
-        let unrotated_out = unrotated.apply_normal_operator(&x);
-        let rotated_out = rotated.apply_normal_operator(&x);
-        for (a, b) in unrotated_out.iter().zip(rotated_out.iter()) {
-            assert!((a - b).abs() < 1e-9, "unrotated={a} rotated={b}");
         }
     }
 
