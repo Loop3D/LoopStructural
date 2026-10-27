@@ -321,7 +321,7 @@ Phase D of the plan. It needs only phases 3 to 5. The Python tests skip when the
   - Needs: none
   - Wave: 1
   - Done when: `python -c "import tomllib; d=tomllib.load(open('packages/loop_interpolation/pyproject.toml','rb')); assert d['project']['optional-dependencies']['native']==['loop-interpolation-core']"` exits 0.
-- [ ] T034 [P] [US6] [M] Write the PyO3 bindings (feature `python`).
+- [x] T034 [P] [US6] [M] Write the PyO3 bindings (feature `python`).
   - Do: Read `plan.md` D8 (Python API). Class `Problem` with the methods of D8. Arrays come in as `PyReadonlyArray1<f64>` and are checked for contiguity. Settings come as a `dict` with the keys of D8; unknown keys raise `ValueError`.
   - Do: `solve` returns `(numpy field, dict report)`. In `F32` mode the field is `float32`.
   - Do: `CoreError` becomes `ValueError` (input), `MemoryError` (OutOfMemory, OverBudget), `RuntimeError` (Infeasible, with `worst` in the message), `NotImplementedError` (Unsupported). Keep the text of the error.
@@ -433,7 +433,7 @@ Phase C of the plan. Do not start before OP1 is answered (memory per dof from T0
 
 Phase E of the plan (was F). It changes the vector type, not the algorithm.
 
-- [ ] T046 [P] [US5] [M] Test: single precision uses at most 60 percent of the memory, agrees with double precision, and reports honestly (story 5, FR-013, FR-022, SC-005).
+- [x] T046 [P] [US5] [M] Test: single precision uses at most 60 percent of the memory, agrees with double precision, and reports honestly (story 5, FR-013, FR-022, SC-005).
   - Do: (1) 50^3 R1-type problem: peak of `F32` is at most 0.6 times the peak of `F64` (counting allocator). (2) The `F32` field differs from the `F64` field by at most 1e-3 of the range (SC-005). (3) For both modes `report.residual` differs from `Problem::residual_f64(&field)` (a new function that recomputes the residual in `f64`) by at most 1e-6 relative. (4) `F32` with `tol = 1e-12` gives `converged == false` and the report says so. (5) `Field` in `F32` mode holds a `Vec<f32>`.
   - Files: `packages/loop_interpolation_core/tests/precision_f32.rs`
   - Needs: T022, T025
