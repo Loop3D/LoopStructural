@@ -11,6 +11,14 @@ def test_resolve_solver_choice_fallbacks_to_cg_for_unknown_name():
     assert resolved == "cg"
 
 
+def test_resolve_solver_choice_accepts_native_without_warning(caplog):
+    logger = logging.getLogger("test_solver_strategy")
+    with caplog.at_level(logging.WARNING, logger="test_solver_strategy"):
+        resolved = strategy.resolve_solver_choice("native", logger)
+    assert resolved == "native"
+    assert not [record for record in caplog.records if record.levelno >= logging.WARNING]
+
+
 def test_extract_admm_kwargs_filters_to_supported_signature():
     def fake_admm_solve(
         A,

@@ -86,6 +86,7 @@ LoopStructural = [
 
 [tool.uv.workspace]
 members = ["packages/*"]
+exclude = ["packages/loop_interpolation_core"]
 
 [tool.uv.sources]
 loop-common = { workspace = true }

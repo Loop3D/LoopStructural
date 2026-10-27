@@ -27,7 +27,7 @@
 
 Package scaffold, release and workspace settings. Rust is new in this repository.
 
-- [ ] T001 [P] [Setup] [S] Add the new package to the release-please files.
+- [x] T001 [P] [Setup] [S] Add the new package to the release-please files.
   - Do: Add package path `packages/loop_interpolation_core`, `release-type` `python`, `component` `loop-interpolation-core`.
   - Do: Add the same path to `exclude-paths` of the root package `.` (fix of 2026-09-27).
   - Do: Add `"packages/loop_interpolation_core": "0.0.0"` to the manifest.
@@ -35,14 +35,14 @@ Package scaffold, release and workspace settings. Rust is new in this repository
   - Needs: none
   - Wave: 1
   - Done when: `python -c "import json; c=json.load(open('.release-please-config.json')); assert 'packages/loop_interpolation_core' in c['packages']; assert 'packages/loop_interpolation_core' in c['packages']['.']['exclude-paths']; m=json.load(open('.release-please-manifest.json')); assert 'packages/loop_interpolation_core' in m"` exits 0.
-- [ ] T002 [P] [Setup] [S] Keep the Rust package out of the uv workspace. Ignore build output.
+- [x] T002 [P] [Setup] [S] Keep the Rust package out of the uv workspace. Ignore build output.
   - Do: In `[tool.uv.workspace]` keep `members = ["packages/*"]` and add `exclude = ["packages/loop_interpolation_core"]`.
   - Do: In `.gitignore` add `packages/loop_interpolation_core/pkg/` and `packages/loop_interpolation_core/tests_web/node_modules/`. `target/` is already ignored.
   - Files: `pyproject.toml`, `.gitignore`
   - Needs: none
   - Wave: 1
   - Done when: `python -c "import tomllib; d=tomllib.load(open('pyproject.toml','rb')); assert 'packages/loop_interpolation_core' in d['tool']['uv']['workspace']['exclude']"` exits 0.
-- [ ] T003 [P] [Setup] [S] Create `Cargo.toml` and an empty `lib.rs` for the core crate.
+- [x] T003 [P] [Setup] [S] Create `Cargo.toml` and an empty `lib.rs` for the core crate.
   - Do: Package name `loop-interpolation-core`, version `0.0.0`, edition `2024`.
   - Do: `[lib] name = "loop_interpolation_core"`, `crate-type = ["cdylib", "rlib"]`.
   - Do: Optional dependencies: `rayon = "1.10"`, `pyo3 = { version = "0.29", features = ["extension-module", "abi3-py39"] }`, `numpy = "0.29"`, `wasm-bindgen = "0.2"`.
@@ -54,7 +54,7 @@ Package scaffold, release and workspace settings. Rust is new in this repository
   - Needs: none
   - Wave: 1
   - Done when: `cargo check --manifest-path packages/loop_interpolation_core/Cargo.toml` exits 0.
-- [ ] T004 [P] [Setup] [S] Create `pyproject.toml` (maturin) and a README skeleton for the core package.
+- [x] T004 [P] [Setup] [S] Create `pyproject.toml` (maturin) and a README skeleton for the core package.
   - Do: Build backend `maturin>=1,<2`. Project name `loop-interpolation-core`, `requires-python = ">=3.9"`, dependency `numpy`.
   - Do: `[tool.maturin]`: `features = ["python"]`, `module-name = "loop_interpolation_core"`.
   - Do: README (ASD-STE100): purpose, link to `specs/001-low-memory-interpolator/spec.md`, and the line `Source: loop-rs crates/interpolation-fd, commit bff51342da8ebff7ca3c87e07c1d4fbd31279c8b, branch lachlan/drillhole`.
@@ -62,7 +62,7 @@ Package scaffold, release and workspace settings. Rust is new in this repository
   - Needs: none
   - Wave: 1
   - Done when: `python -c "import tomllib; d=tomllib.load(open('packages/loop_interpolation_core/pyproject.toml','rb')); assert d['tool']['maturin']['module-name']=='loop_interpolation_core'"` exits 0.
-- [ ] T005 [P] [Found] [M] Write the fixture generator and the 20x20x20 fixture file (reference solution from the matrix solver).
+- [x] T005 [P] [Found] [M] Write the fixture generator and the 20x20x20 fixture file (reference solution from the matrix solver).
   - Do: Read `plan.md` section D8 (fixture format) first.
   - Do: Build a 20x20x20 `FiniteDifferenceInterpolator` problem with value, gradient, normal, tangent and interface data (fixed seed). Solve it with `solver="cg"` and `tol=1e-10`. This field is the reference solution.
   - Do: Write the flat arrays in the D8 order. Write regularisation and interpolation weights in core meaning: the cross-derivative weights `dxy`, `dxz`, `dyz` are divided by 4 (see `StructuredGrid.get_operators`). Read `loop-rs/crates/interpolation-fd/tests_python/test_drop_in_replacement.py` for the mapping of gradient, normal and tangent data.
@@ -303,7 +303,7 @@ Phase D of the plan. It needs only phases 3 to 5. The Python tests skip when the
   - Needs: T004
   - Wave: 2
   - Done when: `python -m pytest packages/loop_interpolation/tests/test_native_no_rows.py -q` collects the tests.
-- [ ] T031 [P] [US6] [S] Test: `resolve_solver_choice("native")` returns `"native"`.
+- [x] T031 [P] [US6] [S] Test: `resolve_solver_choice("native")` returns `"native"`.
   - Do: Add one test: `resolve_solver_choice("native", logger)` returns `"native"` and logs no warning.
   - Files: `packages/loop_interpolation/tests/test_solver_strategy.py`
   - Needs: none
@@ -315,7 +315,7 @@ Phase D of the plan. It needs only phases 3 to 5. The Python tests skip when the
   - Needs: T031
   - Wave: 2
   - Done when: `python -m pytest packages/loop_interpolation/tests/test_solver_strategy.py -q` passes.
-- [ ] T033 [P] [US6] [S] Add the optional extra `native` to the `loop-interpolation` package.
+- [x] T033 [P] [US6] [S] Add the optional extra `native` to the `loop-interpolation` package.
   - Do: Add `native = ["loop-interpolation-core"]` under `[project.optional-dependencies]`. Do not change `dependencies`.
   - Files: `packages/loop_interpolation/pyproject.toml`
   - Needs: none

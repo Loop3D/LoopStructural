@@ -8,6 +8,7 @@
       "exclude-paths": [
         "packages/loop_common",
         "packages/loop_interpolation",
+        "packages/loop_interpolation_core",
         "packages/map2loop",
         "packages/loopstructural_visualisation"
       ]
@@ -19,6 +20,10 @@
     "packages/loop_interpolation": {
       "release-type": "python",
       "component": "loop-interpolation"
+    },
+    "packages/loop_interpolation_core": {
+      "release-type": "python",
+      "component": "loop-interpolation-core"
     },
     "packages/map2loop": {
       "release-type": "python",

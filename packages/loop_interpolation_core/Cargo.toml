@@ -1,0 +1,27 @@
+[package]
+name = "loop-interpolation-core"
+version = "0.0.0"
+edition = "2024"
+
+[lib]
+name = "loop_interpolation_core"
+crate-type = ["cdylib", "rlib"]
+
+[dependencies]
+rayon = { version = "1.10", optional = true }
+pyo3 = { version = "0.29", features = ["extension-module", "abi3-py39"], optional = true }
+numpy = { version = "0.29", optional = true }
+wasm-bindgen = { version = "0.2", optional = true }
+
+[features]
+default = []
+parallel = ["dep:rayon"]
+python = ["dep:pyo3", "dep:numpy"]
+wasm = ["dep:wasm-bindgen"]
+
+[profile.wasm-size]
+inherits = "release"
+opt-level = "z"
+lto = true
+codegen-units = 1
+panic = "abort"
