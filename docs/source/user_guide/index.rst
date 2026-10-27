@@ -13,6 +13,7 @@ for a list of topics covered in this section.
    input_data
    geological_model
    interpolation_options
+   native_solver
    fold_modelling
    fault_modelling
    visualisation

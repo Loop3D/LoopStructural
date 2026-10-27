@@ -1626,6 +1626,15 @@ impl FiniteDifferenceInterpolator {
         self.shell().rows.len() * N_FAMILIES + self.dof()
     }
 
+    /// As [`scratch_len`], but shorter: the shell part and the border part
+    /// share one region. `apply_normal_operator_into` uses the shell part
+    /// first and the border part after it, so the two can overlap. The
+    /// length is at least `dof`, so that the final residual check can keep
+    /// `rhs` in the buffer. Use it only with the `f32` session and that check.
+    pub(crate) fn scratch_len_compact(&self) -> usize {
+        (self.shell().rows.len() * N_FAMILIES).max(self.dof())
+    }
+
     /// As [`scratch_len`], but for [`apply_normal_operator_into_unfused`]
     /// (the reference, pre-fusion computation): one `A x` slot per family
     /// per grid node (not just shell rows), plus the same border-stencil
@@ -1922,10 +1931,20 @@ impl FiniteDifferenceInterpolator {
                 .for_each(|o| *o = S::from_f64(0.0));
         }
         self.accumulate_data_normal(x, out);
-        let (shell_scratch, border_scratch) =
-            scratch.split_at_mut(self.shell().rows.len() * N_FAMILIES);
+        // The border part follows the shell part. If the buffer is shorter
+        // (see `scratch_len_compact`), the border part starts at 0. This is
+        // safe: the shell step is finished before the border steps start,
+        // and the border steps read only the entries that they wrote.
+        let shell_len = self.shell().rows.len() * N_FAMILIES;
+        let dof = self.dof();
+        let border_start = if scratch.len() >= shell_len + dof {
+            shell_len
+        } else {
+            0
+        };
         self.fused_interior_regularisation_into(x, out);
-        self.shell_regularisation_correction_into(x, shell_scratch, out);
+        self.shell_regularisation_correction_into(x, &mut scratch[..shell_len], out);
+        let border_scratch = &mut scratch[border_start..border_start + dof];
         self.accumulate_border_normal_into(x, border_scratch, out);
         self.accumulate_directional_normal_into(x, border_scratch, out);
     }
@@ -2045,9 +2064,28 @@ impl FiniteDifferenceInterpolator {
         // The scratch buffer has at least `n` entries. Reuse it for rhs.
         let rhs = &mut scratch[..n];
         self.write_data_rhs::<f64>(rhs);
+        Self::relative_residual(rhs, &out)
+    }
+
+    /// As [`residual_f64_of`](Self::residual_f64_of), with a low peak
+    /// memory: the scratch buffer has no border part if the problem needs
+    /// none. The arithmetic is the same, so the value is the same.
+    pub(crate) fn residual_f64_compact(&self, x: &[f64]) -> f64 {
+        let n = self.dof();
+        let mut out = vec![0.0_f64; n];
+        let mut scratch = vec![0.0_f64; self.scratch_len_compact()];
+        self.apply_normal_operator_into(x, &mut scratch, &mut out);
+        // The scratch buffer has at least `n` entries. Reuse it for rhs.
+        let rhs = &mut scratch[..n];
+        self.write_data_rhs::<f64>(rhs);
+        Self::relative_residual(rhs, &out)
+    }
+
+    /// `|rhs - nx| / |rhs|`, with the floor `1e-300` in the divisor.
+    fn relative_residual(rhs: &[f64], nx: &[f64]) -> f64 {
         let mut r2 = 0.0_f64;
         let mut b2 = 0.0_f64;
-        for (b, nx) in rhs.iter().zip(out.iter()) {
+        for (b, nx) in rhs.iter().zip(nx.iter()) {
             let d = b - nx;
             r2 += d * d;
             b2 += b * b;

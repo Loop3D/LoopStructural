@@ -12,11 +12,14 @@
 //! The row order is: value-bound rows, then pair-bound rows.
 
 use crate::PAR_MIN_LEN;
+use crate::cg::{dot_s, is_single, jacobi_inverse, weighted_dot};
 use crate::error::{BoundKind, CoreError, ViolatedConstraint};
 use crate::interpolator::FiniteDifferenceInterpolator;
 use crate::memory::MemTracker;
 use crate::par::*;
+use crate::scalar::Scalar;
 use crate::settings::Settings;
+use std::any::Any;
 
 /// Number of outer iterations without a 1 percent fall of the primal residual.
 const STALL_OUTER: usize = 20;
@@ -56,12 +59,12 @@ enum Phase {
 
 /// ADMM as a state machine.
 #[derive(Debug)]
-pub(crate) struct AdmmState {
-    pub x: Vec<f64>,
-    r: Vec<f64>,
-    p: Vec<f64>,
-    ap: Vec<f64>,
-    inv_diag: Vec<f64>,
+pub(crate) struct AdmmState<S: Scalar> {
+    pub x: Vec<S>,
+    r: Vec<S>,
+    p: Vec<S>,
+    ap: Vec<S>,
+    inv_diag: Vec<S>,
     z: Vec<f64>,
     u: Vec<f64>,
     lower: Vec<f64>,
@@ -96,37 +99,20 @@ pub(crate) struct AdmmState {
     best_primal: f64,
     stall: usize,
     done: Option<bool>,
+    /// True for single precision: NaN and stagnation tests are on.
+    single: bool,
 }
 
 /// `out = (N + rho Q^T Q) v`.
-fn apply(
+fn apply<S: Scalar>(
     interp: &FiniteDifferenceInterpolator,
-    scratch: &mut [f64],
+    scratch: &mut [S],
     rho: f64,
-    v: &[f64],
-    out: &mut [f64],
+    v: &[S],
+    out: &mut [S],
 ) {
     interp.apply_normal_operator_into(v, scratch, out);
     interp.accumulate_inequality_normal(v, rho, out);
-}
-
-#[inline]
-fn dot(a: &[f64], b: &[f64]) -> f64 {
-    a.par_iter()
-        .zip(b.par_iter())
-        .with_min_len(PAR_MIN_LEN)
-        .map(|(x, y)| x * y)
-        .sum::<f64>()
-}
-
-/// `sum(r * r * w)`.
-#[inline]
-fn weighted_dot(r: &[f64], w: &[f64]) -> f64 {
-    r.par_iter()
-        .zip(w.par_iter())
-        .with_min_len(PAR_MIN_LEN)
-        .map(|(ri, wi)| ri * ri * wi)
-        .sum::<f64>()
 }
 
 /// How far `q` is outside `[lower, upper]`.
@@ -135,7 +121,7 @@ fn violation(q: f64, lower: f64, upper: f64) -> f64 {
     (lower - q).max(q - upper).max(0.0)
 }
 
-impl AdmmState {
+impl<S: Scalar> AdmmState<S> {
     /// Make the state. All large vectors come from `tracker`.
     pub(crate) fn new(
         tracker: &mut MemTracker,
@@ -146,16 +132,14 @@ impl AdmmState {
         let m = interp.n_inequality_constraints();
         // The diagonal is the one of N only. The pre-solve uses it. The
         // inequality part is added when the ADMM loop starts.
-        let mut diag = interp.try_diagonal(tracker)?;
+        let diag = interp.try_diagonal(tracker)?;
         // Jacobi: a diagonal value of zero or less gives no scaling.
-        diag.par_iter_mut()
-            .with_min_len(PAR_MIN_LEN)
-            .for_each(|d| *d = if *d > 0.0 { 1.0 / *d } else { 1.0 });
-        let inv_diag = diag;
-        let x: Vec<f64> = tracker.try_zeroed(n)?;
-        let r: Vec<f64> = tracker.try_zeroed(n)?;
-        let p: Vec<f64> = tracker.try_zeroed(n)?;
-        let ap: Vec<f64> = tracker.try_zeroed(n)?;
+        // For f32 the f64 diagonal is freed before the other vectors are made.
+        let inv_diag: Vec<S> = jacobi_inverse(tracker, diag)?;
+        let x: Vec<S> = tracker.try_zeroed(n)?;
+        let r: Vec<S> = tracker.try_zeroed(n)?;
+        let p: Vec<S> = tracker.try_zeroed(n)?;
+        let ap: Vec<S> = tracker.try_zeroed(n)?;
         let z: Vec<f64> = tracker.try_zeroed(m)?;
         let u: Vec<f64> = tracker.try_zeroed(m)?;
         let (lower, upper) = interp.inequality_bounds();
@@ -193,7 +177,19 @@ impl AdmmState {
             best_primal: f64::INFINITY,
             stall: 0,
             done: None,
+            single: is_single::<S>(),
         })
+    }
+
+    /// Free `r`, `p`, `ap` and `inv_diag`. Call it only when the run is done.
+    pub(crate) fn release_work(&mut self, tracker: &mut MemTracker) {
+        let item = std::mem::size_of::<S>() as u64;
+        let count = self.r.len() + self.p.len() + self.ap.len() + self.inv_diag.len();
+        self.r = Vec::new();
+        self.p = Vec::new();
+        self.ap = Vec::new();
+        self.inv_diag = Vec::new();
+        tracker.release((count as u64).saturating_mul(item));
     }
 
     /// Total inner CG iterations done.
@@ -212,7 +208,7 @@ impl AdmmState {
     }
 
     /// Start an outer iteration: build `r = rhs_admm - A x` and the first `p`.
-    fn begin_outer(&mut self, interp: &FiniteDifferenceInterpolator, scratch: &mut [f64]) {
+    fn begin_outer(&mut self, interp: &FiniteDifferenceInterpolator, scratch: &mut [S]) {
         let m = self.z.len();
         // `zu` is small: one entry per inequality row.
         let zu: Vec<f64> = (0..m).map(|i| self.z[i] - self.u[i]).collect();
@@ -220,21 +216,21 @@ impl AdmmState {
         interp.write_data_rhs(&mut self.r);
         interp.accumulate_inequality_transpose(&zu, self.rho, &mut self.r);
         // The inner tolerance is relative to the norm of the ADMM right-hand side.
-        self.rhs_norm = dot(&self.r, &self.r).sqrt().max(1e-300);
+        self.rhs_norm = dot_s(&self.r, &self.r).sqrt().max(1e-300);
         apply(interp, scratch, self.rho, &self.x, &mut self.ap);
         self.r
             .par_iter_mut()
             .zip(self.ap.par_iter())
             .with_min_len(PAR_MIN_LEN)
-            .for_each(|(ri, a)| *ri -= *a);
+            .for_each(|(ri, a)| *ri = S::from_f64(ri.to_f64() - a.to_f64()));
         self.p
             .par_iter_mut()
             .zip(self.r.par_iter())
             .zip(self.inv_diag.par_iter())
             .with_min_len(PAR_MIN_LEN)
-            .for_each(|((pi, ri), di)| *pi = ri * di);
+            .for_each(|((pi, ri), di)| *pi = S::from_f64(ri.to_f64() * di.to_f64()));
         self.rz = weighted_dot(&self.r, &self.inv_diag);
-        self.inner_res = dot(&self.r, &self.r).sqrt() / self.rhs_norm;
+        self.inner_res = dot_s(&self.r, &self.r).sqrt() / self.rhs_norm;
         self.inner_iters = 0;
         self.breakdown = false;
         self.cur_tol = self.inner_tol;
@@ -250,9 +246,9 @@ impl AdmmState {
             .zip(self.r.par_iter())
             .zip(self.inv_diag.par_iter())
             .with_min_len(PAR_MIN_LEN)
-            .for_each(|((pi, ri), di)| *pi = ri * di);
+            .for_each(|((pi, ri), di)| *pi = S::from_f64(ri.to_f64() * di.to_f64()));
         self.rz = weighted_dot(&self.r, &self.inv_diag);
-        let r_norm = dot(&self.r, &self.r).sqrt();
+        let r_norm = dot_s(&self.r, &self.r).sqrt();
         self.rhs_norm = r_norm.max(1e-300);
         self.inner_res = r_norm / self.rhs_norm;
         self.inner_iters = 0;
@@ -267,7 +263,8 @@ impl AdmmState {
             .x
             .iter()
             .fold((f64::INFINITY, f64::NEG_INFINITY), |(lo, hi), v| {
-                (lo.min(*v), hi.max(*v))
+                let v = v.to_f64();
+                (lo.min(v), hi.max(v))
             });
         (hi - lo).max(1e-12)
     }
@@ -283,42 +280,63 @@ impl AdmmState {
 
     /// End of the pre-solve. Returns true if the plain solution already
     /// holds all bounds. If not, it makes the ADMM start from this `x`.
-    fn end_pre(&mut self, interp: &FiniteDifferenceInterpolator) -> bool {
+    fn end_pre(
+        &mut self,
+        tracker: &mut MemTracker,
+        interp: &FiniteDifferenceInterpolator,
+    ) -> Result<bool, CoreError> {
         let qx = interp.apply_inequality_operator(&self.x);
         self.max_violation = self.field_violation(&qx);
         self.primal_rel = self.inner_res;
         if self.max_violation <= VIOLATION_LIMIT * self.field_range() {
-            return true;
+            return Ok(true);
         }
         // Warm start: z = clip(Q x), u = 0.
         for (i, q) in qx.iter().enumerate() {
             self.z[i] = q.max(self.lower[i]).min(self.upper[i]);
             self.u[i] = 0.0;
         }
-        // Put the inequality part into the Jacobi scaling (in place).
+        // Put the inequality part into the Jacobi scaling.
         // An entry that was zero or less was stored as 1; it stays a weak
         // scaling only. This changes the speed, not the result.
+        if let Some(d) = (&mut self.inv_diag as &mut dyn Any).downcast_mut::<Vec<f64>>() {
+            // Double precision: the change is done in place.
+            d.par_iter_mut()
+                .with_min_len(PAR_MIN_LEN)
+                .for_each(|d| *d = 1.0 / *d);
+            interp.add_inequality_diagonal(self.rho, d);
+            d.par_iter_mut()
+                .with_min_len(PAR_MIN_LEN)
+                .for_each(|d| *d = if *d > 0.0 { 1.0 / *d } else { 1.0 });
+            return Ok(false);
+        }
+        // Single precision: `add_inequality_diagonal` needs f64 values.
+        // Use one short-lived f64 vector, counted by the tracker.
+        let n = self.inv_diag.len();
+        let mut tmp: Vec<f64> = tracker.try_zeroed(n)?;
+        tmp.par_iter_mut()
+            .zip(self.inv_diag.par_iter())
+            .with_min_len(PAR_MIN_LEN)
+            .for_each(|(t, d)| *t = 1.0 / d.to_f64());
+        interp.add_inequality_diagonal(self.rho, &mut tmp);
         self.inv_diag
             .par_iter_mut()
+            .zip(tmp.par_iter())
             .with_min_len(PAR_MIN_LEN)
-            .for_each(|d| *d = 1.0 / *d);
-        interp.add_inequality_diagonal(self.rho, &mut self.inv_diag);
-        self.inv_diag
-            .par_iter_mut()
-            .with_min_len(PAR_MIN_LEN)
-            .for_each(|d| *d = if *d > 0.0 { 1.0 / *d } else { 1.0 });
-        false
+            .for_each(|(d, t)| *d = S::from_f64(if *t > 0.0 { 1.0 / *t } else { 1.0 }));
+        tracker.release((n as u64).saturating_mul(8));
+        Ok(false)
     }
 
     /// One inner CG iteration.
-    fn cg_iteration(&mut self, interp: &FiniteDifferenceInterpolator, scratch: &mut [f64]) {
+    fn cg_iteration(&mut self, interp: &FiniteDifferenceInterpolator, scratch: &mut [S]) {
         if self.phase == Phase::Pre {
             interp.apply_normal_operator_into(&self.p, scratch, &mut self.ap);
         } else {
             apply(interp, scratch, self.rho, &self.p, &mut self.ap);
         }
-        let p_ap = dot(&self.p, &self.ap);
-        if p_ap.abs() < 1e-300 {
+        let p_ap = dot_s(&self.p, &self.ap);
+        if p_ap.abs() < 1e-300 || (self.single && !p_ap.is_finite()) {
             self.breakdown = true;
             return;
         }
@@ -327,15 +345,15 @@ impl AdmmState {
             .par_iter_mut()
             .zip(self.p.par_iter())
             .with_min_len(PAR_MIN_LEN)
-            .for_each(|(xi, pi)| *xi += alpha * pi);
+            .for_each(|(xi, pi)| *xi = S::from_f64(xi.to_f64() + alpha * pi.to_f64()));
         self.r
             .par_iter_mut()
             .zip(self.ap.par_iter())
             .with_min_len(PAR_MIN_LEN)
-            .for_each(|(ri, api)| *ri -= alpha * api);
+            .for_each(|(ri, api)| *ri = S::from_f64(ri.to_f64() - alpha * api.to_f64()));
         self.total_iters += 1;
         self.inner_iters += 1;
-        self.inner_res = dot(&self.r, &self.r).sqrt() / self.rhs_norm;
+        self.inner_res = dot_s(&self.r, &self.r).sqrt() / self.rhs_norm;
         if self.inner_res <= self.cur_tol {
             return;
         }
@@ -346,13 +364,16 @@ impl AdmmState {
             .zip(self.r.par_iter())
             .zip(self.inv_diag.par_iter())
             .with_min_len(PAR_MIN_LEN)
-            .for_each(|((pi, ri), di)| *pi = ri * di + beta * *pi);
+            .for_each(|((pi, ri), di)| {
+                *pi = S::from_f64(ri.to_f64() * di.to_f64() + beta * pi.to_f64())
+            });
         self.rz = rz_new;
     }
 
     fn inner_finished(&self) -> bool {
         let own_limit = self.phase != Phase::Pre && self.inner_iters >= self.inner_max_iter;
         self.breakdown
+            || (self.single && !self.inner_res.is_finite())
             || self.inner_res <= self.cur_tol
             || own_limit
             || self.total_iters >= self.max_total
@@ -447,8 +468,9 @@ impl AdmmState {
     /// the end of each outer iteration.
     pub(crate) fn step(
         &mut self,
+        tracker: &mut MemTracker,
         interp: &FiniteDifferenceInterpolator,
-        scratch: &mut [f64],
+        scratch: &mut [S],
         max_iters: usize,
     ) -> Result<AdmmOutcome, CoreError> {
         if let Some(c) = self.done {
@@ -471,13 +493,13 @@ impl AdmmState {
                     max_violation: self.max_violation,
                 });
             }
-            if self.inner_res > self.tol {
+            if self.inner_res > self.tol || (self.single && !self.inner_res.is_finite()) {
                 // The pre-solve did not reach its tolerance.
                 self.primal_rel = self.inner_res;
                 self.done = Some(false);
                 return Ok(AdmmOutcome::Done(false));
             }
-            if self.end_pre(interp) {
+            if self.end_pre(tracker, interp)? {
                 self.done = Some(true);
                 return Ok(AdmmOutcome::Done(true));
             }
@@ -510,6 +532,11 @@ impl AdmmState {
             });
         }
         self.phase = Phase::Begin;
+        if self.single && !self.inner_res.is_finite() {
+            // Single precision: a NaN residual ends the solve.
+            self.done = Some(false);
+            return Ok(AdmmOutcome::Done(false));
+        }
         if self.end_outer(interp)? {
             self.done = Some(true);
             return Ok(AdmmOutcome::Done(true));

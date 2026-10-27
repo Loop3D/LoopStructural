@@ -12,7 +12,7 @@ use crate::interpolator::{
 use crate::memory::{ProblemCounts, estimate, max_grid_for_budget};
 use crate::report::{MemoryEstimate, SolveReport, Step};
 use crate::session::SolveSession;
-use crate::settings::{Precision, Settings};
+use crate::settings::Settings;
 
 /// The most nodes that a grid can have: `isize::MAX / 8` (FR-018).
 const MAX_NODES: u64 = isize::MAX as u64 / 8;
@@ -532,11 +532,6 @@ impl Problem {
         }
         if self.n_constraints() == 0 {
             return Err(CoreError::NoConstraints);
-        }
-        if s.precision != Precision::F64 {
-            return Err(CoreError::Unsupported {
-                setting: "f32 precision".into(),
-            });
         }
         SolveSession::new(self, &s)
     }

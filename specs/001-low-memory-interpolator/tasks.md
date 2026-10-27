@@ -458,7 +458,7 @@ Phase E of the plan (was F). It changes the vector type, not the algorithm.
   - Needs: T048
   - Wave: 17
   - Done when: `cargo test --manifest-path packages/loop_interpolation_core/Cargo.toml` passes.
-- [ ] T050 [P] [US5] [M] Make `CgState`, `AdmmState` and the session generic. Select by `Settings.precision`. Dot products add in `f64`.
+- [x] T050 [P] [US5] [M] Make `CgState`, `AdmmState` and the session generic. Select by `Settings.precision`. Dot products add in `f64`.
   - Do: `SolveSession` holds an enum `Inner { F64(State<f64>), F32(State<f32>) }`. `Field` uses `FieldData::F32` in single precision. The bound `F32` mode refuses `NaN` residual and reports `converged == false`.
   - Files: `packages/loop_interpolation_core/src/cg.rs`, `packages/loop_interpolation_core/src/admm.rs`, `packages/loop_interpolation_core/src/session.rs`, `packages/loop_interpolation_core/src/field.rs`
   - Needs: T049
@@ -493,7 +493,7 @@ Phase E of the plan (was F). It changes the vector type, not the algorithm.
   - Needs: T045, T038, T051, T044
   - Wave: 20
   - Done when: `python -c "import yaml; yaml.safe_load(open('.github/workflows/native.yml'))"` exits 0 and the file has jobs `rust`, `wheel`, `wasm`, `reference`.
-- [ ] T054 [P] [Finish] [S] Write the user guide page for `solver="native"`.
+- [x] T054 [P] [Finish] [S] Write the user guide page for `solver="native"`.
   - Do: ASD-STE100 text: what the solver is for, how to install (`pip install loop-interpolation[native]`), how to select it (`solver="native"` before `setup`), the solver options, the unsupported settings list, and the memory estimate. Add `native_solver` to the toctree after `interpolation_options`.
   - Files: `docs/source/user_guide/native_solver.rst`, `docs/source/user_guide/index.rst`
   - Needs: T038
