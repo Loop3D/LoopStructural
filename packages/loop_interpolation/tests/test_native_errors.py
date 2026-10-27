@@ -53,16 +53,13 @@ def _build_interpolator() -> FiniteDifferenceInterpolator:
 #                    receives the interpolator and returns the real value.
 #   attributes     - attributes set on the interpolator before setup.
 #   solver_kwargs  - keywords for solve_system.
+# Column scaling (apply_scaling_matrix) is not in this list. The native solver
+# ignores it for any value (see the Answers in plan.md).
 UNSUPPORTED_SETTINGS = [
     pytest.param(
         "region",
         {"setup_kwargs": {"region": _region_mask}},
         id="region",
-    ),
-    pytest.param(
-        "apply_scaling_matrix",
-        {"attributes": {"apply_scaling_matrix": True}},
-        id="apply_scaling_matrix",
     ),
     pytest.param(
         "use_regularisation_weight_scale",

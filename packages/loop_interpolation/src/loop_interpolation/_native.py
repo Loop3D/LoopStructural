@@ -1,0 +1,388 @@
+"""Adapter between a ``FiniteDifferenceInterpolator`` and the native core.
+
+The native core is the Rust package ``loop_interpolation_core``. This module
+reads the stored constraint data of the interpolator, builds a core
+``Problem``, solves it, and writes the field back to ``interpolator.c``.
+
+Two functions are public:
+
+* ``check_supported(interpolator, setup_kwargs, solver_kwargs)`` raises
+  ``NotImplementedError`` for a setting that the core cannot represent.
+  The message contains the name of the setting.
+* ``solve(interpolator, tol, solver_kwargs) -> bool`` runs the solve.
+
+The module does not import the core at import time. The core is imported
+inside ``solve``, so this module loads when the core is not installed.
+
+The adapter reads the raw data with the ``get_*_constraints`` methods. It
+never reads the sparse rows.
+
+MAPPING from the Python data to the core meaning
+------------------------------------------------
+The core applies a weight verbatim to a row that it has scaled to unit L2
+norm. These are the equivalent Python weights (the same mapping as
+``packages/loop_interpolation_core/fixtures/make_fixture.py``).
+Python column layouts are x y z | data | weight.
+
+* Grid. ``counts`` is ``support.nsteps`` (number of NODES for each axis).
+  The node order is x fastest, as in ``interpolator.c``. A rotated support
+  is not supported.
+* Regularisation. ``dxx dyy dzz`` are the same in Python and core. The
+  cross-derivative weights are divided by 4 inside ``get_operators``, so
+  the core weight is ``dxy / 4`` (same for ``dxz`` and ``dyz``).
+* Border. ``dx dy dz`` are the same in Python and core.
+* Value. Weight is ``cpw * column 4``.
+* Gradient (direction only). Weight is ``gpw``. The weight column is NOT
+  used by Python.
+* Normal (vector with length). Weight is ``npw / 3 * column 6``. When the
+  data has no weight column, the column weight is 1.
+* Tangent. Weight is ``tpw``. The weight column is NOT used by Python.
+* Interface. Weight is ``ipw`` (one value for all points). The pairing is
+  "star": each point is paired with the first point of its id group.
+* Value inequality. Columns x y z | lower | upper. The weight is 1.
+* Inequality pairs. Columns x y z | rock id. A pair (a, b) gives the bound
+  ``lower <= f(point of a) - f(point of b) <= upper`` for all point
+  combinations of the two rock ids. The weight is 1.
+* Directional regularisation. The direction field is evaluated at the
+  regularisation sample points (the nodes) and passed with its weight.
+* A constraint family with weight 0 is not sent to the core. The core
+  raises an error for a weight of 0.
+* ``ridge_factor`` has no setting in the core. It is not mapped.
+* Column scaling (``apply_scaling_matrix``) is ignored for any value. It
+  changes the conditioning of the matrix, not the minimiser. One info line
+  says that the adapter skips it.
+"""
+
+from __future__ import annotations
+
+from time import perf_counter
+
+import numpy as np
+from loop_common.logging import get_logger as getLogger
+
+logger = getLogger(__name__)
+
+# Keys of solver_kwargs that the adapter accepts. Value: key of the core settings.
+_SOLVER_KEYS = {
+    "tol": "tol",
+    "maxiter": "max_iter",
+    "precision": "precision",
+    "budget_bytes": "budget_bytes",
+    "rho": "rho",
+    "inner_max_iter": "inner_max_iter",
+    "inner_tol": "inner_tol",
+    "admm_abs_tol": "admm_abs_tol",
+    "admm_rel_tol": "admm_rel_tol",
+}
+
+_REGULARISATION_KEYS = ("dxx", "dyy", "dzz", "dxy", "dxz", "dyz")
+_BORDER_KEYS = ("dx", "dy", "dz")
+
+_INSTALL_HINT = (
+    "solver='native' needs the package loop_interpolation_core. "
+    "Install it with: pip install loop-interpolation[native]"
+)
+
+
+def _unsupported(setting: str, reason: str = "") -> NotImplementedError:
+    text = f"solver='native' does not support the setting '{setting}'"
+    if reason:
+        text += f": {reason}"
+    return NotImplementedError(text)
+
+
+def check_supported(interpolator, setup_kwargs, solver_kwargs) -> None:
+    """Raise ``NotImplementedError`` for a setting that the core cannot represent.
+
+    Parameters
+    ----------
+    interpolator : FiniteDifferenceInterpolator
+    setup_kwargs : dict or None
+        The keywords of ``setup_interpolator``.
+    solver_kwargs : dict or None
+        The keywords of the solver.
+    """
+    setup_kwargs = dict(setup_kwargs or {})
+    solver_kwargs = dict(solver_kwargs or {})
+
+    support = interpolator.support
+    if getattr(support, "dimension", None) != 3:
+        raise _unsupported("2D support", "the core works on 3D structured grids")
+    if type(support).__name__ == "RectilinearGrid" or not all(
+        hasattr(support, name) for name in ("origin", "nsteps", "step_vector")
+    ):
+        raise _unsupported("support type", "the core works on uniform structured grids")
+    rotation = getattr(support, "rotation_xy", None)
+    if rotation is not None and not np.allclose(np.asarray(rotation, dtype=float), np.eye(3)):
+        raise _unsupported("rotation_xy", "rotated supports are not supported")
+
+    if setup_kwargs.get("region") is not None:
+        raise _unsupported("region", "a region mask is not supported")
+    if "operators" in setup_kwargs:
+        raise _unsupported("operators", "custom operators are not supported")
+    if setup_kwargs.get("use_regularisation_weight_scale", False) or getattr(
+        interpolator, "use_regularisation_weight_scale", False
+    ):
+        raise _unsupported("use_regularisation_weight_scale")
+    if solver_kwargs.get("constant_norm_iterations"):
+        raise _unsupported("constant_norm_iterations")
+    if setup_kwargs.get("regularisation_matrix_free", False):
+        raise _unsupported("regularisation_matrix_free")
+
+    mode = str(
+        setup_kwargs.get(
+            "interface_pair_mode", getattr(interpolator, "interface_pair_mode", "auto")
+        )
+    ).lower()
+    if mode in ("all", "chain"):
+        raise _unsupported("interface_pair_mode", f"mode '{mode}' is not supported; use 'star'")
+    if mode == "auto":
+        fallback = str(
+            setup_kwargs.get(
+                "interface_pair_fallback",
+                getattr(interpolator, "interface_pair_fallback", "star"),
+            )
+        ).lower()
+        if fallback == "chain":
+            raise _unsupported("interface_pair_fallback", "the fallback 'chain' is not supported")
+
+    for key in solver_kwargs:
+        if key not in _SOLVER_KEYS and key != "constant_norm_iterations":
+            raise NotImplementedError(
+                f"solver='native' does not support the solver keyword '{key}'. "
+                f"Supported keywords: {', '.join(_SOLVER_KEYS)}"
+            )
+
+    if getattr(interpolator, "apply_scaling_matrix", False):
+        logger.info("solver='native': column scaling (apply_scaling_matrix) is skipped.")
+
+
+def _core_settings(tol, solver_kwargs) -> dict:
+    """Make the settings dict of the core from ``tol`` and ``solver_kwargs``."""
+    settings = {}
+    if tol is not None:
+        settings["tol"] = float(tol)
+    for key, value in solver_kwargs.items():
+        if key == "constant_norm_iterations":
+            continue
+        if value is None:
+            continue
+        settings[_SOLVER_KEYS[key]] = value
+    return settings
+
+
+def _flat(a) -> np.ndarray:
+    return np.ascontiguousarray(np.asarray(a, dtype=np.float64).ravel())
+
+
+def _weights(w, n: int) -> np.ndarray:
+    """Return a weight array with ``n`` values from a scalar or an array."""
+    return np.ascontiguousarray(np.broadcast_to(np.asarray(w, dtype=np.float64), (n,)).copy())
+
+
+def _rows(array) -> np.ndarray:
+    """Return a 2D float array. An empty or missing array gives 0 rows."""
+    if array is None:
+        return np.zeros((0, 0))
+    a = np.asarray(array, dtype=np.float64)
+    if a.ndim != 2 or a.shape[0] == 0:
+        return np.zeros((0, a.shape[1] if a.ndim == 2 else 0))
+    return a
+
+
+def _weight(interpolator, key: str, default: float = 1.0):
+    return interpolator.interpolation_weights.get(key, default)
+
+
+def _add_weighted(add, points, data, weights) -> None:
+    """Call ``add(points, data, weights)`` for the rows with a weight not 0."""
+    keep = (weights != 0) & np.isfinite(weights)
+    if not np.any(keep):
+        return
+    add(
+        _flat(points[keep]),
+        _flat(data[keep]),
+        _flat(weights[keep]),
+    )
+
+
+def _add_data(problem, interpolator) -> None:
+    """Send the point constraints to the core."""
+    # value: weight = cpw * column 4
+    value = _rows(interpolator.get_value_constraints())
+    if value.shape[0] > 0:
+        w = _weights(_weight(interpolator, "cpw"), value.shape[0]) * value[:, 4]
+        _add_weighted(problem.add_value, value[:, :3], value[:, 3], w)
+
+    # gradient: weight = gpw (the weight column is not used)
+    gradient = _rows(interpolator.get_gradient_constraints())
+    if gradient.shape[0] > 0:
+        w = _weights(_weight(interpolator, "gpw"), gradient.shape[0])
+        _add_weighted(problem.add_gradient, gradient[:, :3], gradient[:, 3:6], w)
+
+    # normal: weight = npw / 3 * column 6 (1 when there is no column)
+    normal = _rows(interpolator.get_norm_constraints())
+    if normal.shape[0] > 0:
+        w = _weights(_weight(interpolator, "npw") / 3.0, normal.shape[0])
+        if normal.shape[1] > 6:
+            w = w * normal[:, 6]
+        _add_weighted(problem.add_normal, normal[:, :3], normal[:, 3:6], w)
+
+    # tangent: weight = tpw (the weight column is not used)
+    tangent = _rows(interpolator.get_tangent_constraints())
+    if tangent.shape[0] > 0:
+        w = _weights(_weight(interpolator, "tpw"), tangent.shape[0])
+        _add_weighted(problem.add_tangent, tangent[:, :3], tangent[:, 3:6], w)
+
+    # interface: one weight (ipw)
+    interface = _rows(interpolator.get_interface_constraints())
+    if interface.shape[0] > 1:
+        ipw = np.asarray(_weight(interpolator, "ipw"), dtype=np.float64)
+        if ipw.size > 1 and not np.all(ipw == ipw.flat[0]):
+            raise _unsupported(
+                "interface per-point weights", "the core takes one weight for all interface points"
+            )
+        ipw = float(ipw.flat[0])
+        valid = np.isfinite(interface[:, 3])
+        if ipw != 0 and np.any(valid):
+            problem.add_interface(_flat(interface[valid, :3]), _flat(interface[valid, 3]), ipw)
+
+
+def _add_inequalities(problem, interpolator, setup_kwargs) -> None:
+    """Send the value bounds and the pair bounds to the core."""
+    bounds = _rows(interpolator.get_inequality_value_constraints())
+    if bounds.shape[0] > 0:
+        problem.add_value_bound(
+            _flat(bounds[:, :3]),
+            _flat(bounds[:, 3]),
+            _flat(bounds[:, 4]),
+            _flat(np.ones(bounds.shape[0])),
+        )
+
+    pairs_data = _rows(interpolator.get_inequality_pairs_constraints())
+    if pairs_data.shape[0] == 0:
+        return
+    upper_bound = setup_kwargs.get("inequality_pair_upper_bound", np.finfo(float).eps)
+    lower_bound = setup_kwargs.get("inequality_pair_lower_bound", -np.inf)
+    pairs = setup_kwargs.get("inequality_pairs", None)
+    ids = pairs_data[:, 3]
+    if not pairs:
+        # Same default as the matrix solver: each unordered pair of rock ids.
+        unique = np.unique(ids)
+        pairs = [(a, b) for i, a in enumerate(unique) for b in unique[i + 1 :]]
+    for upper_id, lower_id in pairs:
+        points_a = pairs_data[ids == upper_id, :3]
+        points_b = pairs_data[ids == lower_id, :3]
+        if points_a.shape[0] == 0 or points_b.shape[0] == 0:
+            continue
+        # All combinations of the points of the two rock ids.
+        a = np.repeat(points_a, points_b.shape[0], axis=0)
+        b = np.tile(points_b, (points_a.shape[0], 1))
+        n = a.shape[0]
+        problem.add_pair_bound(
+            _flat(a),
+            _flat(b),
+            _flat(np.full(n, lower_bound)),
+            _flat(np.full(n, upper_bound)),
+            _flat(np.ones(n)),
+        )
+
+
+def _add_regularisation(problem, interpolator, setup_kwargs) -> None:
+    """Send the regularisation, border and directional weights to the core."""
+    reg = {}
+    for key in _REGULARISATION_KEYS:
+        value = float(_weight(interpolator, key))
+        reg[key] = value / 4.0 if key in ("dxy", "dxz", "dyz") else value
+    problem.set_regularisation(reg)
+    problem.set_border_regularisation(
+        {key: float(_weight(interpolator, key)) for key in _BORDER_KEYS}
+    )
+
+    config = interpolator.resolve_regularisation_config(
+        regularisation=setup_kwargs.get("regularisation", None),
+        directional_regularisation=setup_kwargs.get("directional_regularisation", None),
+    )
+    if len(config.directional) == 0:
+        return
+    sample_points = np.asarray(interpolator.get_regularisation_sample_points(), dtype=float)
+    for term in config.directional:
+        if term.weight == 0:
+            continue
+        vectors = term.direction(sample_points) if callable(term.direction) else term.direction
+        vectors = np.asarray(vectors, dtype=float)
+        if vectors.shape != sample_points.shape:
+            logger.warning(
+                "%s: directional regularisation vectors must have shape %s, got %s. Skipping.",
+                term.name,
+                sample_points.shape,
+                vectors.shape,
+            )
+            continue
+        problem.add_directional_regularisation(_flat(vectors), float(term.weight))
+
+
+def solve(interpolator, tol, solver_kwargs) -> bool:
+    """Solve the interpolation problem with the native core.
+
+    Parameters
+    ----------
+    interpolator : FiniteDifferenceInterpolator
+    tol : float or None
+        Relative residual tolerance. ``None`` keeps the default of the core.
+    solver_kwargs : dict or None
+        Keys: tol, maxiter, precision, budget_bytes, rho, inner_max_iter,
+        inner_tol, admm_abs_tol, admm_rel_tol.
+
+    Returns
+    -------
+    bool
+        True when the solve converged.
+    """
+    started = perf_counter()
+    solver_kwargs = dict(solver_kwargs or {})
+    setup_kwargs = dict(getattr(interpolator, "_setup_kwargs", None) or {})
+
+    # Check the settings first. These errors must not need the core.
+    check_supported(interpolator, setup_kwargs, solver_kwargs)
+
+    try:
+        import loop_interpolation_core as core  # noqa: PLC0415
+    except ImportError as err:
+        raise ImportError(_INSTALL_HINT) from err
+
+    support = interpolator.support
+    problem = core.Problem(
+        np.asarray(support.origin, dtype=np.float64),
+        np.asarray(support.nsteps, dtype=np.int64),
+        np.asarray(support.step_vector, dtype=np.float64),
+    )
+    _add_regularisation(problem, interpolator, setup_kwargs)
+    _add_data(problem, interpolator)
+    _add_inequalities(problem, interpolator, setup_kwargs)
+
+    # tol: the solver_kwargs value wins over the tol argument.
+    settings = _core_settings(solver_kwargs.get("tol", tol), solver_kwargs)
+    field, report = problem.solve(settings)
+
+    interpolator.c = field
+    interpolator.latest_native_report = report
+    converged = bool(report.get("converged", False))
+    if not converged:
+        logger.warning(
+            "The native solver did not converge: %s iterations, residual %s.",
+            report.get("iterations"),
+            report.get("residual"),
+        )
+    for message in report.get("warnings", []):
+        logger.warning("native solver: %s", message)
+
+    total = perf_counter() - started
+    interpolator.latest_solve_timing = {
+        "solver": "native",
+        "total": total,
+        "total_seconds": total,
+        "iterations": report.get("iterations"),
+        "up_to_date": converged,
+    }
+    return converged

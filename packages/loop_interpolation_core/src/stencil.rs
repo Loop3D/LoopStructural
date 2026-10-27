@@ -22,6 +22,7 @@
 use crate::PAR_MIN_LEN;
 use crate::grid::StructuredGrid3D;
 use crate::par::*;
+use crate::scalar::Scalar;
 
 #[derive(Debug, Clone)]
 pub struct Stencil {
@@ -83,7 +84,7 @@ impl Stencil {
     /// `out = A x` (overwrites `out`, no allocation). Rows too close to a
     /// boundary for the full stencil footprint to fit are zero, matching
     /// the Python "interior-only" regularisation rows.
-    pub fn forward_into(&self, grid: &StructuredGrid3D, x: &[f64], out: &mut [f64]) {
+    pub fn forward_into<S: Scalar>(&self, grid: &StructuredGrid3D, x: &[S], out: &mut [S]) {
         let nx = grid.nsteps[0];
         let ny = grid.nsteps[1];
         out.par_iter_mut()
@@ -94,17 +95,21 @@ impl Stencil {
                 let j = (flat / nx) % ny;
                 let k = flat / (nx * ny);
                 *o = if self.is_row_active(grid, i, j, k) {
-                    self.offsets
-                        .iter()
-                        .zip(self.coeffs.iter())
-                        .map(|(d, c)| {
-                            c * x[grid
-                                .neighbour_index(i, j, k, *d)
-                                .expect("row within margin")]
-                        })
-                        .sum()
+                    // The sum runs in f64. Only the stored value is S.
+                    S::from_f64(
+                        self.offsets
+                            .iter()
+                            .zip(self.coeffs.iter())
+                            .map(|(d, c)| {
+                                c * x[grid
+                                    .neighbour_index(i, j, k, *d)
+                                    .expect("row within margin")]
+                                .to_f64()
+                            })
+                            .sum::<f64>(),
+                    )
                 } else {
-                    0.0
+                    S::default()
                 };
             });
     }
@@ -121,12 +126,12 @@ impl Stencil {
     /// `out += scale * A^T y` (accumulates, no allocation), implemented as
     /// correlation with the flipped stencil (see module docs) so it needs
     /// no scatter-add and no atomics.
-    pub fn adjoint_accumulate_into(
+    pub fn adjoint_accumulate_into<S: Scalar>(
         &self,
         grid: &StructuredGrid3D,
-        y: &[f64],
+        y: &[S],
         scale: f64,
-        out: &mut [f64],
+        out: &mut [S],
     ) {
         if scale == 0.0 {
             return;
@@ -163,7 +168,7 @@ impl Stencil {
                                 let sj = (j as i64 + flipped.1 as i64) as usize;
                                 let sk = (k as i64 + flipped.2 as i64) as usize;
                                 if self.is_row_active(grid, si, sj, sk) {
-                                    c * y[src]
+                                    c * y[src].to_f64()
                                 } else {
                                     0.0
                                 }
@@ -172,7 +177,7 @@ impl Stencil {
                         }
                     })
                     .sum();
-                *o += scale * value;
+                *o += S::from_f64(scale * value);
             });
     }
 
@@ -471,23 +476,26 @@ impl EdgeStencil {
     /// touching all `dof` positions to filter out the inactive ones, which
     /// is what a naive full-grid pass would otherwise spend almost all its
     /// time doing).
-    pub fn forward_into(&self, grid: &StructuredGrid3D, x: &[f64], out: &mut [f64]) {
+    pub fn forward_into<S: Scalar>(&self, grid: &StructuredGrid3D, x: &[S], out: &mut [S]) {
         let nx = grid.nsteps[0];
         let ny = grid.nsteps[1];
         let layer_size = self.layer_size(grid);
-        let values: Vec<f64> = (0..layer_size)
+        let values: Vec<S> = (0..layer_size)
             .into_par_iter()
             .with_min_len(PAR_MIN_LEN)
             .map(|pos| {
                 let (i, j, k) = self.ijk_at_layer(nx, ny, self.layer, pos);
-                self.taps
-                    .iter()
-                    .map(|(off, c)| {
-                        c * x[grid
-                            .neighbour_index(i, j, k, self.offset3(*off))
-                            .expect("edge stencil taps stay within the grid by construction")]
-                    })
-                    .sum()
+                S::from_f64(
+                    self.taps
+                        .iter()
+                        .map(|(off, c)| {
+                            c * x[grid
+                                .neighbour_index(i, j, k, self.offset3(*off))
+                                .expect("edge stencil taps stay within the grid by construction")]
+                            .to_f64()
+                        })
+                        .sum::<f64>(),
+                )
             })
             .collect();
         for (pos, value) in values.into_iter().enumerate() {
@@ -507,12 +515,12 @@ impl EdgeStencil {
     /// (see [`target_layers`](Self::target_layers)) to the handful of axis
     /// layers that can ever receive a nonzero contribution instead of
     /// scanning the full `dof`-length grid.
-    pub fn adjoint_accumulate_into(
+    pub fn adjoint_accumulate_into<S: Scalar>(
         &self,
         grid: &StructuredGrid3D,
-        y: &[f64],
+        y: &[S],
         scale: f64,
-        out: &mut [f64],
+        out: &mut [S],
     ) {
         if scale == 0.0 {
             return;
@@ -538,7 +546,7 @@ impl EdgeStencil {
                                     sijk[self.axis] =
                                         (ijk[self.axis] as i64 - *off as i64) as usize;
                                     if self.is_row_active(sijk) {
-                                        c * y[src]
+                                        c * y[src].to_f64()
                                     } else {
                                         0.0
                                     }
@@ -551,7 +559,7 @@ impl EdgeStencil {
                 .collect();
             for (pos, value) in contributions.into_iter().enumerate() {
                 let (i, j, k) = self.ijk_at_layer(nx, ny, target_layer, pos);
-                out[grid.index(i, j, k)] += scale * value;
+                out[grid.index(i, j, k)] += S::from_f64(scale * value);
             }
         }
     }
@@ -673,6 +681,23 @@ mod tests {
 
     fn grid() -> StructuredGrid3D {
         StructuredGrid3D::new([0.0, 0.0, 0.0], [5, 5, 5], [1.0, 1.0, 1.0])
+    }
+
+    #[test]
+    fn f32_forward_matches_f64_forward() {
+        let grid = grid();
+        let n = grid.n_nodes();
+        let x64: Vec<f64> = (0..n).map(|i| ((i * 37 + 11) % 97) as f64 / 97.0).collect();
+        let x32: Vec<f32> = x64.iter().map(|v| *v as f32).collect();
+        let stencil = dxx();
+        let y64 = stencil.forward(&grid, &x64);
+        let mut y32 = vec![0.0f32; n];
+        stencil.forward_into(&grid, &x32, &mut y32);
+        let scale = y64.iter().fold(0.0f64, |m, v| m.max(v.abs())).max(1e-12);
+        for (a, b) in y64.iter().zip(y32.iter()) {
+            // The error is relative to the largest value of the field.
+            assert!((a - *b as f64).abs() / scale < 1e-6);
+        }
     }
 
     #[test]

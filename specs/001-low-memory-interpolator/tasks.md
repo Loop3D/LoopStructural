@@ -330,7 +330,7 @@ Phase D of the plan. It needs only phases 3 to 5. The Python tests skip when the
   - Needs: T025, T022
   - Wave: 14
   - Done when: `cargo check --manifest-path packages/loop_interpolation_core/Cargo.toml --features python` exits 0.
-- [ ] T035 [P] [US6] [M] Write the adapter `_native.py`: map the stored constraints to core calls and solve.
+- [x] T035 [P] [US6] [M] Write the adapter `_native.py`: map the stored constraints to core calls and solve.
   - Do: Function `solve(interpolator, tol, solver_kwargs) -> bool` and function `check_supported(interpolator, setup_kwargs, solver_kwargs)`.
   - Do: Read the data with `get_value_constraints()`, `get_gradient_constraints()`, `get_norm_constraints()`, `get_tangent_constraints()`, `get_interface_constraints()`, `get_inequality_value_constraints()`, `get_inequality_pairs_constraints()`. Do not read sparse rows.
   - Do: Use the weight and gradient mapping that `fixtures/make_fixture.py` documents (cross-derivative weights divided by 4).
@@ -439,7 +439,7 @@ Phase E of the plan (was F). It changes the vector type, not the algorithm.
   - Needs: T022, T025
   - Wave: 14
   - Done when: `cargo test --manifest-path packages/loop_interpolation_core/Cargo.toml --test precision_f32` compiles and fails.
-- [ ] T047 [P] [US5] [M] Add the `Scalar` trait and make `stencil.rs` generic over it.
+- [x] T047 [P] [US5] [M] Add the `Scalar` trait and make `stencil.rs` generic over it.
   - Do: `trait Scalar: Copy + Send + Sync + Default + 'static` with `fn from_f64(f64) -> Self`, `fn to_f64(self) -> f64`, and `Add`, `Mul`, `Sub`, `AddAssign` bounds. Implement for `f32` and `f64`. No new dependency.
   - Do: Make `Stencil::forward_into`, `adjoint_accumulate_into` and the fused kernel taps generic in the vector type. Taps stay `f64`; the sum runs in `f64`.
   - Files: `packages/loop_interpolation_core/src/scalar.rs`, `packages/loop_interpolation_core/src/stencil.rs`
