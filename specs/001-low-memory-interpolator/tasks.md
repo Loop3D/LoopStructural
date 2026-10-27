@@ -138,7 +138,7 @@ Phase B of the plan, first part. Tests before code.
   - Needs: T011
   - Wave: 6
   - Done when: `cargo test --manifest-path packages/loop_interpolation_core/Cargo.toml --test input_validation` compiles and fails (the stubs return errors).
-- [ ] T013 [P] [US1] [M] Implement `Problem::new` and the flat `add_*` methods with validation.
+- [x] T013 [P] [US1] [M] Implement `Problem::new` and the flat `add_*` methods with validation.
   - Do: Use the ported `FiniteDifferenceInterpolator` methods for the maths. Validate first, then call the ported method. Do not add large allocations.
   - Do: Conflict count: compare each new value constraint with earlier ones at the same point with a hash of the point bits. Use a `HashMap` only if the count is below 1 000 000; above this skip the check and add a warning that says it was skipped.
   - Do: `MAX_NODES` is `isize::MAX as u64 / 8`. Use `u128` for the product of the counts.
@@ -153,7 +153,7 @@ Phase B of the plan, first part. Tests before code.
   - Needs: T011
   - Wave: 6
   - Done when: `cargo test --manifest-path packages/loop_interpolation_core/Cargo.toml --lib memory::` compiles and fails.
-- [ ] T015 [P] [Found] [S] Implement `MemTracker` (`try_zeroed`, `release`, `peak`, `current`) with `Vec::try_reserve_exact` (FR-012).
+- [x] T015 [P] [Found] [S] Implement `MemTracker` (`try_zeroed`, `release`, `peak`, `current`) with `Vec::try_reserve_exact` (FR-012).
   - Do: `try_zeroed<T: Copy + Default>(&mut self, n: usize) -> Result<Vec<T>, CoreError>`: check the budget with `u64` maths, call `try_reserve_exact`, then fill with `T::default()`.
   - Files: `packages/loop_interpolation_core/src/memory.rs`
   - Needs: T014

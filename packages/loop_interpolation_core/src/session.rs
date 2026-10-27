@@ -6,7 +6,7 @@ use crate::problem::Problem;
 use crate::report::{SolveReport, Step};
 
 /// A running solve. The session owns the problem. Drop it to cancel.
-#[derive(Debug, Clone)]
+#[derive(Debug)]
 pub struct SolveSession {
     #[allow(dead_code)]
     pub(crate) problem: Problem,

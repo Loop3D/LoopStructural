@@ -22,11 +22,44 @@ impl MemTracker {
         }
     }
 
-    /// Allocate a zeroed vector of `n` items.
-    pub fn try_zeroed<T: Copy + Default>(&mut self, _n: usize) -> Result<Vec<T>, CoreError> {
-        Err(CoreError::Unsupported {
-            setting: "not implemented".into(),
-        })
+    /// Allocate a vector of `n` items, each set to `T::default()`.
+    ///
+    /// The byte count of the request is checked against the budget first.
+    /// Nothing is allocated when the request is refused.
+    pub fn try_zeroed<T: Copy + Default>(&mut self, n: usize) -> Result<Vec<T>, CoreError> {
+        // Compute the request in `u64`. A product that does not fit is out of memory.
+        let item_bytes = std::mem::size_of::<T>() as u64;
+        let request = (n as u64)
+            .checked_mul(item_bytes)
+            .ok_or(CoreError::OutOfMemory {
+                requested_bytes: u64::MAX,
+            })?;
+
+        // Check the budget before any allocation.
+        if let Some(budget) = self.budget {
+            let estimate = self.current.saturating_add(request);
+            if estimate > budget {
+                return Err(CoreError::OverBudget {
+                    estimate_bytes: estimate,
+                    budget_bytes: budget,
+                    // The caller fills in the real grid size later.
+                    max_nodes_per_axis: 0,
+                });
+            }
+        }
+
+        // Reserve the memory. A failure is returned as an error, not an abort.
+        let mut values: Vec<T> = Vec::new();
+        values
+            .try_reserve_exact(n)
+            .map_err(|_| CoreError::OutOfMemory {
+                requested_bytes: request,
+            })?;
+        values.resize(n, T::default());
+
+        self.current = self.current.saturating_add(request);
+        self.peak = self.peak.max(self.current);
+        Ok(values)
     }
 
     /// Give back `bytes` to the budget.
