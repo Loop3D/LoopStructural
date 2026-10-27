@@ -1,6 +1,6 @@
 # Feature spec: Low-memory interpolator for the browser
 
-**Feature**: `001-low-memory-interpolator` | **Created**: 2026-10-27 | **Status**: Draft
+**Feature**: `001-low-memory-interpolator` | **Created**: 2026-10-27 | **Status**: Ready for plan (reviewed 2026-10-27)
 
 **Input**: The user wants an implicit-function interpolator that uses very
 little memory and runs in a web browser. It works on a regular grid. It
@@ -31,6 +31,12 @@ Write in ASD-STE100 Simplified Technical English.
     `field(P) <= 10`.
   - **stage**: one named part of a solve, for example "setup", "solve" or
     "check constraints".
+  - **desktop**: the native program, or the Python call, that uses the same
+    solver code outside a browser.
+  - **constraint row**: one data constraint or one inequality constraint. A
+    regularisation term is not a constraint row.
+  - **active constraint**: an inequality constraint that holds with equality
+    (within SC-004) at the answer.
   - **reference solution**: the field that the matrix-based solver of
     `loop_interpolation` gives for the same problem. For a problem that is too
     big for that solver, it is the field of the same problem on the largest
@@ -107,13 +113,15 @@ points. Check peak memory.
 2. **Given** a pair constraint `field(A) - field(B) >= d` that the
    unconstrained answer breaks, **when** the user solves, **then** it holds
    within the same tolerance.
-3. **Given** a problem with many active constraints (more than 1% of the
-   constraint rows), **when** the user solves, **then** peak memory still
-   stays inside the limit of SC-002. Memory does not grow with the **square**
-   of the number of active constraints.
+3. **Given** problem R3 (many active constraints), **when** the user solves,
+   **then** peak memory stays inside the limit of SC-011. Memory does not grow
+   with the **square** of the number of active constraints.
 4. **Given** a constraint that is not active at the answer, **when** the user
    solves, **then** the result equals the result with no such constraint.
-5. **Given** constraints that cannot all hold, **when** the user solves,
+5. **Given** a constraint that has a lower bound and an upper bound,
+   **when** the user solves, **then** both bounds hold within the tolerance of
+   SC-004.
+6. **Given** constraints that cannot all hold, **when** the user solves,
    **then** the solver stops and reports that the problem is infeasible. It
    gives the 20 constraints with the largest violation (FR-015). It does not
    return a field without a warning.
@@ -136,7 +144,7 @@ event loop. Cancel the solve and check the time to stop.
 2. **Given** a solve is running, **when** the solver reports progress, **then**
    the report gives the stage, the iteration, and the residual. The solver
    sends a report at least once each second (FR-009).
-3. **Given** a solve is running, **when** the user cancels, **then** it stops
+3. **Given** a solve of R1 is running, **when** the user cancels, **then** it stops
    in less than 1 s. The solver frees its memory. The page can start a new
    solve.
 4. **Given** the user cancels, **when** the user asks for the result, **then**
@@ -171,7 +179,8 @@ request fails with a message.
 The user can trade accuracy for memory. A single-precision mode uses at most
 60% of the memory of the default mode (scenario 1).
 
-**Why this priority**: it doubles the largest grid that fits. It is only useful
+**Why this priority**: it raises the largest grid that fits by about 1.7
+times. It is only useful
 after stories 1 and 2 work.
 
 **Independent test**: solve the reference problem in both modes. Compare the
@@ -184,7 +193,10 @@ fields and the peak memory.
 2. **Given** single-precision mode, **when** the solve ends, **then** the
    field agrees with the double-precision field within the tolerance of
    SC-005.
-3. **Given** single-precision mode cannot reach the requested tolerance,
+3. **Given** a solve in either precision mode, **when** the solve ends,
+   **then** the reported residual differs from a double-precision calculation
+   of the same residual by at most 1e-6 relative error (FR-022).
+4. **Given** single-precision mode cannot reach the requested tolerance,
    **when** the solve ends, **then** the result says so. It does not claim
    convergence.
 
@@ -210,7 +222,10 @@ the browser build. Compare the fields.
 3. **Given** a setting that the new solver does not support (for example a
    model region mask), **when** the user selects the new solver, **then** the
    call fails with an error that names the setting. It does not ignore the
-   setting (FR-021).
+   setting (FR-026).
+4. **Given** the same problem, **when** it runs through the Python call and
+   through the browser build, **then** the two fields agree within the
+   tolerance of SC-003 (FR-017).
 
 ### Edge cases
 
@@ -229,6 +244,17 @@ the browser build. Compare the fields.
 - A rotated grid. (Not supported. The caller rotates the data, FR-020. A
   request with a rotation gives a clear error.)
 - A solve with zero constraints. (Error: no constraints.)
+- An inequality constraint whose lower bound is above its upper bound. (Error
+  that names the constraint.)
+- A constraint weight of zero or less. (Error that names the constraint.)
+- Two value constraints at one point with different values. (The solver
+  accepts them and gives a least-squares compromise. It adds a warning that
+  counts the conflicts.)
+- A grid whose node count passes the largest count that the solver can index.
+  (Error that gives the node count and the largest count. The memory estimate
+  does not run first.)
+- The user cancels during setup, before the first iteration. (The solve stops
+  in less than 1 s, as in FR-010.)
 - A second solve starts in the same page while one solve runs. (The second
   call is refused with an error that says a solve is running. The first solve
   is not changed.)
@@ -237,15 +263,16 @@ the browser build. Compare the fields.
 - 2D grids. (Not in the first release. A 2D request gives a clear error.)
 - A model region (a mask on the nodes), a column scaling, or a constant-norm
   iteration from the Python package. (Not in the first release. Each gives a
-  clear error, FR-021.)
+  clear error, FR-026.)
 
 ## Requirements
 
 ### Functional requirements
 
-- **FR-001**: The solver must never store the system matrix, the normal
-  matrix, or any other matrix whose size grows with the number of dof times
-  the number of neighbours of a node.
+- **FR-001**: The solver must never store the system matrix or the normal
+  matrix.
+- **FR-023**: The solver must never store any other matrix whose size grows
+  with the number of dof times the number of neighbours of a node.
 - **FR-002**: The memory that the solver needs must grow in a straight line
   with the number of dof and the number of constraints. It must not grow with
   the square of either.
@@ -273,9 +300,10 @@ the browser build. Compare the fields.
   estimate is over the budget. It must return an error, not abort, when an
   allocation fails.
 - **FR-013**: The solver must offer a single-precision mode and a
-  double-precision mode (story 5). In both modes, the residual that decides
-  convergence must agree with a double-precision calculation of the same
-  residual within 1e-6 relative error.
+  double-precision mode (story 5).
+- **FR-022**: In both modes, the residual that decides convergence must agree
+  with a double-precision calculation of the same residual within 1e-6
+  relative error.
 - **FR-014**: Every result must say if the solve converged, how many
   iterations it used, the final residual, and, for inequality problems, the
   largest constraint violation.
@@ -293,25 +321,27 @@ the browser build. Compare the fields.
   when the user does not select the new solver.
 - **FR-020**: The solver must take all points and vectors in the coordinate
   system of the grid. It must not change coordinates. The caller does all
-  coordinate transformation, including any rotation of the model. The solver
-  must keep the full precision of the grid origin that the caller gives.
+  coordinate transformation, including any rotation of the model.
+- **FR-024**: The solver must keep the full precision of the grid origin that
+  the caller gives.
 - **FR-021**: The user must be able to select the solver in place of the
   existing finite difference interpolator of `loop_interpolation`, with a
-  solver setting. The same constraints, weights and regularisation settings
-  must work. A setting that the solver does not support must give a clear
-  error that names the setting. The solver must not ignore it (story 6).
+  solver setting (story 6).
+- **FR-025**: The same constraints, weights and regularisation settings must
+  work with the new solver.
+- **FR-026**: A setting that the solver does not support must give a clear
+  error that names the setting. The solver must not ignore it.
 
 ### Protocol and data (if the feature changes them)
 
-- **Input**: a grid (origin, node counts, step, optional rotation), a list of
+- **Input**: a grid (origin, node counts, step; a rotation must be absent), a list of
   constraints, regularisation weights, solver settings (precision, tolerance,
   iteration limit, budget).
 - **Output**: the field at the nodes, a convergence report, and a list of
   warnings.
 - **Data format**: constraints go in as flat numeric arrays, one array for each
-  field. They do not go in as text. The large arrays must not be copied more
-  than once between the page and the solver. (How this is done goes in the
-  plan.)
+  field. They do not go in as text. The copies of the large arrays count in the
+  peak memory of SC-001. (How this is done goes in the plan.)
 
 ### Key entities
 
@@ -333,6 +363,8 @@ Reference problem **R1**: a grid of 100 x 100 x 100 nodes (1 million dof), 2 000
 value constraints, 500 orientation constraints, and the default
 regularisation. Reference problem **R2**: the same grid, with 200 pair
 inequality constraints that are active at the answer.
+Reference problem **R3**: the same grid, with 20 000 pair
+inequality constraints that are active at the answer.
 
 - **SC-001**: In double precision, R1 has a peak memory of 100 MB or less in
   the browser, including the field that the solver returns. This is about 100
@@ -340,7 +372,8 @@ inequality constraints that are active at the answer.
 - **SC-002**: R2 has a peak memory of at most 20% more than R1.
 - **SC-003**: The browser result, the desktop result, and the reference
   result agree. The maximum difference is at most 1e-6 of the field range in
-  double precision.
+  double precision. The solver stops at a residual tolerance that gives this
+  agreement. Results for different thread counts may differ in the last bits.
 - **SC-004**: In R2, every inequality constraint holds with a violation of at
   most 1e-4 of the field range. (A tighter limit of 1e-8 is for a later
   phase, see Clarifications.)
@@ -350,14 +383,20 @@ inequality constraints that are active at the answer.
   loop stays below 100 ms.
 - **SC-007**: R1 solves in 60 s or less in Chromium on one thread, on the
   reference machine. The reference machine is a laptop with 4 cores and 16 GB
-  of RAM.
-- **SC-008**: A grid of 250 x 250 x 250 nodes (about 15.6 million dof) in
+  of RAM. CI measures and reports the time. The release check uses the
+  reference machine.
+- **SC-008**: On the desktop, a grid of 250 x 250 x 250 nodes (about 15.6 million dof) in
   single precision, with a budget of 2 GB, solves with a peak memory of 1.5 GB
   or less. (A request over the budget is refused, see story 4.)
 - **SC-009**: The memory estimate is never lower than the measured peak, and
-  is at most 25% higher, for 10 grid sizes from 10^3 to 200^3 nodes.
+  is at most 25% higher, for 10 grid sizes from 10^3 to 200^3 nodes, on the desktop. In Chromium the
+  same check runs for the grid sizes that fit in browser memory.
 - **SC-010**: The module for the browser has a download size of 2 MB or less
-  after compression.
+  after gzip compression.
+- **SC-011**: R3 has a peak memory of at most 20% more than R1.
+- **SC-012**: Peak memory for R1-type problems on 50^3, 100^3 and 150^3 nodes
+  fits a straight line against the dof count with R^2 of at least 0.99
+  (FR-002).
 
 ## Out of scope
 
@@ -403,11 +442,8 @@ inequality constraints that are active at the answer.
   Q: List of conflicting constraints? A: The 20 with the largest violation
   (FR-015). Q: Exact 1e-8 tolerance? A: A later spec (Out of scope).
 
-### Defaults used until the user answers (the user can change them)
-
-1. **2D**: not in the first release (Out of scope).
-2. **Targets**: SC-001, SC-007 and SC-008 are set. The plan measures them
-   first. A change of a number needs the approval of the user.
-3. **Tight constraint tolerance**: the first release gives a violation of 1e-4
-   (SC-004). A tolerance of 1e-8 comes in a later phase, because it is the part
-   most at risk for memory.
+- 2026-10-27: Second review interview. Q: Must the field be bit-for-bit equal
+  for any thread count? A: No. Agreement within the SC-003 tolerance is
+  enough (FR-007). Q: What is the SC-003 tolerance? A: 1e-6 of the field
+  range. Keep it. The solver stops at a residual tolerance that gives it. Q:
+  How many active constraints in R3? A: 20 000 (SC-011).
