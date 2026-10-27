@@ -91,7 +91,7 @@ Phase A of the plan. Source: `~/dev/loop-rs/crates/interpolation-fd` at commit b
   - Needs: T006
   - Wave: 3
   - Done when: `cargo test --manifest-path packages/loop_interpolation_core/Cargo.toml --features parallel` passes and `grep -rnE "rotation|to_local|direction_to_local|serde" packages/loop_interpolation_core/src packages/loop_interpolation_core/tests` prints nothing.
-- [ ] T008 [Found] [M] Make `rayon` optional with a one-thread shim (FR-006).
+- [x] T008 [Found] [M] Make `rayon` optional with a one-thread shim (FR-006).
   - Do: Create `src/par.rs`. With feature `parallel` it re-exports `rayon::prelude::*`.
   - Do: Without the feature it defines traits that give the same method names on std iterators and slices: `par_iter`, `par_iter_mut`, `par_chunks_mut`, `into_par_iter`, `with_min_len` (returns `self`), and a `fold` that takes the rayon form `(identity_fn, op)`. These are the only rayon methods used (checked by `grep`).
   - Do: Replace each `use rayon::prelude::*;` with `use crate::par::*;`. Add `pub(crate) mod par;` to `lib.rs`.

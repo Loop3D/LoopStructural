@@ -9,7 +9,7 @@
 //! fresh vectors, so this is the difference between a solver that's
 //! actually fast and one that merely looks matrix-free on paper.
 
-use rayon::prelude::*;
+use crate::par::*;
 
 use crate::PAR_MIN_LEN;
 

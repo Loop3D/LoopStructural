@@ -7,6 +7,7 @@
 pub mod cg;
 pub mod grid;
 pub mod interpolator;
+pub(crate) mod par;
 pub mod stencil;
 
 /// Rayon chunk-splitting floor shared by every parallel pass in the CG hot

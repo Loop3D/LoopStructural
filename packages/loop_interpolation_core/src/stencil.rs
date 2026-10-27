@@ -21,7 +21,7 @@
 
 use crate::PAR_MIN_LEN;
 use crate::grid::StructuredGrid3D;
-use rayon::prelude::*;
+use crate::par::*;
 
 #[derive(Debug, Clone)]
 pub struct Stencil {

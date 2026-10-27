@@ -54,10 +54,10 @@
 use crate::PAR_MIN_LEN;
 use crate::cg::{CgResult, conjugate_gradient_preconditioned};
 use crate::grid::StructuredGrid3D;
+use crate::par::*;
 use crate::stencil::{
     EdgeStencil, Stencil, dxx, dxy, dxz, dyy, dyz, dzz, edge_backward, edge_forward,
 };
-use rayon::prelude::*;
 use std::collections::HashMap;
 
 /// Number of curvature-regularisation stencil families (dxx, dyy, dzz, dxy,
