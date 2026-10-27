@@ -159,7 +159,7 @@ Phase B of the plan, first part. Tests before code.
   - Needs: T014
   - Wave: 7
   - Done when: `cargo test --manifest-path packages/loop_interpolation_core/Cargo.toml --lib memory::` passes.
-- [ ] T016 [P] [US4] [M] Test: memory estimate, budget refusal, and no big allocation before the check (story 4, FR-011, FR-012).
+- [x] T016 [P] [US4] [M] Test: memory estimate, budget refusal, and no big allocation before the check (story 4, FR-011, FR-012).
   - Do: Use `tests/common/mod.rs` (counting allocator). Add `mod common;`.
   - Do: `estimate_memory` for 100^3 with R1 data gives `total` between 40 MB and 100 MB, and all parts are above 0. It scales in a straight line: the ratio `total(60^3) / total(30^3)` is between 7.5 and 8.5. The call allocates less than 1 MB (use `reset_peak` and `peak`).
   - Do: `Problem::new` on a 200^3 grid allocates less than 1 MB.
@@ -184,7 +184,7 @@ Phase B of the plan, first part. Tests before code.
   - Needs: T015, T010, T016
   - Wave: 9
   - Done when: `cargo test --manifest-path packages/loop_interpolation_core/Cargo.toml` passes (all ported tests) and `cargo test --manifest-path packages/loop_interpolation_core/Cargo.toml --test memory_estimate -- problem_new` passes.
-- [ ] T019 [P] [US1] [M] Test: the CG session equals the one-shot solve, can be cancelled, reports progress, and frees memory (story 3 core, FR-009, FR-010, FR-014).
+- [x] T019 [P] [US1] [M] Test: the CG session equals the one-shot solve, can be cancelled, reports progress, and frees memory (story 3 core, FR-009, FR-010, FR-014).
   - Do: Problem: 30^3, value and normal constraints (fixed data in the test).
   - Do: (1) Repeat `step(7)` until `Done`: the field differs from the ported `solve(5000, 1e-10)` field by at most 1e-8 of the range.
   - Do: (2) Each `Running(progress)` has `stage == Solve`, a growing `iteration` and a falling `residual` (over 5 steps).
