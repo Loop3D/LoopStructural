@@ -4,11 +4,25 @@
 //! build a sparse matrix. It applies the constraints as linear operators and
 //! solves with a conjugate gradient method.
 
+pub mod admm;
 pub mod cg;
+pub mod error;
+pub mod field;
 pub mod grid;
 pub mod interpolator;
+pub mod memory;
 pub(crate) mod par;
+pub mod problem;
+pub mod report;
+pub mod scalar;
+pub mod session;
+pub mod settings;
 pub mod stencil;
+
+#[cfg(feature = "python")]
+mod python;
+#[cfg(feature = "wasm")]
+mod wasm;
 
 /// Rayon chunk-splitting floor shared by every parallel pass in the CG hot
 /// loop (`cg.rs`, `interpolator.rs`, `stencil.rs`). Rayon's default
@@ -38,5 +52,14 @@ pub mod stencil;
 pub(crate) const PAR_MIN_LEN: usize = 200;
 
 pub use cg::CgResult;
+pub use error::{BoundKind, CoreError, ViolatedConstraint};
+pub use field::{Field, FieldData};
 pub use grid::StructuredGrid3D;
-pub use interpolator::{AdmmResult, FiniteDifferenceInterpolator, RegularisationWeights};
+pub use interpolator::{
+    AdmmResult, BorderRegularisationWeights, FiniteDifferenceInterpolator, RegularisationWeights,
+};
+pub use memory::{MemTracker, ProblemCounts, estimate, max_grid_for_budget};
+pub use problem::Problem;
+pub use report::{MemoryEstimate, Progress, SolveReport, Stage, Step};
+pub use session::SolveSession;
+pub use settings::{Precision, Settings};

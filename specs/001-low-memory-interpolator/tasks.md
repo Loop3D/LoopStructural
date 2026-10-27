@@ -100,7 +100,7 @@ Phase A of the plan. Source: `~/dev/loop-rs/crates/interpolation-fd` at commit b
   - Needs: T007
   - Wave: 4
   - Done when: `cargo test --manifest-path packages/loop_interpolation_core/Cargo.toml` (no features) passes, `cargo test --manifest-path packages/loop_interpolation_core/Cargo.toml --features parallel` passes, and `cargo check --manifest-path packages/loop_interpolation_core/Cargo.toml --target wasm32-unknown-unknown` exits 0.
-- [ ] T009 [P] [Found] [M] Add the counting allocator and the baseline memory test. Record the baseline.
+- [x] T009 [P] [Found] [M] Add the counting allocator and the baseline memory test. Record the baseline.
   - Do: `tests/common/mod.rs`: a `#[global_allocator]` wrapper of `std::alloc::System` with atomics `CURRENT` and `PEAK`, and functions `reset_peak()`, `current()`, `peak()`.
   - Do: `tests/memory.rs`: ignored test `baseline_r1` builds problem R1 (100x100x100 grid, 2000 value and 500 normal constraints, default regularisation) with the ported API, calls `solve(5000, 1e-8)`, and prints `bytes_per_dof = peak / 1e6`. Also a normal test `baseline_small` on 30^3 that only prints.
   - Do: Create `measurements.md` with the table heading `Baseline` and the value.
@@ -116,7 +116,7 @@ Phase A of the plan. Source: `~/dev/loop-rs/crates/interpolation-fd` at commit b
   - Needs: T009
   - Wave: 6
   - Done when: `cargo test --manifest-path packages/loop_interpolation_core/Cargo.toml --release --test memory -- --ignored --nocapture baseline_r1` prints a value at least 4 bytes per dof lower than `Baseline`, and `cargo test --manifest-path packages/loop_interpolation_core/Cargo.toml` passes.
-- [ ] T011 [P] [Found] [M] Add the module files and the type and function stubs of D8.
+- [x] T011 [P] [Found] [M] Add the module files and the type and function stubs of D8.
   - Do: Read `plan.md` section D8. Create every type there with the exact fields and derive `Debug, Clone` (and `PartialEq` where D8 says). Implement `Display` and `std::error::Error` for `CoreError`.
   - Do: Every function in D8 returns `Err(CoreError::Unsupported { setting: "not implemented".into() })` or, if it cannot return `Result`, calls `unimplemented!()`. `Settings::default()` has the real default values of D8.
   - Do: `scalar.rs`, `python.rs`, `wasm.rs` hold a doc comment only. In `lib.rs` add `pub mod` lines for the new modules, `#[cfg(feature = "python")] mod python;`, `#[cfg(feature = "wasm")] mod wasm;` and `pub use` lines for the public types.
