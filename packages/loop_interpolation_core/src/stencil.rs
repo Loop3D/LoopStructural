@@ -31,8 +31,9 @@ pub struct Stencil {
     /// `add_constraints_to_least_squares` / `_store_matrix_free_regularisation_block`
     /// row normalisation).
     pub coeffs: Vec<f64>,
-    /// Per-axis maximum absolute offset; a row is only evaluated at nodes at
-    /// least `margin[axis]` away from that axis's boundary.
+    /// Per-axis margin (always 1, as in Python); a row is only evaluated at
+    /// nodes at least `margin[axis]` away from that axis's boundary, on all
+    /// three axes.
     pub margin: [i32; 3],
 }
 
@@ -44,12 +45,10 @@ impl Stencil {
             .iter()
             .map(|(_, v)| if norm > 0.0 { v / norm } else { *v })
             .collect::<Vec<_>>();
-        let mut margin = [0i32; 3];
-        for (di, dj, dk) in &offsets {
-            margin[0] = margin[0].max(di.abs());
-            margin[1] = margin[1].max(dj.abs());
-            margin[2] = margin[2].max(dk.abs());
-        }
+        // Python puts each row only at nodes that are interior on ALL three
+        // axes (1 <= i, j, k <= n - 2), also for stencils that use no tap
+        // along an axis. So the margin is always 1 on every axis.
+        let margin = [1i32; 3];
         Self {
             offsets,
             coeffs,
@@ -362,15 +361,15 @@ pub fn dyz() -> Stencil {
     ])
 }
 
-/// A one-sided first-derivative stencil active only on a fixed axis-aligned
-/// "shell" layer (every node with `coord[axis] == layer`), rather than
+/// A centred second-derivative stencil `[1, -2, 1]` active only on a fixed
+/// axis-aligned "shell" layer (every node with `coord[axis] == layer`), rather than
 /// everywhere-away-from-a-margin like [`Stencil`].
 ///
 /// This is the Rust analogue of the Python `FiniteDifferenceInterpolator`'s
 /// border regularisation terms (`assemble_borders`, built from
-/// `Operator.Dx_forward_mask`/`Dx_backward_mask` and their y/z equivalents,
-/// applied only at `_boundary_indexes`' single interior layer just inside
-/// each face) -- structurally different from the six interior curvature
+/// `Operator.Dxx_mask`/`Dyy_mask`/`Dzz_mask`,
+/// applied at `_boundary_indexes`' single interior layer just inside
+/// each face, on all nodes of that layer) -- structurally different from the six interior curvature
 /// families, which is why it needs its own type instead of reusing
 /// [`Stencil`]'s margin-based activation rule.
 #[derive(Debug, Clone)]
@@ -443,7 +442,7 @@ impl EdgeStencil {
     /// `layer` -- i.e. `coord[axis] - off == layer`, so the output node's
     /// own `coord[axis]` must be `layer + off` for some tap. Taps are always
     /// single-step (`edge_forward`/`edge_backward` only ever emit `off` in
-    /// `{-1, 0, 1}`), so this is at most 2 distinct layers in practice, out
+    /// `{-1, 0, 1}`), so this is at most 3 distinct layers in practice, out
     /// of `nsteps[axis]` possible ones -- the source of this type's whole
     /// speedup over a naive full-`dof` scan.
     fn target_layers(&self, n_axis: usize) -> Vec<usize> {
@@ -640,11 +639,9 @@ impl EdgeStencil {
 }
 
 /// Border regularisation stencil for the layer just inside the *lower* face
-/// along `axis` (index 1): taps at offset -1 (the true boundary node, index
-/// 0) and 0 (the centre, index 1), matching the Python
-/// `Operator.Dx_forward_mask` (see module docs re: sign convention -- these
-/// rows always target zero, so the operator's contribution to the
-/// least-squares system is invariant to an overall row sign flip). Returns
+/// along `axis` (index 1): centred second-derivative taps `[1, -2, 1]` at
+/// offsets -1, 0, +1, matching the Python `Operator.Dxx_mask` (and y/z
+/// equivalents) used by `assemble_borders`. Returns
 /// `None` if `nsteps[axis] < 3`, matching the Python
 /// `_boundary_indexes`/`assemble_borders`'s skip for axes too thin to have a
 /// distinct "one layer in from the boundary" row.
@@ -652,13 +649,13 @@ pub fn edge_forward(axis: usize, nsteps: &[usize; 3]) -> Option<EdgeStencil> {
     if nsteps[axis] < 3 {
         return None;
     }
-    Some(EdgeStencil::new(axis, 1, &[(-1, -1.0), (0, 1.0)]))
+    Some(EdgeStencil::new(axis, 1, &[(-1, 1.0), (0, -2.0), (1, 1.0)]))
 }
 
 /// Border regularisation stencil for the layer just inside the *upper* face
-/// along `axis` (index `nsteps[axis] - 2`): taps at offset 0 (centre) and +1
-/// (the true boundary node), matching `Operator.Dx_backward_mask`. `None`
-/// under the same `nsteps[axis] < 3` condition as [`edge_forward`].
+/// along `axis` (index `nsteps[axis] - 2`): the same centred `[1, -2, 1]`
+/// taps as [`edge_forward`], matching the Python upper-face border rows.
+/// `None` under the same `nsteps[axis] < 3` condition as [`edge_forward`].
 pub fn edge_backward(axis: usize, nsteps: &[usize; 3]) -> Option<EdgeStencil> {
     if nsteps[axis] < 3 {
         return None;
@@ -666,7 +663,7 @@ pub fn edge_backward(axis: usize, nsteps: &[usize; 3]) -> Option<EdgeStencil> {
     Some(EdgeStencil::new(
         axis,
         nsteps[axis] - 2,
-        &[(0, -1.0), (1, 1.0)],
+        &[(-1, 1.0), (0, -2.0), (1, 1.0)],
     ))
 }
 

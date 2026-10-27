@@ -261,7 +261,7 @@ These tasks edit files that ADMM also edits, so they follow Phase 4.
   - Needs: T024, T022
   - Wave: 13
   - Done when: `cargo test --manifest-path packages/loop_interpolation_core/Cargo.toml --test constraint_families` passes (with `--features parallel` also).
-- [ ] T026 [P] [US1] [M] Test: the Rust solver agrees with the matrix-solver fixture (story 1 scenario 4, SC-003).
+- [x] T026 [P] [US1] [M] Test: the Rust solver agrees with the matrix-solver fixture (story 1 scenario 4, SC-003).
   - Do: Read `fixtures/fixture_20.bin` (format in D8, little endian, no crates). Build the `Problem`, solve with `tol = 1e-10`, compare with `expected_field`.
   - Files: `packages/loop_interpolation_core/tests/parity_fixture.rs`
   - Needs: T005, T020

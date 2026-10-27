@@ -128,7 +128,7 @@ fn zero_regularisation_weights_drop_stencil_contribution() {
         dxz: 0.0,
         dyz: 0.0,
     };
-    // Border (first-derivative) regularisation was added by a later P0 pass
+    // Border (centred second-derivative) regularisation was added by a later P0 pass
     // and defaults to weight 1.0, always on -- zero it out too, since this
     // test is specifically about the six curvature families contributing
     // nothing, not about border regularisation.

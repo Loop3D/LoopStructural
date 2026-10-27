@@ -2,7 +2,7 @@
 //!
 //! Ports the ingredients that make the original interesting to reimplement
 //! in Rust -- trilinear value/gradient/norm/tangent/interface constraints,
-//! isotropic curvature regularisation, one-sided border regularisation,
+//! isotropic curvature regularisation, centred second-derivative border regularisation,
 //! anisotropic directional regularisation -- on a
 //! `StructuredGrid`, and solves the resulting weighted least squares system
 //! with conjugate gradient on the normal equations, entirely through
@@ -467,29 +467,27 @@ fn scale3(v: [f64; 3], s: f64) -> [f64; 3] {
     [v[0] * s, v[1] * s, v[2] * s]
 }
 
-/// Build an orthonormal basis `(u, v)` spanning the plane orthogonal to unit
-/// vector `n`. Any valid choice works for the gradient-constraint use case
-/// (constraining the field gradient to be orthogonal to two vectors that
-/// span the plane perpendicular to `n` is equivalent to constraining it to
-/// be parallel to `n`, regardless of how that plane's basis is parameterised)
-/// -- this is a generic, standard construction and does not attempt to
-/// reproduce the geological strike/dip azimuth convention
-/// (`loop_common.math.get_vectors`) bit-for-bit, since that convention is
-/// irrelevant to the numerical correctness of the constraint.
+/// Build the strike/dip basis `(u, v)` for unit vector `n`. It follows the
+/// Python `loop_common.math.get_vectors` convention: the strike `u` is
+/// horizontal, `u = (n_y, -n_x, 0) / hypot(n_x, n_y)`. For an exactly
+/// vertical normal (`hypot == 0`) Python uses `atan2(0, 0) = 0`, so
+/// `u = (0, -1, 0)`. The dip is `v = normalise(cross(u, n))`.
 fn orthonormal_basis(n: [f64; 3]) -> ([f64; 3], [f64; 3]) {
-    let up = if n[2].abs() < 0.9 {
-        [0.0, 0.0, 1.0]
+    let len = norm3(n);
+    let n = if len > 0.0 { scale3(n, 1.0 / len) } else { n };
+    let h = n[0].hypot(n[1]);
+    let u = if h > 0.0 {
+        [n[1] / h, -n[0] / h, 0.0]
     } else {
-        [1.0, 0.0, 0.0]
+        [0.0, -1.0, 0.0]
     };
-    let u_raw = cross(up, n);
-    let u_norm = norm3(u_raw);
-    let u = if u_norm > 0.0 {
-        scale3(u_raw, 1.0 / u_norm)
+    let v_raw = cross(u, n);
+    let v_norm = norm3(v_raw);
+    let v = if v_norm > 0.0 {
+        scale3(v_raw, 1.0 / v_norm)
     } else {
-        [1.0, 0.0, 0.0]
+        v_raw
     };
-    let v = cross(n, u); // already unit length since n, u are orthonormal
     (u, v)
 }
 
@@ -516,8 +514,8 @@ impl Default for RegularisationWeights {
     }
 }
 
-/// Border (one-sided first-derivative) regularisation weights, one per axis,
-/// matching the Python `interpolation_weights["dx"/"dy"/"dz"]`.
+/// Border (centred second-derivative `[1, -2, 1]`) regularisation weights,
+/// one per axis, matching the Python `interpolation_weights["dx"/"dy"/"dz"]`.
 #[derive(Debug, Clone, Copy)]
 pub struct BorderRegularisationWeights {
     pub dx: f64,
@@ -2981,21 +2979,12 @@ mod tests {
         // f(x, y, z) = 1 + 2x - y + 0.5z has zero curvature everywhere, so
         // the regulariser shouldn't fight the data at all: CG should recover
         // it (near-)exactly from a handful of scattered value constraints.
-        // Border regularisation (a separate feature, exercised by
-        // `border_regularisation_changes_boundary_values`) is switched off
-        // here: by design it pulls the boundary's first derivative toward
-        // zero, which -- with only a handful of low-weight value samples --
-        // measurably fights a plane with a genuinely nonzero boundary slope,
-        // and isn't what this test is about.
+        // The default border regularisation is on. The border rows are centred
+        // second derivatives, as in the matrix solver. They give a plane no
+        // penalty, and they are the only rows that fix the nodes on the faces.
         let f = |p: [f64; 3]| 1.0 + 2.0 * p[0] - p[1] + 0.5 * p[2];
         let grid = make_grid();
-        let mut interp = FiniteDifferenceInterpolator::new(grid).with_border_regularisation(
-            BorderRegularisationWeights {
-                dx: 0.0,
-                dy: 0.0,
-                dz: 0.0,
-            },
-        );
+        let mut interp = FiniteDifferenceInterpolator::new(grid);
 
         let samples = [
             [0.5, 0.5, 0.5],
@@ -3056,22 +3045,13 @@ mod tests {
     /// direction-fixing work, not just a data-fit test they're irrelevant to.
     #[test]
     fn recovers_plane_from_gradient_constraints_plus_sparse_value_pins() {
-        // Border regularisation disabled: it's a separate feature (see
-        // `border_regularisation_changes_boundary_values`) that, by design,
-        // pulls the boundary's first derivative toward zero -- with only two
-        // low-weight value pins, that measurably fights a plane with a
-        // genuinely nonzero boundary slope, which isn't what this test is
-        // about.
+        // The default border regularisation is on. The border rows are centred
+        // second derivatives, so a plane has no penalty. The border rows are
+        // also the only rows that fix the nodes on the faces.
         let gradient = [2.0, -1.0, 0.5];
         let f = |p: [f64; 3]| 1.0 + gradient[0] * p[0] + gradient[1] * p[1] + gradient[2] * p[2];
         let grid = make_grid();
-        let mut interp = FiniteDifferenceInterpolator::new(grid).with_border_regularisation(
-            BorderRegularisationWeights {
-                dx: 0.0,
-                dy: 0.0,
-                dz: 0.0,
-            },
-        );
+        let mut interp = FiniteDifferenceInterpolator::new(grid);
 
         for p in [
             [1.0, 1.0, 1.0],
@@ -3104,18 +3084,12 @@ mod tests {
     /// single value pin fully (and uniquely) determines a 3D affine field.
     #[test]
     fn recovers_plane_from_norm_constraints() {
-        // Border regularisation disabled -- see the comment in
+        // The default border regularisation is on -- see the comment in
         // `recovers_plane_from_gradient_constraints_plus_sparse_value_pins`.
         let gradient = [2.0, -1.0, 0.5];
         let f = |p: [f64; 3]| 1.0 + gradient[0] * p[0] + gradient[1] * p[1] + gradient[2] * p[2];
         let grid = make_grid();
-        let mut interp = FiniteDifferenceInterpolator::new(grid).with_border_regularisation(
-            BorderRegularisationWeights {
-                dx: 0.0,
-                dy: 0.0,
-                dz: 0.0,
-            },
-        );
+        let mut interp = FiniteDifferenceInterpolator::new(grid);
 
         interp.add_norm_constraint([4.3, 4.3, 4.3], gradient, 200.0);
         interp.add_value_constraint([0.5, 0.5, 0.5], f([0.5, 0.5, 0.5]), 100.0);
@@ -3268,9 +3242,11 @@ mod tests {
         let with_border = build(5.0);
         let without_border = build(0.0);
 
-        // Compare values at a boundary-shell node (the layer the border
-        // stencils actually target).
-        let boundary_node = grid.index(1, 4, 4);
+        // Compare values at a corner node. A border row on layer 1 has the same
+        // taps as the interior curvature row of that layer, so it adds only
+        // weight there. The face and edge nodes are also reached by interior
+        // rows. The corner nodes are reached by the border rows alone.
+        let boundary_node = grid.index(0, 0, 0);
         let diff = (with_border[boundary_node] - without_border[boundary_node]).abs();
         assert!(
             diff > 1e-6,
@@ -4370,7 +4346,7 @@ mod tests {
 
     /// `profile_apply_1e6`/`profile_apply_1e6_unfused`'s overall
     /// `apply_normal_operator_into` speedup is small: border regularisation
-    /// (six one-sided `EdgeStencil` families, each still using the original,
+    /// (six centred `[1, -2, 1]` `EdgeStencil` families, each still using the original,
     /// unchanged, full-`dof`-iterating exact two-pass computation -- out of
     /// scope for this optimisation, see the module docs) contributes far
     /// more O(dof) passes (12: forward+adjoint x 6 border families) than the

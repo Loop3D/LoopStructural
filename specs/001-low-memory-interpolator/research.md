@@ -33,8 +33,8 @@ Source files: `cg.rs` (177 lines), `grid.rs` (396), `stencil.rs` (798),
   inequality, pairwise inequality. Rows are trilinear. They are stored as small
   records, not as a sparse matrix.
 - **Regularisation.** Six curvature families (`dxx` to `dyz`), fused into one
-  5x5x5 kernel for interior nodes (about 1.7 to 2 times faster). One-sided
-  border stencils. Directional (anisotropic) regularisation.
+  5x5x5 kernel for interior nodes (about 1.7 to 2 times faster). Centred
+  second-derivative border stencils ([1, -2, 1] on layers 1 and n-2). Directional (anisotropic) regularisation.
 - **Solvers.**
   - Preconditioned CG (Jacobi, or block-Jacobi along x).
   - `solve_admm`: fixed-rho ADMM. The x-update is an inner CG.
