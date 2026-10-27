@@ -106,14 +106,14 @@ pub struct ProblemCounts {
 // | working     | shell lookup (u32)                     | 4             |
 // | working     | shell row and output indices (u32)     | 3             |
 // | working     | copy of the field for the caller (f64) | 8             |
-// | working     | ADMM extra vector (only with bounds)   | 8             |
+// | working     | ADMM extra vector (none; rhs is rebuilt)| 0             |
 // | working     | directional weights (only if used)     | 48            |
 //
 // Plain CG: 48 + 8 + 4 + 3 + 8 = 71 bytes per dof, 78 with the margin.
 // With `f32` the vector part is half (24).
 const VECTOR_BYTES_PER_DOF: u64 = 48;
 const WORKING_BYTES_PER_DOF: u64 = 8 + 4 + 3 + 8;
-const ADMM_BYTES_PER_DOF: u64 = 8;
+const ADMM_BYTES_PER_DOF: u64 = 0;
 const DIRECTIONAL_BYTES_PER_DOF: u64 = 48;
 
 // Bytes per constraint record (point, vector or bounds, weight, and the

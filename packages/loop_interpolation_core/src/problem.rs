@@ -257,6 +257,8 @@ impl Problem {
         self.value_rows = self.value_rows.saturating_add(n);
         let mut outside = 0usize;
         let mut conflicts = 0usize;
+        // Upper bound: rows outside the grid are dropped later.
+        self.interp_mut().reserve_value(n);
         for i in 0..n {
             let p = row3(points, i);
             if self.interp().grid.trilinear_coeffs(p).is_none() {
@@ -308,6 +310,14 @@ impl Problem {
             check_weight(family, i, weights[i])?;
         }
         let outside = self.count_outside(points);
+        // Reserve exactly for the rows that are in the grid.
+        let valid = n - outside;
+        match family {
+            "gradient" => self.interp_mut().reserve_gradient(valid),
+            "normal" => self.interp_mut().reserve_norm(valid),
+            "tangent" => self.interp_mut().reserve_tangent(valid),
+            _ => {}
+        }
         for i in 0..n {
             add(
                 self.interp_mut(),
@@ -372,6 +382,8 @@ impl Problem {
         }
         let outside = self.count_outside(points);
         let pts: Vec<[f64; 3]> = (0..n).map(|i| row3(points, i)).collect();
+        // Upper bound: at most one row for each point.
+        self.interp_mut().reserve_interface(n);
         self.interp_mut()
             .add_interface_constraints(&pts, ids, weight);
         self.warn_outside(F, outside);
@@ -417,6 +429,7 @@ impl Problem {
             check_weight(F, i, weights[i])?;
         }
         let outside = self.count_outside(points);
+        self.interp_mut().reserve_value_inequality(n - outside);
         for i in 0..n {
             self.interp_mut().add_value_inequality_constraint(
                 row3(points, i),
@@ -459,6 +472,7 @@ impl Problem {
                 })
                 .count()
         };
+        self.interp_mut().reserve_pair_inequality(n - outside);
         for i in 0..n {
             self.interp_mut().add_inequality_pair_constraint(
                 row3(points_a, i),

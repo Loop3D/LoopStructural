@@ -1548,11 +1548,54 @@ impl FiniteDifferenceInterpolator {
     /// `accumulate_data_normal`/`diagonal`).
     fn data_rhs(&self, tracker: &mut MemTracker) -> Result<Vec<f64>, CoreError> {
         let mut out: Vec<f64> = tracker.try_zeroed(self.dof())?;
-        point_constraints_rhs(&self.value_constraints, &mut out);
-        point_constraints_rhs(&self.gradient_constraints, &mut out);
-        point_constraints_rhs(&self.norm_constraints, &mut out);
-        point_constraints_rhs(&self.tangent_constraints, &mut out);
+        self.write_data_rhs(&mut out);
         Ok(out)
+    }
+
+    /// Write the data right-hand side of `N` into `out`.
+    /// The function sets `out` to zero first. It makes no new vector.
+    /// `out` must have `dof()` entries.
+    pub(crate) fn write_data_rhs(&self, out: &mut [f64]) {
+        out.iter_mut().for_each(|v| *v = 0.0);
+        point_constraints_rhs(&self.value_constraints, out);
+        point_constraints_rhs(&self.gradient_constraints, out);
+        point_constraints_rhs(&self.norm_constraints, out);
+        point_constraints_rhs(&self.tangent_constraints, out);
+    }
+
+    /// Reserve room for `n` more value rows (exact size, no doubling).
+    pub(crate) fn reserve_value(&mut self, n: usize) {
+        self.value_constraints.reserve_exact(n);
+    }
+
+    /// Reserve room for `n` more gradient points (2 rows each).
+    pub(crate) fn reserve_gradient(&mut self, n: usize) {
+        self.gradient_constraints.reserve_exact(2 * n);
+    }
+
+    /// Reserve room for `n` more norm points (3 rows each).
+    pub(crate) fn reserve_norm(&mut self, n: usize) {
+        self.norm_constraints.reserve_exact(3 * n);
+    }
+
+    /// Reserve room for `n` more tangent rows.
+    pub(crate) fn reserve_tangent(&mut self, n: usize) {
+        self.tangent_constraints.reserve_exact(n);
+    }
+
+    /// Reserve room for `n` more interface rows.
+    pub(crate) fn reserve_interface(&mut self, n: usize) {
+        self.interface_constraints.reserve_exact(n);
+    }
+
+    /// Reserve room for `n` more value-bound rows.
+    pub(crate) fn reserve_value_inequality(&mut self, n: usize) {
+        self.value_inequality_constraints.reserve_exact(n);
+    }
+
+    /// Reserve room for `n` more pair-bound rows.
+    pub(crate) fn reserve_pair_inequality(&mut self, n: usize) {
+        self.pair_inequality_constraints.reserve_exact(n);
     }
 
     /// Required length of the `scratch` buffer passed to

@@ -233,7 +233,7 @@ Phase B, second part. The active-set polish is not in this plan (see plan.md D5)
   - Needs: T021
   - Wave: 12
   - Done when: `cargo test --manifest-path packages/loop_interpolation_core/Cargo.toml --test session_admm` passes.
-- [ ] T023 [P] [US2] [M] Test: memory with many active constraints stays near R1 (story 2 scenario 3, SC-002, SC-011, FR-002).
+- [x] T023 [P] [US2] [M] Test: memory with many active constraints stays near R1 (story 2 scenario 3, SC-002, SC-011, FR-002).
   - Do: Make active pair bounds by solving once without bounds, then bounding pairs at their free difference.
   - Do: Add the ignored tests `r2` (100^3, 200 pairs) and `r3` (100^3, 20 000 pairs). Print peak bytes. Add the numbers to `measurements.md` only if the user runs them.
   - Files: `packages/loop_interpolation_core/tests/scale_inequality.rs`
@@ -254,7 +254,7 @@ These tasks edit files that ADMM also edits, so they follow Phase 4.
   - Needs: T020
   - Wave: 11
   - Done when: `cargo test --manifest-path packages/loop_interpolation_core/Cargo.toml --test constraint_families` compiles and fails.
-- [ ] T025 [P] [US1] [M] Implement `Field` and `evaluate`, `evaluate_gradient`. Fix any failure of the family tests.
+- [x] T025 [P] [US1] [M] Implement `Field` and `evaluate`, `evaluate_gradient`. Fix any failure of the family tests.
   - Do: `Field` evaluate uses the ported `evaluate` and `evaluate_gradient` and the grid. Check each point is inside the grid first.
   - Do: For the large-origin case compute `(point - origin) / step` in `f64` before any cast.
   - Files: `packages/loop_interpolation_core/src/field.rs`, `packages/loop_interpolation_core/src/grid.rs`, `packages/loop_interpolation_core/src/interpolator.rs`, `packages/loop_interpolation_core/src/session.rs`

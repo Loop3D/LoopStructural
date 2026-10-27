@@ -15,3 +15,15 @@ bytes_per_dof=79.071076
 bytes_per_dof=63.29426
 
 Note: measured by the ignored test `session_r1` in `tests/memory.rs` (same R1 data, through `Problem::solve`). The test `baseline_r1` still measures the one-shot solver of the ported code, so it stays at the value under `After table cuts`. The value does not include the copy of the field that goes to JavaScript (8 bytes per dof). Same iteration count as the baseline (1054).
+
+## Inequality constraints (R2 and R3)
+
+Measured with the ignored tests `r2` and `r3` in `tests/scale_inequality.rs` (release build, counting allocator, 100^3 grid, 2000 value and 500 gradient rows, active pair bounds).
+
+| Problem | Pair bounds | Peak bytes | Ratio to R1 | Limit | Result |
+|---|---|---|---|---|---|
+| R1 (no bounds) | 0 | 63 195 988 | 1.000 | - | - |
+| R2 | 200 | 63 258 388 | 1.001 | 1.2 (SC-002) | pass |
+| R3 | 20 000 | 69 435 988 | 1.099 | 1.2 (SC-011) | pass |
+
+The first run had a ratio of 1.280 for R3 (fail). Two changes fixed it: ADMM no longer keeps a copy of the data right-hand side (it rebuilds it each outer iteration), and the constraint rows are reserved before they are added (no `Vec` doubling). All runs converge in 1062 iterations.

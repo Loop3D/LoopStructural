@@ -4,8 +4,9 @@
 //! Outer loop: `z = clip(Q x + u, lower, upper)`, then `u += Q x - z`.
 //! Inner loop: Jacobi CG on `(N + rho Q^T Q) x = rhs + rho Q^T (z - u)`.
 //!
-//! Full-size vectors: `x`, `r`, `p`, `ap`, `inv_diag` and `base_rhs`.
-//! `base_rhs` is the only vector that ADMM adds to plain CG (8 bytes per dof).
+//! Full-size vectors: `x`, `r`, `p`, `ap` and `inv_diag`.
+//! ADMM adds no full-size vector to plain CG. The data right-hand side is
+//! computed again from the constraint rows when `r` is rebuilt.
 //! `r` is rebuilt at the start of each outer iteration. No dense matrix is made.
 //! Vectors with one entry per inequality row: `z`, `u`, `lower`, `upper`.
 //! The row order is: value-bound rows, then pair-bound rows.
@@ -61,7 +62,6 @@ pub(crate) struct AdmmState {
     p: Vec<f64>,
     ap: Vec<f64>,
     inv_diag: Vec<f64>,
-    base_rhs: Vec<f64>,
     z: Vec<f64>,
     u: Vec<f64>,
     lower: Vec<f64>,
@@ -144,7 +144,6 @@ impl AdmmState {
     ) -> Result<Self, CoreError> {
         let n = interp.dof();
         let m = interp.n_inequality_constraints();
-        let base_rhs = interp.try_rhs(tracker)?;
         // The diagonal is the one of N only. The pre-solve uses it. The
         // inequality part is added when the ADMM loop starts.
         let mut diag = interp.try_diagonal(tracker)?;
@@ -166,7 +165,6 @@ impl AdmmState {
             p,
             ap,
             inv_diag,
-            base_rhs,
             z,
             u,
             lower,
@@ -218,7 +216,8 @@ impl AdmmState {
         let m = self.z.len();
         // `zu` is small: one entry per inequality row.
         let zu: Vec<f64> = (0..m).map(|i| self.z[i] - self.u[i]).collect();
-        self.r.copy_from_slice(&self.base_rhs);
+        // Data right-hand side, computed again into `r`.
+        interp.write_data_rhs(&mut self.r);
         interp.accumulate_inequality_transpose(&zu, self.rho, &mut self.r);
         // The inner tolerance is relative to the norm of the ADMM right-hand side.
         self.rhs_norm = dot(&self.r, &self.r).sqrt().max(1e-300);
@@ -243,9 +242,9 @@ impl AdmmState {
     }
 
     /// Start the pre-solve: plain CG of `N x = rhs` from `x = 0`.
-    /// `r` is a copy of `base_rhs`. No new vector is needed.
-    fn begin_pre(&mut self) {
-        self.r.copy_from_slice(&self.base_rhs);
+    /// `r` is the data right-hand side (x = 0). No new vector is needed.
+    fn begin_pre(&mut self, interp: &FiniteDifferenceInterpolator) {
+        interp.write_data_rhs(&mut self.r);
         self.p
             .par_iter_mut()
             .zip(self.r.par_iter())
@@ -456,7 +455,7 @@ impl AdmmState {
             return Ok(AdmmOutcome::Done(c));
         }
         if self.phase == Phase::Start {
-            self.begin_pre();
+            self.begin_pre(interp);
         }
         if self.phase == Phase::Pre {
             let mut left = max_iters;
