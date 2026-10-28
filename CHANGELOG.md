@@ -1,5 +1,23 @@
 # Changelog
 
+## [1.10.0](https://github.com/Loop3D/LoopStructural/compare/v1.9.0...v1.10.0) (2026-10-28)
+
+
+### Features
+
+* **loop-interpolation-core:** add a low-memory native solver for Python and the browser ([#354](https://github.com/Loop3D/LoopStructural/issues/354)) ([e5c7539](https://github.com/Loop3D/LoopStructural/commit/e5c7539c63c64d4cdc18e6b9eb76d44386ad4e92))
+* pass the build solver to the interpolator before setup; add a native claudius script ([#362](https://github.com/Loop3D/LoopStructural/issues/362)) ([5024e4f](https://github.com/Loop3D/LoopStructural/commit/5024e4fe6ce75b8c06475092b01cf0eb48f2d845))
+
+
+### Bug Fixes
+
+* **release:** stop release-please taking 1.6.5 for loop-interpolation-core ([#360](https://github.com/Loop3D/LoopStructural/issues/360)) ([fbfed99](https://github.com/Loop3D/LoopStructural/commit/fbfed99d5bcdd9ad17bc706ba63fba55b516765a))
+
+
+### Documentation
+
+* **spec:** fix review findings in 001-low-memory-interpolator ([58a7c3e](https://github.com/Loop3D/LoopStructural/commit/58a7c3e114b6e6b1a7496a7488b63a602d98cf22))
+
 ## [1.9.0](https://github.com/Loop3D/LoopStructural/compare/v1.8.4...v1.9.0) (2026-10-20)
 
 
