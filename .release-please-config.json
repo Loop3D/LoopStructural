@@ -1,5 +1,6 @@
 {
   "separate-pull-requests": true,
+  "bootstrap-sha": "7e82c76c4c7bba9d1d9d4850c75b56cc790d992f",
   "packages": {
     ".": {
       "release-type": "python",
@@ -8,6 +9,7 @@
       "exclude-paths": [
         "packages/loop_common",
         "packages/loop_interpolation",
+        "packages/loop_interpolation_core",
         "packages/map2loop",
         "packages/loopstructural_visualisation"
       ]
@@ -19,6 +21,17 @@
     "packages/loop_interpolation": {
       "release-type": "python",
       "component": "loop-interpolation"
+    },
+    "packages/loop_interpolation_core": {
+      "release-type": "python",
+      "component": "loop-interpolation-core",
+      "extra-files": [
+        {
+          "type": "toml",
+          "path": "Cargo.toml",
+          "jsonpath": "$.package.version"
+        }
+      ]
     },
     "packages/map2loop": {
       "release-type": "python",

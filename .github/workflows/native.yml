@@ -1,0 +1,218 @@
+name: "Native solver"
+
+# This workflow checks the Rust crate loop_interpolation_core.
+# It runs only when the crate, the Python adapter or this file changes.
+
+on:
+  push:
+    branches:
+      - master
+    paths:
+      - 'packages/loop_interpolation_core/**'
+      - 'packages/loop_interpolation/src/loop_interpolation/_native.py'
+      - '.github/workflows/native.yml'
+  pull_request:
+    branches:
+      - master
+    paths:
+      - 'packages/loop_interpolation_core/**'
+      - 'packages/loop_interpolation/src/loop_interpolation/_native.py'
+      - '.github/workflows/native.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  CARGO_TERM_COLOR: always
+  MANIFEST: packages/loop_interpolation_core/Cargo.toml
+
+jobs:
+  # Format, lint and test the crate with all feature sets.
+  rust:
+    name: Rust checks
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install the Rust toolchain
+        run: |
+          rustup toolchain install stable --profile minimal --component rustfmt --component clippy --target wasm32-unknown-unknown
+          rustup default stable
+      - uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git
+            packages/loop_interpolation_core/target
+          key: rust-${{ runner.os }}-${{ hashFiles('packages/loop_interpolation_core/Cargo.lock') }}
+          restore-keys: rust-${{ runner.os }}-
+      - name: Format
+        run: cargo fmt --manifest-path "$MANIFEST" --check
+      - name: Clippy, no features
+        run: cargo clippy --manifest-path "$MANIFEST" --all-targets -- -D warnings
+      - name: Clippy, parallel
+        run: cargo clippy --manifest-path "$MANIFEST" --all-targets --features parallel -- -D warnings
+      - name: Clippy, python
+        run: cargo clippy --manifest-path "$MANIFEST" --all-targets --features python -- -D warnings
+      - name: Clippy, wasm
+        run: cargo clippy --manifest-path "$MANIFEST" --all-targets --features wasm --target wasm32-unknown-unknown -- -D warnings
+      # Use --release. Debug test runs take many minutes.
+      - name: Test, no features
+        run: cargo test --manifest-path "$MANIFEST" --release
+      - name: Test, parallel
+        run: cargo test --manifest-path "$MANIFEST" --release --features parallel
+
+  # Build the Python wheel and run the Python tests with the native core installed.
+  wheel:
+    name: Wheel ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git
+            packages/loop_interpolation_core/target
+          key: wheel-${{ runner.os }}-${{ hashFiles('packages/loop_interpolation_core/Cargo.lock') }}
+          restore-keys: wheel-${{ runner.os }}-
+      # maturin develop needs a virtual environment.
+      # The Linux and macOS folder is bin. The Windows folder is Scripts.
+      - name: Install, build and test
+        shell: bash
+        run: |
+          python -m venv .venv
+          if [ -f .venv/Scripts/activate ]; then source .venv/Scripts/activate; else source .venv/bin/activate; fi
+          python -m pip install --upgrade pip
+          python -m pip install maturin numpy scipy pytest
+          python -m pip install -e packages/loop_common -e packages/loop_interpolation
+          maturin develop --release -m packages/loop_interpolation_core/Cargo.toml
+          python -m pytest packages/loop_interpolation/tests -q
+
+  # Build the WebAssembly package, check its size and run the browser tests.
+  wasm:
+    name: WebAssembly
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Install the Rust toolchain
+        run: |
+          rustup toolchain install stable --profile minimal --target wasm32-unknown-unknown
+          rustup default stable
+      - uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git
+            packages/loop_interpolation_core/target
+          key: wasm-${{ runner.os }}-${{ hashFiles('packages/loop_interpolation_core/Cargo.lock') }}
+          restore-keys: wasm-${{ runner.os }}-
+      # The wasm-bindgen CLI version must equal the wasm-bindgen version in Cargo.lock.
+      - name: Read the wasm-bindgen version
+        run: |
+          V=$(grep -A1 '^name = "wasm-bindgen"$' packages/loop_interpolation_core/Cargo.lock | sed -n 's/^version = "\(.*\)"$/\1/p')
+          echo "Version: $V"
+          test -n "$V"
+          echo "WASM_BINDGEN_VERSION=$V" >> "$GITHUB_ENV"
+      - name: Cache the wasm-bindgen CLI
+        id: bindgen-cache
+        uses: actions/cache@v4
+        with:
+          path: ~/.cargo/bin/wasm-bindgen
+          key: wasm-bindgen-cli-${{ runner.os }}-${{ env.WASM_BINDGEN_VERSION }}
+      - name: Install the wasm-bindgen CLI
+        if: steps.bindgen-cache.outputs.cache-hit != 'true'
+        run: cargo install wasm-bindgen-cli --version "$WASM_BINDGEN_VERSION" --locked
+      - name: Build the WebAssembly package
+        run: bash packages/loop_interpolation_core/scripts/build_wasm.sh
+      - name: Check the size
+        run: python -I packages/loop_interpolation_core/scripts/check_wasm_size.py
+      - name: Install the browser test packages
+        working-directory: packages/loop_interpolation_core/tests_web
+        run: |
+          npm ci
+          npx playwright install --with-deps chromium
+      - name: Browser tests
+        working-directory: packages/loop_interpolation_core/tests_web
+        run: npm test
+
+  # Slow reference runs. Start these by hand only.
+  reference:
+    name: Reference problems
+    if: github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Install the Rust toolchain
+        run: |
+          rustup toolchain install stable --profile minimal --target wasm32-unknown-unknown
+          rustup default stable
+      - uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git
+            packages/loop_interpolation_core/target
+          key: reference-${{ runner.os }}-${{ hashFiles('packages/loop_interpolation_core/Cargo.lock') }}
+          restore-keys: reference-${{ runner.os }}-
+      - name: Read the wasm-bindgen version
+        run: |
+          V=$(grep -A1 '^name = "wasm-bindgen"$' packages/loop_interpolation_core/Cargo.lock | sed -n 's/^version = "\(.*\)"$/\1/p')
+          test -n "$V"
+          echo "WASM_BINDGEN_VERSION=$V" >> "$GITHUB_ENV"
+      - name: Cache the wasm-bindgen CLI
+        id: bindgen-cache
+        uses: actions/cache@v4
+        with:
+          path: ~/.cargo/bin/wasm-bindgen
+          key: wasm-bindgen-cli-${{ runner.os }}-${{ env.WASM_BINDGEN_VERSION }}
+      - name: Install the wasm-bindgen CLI
+        if: steps.bindgen-cache.outputs.cache-hit != 'true'
+        run: cargo install wasm-bindgen-cli --version "$WASM_BINDGEN_VERSION" --locked
+      # The test f32_250_cubed_within_budget is too slow for CI. Skip it.
+      - name: Ignored Rust tests
+        run: |
+          set -o pipefail
+          cargo test --manifest-path "$MANIFEST" --release --test reference_problems -- --ignored --nocapture --test-threads=1 --skip f32_250_cubed_within_budget 2>&1 | tee rust_reference.log
+      - name: Write the reference field
+        run: cargo test --manifest-path "$MANIFEST" --release --test reference_problems r1_write_field -- --ignored
+      - name: Build the WebAssembly package
+        run: bash packages/loop_interpolation_core/scripts/build_wasm.sh
+      - name: Browser reference spec
+        working-directory: packages/loop_interpolation_core/tests_web
+        env:
+          RUN_REFERENCE: '1'
+        run: |
+          set -o pipefail
+          npm ci
+          npx playwright install --with-deps chromium
+          npm test -- reference 2>&1 | tee "$GITHUB_WORKSPACE/browser_reference.log"
+      - name: Write the job summary
+        if: always()
+        run: |
+          {
+            echo "## Rust reference problems"
+            echo '```'
+            cat rust_reference.log 2>/dev/null || echo "No output."
+            echo '```'
+            echo "## Browser reference spec"
+            echo '```'
+            cat browser_reference.log 2>/dev/null || echo "No output."
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"

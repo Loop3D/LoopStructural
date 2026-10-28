@@ -1,0 +1,150 @@
+//! Memory tests. They measure the peak heap use of a full solve.
+
+mod common;
+
+use loop_interpolation_core::{FiniteDifferenceInterpolator, Problem, Settings, StructuredGrid3D};
+
+/// Small deterministic generator (LCG). It returns a number in [0, 1).
+struct Lcg(u64);
+
+impl Lcg {
+    fn next(&mut self) -> f64 {
+        self.0 = self
+            .0
+            .wrapping_mul(6364136223846793005)
+            .wrapping_add(1442695040888963407);
+        ((self.0 >> 11) as f64) / ((1u64 << 53) as f64)
+    }
+}
+
+/// Build and solve a problem on an n x n x n grid.
+/// Return the peak bytes above the level at the start, and the dof.
+fn run(n: usize, n_value: usize, n_normal: usize) -> (usize, usize) {
+    common::reset_peak();
+    let start = common::current();
+
+    let grid = StructuredGrid3D::new([0.0, 0.0, 0.0], [n, n, n], [1.0, 1.0, 1.0]);
+    let mut interp = FiniteDifferenceInterpolator::new(grid);
+    let dof = interp.dof();
+    let extent = (n - 1) as f64;
+    let mut rng = Lcg(12345);
+
+    for _ in 0..n_value {
+        let p = [
+            rng.next() * extent,
+            rng.next() * extent,
+            rng.next() * extent,
+        ];
+        // The value is a plane field, so the data are consistent.
+        let v = p[0] + 0.5 * p[1] + 0.25 * p[2];
+        interp.add_value_constraint(p, v, 1.0);
+    }
+    for _ in 0..n_normal {
+        let p = [
+            rng.next() * extent,
+            rng.next() * extent,
+            rng.next() * extent,
+        ];
+        interp.add_gradient_constraint(p, [1.0, 0.5, 0.25], 1.0);
+    }
+
+    let result = interp.solve(5000, 1e-8);
+    println!(
+        "iterations={} converged={} residual={}",
+        result.iterations, result.converged, result.residual_norm
+    );
+    drop(result);
+
+    let peak = common::peak().saturating_sub(start);
+    (peak, dof)
+}
+
+/// Problem R1: 100^3 grid, 2000 value and 500 normal constraints.
+#[test]
+#[ignore]
+fn baseline_r1() {
+    let (peak, dof) = run(100, 2000, 500);
+    let bytes_per_dof = peak as f64 / dof as f64;
+    println!("bytes_per_dof={}", bytes_per_dof);
+    assert!(bytes_per_dof > 0.0);
+}
+
+/// Small problem on a 30^3 grid. It only prints.
+#[test]
+fn baseline_small() {
+    let (peak, dof) = run(30, 200, 50);
+    println!("small bytes_per_dof={}", peak as f64 / dof as f64);
+}
+
+/// The tables of the interpolator use at most 12 bytes per dof (40^3 grid).
+/// The tables are built on first use, so the test does one short solve first.
+#[test]
+fn table_bytes_within_12_per_dof() {
+    let grid = StructuredGrid3D::new([0.0, 0.0, 0.0], [40, 40, 40], [1.0, 1.0, 1.0]);
+    let mut interp = FiniteDifferenceInterpolator::new(grid);
+    interp.add_value_constraint([20.0, 20.0, 20.0], 1.0, 1.0);
+    let dof = interp.dof();
+    assert_eq!(interp.table_bytes(), 0, "tables must be lazy");
+    let _ = interp.solve(1, 1e-8);
+    let bytes = interp.table_bytes();
+    assert!(bytes > 0, "the solve must build the tables");
+    println!(
+        "table_bytes={} per_dof={}",
+        bytes,
+        bytes as f64 / dof as f64
+    );
+    assert!(bytes <= 12 * dof, "table_bytes={bytes} dof={dof}");
+}
+
+/// Problem R1 through the solve session: same data as `baseline_r1`.
+/// The session keeps four full vectors and the inverse diagonal.
+#[test]
+#[ignore]
+fn session_r1() {
+    let (n, n_value, n_normal) = (100usize, 2000usize, 500usize);
+    common::reset_peak();
+    let start = common::current();
+
+    let mut p = Problem::new([0.0; 3], [n; 3], [1.0; 3]).unwrap();
+    let extent = (n - 1) as f64;
+    let mut rng = Lcg(12345);
+    let mut pts = Vec::with_capacity(3 * n_value);
+    let mut vals = Vec::with_capacity(n_value);
+    for _ in 0..n_value {
+        let q = [
+            rng.next() * extent,
+            rng.next() * extent,
+            rng.next() * extent,
+        ];
+        vals.push(q[0] + 0.5 * q[1] + 0.25 * q[2]);
+        pts.extend_from_slice(&q);
+    }
+    p.add_value(&pts, &vals, &vec![1.0; n_value]).unwrap();
+    let mut pts = Vec::with_capacity(3 * n_normal);
+    let mut dirs = Vec::with_capacity(3 * n_normal);
+    for _ in 0..n_normal {
+        pts.extend_from_slice(&[
+            rng.next() * extent,
+            rng.next() * extent,
+            rng.next() * extent,
+        ]);
+        dirs.extend_from_slice(&[1.0, 0.5, 0.25]);
+    }
+    p.add_gradient(&pts, &dirs, &vec![1.0; n_normal]).unwrap();
+
+    let dof = n * n * n;
+    let (field, report) = p
+        .solve(Settings {
+            tol: 1e-8,
+            max_iter: 5000,
+            ..Settings::default()
+        })
+        .unwrap();
+    println!(
+        "iterations={} converged={} residual={}",
+        report.iterations, report.converged, report.residual
+    );
+    drop(field);
+    let peak = common::peak().saturating_sub(start);
+    println!("bytes_per_dof={}", peak as f64 / dof as f64);
+}
