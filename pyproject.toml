@@ -86,6 +86,7 @@ LoopStructural = [
 
 [tool.uv.workspace]
 members = ["packages/*"]
+exclude = ["packages/loop_interpolation_core"]
 
 [tool.uv.sources]
 loop-common = { workspace = true }
@@ -93,6 +94,10 @@ loop-interpolation = { workspace = true }
 loopstructuralvisualisation = { workspace = true }
 map2loop = { workspace = true }
 LoopStructural = { workspace = true }
+# The Rust core is not a workspace member (it builds with maturin), but the
+# extra loop-interpolation[native] needs a source so that uv can lock it.
+# uv reads its static metadata. It builds the core only when the extra is used.
+loop-interpolation-core = { path = "packages/loop_interpolation_core" }
 
 [tool.pytest.ini_options]
 addopts = "--import-mode=importlib"

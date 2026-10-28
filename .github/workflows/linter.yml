@@ -46,12 +46,16 @@ jobs:
       - name: Lint with ruff
         run: |
           ruff check ${{ env.PROJECT_FOLDERS }} --fix --exit-zero
+      # A pull request from a fork gets a read-only GITHUB_TOKEN, so it
+      # cannot push the style branch. Skip the push and the PR for it.
       - uses: stefanzweifel/git-auto-commit-action@v5
+        if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
         with:
           commit_message: "style: style fixes by ruff and autoformatting by black"
           branch: lint/style-fixes-${{ github.run_id }}
           create_branch: true
       - name: Create Pull Request
+        if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
         uses: peter-evans/create-pull-request@v6
         with:
           token: ${{ secrets.GITHUB_TOKEN }}

@@ -27,6 +27,7 @@ dependencies = ["loop-common", "numpy", "scipy", "pydantic"]
 
 [project.optional-dependencies]
 tests = ["pytest"]
+native = ["loop-interpolation-core"]
 
 [tool.setuptools.packages.find]
 where = ["src"]

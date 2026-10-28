@@ -126,7 +126,10 @@ def test_matches_golden_field(case, engine, request):
     golden, _ = harness.load_golden(case, engine)
     if golden is None:
         pytest.fail("no golden file: run with --update-golden and review the figures first")
-    ok = np.allclose(r["value"], golden["value"], atol=1e-6, rtol=0, equal_nan=True) and np.allclose(
+    # The solver stops at a relative residual of 1e-8. Other platforms (macOS
+    # arm64) add in a different order and differ by about 1e-6, so 1e-6 is
+    # too tight. A real change of the field is much larger than 1e-5.
+    ok = np.allclose(r["value"], golden["value"], atol=1e-5, rtol=0, equal_nan=True) and np.allclose(
         r["gradient"], golden["gradient"], atol=1e-5, rtol=0, equal_nan=True
     )
     if not ok:

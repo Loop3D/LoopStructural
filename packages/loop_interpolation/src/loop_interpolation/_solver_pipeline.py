@@ -35,6 +35,76 @@ def extract_constant_norm_options(solver_kwargs: dict, logger):
     return constant_norm_iterations, constant_norm_weight, constant_norm_target
 
 
+def extract_ridge_options(
+    solver_kwargs: dict, add_ridge_default: bool, ridge_factor_default: float, logger
+):
+    """Pop per-solve ridge options from solver kwargs.
+
+    ``ridge_factor`` scales the identity rows appended to the system, so it
+    adds ``ridge_factor**2`` to the diagonal of the normal equations. A
+    ``ridge_factor`` of 0 disables the ridge term.
+
+    Returns
+    -------
+    tuple[bool, float]
+        whether to add the ridge term, and the ridge factor
+    """
+    add_ridge = solver_kwargs.pop("add_ridge_regularisation", None)
+    ridge_factor = solver_kwargs.pop("ridge_factor", None)
+    if ridge_factor is None:
+        ridge_factor = float(ridge_factor_default)
+        if add_ridge is None:
+            add_ridge = bool(add_ridge_default)
+    else:
+        ridge_factor = float(ridge_factor)
+        if ridge_factor < 0.0:
+            logger.warning("ridge_factor must be >= 0; using %s", abs(ridge_factor))
+            ridge_factor = abs(ridge_factor)
+        if add_ridge is None:
+            add_ridge = ridge_factor > 0.0
+    return bool(add_ridge) and ridge_factor > 0.0, ridge_factor
+
+
+def extract_initial_guess(solver_kwargs: dict, previous_c, support, dof: int, logger):
+    """Pop ``x0`` and ``warm_start`` from solver kwargs and resolve the
+    initial guess for the solver.
+
+    ``x0`` is an array of length ``dof`` or a callable that takes the support
+    and returns one. It has priority over ``warm_start``. With
+    ``warm_start=True`` the previous solution is the initial guess, if it is
+    finite and has the correct length.
+
+    Returns
+    -------
+    Optional[np.ndarray]
+        initial guess, or None for a zero start
+    """
+    x0 = solver_kwargs.pop("x0", None)
+    warm_start = bool(solver_kwargs.pop("warm_start", False))
+    if x0 is not None:
+        if callable(x0):
+            x0 = x0(support)
+        x0 = np.array(x0, dtype=float).reshape(-1)
+        if x0.shape[0] != dof:
+            logger.warning(
+                "x0 has %d values but the system has %d degrees of freedom; ignoring x0",
+                x0.shape[0],
+                dof,
+            )
+            return None
+        return x0
+    if not warm_start:
+        return None
+    if previous_c is None:
+        return None
+    previous_c = np.array(previous_c, dtype=float).reshape(-1)
+    if previous_c.shape[0] != dof or not np.all(np.isfinite(previous_c)):
+        logger.info("No usable previous solution for warm start; starting from zero")
+        return None
+    logger.info("Warm starting solver from previous solution")
+    return previous_c
+
+
 def init_timing(solver_choice) -> dict:
     return {
         "solver": "callable" if callable(solver_choice) else solver_choice,
