@@ -395,7 +395,7 @@ Phase C of the plan. Do not start before OP1 is answered (memory per dof from T0
   - Wave: 14
   - Done when: `cargo check --manifest-path packages/loop_interpolation_core/Cargo.toml --target wasm32-unknown-unknown --features wasm` exits 0.
   - Blocked by: OP1
-- [ ] T042 [P] [US3] [M] Write the Worker wrapper `web/worker.js` (progress, cancel, one solve at a time).
+- [x] T042 [P] [US3] [M] Write the Worker wrapper `web/worker.js` (progress, cancel, one solve at a time).
   - Do: Messages in: `init`, `estimate`, `solve`, `cancel`. Messages out: `progress`, `result`, `error`, `cancelled`.
   - Do: `solve` builds the problem from transferable buffers (no copy), calls `start`, then loops `step(maxIters)` with `await new Promise(r => setTimeout(r, 0))` between steps. Pick `maxIters` so one step takes about 100 ms (start with 5, scale with the measured time of the last step).
   - Do: A `cancel` message sets a flag that the loop checks before each step. On cancel call `session.free()`.
@@ -413,7 +413,7 @@ Phase C of the plan. Do not start before OP1 is answered (memory per dof from T0
   - Wave: 16
   - Done when: `npx --prefix packages/loop_interpolation_core/tests_web tsc --noEmit packages/loop_interpolation_core/web/index.d.ts` exits 0.
   - Blocked by: OP1
-- [ ] T044 [P] [US1] [M] Write the browser build script and the size check (SC-010).
+- [x] T044 [P] [US1] [M] Write the browser build script and the size check (SC-010).
   - Do: Steps: `cargo build --profile wasm-size --target wasm32-unknown-unknown --features wasm`; `wasm-bindgen --target web --out-dir pkg`; `wasm-opt -Oz` if present (skip with a message if not).
   - Do: `check_wasm_size.py` reads `pkg/*.wasm`, gzips it in memory, prints the size and exits 1 above 2 000 000 bytes. If the size is above, stop and report (OP2).
   - Files: `packages/loop_interpolation_core/scripts/build_wasm.sh`, `packages/loop_interpolation_core/scripts/check_wasm_size.py`
