@@ -76,3 +76,18 @@ Measured on the development machine (Windows, 20 logical cores, release build, o
 - On one thread the native solver is 10 to 30 percent slower. With `parallel` it is 3.4 times faster at 100^3.
 - The golden tests (`tests/golden`, FD engine, 7 cases) agree with the native solver to 1e-9 (limits 1e-6 for values and 1e-5 for gradients).
 - The browser (WebAssembly, one thread) solves the 60^3 test problem of `tests_web` in about 12 s. The size of the module is 268 693 bytes, 92 539 bytes after gzip (SC-010).
+
+## Browser reference run (R1 in Chromium)
+
+Test: `tests_web/reference.spec.js` (runs only with `RUN_REFERENCE=1`). Chromium, one thread, no cross-origin isolation, development machine (Windows, 20 logical cores). The browser field is compared with `target/r1_field.f64` from the Rust test `r1_write_field`.
+
+| Item | Result | Limit | Result |
+|---|---|---|---|
+| Memory (`WebAssembly.Memory.buffer.byteLength`) | 65 798 144 bytes | 100 MB (SC-001) | pass |
+| Difference from the Rust field | 0 (bit-identical, 1062 iterations, converged) | 1e-6 of the range (SC-003) | pass |
+| Progress messages (worst gap) | 741 (573 ms) and 649 (913 ms) in two runs | one in each second (SC-006) | pass |
+| Solve time | 93.3 s and 107.2 s (two runs) | 60 s on the reference machine (SC-007) | report only |
+
+- The time is above 60 s on this machine. SC-007 is checked on the reference machine (a laptop with 4 cores and 16 GB, OP3). The native Rust solve takes 53 to 57 s on one thread, so WebAssembly is about 1.7 to 2 times slower than native on one thread.
+- The worst gap between progress messages was 913 ms in one run. The limit is 1000 ms. The Worker posts progress at most every 100 ms, so this gap comes from one long step.
+- R2 (pair bounds) is not in the browser run. The Rust tests cover R2 and R3.

@@ -476,7 +476,7 @@ Phase E of the plan (was F). It changes the vector type, not the algorithm.
   - Needs: T023, T050, T017
   - Wave: 19
   - Done when: `cargo test --manifest-path packages/loop_interpolation_core/Cargo.toml --release --test reference_problems` passes (CI sizes). `cargo test --manifest-path packages/loop_interpolation_core/Cargo.toml --release --test reference_problems -- --ignored --nocapture` prints the table that is copied to `measurements.md`.
-- [ ] T052 [P] [Finish] [M] Add the browser reference run: R1 and R2 in Chromium (SC-001, SC-003, SC-006, SC-007).
+- [x] T052 [P] [Finish] [M] Add the browser reference run: R1 and R2 in Chromium (SC-001, SC-003, SC-006, SC-007).
   - Do: Generate the R1 data in JavaScript with the same formulas as `reference_problems.rs` (copy the formulas into both files and name them in a comment).
   - Files: `packages/loop_interpolation_core/tests_web/reference.spec.js`
   - Needs: T045, T051
