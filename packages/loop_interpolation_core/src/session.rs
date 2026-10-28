@@ -195,6 +195,12 @@ pub struct SolveSession {
     final_residual: Option<f64>,
     /// Warnings that the solver adds to the report.
     notes: Vec<String>,
+    /// Set when `finalize` fails. The session is then broken: every later
+    /// `step` returns this error. The state is not valid any more.
+    failed: Option<CoreError>,
+    /// Test only: make the next `finalize` fail once with this error.
+    #[cfg(test)]
+    inject_finalize_error: Option<CoreError>,
 }
 
 impl SolveSession {
@@ -215,6 +221,9 @@ impl SolveSession {
             tol: s.tol,
             final_residual: None,
             notes: Vec::new(),
+            failed: None,
+            #[cfg(test)]
+            inject_finalize_error: None,
         })
     }
 
@@ -249,6 +258,10 @@ impl SolveSession {
         // The work vectors are not needed any more. Free them first, so the
         // peak of the check stays low.
         st.release_work(&mut self.tracker);
+        #[cfg(test)]
+        if let Some(e) = self.inject_finalize_error.take() {
+            return Err(e);
+        }
         if st.is_cg() {
             let n = st.x().len();
             // One `f64` copy of `x` is needed for the check. If it does not
@@ -260,6 +273,10 @@ impl SolveSession {
                     }
                     // Free the `f32` copy during the check, then restore it.
                     // The `f32` to `f64` to `f32` trip is exact.
+                    // The `f32` buffer cannot be reserved before the check:
+                    // that would raise the peak by 4 bytes per dof. If the
+                    // restore fails, `step` stores the error and the session
+                    // stays failed.
                     let x32 = std::mem::take(st.x_mut());
                     let bytes32 = (x32.len() as u64).saturating_mul(4);
                     drop(x32);
@@ -306,6 +323,9 @@ impl SolveSession {
 
     /// Run at most `max_iters` iterations.
     pub fn step(&mut self, max_iters: usize) -> Result<Step, CoreError> {
+        if let Some(e) = &self.failed {
+            return Err(e.clone());
+        }
         if let Some(converged) = self.done {
             return Ok(Step::Done(self.report(converged)));
         }
@@ -333,7 +353,13 @@ impl SolveSession {
                 }))
             }
             Out::Done(converged) => {
-                let converged = self.finalize(converged)?;
+                let converged = match self.finalize(converged) {
+                    Ok(c) => c,
+                    Err(e) => {
+                        self.failed = Some(e.clone());
+                        return Err(e);
+                    }
+                };
                 self.done = Some(converged);
                 Ok(Step::Done(self.report(converged)))
             }
@@ -342,6 +368,9 @@ impl SolveSession {
 
     /// Return the current field. `converged` is false until `Done`.
     pub fn best_so_far(&self) -> Result<(Field, SolveReport), CoreError> {
+        if let Some(e) = &self.failed {
+            return Err(e.clone());
+        }
         let data = match &self.inner {
             Inner::F64(st) => FieldData::F64(copy_vec(st.x())?),
             Inner::F32(st) => FieldData::F32(copy_vec(st.x())?),
@@ -355,6 +384,9 @@ impl SolveSession {
 
     /// Move the field out.
     pub fn finish(self) -> Result<(Field, SolveReport), CoreError> {
+        if let Some(e) = &self.failed {
+            return Err(e.clone());
+        }
         let report = self.report(self.done == Some(true));
         let grid = self.problem.interpolator().grid;
         let data = match self.inner {
@@ -362,5 +394,58 @@ impl SolveSession {
             Inner::F32(st) => FieldData::F32(st.into_x()),
         };
         Ok((Field { grid, data }, report))
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    fn f32_session() -> SolveSession {
+        let mut p = Problem::new([0.0; 3], [5; 3], [1.0; 3]).unwrap();
+        let pts = [1.0, 1.0, 1.0, 3.0, 2.0, 2.0, 2.0, 3.0, 1.0];
+        p.add_value(&pts, &[1.0, 2.0, 3.0], &[1.0; 3]).unwrap();
+        let s = Settings {
+            precision: Precision::F32,
+            budget_bytes: Some(1 << 24),
+            ..Settings::default()
+        };
+        p.start(s).unwrap()
+    }
+
+    #[test]
+    fn failed_finalize_is_final() {
+        let mut session = f32_session();
+        let err = CoreError::OutOfMemory { requested_bytes: 1 };
+        session.inject_finalize_error = Some(err.clone());
+        let mut first = None;
+        for _ in 0..100_000 {
+            match session.step(1 << 20) {
+                Ok(Step::Running(_)) => continue,
+                other => {
+                    first = Some(other);
+                    break;
+                }
+            }
+        }
+        assert_eq!(first.unwrap().err(), Some(err.clone()));
+        // The second call returns the same error. It is not a done step.
+        assert_eq!(session.step(1 << 20).err(), Some(err));
+        assert!(session.done.is_none());
+        // No field of zero length leaves the failed session.
+        assert!(session.best_so_far().is_err());
+        assert!(session.finish().is_err());
+    }
+
+    #[test]
+    fn f32_check_keeps_the_field_whole() {
+        let mut session = f32_session();
+        loop {
+            if let Step::Done(_) = session.step(1 << 20).unwrap() {
+                break;
+            }
+        }
+        let (field, _) = session.finish().unwrap();
+        assert_eq!(field.values_f64().len(), 125);
     }
 }
