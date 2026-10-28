@@ -585,7 +585,7 @@ the SC-007 release check on the reference machine (OP3).
 
 Answers of the user during the build (2026-10-27). They record decisions that the plan did not cover.
 
-- **OP1 (memory per dof):** measured 63.3 bytes per dof for R1 through the session (target 75). The user has not yet confirmed OP1, so the browser tasks (T039 to T045, T052) stay blocked.
+- **OP1 (memory per dof):** measured 63.3 bytes per dof for R1 through the session (target 75). The user confirmed OP1 on 2026-10-28, so the browser tasks (T039 to T045, T052) may start.
 - **T013, session derive:** `Clone` is removed from `SolveSession` in `session.rs`, because `Problem` now holds the interpolator.
 - **T016, scaling test:** the constraint rows grow with the node count in the scaling test (same density), because a stored row is 144 bytes and the constraint part is not small for a 30^3 grid.
 - **T026, parity with the matrix solver (FR-025, SC-003):** the Rust numerics follow the Python solver. The curvature rows are only at nodes that are interior on all three axes. The border rows are centred second derivatives `[1, -2, 1]` on layers 1 and n-2. The gradient strike and dip basis uses the horizontal strike of the Python solver. The one-sided first-derivative border of loop-rs is not used. Reason: a centred second derivative gives a plane no penalty, and the Python results do not change (FR-019).
