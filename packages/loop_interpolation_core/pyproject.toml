@@ -4,7 +4,7 @@ build-backend = "maturin"
 
 [project]
 name = "loop-interpolation-core"
-version = "0.1.0"
+version = "1.6.5"
 description = "Native (Rust) core for the low-memory LoopStructural interpolator"
 readme = "README.md"
 requires-python = ">=3.9"
