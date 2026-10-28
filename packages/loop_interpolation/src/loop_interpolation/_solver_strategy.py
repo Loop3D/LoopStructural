@@ -55,6 +55,7 @@ def solve_with_cg(
     solver_kwargs: dict,
     timing: dict,
     logger,
+    x0: np.ndarray | None = None,
 ) -> tuple[np.ndarray, bool]:
     from time import perf_counter
 
@@ -66,7 +67,7 @@ def solve_with_cg(
 
     logger.info(f"Solver kwargs: {solver_kwargs}")
     solve_step_started = perf_counter()
-    res = sparse.linalg.cg(A.T @ A, A.T @ b, **solver_kwargs)
+    res = sparse.linalg.cg(A.T @ A, A.T @ b, x0=x0, **solver_kwargs)
     timing["solve_seconds"] = perf_counter() - solve_step_started
     if res[1] > 0:
         logger.warning(
@@ -83,6 +84,7 @@ def solve_with_cg_normal_equations(
     solver_kwargs: dict,
     timing: dict,
     logger,
+    x0: np.ndarray | None = None,
 ) -> tuple[np.ndarray, bool]:
     """Solve an already-assembled normal-equations system ``N x = rhs`` with CG.
 
@@ -102,7 +104,7 @@ def solve_with_cg_normal_equations(
 
     logger.info(f"Solver kwargs: {solver_kwargs}")
     solve_step_started = perf_counter()
-    res = sparse.linalg.cg(N, rhs, **solver_kwargs)
+    res = sparse.linalg.cg(N, rhs, x0=x0, **solver_kwargs)
     timing["solve_seconds"] = perf_counter() - solve_step_started
     if res[1] > 0:
         logger.warning(
@@ -119,6 +121,7 @@ def solve_with_lsmr(
     solver_kwargs: dict,
     timing: dict,
     logger,
+    x0: np.ndarray | None = None,
 ) -> tuple[np.ndarray, bool]:
     from time import perf_counter
 
@@ -127,6 +130,8 @@ def solve_with_lsmr(
         solver_kwargs["btol"] = tol
         solver_kwargs["atol"] = 0.0
         logger.info(f"Setting lsmr btol to {tol}")
+    if x0 is not None:
+        solver_kwargs["x0"] = x0
     logger.info(f"Solver kwargs: {solver_kwargs}")
     solve_step_started = perf_counter()
     res = sparse.linalg.lsmr(A, b, **solver_kwargs)
@@ -193,16 +198,18 @@ def solve_with_admm(
     timing: dict,
     support,
     logger,
+    x0: np.ndarray | None = None,
 ) -> tuple[np.ndarray, list | None, bool]:
     from time import perf_counter
 
     from .loopsolver import admm_solve
 
-    if "x0" in solver_kwargs:
-        x0 = solver_kwargs["x0"](support)
-    else:
+    legacy_x0 = solver_kwargs.pop("x0", None)
+    if x0 is None and legacy_x0 is not None:
+        x0 = legacy_x0(support) if callable(legacy_x0) else legacy_x0
+    if x0 is None:
         x0 = np.zeros(A.shape[1])
-    solver_kwargs.pop("x0", None)
+    x0 = np.array(x0, dtype=float)
 
     linsys_solver, admm_kwargs = extract_admm_kwargs(solver_kwargs, admm_solve)
     solve_step_started = perf_counter()
