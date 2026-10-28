@@ -406,7 +406,7 @@ Phase C of the plan. Do not start before OP1 is answered (memory per dof from T0
   - Wave: 15
   - Done when: `node --check packages/loop_interpolation_core/web/worker.js` exits 0. The browser tests that use it run in the task T045.
   - Blocked by: OP1
-- [ ] T043 [P] [US1] [S] Write the TypeScript declaration file and the web README.
+- [x] T043 [P] [US1] [S] Write the TypeScript declaration file and the web README.
   - Do: Declare the message types of `worker.js` and the classes of D6. README in ASD-STE100: how to load the worker, the message list, and the note that the page must transform coordinates (FR-020).
   - Files: `packages/loop_interpolation_core/web/index.d.ts`, `packages/loop_interpolation_core/web/README.md`
   - Needs: T042
