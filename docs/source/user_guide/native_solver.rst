@@ -50,8 +50,18 @@ The native solver accepts these keyword arguments in ``solver_kwargs``:
       - Absolute tolerance of the ADMM outer loop. The default is 1e-4.
     * - admm_rel_tol
       - Relative tolerance of the ADMM outer loop. The default is 1e-3.
+    * - ridge_factor
+      - Ridge factor. The solver adds ``ridge_factor**2`` to the diagonal of the normal equations. 0 removes the ridge term. The default is the ``ridge_factor`` of the interpolator (1e-8).
+    * - add_ridge_regularisation
+      - ``False`` removes the ridge term for this solve. The default is the setting of the interpolator.
+    * - warm_start
+      - ``True`` starts the solver from the last field of the interpolator, not from 0. If the last field is not finite, the solver starts from 0. The default is ``False``.
+    * - x0
+      - Start value, one value for each node, or a function that takes the support and returns one. It has priority over ``warm_start``.
 
 The value of ``tol`` in ``solver_kwargs`` replaces the ``tol`` argument of the solve.
+A start value needs 8 more bytes for each node until the solve starts. The memory estimate includes these bytes.
+Use ``warm_start`` when you solve again after a small change, for example a new weight. The solve then needs fewer iterations.
 Any other keyword is rejected with a ``NotImplementedError``. The message lists the accepted keywords.
 
 Unsupported settings

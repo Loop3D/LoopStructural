@@ -1313,9 +1313,7 @@ class DiscreteInterpolator(GeologicalInterpolator):
         # does not converge must keep the old field, so keep the old array.
         # This is safe only because _pre_solve does not fill c in place.
         previous_c = self.c if solver_choice == "native" else None
-        # Keep the raw kwargs. The native check must see every key.
-        raw_solver_kwargs = dict(solver_kwargs or {})
-        solver_kwargs = dict(raw_solver_kwargs)
+        solver_kwargs = dict(solver_kwargs or {})
         # read the initial guess before _pre_solve clears the previous solution
         x0 = _solver_pipeline.extract_initial_guess(
             solver_kwargs, self.c, self.support, self.dof, logger
@@ -1336,15 +1334,21 @@ class DiscreteInterpolator(GeologicalInterpolator):
             # Import here. The core is not loaded when the package is imported.
             from . import _native
 
-            _native.check_supported(
-                self, getattr(self, "_setup_kwargs", {}), raw_solver_kwargs
-            )
+            # The ridge and start value keys are already taken out of
+            # solver_kwargs. The core gets them as arguments.
+            _native.check_supported(self, getattr(self, "_setup_kwargs", {}), solver_kwargs)
             if len(self.constraints) > 0:
                 # The rows come from a matrix setup. The core ignores them.
                 logger.warning(
                     'solver="native" saves memory only when it is set before setup'
                 )
-            converged = _native.solve(self, tol, raw_solver_kwargs)
+            converged = _native.solve(
+                self,
+                tol,
+                solver_kwargs,
+                x0=x0,
+                ridge_factor=ridge_factor if add_ridge else 0.0,
+            )
             self.up_to_date = bool(converged)
             # _native.solve sets the timing with a "total" key. Keep it.
             timing_native = dict(getattr(self, "latest_solve_timing", None) or {})

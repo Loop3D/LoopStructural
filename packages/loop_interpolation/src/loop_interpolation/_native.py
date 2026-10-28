@@ -56,7 +56,11 @@ Python column layouts are x y z | data | weight.
   regularisation sample points (the nodes) and passed with its weight.
 * A constraint family with weight 0 is not sent to the core. The core
   raises an error for a weight of 0.
-* ``ridge_factor`` has no setting in the core. It is not mapped.
+* ``ridge_factor`` goes to ``Problem.set_ridge_factor``. ``solve_system``
+  gives the value of the solve (``solver_kwargs`` or the interpolator
+  default). When the ridge is off, the adapter sends 0.
+* The start value (``x0`` or ``warm_start`` in ``solver_kwargs``) goes to
+  ``Problem.set_initial_guess``. Without it the core starts from 0.
 * Column scaling (``apply_scaling_matrix``) is ignored for any value. It
   changes the conditioning of the matrix, not the minimiser. One info line
   says that the adapter skips it.
@@ -456,7 +460,7 @@ def _add_regularisation(problem, interpolator, setup_kwargs) -> None:
         problem.add_directional_regularisation(_flat(vectors), float(term.weight))
 
 
-def solve(interpolator, tol, solver_kwargs) -> bool:
+def solve(interpolator, tol, solver_kwargs, x0=None, ridge_factor=None) -> bool:
     """Solve the interpolation problem with the native core.
 
     Parameters
@@ -466,7 +470,14 @@ def solve(interpolator, tol, solver_kwargs) -> bool:
         Relative residual tolerance. ``None`` keeps the default of the core.
     solver_kwargs : dict or None
         Keys: tol, maxiter, precision, budget_bytes, rho, inner_max_iter,
-        inner_tol, admm_abs_tol, admm_rel_tol.
+        inner_tol, admm_abs_tol, admm_rel_tol. ``solve_system`` takes out the
+        keys ridge_factor, add_ridge_regularisation, warm_start and x0 and
+        gives them as ``x0`` and ``ridge_factor``.
+    x0 : np.ndarray or None
+        Start value, one value for each node. ``None`` starts from 0.
+    ridge_factor : float or None
+        Ridge factor. 0 removes the ridge term. ``None`` keeps the default
+        of the core (1e-8).
 
     Returns
     -------
@@ -507,6 +518,10 @@ def solve(interpolator, tol, solver_kwargs) -> bool:
     _add_regularisation(problem, interpolator, setup_kwargs)
     _add_data(problem, interpolator)
     _add_inequalities(problem, interpolator, setup_kwargs)
+    if ridge_factor is not None:
+        problem.set_ridge_factor(float(ridge_factor))
+    if x0 is not None:
+        problem.set_initial_guess(np.ascontiguousarray(x0, dtype=np.float64))
 
     # tol: the solver_kwargs value wins over the tol argument.
     settings = _core_settings(solver_kwargs.get("tol", tol), solver_kwargs)
