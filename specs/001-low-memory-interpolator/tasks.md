@@ -483,7 +483,7 @@ Phase E of the plan (was F). It changes the vector type, not the algorithm.
   - Wave: 20
   - Done when: `npm --prefix packages/loop_interpolation_core/tests_web test -- reference` prints peak `memoryBytes` (at most 100 000 000 for R1), solve time, and the max difference from `target/r1_field.f64` (at most 1e-6 of the range). The spec is skipped unless the environment variable `RUN_REFERENCE=1` is set.
   - Blocked by: OP1
-- [ ] T053 [P] [Finish] [M] Write the CI workflow with path filters.
+- [x] T053 [P] [Finish] [M] Write the CI workflow with path filters.
   - Do: Trigger on `packages/loop_interpolation_core/**`, `packages/loop_interpolation/src/loop_interpolation/_native.py` and the workflow file. Also `workflow_dispatch`.
   - Do: `rust`: `cargo fmt --check`, `cargo clippy -- -D warnings` (no features, `parallel`, `wasm` on target `wasm32-unknown-unknown`, `python`), `cargo test` (with and without `parallel`).
   - Do: `wheel`: maturin build, install, run `pytest packages/loop_interpolation/tests` on ubuntu, windows and macos.
