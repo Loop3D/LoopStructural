@@ -327,6 +327,9 @@ class DiscreteInterpolator(GeologicalInterpolator):
 
         """
         self.constraints = {}
+        # setup_interpolator sets these two values again when it ends.
+        self._native_setup = False
+        self._setup_constraint_names = None
         self.c_ = 0
         self.regularisation_scale = np.ones(self.dof)
         logger.info("Resetting interpolation constraints")
@@ -1262,12 +1265,28 @@ class DiscreteInterpolator(GeologicalInterpolator):
             True if the interpolation is run
 
         """
+        solver_choice = self._normalise_solver_choice(solver)
+        # A native setup builds no sparse rows. A matrix solver needs them.
+        # Check this before _pre_solve, so that the old field stays.
+        if getattr(self, "_native_setup", False) and solver_choice != "native":
+            raise ValueError(
+                "The interpolator was set up with solver='native', so it has no "
+                "sparse rows. Run setup again with the new solver, or use "
+                "solver='native'."
+            )
+        # _pre_solve makes a new c array filled with NaN. A native solve that
+        # does not converge must keep the old field, so keep the old array.
+        # This is safe only because _pre_solve does not fill c in place.
+        previous_c = self.c if solver_choice == "native" else None
         if not self._pre_solve():
             raise ValueError("Pre solve failed")
 
         solve_started = perf_counter()
-        solver_choice = self._normalise_solver_choice(solver)
         if solver_choice == "native":
+            self.c = previous_c
+            # Clear the history and the timing keys of an earlier matrix solve.
+            self.solver_history = None
+            self.latest_solve_timing = _solver_pipeline.init_timing("native")
             # Import here. The core is not loaded when the package is imported.
             from . import _native
 
@@ -1277,6 +1296,7 @@ class DiscreteInterpolator(GeologicalInterpolator):
                 self, getattr(self, "_setup_kwargs", {}), raw_solver_kwargs
             )
             if len(self.constraints) > 0:
+                # The rows come from a matrix setup. The core ignores them.
                 logger.warning(
                     'solver="native" saves memory only when it is set before setup'
                 )

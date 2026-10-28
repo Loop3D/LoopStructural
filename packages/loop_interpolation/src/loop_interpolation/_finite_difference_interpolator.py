@@ -194,6 +194,11 @@ class FiniteDifferenceInterpolator(DiscreteInterpolator):
             # run again from update(): reset() already cleared the rows.
             self.matrix_free_regularisation_blocks = {}
             self.regularisation_matrix_free = False
+            # add_inequality_pairs_constraints and add_value_inequality_constraints
+            # only build sparse inequality rows. They store no raw data. The
+            # core reads the raw inequality data itself, so we skip them here.
+            self._native_setup = True
+            self._setup_constraint_names = frozenset(self.constraints)
             # The report uses the raw data, not the rows, so it is still valid.
             return self.finalize_setup_diagnostics_report()
         self.regularisation_matrix_free = bool(kwargs.get("regularisation_matrix_free", False))
@@ -233,6 +238,8 @@ class FiniteDifferenceInterpolator(DiscreteInterpolator):
             self.assemble_inner(o[0], o[1], name=k)
         self.add_directional_regularisation(regularisation_config.directional)
         self.assemble_borders()
+        # The rows up to here come from setup. Any other row is an extra row.
+        self._setup_constraint_names = frozenset(self.constraints)
         return self.finalize_setup_diagnostics_report()
 
     def copy(self):

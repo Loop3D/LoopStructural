@@ -118,3 +118,137 @@ def test_native_without_core_raises_import_error_with_install_hint(monkeypatch):
 
     with pytest.raises(ImportError, match=re.escape("pip install loop-interpolation[native]")):
         interp.solve_system(solver="native")
+
+
+# --- Interpolator classes and sparse-only rows (review finding 1) ---
+
+
+def _fold_grid_data():
+    return np.array([[1.0, 1.0, 1.0, 0.0, 1.0], [2.0, 2.0, 2.0, 1.0, 1.0]])
+
+
+def test_native_rejects_p1_interpolator():
+    from loop_common.supports import TetMesh
+    from loop_interpolation import PiecewiseLinearInterpolator as P1
+
+    interp = P1(TetMesh())
+    with pytest.raises(NotImplementedError, match="FiniteDifferenceInterpolator"):
+        interp.solve_system(solver="native")
+
+
+def test_native_rejects_fd_fold_subclass():
+    from loop_interpolation import FDFoldInterpolator
+
+    interp = FDFoldInterpolator(_make_grid())
+    with pytest.raises(NotImplementedError, match="FDFoldInterpolator"):
+        interp.solve_system(solver="native")
+
+
+def test_native_accepts_subclass_with_flag():
+    from loop_interpolation import _native
+
+    class Flagged(FiniteDifferenceInterpolator):
+        supports_native = True
+
+    _native.check_supported(Flagged(_make_grid()), {}, {})
+    _native.check_supported(FiniteDifferenceInterpolator(_make_grid()), {}, {})
+
+
+def test_native_rejects_subclass_without_flag():
+    class Plain(FiniteDifferenceInterpolator):
+        pass
+
+    with pytest.raises(NotImplementedError, match="Plain"):
+        Plain(_make_grid()).solve_system(solver="native")
+
+
+def test_native_rejects_subclass_of_flagged_subclass():
+    class Flagged(FiniteDifferenceInterpolator):
+        supports_native = True
+
+    class Child(Flagged):
+        pass
+
+    with pytest.raises(NotImplementedError, match="Child"):
+        Child(_make_grid()).solve_system(solver="native")
+
+
+def test_native_rejects_sparse_only_least_squares_rows():
+    interp = _build_interpolator()
+    interp.solver = "native"
+    interp.setup_interpolator()
+    interp.add_constraints_to_least_squares(
+        np.array([[1.0]]), np.array([0.0]), np.array([[0]]), name="extra"
+    )
+    with pytest.raises(NotImplementedError, match="add_constraints_to_least_squares"):
+        interp.solve_system(solver="native")
+
+
+def test_native_rejects_extra_rows_after_matrix_setup():
+    interp = _build_interpolator()
+    interp.solver = "cg"
+    interp.setup_interpolator()
+    assert len(interp.constraints) > 0
+    interp.add_constraints_to_least_squares(
+        np.array([[1.0]]), np.array([0.0]), np.array([[0]]), name="extra"
+    )
+    with pytest.raises(NotImplementedError, match="add_constraints_to_least_squares"):
+        interp.solve_system(solver="native")
+
+
+def test_native_setup_then_matrix_solver_raises_value_error():
+    interp = _build_interpolator()
+    interp.solver = "native"
+    interp.setup_interpolator()
+    with pytest.raises(ValueError, match="setup"):
+        interp.solve_system(solver="cg")
+    # The failed call must not destroy the old field.
+    assert not np.all(np.isnan(interp.c))
+
+
+def test_native_setup_keeps_setup_kwargs_and_builds_no_rows():
+    interp = _build_interpolator()
+    interp.solver = "native"
+    interp.setup_interpolator(cpw=2.0)
+    assert interp._setup_kwargs == {"cpw": 2.0}
+    assert interp._native_setup
+    assert len(interp.constraints) == 0
+    assert len(interp.ineq_constraints) == 0
+    assert interp._setup_constraint_names == frozenset()
+
+
+def test_second_setup_gives_new_snapshot_and_flag():
+    interp = _build_interpolator()
+    interp.solver = "native"
+    interp.setup_interpolator()
+    assert interp._native_setup
+    # A new setup with a matrix solver clears the flag and records the new rows.
+    interp.solver = "cg"
+    interp.setup_interpolator()
+    assert not interp._native_setup
+    assert interp._setup_constraint_names == frozenset(interp.constraints)
+    assert len(interp._setup_constraint_names) > 0
+    assert interp.solve_system(solver="cg") in (True, False)
+    # reset() clears the flag and the snapshot.
+    interp.solver = "native"
+    interp.setup_interpolator()
+    interp.reset()
+    assert not interp._native_setup
+    assert interp._setup_constraint_names is None
+
+
+def test_native_rejects_inequality_feature():
+    interp = _build_interpolator()
+    interp.solver = "native"
+    interp.setup_interpolator()
+    interp.add_inequality_feature(lambda xyz: xyz[:, 2], lower=True)
+    with pytest.raises(NotImplementedError, match="add_inequality_feature"):
+        interp.solve_system(solver="native")
+
+
+def test_native_accepts_normal_data_rows_after_native_setup():
+    pytest.importorskip("loop_interpolation_core")
+    interp = _build_interpolator()
+    interp.solver = "native"
+    interp.setup_interpolator()
+    assert interp.solve_system(solver="native") in (True, False)

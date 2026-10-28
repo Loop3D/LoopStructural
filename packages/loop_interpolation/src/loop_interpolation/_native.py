@@ -105,6 +105,37 @@ def check_supported(interpolator, setup_kwargs, solver_kwargs) -> None:
     setup_kwargs = dict(setup_kwargs or {})
     solver_kwargs = dict(solver_kwargs or {})
 
+    # Only the plain finite difference class is known to match the core.
+    # A subclass must set the class attribute supports_native = True in its
+    # own body. The flag is not inherited, so a subclass of a supported
+    # subclass must set it again.
+    # Fold, P1 and P2 interpolators add terms that the core cannot represent.
+    from ._finite_difference_interpolator import FiniteDifferenceInterpolator
+
+    cls = type(interpolator)
+    if cls is not FiniteDifferenceInterpolator and not cls.__dict__.get("supports_native", False):
+        raise _unsupported(
+            "interpolator class",
+            f"{cls.__name__} is not supported; the core works with "
+            "FiniteDifferenceInterpolator on a uniform structured grid",
+        )
+
+    # Sparse rows that the user adds are not in the raw data. The core cannot
+    # read them. setup_interpolator records the names of the rows that it
+    # made itself. Each other name in "constraints" is an extra row. This
+    # is true after a native setup and after a matrix setup. The rows of
+    # "inequality_feature" are always extra.
+    if "inequality_feature" in getattr(interpolator, "ineq_constraints", {}):
+        raise _unsupported(
+            "add_inequality_feature", "the core reads only the raw data, not sparse rows"
+        )
+    setup_names = getattr(interpolator, "_setup_constraint_names", None) or frozenset()
+    if set(getattr(interpolator, "constraints", None) or {}) - setup_names:
+        raise _unsupported(
+            "add_constraints_to_least_squares",
+            "the core reads only the raw data, not sparse rows",
+        )
+
     support = interpolator.support
     if getattr(support, "dimension", None) != 3:
         raise _unsupported("2D support", "the core works on 3D structured grids")
@@ -338,6 +369,19 @@ def solve(interpolator, tol, solver_kwargs) -> bool:
     -------
     bool
         True when the solve converged.
+
+    Notes
+    -----
+    ``interpolator.c`` changes only when the solve converged. When the solve
+    does not converge, ``c`` keeps its old value. The partial field is in
+    ``interpolator.latest_native_report["field"]``. A converged report has no
+    ``field`` key. The matrix solvers (for example ``cg``) differ here. They
+    write the last iterate to ``c`` also when they do not converge.
+
+    The defaults of the core are ``tol=1e-8`` and ``maxiter=5000``. The
+    ``cg`` matrix solver uses ``rtol=1e-8``. Its ``maxiter`` is the scipy
+    default, 10 times the number of nodes. So the native solver can stop
+    earlier on large grids. Set ``maxiter`` to get the same limit.
     """
     started = perf_counter()
     solver_kwargs = dict(solver_kwargs or {})
@@ -365,9 +409,21 @@ def solve(interpolator, tol, solver_kwargs) -> bool:
     settings = _core_settings(solver_kwargs.get("tol", tol), solver_kwargs)
     field, report = problem.solve(settings)
 
-    interpolator.c = field
-    interpolator.latest_native_report = report
+    # The core can return float32. ``c`` is always float64.
+    field = np.asarray(field, dtype=np.float64)
+    if field.shape[0] != support.n_nodes:
+        raise RuntimeError(
+            f"The native solver returned {field.shape[0]} values. "
+            f"The support has {support.n_nodes} nodes."
+        )
+
     converged = bool(report.get("converged", False))
+    if converged:
+        interpolator.c = field
+    else:
+        # Keep the old ``c``. Give the partial field in the report.
+        report["field"] = field
+    interpolator.latest_native_report = report
     if not converged:
         logger.warning(
             "The native solver did not converge: %s iterations, residual %s.",

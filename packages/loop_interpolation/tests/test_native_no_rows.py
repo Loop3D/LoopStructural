@@ -92,6 +92,119 @@ def test_update_after_native_setup_keeps_field():
     assert np.allclose(_field(interpolator), first, rtol=1e-9, atol=1e-9)
 
 
+def test_native_not_converged_keeps_old_field():
+    """A solve that does not converge returns False and keeps the old ``c``."""
+    pytest.importorskip("loop_interpolation_core")
+    interpolator = _make_interpolator("native")
+    interpolator.setup(**SETUP_KWARGS)
+    interpolator._setup_kwargs = dict(SETUP_KWARGS)
+    old = np.full(interpolator.support.n_nodes, 7.0)
+    interpolator.c = old.copy()
+    # Call solve directly. This tests the adapter without solve_system.
+    from loop_interpolation import _native
+
+    converged = _native.solve(interpolator, None, {"maxiter": 1})
+    assert converged is False
+    assert np.array_equal(interpolator.c, old)
+    report = interpolator.latest_native_report
+    assert report["converged"] is False
+    partial = np.asarray(report["field"])
+    assert partial.shape[0] == interpolator.support.n_nodes
+    assert not np.array_equal(partial, old)
+
+
+def test_native_via_solve_system_keeps_old_field_when_not_converged():
+    """``solve_system`` keeps the old ``c`` when the native solve stops early."""
+    pytest.importorskip("loop_interpolation_core")
+    interpolator = _make_interpolator("native")
+    interpolator.setup(**SETUP_KWARGS)
+    interpolator._setup_kwargs = dict(SETUP_KWARGS)
+    assert interpolator.solve_system("native") is True
+    old = _field(interpolator)
+    converged = interpolator.solve_system("native", solver_kwargs={"maxiter": 1})
+    assert converged is False
+    assert interpolator.up_to_date is False
+    assert np.array_equal(interpolator.c, old)
+    assert "field" in interpolator.latest_native_report
+
+
+def test_native_after_cg_resets_history_and_timing():
+    """A native solve after a cg solve clears the cg history and timing keys."""
+    pytest.importorskip("loop_interpolation_core")
+    interpolator = _make_interpolator("cg")
+    interpolator.setup(**SETUP_KWARGS)
+    interpolator.solve_system("cg", tol=1e-8)
+    cg_keys = set(interpolator.latest_solve_timing) - {
+        "solver",
+        "total",
+        "total_seconds",
+        "iterations",
+        "up_to_date",
+    }
+    assert cg_keys
+    interpolator.solver_history = [1.0]
+    assert interpolator.solve_system("native") is True
+    assert interpolator.solver_history is None
+    timing = interpolator.latest_solve_timing
+    assert timing["solver"] == "native"
+    assert not (set(timing) & cg_keys)
+
+
+def test_native_converged_report_has_no_field():
+    """A converged solve writes ``c`` and keeps the field out of the report."""
+    pytest.importorskip("loop_interpolation_core")
+    interpolator = _make_interpolator("native")
+    interpolator.setup(**SETUP_KWARGS)
+    interpolator._setup_kwargs = dict(SETUP_KWARGS)
+    assert interpolator.solve_system("native") is True
+    assert "field" not in interpolator.latest_native_report
+    assert interpolator.c.shape[0] == interpolator.support.n_nodes
+
+
+def test_native_f32_precision_gives_float64_field():
+    """The f32 solve returns a float64 ``c``."""
+    pytest.importorskip("loop_interpolation_core")
+    from loop_interpolation import _native
+
+    interpolator = _make_interpolator("native")
+    interpolator.setup(**SETUP_KWARGS)
+    interpolator._setup_kwargs = dict(SETUP_KWARGS)
+    assert _native.solve(interpolator, None, {"precision": "f32", "tol": 1e-3}) is True
+    assert interpolator.c.dtype == np.float64
+
+
+@pytest.mark.parametrize("converged", [True, False])
+def test_native_wrong_field_length_raises(monkeypatch, converged):
+    """A field with the wrong length raises RuntimeError and keeps ``c``."""
+    import types
+
+    from loop_interpolation import _native
+
+    class FakeProblem:
+        def __init__(self, *args):
+            pass
+
+        def __getattr__(self, name):
+            return lambda *args, **kwargs: None
+
+        def solve(self, settings):
+            return np.zeros(3, dtype=np.float32), {"converged": converged}
+
+    fake = types.SimpleNamespace(Problem=FakeProblem)
+    monkeypatch.setitem(sys.modules, "loop_interpolation_core", fake)
+    monkeypatch.setattr(_native, "_core_settings", lambda *args, **kwargs: {})
+    interpolator = _make_interpolator("native")
+    interpolator.setup(**SETUP_KWARGS)
+    interpolator._setup_kwargs = dict(SETUP_KWARGS)
+    old = np.full(interpolator.support.n_nodes, 7.0)
+    interpolator.c = old.copy()
+    interpolator.latest_native_report = None
+    with pytest.raises(RuntimeError, match="3"):
+        _native.solve(interpolator, None, {})
+    assert np.array_equal(interpolator.c, old)
+    assert interpolator.latest_native_report is None
+
+
 def test_import_does_not_import_core():
     """(d) Import of loop_interpolation never imports the core."""
     code = (
