@@ -147,3 +147,5 @@ sandbox/*
 # loop_interpolation_core build output (wasm pkg) and browser test dependencies
 packages/loop_interpolation_core/pkg/
 packages/loop_interpolation_core/tests_web/node_modules/
+packages/loop_interpolation_core/tests_web/test-results/
+packages/loop_interpolation_core/tests_web/playwright-report/
