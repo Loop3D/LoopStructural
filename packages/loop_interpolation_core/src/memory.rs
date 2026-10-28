@@ -94,7 +94,10 @@ pub struct ProblemCounts {
     /// True when directional regularisation is on.
     pub uses_directional: bool,
     /// True when the problem has a start value (8 bytes for each dof).
-    pub has_initial_guess: bool,
+    pub has_start: bool,
+    /// True when the operator uses the per-class stencil: every axis has at
+    /// least 7 nodes and there is no directional regularisation.
+    pub class_stencil: bool,
 }
 
 // Memory model. All numbers come from the counting allocator, for grids
@@ -128,16 +131,26 @@ pub struct ProblemCounts {
 // 4400 bytes for each `n`.
 //
 // Fixed: conflict-check table, small tables and allocator slack.
+//
+// Per-class stencil (the default when every axis has 7 or more nodes and
+// there is no directional regularisation): there is no shell lookup, no
+// scratch buffer and no surface term. Measured for 30^3, 45^3 and 60^3 with
+// `f64`, the peak grows by exactly the 40 vector bytes for each dof. The
+// final residual check of `f32` needs 16 bytes for each dof, which is less
+// than its 20 vector bytes. The estimate keeps 1 working byte for each dof
+// and adds the kernel table (`class_stencil::MAX_BYTES`) to the fixed part.
 const VECTOR_BYTES_PER_DOF: u64 = 40;
 /// Vector bytes for each dof with `f32`.
 const VECTOR_BYTES_PER_DOF_F32: u64 = 20;
 const WORKING_BYTES_PER_DOF: u64 = 8 + 4 + 1;
 /// Working bytes for each dof with `f32`.
 const WORKING_BYTES_PER_DOF_F32: u64 = 1;
+/// Working bytes for each dof with the per-class stencil (`f64` and `f32`).
+const CLASS_WORKING_BYTES_PER_DOF: u64 = 1;
 const ADMM_BYTES_PER_DOF: u64 = 0;
 const DIRECTIONAL_BYTES_PER_DOF: u64 = 48;
 /// Start value of the solve (f64), only if it is set.
-const INITIAL_GUESS_BYTES_PER_DOF: u64 = 8;
+const START_BYTES_PER_DOF: u64 = 8;
 /// Bytes for each `n^2` (shell and border scratch).
 const SURFACE_BYTES_PER_NODE: u64 = 1020;
 /// Bytes taken off for each `n` (the border of a small grid).
@@ -197,7 +210,9 @@ pub fn estimate(c: &ProblemCounts, s: &Settings) -> MemoryEstimate {
         .saturating_add(c.n_value_bound.saturating_mul(VALUE_BOUND_RECORD));
 
     // Working memory: tables, scratch, ADMM extra, directional weights.
-    let mut per_dof = if f32 {
+    let mut per_dof = if c.class_stencil {
+        CLASS_WORKING_BYTES_PER_DOF
+    } else if f32 {
         WORKING_BYTES_PER_DOF_F32
     } else {
         WORKING_BYTES_PER_DOF
@@ -211,18 +226,24 @@ pub fn estimate(c: &ProblemCounts, s: &Settings) -> MemoryEstimate {
     if c.uses_directional {
         per_dof += DIRECTIONAL_BYTES_PER_DOF;
     }
-    if c.has_initial_guess {
+    if c.has_start {
         // The f64 start value stays until the solver vectors are made.
-        per_dof += INITIAL_GUESS_BYTES_PER_DOF;
+        per_dof += START_BYTES_PER_DOF;
     }
     working = working.saturating_add(dof.saturating_mul(per_dof));
-    let axis = (dof as f64).cbrt();
-    let surface = (axis * axis).round() as u64;
-    let edge = axis.round() as u64;
-    working = working
-        .saturating_add(surface.saturating_mul(SURFACE_BYTES_PER_NODE))
-        .saturating_sub(edge.saturating_mul(EDGE_BYTES_PER_NODE))
-        .saturating_add(FIXED_BYTES);
+    if c.class_stencil {
+        working = working
+            .saturating_add(crate::class_stencil::MAX_BYTES)
+            .saturating_add(FIXED_BYTES);
+    } else {
+        let axis = (dof as f64).cbrt();
+        let surface = (axis * axis).round() as u64;
+        let edge = axis.round() as u64;
+        working = working
+            .saturating_add(surface.saturating_mul(SURFACE_BYTES_PER_NODE))
+            .saturating_sub(edge.saturating_mul(EDGE_BYTES_PER_NODE))
+            .saturating_add(FIXED_BYTES);
+    }
 
     // Total with the margin. Use `u128` so that it cannot overflow.
     let sum = vectors as u128 + constraints as u128 + working as u128;

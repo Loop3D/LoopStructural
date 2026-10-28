@@ -1,4 +1,4 @@
-//! Tests of the start value (`set_initial_guess`) and the ridge factor
+//! Tests of the start value (`set_start`) and the ridge factor
 //! (`set_ridge_factor`). A warm start must give the same field as a cold
 //! start, and a start at the solution must need almost no iterations.
 
@@ -88,11 +88,18 @@ fn cg_warm_start_at_the_solution_needs_few_iterations() {
     let (cold, cold_report) = run(base_problem(), settings());
     assert!(cold_report.converged);
     let mut p = base_problem();
-    p.set_initial_guess(&cold.values_f64()).unwrap();
+    p.set_start(&cold.values_f64()).unwrap();
     let (warm, warm_report) = run(p, settings());
     assert!(warm_report.converged);
+    println!(
+        "start at the solution: {} iterations, cold: {}",
+        warm_report.iterations, cold_report.iterations
+    );
+    // The recursive residual of the cold solve is below the tolerance. The
+    // true residual of the same field can be a little above it, so a few
+    // iterations are allowed.
     assert!(
-        warm_report.iterations * 10 < cold_report.iterations,
+        warm_report.iterations <= 3,
         "warm {} cold {}",
         warm_report.iterations,
         cold_report.iterations
@@ -101,11 +108,77 @@ fn cg_warm_start_at_the_solution_needs_few_iterations() {
     assert!(max_diff(&warm.values_f64(), &cold) <= 1e-6 * range_of(&cold));
 }
 
+/// Data for the nested test: value = a smooth function, at points inside
+/// [1, 18]^3 (physical units, the same for both grids).
+fn add_nested_data(p: &mut Problem) {
+    let mut points = Vec::new();
+    let mut values = Vec::new();
+    for a in 0..6 {
+        for b in 0..6 {
+            for c in 0..4 {
+                let q = [
+                    1.0 + 3.2 * a as f64,
+                    1.5 + 3.1 * b as f64,
+                    2.0 + 4.7 * c as f64,
+                ];
+                values.push(0.1 * q[0] + 0.05 * q[1] * q[1] / 18.0 + 0.2 * (q[2] * 0.3).sin());
+                points.extend_from_slice(&q);
+            }
+        }
+    }
+    let weights = vec![1.0; values.len()];
+    p.add_value(&points, &values, &weights).unwrap();
+}
+
+/// Nested iteration: solve on 10^3, evaluate that field at the nodes of a
+/// 20^3 grid with the same extent, and use it as the start of the 20^3
+/// solve. The result equals a cold 20^3 solve within SC-003 (1e-6 of the
+/// field range).
+#[test]
+fn nested_10_to_20_equals_a_cold_solve() {
+    const EXTENT: f64 = 19.0;
+    let mut coarse = Problem::new([0.0; 3], [10; 3], [EXTENT / 9.0; 3]).unwrap();
+    add_nested_data(&mut coarse);
+    let (coarse_field, coarse_report) = run(coarse, settings());
+    assert!(coarse_report.converged);
+
+    // Fine nodes in the node order of the grid (x fastest).
+    let mut nodes = Vec::with_capacity(3 * 20 * 20 * 20);
+    for k in 0..20 {
+        for j in 0..20 {
+            for i in 0..20 {
+                nodes.extend_from_slice(&[i as f64, j as f64, k as f64]);
+            }
+        }
+    }
+    let start = coarse_field.evaluate(&nodes).unwrap();
+
+    let mut cold_problem = Problem::new([0.0; 3], [20; 3], [1.0; 3]).unwrap();
+    add_nested_data(&mut cold_problem);
+    let (cold, cold_report) = run(cold_problem, settings());
+    assert!(cold_report.converged);
+
+    let mut nested_problem = Problem::new([0.0; 3], [20; 3], [1.0; 3]).unwrap();
+    add_nested_data(&mut nested_problem);
+    nested_problem.set_start(&start).unwrap();
+    let (nested, nested_report) = run(nested_problem, settings());
+    assert!(nested_report.converged);
+    println!(
+        "nested: {} iterations (+{} on 10^3), cold: {}",
+        nested_report.iterations, coarse_report.iterations, cold_report.iterations
+    );
+
+    let cold = cold.values_f64();
+    let diff = max_diff(&nested.values_f64(), &cold);
+    assert!(diff <= 1e-6 * range_of(&cold), "difference {diff}");
+    assert!(nested_report.iterations <= cold_report.iterations);
+}
+
 #[test]
 fn cg_warm_start_from_a_rough_start_gives_the_same_field() {
     let (cold, _) = run(base_problem(), settings());
     let mut p = base_problem();
-    p.set_initial_guess(&rough_start()).unwrap();
+    p.set_start(&rough_start()).unwrap();
     let (warm, report) = run(p, settings());
     assert!(report.converged);
     let cold = cold.values_f64();
@@ -124,7 +197,7 @@ fn f32_warm_start_at_the_solution_converges() {
     let (cold, cold_report) = run(base_problem(), s.clone());
     assert!(cold_report.converged, "{cold_report:?}");
     let mut p = base_problem();
-    p.set_initial_guess(&cold.values_f64()).unwrap();
+    p.set_start(&cold.values_f64()).unwrap();
     let (_, warm_report) = run(p, s);
     assert!(warm_report.converged);
     assert!(warm_report.iterations <= cold_report.iterations);
@@ -138,7 +211,7 @@ fn admm_warm_start_gives_the_same_field() {
     let range = range_of(&cold);
     for start in [cold.clone(), rough_start()] {
         let mut p = bound_problem();
-        p.set_initial_guess(&start).unwrap();
+        p.set_start(&start).unwrap();
         let (warm, report) = run(p, settings());
         assert!(report.converged);
         let warm = warm.values_f64();
@@ -150,29 +223,29 @@ fn admm_warm_start_gives_the_same_field() {
 }
 
 #[test]
-fn initial_guess_is_checked() {
+fn start_is_checked() {
     let mut p = base_problem();
     let short = vec![0.0; N * N * N - 1];
     assert!(matches!(
-        p.set_initial_guess(&short),
+        p.set_start(&short),
         Err(CoreError::InvalidInput { .. })
     ));
     let mut bad = vec![0.0; N * N * N];
     bad[7] = f64::NAN;
-    match p.set_initial_guess(&bad) {
+    match p.set_start(&bad) {
         Err(CoreError::InvalidInput { constraint, .. }) => {
-            assert_eq!(constraint, "initial_guess[7]")
+            assert_eq!(constraint, "start[7]")
         }
         other => panic!("expected InvalidInput, got {other:?}"),
     }
 }
 
 #[test]
-fn initial_guess_is_in_the_memory_estimate() {
+fn start_is_in_the_memory_estimate() {
     let s = settings();
     let mut p = base_problem();
     let without = p.estimate_memory(&s).unwrap().total;
-    p.set_initial_guess(&vec![0.0; N * N * N]).unwrap();
+    p.set_start(&vec![0.0; N * N * N]).unwrap();
     let with = p.estimate_memory(&s).unwrap().total;
     assert!(with >= without + 8 * (N * N * N) as u64);
 }

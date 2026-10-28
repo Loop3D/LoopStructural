@@ -95,7 +95,9 @@ Memory estimate
 The core estimates the memory of a solve before it starts. The estimate uses only the counts of the problem. It does not allocate memory.
 The estimate has four parts, in bytes: ``vectors``, ``constraints``, ``working`` and ``total``.
 
-The solver vectors dominate the estimate. For conjugate gradient in double precision, a solve needs about 63 bytes for each node (measured for a 100 by 100 by 100 grid).
+The solver vectors dominate the estimate. For conjugate gradient in double precision, a solve needs about 40 bytes for each node (measured for a 100 by 100 by 100 grid).
+This is true when each axis has 7 or more nodes and there is no directional regularisation. Then the solver applies the regularisation with one stencil for each class of node, and it needs no other buffer for each node.
+For a smaller grid, or with directional regularisation, the solver uses the older operator, and a solve needs about 63 bytes for each node.
 The ADMM solver, for problems with bounds, needs about the same memory. It keeps a few more values for each bound, not for each node. The constraint records need more memory in addition to these values.
 
 With ``precision="f32"``, the vector part is half of the value for double precision.

@@ -124,7 +124,7 @@ pub struct Problem {
     uses_directional: bool,
     /// Start value of the solve (one value for each node). `None`: zero.
     /// The session takes it when it starts.
-    pub(crate) initial_guess: Option<Vec<f64>>,
+    pub(crate) start: Option<Vec<f64>>,
 }
 
 impl fmt::Debug for Problem {
@@ -222,7 +222,7 @@ impl Problem {
             seen_values: Some(HashMap::new()),
             value_rows: 0,
             uses_directional: false,
-            initial_guess: None,
+            start: None,
         })
     }
 
@@ -242,8 +242,8 @@ impl Problem {
 
     /// Set the start value of the solve, one value for each node in the
     /// node order of the grid. Without a start value the solve starts at 0.
-    pub fn set_initial_guess(&mut self, x0: &[f64]) -> Result<(), CoreError> {
-        const F: &str = "initial_guess";
+    pub fn set_start(&mut self, x0: &[f64]) -> Result<(), CoreError> {
+        const F: &str = "start";
         check_len(F, "x0", x0.len(), self.interp().dof())?;
         if let Some(i) = x0.iter().position(|v| !v.is_finite()) {
             return Err(bad_row(F, i, "value is not finite"));
@@ -254,7 +254,7 @@ impl Problem {
                 requested_bytes: (x0.len() as u64).saturating_mul(8),
             })?;
         v.extend_from_slice(x0);
-        self.initial_guess = Some(v);
+        self.start = Some(v);
         Ok(())
     }
 
@@ -530,7 +530,12 @@ impl Problem {
             n_pair_bound: i.n_inequality_pair_constraints() as u64,
             n_value_bound: i.n_value_inequality_constraints() as u64,
             uses_directional: self.uses_directional,
-            has_initial_guess: self.initial_guess.is_some(),
+            has_start: self.start.is_some(),
+            class_stencil: !self.uses_directional
+                && i.grid
+                    .nsteps
+                    .iter()
+                    .all(|&n| n >= crate::class_stencil::MIN_AXIS_NODES),
         }
     }
 

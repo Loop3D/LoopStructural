@@ -60,7 +60,7 @@ Python column layouts are x y z | data | weight.
   gives the value of the solve (``solver_kwargs`` or the interpolator
   default). When the ridge is off, the adapter sends 0.
 * The start value (``x0`` or ``warm_start`` in ``solver_kwargs``) goes to
-  ``Problem.set_initial_guess``. Without it the core starts from 0.
+  ``Problem.set_start``. Without it the core starts from 0.
 * Column scaling (``apply_scaling_matrix``) is ignored for any value. It
   changes the conditioning of the matrix, not the minimiser. One info line
   says that the adapter skips it.
@@ -521,7 +521,7 @@ def solve(interpolator, tol, solver_kwargs, x0=None, ridge_factor=None) -> bool:
     if ridge_factor is not None:
         problem.set_ridge_factor(float(ridge_factor))
     if x0 is not None:
-        problem.set_initial_guess(np.ascontiguousarray(x0, dtype=np.float64))
+        problem.set_start(np.ascontiguousarray(x0, dtype=np.float64))
 
     # tol: the solver_kwargs value wins over the tol argument.
     settings = _core_settings(solver_kwargs.get("tol", tol), solver_kwargs)

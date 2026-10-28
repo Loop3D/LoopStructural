@@ -101,7 +101,7 @@ pub(crate) struct AdmmState<S: Scalar> {
     done: Option<bool>,
     /// True for single precision: NaN and stagnation tests are on.
     single: bool,
-    /// True after `warm_start`: the pre-solve starts from `x`, not from 0.
+    /// True after `restart_from`: the pre-solve starts from `x`, not from 0.
     warm: bool,
 }
 
@@ -241,7 +241,7 @@ impl<S: Scalar> AdmmState<S> {
     }
 
     /// Set the start value `x`. Call it before the first `step`.
-    pub(crate) fn warm_start(&mut self, x0: &[f64]) {
+    pub(crate) fn restart_from(&mut self, x0: &[f64]) {
         debug_assert_eq!(self.phase, Phase::Start);
         self.x
             .par_iter_mut()

@@ -6,6 +6,7 @@
 
 pub mod admm;
 pub mod cg;
+pub(crate) mod class_stencil;
 pub mod error;
 pub mod field;
 pub mod grid;

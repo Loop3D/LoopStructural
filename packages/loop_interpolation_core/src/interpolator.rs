@@ -53,6 +53,7 @@
 
 use crate::PAR_MIN_LEN;
 use crate::cg::{CgResult, conjugate_gradient_preconditioned};
+use crate::class_stencil::ClassKernels;
 use crate::error::CoreError;
 use crate::grid::StructuredGrid3D;
 use crate::memory::MemTracker;
@@ -858,6 +859,10 @@ pub struct FiniteDifferenceInterpolator {
     /// `build_shell_indices`). The tables are empty until `prepare` (or the
     /// first use) builds them. `new` does not allocate them.
     shell: OnceLock<ShellTables>,
+    /// The 343 per-class regularisation kernels (see `class_stencil.rs`).
+    /// `None` inside when the grid has an axis with fewer than 7 nodes.
+    /// Built on first use; rebuilt when the weights change.
+    class_kernels: OnceLock<Option<ClassKernels>>,
     /// Per-node squared weight for each of the six curvature families
     /// (`[dxx, dyy, dzz, dxy, dxz, dyz]`), accumulated across every
     /// [`add_directional_regularisation`](Self::add_directional_regularisation)
@@ -901,6 +906,7 @@ impl FiniteDifferenceInterpolator {
             border_stencils,
             combined_kernel: OnceLock::new(),
             shell: OnceLock::new(),
+            class_kernels: OnceLock::new(),
             directional_weight2: None,
         }
     }
@@ -915,14 +921,17 @@ impl FiniteDifferenceInterpolator {
             (dxz(), weights.dxz),
             (dyz(), weights.dyz),
         ];
-        // The weights changed, so the old kernel is not valid. Drop it.
+        // The weights changed, so the old kernels are not valid. Drop them.
         self.combined_kernel = OnceLock::new();
+        self.class_kernels = OnceLock::new();
         self
     }
 
-    /// Build the shell tables and the combined kernel. Call it once before a
-    /// solve. A second call does nothing. The grid-sized shell lookup is
-    /// counted by `tracker`.
+    /// Build the tables of the regularisation operator: the class kernels,
+    /// or (for a grid with an axis of fewer than 7 nodes, or with
+    /// directional regularisation) the shell tables and the combined
+    /// kernel. Call it once before a solve. A second call does nothing.
+    /// The grid-sized shell lookup is counted by `tracker`.
     #[allow(dead_code)]
     pub(crate) fn prepare(&mut self, tracker: &mut MemTracker) -> Result<(), CoreError> {
         self.ensure_tables(tracker)
@@ -930,6 +939,9 @@ impl FiniteDifferenceInterpolator {
 
     /// As `prepare`, but it takes `&self`. The tables use `OnceLock`.
     fn ensure_tables(&self, tracker: &mut MemTracker) -> Result<(), CoreError> {
+        if self.class_kernels().is_some() {
+            return Ok(());
+        }
         if self.shell.get().is_none() {
             let tables = build_shell_indices(&self.grid, tracker)?;
             // If another thread set the tables first, keep that value.
@@ -953,9 +965,22 @@ impl FiniteDifferenceInterpolator {
             .get_or_init(|| build_combined_kernel(&self.stencils, &self.grid))
     }
 
+    /// The class kernels, if the operator can use them: every axis has at
+    /// least 7 nodes and there is no directional regularisation. Built on
+    /// first use.
+    fn class_kernels(&self) -> Option<&ClassKernels> {
+        if self.directional_weight2.is_some() {
+            return None;
+        }
+        self.class_kernels
+            .get_or_init(|| ClassKernels::build(&self.grid, &self.stencils, &self.border_stencils))
+            .as_ref()
+    }
+
     pub fn with_border_regularisation(mut self, weights: BorderRegularisationWeights) -> Self {
         self.border_regularisation = weights;
         self.border_stencils = build_border_stencils(&self.grid, weights);
+        self.class_kernels = OnceLock::new();
         self
     }
 
@@ -982,7 +1007,12 @@ impl FiniteDifferenceInterpolator {
             .combined_kernel
             .get()
             .map_or(0, |k| k.capacity() * std::mem::size_of::<KernelTap>());
-        shell + directional + kernel
+        let class = self
+            .class_kernels
+            .get()
+            .and_then(|k| k.as_ref())
+            .map_or(0, ClassKernels::bytes);
+        shell + directional + kernel + class
     }
 
     /// Add a scalar value observation at `point` with weight `weight`.
@@ -1575,6 +1605,11 @@ impl FiniteDifferenceInterpolator {
     /// `out` must have `dof()` entries.
     pub(crate) fn write_data_rhs<S: Scalar>(&self, out: &mut [S]) {
         out.iter_mut().for_each(|v| *v = S::from_f64(0.0));
+        self.add_data_rhs(out);
+    }
+
+    /// Add the data right-hand side of `N` to `out`.
+    fn add_data_rhs<S: Scalar>(&self, out: &mut [S]) {
         point_constraints_rhs(&self.value_constraints, out);
         point_constraints_rhs(&self.gradient_constraints, out);
         point_constraints_rhs(&self.norm_constraints, out);
@@ -1621,8 +1656,12 @@ impl FiniteDifferenceInterpolator {
     /// family, per *boundary-shell row* (see `shell_row_indices`; only these
     /// need the exact two-pass computation now that the deep interior is
     /// handled by the fused single-kernel pass), plus one dof-length buffer
-    /// shared (reused sequentially) across the border stencils.
+    /// shared (reused sequentially) across the border stencils. The class
+    /// kernels need no scratch, so the length is 0 when they apply.
     pub fn scratch_len(&self) -> usize {
+        if self.class_kernels().is_some() {
+            return 0;
+        }
         self.shell().rows.len() * N_FAMILIES + self.dof()
     }
 
@@ -1631,7 +1670,11 @@ impl FiniteDifferenceInterpolator {
     /// first and the border part after it, so the two can overlap. The
     /// length is at least `dof`, so that the final residual check can keep
     /// `rhs` in the buffer. Use it only with the `f32` session and that check.
+    /// The class kernels need no scratch, so the length is 0 when they apply.
     pub(crate) fn scratch_len_compact(&self) -> usize {
+        if self.class_kernels().is_some() {
+            return 0;
+        }
         (self.shell().rows.len() * N_FAMILIES).max(self.dof())
     }
 
@@ -1918,7 +1961,17 @@ impl FiniteDifferenceInterpolator {
     /// parallel pass (`out[i] = ridge^2 * x[i]`, or zero if there's no ridge
     /// damping) rather than a serial zero pass followed by a separate
     /// serial ridge pass at the end.
+    ///
+    /// When every axis has at least 7 nodes and there is no directional
+    /// regularisation, the regularisation and the ridge term are one sweep
+    /// with the per-class kernels (see `class_stencil.rs`), and `scratch` is
+    /// not used. The data rows are added after the sweep.
     pub fn apply_normal_operator_into<S: Scalar>(&self, x: &[S], scratch: &mut [S], out: &mut [S]) {
+        if let Some(kernels) = self.class_kernels() {
+            kernels.apply_into(x, self.ridge_factor * self.ridge_factor, out);
+            self.accumulate_data_normal(x, out);
+            return;
+        }
         if self.ridge_factor != 0.0 {
             let r2 = self.ridge_factor * self.ridge_factor;
             out.par_iter_mut()
@@ -2059,7 +2112,8 @@ impl FiniteDifferenceInterpolator {
     pub(crate) fn residual_f64_of(&self, x: &[f64]) -> f64 {
         let n = self.dof();
         let mut out = vec![0.0_f64; n];
-        let mut scratch = vec![0.0_f64; self.scratch_len()];
+        // At least `n` entries, so that the buffer can hold rhs after the apply.
+        let mut scratch = vec![0.0_f64; self.scratch_len().max(n)];
         self.apply_normal_operator_into(x, &mut scratch, &mut out);
         // The scratch buffer has at least `n` entries. Reuse it for rhs.
         let rhs = &mut scratch[..n];
@@ -2069,11 +2123,23 @@ impl FiniteDifferenceInterpolator {
 
     /// As [`residual_f64_of`](Self::residual_f64_of), with a low peak
     /// memory: the scratch buffer has no border part if the problem needs
-    /// none. The arithmetic is the same, so the value is the same.
+    /// none. With the class kernels there is no scratch and no `rhs`
+    /// vector: `out` becomes `rhs - N x` in place, and then holds `rhs` for
+    /// the divisor. The value can differ from `residual_f64_of` in the
+    /// last bits.
     pub(crate) fn residual_f64_compact(&self, x: &[f64]) -> f64 {
         let n = self.dof();
         let mut out = vec![0.0_f64; n];
-        let mut scratch = vec![0.0_f64; self.scratch_len_compact()];
+        if self.class_kernels().is_some() {
+            self.apply_normal_operator_into(x, &mut [], &mut out);
+            out.iter_mut().for_each(|v| *v = -*v);
+            self.add_data_rhs(&mut out);
+            let r2: f64 = out.iter().map(|v| v * v).sum();
+            self.write_data_rhs::<f64>(&mut out);
+            let b2: f64 = out.iter().map(|v| v * v).sum();
+            return r2.sqrt() / b2.sqrt().max(1e-300);
+        }
+        let mut scratch = vec![0.0_f64; self.scratch_len_compact().max(n)];
         self.apply_normal_operator_into(x, &mut scratch, &mut out);
         // The scratch buffer has at least `n` entries. Reuse it for rhs.
         let rhs = &mut scratch[..n];
@@ -4503,7 +4569,7 @@ mod tests {
         }
         let elapsed = start.elapsed();
         eprintln!(
-            "profile_apply_1e6 [FUSED]: {:?}/call over {iters} calls (dof={n})",
+            "profile_apply_1e6 [DEFAULT, class stencil]: {:?}/call over {iters} calls (dof={n})",
             elapsed / iters
         );
     }
@@ -4581,7 +4647,7 @@ mod tests {
         }
         let elapsed = start.elapsed();
         eprintln!(
-            "profile_apply_1e6_interior_only [FUSED, no border]: {:?}/call over {iters} calls (dof={n})",
+            "profile_apply_1e6_interior_only [DEFAULT, class stencil, no border]: {:?}/call over {iters} calls (dof={n})",
             elapsed / iters
         );
     }

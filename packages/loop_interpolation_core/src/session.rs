@@ -71,9 +71,9 @@ impl<S: Scalar> State<S> {
                     let mut op = |v: &[S], out: &mut [S]| {
                         interp.apply_normal_operator_into(v, &mut scratch, out);
                     };
-                    cg.warm_start(x0, &mut op);
+                    cg.restart_from(x0, &mut op);
                 }
-                Solver::Admm(admm) => admm.warm_start(x0),
+                Solver::Admm(admm) => admm.restart_from(x0),
             }
         }
         Ok(Self { solver, scratch })
@@ -223,7 +223,7 @@ impl SolveSession {
         let mut tracker = MemTracker::new(s.budget_bytes);
         problem.interpolator_mut().prepare(&mut tracker)?;
         // The solver copies the start value. Then it is freed.
-        let x0 = problem.initial_guess.take();
+        let x0 = problem.start.take();
         let x0 = x0.as_deref();
         let interp = problem.interpolator();
         let inner = match s.precision {

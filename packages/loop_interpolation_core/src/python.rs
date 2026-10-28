@@ -235,9 +235,9 @@ impl PyProblem {
     }
 
     /// Set the start value of the solve. `x0` has one value for each node.
-    fn set_initial_guess(&mut self, x0: PyReadonlyArray1<'_, f64>) -> PyResult<()> {
+    fn set_start(&mut self, x0: PyReadonlyArray1<'_, f64>) -> PyResult<()> {
         let x = slice("x0", &x0)?;
-        self.get()?.set_initial_guess(x).map_err(map_err)
+        self.get()?.set_start(x).map_err(map_err)
     }
 
     /// Add value constraints.

@@ -206,7 +206,7 @@ pub(crate) fn jacobi_inverse<S: Scalar>(
 /// Full vectors: `x`, `r`, `p`, `ap` and `inv_diag` (5 x size of `S` per dof).
 /// There is no `z` and no `rhs`: `r` starts as `rhs` (the start value `x0`
 /// is zero) and `rz = sum(r * r * inv_diag)`. Every sum adds in `f64`.
-/// [`warm_start`](Self::warm_start) sets a start value that is not zero.
+/// [`restart_from`](Self::restart_from) sets a start value that is not zero.
 #[derive(Debug)]
 pub struct CgState<S: Scalar> {
     pub x: Vec<S>,
@@ -288,7 +288,7 @@ impl<S: Scalar> CgState<S> {
     /// `r` becomes `rhs - N x0`. `ap` is the work vector for `N x0`, so no
     /// new vector is made. The residual stays relative to `|rhs|`.
     /// `op(v, out)` must write `out = N v`.
-    pub fn warm_start(&mut self, x0: &[f64], op: &mut dyn FnMut(&[S], &mut [S])) {
+    pub fn restart_from(&mut self, x0: &[f64], op: &mut dyn FnMut(&[S], &mut [S])) {
         debug_assert_eq!(self.iterations, 0);
         self.x
             .par_iter_mut()
