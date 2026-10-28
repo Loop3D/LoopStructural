@@ -1,5 +1,6 @@
 {
   "separate-pull-requests": true,
+  "bootstrap-sha": "7e82c76c4c7bba9d1d9d4850c75b56cc790d992f",
   "packages": {
     ".": {
       "release-type": "python",
