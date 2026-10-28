@@ -23,7 +23,14 @@
     },
     "packages/loop_interpolation_core": {
       "release-type": "python",
-      "component": "loop-interpolation-core"
+      "component": "loop-interpolation-core",
+      "extra-files": [
+        {
+          "type": "toml",
+          "path": "Cargo.toml",
+          "jsonpath": "$.package.version"
+        }
+      ]
     },
     "packages/map2loop": {
       "release-type": "python",
