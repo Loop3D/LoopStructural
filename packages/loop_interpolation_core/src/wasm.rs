@@ -499,10 +499,7 @@ fn done_result(r: &SolveReport) -> WasmStepResult {
 impl WasmSession {
     /// Run `f` on the field. Before the end of the solve, the field is the
     /// best result so far.
-    fn with_field<R>(
-        &self,
-        f: impl FnOnce(&Field) -> Result<R, CoreError>,
-    ) -> Result<R, JsError> {
+    fn with_field<R>(&self, f: impl FnOnce(&Field) -> Result<R, CoreError>) -> Result<R, JsError> {
         if let Some(field) = &self.field {
             return f(field).map_err(js_err);
         }
