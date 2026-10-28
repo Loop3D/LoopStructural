@@ -384,7 +384,7 @@ Phase C of the plan. Do not start before OP1 is answered (memory per dof from T0
   - Wave: 12
   - Done when: `npm --prefix packages/loop_interpolation_core/tests_web test -- responsiveness` fails (no package).
   - Blocked by: OP1
-- [ ] T041 [P] [US1] [M] Write the `wasm-bindgen` classes (feature `wasm`).
+- [x] T041 [P] [US1] [M] Write the `wasm-bindgen` classes (feature `wasm`).
   - Do: Read `plan.md` D6 and D8. Classes `WasmProblem` and `WasmSession` with the JavaScript names of D6 (`Problem`, `Session`) set by `js_name`.
   - Do: `CoreError` becomes a thrown `JsError` whose message is JSON text: `{"kind":"OverBudget","estimate":..,"budget":..,"maxNodesPerAxis":..}`. No `serde`: write the JSON by hand.
   - Do: `Session.field()` copies out once (`Float64Array` or `Float32Array`). `Session.free()` is the wasm-bindgen free: it drops the session and frees memory.
