@@ -1,0 +1,178 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>loop_interpolation_core harness</title>
+</head>
+<body>
+<!--
+  Test page for the Playwright specs.
+  It starts /web/worker.js as a module Worker. The main thread never loads
+  the WebAssembly module (story 3, FR-008).
+
+  API on window:
+    loopHarness.worker            the Worker object
+    loopHarness.messages          all messages from the worker, in order
+    loopHarness.post(msg, xfer)   send a message (xfer = list of transferables)
+    loopHarness.waitFor(pred, ms) Promise of the first message (old or new)
+                                  for which pred(message) is true
+    parseFixture(bytes)           parse fixture bytes (D8 format) to an object
+    runFixture(bytes)             solve the fixture in the worker; returns
+                                  { maxDiff, range, length, result }
+    crossOriginIsolated           (standard) must be false
+-->
+<script type="module">
+  const messages = [];
+  const waiters = [];
+
+  const worker = new Worker('/web/worker.js', { type: 'module' });
+  worker.onmessage = (event) => {
+    const msg = event.data;
+    messages.push(msg);
+    for (const w of waiters.slice()) {
+      if (w.pred(msg)) {
+        waiters.splice(waiters.indexOf(w), 1);
+        clearTimeout(w.timer);
+        w.resolve(msg);
+      }
+    }
+  };
+  // A load error of the module becomes an "error" message for the test.
+  worker.onerror = (event) => {
+    worker.onmessage({
+      data: { type: 'error', kind: 'WorkerLoadError', message: String(event.message || 'worker error') },
+    });
+  };
+
+  function post(msg, transfer) {
+    worker.postMessage(msg, transfer || []);
+  }
+
+  function waitFor(pred, ms = 60000) {
+    const old = messages.find(pred);
+    if (old) return Promise.resolve(old);
+    return new Promise((resolve, reject) => {
+      const w = { pred, resolve };
+      w.timer = setTimeout(() => {
+        waiters.splice(waiters.indexOf(w), 1);
+        reject(new Error('timeout while the harness waits for a worker message'));
+      }, ms);
+      waiters.push(w);
+    });
+  }
+
+  // Parse the fixture file (D8 format, little endian):
+  // "LIF1", then blocks of (u32 length N, N values of f64).
+  const BLOCK_NAMES = [
+    'origin', 'counts', 'step', 'reg', 'border', 'ridge',
+    'value_points', 'value_values', 'value_weights',
+    'gradient_points', 'gradient_vectors', 'gradient_weights',
+    'normal_points', 'normal_vectors', 'normal_weights',
+    'tangent_points', 'tangent_vectors', 'tangent_weights',
+    'interface_points', 'interface_ids', 'interface_weight',
+    'expected_field',
+  ];
+
+  function parseFixture(bytes) {
+    const buf = bytes instanceof ArrayBuffer ? bytes : bytes.buffer.slice(
+      bytes.byteOffset, bytes.byteOffset + bytes.byteLength);
+    const view = new DataView(buf);
+    const magic = String.fromCharCode(
+      view.getUint8(0), view.getUint8(1), view.getUint8(2), view.getUint8(3));
+    if (magic !== 'LIF1') throw new Error('bad fixture magic: ' + magic);
+    let pos = 4;
+    const out = {};
+    for (const name of BLOCK_NAMES) {
+      const n = view.getUint32(pos, true);
+      pos += 4;
+      const arr = new Float64Array(n);
+      for (let i = 0; i < n; i++) {
+        arr[i] = view.getFloat64(pos, true);
+        pos += 8;
+      }
+      out[name] = arr;
+    }
+    if (pos !== buf.byteLength) throw new Error('fixture has extra bytes');
+    return out;
+  }
+
+  // The file can hold one weight for all points. Repeat it to one per point.
+  function perPoint(weights, n) {
+    if (weights.length === n) return weights;
+    if (weights.length === 1) return new Float64Array(n).fill(weights[0]);
+    throw new Error(`weights have ${weights.length} values; ${n} are needed`);
+  }
+
+  // Build the "solve" message (D6) from a parsed fixture.
+  // The ridge value of the file is not sent: the core has a fixed ridge.
+  function fixtureToSolveMessage(fx, id) {
+    const nv = fx.value_points.length / 3;
+    const ng = fx.gradient_points.length / 3;
+    const nn = fx.normal_points.length / 3;
+    const nt = fx.tangent_points.length / 3;
+    const [dxx, dyy, dzz, dxy, dxz, dyz] = fx.reg;
+    const [dx, dy, dz] = fx.border;
+    const msg = {
+      type: 'solve',
+      id,
+      grid: {
+        origin: fx.origin,
+        counts: Uint32Array.from(fx.counts),
+        step: fx.step,
+      },
+      regularisation: { dxx, dyy, dzz, dxy, dxz, dyz, dx, dy, dz },
+      constraints: {
+        value: { points: fx.value_points, values: fx.value_values, weights: perPoint(fx.value_weights, nv) },
+        gradient: { points: fx.gradient_points, vectors: fx.gradient_vectors, weights: perPoint(fx.gradient_weights, ng) },
+        normal: { points: fx.normal_points, vectors: fx.normal_vectors, weights: perPoint(fx.normal_weights, nn) },
+        tangent: { points: fx.tangent_points, vectors: fx.tangent_vectors, weights: perPoint(fx.tangent_weights, nt) },
+        interface: { points: fx.interface_points, ids: fx.interface_ids, weight: fx.interface_weight[0] },
+      },
+      settings: { precision: 'f64', tol: 1e-10, maxIter: 50000 },
+    };
+    // Send copies as transferables (no copy inside the worker path).
+    const transfer = [];
+    const clone = (a) => { const c = a.slice(); transfer.push(c.buffer); return c; };
+    msg.grid.origin = clone(msg.grid.origin);
+    msg.grid.counts = clone(msg.grid.counts);
+    msg.grid.step = clone(msg.grid.step);
+    for (const fam of Object.values(msg.constraints)) {
+      for (const k of Object.keys(fam)) {
+        if (fam[k] instanceof Float64Array) fam[k] = clone(fam[k]);
+      }
+    }
+    return { msg, transfer };
+  }
+
+  async function runFixture(bytes) {
+    const fx = parseFixture(bytes);
+    const id = 1;
+    post({ type: 'init' });
+    const { msg, transfer } = fixtureToSolveMessage(fx, id);
+    post(msg, transfer);
+    const done = await waitFor(
+      (m) => (m.type === 'result' || m.type === 'error') && (m.id === id || m.id === undefined), 110000);
+    if (done.type === 'error') {
+      throw new Error('worker error: ' + JSON.stringify(done));
+    }
+    const field = Float64Array.from(done.field);
+    const expected = fx.expected_field;
+    if (field.length !== expected.length) {
+      throw new Error(`field has ${field.length} values; ${expected.length} expected`);
+    }
+    let lo = Infinity, hi = -Infinity, maxDiff = 0;
+    for (let i = 0; i < expected.length; i++) {
+      lo = Math.min(lo, expected[i]);
+      hi = Math.max(hi, expected[i]);
+      maxDiff = Math.max(maxDiff, Math.abs(field[i] - expected[i]));
+    }
+    return { maxDiff, range: hi - lo, length: field.length, result: { ...done, field: undefined } };
+  }
+
+  window.loopHarness = { worker, messages, post, waitFor };
+  window.parseFixture = parseFixture;
+  window.runFixture = runFixture;
+  window.harnessReady = true;
+</script>
+</body>
+</html>

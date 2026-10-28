@@ -369,7 +369,7 @@ Phase D of the plan. It needs only phases 3 to 5. The Python tests skip when the
 
 Phase C of the plan. Do not start before OP1 is answered (memory per dof from T020).
 
-- [ ] T039 [P] [US1] [M] Test: the Worker solves the 20^3 fixture in Chromium (story 1 scenarios 1 to 4, FR-017).
+- [x] T039 [P] [US1] [M] Test: the Worker solves the 20^3 fixture in Chromium (story 1 scenarios 1 to 4, FR-017).
   - Do: Playwright (Chromium only). `harness.html` starts `web/worker.js` as a module Worker and exposes `window.runFixture(bytes)`. The spec fetches `fixtures/fixture_20.bin`, parses it in JavaScript (D8 format), builds the problem through worker messages (D6), and compares the field with `expected_field`: max difference at most 1e-6 of the range.
   - Do: The page is served with no cross-origin isolation headers (FR-006).
   - Files: `packages/loop_interpolation_core/tests_web/package.json`, `packages/loop_interpolation_core/tests_web/playwright.config.js`, `packages/loop_interpolation_core/tests_web/harness.html`, `packages/loop_interpolation_core/tests_web/fixture.spec.js`
