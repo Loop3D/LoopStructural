@@ -335,9 +335,12 @@ def test_native_with_cap_above_size_matches_admm_and_repeats():
     admm = solve("admm")
     scale = _field_range(admm)
     assert float(np.max(np.abs(first - admm))) <= FIELD_TOL * scale
-    np.testing.assert_array_equal(first, second)
+    # The same seed gives the same rows. The parallel sums of the core do
+    # not add in a fixed order, so two runs can differ in the last bits
+    # (SC-003). On macOS the difference was 1.4e-10.
+    np.testing.assert_allclose(first, second, rtol=0, atol=1e-9 * scale)
 
     # A cap below the size of the product (4 of 9 rows) is repeatable with the same seed.
     capped_1 = solve("native", inequality_pair_max_rows=4)
     capped_2 = solve("native", inequality_pair_max_rows=4)
-    np.testing.assert_array_equal(capped_1, capped_2)
+    np.testing.assert_allclose(capped_1, capped_2, rtol=0, atol=1e-9 * scale)
