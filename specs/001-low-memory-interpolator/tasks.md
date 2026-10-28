@@ -421,7 +421,7 @@ Phase C of the plan. Do not start before OP1 is answered (memory per dof from T0
   - Wave: 15
   - Done when: `bash packages/loop_interpolation_core/scripts/build_wasm.sh` creates `packages/loop_interpolation_core/pkg/` and `python -I packages/loop_interpolation_core/scripts/check_wasm_size.py` prints the gzip size and exits 0 when the size is at most 2 000 000 bytes.
   - Blocked by: OP1
-- [ ] T045 [US3] [M] Run the browser tests against the built package and fix failures.
+- [x] T045 [US3] [M] Run the browser tests against the built package and fix failures.
   - Do: Fix failures only in the two files of the Files list. If a fix needs another file, stop and report it.
   - Files: `packages/loop_interpolation_core/src/wasm.rs`, `packages/loop_interpolation_core/web/worker.js`
   - Needs: T044, T042, T039, T040, T043
@@ -499,7 +499,7 @@ Phase E of the plan (was F). It changes the vector type, not the algorithm.
   - Needs: T038
   - Wave: 18
   - Done when: `grep -q native_solver docs/source/user_guide/index.rst` exits 0 and the file `docs/source/user_guide/native_solver.rst` exists.
-- [ ] T055 [P] [Finish] [S] Complete the core package README.
+- [x] T055 [P] [Finish] [S] Complete the core package README.
   - Do: Add: build commands (maturin, wasm), the three forms, the feature flags, the contract (flat arrays, grid coordinates only), and the list of differences from loop-rs (rotation removed, sessions, memory tracking).
   - Files: `packages/loop_interpolation_core/README.md`
   - Needs: T044, T038

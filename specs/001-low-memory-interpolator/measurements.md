@@ -60,3 +60,19 @@ Notes:
 - The memory model has three parts: about 53 bytes for each node, about 1020 bytes for each n^2 (shell and border scratch), and about 190 bytes for each stored constraint row. The first estimate had a low surface term and failed SC-009 from n = 120.
 - The R1 time of 53 to 57 s is close to the 60 s limit of SC-007. The limit is for Chromium on the reference machine and is checked by T052.
 - The field of R1 for the browser comparison is written to `packages/loop_interpolation_core/target/r1_field.f64` (8 000 000 bytes, 1062 iterations, converged).
+
+## Comparison with the Python matrix solver
+
+Measured on the development machine (Windows, 20 logical cores, release build, one run each, about 15 to 20 percent noise). Both solvers solve the same synthetic problem at tolerance 1e-8: R1-type data (value and gradient rows, scaled with the grid; 2000 and 500 rows at 100^3). The peak memory is the extra peak working set of the process above the interpreter. Each run is a separate process.
+
+| Grid | Matrix solver (`cg`) | Native, 1 thread | Native, `parallel` |
+|---|---|---|---|
+| 30^3 | 2.7 s, 68 MB | 3.6 s, 3 MB | not run |
+| 50^3 | 9.7 s, 305 MB | 12.3 s, 13 MB | 5.0 s, 15 MB |
+| 70^3 | 26.1 s, 836 MB | 28.3 s, 31 MB | not run |
+| 100^3 | 71.3 s, 2445 MB | 78.4 s, 84 MB | 20.8 s, 86 MB |
+
+- At 100^3 the native solver uses 29 times less memory (84 MB against 2445 MB).
+- On one thread the native solver is 10 to 30 percent slower. With `parallel` it is 3.4 times faster at 100^3.
+- The golden tests (`tests/golden`, FD engine, 7 cases) agree with the native solver to 1e-9 (limits 1e-6 for values and 1e-5 for gradients).
+- The browser (WebAssembly, one thread) solves the 60^3 test problem of `tests_web` in about 12 s. The size of the module is 268 693 bytes, 92 539 bytes after gzip (SC-010).
