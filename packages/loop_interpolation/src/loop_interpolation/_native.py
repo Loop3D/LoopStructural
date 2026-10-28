@@ -42,7 +42,16 @@ Python column layouts are x y z | data | weight.
 * Value inequality. Columns x y z | lower | upper. The weight is 1.
 * Inequality pairs. Columns x y z | rock id. A pair (a, b) gives the bound
   ``lower <= f(point of a) - f(point of b) <= upper`` for all point
-  combinations of the two rock ids. The weight is 1.
+  combinations of the two rock ids. The weight is 1. The first id of a
+  pair is the upper side. A row with a nan or inf position is dropped.
+  A pair can have ``n_a * n_b`` rows. The setup keyword
+  ``inequality_pair_max_rows`` (default 100000) limits the rows of each
+  pair. When ``n_a * n_b`` is more than the limit, the adapter uses that
+  many random combinations and writes one warning. The random generator is
+  ``numpy.random.default_rng`` with the seed ``inequality_pair_seed``
+  (default 0), so two runs with the same input give the same rows. The
+  adapter picks the indices and does not build the full product. It sends
+  the rows to the core in chunks of 100000.
 * Directional regularisation. The direction field is evaluated at the
   regularisation sample points (the nodes) and passed with its weight.
 * A constraint family with weight 0 is not sent to the core. The core
@@ -74,6 +83,12 @@ _SOLVER_KEYS = {
     "admm_abs_tol": "admm_abs_tol",
     "admm_rel_tol": "admm_rel_tol",
 }
+
+# Inequality pairs: default cap of rows for each pair, seed of the sampling,
+# and rows for each call of add_pair_bound.
+_PAIR_MAX_ROWS = 100_000
+_PAIR_SEED = 0
+_PAIR_CHUNK = 100_000
 
 _REGULARISATION_KEYS = ("dxx", "dyy", "dzz", "dxy", "dxz", "dyz")
 _BORDER_KEYS = ("dx", "dy", "dz")
@@ -225,15 +240,30 @@ def _weight(interpolator, key: str, default: float = 1.0):
     return interpolator.interpolation_weights.get(key, default)
 
 
-def _add_weighted(add, points, data, weights) -> None:
-    """Call ``add(points, data, weights)`` for the rows with a weight not 0."""
-    keep = (weights != 0) & np.isfinite(weights)
+# How the matrix path treats bad data rows (FD interpolator, shared helpers):
+# - A row with a nan or inf in the position or the data is dropped.
+# - A negative weight is kept. The solver squares the weight, so only the size counts.
+# - A weight of 0 gives a row with no effect. A nan weight is dropped.
+# - A gradient or tangent vector of length 0 gives no constraint (dropped).
+# - A normal vector of length 0 is kept. It constrains the gradient to 0.
+# The native path does the same. A negative weight becomes its absolute value,
+# because the core accepts only weights that are more than 0.
+def _add_weighted(add, points, data, weights, drop_zero_norm=False, name="data") -> None:
+    """Call ``add(points, data, weights)`` for the rows that the matrix path keeps."""
+    data2 = data.reshape(data.shape[0], -1)
+    keep = np.isfinite(weights) & (weights != 0)
+    keep &= np.isfinite(points).all(axis=1) & np.isfinite(data2).all(axis=1)
+    if drop_zero_norm:
+        keep &= np.linalg.norm(data2, axis=1) > 0
+    n_dropped = int(keep.size - np.count_nonzero(keep))
+    if n_dropped:
+        logger.debug("native: %d of %d %s rows dropped (bad data)", n_dropped, keep.size, name)
     if not np.any(keep):
         return
     add(
         _flat(points[keep]),
         _flat(data[keep]),
-        _flat(weights[keep]),
+        _flat(np.abs(weights[keep])),
     )
 
 
@@ -243,13 +273,20 @@ def _add_data(problem, interpolator) -> None:
     value = _rows(interpolator.get_value_constraints())
     if value.shape[0] > 0:
         w = _weights(_weight(interpolator, "cpw"), value.shape[0]) * value[:, 4]
-        _add_weighted(problem.add_value, value[:, :3], value[:, 3], w)
+        _add_weighted(problem.add_value, value[:, :3], value[:, 3], w, name="value")
 
     # gradient: weight = gpw (the weight column is not used)
     gradient = _rows(interpolator.get_gradient_constraints())
     if gradient.shape[0] > 0:
         w = _weights(_weight(interpolator, "gpw"), gradient.shape[0])
-        _add_weighted(problem.add_gradient, gradient[:, :3], gradient[:, 3:6], w)
+        _add_weighted(
+            problem.add_gradient,
+            gradient[:, :3],
+            gradient[:, 3:6],
+            w,
+            drop_zero_norm=True,
+            name="gradient",
+        )
 
     # normal: weight = npw / 3 * column 6 (1 when there is no column)
     normal = _rows(interpolator.get_norm_constraints())
@@ -257,13 +294,20 @@ def _add_data(problem, interpolator) -> None:
         w = _weights(_weight(interpolator, "npw") / 3.0, normal.shape[0])
         if normal.shape[1] > 6:
             w = w * normal[:, 6]
-        _add_weighted(problem.add_normal, normal[:, :3], normal[:, 3:6], w)
+        _add_weighted(problem.add_normal, normal[:, :3], normal[:, 3:6], w, name="normal")
 
     # tangent: weight = tpw (the weight column is not used)
     tangent = _rows(interpolator.get_tangent_constraints())
     if tangent.shape[0] > 0:
         w = _weights(_weight(interpolator, "tpw"), tangent.shape[0])
-        _add_weighted(problem.add_tangent, tangent[:, :3], tangent[:, 3:6], w)
+        _add_weighted(
+            problem.add_tangent,
+            tangent[:, :3],
+            tangent[:, 3:6],
+            w,
+            drop_zero_norm=True,
+            name="tangent",
+        )
 
     # interface: one weight (ipw)
     interface = _rows(interpolator.get_interface_constraints())
@@ -274,9 +318,23 @@ def _add_data(problem, interpolator) -> None:
                 "interface per-point weights", "the core takes one weight for all interface points"
             )
         ipw = float(ipw.flat[0])
-        valid = np.isfinite(interface[:, 3])
-        if ipw != 0 and np.any(valid):
-            problem.add_interface(_flat(interface[valid, :3]), _flat(interface[valid, 3]), ipw)
+        # Same rules as the matrix path:
+        # - A row with a nan id or a nan or inf position is dropped.
+        # - A group with fewer than two points gives no pair and is dropped.
+        # - A negative weight becomes its absolute value (see _add_weighted).
+        # - A weight of 0 or a nan weight gives no constraint.
+        valid = np.isfinite(interface[:, :4]).all(axis=1)
+        ids, counts = np.unique(interface[valid, 3], return_counts=True)
+        valid &= np.isin(interface[:, 3], ids[counts > 1])
+        n_dropped = int(valid.size - np.count_nonzero(valid))
+        if n_dropped:
+            logger.debug(
+                "native: %d of %d interface rows dropped (bad id, bad position or single point)",
+                n_dropped,
+                valid.size,
+            )
+        if np.isfinite(ipw) and ipw != 0 and np.any(valid):
+            problem.add_interface(_flat(interface[valid, :3]), _flat(interface[valid, 3]), abs(ipw))
 
 
 def _add_inequalities(problem, interpolator, setup_kwargs) -> None:
@@ -296,6 +354,16 @@ def _add_inequalities(problem, interpolator, setup_kwargs) -> None:
     upper_bound = setup_kwargs.get("inequality_pair_upper_bound", np.finfo(float).eps)
     lower_bound = setup_kwargs.get("inequality_pair_lower_bound", -np.inf)
     pairs = setup_kwargs.get("inequality_pairs", None)
+    max_rows = setup_kwargs.get("inequality_pair_max_rows", _PAIR_MAX_ROWS)
+    if int(max_rows) < 1:
+        raise ValueError(f"inequality_pair_max_rows must be 1 or more, got {max_rows}")
+    max_rows = int(max_rows)
+    rng = np.random.default_rng(setup_kwargs.get("inequality_pair_seed", _PAIR_SEED))
+    # The core stops on a nan or inf position. Drop these rows.
+    finite = np.isfinite(pairs_data[:, :3]).all(axis=1)
+    if not finite.all():
+        logger.debug("native: %d inequality pair rows dropped (bad position)", int((~finite).sum()))
+        pairs_data = pairs_data[finite]
     ids = pairs_data[:, 3]
     if not pairs:
         # Same default as the matrix solver: each unordered pair of rock ids.
@@ -304,19 +372,54 @@ def _add_inequalities(problem, interpolator, setup_kwargs) -> None:
     for upper_id, lower_id in pairs:
         points_a = pairs_data[ids == upper_id, :3]
         points_b = pairs_data[ids == lower_id, :3]
-        if points_a.shape[0] == 0 or points_b.shape[0] == 0:
+        n_a, n_b = points_a.shape[0], points_b.shape[0]
+        if n_a == 0 or n_b == 0:
             continue
-        # All combinations of the points of the two rock ids.
-        a = np.repeat(points_a, points_b.shape[0], axis=0)
-        b = np.tile(points_b, (points_a.shape[0], 1))
-        n = a.shape[0]
-        problem.add_pair_bound(
-            _flat(a),
-            _flat(b),
-            _flat(np.full(n, lower_bound)),
-            _flat(np.full(n, upper_bound)),
-            _flat(np.ones(n)),
-        )
+        # One row for each combination of a point of each rock id. A pair with
+        # more than max_rows combinations gets a random sample of max_rows rows.
+        total = n_a * n_b
+        if total > max_rows:
+            logger.warning(
+                "native: inequality pair (%s, %s) has %d point combinations. "
+                "Only %d random combinations are used (inequality_pair_max_rows).",
+                upper_id,
+                lower_id,
+                total,
+                max_rows,
+            )
+            flat = _sample_indices(rng, total, max_rows)
+        else:
+            flat = np.arange(total)
+        # Send the rows in chunks. Index arithmetic makes the chunk, so the
+        # full set of combinations is never in memory.
+        for start in range(0, flat.size, _PAIR_CHUNK):
+            k = flat[start : start + _PAIR_CHUNK]
+            n = k.size
+            problem.add_pair_bound(
+                _flat(points_a[k // n_b]),
+                _flat(points_b[k % n_b]),
+                _flat(np.full(n, lower_bound)),
+                _flat(np.full(n, upper_bound)),
+                _flat(np.ones(n)),
+            )
+
+
+def _sample_indices(rng, total: int, count: int) -> np.ndarray:
+    """Return ``count`` different random integers in ``[0, total)``, sorted.
+
+    ``rng.choice(total, replace=False)`` can allocate ``total`` values, and
+    ``total`` can be very large. This function allocates about ``count``
+    values. When ``total`` is more than 4 times ``count``, it draws with
+    replacement and removes the repeats until ``count`` values remain.
+    Then, a repeat is rare and a round or two is enough.
+    """
+    if total <= 4 * count:
+        return np.sort(rng.choice(total, size=count, replace=False))
+    picked = np.unique(rng.integers(0, total, size=count))
+    while picked.size < count:
+        extra = rng.integers(0, total, size=count - picked.size)
+        picked = np.unique(np.concatenate([picked, extra]))
+    return picked
 
 
 def _add_regularisation(problem, interpolator, setup_kwargs) -> None:

@@ -192,3 +192,151 @@ def test_native_node_order_matches_matrix_solver():
     span = float(np.ptp(expected))
     assert np.max(np.abs(results["cg"] - expected)) <= 1e-3 * span
     assert np.max(np.abs(results["native"] - results["cg"])) <= REL_TOL * span
+
+
+def _bad_row_data() -> dict:
+    """Good rows of every family plus rows that the matrix solver drops or tolerates."""
+    data = _data("value")
+    rng = np.random.default_rng(SEED + 1)
+    value = data["add_value_constraints"]
+    bad_value = np.array(
+        [
+            [10.0, 10.0, 10.0, 5.0, -1.0],  # negative weight
+            [12.0, 11.0, 10.0, np.nan, 1.0],  # nan value
+            [np.nan, 11.0, 10.0, 5.0, 1.0],  # nan position
+        ]
+    )
+    p = _points(rng, 30)
+    g = _field_gradient(p)
+    g /= np.linalg.norm(g, axis=1)[:, None]
+    bad_vectors = np.array([[0.0, 0.0, 0.0], [np.nan, 1.0, 0.0]])
+    bad_p = _points(rng, 2)
+    gradient = np.vstack([np.column_stack([p, g]), np.column_stack([bad_p, bad_vectors])])
+    normal_p = _points(rng, 30)
+    n = _field_gradient(normal_p)
+    normal = np.column_stack([normal_p, n, np.ones(len(normal_p))])
+    bad_normal = np.column_stack(
+        [_points(rng, 3), np.array([[np.nan, 0, 1], [0, 0, 0], [0.1, 0.2, 0.3]]), [1.0, 1.0, -1.0]]
+    )
+    t = np.cross(_field_gradient(p), np.tile([0.0, 0.0, 1.0], (len(p), 1)))
+    t /= np.linalg.norm(t, axis=1)[:, None]
+    tangent = np.vstack([np.column_stack([p, t]), np.column_stack([bad_p, bad_vectors])])
+    return {
+        "add_value_constraints": np.vstack([value, bad_value]),
+        "add_gradient_constraints": gradient,
+        "add_normal_constraints": np.vstack([normal, bad_normal]),
+        "add_tangent_constraints": tangent,
+    }
+
+
+def test_native_matches_cg_with_bad_data_rows():
+    # Bad rows: negative weight, nan vector, nan value, nan position, zero vector.
+    # The native solver must not raise. The field must match the matrix solver.
+    weights = {**ZERO_DATA_WEIGHTS, "cpw": 1.0, "gpw": 1.0, "npw": 1.0, "tpw": 1.0}
+    reference = _build("cg", _bad_row_data(), weights)
+    native = _build("native", _bad_row_data(), weights)
+    assert np.all(np.isfinite(reference))
+    assert np.all(np.isfinite(native))
+    span = float(np.ptp(reference))
+    assert np.max(np.abs(native - reference)) <= REL_TOL * span
+
+
+def _bad_interface_data() -> dict:
+    """Interface groups of 3 points plus a nan id, a nan position and a one point group."""
+    data = _data("interface")
+    rng = np.random.default_rng(SEED + 2)
+    extra = np.column_stack([_points(rng, 4), [np.nan, 0.0, 9.0, 4.0]])
+    extra[1, 0] = np.nan  # nan position inside group 0
+    # Group 4 keeps one valid point only: the other point has a nan position.
+    extra[3, 1] = np.nan
+    extra = np.vstack(
+        [
+            extra,
+            np.column_stack([_points(rng, 1), [4.0]]),
+            np.column_stack([_points(rng, 1), [9.0]]),
+        ]
+    )
+    # The setter may drop some of these rows. Inject the rows after the setter.
+    data["_interface_rows"] = np.vstack([data.pop("set_interface_constraints"), extra])
+    return data
+
+
+def _build_interface(solver: str, data: dict, ipw) -> np.ndarray:
+    data = dict(data)
+    rows = data.pop("_interface_rows")
+    builder = InterpolatorBuilder(
+        interpolatortype=InterpolatorType.FINITE_DIFFERENCE, support=_make_grid()
+    )
+    if solver == "native":
+        builder.use_solver("native", **NATIVE_KWARGS)
+    else:
+        builder.use_solver(solver, **CG_KWARGS)
+    for method, array in data.items():
+        getattr(builder, method)(array)
+    # Inject the rows so that they reach the adapter and the matrix path as they are.
+    builder.interpolator.get_interface_constraints = lambda: rows
+    builder.setup_interpolator(
+        interface_pair_mode="star", **{**ZERO_DATA_WEIGHTS, "cpw": 1.0, "ipw": ipw}
+    )
+    builder.solve()
+    return np.asarray(builder.build().c, dtype=float).copy()
+
+
+@pytest.mark.parametrize("ipw", [1.0, -1.0])
+def test_native_matches_cg_with_bad_interface_rows(ipw):
+    # Bad rows: nan id, nan position, groups with one valid point.
+    # A negative ipw acts like its absolute value on the matrix path.
+    data = _bad_interface_data()
+    reference = _build_interface("cg", data, ipw)
+    native = _build_interface("native", data, ipw)
+    assert np.all(np.isfinite(native))
+    span = float(np.ptp(reference))
+    assert np.max(np.abs(native - reference)) <= REL_TOL * span
+
+
+def test_native_negative_interface_weight_equals_absolute_weight():
+    data = _bad_interface_data()
+    positive = _build_interface("native", data, 1.0)
+    negative = _build_interface("native", data, -1.0)
+    assert np.max(np.abs(positive - negative)) <= REL_TOL * float(np.ptp(positive))
+
+
+def test_native_interface_only_single_point_groups_adds_nothing():
+    # Every group has one point. Nothing reaches the core.
+    from loop_interpolation import _native
+
+    calls = []
+
+    class _Problem:
+        def add_interface(self, *args):
+            calls.append(args)
+
+    class _Interp:
+        def __init__(self):
+            self.interpolation_weights = {"ipw": 1.0}
+
+        def __getattr__(self, name):
+            return lambda: None
+
+        def get_interface_constraints(self):
+            return np.array([[1.0, 1, 1, 0], [2, 2, 2, 1], [3, 3, 3, np.nan], [4, 4, 4, np.nan]])
+
+    _native._add_data(_Problem(), _Interp())
+    assert calls == []
+
+
+def test_native_mixed_interface_weights_still_raise():
+    from loop_interpolation import _native
+
+    class _Interp:
+        def __init__(self):
+            self.interpolation_weights = {"ipw": np.array([1.0, 2.0, 1.0])}
+
+        def __getattr__(self, name):
+            return lambda: None
+
+        def get_interface_constraints(self):
+            return np.array([[1.0, 1, 1, 0], [2, 2, 2, 0], [3, 3, 3, 0]])
+
+    with pytest.raises(NotImplementedError):
+        _native._add_data(object(), _Interp())

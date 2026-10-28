@@ -163,3 +163,181 @@ def test_native_matches_admm_with_pair_bounds():
 
     difference = float(np.nanmax(np.abs(field_native - field_admm)))
     assert difference <= FIELD_TOL * value_range, f"max field difference {difference}"
+
+
+# --- Cap on the pair-bound rows (finding 5, decision D-R1) ---------------------
+
+
+class _CountingProblem:
+    """Stub of the core problem. It keeps the pair rows and the largest chunk."""
+
+    def __init__(self, keep_rows=False):
+        self.keep_rows = keep_rows
+        self.n_rows = 0
+        self.max_chunk = 0
+        self.calls = 0
+        self.a = []
+        self.b = []
+
+    def add_value_bound(self, *args):
+        pass
+
+    def add_pair_bound(self, points_a, points_b, lower, upper, weights):
+        self.calls += 1
+        self.n_rows += lower.size
+        self.max_chunk = max(self.max_chunk, lower.size)
+        if self.keep_rows:
+            self.a.append(points_a.reshape(-1, 3).copy())
+            self.b.append(points_b.reshape(-1, 3).copy())
+
+
+class _StubInterpolator:
+    def __init__(self, pairs):
+        self._pairs = pairs
+
+    def get_inequality_value_constraints(self):
+        return None
+
+    def get_inequality_pairs_constraints(self):
+        return self._pairs
+
+
+class _RecordingLogger:
+    """Replace the module logger. The loop_common logger does not propagate to caplog."""
+
+    def __init__(self):
+        self.warnings = []
+
+    def warning(self, message, *args):
+        self.warnings.append(message % args)
+
+    def debug(self, *args, **kwargs):
+        pass
+
+    info = debug
+
+
+def _two_rock_pairs(n_each, seed=1):
+    rng = np.random.default_rng(seed)
+    a = np.column_stack([rng.uniform(0, 1, (n_each, 3)), np.zeros(n_each), np.ones(n_each)])
+    b = np.column_stack([rng.uniform(0, 1, (n_each, 3)), np.ones(n_each), np.ones(n_each)])
+    return np.vstack([a, b])
+
+
+def test_pair_bounds_cap_keeps_memory_low_and_warns(monkeypatch):
+    import tracemalloc
+
+    from loop_interpolation import _native
+
+    recorder = _RecordingLogger()
+    monkeypatch.setattr(_native, "logger", recorder)
+    interpolator = _StubInterpolator(_two_rock_pairs(5000))  # 25 million combinations
+    problem = _CountingProblem()
+    tracemalloc.start()
+    try:
+        _native._add_inequalities(problem, interpolator, {})
+        _, peak = tracemalloc.get_traced_memory()
+    finally:
+        tracemalloc.stop()
+    assert peak < 200 * 1024**2, f"peak {peak / 1024**2:.0f} MB"
+    assert problem.n_rows == 100_000
+    assert problem.max_chunk <= 100_000
+    assert len(recorder.warnings) == 1
+    text = recorder.warnings[0]
+    assert "25000000" in text and "100000" in text
+
+
+def test_pair_bounds_below_cap_send_all_combinations(monkeypatch):
+    from loop_interpolation import _native
+
+    recorder = _RecordingLogger()
+    monkeypatch.setattr(_native, "logger", recorder)
+    data = _two_rock_pairs(7)
+    problem = _CountingProblem(keep_rows=True)
+    _native._add_inequalities(problem, _StubInterpolator(data), {})
+    assert not recorder.warnings
+    a = np.vstack(problem.a)
+    b = np.vstack(problem.b)
+    # The matrix path pairs every point of the first id with every point of the second.
+    expected_a = np.repeat(data[:7, :3], 7, axis=0)
+    expected_b = np.tile(data[7:, :3], (7, 1))
+    np.testing.assert_array_equal(a, expected_a)
+    np.testing.assert_array_equal(b, expected_b)
+
+
+def test_pair_bounds_sample_is_repeatable_and_inside_the_product():
+    from loop_interpolation import _native
+
+    def rows(seed):
+        problem = _CountingProblem(keep_rows=True)
+        setup = {"inequality_pair_max_rows": 50}
+        if seed is not None:
+            setup["inequality_pair_seed"] = seed
+        _native._add_inequalities(problem, _StubInterpolator(_two_rock_pairs(30)), setup)
+        return np.vstack(problem.a), np.vstack(problem.b)
+
+    first, second = rows(None), rows(None)
+    np.testing.assert_array_equal(first[0], second[0])
+    np.testing.assert_array_equal(first[1], second[1])
+    assert first[0].shape[0] == 50
+    # No combination appears twice.
+    assert np.unique(np.hstack(first), axis=0).shape[0] == 50
+    other = rows(5)
+    assert not np.array_equal(first[0], other[0]) or not np.array_equal(first[1], other[1])
+
+
+def test_pair_bounds_bad_cap_is_rejected():
+    from loop_interpolation import _native
+
+    with pytest.raises(ValueError, match="inequality_pair_max_rows"):
+        _native._add_inequalities(
+            _CountingProblem(),
+            _StubInterpolator(_two_rock_pairs(3)),
+            {"inequality_pair_max_rows": 0},
+        )
+
+
+def test_pair_bounds_nan_rows_are_dropped():
+    from loop_interpolation import _native
+
+    data = _two_rock_pairs(4)
+    data[0, 0] = np.nan
+    problem = _CountingProblem()
+    _native._add_inequalities(problem, _StubInterpolator(data), {})
+    assert problem.n_rows == 3 * 4
+
+
+def test_native_with_cap_above_size_matches_admm_and_repeats():
+    # Cap above the size of the product: same field as the ADMM oracle.
+    def solve(solver, **extra):
+        interpolator = _make_interpolator(solver)
+        _add_ramp_data(interpolator)
+        rock0 = np.array([[0.3, 0.3, 0.8], [0.5, 0.5, 0.8], [0.7, 0.7, 0.8]])
+        rock1 = np.array([[0.3, 0.7, 0.3], [0.5, 0.5, 0.3], [0.7, 0.3, 0.3]])
+        pairs = np.vstack(
+            [
+                np.column_stack([rock0, np.zeros(3), np.ones(3)]),
+                np.column_stack([rock1, np.ones(3), np.ones(3)]),
+            ]
+        )
+        interpolator.set_inequality_pairs_constraints(pairs)
+        interpolator.setup(
+            inequality_pairs=[(0, 1)],
+            inequality_pair_upper_bound=PAIR_UPPER_BOUND,
+            inequality_pair_lower_bound=-np.inf,
+            **extra,
+        )
+        interpolator.solve_system(solver=solver, solver_kwargs=dict(SOLVER_KWARGS[solver]))
+        return interpolator.evaluate_value(_evaluation_points())
+
+    first = solve("native", inequality_pair_max_rows=1000)
+    second = solve("native", inequality_pair_max_rows=1000)
+    admm = solve("admm")
+    scale = _field_range(admm)
+    assert float(np.max(np.abs(first - admm))) <= FIELD_TOL * scale
+    np.testing.assert_array_equal(first, second)
+
+    # A cap below the size of the product (4 of 9 rows) is repeatable with the same seed.
+    capped_1 = solve("native", inequality_pair_max_rows=4)
+    capped_2 = solve("native", inequality_pair_max_rows=4)
+    np.testing.assert_array_equal(capped_1, capped_2)
