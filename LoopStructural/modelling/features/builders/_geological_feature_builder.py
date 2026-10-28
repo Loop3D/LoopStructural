@@ -554,6 +554,10 @@ class GeologicalFeatureBuilder(BaseBuilder):
 
                 self.interpolator.support.maximum = newmax
             self.interpolator.set_region(region=region)
+        # The interpolator must know the solver before setup: with
+        # solver="native" the setup builds no sparse rows in Python.
+        if kwargs.get('solver') is not None:
+            self.interpolator.solver = kwargs['solver']
         logger.info(f'Setting up interpolator for {self.name}')
         self.interpolator.setup_interpolator(**kwargs)
         logger.info(f'installing gradient constraints {self.name}')
