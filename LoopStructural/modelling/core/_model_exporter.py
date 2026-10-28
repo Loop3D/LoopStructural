@@ -13,7 +13,7 @@ from __future__ import annotations
 import pathlib
 from typing import TYPE_CHECKING
 
-from ...geometry import StructuredGrid
+from ...geometry import PropertyGrid
 from ...utils import getLogger, surface_list
 
 if TYPE_CHECKING:
@@ -70,11 +70,11 @@ class ModelExporter:
     @staticmethod
     def get_block_model(
         model: GeologicalModel, name: str = 'block model'
-    ) -> tuple[StructuredGrid, list]:
+    ) -> tuple[PropertyGrid, list]:
         # NOTE: bounding_box.structured_grid() returns loop_common's
         # interpolation-support StructuredGrid (no properties dict); use
-        # LoopStructural's own geometry StructuredGrid for storing values.
-        grid = StructuredGrid(
+        # the PropertyGrid result container for storing values.
+        grid = PropertyGrid(
             origin=model.bounding_box.origin,
             step_vector=model.bounding_box.step_vector,
             nsteps=model.bounding_box.nsteps,
