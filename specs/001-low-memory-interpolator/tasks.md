@@ -377,7 +377,7 @@ Phase C of the plan. Do not start before OP1 is answered (memory per dof from T0
   - Wave: 11
   - Done when: `npm --prefix packages/loop_interpolation_core/tests_web test` fails because the package `pkg/` does not exist yet.
   - Blocked by: OP1
-- [ ] T040 [P] [US3] [M] Test: page responsiveness, cancel time, budget error, second solve refused, memory reading (story 3, story 4, SC-006, FR-010).
+- [x] T040 [P] [US3] [M] Test: page responsiveness, cancel time, budget error, second solve refused, memory reading (story 3, story 4, SC-006, FR-010).
   - Do: Problem 60^3 generated in the page. (a) A main-thread timer every 10 ms: the largest gap during the solve is below 100 ms. (b) `cancel` after 1 s: the worker answers `cancelled` within 1 s, and a new solve then works. (c) A budget of 1 MB gives an `OverBudget` message with `estimate`, `budget`, `maxNodesPerAxis`. (d) A second `solve` message while one runs gives `SolveRunning` and the first solve ends normally. (e) The worker reports `memoryBytes = WebAssembly.Memory.buffer.byteLength` with the result. (f) Progress messages arrive at least once each second.
   - Files: `packages/loop_interpolation_core/tests_web/responsiveness.spec.js`
   - Needs: T039
