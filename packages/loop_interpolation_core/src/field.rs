@@ -26,7 +26,8 @@ fn check_points(grid: &StructuredGrid3D, points: &[f64]) -> Result<Vec<[f64; 3]>
             reason: format!("length {} is not a multiple of 3", points.len()),
         });
     }
-    let pts: Vec<[f64; 3]> = points.chunks_exact(3).map(|c| [c[0], c[1], c[2]]).collect();
+    // The length is a multiple of 3, so there is no remainder.
+    let pts: Vec<[f64; 3]> = points.as_chunks::<3>().0.to_vec();
     // The grid code computes (p - origin) / step in f64. NaN is outside.
     for (index, p) in pts.iter().enumerate() {
         if grid.trilinear_coeffs(*p).is_none() {

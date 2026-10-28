@@ -308,9 +308,11 @@ pub struct WasmEstimate {
 }
 
 /// Result of one `step` call.
-#[wasm_bindgen(js_name = StepResult, getter_with_clone)]
+/// Only the `String` and `Vec` fields need a clone in their getter.
+#[wasm_bindgen(js_name = StepResult)]
 pub struct WasmStepResult {
     pub done: bool,
+    #[wasm_bindgen(getter_with_clone)]
     pub stage: String,
     pub iteration: f64,
     pub residual: f64,
@@ -318,6 +320,7 @@ pub struct WasmStepResult {
     pub converged: bool,
     #[wasm_bindgen(js_name = peakBytes)]
     pub peak_bytes: f64,
+    #[wasm_bindgen(getter_with_clone)]
     pub warnings: Vec<String>,
 }
 

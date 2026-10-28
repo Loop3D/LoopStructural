@@ -52,9 +52,12 @@ fn read_block(bytes: &[u8], pos: &mut usize) -> Vec<f64> {
     *pos = len_end;
     let data_end = *pos + 8 * n;
     assert!(data_end <= bytes.len(), "fixture is too short (block data)");
+    // The length is 8 n, so there is no remainder.
     let values = bytes[*pos..data_end]
-        .chunks_exact(8)
-        .map(|c| f64::from_le_bytes(c.try_into().unwrap()))
+        .as_chunks::<8>()
+        .0
+        .iter()
+        .map(|c| f64::from_le_bytes(*c))
         .collect();
     *pos = data_end;
     values
