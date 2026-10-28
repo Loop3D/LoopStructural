@@ -1,0 +1,25 @@
+{
+  "max_workers": 5,
+  "roles": {
+    "spec-reviewer": "  ",
+    "spec-planner": "strong",
+    "spec-cascade": "strong",
+    "spec-implementer": "standard",
+    "spec-orchestrator": "standard",
+    "worker-S": "simple",
+    "worker-M": "standard",
+    "code-reviewer": "strong"
+  },
+  "providers": {
+    "claude": {
+      "simple": { "model": "haiku" },
+      "standard": { "model": "sonnet" },
+      "strong": { "model": "opus" }
+    },
+    "codex": {
+      "simple": { "model": "gpt-6-luna", "reasoning_effort": "low" },
+      "standard": { "model": "gpt-6.1-sol", "reasoning_effort": "low" },
+      "strong": { "model": "gpt-6.1-sol", "reasoning_effort": "medium" }
+    }
+  }
+}
