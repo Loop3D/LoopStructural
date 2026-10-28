@@ -505,7 +505,7 @@ Phase E of the plan (was F). It changes the vector type, not the algorithm.
   - Needs: T044, T038
   - Wave: 18
   - Done when: `grep -c "bff51342da8ebff7ca3c87e07c1d4fbd31279c8b" packages/loop_interpolation_core/README.md` prints 1 or more.
-- [ ] T056 [Finish] [M] Run all checks and fix format and lint problems.
+- [x] T056 [Finish] [M] Run all checks and fix format and lint problems.
   - Do: Fix only format and lint problems. Name the changed files in the report. Do not change behaviour.
   - Do: Update the plan and tasks status in the index of `specs/` if an index exists (none exists today).
   - Files: none (runs alone; fixes only in files named in the task text)
