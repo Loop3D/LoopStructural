@@ -1,5 +1,5 @@
 {
-  ".": "1.9.0",
+  ".": "1.10.0",
   "packages/loop_common": "0.1.0",
   "packages/loop_interpolation": "0.2.0",
   "packages/loop_interpolation_core": "0.1.0",
