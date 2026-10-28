@@ -1,0 +1,91 @@
+name: "Native wheels"
+
+# Build the wheels and the sdist of loop-interpolation-core.
+# pypi.yml calls this workflow and then publishes the files.
+# A pull request that changes the crate also runs it, so a broken wheel
+# build shows before a release.
+#
+# The crate uses abi3-py39, so one wheel for each platform works with all
+# Python versions from 3.9.
+
+on:
+  workflow_call:
+  pull_request:
+    branches:
+      - master
+    paths:
+      - 'packages/loop_interpolation_core/**'
+      - '.github/workflows/core-wheels.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  MANIFEST: packages/loop_interpolation_core/Cargo.toml
+
+jobs:
+  wheels:
+    name: Wheel ${{ matrix.platform.name }}
+    runs-on: ${{ matrix.platform.runner }}
+    strategy:
+      fail-fast: false
+      matrix:
+        platform:
+          - { name: linux-x86_64, runner: ubuntu-latest, target: x86_64, smoke: true }
+          - { name: linux-aarch64, runner: ubuntu-24.04-arm, target: aarch64, smoke: true }
+          - { name: macos-arm64, runner: macos-latest, target: aarch64, smoke: true }
+          # Cross-compiled on the arm64 runner, so it is not run here.
+          - { name: macos-x86_64, runner: macos-latest, target: x86_64, smoke: false }
+          - { name: windows-x86_64, runner: windows-latest, target: x64, smoke: true }
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      # On Linux the build runs in a manylinux container.
+      - name: Build the wheel
+        uses: PyO3/maturin-action@v1
+        with:
+          target: ${{ matrix.platform.target }}
+          manylinux: auto
+          args: --release --out dist --manifest-path ${{ env.MANIFEST }}
+      - name: Install the wheel and solve a small problem
+        if: matrix.platform.smoke
+        shell: bash
+        run: |
+          python -m pip install numpy
+          python -m pip install --no-index --find-links dist loop-interpolation-core
+          python - <<'EOF'
+          import numpy as np
+          import loop_interpolation_core as core
+
+          problem = core.Problem([0.0, 0.0, 0.0], [8, 8, 8], [1.0, 1.0, 1.0])
+          points = np.array([2.0, 2.0, 2.0, 5.0, 5.0, 5.0])
+          problem.add_value(points, np.array([0.0, 1.0]), np.ones(2))
+          field, report = problem.solve({})
+          assert report["converged"], report
+          assert field.shape == (512,), field.shape
+          print("solve converged in", report["iterations"], "iterations")
+          EOF
+      - uses: actions/upload-artifact@v4
+        with:
+          name: core-wheel-${{ matrix.platform.name }}
+          path: dist/*.whl
+          if-no-files-found: error
+
+  sdist:
+    name: Sdist
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build the sdist
+        uses: PyO3/maturin-action@v1
+        with:
+          command: sdist
+          args: --out dist --manifest-path ${{ env.MANIFEST }}
+      - uses: actions/upload-artifact@v4
+        with:
+          name: core-sdist
+          path: dist/*.tar.gz
+          if-no-files-found: error
