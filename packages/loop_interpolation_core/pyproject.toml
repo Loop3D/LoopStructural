@@ -11,5 +11,5 @@ requires-python = ">=3.9"
 dependencies = ["numpy"]
 
 [tool.maturin]
-features = ["python"]
+features = ["python", "parallel"]
 module-name = "loop_interpolation_core"
