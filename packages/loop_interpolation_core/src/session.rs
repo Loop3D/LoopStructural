@@ -40,10 +40,12 @@ struct State<S: Scalar> {
 
 impl<S: Scalar> State<S> {
     /// Allocate the solver vectors and the scratch buffer from `tracker`.
+    /// With `x0` the solver starts from `x0`, not from zero.
     fn new(
         interp: &FiniteDifferenceInterpolator,
         tracker: &mut MemTracker,
         s: &Settings,
+        x0: Option<&[f64]>,
     ) -> Result<Self, CoreError> {
         // The `f32` scratch has no border part if the problem needs none.
         // The `f64` scratch is not changed.
@@ -61,7 +63,19 @@ impl<S: Scalar> State<S> {
             let diag = interp.try_diagonal(tracker)?;
             Solver::Cg(CgState::new(tracker, rhs, diag, s.tol, s.max_iter)?)
         };
-        let scratch: Vec<S> = tracker.try_zeroed(scratch_len)?;
+        let mut scratch: Vec<S> = tracker.try_zeroed(scratch_len)?;
+        let mut solver = solver;
+        if let Some(x0) = x0 {
+            match &mut solver {
+                Solver::Cg(cg) => {
+                    let mut op = |v: &[S], out: &mut [S]| {
+                        interp.apply_normal_operator_into(v, &mut scratch, out);
+                    };
+                    cg.warm_start(x0, &mut op);
+                }
+                Solver::Admm(admm) => admm.warm_start(x0),
+            }
+        }
         Ok(Self { solver, scratch })
     }
 
@@ -208,9 +222,13 @@ impl SolveSession {
     pub(crate) fn new(mut problem: Problem, s: &Settings) -> Result<Self, CoreError> {
         let mut tracker = MemTracker::new(s.budget_bytes);
         problem.interpolator_mut().prepare(&mut tracker)?;
+        // The solver copies the start value. Then it is freed.
+        let x0 = problem.initial_guess.take();
+        let x0 = x0.as_deref();
+        let interp = problem.interpolator();
         let inner = match s.precision {
-            Precision::F64 => Inner::F64(State::new(problem.interpolator(), &mut tracker, s)?),
-            Precision::F32 => Inner::F32(State::new(problem.interpolator(), &mut tracker, s)?),
+            Precision::F64 => Inner::F64(State::new(interp, &mut tracker, s, x0)?),
+            Precision::F32 => Inner::F32(State::new(interp, &mut tracker, s, x0)?),
         };
         Ok(Self {
             problem,

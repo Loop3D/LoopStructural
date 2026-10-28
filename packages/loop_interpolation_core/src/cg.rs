@@ -206,6 +206,7 @@ pub(crate) fn jacobi_inverse<S: Scalar>(
 /// Full vectors: `x`, `r`, `p`, `ap` and `inv_diag` (5 x size of `S` per dof).
 /// There is no `z` and no `rhs`: `r` starts as `rhs` (the start value `x0`
 /// is zero) and `rz = sum(r * r * inv_diag)`. Every sum adds in `f64`.
+/// [`warm_start`](Self::warm_start) sets a start value that is not zero.
 #[derive(Debug)]
 pub struct CgState<S: Scalar> {
     pub x: Vec<S>,
@@ -281,6 +282,40 @@ impl<S: Scalar> CgState<S> {
             since_best: 0,
             reason: None,
         })
+    }
+
+    /// Start from `x0` and not from zero. Call it before the first `step`.
+    /// `r` becomes `rhs - N x0`. `ap` is the work vector for `N x0`, so no
+    /// new vector is made. The residual stays relative to `|rhs|`.
+    /// `op(v, out)` must write `out = N v`.
+    pub fn warm_start(&mut self, x0: &[f64], op: &mut dyn FnMut(&[S], &mut [S])) {
+        debug_assert_eq!(self.iterations, 0);
+        self.x
+            .par_iter_mut()
+            .zip(x0.par_iter())
+            .with_min_len(PAR_MIN_LEN)
+            .for_each(|(xi, v)| *xi = S::from_f64(*v));
+        op(&self.x, &mut self.ap); // ap = N x0
+        self.r
+            .par_iter_mut()
+            .zip(self.ap.par_iter())
+            .with_min_len(PAR_MIN_LEN)
+            .for_each(|(ri, a)| *ri = S::from_f64(ri.to_f64() - a.to_f64()));
+        self.p
+            .par_iter_mut()
+            .zip(self.r.par_iter())
+            .zip(self.inv_diag.par_iter())
+            .with_min_len(PAR_MIN_LEN)
+            .for_each(|((pi, ri), di)| *pi = S::from_f64(ri.to_f64() * di.to_f64()));
+        self.rz = weighted_dot(&self.r, &self.inv_diag);
+        self.residual = dot_s(&self.r, &self.r).sqrt() / self.rhs_norm;
+        self.done = if self.residual <= self.tol {
+            Some(CgStatus::Converged)
+        } else if self.max_iter == 0 {
+            Some(CgStatus::MaxIter)
+        } else {
+            None
+        };
     }
 
     /// Number of CG iterations done.

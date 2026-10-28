@@ -8,6 +8,8 @@
 //! new Problem(origin: Float64Array(3), counts: Uint32Array(3), step: Float64Array(3))
 //! problem.setRegularisation(w: object)    // keys, all optional: dxx dyy dzz dxy dxz dyz dx dy dz
 //!                                         // (missing key = 1.0; dx/dy/dz are the border weights)
+//! problem.setRidgeFactor(ridgeFactor: number)          // 0 removes the ridge term; default 1e-8
+//! problem.setInitialGuess(x0: Float64Array(nodes))     // start value; default 0
 //! problem.addValue(points: Float64Array(3n), values: Float64Array(n), weights: Float64Array(n))
 //! problem.addGradient(points, vectors: Float64Array(3n), weights)
 //! problem.addNormal(points, vectors, weights)
@@ -359,6 +361,16 @@ impl WasmProblem {
                     dz: dz.unwrap_or(b.dz),
                 });
         }
+    }
+
+    #[wasm_bindgen(js_name = setRidgeFactor)]
+    pub fn set_ridge_factor(&mut self, ridge_factor: f64) -> Result<(), JsError> {
+        self.inner.set_ridge_factor(ridge_factor).map_err(js_err)
+    }
+
+    #[wasm_bindgen(js_name = setInitialGuess)]
+    pub fn set_initial_guess(&mut self, x0: &[f64]) -> Result<(), JsError> {
+        self.inner.set_initial_guess(x0).map_err(js_err)
     }
 
     #[wasm_bindgen(js_name = addValue)]

@@ -93,6 +93,8 @@ pub struct ProblemCounts {
     pub n_value_bound: u64,
     /// True when directional regularisation is on.
     pub uses_directional: bool,
+    /// True when the problem has a start value (8 bytes for each dof).
+    pub has_initial_guess: bool,
 }
 
 // Memory model. All numbers come from the counting allocator, for grids
@@ -134,6 +136,8 @@ const WORKING_BYTES_PER_DOF: u64 = 8 + 4 + 1;
 const WORKING_BYTES_PER_DOF_F32: u64 = 1;
 const ADMM_BYTES_PER_DOF: u64 = 0;
 const DIRECTIONAL_BYTES_PER_DOF: u64 = 48;
+/// Start value of the solve (f64), only if it is set.
+const INITIAL_GUESS_BYTES_PER_DOF: u64 = 8;
 /// Bytes for each `n^2` (shell and border scratch).
 const SURFACE_BYTES_PER_NODE: u64 = 1020;
 /// Bytes taken off for each `n` (the border of a small grid).
@@ -206,6 +210,10 @@ pub fn estimate(c: &ProblemCounts, s: &Settings) -> MemoryEstimate {
     }
     if c.uses_directional {
         per_dof += DIRECTIONAL_BYTES_PER_DOF;
+    }
+    if c.has_initial_guess {
+        // The f64 start value stays until the solver vectors are made.
+        per_dof += INITIAL_GUESS_BYTES_PER_DOF;
     }
     working = working.saturating_add(dof.saturating_mul(per_dof));
     let axis = (dof as f64).cbrt();

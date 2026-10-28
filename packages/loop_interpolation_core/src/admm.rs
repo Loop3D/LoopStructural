@@ -101,6 +101,8 @@ pub(crate) struct AdmmState<S: Scalar> {
     done: Option<bool>,
     /// True for single precision: NaN and stagnation tests are on.
     single: bool,
+    /// True after `warm_start`: the pre-solve starts from `x`, not from 0.
+    warm: bool,
 }
 
 /// `out = (N + rho Q^T Q) v`.
@@ -178,6 +180,7 @@ impl<S: Scalar> AdmmState<S> {
             stall: 0,
             done: None,
             single: is_single::<S>(),
+            warm: false,
         })
     }
 
@@ -237,10 +240,31 @@ impl<S: Scalar> AdmmState<S> {
         self.phase = Phase::Inner;
     }
 
-    /// Start the pre-solve: plain CG of `N x = rhs` from `x = 0`.
-    /// `r` is the data right-hand side (x = 0). No new vector is needed.
-    fn begin_pre(&mut self, interp: &FiniteDifferenceInterpolator) {
+    /// Set the start value `x`. Call it before the first `step`.
+    pub(crate) fn warm_start(&mut self, x0: &[f64]) {
+        debug_assert_eq!(self.phase, Phase::Start);
+        self.x
+            .par_iter_mut()
+            .zip(x0.par_iter())
+            .with_min_len(PAR_MIN_LEN)
+            .for_each(|(xi, v)| *xi = S::from_f64(*v));
+        self.warm = true;
+    }
+
+    /// Start the pre-solve: plain CG of `N x = rhs` from the start `x`.
+    /// `r` is the data right-hand side, minus `N x` after a warm start.
+    /// No new vector is needed. The residual is relative to `|rhs|`.
+    fn begin_pre(&mut self, interp: &FiniteDifferenceInterpolator, scratch: &mut [S]) {
         interp.write_data_rhs(&mut self.r);
+        let rhs_norm = dot_s(&self.r, &self.r).sqrt().max(1e-300);
+        if self.warm {
+            interp.apply_normal_operator_into(&self.x, scratch, &mut self.ap);
+            self.r
+                .par_iter_mut()
+                .zip(self.ap.par_iter())
+                .with_min_len(PAR_MIN_LEN)
+                .for_each(|(ri, a)| *ri = S::from_f64(ri.to_f64() - a.to_f64()));
+        }
         self.p
             .par_iter_mut()
             .zip(self.r.par_iter())
@@ -249,7 +273,7 @@ impl<S: Scalar> AdmmState<S> {
             .for_each(|((pi, ri), di)| *pi = S::from_f64(ri.to_f64() * di.to_f64()));
         self.rz = weighted_dot(&self.r, &self.inv_diag);
         let r_norm = dot_s(&self.r, &self.r).sqrt();
-        self.rhs_norm = r_norm.max(1e-300);
+        self.rhs_norm = rhs_norm;
         self.inner_res = r_norm / self.rhs_norm;
         self.inner_iters = 0;
         self.breakdown = false;
@@ -477,7 +501,7 @@ impl<S: Scalar> AdmmState<S> {
             return Ok(AdmmOutcome::Done(c));
         }
         if self.phase == Phase::Start {
-            self.begin_pre(interp);
+            self.begin_pre(interp, scratch);
         }
         if self.phase == Phase::Pre {
             let mut left = max_iters;

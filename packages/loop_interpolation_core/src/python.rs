@@ -229,6 +229,17 @@ impl PyProblem {
         Ok(())
     }
 
+    /// Set the ridge factor. 0 removes the ridge term. The default is 1e-8.
+    fn set_ridge_factor(&mut self, ridge_factor: f64) -> PyResult<()> {
+        self.get()?.set_ridge_factor(ridge_factor).map_err(map_err)
+    }
+
+    /// Set the start value of the solve. `x0` has one value for each node.
+    fn set_initial_guess(&mut self, x0: PyReadonlyArray1<'_, f64>) -> PyResult<()> {
+        let x = slice("x0", &x0)?;
+        self.get()?.set_initial_guess(x).map_err(map_err)
+    }
+
     /// Add value constraints.
     fn add_value(
         &mut self,

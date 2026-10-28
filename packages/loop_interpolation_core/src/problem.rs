@@ -122,6 +122,9 @@ pub struct Problem {
     value_rows: usize,
     /// True after `add_directional_regularisation`.
     uses_directional: bool,
+    /// Start value of the solve (one value for each node). `None`: zero.
+    /// The session takes it when it starts.
+    pub(crate) initial_guess: Option<Vec<f64>>,
 }
 
 impl fmt::Debug for Problem {
@@ -219,11 +222,40 @@ impl Problem {
             seen_values: Some(HashMap::new()),
             value_rows: 0,
             uses_directional: false,
+            initial_guess: None,
         })
     }
 
     pub fn set_regularisation(&mut self, w: RegularisationWeights) {
         self.with_interp(|i| i.with_regularisation(w));
+    }
+
+    /// Set the ridge factor. The normal operator gets `ridge_factor^2 * I`.
+    /// 0 removes the ridge term. The default is 1e-8.
+    pub fn set_ridge_factor(&mut self, ridge_factor: f64) -> Result<(), CoreError> {
+        if !(ridge_factor.is_finite() && ridge_factor >= 0.0) {
+            return Err(bad_input("ridge_factor", "must be finite and 0 or more"));
+        }
+        self.interp_mut().ridge_factor = ridge_factor;
+        Ok(())
+    }
+
+    /// Set the start value of the solve, one value for each node in the
+    /// node order of the grid. Without a start value the solve starts at 0.
+    pub fn set_initial_guess(&mut self, x0: &[f64]) -> Result<(), CoreError> {
+        const F: &str = "initial_guess";
+        check_len(F, "x0", x0.len(), self.interp().dof())?;
+        if let Some(i) = x0.iter().position(|v| !v.is_finite()) {
+            return Err(bad_row(F, i, "value is not finite"));
+        }
+        let mut v: Vec<f64> = Vec::new();
+        v.try_reserve_exact(x0.len())
+            .map_err(|_| CoreError::OutOfMemory {
+                requested_bytes: (x0.len() as u64).saturating_mul(8),
+            })?;
+        v.extend_from_slice(x0);
+        self.initial_guess = Some(v);
+        Ok(())
     }
 
     pub fn set_border_regularisation(&mut self, w: BorderRegularisationWeights) {
@@ -498,6 +530,7 @@ impl Problem {
             n_pair_bound: i.n_inequality_pair_constraints() as u64,
             n_value_bound: i.n_value_inequality_constraints() as u64,
             uses_directional: self.uses_directional,
+            has_initial_guess: self.initial_guess.is_some(),
         }
     }
 
