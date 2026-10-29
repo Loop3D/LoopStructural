@@ -31,7 +31,7 @@ If you would like to contribute code to LoopStructural please open an `issue <ht
 a bug report or a feature request and then submit a pull request and link it to this issue.
 
 Getting setup
-~~~~~~~~~~~
+~~~~~~~~~~~~~
 To get started, fork and clone the repository. It's then best to get started with conda::
 
     conda activate
@@ -82,6 +82,7 @@ Commit messages
 A changelog is automatically generated from the commit message, the following keywords are identified in the commit log.
  
 .. code-block::
+
     <type>[optional scope]: <description>
 
     [optional body]

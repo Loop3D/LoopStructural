@@ -1,6 +1,3 @@
-sphinx
-sphinx_gallery
-sphinxcontrib-bibtex
-pydata_sphinx_theme
-myst-parser
-sphinx-design
+# Build the docs with the project and its docs extra:
+#   pip install -r docs/requirements.txt
+.[docs]

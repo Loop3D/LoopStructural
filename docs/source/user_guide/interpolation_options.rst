@@ -168,7 +168,7 @@ Iterative solvers:
 * algorithmic multigrid solver - using pyamg
 * lsqr - this solver uses the rectangular matrix directly, therefore does not require computing A.T A and A.T B. Uses scipy
 
-.. code-block:
+.. code-block::
 
   model.create_and_add_foliation('my_foliation',solver='lu')
   model.create_and_add_foliation('my_foliation',solver='chol')
@@ -185,7 +185,7 @@ You can also pass a function that solves
 
 to LoopStructural if you want to use another solver by using the `external` keyword . 
 
-.. code-block:
+.. code-block::
 
   def mysolver(A,B):
     from scipy.sparse.linalg import gmres
@@ -195,7 +195,7 @@ to LoopStructural if you want to use another solver by using the `external` keyw
  
  The solution to the least squares problem will be stored in the interpolator object and can be easily accessed:
 
-.. code-block:
+.. code-block::
 
   model.create_and_add_foliation('my_foliation',solver='pyamg')
   pyamg_solution = model['my_foliation'].interpolator.c[model['my_foliation'].interpolator.region]
