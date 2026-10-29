@@ -89,3 +89,75 @@ def test_vector_valued_cell_data(grid):
     grid.cell_properties["v"] = np.column_stack([np.arange(grid.n_cells), -np.arange(grid.n_cells)]).astype(float)
     values = grid.cell_value_at("v", grid.cell_centres[[0, -1]])
     np.testing.assert_allclose(values, [[0, 0], [grid.n_cells - 1, -(grid.n_cells - 1)]])
+
+
+# --------------------------------------------------------------------------- trilinear
+LINEAR = np.array([1.5, -2.0, 0.75])
+
+
+def _linear(points):
+    return points @ LINEAR + 3.0
+
+
+def test_trilinear_reproduces_a_linear_field_exactly(grid):
+    grid.properties["f"] = _linear(grid.nodes)
+    points = np.random.default_rng(1).uniform(grid.origin, grid.maximum, (300, 3))
+    np.testing.assert_allclose(grid.evaluate_value("f", points), _linear(points), atol=1e-9)
+
+
+def test_trilinear_returns_the_node_values_at_the_nodes(grid):
+    values = np.random.default_rng(2).normal(size=grid.n_nodes)
+    grid.properties["f"] = values
+    np.testing.assert_allclose(grid.evaluate_value("f", grid.nodes), values, atol=1e-12)
+
+
+def test_trilinear_is_nan_outside(grid):
+    grid.properties["f"] = _linear(grid.nodes)
+    outside = np.array([grid.maximum + grid.step_vector, grid.origin - grid.step_vector])
+    assert np.isnan(grid.evaluate_value("f", outside)).all()
+
+
+def test_trilinear_at_the_cell_midpoint_is_the_mean_of_its_corner_values(grid):
+    values = np.random.default_rng(3).normal(size=grid.n_nodes)
+    grid.properties["f"] = values
+    geometry = grid.geometry
+    centres = grid.cell_centres
+    corners, _ = geometry.position_to_cell_corners(centres)
+    np.testing.assert_allclose(grid.evaluate_value("f", centres), values[corners].mean(axis=1))
+
+
+def test_trilinear_multicomponent(grid):
+    grid.properties["v"] = np.column_stack([_linear(grid.nodes), -_linear(grid.nodes)])
+    points = np.random.default_rng(4).uniform(grid.origin, grid.maximum, (50, 3))
+    result = grid.evaluate_value("v", points)
+    assert result.shape == (50, 2)
+    np.testing.assert_allclose(result[:, 0], _linear(points), atol=1e-9)
+    np.testing.assert_allclose(result[:, 1], -_linear(points), atol=1e-9)
+
+
+def test_trilinear_agrees_with_the_interpolation_support(grid):
+    from loop_common.supports import StructuredGrid
+
+    support = StructuredGrid(
+        origin=grid.origin, nsteps_cells=grid.nsteps - 1, step_vector=grid.step_vector
+    )
+    values = np.random.default_rng(5).normal(size=grid.n_nodes)
+    grid.properties["f"] = values
+    points = np.random.default_rng(6).uniform(grid.origin - grid.step_vector, grid.maximum + grid.step_vector, (200, 3))
+    np.testing.assert_allclose(
+        grid.evaluate_value("f", points), support.evaluate_value(points, values), equal_nan=True
+    )
+
+
+def test_transfer_a_property_onto_a_finer_support(grid):
+    """The use case: evaluate a property at the nodes of another support."""
+    from loop_common.supports import StructuredGrid
+
+    grid.properties["f"] = _linear(grid.nodes)
+    finer = StructuredGrid(
+        origin=grid.origin,
+        nsteps_cells=(grid.nsteps - 1) * 3,
+        step_vector=grid.step_vector / 3.0,
+    )
+    transferred = grid.evaluate_value("f", finer.nodes)
+    np.testing.assert_allclose(transferred, _linear(finer.nodes), atol=1e-9)

@@ -265,3 +265,178 @@ class StructuredGrid3DGeometry:
     def global_cell_indices(self, cell_indexes):
         """Flat cell indexes from (..., 3) cell ijk indexes; the order cell data is stored in."""
         return self._global_indicies(cell_indexes, self.nsteps_cells)
+
+    def position_to_cell_corners(self, pos):
+        """Get the global indices of the vertices (corners) of the cell containing each point.
+
+        Parameters
+        ----------
+        pos : np.array
+            (N, 3) array of xyz coordinates representing the positions of N points.
+
+        Returns
+        -------
+        globalidx : np.array
+            (N, 8) array of global indices corresponding to the 8 corner nodes of the cell
+            each point lies in. If a point lies outside the support, its corresponding entry
+            will be set to -1.
+        inside : np.array
+            (N,) boolean array indicating whether each point is inside the support domain.
+        """
+        cell_indexes, inside = self.position_to_cell_index(pos)
+        nx, ny = self.nsteps[0], self.nsteps[1]
+        offsets = np.array(
+            [0, 1, nx, nx + 1, nx * ny, nx * ny + 1, nx * ny + nx, nx * ny + nx + 1],
+            dtype=np.intp,
+        )
+        g = cell_indexes[:, 0] + nx * cell_indexes[:, 1] + nx * ny * cell_indexes[:, 2]
+        globalidx = g[:, None] + offsets[None, :]  # (N, 8)
+        globalidx[~inside] = -1
+        return globalidx, inside
+
+    def position_to_cell_vertices(self, pos):
+        """Get the vertices of the cell a point is in
+
+        Parameters
+        ----------
+        pos : np.array
+            Nx3 array of xyz locations
+
+        Returns
+        -------
+        np.array((N,3),dtype=float), np.array(N,dtype=int)
+            vertices, inside
+        """
+        gi, inside = self.position_to_cell_corners(pos)
+        node_indexes = self.global_index_to_node_index(gi)
+        return self.node_indexes_to_position(node_indexes), inside
+
+    def node_indexes_to_position(self, node_indexes: np.ndarray) -> np.ndarray:
+        original_shape = node_indexes.shape
+        node_indexes = node_indexes.reshape((-1, 3))
+        xyz = np.zeros((node_indexes.shape[0], 3), dtype=float)
+        xyz[:, 0] = self.origin[0] + self.step_vector[0] * node_indexes[:, 0]
+        xyz[:, 1] = self.origin[1] + self.step_vector[1] * node_indexes[:, 1]
+        xyz[:, 2] = self.origin[2] + self.step_vector[2] * node_indexes[:, 2]
+        xyz = xyz.reshape(original_shape)
+        return xyz
+
+    @property
+    def element_size(self):
+        return np.prod(self.step_vector)
+
+    @property
+    def element_scale(self):
+        # all elements are the same size
+        return 1.0
+
+    def trilinear(self, local_coords):
+        """
+        Returns the trilinear interpolation for the local coordinates
+
+        Parameters
+        ----------
+        x - double, array of doubles
+        y - double, array of doubles
+        z - double, array of doubles
+
+        Returns
+        -------
+        array of interpolation coefficients
+
+        """
+        interpolant = np.zeros((local_coords.shape[0], 8), dtype=np.float64)
+        # interpolant[:,0] = (1 - local_coords[:, 0])* (1 - local_coords[:, 1])* (1 - local_coords[:, 2])
+        # interpolant[:,1] = local_coords[:, 0]* (1 - local_coords[:, 1])* (1 - local_coords[:, 2])
+        # interpolant[:,2] = (1 - local_coords[:, 0])* local_coords[:, 1]* (1 - local_coords[:, 2])
+        # interpolant[:,3] = (1 - local_coords[:, 0])* (1 - local_coords[:, 1])* local_coords[:, 2]
+        # interpolant[:,4] = local_coords[:, 0] * (1 - local_coords[:, 1]) * local_coords[:, 2]
+        # interpolant[:,5] = (1 - local_coords[:, 0]) * local_coords[:, 1] * local_coords[:, 2]
+        # interpolant[:,6] = local_coords[:, 0] * local_coords[:, 1] * (1 - local_coords[:, 2])
+        # interpolant[:,7] =  local_coords[:, 0] * local_coords[:, 1] * local_coords[:, 2]
+        interpolant[:, 0] = (
+            (1 - local_coords[:, 0]) * (1 - local_coords[:, 1]) * (1 - local_coords[:, 2])
+        )
+        interpolant[:, 1] = local_coords[:, 0] * (1 - local_coords[:, 1]) * (1 - local_coords[:, 2])
+        interpolant[:, 2] = (1 - local_coords[:, 0]) * local_coords[:, 1] * (1 - local_coords[:, 2])
+        interpolant[:, 4] = (1 - local_coords[:, 0]) * (1 - local_coords[:, 1]) * local_coords[:, 2]
+        interpolant[:, 5] = local_coords[:, 0] * (1 - local_coords[:, 1]) * local_coords[:, 2]
+        interpolant[:, 6] = (1 - local_coords[:, 0]) * local_coords[:, 1] * local_coords[:, 2]
+        interpolant[:, 3] = local_coords[:, 0] * local_coords[:, 1] * (1 - local_coords[:, 2])
+        interpolant[:, 7] = local_coords[:, 0] * local_coords[:, 1] * local_coords[:, 2]
+        return interpolant
+
+    def position_to_local_coordinates(self, pos):
+        """
+        Convert from global to local coordinates within a cel
+
+        Parameters
+        ----------
+        pos - array of positions inside
+
+        Returns
+        -------
+        localx, localy, localz
+
+        """
+        pos = self.check_position(pos)
+        cell_indexes, _inside = self.position_to_cell_index(pos)
+
+        # Use cell origin (not modulo) so points on max faces/vertices map to local=1.
+        cell_origin = self.origin[None, :] + self.step_vector[None, :] * cell_indexes
+        local_coords = (pos - cell_origin) / self.step_vector[None, :]
+        local_coords = np.clip(local_coords, 0.0, 1.0)
+        return local_coords
+
+    def position_to_dof_coefs(self, pos):
+        """
+        Global posotion to interpolation coefficients
+
+        Parameters
+        ----------
+        pos
+
+        Returns
+        -------
+
+        """
+        local_coords = self.position_to_local_coordinates(pos)
+        weights = self.trilinear(local_coords)
+        return weights
+
+    def evaluate_value(self, evaluation_points, property_array):
+        """Trilinear interpolation of node values at the evaluation points.
+
+        Parameters
+        ----------
+        evaluation_points : np.ndarray
+            N x 3 locations in the grid's own frame
+        property_array : np.ndarray
+            values at the nodes, shape ``(n_nodes,)`` or ``(n_nodes, k)``, in node order
+            (x varies fastest)
+
+        Returns
+        -------
+        np.ndarray
+            ``(N,)`` (or ``(N, k)``) interpolated values; NaN for points outside the grid
+        """
+        property_array = np.asarray(property_array)
+        evaluation_points = self.check_position(evaluation_points)
+        if property_array.shape[0] != self.n_nodes:
+            logger.error("Property array does not match grid")
+            raise ValueError(
+                f"cannot assign {property_array.shape[0]} vlaues to array of shape {self.n_nodes}"
+            )
+        idc, inside = self.position_to_cell_corners(evaluation_points)
+        if idc.shape[0] != inside.shape[0]:
+            raise ValueError("index does not match number of nodes")
+        weights = self.position_to_dof_coefs(evaluation_points[inside, :])
+        if property_array.ndim == 1:
+            v = np.zeros(idc.shape)
+            v[:, :] = np.nan
+            v[inside, :] = weights
+            v[inside, :] *= property_array[idc[inside, :]]
+            return np.sum(v, axis=1)
+        result = np.full((idc.shape[0],) + property_array.shape[1:], np.nan)
+        result[inside] = np.einsum("nc,nc...->n...", weights, property_array[idc[inside, :]])
+        return result

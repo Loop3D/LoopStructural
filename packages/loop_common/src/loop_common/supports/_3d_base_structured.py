@@ -137,73 +137,9 @@ class BaseStructuredSupport(StructuredGrid3DGeometry, BaseSupport):
 
 
 
-    def position_to_cell_corners(self, pos):
-        """Get the global indices of the vertices (corners) of the cell containing each point.
-
-        Parameters
-        ----------
-        pos : np.array
-            (N, 3) array of xyz coordinates representing the positions of N points.
-
-        Returns
-        -------
-        globalidx : np.array
-            (N, 8) array of global indices corresponding to the 8 corner nodes of the cell
-            each point lies in. If a point lies outside the support, its corresponding entry
-            will be set to -1.
-        inside : np.array
-            (N,) boolean array indicating whether each point is inside the support domain.
-        """
-        cell_indexes, inside = self.position_to_cell_index(pos)
-        nx, ny = self.nsteps[0], self.nsteps[1]
-        offsets = np.array(
-            [0, 1, nx, nx + 1, nx * ny, nx * ny + 1, nx * ny + nx, nx * ny + nx + 1],
-            dtype=np.intp,
-        )
-        g = cell_indexes[:, 0] + nx * cell_indexes[:, 1] + nx * ny * cell_indexes[:, 2]
-        globalidx = g[:, None] + offsets[None, :]  # (N, 8)
-        globalidx[~inside] = -1
-        return globalidx, inside
-
-    def position_to_cell_vertices(self, pos):
-        """Get the vertices of the cell a point is in
-
-        Parameters
-        ----------
-        pos : np.array
-            Nx3 array of xyz locations
-
-        Returns
-        -------
-        np.array((N,3),dtype=float), np.array(N,dtype=int)
-            vertices, inside
-        """
-        gi, inside = self.position_to_cell_corners(pos)
-        node_indexes = self.global_index_to_node_index(gi)
-        return self.node_indexes_to_position(node_indexes), inside
-
-    def node_indexes_to_position(self, node_indexes: np.ndarray) -> np.ndarray:
-        original_shape = node_indexes.shape
-        node_indexes = node_indexes.reshape((-1, 3))
-        xyz = np.zeros((node_indexes.shape[0], 3), dtype=float)
-        xyz[:, 0] = self.origin[0] + self.step_vector[0] * node_indexes[:, 0]
-        xyz[:, 1] = self.origin[1] + self.step_vector[1] * node_indexes[:, 1]
-        xyz[:, 2] = self.origin[2] + self.step_vector[2] * node_indexes[:, 2]
-        xyz = xyz.reshape(original_shape)
-        return xyz
 
 
 
-
-
-    @property
-    def element_size(self):
-        return np.prod(self.step_vector)
-
-    @property
-    def element_scale(self):
-        # all elements are the same size
-        return 1.0
 
     def vtk(self, node_properties=None, cell_properties=None):
         try:
