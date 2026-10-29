@@ -636,12 +636,13 @@ class GeologicalModel:
 
         Notes
         -----
-        stratigraphic_column is a nested dictionary with the format
-        {'group':
+        stratigraphic_column is a nested dictionary with the format::
+
+            {'group':
                 {'series1':
                             {'min':0., 'max':10.,'id':0,'colour':}
                 }
-        }
+            }
 
         """
         warnings.warn(

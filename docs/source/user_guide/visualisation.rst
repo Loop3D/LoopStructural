@@ -1,136 +1,180 @@
 Visualisation
-=================
-LoopStructural uses the powerful lavaVu visualisaton library for visualising the 3D models as surfaces and scalar fields.
-LavaVu provides an interative viewer inside jupyter notebooks and can use matplotlib colourmaps as well as export the model to webgl.
-The LavaVuModelViewer provides an easy to use interfaces for adding GeologicalFeatures to the viewer, the base lavaVu object can still be used.
-Some of the functions in the viewer require a bounding box to be able to draw isosurfaces or scalar fields.
-By default the viewer is initialised with a GeologicalModel and the origin and maximum of the model are used to set the viewers extents.
-It is also possible to modify this manually by changing the bounding_box attribute.
+=============
 
-Visualising GeologicalFeatures
-------------------------------
+LoopStructural visualises models with :class:`LoopStructural.visualisation.Loop3DView`, a thin
+subclass of the `PyVista <https://docs.pyvista.org>`_ ``Plotter`` that knows how to draw
+geological features, faults, data and whole models. It comes from the separate
+``loopstructuralvisualisation`` package; install it with
 
-There are four main ways a GeologicalFeature can be visualised.
-1. Scalar field showing the value of the implicit function on a block representing the model domain
+.. code-block:: bash
 
-.. code-block::
+    pip install loopstructural[visualisation]
 
-    view.plot_scalar_field(geological_feature)
+Because ``Loop3DView`` *is* a PyVista plotter, everything PyVista can do (``add_mesh``,
+``add_points``, ``add_arrows``, ``camera_position``, ``screenshot``, ...) is available as well.
 
-2. Surfaces extracted from isovalues of the implicit function
+.. code-block:: python
 
-.. code-block::
+    from LoopStructural.visualisation import Loop3DView
 
-    view.plot_surface(geological_feature,value=0)
+    view = Loop3DView(model)       # the model is used for bounds and defaults
+    view.plot_surface(feature, value=0)
+    view.display()                 # opens the viewer (inline in a notebook)
 
-3. Vector field representing the gradient of the implicit function
+Some methods need a bounding box to know where to evaluate the feature. By default this is
+the bounding box of the model passed to ``Loop3DView``; ``plot_surface``,
+``plot_scalar_field``, ``plot_vector_field``, ``plot_fault`` and ``plot_fault_displacements``
+also accept a ``bounding_box=`` argument to override it.
 
-.. code-block::
+Visualising geological features
+-------------------------------
 
-    view.plot_surface(geological_feature)
+There are four main ways to look at a geological feature.
 
-4. Cross section showing the value of the implicit function at a particular location inside the model
+1. A scalar field: the value of the implicit function on a volume.
 
-.. code-block::
+   .. code-block:: python
 
-    view.add_section(geological_feature,axis='x',value=0)
+       view.plot_scalar_field(feature, cmap="viridis")
 
-When adding to the viewer there are a number of common arguments that can be specified to change the behaviour:
+2. Surfaces: isosurfaces of the implicit function. ``value`` is one isovalue, a list of
+   isovalues, or a positive integer number of regularly spaced surfaces between the minimum and
+   maximum of the feature (``0`` is read as the isovalue 0.0, not a count). If ``value`` is
+   omitted the surface at the middle of the feature's range is drawn.
 
-  .. list-table:: Viewer kwargs
-      :widths: 25 75
-      :header-rows: 1
+   .. code-block:: python
 
-      * - Parameter
-        - Options
-      * - vmin
-        - minimum value for colourmap
-      * - vmax
-        - maximum value for colourmap
-      * - cmap
-        - matplotlib colourmap or string with name of matplotlib colourmap e.g. 'rainbow'
-      * - pyvista_kwargs
-        - any arguments to be passed to the :meth:`pyvista.Plotter.add_mesh` method
-      
-The default behaviour of the viewer can also be modified.
-To change the resolution of the scalar field or isosurfacing, either set the number of steps in x,y,z or the total number of elements of tht bounding box
+       view.plot_surface(feature, value=[0, 100, 300], cmap="rainbow")
 
-.. code-block::
-    
-    model.bounding_box.nsteps = np.array([nx,ny,nz])
+3. A vector field: the gradient of the implicit function, drawn as arrows.
+
+   .. code-block:: python
+
+       view.plot_vector_field(feature, scale=50)
+
+4. Sliders: pass ``slicer=True`` to ``plot_scalar_field`` or ``plot_surface`` to add an
+   interactive slicing widget.
+
+The methods share a few arguments:
+
+.. list-table:: Common arguments
+    :widths: 25 75
+    :header-rows: 1
+
+    * - Parameter
+      - Meaning
+    * - ``vmin``, ``vmax``
+      - limits of the colour map
+    * - ``cmap``
+      - a matplotlib colour map, or its name e.g. ``"rainbow"``
+    * - ``opacity``
+      - transparency of the object, between 0 and 1
+    * - ``name``
+      - name of the object in the viewer. If the name is already used a numeric suffix is added
+        (``name_1``, ``name_2``, ...) so nothing is replaced
+    * - ``pyvista_kwargs``
+      - a dictionary passed on to :meth:`pyvista.Plotter.add_mesh`
+    * - ``bounding_box``
+      - the region to evaluate the feature in, by default the model's bounding box
+
+Resolution
+~~~~~~~~~~
+
+The scalar field and isosurfaces are evaluated on a regular grid over the bounding box.
+To change its resolution either set the number of points in each direction or the approximate
+number of cells:
+
+.. code-block:: python
+
+    model.bounding_box.nsteps = np.array([nx, ny, nz])
     print(model.bounding_box.nsteps)
-    model.bounding_box.nelements = 1e6
+
+    model.bounding_box.nelements = 1e6    # updates nsteps for roughly cubic cells
     print(model.bounding_box.nsteps)
 
-
-    
 Visualising data
 ----------------
 
-The input data for the geological model can also be visualised within the viewer. 
-To add all of the data attached to a GeologicalFeature
+The data attached to a feature can be drawn with the feature:
 
-.. code-block::
+.. code-block:: python
 
-    view.plot_data(geological_feature,value=True,vector=True,scale=10,pyvista_kwargs={})
+    view.plot_data(feature, value=True, vector=True, scale=50)
 
-Alternatively, points can be added into the model using the:
+``value`` draws the value constraints as points and ``vector`` draws the orientation
+constraints as arrows. Arbitrary points and arrows can be added with the PyVista methods:
 
-.. code-block::
+.. code-block:: python
 
-    view.add_points(xyz)
+    view.add_points(xyz, name="my points")
+    view.add_points(xyz, scalars=values, name="my values")
+    view.add_arrows(xyz, directions, name="my vectors")
 
-or points with an associated value:
+.. warning::
 
-.. code-block::
-    view.add_points(xyz,scalars=np.array(values))
+    Pass a distinct ``name`` for each object. ``Loop3DView`` does not replace an existing
+    object when a name is reused: the new object is given a numeric suffix (``name_1``,
+    ``name_2``, ...) and both stay in the scene.
 
-or points with an associated vector:
+Visualising the geological model
+--------------------------------
 
-.. code-block::
+When a model has a stratigraphic column (and, optionally, faults), the whole model can be
+drawn at once. A block model colours each cell by the ``id`` of its stratigraphic unit:
 
-    view.add_arrows(xyz,direction)
-
-**Warning, you cannot have two objects in the viewer with the same name**
-
-Visualising geological model
-----------------------------
-
-Where the GeologicalModel has an assocaited stratigraphic column including a list of faults in the model, this can be used for automatically visualising the model.
-To add a block model showing the stratigraphic unit distribution, where the value is linked to the *id* in the stratigraphic column.
-
-.. code-block::
+.. code-block:: python
 
     view.plot_block_model()
 
-alternatively, the surfaces can be added to the visualisation.
+or draw a surface for each stratigraphic unit and, optionally, each fault:
 
-.. code-block::
+.. code-block:: python
 
-    view.plot_model_surfaces(faults=True,strati=True)
+    view.plot_model_surfaces(strati=True, faults=True)
 
-Where the faults flag allows you to disable visualising the fault surface. 
-This function will add a surface for every stratigraphic unit in the stratigraphic column.
+Faults can also be drawn individually, with the slip vector and displacement volume:
+
+.. code-block:: python
+
+    view.plot_fault(model["fault_name"], surface=True, slip_vector=True)
 
 Custom visualisation
 --------------------
 
-It is also possible to pass custom functions to the viewer using the LambdaGeologicalFeature.
-The LambdaGeologicalFeature is a class allowing for a function describing the value at locations or vector field.
+A :class:`LoopStructural.modelling.features.LambdaGeologicalFeature` wraps any function of
+location, so arbitrary quantities can be drawn with the same methods.
 
-.. code-block::
+.. code-block:: python
 
     from LoopStructural.modelling.features import LambdaGeologicalFeature
+
     def x_function(xyz):
-        return xyz[:,0]
-    custom_feature = LambdaGeologicalFeature(x_function,name='x feature')
-    view.plot_surface(custom_feature,value)
-    view.plot_scalar_field(custom_feature)
+        return xyz[:, 0]
 
-The function passed to the LambdaGeologicalFeature can be as simple or complicated as required. 
-It will be evaluated for the locations within the model that the visualisation requires, usually between the origin and maximum of the geoloical model.
-By default the min and max values are 0, however these can be overwritten by setting the attribute min and max to the required values.
+    custom_feature = LambdaGeologicalFeature(x_function, name="x feature")
 
+    # a lambda feature has no model, so say where to evaluate it
+    bb = model.bounding_box
+    view.plot_surface(custom_feature, value=0.5 * (bb.origin[0] + bb.maximum[0]), bounding_box=bb)
+    view.plot_scalar_field(custom_feature, bounding_box=bb)
 
+The function is evaluated at the locations the visualisation needs, normally between the
+origin and maximum of the bounding box. ``min()`` and ``max()`` on a feature are methods, not
+settable attributes, and a feature without a model (such as a lambda feature) returns 0 for
+both. To control the colour range pass ``vmin`` and ``vmax`` to the plotting method instead.
+If you use the lambda feature as ``paint_with``, also pass ``vmin`` and ``vmax`` since the
+default range comes from ``min()`` and ``max()``.
 
+Using the grid directly
+-----------------------
 
+``feature.scalar_field()`` evaluates a feature on the bounding box's regular grid and returns a
+:class:`LoopStructural.geometry.StructuredGrid`. Its ``properties`` hold the values at the nodes and
+``cell_properties`` hold values at the cell centres. ``vtk()`` returns a PyVista
+grid and ``save()`` writes it to VTK, GeoH5, OMF or GOCAD files.
+
+.. code-block:: python
+
+    grid = feature.scalar_field()
+    grid.plot()                         # quick look with PyVista
+    grid.save("scalar_field.vtk")

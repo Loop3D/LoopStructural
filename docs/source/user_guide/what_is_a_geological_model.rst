@@ -49,6 +49,7 @@ The interpolator can be evaluated on a grid to visualise the geometry of the geo
     import numpy as np
     import pandas as pd
     from LoopStructural import InterpolatorBuilder, BoundingBox
+    from LoopStructural.geometry import StructuredGrid
     from LoopStructural.visualisation import Loop3DView
     
     bounding_box = BoundingBox(np.array([-2, -2, -2]), np.array([2, 2, 2]))
@@ -60,7 +61,11 @@ The interpolator can be evaluated on a grid to visualise the geometry of the geo
         .add_normal_constraints(vector.values).setup_interpolator()
         .build()
     )
-    mesh = bounding_box.structured_grid()
+    mesh = StructuredGrid(
+        origin=bounding_box.origin,
+        step_vector=bounding_box.step_vector,
+        nsteps=bounding_box.nsteps,
+    )
     mesh.properties['val'] = interpolator.evaluate_value(mesh.nodes)
     view = Loop3DView()
     view.add_mesh(mesh.vtk())
@@ -118,7 +123,11 @@ If we were to change the length of the vector we would change the distance betwe
         .add_normal_constraints(vector.values).setup_interpolator()
         .build()
     )
-    mesh2 = bounding_box.structured_grid()
+    mesh2 = StructuredGrid(
+        origin=bounding_box.origin,
+        step_vector=bounding_box.step_vector,
+        nsteps=bounding_box.nsteps,
+    )
     mesh2.properties['val'] = interpolator.evaluate_value(mesh2.nodes)
     view = Loop3DView()
     view.add_mesh(mesh2.vtk().contour([-1, 0, 1]),color='red')
@@ -151,6 +160,7 @@ Following the example above we will use two lines of points with a value of 0 an
     import numpy as np
     import pandas as pd
     from LoopStructural import InterpolatorBuilder, BoundingBox
+    from LoopStructural.geometry import StructuredGrid
     from LoopStructural.visualisation import Loop3DView
 
     x = np.linspace(0, 1, 10)
@@ -175,7 +185,11 @@ Following the example above we will use two lines of points with a value of 0 an
         .setup_interpolator()
         .build()
     )
-    mesh = bounding_box.structured_grid()
+    mesh = StructuredGrid(
+        origin=bounding_box.origin,
+        step_vector=bounding_box.step_vector,
+        nsteps=bounding_box.nsteps,
+    )
     mesh.properties["val"] = interpolator.evaluate_value(mesh.nodes)
     view = Loop3DView()
     view.add_mesh(mesh.vtk().contour([0, 0.5]), opacity=0.4)

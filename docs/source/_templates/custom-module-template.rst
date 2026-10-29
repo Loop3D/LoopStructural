@@ -15,39 +15,43 @@
    {% endblock %}
 
    {% block functions %}
-   {% if functions %}
+   {% set functions_ours = ours(fullname, functions) %}
+   {% if functions_ours %}
    .. rubric:: {{ _('Functions') }}
 
    .. autosummary::
       :toctree:
       :recursive:
-   {% for item in functions %}
+   {% for item in functions_ours %}
       {{ item }}
    {%- endfor %}
    {% endif %}
    {% endblock %}
 
    {% block classes %}
-   {% if classes %}
+   {% set classes_ours = ours(fullname, classes) %}
+   {% if classes_ours %}
    .. rubric:: {{ _('Classes') }}
 
    .. autosummary::
       :toctree:                                          
       :template: custom-class-template.rst
       :recursive:              
-   {% for item in classes %}
+   {% for item in classes_ours %}
       {{ item }}
    {%- endfor %}
    {% endif %}
    {% endblock %}
 
    {% block exceptions %}
-   {% if exceptions %}
+   {% set exceptions_ours = ours(fullname, exceptions) %}
+   {% if exceptions_ours %}
    .. rubric:: {{ _('Exceptions') }}
 
    .. autosummary::
-      :toctree:                                          
-   {% for item in exceptions %}
+      :toctree:
+      :template: custom-class-template.rst
+   {% for item in exceptions_ours %}
       {{ item }}
    {%- endfor %}
    {% endif %}
