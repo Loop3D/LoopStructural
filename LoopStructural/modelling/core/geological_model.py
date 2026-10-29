@@ -708,7 +708,26 @@ class GeologicalModel:
         feature : BaseFeature
             the created geological feature, or None if it could not be built
         """
-        return FeatureBuilderRegistry.create(feature_type, self, name, **params)
+        record_params = dict(params)
+        if feature_type == "foliation" and record_params.get("faults") is None:
+            # faults=None means every fault in the model when the feature is built, which is not
+            # recoverable from the feature list order once index= has been used: record the
+            # faults that are actually used (in model order, as add_faults reads them)
+            record_params["faults"] = [
+                f.name for f in self.features if f.type == FeatureType.FAULT
+            ]
+        if (
+            feature_type in ("folded_foliation", "folded_fold_frame")
+            and record_params.get("fold_frame") is None
+            and len(self.features) > 0
+        ):
+            # fold_frame=None means "the last feature in the model" when the feature is built;
+            # record that name so the recipe does not depend on the order of the feature list
+            record_params["fold_frame"] = self.features[-1].name
+        feature = FeatureBuilderRegistry.create(feature_type, self, name, **params)
+        if feature is not None:
+            ModelSerializer.record_creation(feature, feature_type, record_params)
+        return feature
 
     @public_api(tier="stable")
     def create_and_add_foliation(
