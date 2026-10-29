@@ -156,6 +156,21 @@ def test_a_callable_solver_with_inequality_constraints_warns_too(caplog):
     assert "solver 'custom'" in warning.getMessage()
 
 
+def test_the_ignored_warning_fires_once_per_interpolator_not_once_per_solve(caplog):
+    from scipy.sparse.linalg import lsmr
+
+    with caplog.at_level(logging.WARNING):
+        first = builder().setup_interpolator().interpolator
+        for _ in range(3):
+            first.solve_system("cg")
+        assert len(ignored_warnings(caplog)) == 1
+        # a different interpolator is a different solve problem, so it warns for itself
+        second = builder().setup_interpolator().interpolator
+        second.solve_system(lambda a, b: lsmr(a, b)[0])
+        second.solve_system("cg")
+    assert len(ignored_warnings(caplog)) == 2
+
+
 def test_admm_does_not_say_inequality_constraints_are_ignored(caplog):
     with caplog.at_level(logging.WARNING):
         builder().setup_interpolator().use_solver("admm", admm_weight=1.0).solve().build()

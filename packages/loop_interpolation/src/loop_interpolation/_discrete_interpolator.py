@@ -46,6 +46,8 @@ def _drop_nan_rows(A, B, idc, w, name):
 class DiscreteInterpolator(GeologicalInterpolator):
     """ """
 
+    _inequality_ignored_warned = False
+
     def __init__(self, support, data=None, c=None, up_to_date=False):
         """
         Base class for a discrete interpolator e.g. piecewise linear or finite difference which is
@@ -1383,7 +1385,8 @@ class DiscreteInterpolator(GeologicalInterpolator):
             self._materialise_matrix_free_regularisation_blocks()
 
         Q, bounds = self._assemble_inequality_system(timing)
-        if solver_choice != "admm" and Q.shape[0] > 0:
+        if solver_choice != "admm" and Q.shape[0] > 0 and not self._inequality_ignored_warned:
+            self._inequality_ignored_warned = True  # once per interpolator, not once per solve
             # only ADMM (and the native solver, handled above) uses the inequality rows
             solver_name = solver_choice if isinstance(solver_choice, str) else "custom"
             logger.warning(
