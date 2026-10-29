@@ -8,8 +8,34 @@ logger = getLogger(__name__)
 
 
 @dataclass
-class StructuredGrid:
-    """A structured grid for storing 3D geological data."""
+class PropertyGrid:
+    """A regular 3D grid for storing property values (the result container).
+
+    This is a plain data container, not an interpolation support: it holds
+    node-based ``properties`` and ``cell_properties`` on a regular grid and can
+    export them (``vtk``, ``save``). For the class used to interpolate on a
+    grid see :class:`loop_common.supports.StructuredGrid`.
+
+    It was previously named ``StructuredGrid``; that name remains as an alias.
+
+    This class represents a regular 3D grid with properties and cell properties
+    that can be used for geological modelling and visualisation.
+
+    Parameters
+    ----------
+    origin : np.ndarray, optional
+        Origin point of the grid, by default [0, 0, 0]
+    step_vector : np.ndarray, optional
+        Step size in each direction, by default [1, 1, 1]
+    nsteps : np.ndarray, optional
+        Number of steps in each direction, by default [10, 10, 10]
+    cell_properties : Dict[str, np.ndarray], optional
+        Properties defined at cell centres, by default empty dict
+    properties : Dict[str, np.ndarray], optional
+        Properties defined at grid nodes, by default empty dict
+    name : str, optional
+        Name of the grid, by default "default_grid"
+    """
 
     origin: np.ndarray = field(default_factory=lambda: np.array([0, 0, 0]))
     step_vector: np.ndarray = field(default_factory=lambda: np.array([1, 1, 1]))
@@ -19,6 +45,13 @@ class StructuredGrid:
     name: str = "default_grid"
 
     def to_dict(self):
+        """Convert the structured grid to a dictionary representation.
+
+        Returns
+        -------
+        dict
+            Dictionary containing all grid properties and metadata
+        """
         return {
             "origin": self.origin,
             "maximum": self.maximum,
@@ -31,17 +64,40 @@ class StructuredGrid:
 
     @property
     def maximum(self):
+        """Calculate the maximum coordinates of the grid.
+
+        Returns
+        -------
+        np.ndarray
+            Maximum coordinates (origin + (nsteps - 1) * step_vector)
+        """
         return self.origin + (self.nsteps - 1) * self.step_vector
 
     def vtk(self):
+        """Convert the structured grid to a PyVista RectilinearGrid.
+
+        Returns
+        -------
+        pv.RectilinearGrid
+            PyVista grid object with all properties attached
+
+        Raises
+        ------
+        ImportError
+            If PyVista is not installed
+        """
         try:
             import pyvista as pv
-        except ImportError as exc:
-            raise ImportError("pyvista is required for vtk support") from exc
+        except ImportError:
+            raise ImportError("pyvista is required for vtk support")
         x = np.linspace(self.origin[0], self.maximum[0], self.nsteps[0])
         y = np.linspace(self.origin[1], self.maximum[1], self.nsteps[1])
         z = np.linspace(self.origin[2], self.maximum[2], self.nsteps[2])
-        grid = pv.RectilinearGrid(x, y, z)
+        grid = pv.RectilinearGrid(
+            x,
+            y,
+            z,
+        )
         for name, data in self.properties.items():
             grid[name] = data.reshape((grid.n_points, -1), order="F")
         for name, data in self.cell_properties.items():
@@ -49,6 +105,13 @@ class StructuredGrid:
         return grid
 
     def plot(self, pyvista_kwargs=None):
+        """Calls pyvista plot on the vtk object
+
+        Parameters
+        ----------
+        pyvista_kwargs : dict, optional
+            kwargs passed to pyvista.DataSet.plot(), by default {}
+        """
         if pyvista_kwargs is None:
             pyvista_kwargs = {}
         try:
@@ -59,9 +122,16 @@ class StructuredGrid:
 
     @property
     def cell_centres(self):
+        """Calculate the coordinates of cell centres.
+
+        Returns
+        -------
+        tuple of np.ndarray
+            X, Y, Z coordinates of all cell centres
+        """
         x = np.linspace(
             self.origin[0] + self.step_vector[0] * 0.5,
-            self.maximum[0] + self.step_vector[0] * 0.5,
+            self.maximum[0] - self.step_vector[0] * 0.5,
             self.nsteps[0] - 1,
         )
         y = np.linspace(
@@ -79,6 +149,7 @@ class StructuredGrid:
 
     @property
     def nodes(self):
+
         x = np.linspace(self.origin[0], self.maximum[0], self.nsteps[0])
         y = np.linspace(self.origin[1], self.maximum[1], self.nsteps[1])
         z = np.linspace(self.origin[2], self.maximum[2], self.nsteps[2])
@@ -92,6 +163,7 @@ class StructuredGrid:
             raise ValueError("Step vector of grids must be the same")
         if not np.all(np.isclose(self.nsteps, other.nsteps)):
             raise ValueError("Number of steps of grids must be the same")
+
         for name, data in other.cell_properties.items():
             self.cell_properties[name] = data
         for name, data in other.properties.items():
@@ -102,13 +174,32 @@ class StructuredGrid:
         ext = filename.split(".")[-1].lower()
         if ext == "json":
             import json
+
             with open(filename, "w") as f:
                 json.dump(self.to_dict(), f)
         elif ext == "vtk":
             self.vtk().save(filename)
+
+        elif ext == "geoh5":
+            from LoopStructural.export.geoh5 import add_structured_grid_to_geoh5
+
+            add_structured_grid_to_geoh5(filename, self, groupname=group)
         elif ext == "pkl":
             import pickle
+
             with open(filename, "wb") as f:
                 pickle.dump(self, f)
+        elif ext == "omf":
+            from LoopStructural.export.omf_wrapper import add_structured_grid_to_omf
+
+            add_structured_grid_to_omf(self, filename)
+        elif ext == "vo" or ext == "gocad":
+            from LoopStructural.export.gocad import _write_structured_grid_gocad
+
+            _write_structured_grid_gocad(self, filename)
         else:
             raise ValueError(f"Unknown file extension {ext}")
+
+
+# Backwards-compatible name (1.x); also keeps old pickles resolvable.
+StructuredGrid = PropertyGrid
