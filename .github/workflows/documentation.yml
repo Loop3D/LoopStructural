@@ -42,6 +42,9 @@ jobs:
       - name: Install PyVista and dependencies
         run: |
           pip install -e .[docs]
+          # the root pyproject pins the packages below the versions in packages/; install those over it
+          pip install -e packages/loop_common -e packages/loop_interpolation \
+            -e "packages/loopstructural_visualisation[all]"
 
       - name: Install custom OSMesa VTK variant
         run: |
