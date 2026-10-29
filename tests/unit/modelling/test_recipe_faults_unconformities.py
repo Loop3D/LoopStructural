@@ -192,3 +192,53 @@ def test_a_model_with_a_fault_and_an_unconformity_rebuilds_exactly():
     )
     # the unconformity hides part of each group, so the test is not vacuous
     assert 0.1 < np.isnan(model.evaluate_feature_value("upper", points)).mean() < 0.95
+
+
+# ------------------------------------------------------------------ resolved names, not order
+def test_a_model_built_with_index_records_the_faults_it_used_and_rebuilds_identically():
+    """A foliation built before a fault that is then inserted ahead of it has no faults.
+
+    Rebuilding in list order would give the foliation the fault (faults=None means every fault
+    in the model at that time), so the recipe records the faults that were actually used.
+    """
+    model = GeologicalModel([0, 0, 0], [10, 10, 10])
+    model.data = fault_data()
+    model.create_and_add_foliation("strati", nelements=1000)
+    model.create_and_add_fault(
+        "fault",
+        1,
+        nelements=1000,
+        buffer=0.5,
+        major_axis=10,
+        minor_axis=3,
+        intermediate_axis=10,
+        index=0,
+    )
+    model.update()
+    assert [f.name for f in model.features] == ["fault", "strati"]
+    entries = json.loads(model.to_recipe_json())["model"]["features"]
+    assert entries[1]["build"]["parameters"]["faults"] == []
+    rebuilt = rebuild(model)
+    points = np.random.default_rng(2).uniform(0, 10, (300, 3))
+    same_field(model, rebuilt, "strati", points)
+    np.testing.assert_allclose(
+        rebuilt.evaluate_fault_displacements(points),
+        model.evaluate_fault_displacements(points),
+        atol=1e-8,
+    )
+
+
+def test_an_unconformity_without_a_value_is_refused_with_a_loop_error():
+    model, _ = two_group_model(False)
+    recipe = model.to_recipe_dict()
+    del recipe["model"]["features"][1]["build"]["parameters"]["value"]
+    with pytest.raises(LoopValueError, match="no 'value'"):
+        GeologicalModel.from_recipe_dict(recipe)
+
+
+def test_an_onlap_unconformity_is_mapped_to_the_feature_in_the_model():
+    model, _ = two_group_model(True)
+    rebuilt = rebuild(model)
+    assert [f.name for f in rebuilt.features] == [f.name for f in model.features]
+    for name in (f.name for f in rebuilt.features):
+        assert rebuilt[name] is rebuilt.features[rebuilt.feature_name_index[name]]

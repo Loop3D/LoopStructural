@@ -59,7 +59,9 @@ def test_the_requested_parameters_are_stored_not_the_realised_ones():
 def test_data_and_other_features_are_not_stored_as_parameters():
     model, _, _ = claudius_model()
     parameters = json.loads(model.to_recipe_json())["model"]["features"][0]["build"]["parameters"]
-    assert not {"data", "faults", "index"} & set(parameters)
+    assert not {"data", "index"} & set(parameters)
+    # faults are stored as the names of the faults that were used, never as features
+    assert parameters["faults"] == []
 
 
 def test_group_mapping_survives_a_round_trip():
@@ -147,3 +149,30 @@ def test_an_older_recipe_entry_that_is_not_a_foliation_is_refused():
     entry["kind"] = "structural_frame"
     with pytest.raises(LoopValueError, match="only foliations can be rebuilt"):
         GeologicalModel.from_recipe_dict(recipe)
+
+
+# ------------------------------------------------------- parameters are copied, not aliased
+def test_changing_a_parameter_after_creation_does_not_change_the_recipe():
+    model, _, _ = claudius_model()
+    values = [1, 2, 3]
+    weights = {"a": [1.0, 2.0]}
+    ModelSerializer.record_creation(
+        model["strati"], "foliation", {"nelements": 1000, "v": values, "w": weights}
+    )
+    before = model.to_recipe_json()
+    values.append(4)
+    weights["a"].append(3.0)
+    weights["b"] = 1
+    assert model.to_recipe_json() == before
+    parameters = json.loads(before)["model"]["features"][0]["build"]["parameters"]
+    assert parameters["v"] == [1, 2, 3]
+    assert parameters["w"] == {"a": [1.0, 2.0]}
+
+
+def test_a_numpy_array_parameter_is_stored_as_a_list_and_copied():
+    model, _, _ = claudius_model()
+    vector = np.array([0.0, 1.0, 0.5])
+    ModelSerializer.record_creation(model["strati"], "foliation", {"nelements": 1000, "vec": vector})
+    vector[0] = 99.0
+    parameters = json.loads(model.to_recipe_json())["model"]["features"][0]["build"]["parameters"]
+    assert parameters["vec"] == [0.0, 1.0, 0.5]
