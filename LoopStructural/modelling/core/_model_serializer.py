@@ -20,15 +20,16 @@ from ...geometry import BoundingBox
 from ...utils import LoopValueError, getLogger
 from ..features import GeologicalFeature, StructuralFrame, UnconformityFeature
 from ..features.fault import FaultSegment
+from ..features.fold import FoldFrame
 from .stratigraphic_column import StratigraphicColumn
 
 logger = getLogger(__name__)
 
 
 # Parameters of create_and_add_feature that are not stored as they are: ``index`` is the position
-# (the recipe keeps the order), ``data`` is a data frame (see ``custom_data``), and ``faults`` are
-# other features, stored by name.
-_NOT_RECORDED = ("index", "faults", "data")
+# (the recipe keeps the order), ``data`` is a data frame (see ``custom_data``), and ``faults`` and
+# ``fold_frame`` are other features, stored by name.
+_NOT_RECORDED = ("index", "faults", "data", "fold_frame")
 
 # Feature types a recipe can rebuild from the parameters stored with it, and the kind that
 # ``feature_recipe_kind`` must report for a feature created as that type.
@@ -36,6 +37,9 @@ _SUPPORTED_FEATURE_TYPES = {
     "foliation": "foliation",
     "fault": "fault",
     "unconformity": "unconformity",
+    "fold_frame": "fold_frame",
+    "folded_foliation": "foliation",
+    "folded_fold_frame": "fold_frame",
 }
 
 
@@ -68,6 +72,8 @@ class ModelSerializer:
             return "unconformity"
         if isinstance(feature, GeologicalFeature):
             return "foliation"
+        if isinstance(feature, FoldFrame):
+            return "fold_frame"
         if isinstance(feature, StructuralFrame):
             return "structural_frame"
         return feature.__class__.__name__.lower()
@@ -84,6 +90,9 @@ class ModelSerializer:
         if faults is not None:
             # [] means "no faults", which is different from None ("all faults in the model")
             parameters["faults"] = [f if isinstance(f, str) else f.name for f in faults]
+        fold_frame = params.get("fold_frame")
+        if fold_frame is not None:
+            parameters["fold_frame"] = fold_frame if isinstance(fold_frame, str) else fold_frame.name
         feature._recipe_creation = {
             "feature_type": feature_type,
             "parameters": parameters,
@@ -249,6 +258,14 @@ class ModelSerializer:
                         "entries of the recipe"
                     )
                 parameters["faults"] = [feature_map[n] for n in fault_names]
+            if "fold_frame" in parameters:
+                frame_name = parameters["fold_frame"]
+                if frame_name not in feature_map:
+                    raise LoopValueError(
+                        f"Feature '{feature_name}' uses the fold frame '{frame_name}', which is "
+                        "not an earlier entry of the recipe"
+                    )
+                parameters["fold_frame"] = feature_map[frame_name]
             if feature_type == "unconformity":
                 base = feature_map.get(parameters.get("feature"))
                 if base is None:
