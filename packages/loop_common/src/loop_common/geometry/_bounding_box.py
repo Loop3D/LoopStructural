@@ -9,6 +9,8 @@ from loop_common.logging import get_logger as getLogger
 # from LoopStructural.utils.exceptions import LoopValueError
 from loop_common.math import rng
 
+from ._structured_grid import PropertyGrid
+
 logger = getLogger(__name__)
 
 
@@ -699,12 +701,31 @@ class BoundingBox:
         vertex_data: dict | None = None,
         name: str = "bounding_box",
         local_coordinates: bool = False,
-    ):
-        # imported here because loop_common.supports builds on loop_common.geometry
-        from loop_common.supports import StructuredGrid
+    ) -> PropertyGrid:
+        """Create a :class:`PropertyGrid` whose nodes are the points of :meth:`regular_grid`.
 
+        The grid has ``nsteps`` nodes in each direction spanning the bounding box
+        (spacing :attr:`node_step_vector`), so values computed at ``regular_grid()`` /
+        ``cell_centres()`` can be stored on it directly. For a grid to interpolate on, use
+        ``loop_common.supports.StructuredGrid`` (built from ``step_vector``, the cell size).
+
+        Parameters
+        ----------
+        cell_data : dict, optional
+            cell properties to store on the grid (copied)
+        vertex_data : dict, optional
+            node properties to store on the grid (copied)
+        name : str, optional
+            name of the grid, by default "bounding_box"
+        local_coordinates : bool, optional
+            build the grid in the bounding box's local frame, by default False
+
+        Returns
+        -------
+        PropertyGrid
+        """
         # python is passing a reference to the cell_data, vertex_data dicts so we need to
-        # copy them to make sure that different instances of StructuredGrid are not sharing the same
+        # copy them to make sure that different instances of PropertyGrid are not sharing the same
         # underlying objects
         if cell_data is None:
             cell_data = {}
@@ -721,12 +742,12 @@ class BoundingBox:
             local_points = self.project(self.corners)
             local_origin = np.min(local_points, axis=0)
             local_maximum = np.max(local_points, axis=0)
-            step_vector = (local_maximum - local_origin) / self.nsteps
+            step_vector = (local_maximum - local_origin) / (self.nsteps - 1)
             origin = local_origin
         else:
-            step_vector = self.step_vector
+            step_vector = self.node_step_vector
             origin = self.origin
-        return StructuredGrid(
+        return PropertyGrid(
             origin=origin,
             step_vector=step_vector,
             nsteps=self.nsteps,

@@ -71,15 +71,7 @@ class ModelExporter:
     def get_block_model(
         model: GeologicalModel, name: str = 'block model'
     ) -> tuple[PropertyGrid, list]:
-        # NOTE: bounding_box.structured_grid() returns loop_common's
-        # interpolation-support StructuredGrid (no properties dict); use
-        # the PropertyGrid result container for storing values.
-        grid = PropertyGrid(
-            origin=model.bounding_box.origin,
-            step_vector=model.bounding_box.node_step_vector,
-            nsteps=model.bounding_box.nsteps,
-            name=name,
-        )
+        grid = model.bounding_box.structured_grid(name=name)
 
         grid.cell_properties['stratigraphy'] = model.evaluate_model(
             model.rescale(model.bounding_box.cell_centres())
