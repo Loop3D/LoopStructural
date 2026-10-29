@@ -4,6 +4,8 @@ import numpy as np
 
 from loop_common.logging import get_logger as getLogger
 
+from ._structured_grid_3d import StructuredGrid3DGeometry
+
 logger = getLogger(__name__)
 
 
@@ -11,10 +13,15 @@ logger = getLogger(__name__)
 class PropertyGrid:
     """A regular 3D grid for storing property values (the result container).
 
-    This is a plain data container, not an interpolation support: it holds
+    This is a data container, not an interpolation support: it holds
     node-based ``properties`` and ``cell_properties`` on a regular grid and can
     export them (``vtk``, ``save``). For the class used to interpolate on a
     grid see :class:`loop_common.supports.StructuredGrid`.
+
+    The grid geometry (node and cell positions, point-in-cell lookup) is defined once, by
+    :class:`StructuredGrid3DGeometry`, which is built from ``origin``, ``step_vector`` and
+    ``nsteps`` (the number of **nodes**) whenever it is needed; see :attr:`geometry`. Points
+    passed to the lookup methods are in the grid's own frame (the grid is not rotated).
 
     It was previously named ``StructuredGrid``; that name remains as an alias.
 
@@ -63,6 +70,16 @@ class PropertyGrid:
         }
 
     @property
+    def geometry(self) -> StructuredGrid3DGeometry:
+        """The grid geometry, built from the current ``origin``, ``step_vector`` and ``nsteps``.
+
+        It is a fresh object each time, so it always reflects the current fields.
+        """
+        return StructuredGrid3DGeometry(
+            origin=self.origin, nsteps=self.nsteps, step_vector=self.step_vector
+        )
+
+    @property
     def maximum(self):
         """Calculate the maximum coordinates of the grid.
 
@@ -71,7 +88,70 @@ class PropertyGrid:
         np.ndarray
             Maximum coordinates (origin + (nsteps - 1) * step_vector)
         """
-        return self.origin + (self.nsteps - 1) * self.step_vector
+        return self.geometry.maximum
+
+    @property
+    def nsteps_cells(self):
+        """Number of cells in each direction (``nsteps - 1``)."""
+        return self.geometry.nsteps_cells
+
+    @property
+    def n_nodes(self):
+        """Total number of nodes."""
+        return self.geometry.n_nodes
+
+    @property
+    def n_cells(self):
+        """Total number of cells."""
+        return self.geometry.n_elements
+
+    def inside(self, points):
+        """Boolean mask of the points inside the grid (boundary included)."""
+        return self.geometry.inside(np.asarray(points, dtype=float))
+
+    def cell_index_at(self, points):
+        """Flat index of the cell each point falls in.
+
+        The flat index addresses ``cell_properties`` arrays and the rows of ``cell_centres``
+        (x varies fastest). Points on the maximum boundary belong to the last cell.
+
+        Parameters
+        ----------
+        points : array-like
+            N x 3 locations (or one location) in the grid's own frame
+
+        Returns
+        -------
+        np.ndarray
+            N integer indexes, ``-1`` for points outside the grid
+        """
+        geometry = self.geometry
+        cell_ijk, inside = geometry.position_to_cell_index(np.asarray(points, dtype=float))
+        index = np.full(len(inside), -1, dtype=np.int64)
+        index[inside] = geometry.global_cell_indices(cell_ijk[inside])
+        return index
+
+    def cell_value_at(self, name, points):
+        """Value of the cell property ``name`` in the cell each point falls in.
+
+        Parameters
+        ----------
+        name : str
+            key of ``cell_properties``
+        points : array-like
+            N x 3 locations (or one location) in the grid's own frame
+
+        Returns
+        -------
+        np.ndarray
+            one entry per point; NaN for points outside the grid
+        """
+        values = np.asarray(self.cell_properties[name])
+        index = self.cell_index_at(points)
+        found = index >= 0
+        result = np.full((len(index),) + values.shape[1:], np.nan)
+        result[found] = values[index[found]]
+        return result
 
     def vtk(self):
         """Convert the structured grid to a PyVista RectilinearGrid.
@@ -122,39 +202,21 @@ class PropertyGrid:
 
     @property
     def cell_centres(self):
-        """Calculate the coordinates of cell centres.
+        """Coordinates of the centres of the ``nsteps - 1`` cells in each direction.
 
         Returns
         -------
-        tuple of np.ndarray
-            X, Y, Z coordinates of all cell centres
+        np.ndarray
+            (n_cells, 3) array in the same order as ``cell_properties`` (x varies fastest)
         """
-        x = np.linspace(
-            self.origin[0] + self.step_vector[0] * 0.5,
-            self.maximum[0] - self.step_vector[0] * 0.5,
-            self.nsteps[0] - 1,
-        )
-        y = np.linspace(
-            self.origin[1] + self.step_vector[1] * 0.5,
-            self.maximum[1] - self.step_vector[1] * 0.5,
-            self.nsteps[1] - 1,
-        )
-        z = np.linspace(
-            self.origin[2] + self.step_vector[2] * 0.5,
-            self.maximum[2] - self.step_vector[2] * 0.5,
-            self.nsteps[2] - 1,
-        )
-        x, y, z = np.meshgrid(x, y, z, indexing="ij")
-        return np.vstack([x.flatten(order="f"), y.flatten(order="f"), z.flatten(order="f")]).T
+        geometry = self.geometry
+        cell_ijk = geometry.global_index_to_cell_index(np.arange(geometry.n_elements))
+        return geometry.origin + (cell_ijk + 0.5) * geometry.step_vector
 
     @property
     def nodes(self):
-
-        x = np.linspace(self.origin[0], self.maximum[0], self.nsteps[0])
-        y = np.linspace(self.origin[1], self.maximum[1], self.nsteps[1])
-        z = np.linspace(self.origin[2], self.maximum[2], self.nsteps[2])
-        x, y, z = np.meshgrid(x, y, z, indexing="ij")
-        return np.vstack([x.flatten(order="f"), y.flatten(order="f"), z.flatten(order="f")]).T
+        """Coordinates of the nodes, (n_nodes, 3), in the same order as ``properties``."""
+        return self.geometry.nodes
 
     def merge(self, other):
         if not np.all(np.isclose(self.origin, other.origin)):
