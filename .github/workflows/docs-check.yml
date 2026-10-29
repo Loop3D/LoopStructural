@@ -42,7 +42,7 @@ jobs:
 
       - name: Install the packages and the docs extra
         run: |
-          pip install -e packages/loop_common -e packages/loop_interpolation \
+          pip install -e . -e packages/loop_common -e packages/loop_interpolation \
             -e "packages/loopstructural_visualisation[all]"
           pip install -e ".[docs]"
 
