@@ -708,7 +708,10 @@ class GeologicalModel:
         feature : BaseFeature
             the created geological feature, or None if it could not be built
         """
-        return FeatureBuilderRegistry.create(feature_type, self, name, **params)
+        feature = FeatureBuilderRegistry.create(feature_type, self, name, **params)
+        if feature is not None:
+            ModelSerializer.record_creation(feature, feature_type, params)
+        return feature
 
     @public_api(tier="stable")
     def create_and_add_foliation(
