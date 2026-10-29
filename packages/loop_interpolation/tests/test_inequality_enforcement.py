@@ -10,16 +10,25 @@ true value is clearly above or below the 0.5 horizon become one-sided bounds on 
 ``0.5 <= f`` above, ``f <= 0.5`` below. Without the bounds this data leaves 4 of the 24 bounded
 points on the wrong side of 0.5.
 
-What was observed (not diagnosed):
+Diagnosis:
 
-* ADMM with ``nmajor=10, admm_weight=0.01, maxiter=50`` (the arguments the existing builder test
-  uses) enforces every bound, and the error against the truth falls.
-* ADMM with its default arguments, or with only some of those arguments, returns essentially the
-  unconstrained solution: 4 of 24 bounds still violated, worst by 0.056.
+* ``solve_system`` column-scales the equality system (``apply_scaling_matrix``, on by default) and
+  solves for ``y`` where ``c = S @ y``. The inequality matrix ``Q`` was passed to ADMM unscaled,
+  so the bounds were applied to ``y`` instead of to the field ``Q @ c``. With scaling on, even a
+  large penalty left bounds violated (``admm_weight=10``: 10 of 24). Fixed by passing ``Q @ S``.
+* With that fixed ADMM behaves like ordinary ADMM. Its default penalty ``admm_weight=0.01`` is too
+  weak for this problem: after the default 200 outer iterations the primal residual is 0.056
+  against a tolerance of 0.0025 (still falling after 5000 iterations: 0.0145), so 4 of 24 bounds
+  are still violated. ``admm_weight=0.1`` stops at iteration 150, ``admm_weight=1`` at iteration
+  90 with every bound satisfied. The solver reaches ``nmajor`` without meeting its tolerance and
+  returns without a warning.
+* ``nmajor=10, maxiter=50`` (the arguments of the existing builder test) enforces the bounds
+  only by accident: it is an unconverged, truncated solve, and ``maxiter=100`` with the same
+  ``nmajor`` violates them again.
 * With the ``cg`` solver the inequality data have no effect, and nothing is logged.
 
-The last two are strict xfails. When they start to pass they XPASS, which fails the run: remove
-the markers then.
+The default-penalty and ``cg`` cases are strict xfails. When they start to pass they XPASS, which
+fails the run: remove the markers then.
 """
 import logging
 
@@ -103,11 +112,22 @@ def test_admm_with_the_arguments_of_the_existing_builder_test_enforces_the_bound
 
 @pytest.mark.xfail(
     strict=True,
-    reason="ADMM with its default arguments returns essentially the unconstrained solution "
-    "here (4 of 24 bounds violated, worst 0.056); cause not diagnosed",
+    reason="the default penalty admm_weight=0.01 is too weak here: after 200 iterations the primal "
+    "residual (0.056) is far above the tolerance (0.0025), 4 of 24 bounds are violated, and the "
+    "solver returns without a warning",
 )
-def test_admm_with_default_arguments_enforces_the_bounds():
+def test_admm_with_the_default_penalty_enforces_the_bounds():
     interpolator = builder().setup_interpolator().use_solver("admm").solve().build()
+    assert violations(interpolator).max() <= TOLERANCE
+
+
+@pytest.mark.parametrize("apply_scaling_matrix", [True, False])
+@pytest.mark.parametrize("admm_weight", [1.0, 10.0])
+def test_admm_enforces_the_bounds_with_and_without_column_scaling(apply_scaling_matrix, admm_weight):
+    """The inequality rows must be scaled with the equality system (they were not)."""
+    built = builder()
+    built.interpolator.apply_scaling_matrix = apply_scaling_matrix
+    interpolator = built.setup_interpolator().use_solver("admm", admm_weight=admm_weight).solve().build()
     assert violations(interpolator).max() <= TOLERANCE
 
 
