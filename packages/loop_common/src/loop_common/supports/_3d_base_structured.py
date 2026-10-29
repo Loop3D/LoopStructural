@@ -16,7 +16,6 @@ class LoopException(Exception):
     """Custom exception for LoopStructural errors."""
 
 
-
 class BaseStructuredSupport(StructuredGrid3DGeometry, BaseSupport):
     """A structured grid used as an interpolation support.
 
@@ -71,20 +70,6 @@ class BaseStructuredSupport(StructuredGrid3DGeometry, BaseSupport):
     def associateInterpolator(self, interpolator):
         self.interpolator = interpolator
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     def __str__(self):
         return (
             f"LoopStructural interpolation support:  {self.supporttype} \n"
@@ -95,12 +80,8 @@ class BaseStructuredSupport(StructuredGrid3DGeometry, BaseSupport):
             f"Degrees of freedon {self.n_nodes}"
         )
 
-
-
-
     def position_to_cell_global_index(self, pos):
         _ix, _iy, _iz = self.position_to_cell_index(pos)
-
 
     def check_position(self, pos: np.ndarray) -> np.ndarray:
         """[summary]
@@ -134,12 +115,6 @@ class BaseStructuredSupport(StructuredGrid3DGeometry, BaseSupport):
             logger.error("Position array needs to be a list of points or a point")
             raise ValueError("Position array needs to be a list of points or a point")
         return pos
-
-
-
-
-
-
 
     def vtk(self, node_properties=None, cell_properties=None):
         try:
