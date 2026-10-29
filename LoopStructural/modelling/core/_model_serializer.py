@@ -10,6 +10,7 @@ stable API surface (``tests/unit/test_public_api_contract.py``) -- and just
 delegate to the staticmethods here.
 """
 
+import copy
 import json
 import pathlib
 
@@ -76,7 +77,10 @@ class ModelSerializer:
         """
         feature._recipe_creation = {
             "feature_type": feature_type,
-            "parameters": {k: v for k, v in params.items() if k not in _NOT_RECORDED},
+            # deep copy: a list/dict/array the caller changes later must not change the recipe
+            "parameters": {
+                k: copy.deepcopy(v) for k, v in params.items() if k not in _NOT_RECORDED
+            },
             "custom_data": params.get("data") is not None,
         }
 
