@@ -131,7 +131,7 @@ class PropertyGrid:
         """
         x = np.linspace(
             self.origin[0] + self.step_vector[0] * 0.5,
-            self.maximum[0] + self.step_vector[0] * 0.5,
+            self.maximum[0] - self.step_vector[0] * 0.5,
             self.nsteps[0] - 1,
         )
         y = np.linspace(
