@@ -100,10 +100,54 @@ def test_the_fold_parameters_are_stored():
 
 
 def test_a_folded_foliation_that_used_the_last_feature_as_its_frame_rebuilds_exactly():
-    """fold_frame=None means 'the last feature'; that is reproduced because the order is kept."""
+    """fold_frame=None means 'the last feature'; the recipe records the frame that was used."""
     model, boundary = single_fold_model(explicit_frame=False)
     foliation = json.loads(model.to_recipe_json())["model"]["features"][1]
-    assert "fold_frame" not in foliation["build"]["parameters"]
+    assert foliation["build"]["parameters"]["fold_frame"] == "s1"
+    assert_same(model, rebuild(model), boundary, [("s1", True), ("s0", False)])
+
+
+def test_a_model_built_with_index_records_the_frame_it_used_and_rebuilds_identically():
+    """A frame inserted between a folded foliation and its frame must not become its frame."""
+    data, boundary = load_noddy_single_fold()
+    data = data.sort_values("random")
+    s1_rows = data[data["feature_name"] == "s1"]
+    other = s1_rows.copy()
+    other["feature_name"] = "sB"
+    model = GeologicalModel(boundary[0, :], boundary[1, :])
+    model.data = pd.concat([data[:20], s1_rows, other])
+    model.create_and_add_fold_frame("s1", interpolatortype="PLI", nelements=3000, buffer=0.5)
+    model.create_and_add_folded_foliation(
+        "s0", nelements=3000, fold_axis=FOLD_AXIS, limb_wl=12000, buffer=0.5
+    )
+    model.create_and_add_fold_frame(
+        "sB", interpolatortype="PLI", nelements=3000, buffer=0.5, index=1
+    )
+    model.update()
+    assert [f.name for f in model.features] == ["s1", "sB", "s0"]
+    entries = json.loads(model.to_recipe_json())["model"]["features"]
+    assert entries[2]["build"]["parameters"]["fold_frame"] == "s1"
+    assert_same(
+        model, rebuild(model), boundary, [("s1", True), ("sB", True), ("s0", False)]
+    )
+
+
+def test_an_array_fold_axis_is_stored_as_a_list_and_rebuilds_exactly():
+    data, boundary = load_noddy_single_fold()
+    data = data.sort_values("random")
+    model = GeologicalModel(boundary[0, :], boundary[1, :])
+    model.data = pd.concat([data[:20], data[data["feature_name"] == "s1"]])
+    frame = model.create_and_add_fold_frame(
+        "s1", interpolatortype="PLI", nelements=3000, buffer=0.5
+    )
+    axis = np.array(FOLD_AXIS)
+    model.create_and_add_folded_foliation(
+        "s0", fold_frame=frame, nelements=3000, fold_axis=axis, limb_wl=12000, buffer=0.5
+    )
+    model.update()
+    axis[:] = 0.0  # changing the array afterwards must not change the recipe
+    entries = json.loads(model.to_recipe_json())["model"]["features"]
+    assert entries[1]["build"]["parameters"]["fold_axis"] == FOLD_AXIS
     assert_same(model, rebuild(model), boundary, [("s1", True), ("s0", False)])
 
 

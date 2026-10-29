@@ -716,6 +716,14 @@ class GeologicalModel:
             record_params["faults"] = [
                 f.name for f in self.features if f.type == FeatureType.FAULT
             ]
+        if (
+            feature_type in ("folded_foliation", "folded_fold_frame")
+            and record_params.get("fold_frame") is None
+            and len(self.features) > 0
+        ):
+            # fold_frame=None means "the last feature in the model" when the feature is built;
+            # record that name so the recipe does not depend on the order of the feature list
+            record_params["fold_frame"] = self.features[-1].name
         feature = FeatureBuilderRegistry.create(feature_type, self, name, **params)
         if feature is not None:
             ModelSerializer.record_creation(feature, feature_type, record_params)

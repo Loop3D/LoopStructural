@@ -1,3 +1,5 @@
+import numpy as np
+
 from LoopStructural.utils import getLogger
 
 logger = getLogger(__name__)
@@ -57,7 +59,13 @@ class BaseBuilder:
         for k, i in build_arguments.items():
             logger.info(f"Setting {k} to {i} for {self.name}")
             logger.info(f"{k} is currrently {self._build_arguments.get(k, None)}")
-            if i != self._build_arguments.get(k, None):
+            current = self._build_arguments.get(k, None)
+            # `!=` on a numpy array is elementwise and has no single truth value
+            if isinstance(i, np.ndarray) or isinstance(current, np.ndarray):
+                changed = not np.array_equal(i, current)
+            else:
+                changed = i != current
+            if changed:
                 logger.info(f"Setting {k} to {i} for {self.name}")
                 self._build_arguments[k] = i
                 ## if build_arguments change then flag to reinterpolate
