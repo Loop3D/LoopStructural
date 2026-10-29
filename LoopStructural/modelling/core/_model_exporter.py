@@ -76,7 +76,7 @@ class ModelExporter:
         # the PropertyGrid result container for storing values.
         grid = PropertyGrid(
             origin=model.bounding_box.origin,
-            step_vector=model.bounding_box.step_vector,
+            step_vector=model.bounding_box.node_step_vector,
             nsteps=model.bounding_box.nsteps,
             name=name,
         )

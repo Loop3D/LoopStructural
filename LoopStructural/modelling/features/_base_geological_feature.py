@@ -389,7 +389,7 @@ class BaseFeature(metaclass=ABCMeta):
         # the PropertyGrid result container for storing values.
         grid = PropertyGrid(
             origin=bounding_box.origin,
-            step_vector=bounding_box.step_vector,
+            step_vector=bounding_box.node_step_vector,
             nsteps=bounding_box.nsteps,
             name=self.name,
         )
@@ -419,7 +419,7 @@ class BaseFeature(metaclass=ABCMeta):
             bounding_box = self.model.bounding_box
         grid = PropertyGrid(
             origin=bounding_box.origin,
-            step_vector=bounding_box.step_vector,
+            step_vector=bounding_box.node_step_vector,
             nsteps=bounding_box.nsteps,
             name=self.name,
         )
