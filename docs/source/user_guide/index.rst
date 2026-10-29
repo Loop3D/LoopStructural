@@ -20,3 +20,4 @@ for a list of topics covered in this section.
    fault_modelling
    visualisation
    debugging
+   map2loop

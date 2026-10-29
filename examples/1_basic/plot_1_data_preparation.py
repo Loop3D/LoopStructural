@@ -88,6 +88,7 @@ surface_2 = np.array([xx.flatten(), yy.flatten(), zz.flatten(), val.flatten()]).
 # * :code:`gx,gy,gz` represent a constraint where the interpolated scalar field is parallel to this vector
 # * :code:`nx,ny,nz` represent a constraint which set the partial derivatives of the function.
 # * :code:`feature_name` assigns which geologicalfeature the observations control
+#
 # **Note** for the interpolator to solve there needs to be two unique values or a norm constraint
 # for the interpolator to be able to find a solution.
 

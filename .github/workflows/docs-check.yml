@@ -1,0 +1,69 @@
+name: "📖 Docs check"
+
+# Builds the documentation on pull requests that touch it. The build fails if Sphinx errors or if
+# any gallery example raises (sphinx-gallery reports all failing examples at the end). Unlike documentation.yml this does not deploy anything.
+on:
+  pull_request:
+    branches:
+      - master
+    paths:
+      - "docs/**"
+      - "examples/**"
+      - "LoopStructural/**"
+      - "packages/*/src/**"
+      - "pyproject.toml"
+      - ".github/workflows/docs-check.yml"
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  docs:
+    name: Build documentation
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    env:
+      PYVISTA_OFF_SCREEN: "True"
+      MPLBACKEND: Agg
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: "pip"
+
+      - name: Install system libraries for off-screen rendering
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libosmesa6-dev libgl1-mesa-dev python3-tk pandoc
+
+      - name: Install the packages and the docs extra
+        run: |
+          pip install -e packages/loop_common -e packages/loop_interpolation \
+            -e "packages/loopstructural_visualisation[all]"
+          pip install -e ".[docs]"
+
+      - name: Use the OSMesa build of VTK
+        run: |
+          pip uninstall vtk -y
+          pip install vtk-osmesa==9.3.0 --index-url https://gitlab.kitware.com/api/v4/projects/13/packages/pypi/simple
+
+      # pyvista's viewer directive writes _static as a file on a fresh output directory
+      - name: Build
+        run: |
+          mkdir -p docs/build/html/_static
+          python -m sphinx -b html docs/source docs/build/html -w sphinx_warnings.txt --keep-going
+
+      - name: Show the warnings
+        if: always()
+        run: if [ -e sphinx_warnings.txt ]; then cat sphinx_warnings.txt; fi
+
+      - name: Upload HTML
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: docs-html
+          path: docs/build/html/

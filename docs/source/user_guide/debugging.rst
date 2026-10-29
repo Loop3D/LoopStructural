@@ -7,8 +7,8 @@ Surfaces are not displaying
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 - check to see what the scalar field looks linked
 - look at the values of the nodes of the implicit function supports `feature.interpolator.c` if all of the nodes are 0 the interpolator has not solved.
-- Does the scalar field show different colours? `view.add_scalar_field(feature)`
-- If the scalar field shows the right geometry, are the surface values correct?
+- Does the scalar field show different colours? `view.plot_scalar_field(feature)`
+- If the scalar field shows the right geometry, are the surface values correct? Compare the range of the field with the ``value`` you pass to `view.plot_surface(feature, value=...)`
 
 
 Surface geometry is erroneous
@@ -19,12 +19,13 @@ Surface geometry is erroneous
 - Try using only value constraints
 - Change gradient norm constraints to gradient direction constraints (rename :code:`nx,ny,nz` to :code:`gx,gy,gz`)
 - Try removing some of the data points
-- Try changing to using interface constraints instead of value, to do this rename column :code:`val` to code:`interface` but only use :code:`FDI`. 
-Alternatively use surfe with `method=interface`. Using either of these methods the value of the scalar field will change.
+- Try changing to using interface constraints instead of value, to do this rename column :code:`val` to code:`interface` but only use :code:`FDI`.
+  Alternatively use surfe with `method=interface`. Using either of these methods the value of the scalar field will change.
 - The tolerance of the conjugate gradient solver is scaled to the size of the model assuming that the scalar field is interpolated to have a magnitude of the gradient
-norm to be close to 1. The tolerance is saved in `feature.builder.build_arguments['tol']` but can be overwritten using the argument in code:`create_and_add` `tol=val`. 
-Smaller values mean the solution will be a closer fit to the data + regularisation. 
+  norm to be close to 1. The tolerance is saved in `feature.builder.build_arguments['tol']` but can be overwritten using the argument in code:`create_and_add` `tol=val`.
+  Smaller values mean the solution will be a closer fit to the data + regularisation. 
 - Try changing the relative weighting of the data points and regularisation.
+
  * :code:`regularisation` - changes the weighting of the constant gradient or the finite difference second derivative. 1.0 is equivalent to 0.1 constant gradient.
  * :code:`npw=1.0` changes the weighting of the gradient norm constraints
  * :code:`gpw=1.0` changes the weighting of gradient direction constraints
@@ -62,9 +63,9 @@ S-Plot doesn't fit the observations
 - Is the wavelength obvious in the s-variogram? If it is, check the guessed wavelength is reasonable Check the s 
 - Try specifying the wavelength using :code:`limb_wl` or :code:`axis_wl` 
 - If the data points in the S-Plot do not look correct, check the data points in the model by plotting the axial foliation and the data. The fold geometry
-should be visible.
+  should be visible.
 - If the fold is non-cylindrical, try building a cylindrical fold by removing some data
-- Check the polarity of the datapoints, the fold modelling requires the polarity of the vectors is constant. Check uising vector plots :code:`view.add_data(folded_foliation,vectors=True)`
+- Check the polarity of the datapoints, the fold modelling requires the polarity of the vectors is constant. Check using vector plots :code:`view.plot_data(folded_foliation, vector=True)`
 
 Faults
 ------
@@ -76,11 +77,11 @@ No displacement
 
 .. code-block::
 
-    view.add_scalar_field(fault[0])
-    view.add_scalar_field(fault[1])
-    view.add_scalar_field(fault[2])
+    view.plot_scalar_field(fault[0])
+    view.plot_scalar_field(fault[1])
+    view.plot_scalar_field(fault[2])
 
-- Increase the resolution of the visualisation mesh :code:`view.nelements=1e6`
+- Increase the resolution of the visualisation grid :code:`model.bounding_box.nelements = 1e6`
 - Is the fault parallel to the feature being faulted?
 - Has the fault been added to the feature being faulted?
 
@@ -92,10 +93,12 @@ No displacement
 
 .. code-block::
 
-    view = LavaVuModelViewer(model)
-    view.add_vector_field(model['fault'][1],locations=model.regular_grid()[::200]) #random 200 locations
-    view.add_isosurface(model['fault'][0],0)
-    view.interactive()
+    from LoopStructural.visualisation import Loop3DView
+
+    view = Loop3DView(model)
+    view.plot_vector_field(model['fault'][1], scale=50, name='slip direction')
+    view.plot_surface(model['fault'][0], value=0, name='fault surface')
+    view.display()
 
 
 

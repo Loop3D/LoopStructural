@@ -26,7 +26,7 @@ Geological observations including the location of contacts and orientation of st
 
 .. math:: \nabla f(x,y,z) \cdot \textbf{t} = 0
 
-**To solve the implicit system there needs to be a minimum of two different value observations, or a value observation and a gradient normal constraint. **
+**To solve the implicit system there needs to be a minimum of two different value observations, or a value observation and a gradient normal constraint.**
 
 LoopStructural has two types of interpolation algorithms that can be used.
 1. Discrete interpolation where the implicit function is approximated by basis functions on a predefined support

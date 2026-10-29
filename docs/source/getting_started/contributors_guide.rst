@@ -38,14 +38,19 @@ To get started, fork and clone the repository. It's then best to get started wit
     pip install -r requirements.txt
     conda list
 
-N.B. On Linux, the LavaVu package requires the installation of extra tools::
-
-    sudo apt install build-essential libgl1-mesa-dev libx11-dev zlib1g-dev
+N.B. The docs and examples render 3D views with PyVista. On a headless Linux machine install the
+OpenGL libraries it needs (e.g. ``sudo apt install libgl1-mesa-dev libosmesa6-dev``) and set
+``PYVISTA_OFF_SCREEN=true``.
 
 For changes to ``./docs``::
 
     pip install -r docs/requirements.txt
     make -C ./docs html
+
+``docs/requirements.txt`` installs the project with its ``docs`` extra. The build runs every
+example in ``examples/`` and takes several minutes; an example that raises an error fails the
+check in CI. If the first build stops with ``NotADirectoryError`` for ``_static``, create the
+directory first with ``mkdir -p docs/build/html/_static`` and build again.
 
 Building the docs the first time takes a little while. After this, you will see a build directory. From here you can preview the generated HTML 
 in your browser. 
