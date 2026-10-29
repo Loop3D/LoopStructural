@@ -10,9 +10,11 @@ stable API surface (``tests/unit/test_public_api_contract.py``) -- and just
 delegate to the staticmethods here.
 """
 
+import copy
 import json
 import pathlib
 
+import numpy as np
 import pandas as pd
 
 from ...geometry import BoundingBox
@@ -24,18 +26,98 @@ from .stratigraphic_column import StratigraphicColumn
 logger = getLogger(__name__)
 
 
+# Parameters of create_and_add_feature that are not stored with a feature's creation record:
+# ``index`` is the position (the recipe keeps the order), ``faults`` are other features (the recipe
+# keeps their names), and ``data`` is a data frame (see ``custom_data``).
+_NOT_RECORDED = ("index", "faults", "data")
+
+# Feature types a recipe can rebuild from the parameters stored with it.
+_SUPPORTED_FEATURE_TYPES = ("foliation",)
+
+
+def _json_safe(value: object, where: str) -> object:
+    """Return ``value`` as something ``json`` can write, or raise ``LoopValueError``."""
+    if value is None or isinstance(value, (bool, int, float, str)):
+        return value
+    if isinstance(value, np.generic):
+        return value.item()
+    if isinstance(value, np.ndarray):
+        return value.tolist()
+    if isinstance(value, (list, tuple)):
+        return [_json_safe(v, where) for v in value]
+    if isinstance(value, dict):
+        return {str(k): _json_safe(v, f"{where}[{k!r}]") for k, v in value.items()}
+    raise LoopValueError(
+        f"{where} is a {type(value).__name__}, which cannot be written to a recipe. "
+        "Only numbers, strings, booleans, None, lists and dictionaries of these can be stored."
+    )
+
+
 class ModelSerializer:
     @staticmethod
     def feature_recipe_kind(feature):
+        # subclasses first: FaultSegment is a StructuralFrame and UnconformityFeature a
+        # GeologicalFeature
+        if isinstance(feature, FaultSegment):
+            return "fault"
+        if isinstance(feature, UnconformityFeature):
+            return "unconformity"
         if isinstance(feature, GeologicalFeature):
             return "foliation"
         if isinstance(feature, StructuralFrame):
             return "structural_frame"
-        if isinstance(feature, UnconformityFeature):
-            return "unconformity"
-        if isinstance(feature, FaultSegment):
-            return "fault"
         return feature.__class__.__name__.lower()
+
+    @staticmethod
+    def record_creation(feature: object, feature_type: str, params: dict) -> None:
+        """Remember how ``feature`` was created, for the recipe.
+
+        Called by ``GeologicalModel.create_and_add_feature`` with the parameters that were
+        *requested* (for example ``nelements``, not the element count that was realised).
+        """
+        feature._recipe_creation = {
+            "feature_type": feature_type,
+            # deep copy: a list/dict/array the caller changes later must not change the recipe
+            "parameters": {
+                k: copy.deepcopy(v) for k, v in params.items() if k not in _NOT_RECORDED
+            },
+            "custom_data": params.get("data") is not None,
+        }
+
+    @staticmethod
+    def feature_build_entry(feature: object) -> dict:
+        """Return the ``build`` part of a feature's recipe entry.
+
+        Raises
+        ------
+        LoopValueError
+            if the feature cannot be rebuilt from a recipe yet
+        """
+        kind = ModelSerializer.feature_recipe_kind(feature)
+        creation = getattr(feature, "_recipe_creation", None)
+        if creation is None:
+            raise LoopValueError(
+                f"Feature '{feature.name}' ({kind}) cannot be stored in a recipe: there is no "
+                "record of how it was created. Recipes store features created with "
+                "GeologicalModel.create_and_add_feature (or a create_and_add_* method)."
+            )
+        feature_type = creation["feature_type"]
+        if kind != "foliation" or feature_type not in _SUPPORTED_FEATURE_TYPES:
+            raise LoopValueError(
+                f"Feature '{feature.name}' ({kind}, created as '{feature_type}') cannot be "
+                "stored in a recipe yet: recipes currently support foliations only."
+            )
+        if creation["custom_data"]:
+            raise LoopValueError(
+                f"Feature '{feature.name}' was created with its own data=, which a recipe cannot "
+                "store: a recipe rebuilds a feature from the rows of the model data whose "
+                "feature_name matches. Put the data in model.data instead."
+            )
+        parameters = {
+            key: _json_safe(value, f"parameter '{key}' of feature '{feature.name}'")
+            for key, value in creation["parameters"].items()
+        }
+        return {"feature_type": feature_type, "parameters": parameters}
 
     @staticmethod
     def to_dict(model):
@@ -68,6 +150,7 @@ class ModelSerializer:
                     if getattr(fault, "name", None)
                 ],
                 "regions": [],
+                "build": ModelSerializer.feature_build_entry(feature),
             }
             recipe["model"]["features"].append(feature_entry)
         if data_reference is not None:
@@ -132,10 +215,27 @@ class ModelSerializer:
             feature_name = feature_entry.get("name")
             if not isinstance(feature_name, str):
                 raise TypeError("each feature entry must include a string name")
-            feature_data = model.data.loc[model.data["feature_name"] == feature_name].copy()
-            if feature_data.empty:
-                feature_data = None
-            feature = model.create_and_add_foliation(feature_name, data=feature_data)
+            build = feature_entry.get("build")
+            if build is None:
+                # a recipe written before build parameters were stored
+                kind = feature_entry.get("kind", "foliation")
+                if kind != "foliation":
+                    raise LoopValueError(
+                        f"Cannot rebuild feature '{feature_name}' of kind '{kind}' from this "
+                        "recipe: recipes currently support foliations only."
+                    )
+                logger.warning(
+                    f"The recipe has no build parameters for feature '{feature_name}' (it was "
+                    "written by an older version); building it with the default parameters"
+                )
+                build = {"feature_type": "foliation", "parameters": {}}
+            if not isinstance(build, dict) or not isinstance(build.get("parameters", {}), dict):
+                raise TypeError("a feature's build entry must be a dictionary with parameters")
+            feature = model.create_and_add_feature(
+                build.get("feature_type", "foliation"),
+                feature_name,
+                **build.get("parameters", {}),
+            )
             if feature is None:
                 raise ValueError(f"Could not recreate feature '{feature_name}' from recipe")
             feature_map[feature_name] = feature
