@@ -20,15 +20,16 @@ Diagnosis:
   weak for this problem: after the default 200 outer iterations the primal residual is 0.056
   against a tolerance of 0.0025 (still falling after 5000 iterations: 0.0145), so 4 of 24 bounds
   are still violated. ``admm_weight=0.1`` stops at iteration 150, ``admm_weight=1`` at iteration
-  90 with every bound satisfied. The solver reaches ``nmajor`` without meeting its tolerance and
-  returns without a warning.
+  90 with every bound satisfied. When the solver reaches ``nmajor`` without meeting its tolerance
+  it now logs a warning (it used to return silently).
 * ``nmajor=10, maxiter=50`` (the arguments of the existing builder test) enforces the bounds
   only by accident: it is an unconverged, truncated solve, and ``maxiter=100`` with the same
   ``nmajor`` violates them again.
-* With the ``cg`` solver the inequality data have no effect, and nothing is logged.
+* With any solver other than ``admm`` (and ``native``) the inequality data have no effect. A
+  warning now says so; it used to be silent, including for ``l`` / ``u`` columns in model data.
 
-The default-penalty and ``cg`` cases are strict xfails. When they start to pass they XPASS, which
-fails the run: remove the markers then.
+The default-penalty case is a strict xfail. When it starts to pass it XPASSes, which fails the run:
+remove the marker then.
 """
 import logging
 
@@ -131,15 +132,68 @@ def test_admm_enforces_the_bounds_with_and_without_column_scaling(apply_scaling_
     assert violations(interpolator).max() <= TOLERANCE
 
 
-@pytest.mark.xfail(
-    strict=True,
-    reason="expectation, not a documented contract: with solver 'cg' the inequality data are "
-    "dropped without a warning",
-)
+# ------------------------------------------------------------------ ignored inequality data is reported
+def ignored_warnings(caplog):
+    return [r for r in caplog.records if "does not use them" in r.getMessage()]
+
+
 def test_cg_with_inequality_constraints_warns_that_they_are_not_used(caplog):
     with caplog.at_level(logging.WARNING):
         builder().setup_interpolator().use_solver("cg").solve().build()
-    assert any("inequality" in record.getMessage().lower() for record in caplog.records)
+    (warning,) = ignored_warnings(caplog)
+    assert "solver 'cg'" in warning.getMessage()
+    assert "solver='admm'" in warning.getMessage()
+    assert f"{len(sparse_data()[2])} inequality constraint rows" in warning.getMessage()
+
+
+def test_a_callable_solver_with_inequality_constraints_warns_too(caplog):
+    from scipy.sparse.linalg import lsmr
+
+    with caplog.at_level(logging.WARNING):
+        built = builder().setup_interpolator()
+        built.interpolator.solve_system(lambda a, b: lsmr(a, b)[0])
+    (warning,) = ignored_warnings(caplog)
+    assert "solver 'custom'" in warning.getMessage()
+
+
+def test_admm_does_not_say_inequality_constraints_are_ignored(caplog):
+    with caplog.at_level(logging.WARNING):
+        builder().setup_interpolator().use_solver("admm", admm_weight=1.0).solve().build()
+    assert not ignored_warnings(caplog)
+
+
+def test_cg_without_inequality_constraints_does_not_warn(caplog):
+    with caplog.at_level(logging.WARNING):
+        builder(with_inequality=False).setup_interpolator().use_solver("cg").solve().build()
+    assert not ignored_warnings(caplog)
+
+
+def test_inequality_columns_in_model_data_warn_with_the_default_solver(caplog):
+    """The path most users take: l and u columns in model.data, GeologicalModel's default solver."""
+    import pandas as pd
+
+    from LoopStructural import GeologicalModel
+    from LoopStructural.datasets import load_claudius
+
+    data, bb = load_claudius()
+    extra = pd.DataFrame(
+        {
+            "X": [bb[0, 0] + 400, bb[0, 0] + 800],
+            "Y": [bb[0, 1] + 500, bb[0, 1] + 900],
+            "Z": [bb[0, 2] + 200, bb[0, 2] + 300],
+            "l": [-1e3, -1e3],
+            "u": [200.0, 300.0],
+            "feature_name": "strati",
+        }
+    )
+    model = GeologicalModel(bb[0, :], bb[1, :])
+    model.data = pd.concat([data, extra], ignore_index=True)
+    model.stratigraphic_column.clear(basement=False)
+    model.create_and_add_foliation("strati", nelements=1000)
+    with caplog.at_level(logging.WARNING):
+        model.update()
+    (warning,) = ignored_warnings(caplog)
+    assert "2 inequality constraint rows" in warning.getMessage()
 
 
 # ------------------------------------------------------------------ non-convergence is reported

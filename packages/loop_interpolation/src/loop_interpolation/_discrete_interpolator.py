@@ -1375,6 +1375,14 @@ class DiscreteInterpolator(GeologicalInterpolator):
             self._materialise_matrix_free_regularisation_blocks()
 
         Q, bounds = self._assemble_inequality_system(timing)
+        if solver_choice != "admm" and Q.shape[0] > 0:
+            # only ADMM (and the native solver, handled above) uses the inequality rows
+            solver_name = solver_choice if isinstance(solver_choice, str) else "custom"
+            logger.warning(
+                f"{Q.shape[0]} inequality constraint rows were supplied but solver "
+                f"'{solver_name}' does not use them, so they are ignored. Use "
+                "solver='admm' to enforce them."
+            )
         # Legacy compatibility: ignore deprecated backend switch.
         solver_kwargs.pop("backend", None)
 
