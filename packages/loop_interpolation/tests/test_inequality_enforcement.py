@@ -113,8 +113,8 @@ def test_admm_with_the_arguments_of_the_existing_builder_test_enforces_the_bound
 @pytest.mark.xfail(
     strict=True,
     reason="the default penalty admm_weight=0.01 is too weak here: after 200 iterations the primal "
-    "residual (0.056) is far above the tolerance (0.0025), 4 of 24 bounds are violated, and the "
-    "solver returns without a warning",
+    "residual (0.056) is far above the tolerance (0.0025) and 4 of 24 bounds are violated (the "
+    "solver now warns about this, see the non-convergence tests below)",
 )
 def test_admm_with_the_default_penalty_enforces_the_bounds():
     interpolator = builder().setup_interpolator().use_solver("admm").solve().build()
@@ -140,3 +140,79 @@ def test_cg_with_inequality_constraints_warns_that_they_are_not_used(caplog):
     with caplog.at_level(logging.WARNING):
         builder().setup_interpolator().use_solver("cg").solve().build()
     assert any("inequality" in record.getMessage().lower() for record in caplog.records)
+
+
+# ------------------------------------------------------------------ non-convergence is reported
+def not_converged_warnings(caplog):
+    return [r for r in caplog.records if "without converging" in r.getMessage()]
+
+
+def test_the_default_penalty_that_does_not_converge_says_so(caplog):
+    with caplog.at_level(logging.WARNING):
+        builder().setup_interpolator().use_solver("admm").solve().build()
+    (warning,) = not_converged_warnings(caplog)
+    message = warning.getMessage()
+    assert "ADMM used all 200 iterations" in message
+    assert "primal residual" in message and "tolerance" in message
+    assert "admm_weight" in message
+
+
+def test_a_penalty_that_converges_does_not_warn(caplog):
+    with caplog.at_level(logging.WARNING):
+        interpolator = (
+            builder().setup_interpolator().use_solver("admm", admm_weight=1.0).solve().build()
+        )
+    assert not not_converged_warnings(caplog)
+    assert violations(interpolator).max() <= TOLERANCE
+
+
+def small_problem():
+    """Data say the unknowns sum to 3; the first two are bounded to [0, 0.2]."""
+    from scipy import sparse
+
+    n = 6
+    a = sparse.vstack(
+        [sparse.identity(n, format="csr") * 0.2, sparse.csr_matrix(np.ones((1, n)))]
+    ).tocsr()
+    b = np.r_[np.zeros(n), 3.0]
+    q = sparse.csr_matrix(np.eye(n)[:2])
+    bounds = np.array([[0.0, 0.2, 1.0], [0.0, 0.2, 1.0]])
+    return a, b, q, bounds, np.zeros(n)
+
+
+def solve_small(**kwargs):
+    from loop_interpolation.loopsolver import admm_solve
+
+    a, b, q, bounds, x0 = small_problem()
+    return admm_solve(a, b, q, bounds, x0, linsys_solver="lsmr", **kwargs)
+
+
+def test_solver_converged_in_time_does_not_warn(caplog):
+    with caplog.at_level(logging.WARNING):
+        x = solve_small(admm_weight=1.0, nmajor=200)
+    assert not not_converged_warnings(caplog)
+    np.testing.assert_allclose(x[:2], 0.2, atol=1e-3)
+
+
+def test_solver_out_of_iterations_warns_and_reports_the_residuals(caplog):
+    with caplog.at_level(logging.WARNING):
+        x = solve_small(admm_weight=1e-4, nmajor=20)
+    (warning,) = not_converged_warnings(caplog)
+    assert "all 20 iterations" in warning.getMessage()
+    assert "the final value used was 0.0001" in warning.getMessage()
+    # and the bounds really are violated, so the warning is true
+    assert x[:2].max() > 0.2 + 0.1
+
+
+def test_solver_stopped_by_model_update_tolerance_does_not_warn(caplog):
+    """Stopping because the model stopped changing was asked for; it is not a failure."""
+    with caplog.at_level(logging.WARNING):
+        solve_small(admm_weight=1e-4, nmajor=20, model_update_tol=10.0)
+    assert not not_converged_warnings(caplog)
+
+
+def test_a_solver_with_fewer_iterations_than_the_minimum_warns(caplog):
+    """It cannot be declared converged before min_iterations, so it used all of its iterations."""
+    with caplog.at_level(logging.WARNING):
+        solve_small(admm_weight=1.0, nmajor=3)
+    assert len(not_converged_warnings(caplog)) == 1
