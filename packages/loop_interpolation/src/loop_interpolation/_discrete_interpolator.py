@@ -1008,6 +1008,9 @@ class DiscreteInterpolator(GeologicalInterpolator):
             polish_solver_kwargs = dict(stable_solver_kwargs)
             polish_solver_kwargs["x0"] = lambda _support, x0=x0_seed: np.array(x0, copy=True)
             polish_solver_kwargs["constant_norm_iterations"] = 0
+            # warn about non-convergence once per solve: only the final polish iteration reports
+            # (the earlier ones are intermediate, warm-started steps)
+            polish_solver_kwargs["warn_on_nonconvergence"] = i == int(iterations) - 1
 
             solved = self.solve_system("admm", solver_kwargs=polish_solver_kwargs)
             if not solved:
@@ -1231,6 +1234,11 @@ class DiscreteInterpolator(GeologicalInterpolator):
         if Q is None:
             logger.warning("No inequality constraints, using lsmr")
             return self.solve_system("lsmr", solver_kwargs=solver_kwargs)
+
+        if constant_norm_iterations > 0 and constant_norm_weight > 0.0:
+            # the polish re-solves follow and the last one reports non-convergence for the
+            # whole solve, so this first solve stays quiet
+            solver_kwargs = {**solver_kwargs, "warn_on_nonconvergence": False}
 
         try:
             c, history, ok = _solver_strategy.solve_with_admm(
