@@ -1396,6 +1396,11 @@ class DiscreteInterpolator(GeologicalInterpolator):
             if x0 is not None and scaling_matrix is not None:
                 # the solver works on y where c = S @ y
                 x0 = x0 / scaling_matrix.diagonal()
+            if scaling_matrix is not None and Q.shape[0] > 0:
+                # the solver works on y where c = S @ y, so the inequality rows must act on y
+                # too: Q @ c = (Q @ S) @ y. Without this the bounds are applied to y, not to the
+                # field.
+                Q = (Q @ scaling_matrix).tocsr()
 
             if callable(solver_choice):
                 self.up_to_date = self._solve_with_callable(solver_choice, A, b, timing)
