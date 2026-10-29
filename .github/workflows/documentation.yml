@@ -42,6 +42,7 @@ jobs:
       - name: Install PyVista and dependencies
         run: |
           pip install -e .[docs]
+          pip install loop-interpolation-core
 
       - name: Install custom OSMesa VTK variant
         run: |
