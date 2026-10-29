@@ -759,6 +759,24 @@ class SorterHierarchical(Sorter):
 
     A group with no supergroup is one item at the supergroup level, the same as a
     supergroup. A unit with no group (and no supergroup) is one item at that level.
+
+    Notes:
+        * Supported inner sorters are the sorters in this module that take their data as
+          attributes and return a list of unit names: SorterUseNetworkX (and
+          SorterUseHint), SorterAgeBased, SorterAlpha and SorterMaximiseContacts. The
+          data they use (contacts, unit_relationships, geology_data and the age columns)
+          is relabelled at each level. The structure data of SorterObservationProjections
+          is NOT relabelled, so it is not suitable for the group and supergroup levels.
+          Another SorterHierarchical can not be the inner sorter (TypeError).
+        * Sorters that use contacts (for example SorterAlpha) have no inherent direction:
+          a contact says that two units are next to each other, not which is older. The
+          direction of the order of the supergroups, and of the groups in a supergroup,
+          can therefore differ from the direction of the order of the units in a group.
+          Use a sorter with a direction (SorterAgeBased, SorterUseNetworkX) or the
+          postprocess function if the direction matters.
+        * By default a step that the inner sorter can not do (for example it has no
+          contacts between the groups of a supergroup) is logged and the labels of that
+          step keep their order. Set strict=True to raise the error instead.
     """
 
     required_arguments: List[str] = ['sorter']
@@ -770,6 +788,7 @@ class SorterHierarchical(Sorter):
         group_column: Optional[str] = 'group',
         supergroup_column: Optional[str] = 'supergroup',
         postprocess: Optional[Callable[[list, Dict[str, str]], list]] = None,
+        strict: bool = False,
     ):
         """
         Initialiser for hierarchical sorter
@@ -786,6 +805,9 @@ class SorterHierarchical(Sorter):
                 each unit name in that step (the group, the supergroup or the unit name).
                 For example, use it to repair the closed route of a travelling salesman
                 sorter. Defaults to None.
+            strict (bool, optional): if True, an error of the inner sorter (ValueError,
+                KeyError, IndexError or a networkx error) is raised. If False, it is
+                logged and the labels of that step keep their order. Defaults to False.
         """
         super().__init__()
         if isinstance(sorter, SorterHierarchical):
@@ -794,9 +816,11 @@ class SorterHierarchical(Sorter):
         self.group_column = group_column
         self.supergroup_column = supergroup_column
         self.postprocess = postprocess
+        self.strict = strict
         self.unit_name_column = getattr(sorter, 'unit_name_column', None) or 'name'
         self.sorter_label = f"SorterHierarchical({sorter.sorter_label})"
 
+    @beartype.beartype
     def sort(self, units: pandas.DataFrame) -> list:
         """
         Execute sorter method takes unit data and returns the sorted unit names based on this algorithm.
@@ -961,8 +985,10 @@ class SorterHierarchical(Sorter):
         """
         Sort the labels in the table with a relabelled copy of the sorter
 
-        If the sorter fails, the labels are kept in the order of the table. If the sorter
-        does not return some labels, they are added at the end.
+        If the sorter fails (ValueError, KeyError, IndexError or a networkx error) the
+        labels are kept in the order of the table, or the error is raised if self.strict.
+        Other errors (for example a wrong type or a missing attribute) are always raised.
+        If the sorter does not return some labels, they are added at the end.
 
         Args:
             table (pandas.DataFrame): one row for each label
@@ -976,7 +1002,9 @@ class SorterHierarchical(Sorter):
             return expected
         try:
             order = self._relabelled_sorter(labels).sort(table)
-        except Exception as e:
+        except (ValueError, KeyError, IndexError, nx.NetworkXException) as e:
+            if self.strict:
+                raise
             logger.warning(
                 f"{self.sorter_label}: could not sort {expected} ({e}). "
                 "The order of these is not changed."

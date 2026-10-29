@@ -179,3 +179,67 @@ def test_postprocess_is_applied_to_each_step():
     order = SorterHierarchical(sorter=SorterAgeBased(), postprocess=reverse).sort(units)
     assert order == ["D", "C", "B", "A"]
     assert ["G1", "G2"] in calls
+
+
+def failing_step_units_and_contacts():
+    units = make_units(
+        [
+            ["A", 0, 0, "G1", ""],
+            ["B", 0, 0, "G1", ""],
+            ["C", 0, 0, "G2", ""],
+        ]
+    )
+    # no contacts in G1, so SorterAlpha can not sort A and B
+    contacts = pandas.DataFrame({"UNITNAME_1": ["B"], "UNITNAME_2": ["C"], "length": [10.0]})
+    return units, contacts
+
+
+def test_strict_raises_the_error_of_the_inner_sorter():
+    units, contacts = failing_step_units_and_contacts()
+    sorter = SorterHierarchical(sorter=SorterAlpha(contacts=contacts), strict=True)
+    with pytest.raises(ValueError, match="contacts"):
+        sorter.sort(units)
+
+
+def test_not_strict_is_the_default_and_keeps_all_units():
+    units, contacts = failing_step_units_and_contacts()
+    sorter = SorterHierarchical(sorter=SorterAlpha(contacts=contacts))
+    assert sorter.strict is False
+    assert sorted(sorter.sort(units)) == ["A", "B", "C"]
+
+
+def test_errors_that_are_not_sorting_errors_are_raised_even_when_not_strict():
+    class Broken(SorterAgeBased):
+        def sort(self, units):
+            raise AttributeError("a bug in the sorter")
+
+    units = make_units([["A", 1.0, 2.0, "G1", ""], ["B", 3.0, 4.0, "G2", ""]])
+    with pytest.raises(AttributeError):
+        SorterHierarchical(sorter=Broken()).sort(units)
+
+
+def test_nested_hierarchical_sorter_is_a_type_error():
+    inner = SorterHierarchical(sorter=SorterAgeBased())
+    with pytest.raises(TypeError, match="SorterHierarchical"):
+        SorterHierarchical(sorter=inner)
+
+
+def test_sort_checks_the_type_of_units():
+    with pytest.raises(Exception, match="(?i)units|DataFrame"):
+        SorterHierarchical(sorter=SorterAgeBased()).sort(["A", "B"])
+
+
+def test_single_unit():
+    units = make_units([["A", 1.0, 2.0, "G1", "S1"]])
+    assert SorterHierarchical(sorter=SorterAgeBased()).sort(units) == ["A"]
+    assert SorterHierarchical(sorter=SorterAgeBased(), strict=True).sort(units) == ["A"]
+
+
+def test_empty_units():
+    units = make_units([])
+    assert SorterHierarchical(sorter=SorterAgeBased()).sort(units) == []
+
+
+def test_units_without_the_name_column_is_a_value_error():
+    with pytest.raises(ValueError, match="name"):
+        SorterHierarchical(sorter=SorterAgeBased()).sort(pandas.DataFrame())
