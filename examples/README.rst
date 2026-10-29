@@ -14,7 +14,7 @@ learn them:
    logging, controlling data weighting, and comparing interpolators.
 5. **Interpolation** - how the interpolators behave, measured against synthetic
    models with a known answer: choosing an interpolator, the regularisation weight, and
-   fold constraints with sparse data.
+   fold constraints with sparse data, refolded folds, and the kinds of orientation data.
 
 Each example is a standalone, runnable Python script. Most examples load
 one of the sample datasets bundled in :code:`LoopStructural.datasets`, so
