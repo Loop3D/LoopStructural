@@ -26,7 +26,7 @@ Geological observations including the location of contacts and orientation of st
 
 .. math:: \nabla f(x,y,z) \cdot \textbf{t} = 0
 
-**To solve the implicit system there needs to be a minimum of two different value observations, or a value observation and a gradient normal constraint. **
+**To solve the implicit system there needs to be a minimum of two different value observations, or a value observation and a gradient normal constraint.**
 
 LoopStructural has two types of interpolation algorithms that can be used.
 1. Discrete interpolation where the implicit function is approximated by basis functions on a predefined support
@@ -168,7 +168,7 @@ Iterative solvers:
 * algorithmic multigrid solver - using pyamg
 * lsqr - this solver uses the rectangular matrix directly, therefore does not require computing A.T A and A.T B. Uses scipy
 
-.. code-block:
+.. code-block::
 
   model.create_and_add_foliation('my_foliation',solver='lu')
   model.create_and_add_foliation('my_foliation',solver='chol')
@@ -185,7 +185,7 @@ You can also pass a function that solves
 
 to LoopStructural if you want to use another solver by using the `external` keyword . 
 
-.. code-block:
+.. code-block::
 
   def mysolver(A,B):
     from scipy.sparse.linalg import gmres
@@ -195,7 +195,7 @@ to LoopStructural if you want to use another solver by using the `external` keyw
  
  The solution to the least squares problem will be stored in the interpolator object and can be easily accessed:
 
-.. code-block:
+.. code-block::
 
   model.create_and_add_foliation('my_foliation',solver='pyamg')
   pyamg_solution = model['my_foliation'].interpolator.c[model['my_foliation'].interpolator.region]

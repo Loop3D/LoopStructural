@@ -44,6 +44,68 @@ autosummary_generate = True  # Make _autosummary files and include them
 napoleon_numpy_docstring = True  # False  # Force consistency, leave only Google
 napoleon_use_rtype = False  # More legible
 autosummary_imported_members = True
+
+
+def _is_reexport(modname, objname):
+    """True when ``modname.objname`` is defined in another module and only imported here."""
+    import importlib
+
+    try:
+        obj = getattr(importlib.import_module(modname), objname)
+    except Exception:  # noqa: BLE001 - anything unimportable is documented as usual
+        return False
+    return getattr(obj, "__module__", modname) != modname
+
+
+# Classes re-exported by several packages (LoopStructural, LoopStructural.utils, ...) are
+# indexed once, where they are defined. The other pages still show them, marked ``:no-index:``,
+# so Sphinx does not warn about duplicate objects or ambiguous cross-references.
+_OUR_PACKAGES = ("LoopStructural", "loop_common", "loop_interpolation", "loopstructuralvisualisation")
+
+
+def _ours(modname, names):
+    """Keep the members of ``modname`` that belong to this project.
+
+    ``autosummary_imported_members`` also lists whatever a module imports (pydantic, sklearn,
+    abc, ...), whose docstrings are not written for these docs.
+    """
+    import importlib
+
+    module = importlib.import_module(modname)
+    kept = []
+    for name in names:
+        owner = getattr(getattr(module, name, None), "__module__", None) or modname
+        if owner.split(".")[0] in _OUR_PACKAGES:
+            kept.append(name)
+    return kept
+
+
+def _third_party_bases(modname, objname):
+    """Comma-separated names of the base classes of ``modname.objname`` that are not ours.
+
+    Used to leave members inherited from e.g. ``pyvista.Plotter`` or ``pydantic.BaseModel`` out of
+    the class pages: their docstrings link to labels that only exist in those projects' docs.
+    """
+    import importlib
+
+    try:
+        cls = getattr(importlib.import_module(modname), objname)
+        mro = cls.__mro__
+    except Exception:  # noqa: BLE001 - not a class, or not importable
+        return ""
+    names = [
+        base.__name__
+        for base in mro[1:]
+        if base is not object and base.__module__.split(".")[0] not in _OUR_PACKAGES
+    ]
+    return ", ".join(dict.fromkeys(names))
+
+
+autosummary_context = {
+    "is_reexport": _is_reexport,
+    "ours": _ours,
+    "third_party_bases": _third_party_bases,
+}
 autosummary_ignore_module_all = False
 # Add any Sphinx extension module names here, as strings. They can be
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
@@ -72,7 +134,11 @@ templates_path = ["_templates"]
 # List of patterns, relative to source directory, that match files and
 # directories to ignore when looking for source files.
 # This pattern also affects html_static_path and html_extra_path.
-exclude_patterns = []
+exclude_patterns = ["getting_started/todo.rst"]
+
+# sphinx-gallery and autosummary_context hold functions, which cannot be pickled into the
+# environment cache; this only means those two settings are re-read on every build.
+suppress_warnings = ["config.cache"]
 
 html_theme_options = {
     "icon_links": [

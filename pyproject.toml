@@ -66,6 +66,9 @@ docs = [
     "sphinxcontrib-bibtex",
     "myst-parser",
     "sphinx-design",
+    "trame",
+    "trame-vtk",
+    "trame-vuetify",
 ]
 [project.urls]
 Documentation = 'https://Loop3d.org/LoopStructural/'

@@ -142,15 +142,17 @@ class FiniteDifferenceInterpolator(DiscreteInterpolator):
         Default masks are the second derivative in x,y,z direction and the second
         derivative of x wrt y and y wrt z and z wrt x. Custom masks can be used
         by specifying the operator as a 3d numpy array
-        e.g. [ [ [ 0 0 0 ]
-                 [ 0 1 0 ]
-                 [ 0 0 0 ] ]
-                 [ [ 1 1 1 ]
-                 [ 1 1 1 ]
-                 [ 1 1 1 ] ]
-                 [ [ 0 0 0 ]
-                 [ 0 1 0 ]
-                 [ 0 0 0 ] ]
+        e.g.::
+
+            [ [ [ 0 0 0 ]
+                [ 0 1 0 ]
+                [ 0 0 0 ] ]
+              [ [ 1 1 1 ]
+                [ 1 1 1 ]
+                [ 1 1 1 ] ]
+              [ [ 0 0 0 ]
+                [ 0 1 0 ]
+                [ 0 0 0 ] ] ]
 
         Returns
         -------

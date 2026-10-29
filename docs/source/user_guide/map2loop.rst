@@ -1,11 +1,29 @@
-The class method (GeologicalModel.from_map2loop_directory(m2l_directory, **kwargs)) creates an instance of a  GeologicalModel from a root map2loop output directory. 
-There are two steps to this function the first is a pre-processing step that prepares the extracted datasets for LoopStructural. This involves combining all observations (fault surface location, fault orientation, stratigraphic orientation and stratigraphic contacts) into the one pandas DataFrame. The cumulative thickness is calculated by iterating over the stratigraphic column for each group and starting with the base of the group as 0 and adding the thickness of the lower unit. This function returns a python dictionary which is structured as shown in Table 5. The processed data dictionary can then be passed to a utility function that:
-1.	initialises a GeologicalModel for the specified bounding box (map area chosen for map2loop and depth specified).
-2.	associates the pandas DataFrame to the model
-3.	iterate through the fault-stratigraphy table
-•	adding stratigraphic packages that are associated with no faults
-•	add faults in reverse order, fault intersections are manually, and fault geometries are only interpolated within their object aligned bounding box to reduce computational to ensure that 
-•	The base of each group is assigned as an unconformity for any older stratigraphic units or faults that occur below it
-4.	associate stratigraphic column to geological model
- 
-A parameters dictionary can be passed to the GeologicalModel.from_map2loop_directory function which allows for the interpolator parameters (listed in Table 2) for the model to be specified. This can be passed using two python dictionaries: foliation_params contains the parameters for modelling any stratigraphic groups and fault_params contains parameters for the faults. 
+Using map2loop output
+=====================
+
+`map2loop <https://github.com/Loop3D/map2loop>`_ extracts the observations needed for a 3D model
+(stratigraphic contacts, orientations, fault traces and their relationships) from a geological map.
+LoopStructural turns that output into a model in two steps: a *processor* gathers the observations
+and the order of the geological features, and the model is built from the processor.
+
+.. code-block:: python
+
+    from LoopStructural import GeologicalModel
+    from LoopStructural.modelling.input import Map2LoopProcessor
+
+    processor = Map2LoopProcessor("path/to/map2loop/project")
+    model = GeologicalModel.from_processor(processor)
+    model.update()      # run the interpolation
+
+:class:`~LoopStructural.modelling.input.Map2LoopProcessor` reads the directory layout written by
+the original map2loop (the ``output`` and ``tmp`` folders). For other sources, or to control the
+inputs yourself, build a :class:`~LoopStructural.modelling.input.ProcessInputData` from data frames
+and use :meth:`GeologicalModel.from_processor` in the same way; see
+:doc:`/_auto_examples/4_advanced/plot_1_model_from_geological_map` for a worked example.
+
+``from_processor`` creates the model for the extent given by the processor (``origin`` to ``maximum``)
+and attaches its data. It then adds the faults of the processor's fault network, including splay and
+abutting relationships between faults, and adds each stratigraphic group as a foliation affected by the
+faults listed for it in the fault-stratigraphy table. The base of each interpolated group is added as an
+unconformity, and the processor's stratigraphic column is attached to the model. The model is returned
+without having been solved; call ``model.update()``.
