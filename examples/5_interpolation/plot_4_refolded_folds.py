@@ -80,7 +80,7 @@ normals = np.c_[orientation_xyz, truth_gradient(orientation_xyz)]
 #
 # The axis rotation is the plunge of the early fold's axis, which the later fold varies with
 # ``gy``. The ``+ 180`` is a sign convention of the library: the frame's third axis must point
-# against the orientation vectors.
+# against the orientation vectors. Note: the library may warn that ``fold_norm`` may need sign inversion; that warning is expected here because of this deliberate sign convention (the ``+ 180``/negated angles) and can be ignored.
 
 
 class Coordinate:

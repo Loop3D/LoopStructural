@@ -84,7 +84,7 @@ normals = np.c_[orientation_xyz, truth_gradient(orientation_xyz)]
 # the axis. For this fold they are just ``x`` and ``y``. A ``FoldEvent`` combines the frame with
 # the fold axis and a function giving the limb rotation angle (the dip of the limb) in terms of
 # ``gx``. For a cylindrical fold the axis is constant. The signs follow the library's
-# convention for the direction of the frame's third axis.
+# convention for the direction of the frame's third axis. Note: the library may warn that ``fold_norm`` may need sign inversion; that warning is expected here because of this deliberate sign convention (the ``+ 180``/negated angles) and can be ignored.
 
 
 class Coordinate:
