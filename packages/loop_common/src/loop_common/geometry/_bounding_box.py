@@ -8,7 +8,8 @@ from loop_common.logging import get_logger as getLogger
 
 # from LoopStructural.utils.exceptions import LoopValueError
 from loop_common.math import rng
-from loop_common.supports import StructuredGrid
+
+from ._structured_grid import PropertyGrid
 
 logger = getLogger(__name__)
 
@@ -29,6 +30,20 @@ class BoundingBox:
     ):
         """A bounding box for a model, defined by the
         origin, maximum and number of steps in each direction
+
+        Notes
+        -----
+        ``nsteps`` is used in two ways, so two spacings are provided:
+
+        * Cell-based (interpolation): ``nsteps`` is the number of cells in each
+          direction and ``step_vector`` is ``(maximum - origin) / nsteps``. Interpolation
+          supports are built from these.
+        * Node-based (values on a grid): ``regular_grid`` returns ``nsteps`` points spanning
+          the full extent, so the spacing between them is ``node_step_vector``,
+          ``(maximum - origin) / (nsteps - 1)``. ``cell_centres`` returns the
+          ``nsteps - 1`` centres of the cells between those points. Use this
+          convention (as pyvista/VTK ``ImageData`` and ``numpy.linspace`` do)
+          when storing values computed at ``regular_grid`` or ``cell_centres``.
 
         Parameters
         ----------
@@ -394,6 +409,18 @@ class BoundingBox:
         return (self.maximum - self.origin) / self.nsteps
 
     @property
+    def node_step_vector(self):
+        """Spacing between the ``nsteps`` points returned by :meth:`regular_grid`.
+
+        ``(maximum - origin) / (nsteps - 1)``; compare ``step_vector``, which divides
+        by ``nsteps`` and is the cell size used to build interpolation supports.
+        """
+        nodes = np.asarray(self.nsteps, dtype=float)
+        if np.any(nodes < 2):
+            raise LoopValueError("Cannot compute node_step_vector: nsteps must be at least 2")
+        return (self.maximum - self.origin) / (nodes - 1)
+
+    @property
     def length(self):
         return self.maximum - self.origin
 
@@ -573,21 +600,29 @@ class BoundingBox:
         return locs
 
     def cell_centres(self, order: str = "F") -> np.ndarray:
-        """Get the cell centres of a regular grid
+        """Get the centres of the cells between the points of :meth:`regular_grid`
+
+        There are ``nsteps - 1`` cells in each direction, each ``node_step_vector`` wide,
+        so every centre is inside the bounding box.
 
         Parameters
         ----------
         order : str, optional
-            order of the grid, by default "C"
+            order of the grid, by default "F"
 
         Returns
         -------
         np.ndarray
-            array of cell centres
+            array of cell centres, in the local coordinate system
         """
-        locs = self.regular_grid(order=order, nsteps=self.nsteps - 1)
-
-        return locs + 0.5 * self.step_vector
+        half = 0.5 * self.node_step_vector
+        coordinates = [
+            np.linspace(self.origin[i] + half[i], self.maximum[i] - half[i], self.nsteps[i] - 1)
+            for i in range(self.dimensions)
+        ]
+        coordinate_grid = np.meshgrid(*coordinates, indexing="ij")
+        locs = np.array([coord.flatten(order=order) for coord in coordinate_grid]).T
+        return self.project(locs)
 
     def to_dict(self) -> dict:
         """Export the defining characteristics of the bounding
@@ -666,9 +701,31 @@ class BoundingBox:
         vertex_data: dict | None = None,
         name: str = "bounding_box",
         local_coordinates: bool = False,
-    ):
+    ) -> PropertyGrid:
+        """Create a :class:`PropertyGrid` whose nodes are the points of :meth:`regular_grid`.
+
+        The grid has ``nsteps`` nodes in each direction spanning the bounding box
+        (spacing :attr:`node_step_vector`), so values computed at ``regular_grid()`` /
+        ``cell_centres()`` can be stored on it directly. For a grid to interpolate on, use
+        ``loop_common.supports.StructuredGrid`` (built from ``step_vector``, the cell size).
+
+        Parameters
+        ----------
+        cell_data : dict, optional
+            cell properties to store on the grid (copied)
+        vertex_data : dict, optional
+            node properties to store on the grid (copied)
+        name : str, optional
+            name of the grid, by default "bounding_box"
+        local_coordinates : bool, optional
+            build the grid in the bounding box's local frame, by default False
+
+        Returns
+        -------
+        PropertyGrid
+        """
         # python is passing a reference to the cell_data, vertex_data dicts so we need to
-        # copy them to make sure that different instances of StructuredGrid are not sharing the same
+        # copy them to make sure that different instances of PropertyGrid are not sharing the same
         # underlying objects
         if cell_data is None:
             cell_data = {}
@@ -685,12 +742,12 @@ class BoundingBox:
             local_points = self.project(self.corners)
             local_origin = np.min(local_points, axis=0)
             local_maximum = np.max(local_points, axis=0)
-            step_vector = (local_maximum - local_origin) / self.nsteps
+            step_vector = (local_maximum - local_origin) / (self.nsteps - 1)
             origin = local_origin
         else:
-            step_vector = self.step_vector
+            step_vector = self.node_step_vector
             origin = self.origin
-        return StructuredGrid(
+        return PropertyGrid(
             origin=origin,
             step_vector=step_vector,
             nsteps=self.nsteps,
