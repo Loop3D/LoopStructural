@@ -1,4 +1,8 @@
-"""What a recipe can and cannot store, and that it says so instead of rebuilding something wrong."""
+"""What a recipe can and cannot store, and that it says so instead of rebuilding something wrong.
+
+Recipes rebuild foliations, faults and unconformities. Anything else is refused when the recipe is
+written, naming the feature.
+"""
 import json
 
 import numpy as np
@@ -91,15 +95,12 @@ def test_an_unconformity_is_recognised_as_an_unconformity():
 
 
 # ------------------------------------------------------------------ what is refused
-def test_a_model_with_a_fault_is_refused_not_rebuilt_without_the_fault():
-    with pytest.raises(LoopValueError, match=r"fault.*foliations only"):
-        fault_model().to_recipe_json()
-
-
-def test_a_model_with_an_unconformity_is_refused():
-    model, _, _ = claudius_model()
-    model.add_unconformity(model["strati"], 0)
-    with pytest.raises(LoopValueError, match=r"__strati_unconformity.*unconformity"):
+def test_a_domain_fault_is_refused():
+    model = fault_model()
+    model.create_and_add_domain_fault("domain_fault_data", nelements=500)
+    # refused, and the message names the feature (it has no creation record: the domain fault in
+    # model.features is not the object create_and_add_feature returned)
+    with pytest.raises(LoopValueError, match=r"'domain_fault_data'.*cannot be stored in a recipe"):
         model.to_recipe_json()
 
 
@@ -144,5 +145,5 @@ def test_an_older_recipe_entry_that_is_not_a_foliation_is_refused():
     entry = recipe["model"]["features"][0]
     del entry["build"]
     entry["kind"] = "structural_frame"
-    with pytest.raises(LoopValueError, match="foliations only"):
+    with pytest.raises(LoopValueError, match="only foliations can be rebuilt"):
         GeologicalModel.from_recipe_dict(recipe)

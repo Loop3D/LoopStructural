@@ -25,13 +25,18 @@ from .stratigraphic_column import StratigraphicColumn
 logger = getLogger(__name__)
 
 
-# Parameters of create_and_add_feature that are not stored with a feature's creation record:
-# ``index`` is the position (the recipe keeps the order), ``faults`` are other features (the recipe
-# keeps their names), and ``data`` is a data frame (see ``custom_data``).
+# Parameters of create_and_add_feature that are not stored as they are: ``index`` is the position
+# (the recipe keeps the order), ``data`` is a data frame (see ``custom_data``), and ``faults`` are
+# other features, stored by name.
 _NOT_RECORDED = ("index", "faults", "data")
 
-# Feature types a recipe can rebuild from the parameters stored with it.
-_SUPPORTED_FEATURE_TYPES = ("foliation",)
+# Feature types a recipe can rebuild from the parameters stored with it, and the kind that
+# ``feature_recipe_kind`` must report for a feature created as that type.
+_SUPPORTED_FEATURE_TYPES = {
+    "foliation": "foliation",
+    "fault": "fault",
+    "unconformity": "unconformity",
+}
 
 
 def _json_safe(value: object, where: str) -> object:
@@ -74,9 +79,14 @@ class ModelSerializer:
         Called by ``GeologicalModel.create_and_add_feature`` with the parameters that were
         *requested* (for example ``nelements``, not the element count that was realised).
         """
+        parameters = {k: v for k, v in params.items() if k not in _NOT_RECORDED}
+        faults = params.get("faults")
+        if faults is not None:
+            # [] means "no faults", which is different from None ("all faults in the model")
+            parameters["faults"] = [f if isinstance(f, str) else f.name for f in faults]
         feature._recipe_creation = {
             "feature_type": feature_type,
-            "parameters": {k: v for k, v in params.items() if k not in _NOT_RECORDED},
+            "parameters": parameters,
             "custom_data": params.get("data") is not None,
         }
 
@@ -98,10 +108,10 @@ class ModelSerializer:
                 "GeologicalModel.create_and_add_feature (or a create_and_add_* method)."
             )
         feature_type = creation["feature_type"]
-        if kind != "foliation" or feature_type not in _SUPPORTED_FEATURE_TYPES:
+        if _SUPPORTED_FEATURE_TYPES.get(feature_type) != kind:
             raise LoopValueError(
                 f"Feature '{feature.name}' ({kind}, created as '{feature_type}') cannot be "
-                "stored in a recipe yet: recipes currently support foliations only."
+                f"stored in a recipe yet: recipes support {sorted(_SUPPORTED_FEATURE_TYPES)}."
             )
         if creation["custom_data"]:
             raise LoopValueError(
@@ -218,7 +228,8 @@ class ModelSerializer:
                 if kind != "foliation":
                     raise LoopValueError(
                         f"Cannot rebuild feature '{feature_name}' of kind '{kind}' from this "
-                        "recipe: recipes currently support foliations only."
+                        "recipe: it has no build parameters, and only foliations can be rebuilt "
+                        "without them."
                     )
                 logger.warning(
                     f"The recipe has no build parameters for feature '{feature_name}' (it was "
@@ -227,11 +238,30 @@ class ModelSerializer:
                 build = {"feature_type": "foliation", "parameters": {}}
             if not isinstance(build, dict) or not isinstance(build.get("parameters", {}), dict):
                 raise TypeError("a feature's build entry must be a dictionary with parameters")
-            feature = model.create_and_add_feature(
-                build.get("feature_type", "foliation"),
-                feature_name,
-                **build.get("parameters", {}),
-            )
+            feature_type = build.get("feature_type", "foliation")
+            parameters = dict(build.get("parameters", {}))
+            if "faults" in parameters:
+                fault_names = parameters["faults"]
+                missing = [n for n in fault_names if n not in feature_map]
+                if missing:
+                    raise LoopValueError(
+                        f"Feature '{feature_name}' refers to {missing}, which are not earlier "
+                        "entries of the recipe"
+                    )
+                parameters["faults"] = [feature_map[n] for n in fault_names]
+            if feature_type == "unconformity":
+                base = feature_map.get(parameters.get("feature"))
+                if base is None:
+                    raise LoopValueError(
+                        f"Unconformity '{feature_name}' refers to '{parameters.get('feature')}', "
+                        "which is not an earlier entry of the recipe"
+                    )
+                add = (
+                    model.add_onlap_unconformity if parameters.get("onlap") else model.add_unconformity
+                )
+                feature = add(base, parameters["value"])
+            else:
+                feature = model.create_and_add_feature(feature_type, feature_name, **parameters)
             if feature is None:
                 raise ValueError(f"Could not recreate feature '{feature_name}' from recipe")
             feature_map[feature_name] = feature
@@ -241,7 +271,9 @@ class ModelSerializer:
             fault_names = feature_entry.get("faults", [])
             if not isinstance(fault_names, list):
                 raise TypeError("faults must be a list")
-            if fault_names:
+            # restores faults assigned to a foliation after it was built; faults, unconformities
+            # and features given an explicit faults list were built with them
+            if fault_names and feature_entry.get("kind", "foliation") == "foliation":
                 feature = feature_map[feature_name]
                 feature.faults = [feature_map[name] for name in fault_names if name in feature_map]
 
