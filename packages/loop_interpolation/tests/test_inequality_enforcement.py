@@ -155,6 +155,21 @@ def test_the_default_penalty_that_does_not_converge_says_so(caplog):
     assert "ADMM used all 200 iterations" in message
     assert "primal residual" in message and "tolerance" in message
     assert "admm_weight" in message
+    # the primal residual missed its tolerance here, so the bounds really may be violated
+    assert "may not be fully satisfied" in message
+
+
+def test_the_constant_norm_polish_warns_once_not_once_per_iteration(caplog):
+    """The polish re-solves with ADMM each iteration; the warning is for the whole solve."""
+    with caplog.at_level(logging.WARNING):
+        (
+            builder()
+            .setup_interpolator()
+            .use_solver("admm", constant_norm_iterations=3, constant_norm_weight=0.1)
+            .solve()
+            .build()
+        )
+    assert len(not_converged_warnings(caplog)) == 1
 
 
 def test_a_penalty_that_converges_does_not_warn(caplog):
@@ -202,6 +217,29 @@ def test_solver_out_of_iterations_warns_and_reports_the_residuals(caplog):
     assert "the final value used was 0.0001" in warning.getMessage()
     # and the bounds really are violated, so the warning is true
     assert x[:2].max() > 0.2 + 0.1
+
+
+def test_dual_only_miss_does_not_claim_the_bounds_are_violated(caplog):
+    """admm_weight=1 with 20 iterations meets the primal tolerance but not the dual one."""
+    with caplog.at_level(logging.WARNING):
+        interpolator = (
+            builder()
+            .setup_interpolator()
+            .use_solver("admm", admm_weight=1.0, nmajor=20)
+            .solve()
+            .build()
+        )
+    (warning,) = not_converged_warnings(caplog)
+    message = warning.getMessage()
+    assert "satisfied to tolerance" in message
+    assert "may not be fully satisfied" not in message
+    assert violations(interpolator).max() <= TOLERANCE  # and the message is true
+
+
+def test_warning_can_be_silenced_per_solve(caplog):
+    with caplog.at_level(logging.WARNING):
+        solve_small(admm_weight=1e-4, nmajor=20, warn_on_nonconvergence=False)
+    assert not not_converged_warnings(caplog)
 
 
 def test_solver_stopped_by_model_update_tolerance_does_not_warn(caplog):

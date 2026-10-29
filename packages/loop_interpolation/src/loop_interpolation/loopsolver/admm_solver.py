@@ -98,6 +98,7 @@ def admm_solve(
     model_update_tol: float = 0.0,
     min_iterations: int = 5,
     return_history: bool = False,
+    warn_on_nonconvergence: bool = True,
 ):
     if A.shape[1] != x0.shape[0]:
         raise ValueError("Number of columns in interpolation matrix does not match x0")
@@ -470,13 +471,30 @@ def admm_solve(
             if dx_norm <= model_update_tol * model_scale:
                 break
 
-    if Q.shape[0] > 0 and not converged and not stopped_on_model_update and last_residuals:
+    if (
+        warn_on_nonconvergence
+        and Q.shape[0] > 0
+        and not converged
+        and not stopped_on_model_update
+        and last_residuals
+    ):
         primal_norm, eps_pri, dual_norm, eps_dual = last_residuals
+        if primal_norm > eps_pri:
+            consequence = "the inequality constraints may not be fully satisfied"
+            advice = (
+                f"Try a larger admm_weight (the final value used was {rho:g}) or a larger nmajor."
+            )
+        else:
+            # the bounds hold to tolerance; only the dual residual (optimality) missed
+            consequence = (
+                "the inequality constraints are satisfied to tolerance but the solution may "
+                "not be fully converged"
+            )
+            advice = f"Try a larger nmajor (the final admm_weight was {rho:g})."
         logger.warning(
             f"ADMM used all {nmajor} iterations without converging: primal residual "
             f"{primal_norm:.3g} (tolerance {eps_pri:.3g}), dual residual {dual_norm:.3g} "
-            f"(tolerance {eps_dual:.3g}). The inequality constraints may still be violated. "
-            f"Try a larger admm_weight (the final value used was {rho:g}) or a larger nmajor."
+            f"(tolerance {eps_dual:.3g}); {consequence}. {advice}"
         )
 
     if return_history:

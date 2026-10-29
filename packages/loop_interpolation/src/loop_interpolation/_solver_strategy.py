@@ -183,6 +183,7 @@ def extract_admm_kwargs(solver_kwargs: dict, admm_solve) -> tuple[str, dict]:
         "inner_maxiter_schedule": solver_kwargs.pop("inner_maxiter_schedule", "linear"),
         "model_update_tol": solver_kwargs.pop("model_update_tol", 0.0),
         "return_history": solver_kwargs.pop("return_history", False),
+        "warn_on_nonconvergence": solver_kwargs.pop("warn_on_nonconvergence", True),
     }
     supported_optional = set(inspect.signature(admm_solve).parameters.keys())
     admm_kwargs = {k: v for k, v in admm_kwargs.items() if k in supported_optional}
