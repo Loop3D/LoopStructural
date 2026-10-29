@@ -42,11 +42,7 @@ jobs:
 
       - name: Install the packages and the docs extra
         run: |
-          # The root pyproject pins loop-common/loop-interpolation below the versions in
-          # packages/, so install the docs extra first and then put the local packages over it.
-          pip install -e ".[docs]"
-          pip install -e packages/loop_common -e "packages/loop_interpolation[native]" \
-            -e "packages/loopstructural_visualisation[all]"
+          python .github/scripts/install_docs_deps.py
 
       - name: Use the OSMesa build of VTK
         run: |
