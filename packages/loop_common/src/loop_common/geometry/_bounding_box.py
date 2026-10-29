@@ -8,7 +8,6 @@ from loop_common.logging import get_logger as getLogger
 
 # from LoopStructural.utils.exceptions import LoopValueError
 from loop_common.math import rng
-from loop_common.supports import StructuredGrid
 
 logger = getLogger(__name__)
 
@@ -667,6 +666,9 @@ class BoundingBox:
         name: str = "bounding_box",
         local_coordinates: bool = False,
     ):
+        # imported here because loop_common.supports builds on loop_common.geometry
+        from loop_common.supports import StructuredGrid
+
         # python is passing a reference to the cell_data, vertex_data dicts so we need to
         # copy them to make sure that different instances of StructuredGrid are not sharing the same
         # underlying objects
