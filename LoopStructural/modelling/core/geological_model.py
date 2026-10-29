@@ -708,9 +708,17 @@ class GeologicalModel:
         feature : BaseFeature
             the created geological feature, or None if it could not be built
         """
+        record_params = dict(params)
+        if feature_type == "foliation" and record_params.get("faults") is None:
+            # faults=None means every fault in the model when the feature is built, which is not
+            # recoverable from the feature list order once index= has been used: record the
+            # faults that are actually used (in model order, as add_faults reads them)
+            record_params["faults"] = [
+                f.name for f in self.features if f.type == FeatureType.FAULT
+            ]
         feature = FeatureBuilderRegistry.create(feature_type, self, name, **params)
         if feature is not None:
-            ModelSerializer.record_creation(feature, feature_type, params)
+            ModelSerializer.record_creation(feature, feature_type, record_params)
         return feature
 
     @public_api(tier="stable")

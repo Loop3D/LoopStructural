@@ -10,6 +10,7 @@ stable API surface (``tests/unit/test_public_api_contract.py``) -- and just
 delegate to the staticmethods here.
 """
 
+import copy
 import json
 import pathlib
 
@@ -85,7 +86,10 @@ class ModelSerializer:
         Called by ``GeologicalModel.create_and_add_feature`` with the parameters that were
         *requested* (for example ``nelements``, not the element count that was realised).
         """
-        parameters = {k: v for k, v in params.items() if k not in _NOT_RECORDED}
+        # deep copy: a list/dict/array the caller changes later must not change the recipe
+        parameters = {
+            k: copy.deepcopy(v) for k, v in params.items() if k not in _NOT_RECORDED
+        }
         faults = params.get("faults")
         if faults is not None:
             # [] means "no faults", which is different from None ("all faults in the model")
@@ -276,7 +280,15 @@ class ModelSerializer:
                 add = (
                     model.add_onlap_unconformity if parameters.get("onlap") else model.add_unconformity
                 )
+                if "value" not in parameters:
+                    raise LoopValueError(
+                        f"Unconformity '{feature_name}' has no 'value' in its recipe parameters"
+                    )
                 feature = add(base, parameters["value"])
+                if parameters.get("onlap"):
+                    # add_onlap_unconformity returns the unconformity applied to the other
+                    # features; the model holds its inverse
+                    feature = model.get_feature_by_name(feature_name)
             else:
                 feature = model.create_and_add_feature(feature_type, feature_name, **parameters)
             if feature is None:
