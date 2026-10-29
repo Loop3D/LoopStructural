@@ -39,6 +39,9 @@ class StructuredGrid3DGeometry:
         self._rotation_xy[2, 2] = 1
         self.rotation_xy = rotation_xy
 
+    def _on_geometry_change(self):
+        """Hook called after origin, step_vector, nsteps or maximum change; subclasses override."""
+
     @property
     def volume(self):
         return np.prod(self.maximum - self.origin)
@@ -69,6 +72,7 @@ class StructuredGrid3DGeometry:
         change_factor = nsteps / self.nsteps
         self._step_vector /= change_factor
         self._nsteps = nsteps
+        self._on_geometry_change()
 
     @property
     def nsteps_cells(self):
@@ -99,6 +103,7 @@ class StructuredGrid3DGeometry:
         newsteps = self._nsteps / change_factor
         self._nsteps = np.ceil(newsteps).astype(int)
         self._step_vector = step_vector
+        self._on_geometry_change()
 
     @property
     def origin(self):
@@ -115,6 +120,7 @@ class StructuredGrid3DGeometry:
             logger.error(f"Cannot resize the grid. The proposed number of steps is {self._nsteps}, these must be all > 0")
             raise ValueError("Cannot resize the grid.")
         self._origin = origin
+        self._on_geometry_change()
 
     @property
     def maximum(self):
@@ -130,6 +136,7 @@ class StructuredGrid3DGeometry:
         if np.any(~(self._nsteps > 0)):
             logger.error(f"Cannot resize the grid. The proposed number of steps is {self._nsteps}, these must be all > 0")
             raise ValueError("Cannot resize the grid.")
+        self._on_geometry_change()
 
     @property
     def n_nodes(self):
@@ -172,20 +179,37 @@ class StructuredGrid3DGeometry:
         return np.einsum("ijk,ik->ij", self.rotation_xy[None, :, :], pos)
 
     def position_to_cell_index(self, pos: np.ndarray) -> tuple[np.ndarray, np.ndarray]:
-        inside = self.inside(pos)
+        """Get the (i, j, k) index of the cell that each point is in.
+
+        Points are expected in the grid's own frame; ``rotation_xy`` is not applied
+        (see :meth:`rotate`).
+
+        Parameters
+        ----------
+        pos : np.ndarray
+            Nx3 array of xyz locations
+
+        Returns
+        -------
+        tuple[np.ndarray, np.ndarray]
+            N,3 integer cell indexes and a boolean mask of the points that are inside the
+            grid. Points on the maximum boundary belong to the last cell. The index of a point
+            outside the grid is (0, 0, 0): use the mask, not the index, to detect them.
+        """
         pos = self.check_position(pos)
+        inside = self.inside(pos)
         cell_indexes = np.zeros((pos.shape[0], 3), dtype=int)
-        cell_indexes[:, 0] = (pos[:, 0] - self.origin[0]) / self.step_vector[0]
-        cell_indexes[:, 1] = (pos[:, 1] - self.origin[1]) / self.step_vector[1]
-        cell_indexes[:, 2] = (pos[:, 2] - self.origin[2]) / self.step_vector[2]
-        return cell_indexes.astype(int), inside
+        for axis in range(3):
+            cell = np.floor((pos[inside, axis] - self.origin[axis]) / self.step_vector[axis])
+            cell_indexes[inside, axis] = np.clip(cell.astype(int), 0, self.nsteps_cells[axis] - 1)
+        return cell_indexes, inside
 
     def inside(self, pos: np.ndarray) -> np.ndarray:
-        inside = np.ones(pos.shape[0]).astype(bool)
-        for i in range(3):
-            inside *= pos[:, i] > self.origin[i]
-            inside *= pos[:, i] < self.maximum[i]
-        return inside
+        """Boolean mask of the points inside the grid, boundary included (to a small tolerance)."""
+        pos = self.check_position(pos)
+        extent = np.maximum(np.abs(self.maximum - self.origin), 1.0)
+        tol = np.finfo(float).eps * 32.0 * extent
+        return np.all((pos >= (self.origin - tol)) & (pos <= (self.maximum + tol)), axis=1)
 
     def check_position(self, pos: np.ndarray) -> np.ndarray:
         if len(pos.shape) == 1:
@@ -193,27 +217,6 @@ class StructuredGrid3DGeometry:
         if len(pos.shape) != 2:
             raise ValueError("Position array needs to be a list of points or a point")
         return pos
-
-    def neighbour_global_indexes(self, mask=None, **kwargs):
-        indexes = None
-        if "indexes" in kwargs:
-            indexes = kwargs["indexes"]
-        if "indexes" not in kwargs:
-            gi = np.arange(self.n_nodes)
-            indexes = self.global_index_to_node_index(gi)
-            edge_mask = (
-                (indexes[:, 0] > 0) & (indexes[:, 0] < self.nsteps[0] - 1)
-                & (indexes[:, 1] > 0) & (indexes[:, 1] < self.nsteps[1] - 1)
-                & (indexes[:, 2] > 0) & (indexes[:, 2] < self.nsteps[2] - 1)
-            )
-            indexes = indexes[edge_mask, :].T
-        if indexes.ndim != 2:
-            logger.error("indexes.ndim = %s, expected 2", indexes.ndim)
-            return
-        if mask is None:
-            mask = np.array([[-1, 0, 1, -1, 0, 1, -1, 0, 1], [1, 1, 1, 0, 0, 0, -1, -1, -1]])
-        neighbours = indexes[:, None, :] + mask[:, :, None]
-        return (neighbours[0, :, :] + self.nsteps[0, None, None] * neighbours[1, :, :]).astype(np.int64)
 
     def cell_corner_indexes(self, cell_indexes: np.ndarray) -> np.ndarray:
         corner_indexes = np.zeros((cell_indexes.shape[0], 8, 3), dtype=np.int64)
@@ -229,15 +232,36 @@ class StructuredGrid3DGeometry:
         cell_indexes = np.zeros((global_index.shape[0], 3), dtype=np.int64)
         cell_indexes[:, 0] = global_index % self.nsteps_cells[0, None]
         cell_indexes[:, 1] = (global_index // self.nsteps_cells[0, None]) % self.nsteps_cells[1, None]
-        cell_indexes[:, 2] = (global_index // (self.nsteps_cells[0, None] * self.nsteps_cells[1, None])) % self.nsteps_cells[2, None]
+        cell_indexes[:, 2] = global_index // self.nsteps_cells[0, None] // self.nsteps_cells[1, None]
         return cell_indexes
 
     def global_index_to_node_index(self, global_index):
-        cell_indexes = np.zeros((global_index.shape[0], 3), dtype=np.int64)
-        cell_indexes[:, 0] = global_index % self.nsteps[0, None]
-        cell_indexes[:, 1] = (global_index // self.nsteps[0, None]) % self.nsteps[1, None]
-        cell_indexes[:, 2] = (global_index // (self.nsteps[0, None] * self.nsteps[1, None])) % self.nsteps[2, None]
-        return cell_indexes
+        """Node ijk indexes (shape ``(*global_index.shape, 3)``) from flat node indexes."""
+        global_index = np.asarray(global_index)
+        original_shape = global_index.shape
+        global_index = global_index.reshape(-1)
+        node_indexes = np.zeros((global_index.shape[0], 3), dtype=np.int64)
+        node_indexes[:, 0] = global_index % self.nsteps[0, None]
+        node_indexes[:, 1] = global_index // self.nsteps[0, None] % self.nsteps[1, None]
+        node_indexes[:, 2] = global_index // self.nsteps[0, None] // self.nsteps[1, None]
+        return node_indexes.reshape(*original_shape, 3)
+
+    def _global_indicies(self, indexes: np.ndarray, nsteps: np.ndarray) -> np.ndarray:
+        """Convert (..., 3) ijk indexes to flat indexes for a grid with ``nsteps`` per axis (x fastest)."""
+        indexes = np.asarray(indexes)
+        if indexes.ndim == 1:
+            raise ValueError("Cell indexes needs to be Nx3")
+        if indexes.shape[-1] != 3:
+            raise ValueError("Last dimensions should be ijk indexing")
+        original_shape = indexes.shape
+        indexes = indexes.reshape(-1, 3)
+        gi = indexes[:, 0] + nsteps[0] * indexes[:, 1] + nsteps[0] * nsteps[1] * indexes[:, 2]
+        return gi.reshape(original_shape[:-1])
 
     def global_node_indices(self, node_indexes):
-        return node_indexes
+        """Flat node indexes from (..., 3) node ijk indexes."""
+        return self._global_indicies(node_indexes, self.nsteps)
+
+    def global_cell_indices(self, cell_indexes):
+        """Flat cell indexes from (..., 3) cell ijk indexes; the order cell data is stored in."""
+        return self._global_indicies(cell_indexes, self.nsteps_cells)
