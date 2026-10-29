@@ -22,8 +22,9 @@ Because ``Loop3DView`` *is* a PyVista plotter, everything PyVista can do (``add_
     view.display()                 # opens the viewer (inline in a notebook)
 
 Some methods need a bounding box to know where to evaluate the feature. By default this is
-the bounding box of the model passed to ``Loop3DView``; every ``plot_*`` method also accepts a
-``bounding_box=`` argument to override it.
+the bounding box of the model passed to ``Loop3DView``; ``plot_surface``,
+``plot_scalar_field``, ``plot_vector_field``, ``plot_fault`` and ``plot_fault_displacements``
+also accept a ``bounding_box=`` argument to override it.
 
 Visualising geological features
 -------------------------------
@@ -37,7 +38,9 @@ There are four main ways to look at a geological feature.
        view.plot_scalar_field(feature, cmap="viridis")
 
 2. Surfaces: isosurfaces of the implicit function. ``value`` is one isovalue, a list of
-   isovalues, or an integer number of regularly spaced surfaces.
+   isovalues, or a positive integer number of regularly spaced surfaces between the minimum and
+   maximum of the feature (``0`` is read as the isovalue 0.0, not a count). If ``value`` is
+   omitted the surface at the middle of the feature's range is drawn.
 
    .. code-block:: python
 
@@ -67,7 +70,8 @@ The methods share a few arguments:
     * - ``opacity``
       - transparency of the object, between 0 and 1
     * - ``name``
-      - name of the object in the viewer. Adding two objects with the same name replaces the first
+      - name of the object in the viewer. If the name is already used a numeric suffix is added
+        (``name_1``, ``name_2``, ...) so nothing is replaced
     * - ``pyvista_kwargs``
       - a dictionary passed on to :meth:`pyvista.Plotter.add_mesh`
     * - ``bounding_box``
@@ -108,7 +112,9 @@ constraints as arrows. Arbitrary points and arrows can be added with the PyVista
 
 .. warning::
 
-    Pass a distinct ``name`` for each object. Reusing a name replaces the earlier object.
+    Pass a distinct ``name`` for each object. ``Loop3DView`` does not replace an existing
+    object when a name is reused: the new object is given a numeric suffix (``name_1``,
+    ``name_2``, ...) and both stay in the scene.
 
 Visualising the geological model
 --------------------------------
@@ -153,8 +159,11 @@ location, so arbitrary quantities can be drawn with the same methods.
     view.plot_scalar_field(custom_feature, bounding_box=bb)
 
 The function is evaluated at the locations the visualisation needs, normally between the
-origin and maximum of the bounding box. Set the ``min`` and ``max`` attributes of the feature
-if the colour range should differ from the default.
+origin and maximum of the bounding box. ``min()`` and ``max()`` on a feature are methods, not
+settable attributes, and a feature without a model (such as a lambda feature) returns 0 for
+both. To control the colour range pass ``vmin`` and ``vmax`` to the plotting method instead.
+If you use the lambda feature as ``paint_with``, also pass ``vmin`` and ``vmax`` since the
+default range comes from ``min()`` and ``max()``.
 
 Using the grid directly
 -----------------------

@@ -134,7 +134,7 @@ conformable_feature = model.create_and_add_foliation("conformable")
 # xyz coordinates.
 #
 # In the following example we will use matplotlib to visualise these results however, the
-# next tutorial will show how to use the lavavu visualisation model.
+# next tutorial will show how to use the 3D (PyVista based) visualisation module.
 
 
 import matplotlib.pyplot as plt
