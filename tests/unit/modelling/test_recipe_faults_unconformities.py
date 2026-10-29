@@ -152,3 +152,43 @@ def test_an_unconformity_that_refers_to_a_missing_feature_is_refused():
     recipe["model"]["features"][1]["build"]["parameters"]["feature"] = "not_there"
     with pytest.raises(LoopValueError, match="not an earlier entry"):
         GeologicalModel.from_recipe_dict(recipe)
+
+
+# --------------------------------------------------------------- both in one model
+def test_a_model_with_a_fault_and_an_unconformity_rebuilds_exactly():
+    rows = [
+        [5, 5, 5, 0, 0.70710678, 0.0, 0.70710678, 0, "fault"],
+        [5, 5, 5, 0, -0.70710678, 0.0, 0.70710678, 1, "fault"],
+        [2, 2, 8, 0, 0.05, 0, 1, np.nan, "upper"],
+        [8, 2, 8.2, 0, 0.05, 0, 1, np.nan, "upper"],
+        [5, 8, 8.1, 0, 0, 0.05, 1, np.nan, "upper"],
+        [2, 5, 4, 0, 0, 0, 1, np.nan, "lower"],
+        [8, 5, 3.5, 0, 0, 0, 1, np.nan, "lower"],
+        [5, 2, 3.8, 0, 0, 0, 1, np.nan, "lower"],
+        [5, 8, 3.9, 0, 0, 0, 1, np.nan, "lower"],
+        [2, 5, 2, -2, 0, 0, 1, np.nan, "lower"],
+    ]
+    model = GeologicalModel([0, 0, 0], [10, 10, 10])
+    model.data = pd.DataFrame(
+        rows, columns=["X", "Y", "Z", "val", "nx", "ny", "nz", "coord", "feature_name"]
+    )
+    model.create_and_add_fault(
+        "fault", 1, nelements=1000, buffer=0.5, major_axis=10, minor_axis=3, intermediate_axis=10
+    )
+    upper = model.create_and_add_foliation("upper", nelements=1000)
+    model.add_unconformity(upper, 0)
+    model.create_and_add_foliation("lower", nelements=1000)
+    model.update()
+
+    rebuilt = rebuild(model)
+    assert [(f.name, type(f)) for f in rebuilt.features] == [(f.name, type(f)) for f in model.features]
+    points = np.random.default_rng(0).uniform(0, 10, (500, 3))
+    same_field(model, rebuilt, "upper", points)
+    same_field(model, rebuilt, "lower", points)
+    np.testing.assert_allclose(
+        rebuilt.evaluate_fault_displacements(points),
+        model.evaluate_fault_displacements(points),
+        atol=1e-8,
+    )
+    # the unconformity hides part of each group, so the test is not vacuous
+    assert 0.1 < np.isnan(model.evaluate_feature_value("upper", points)).mean() < 0.95
