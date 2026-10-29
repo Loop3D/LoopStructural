@@ -170,7 +170,14 @@ def test_cg_without_inequality_constraints_does_not_warn(caplog):
 
 def test_inequality_columns_in_model_data_warn_with_the_default_solver(caplog):
     """The path most users take: l and u columns in model.data, GeologicalModel's default solver."""
+    from importlib.metadata import PackageNotFoundError, version
+
     import pandas as pd
+
+    try:
+        version("LoopStructural")  # the package-only CI job runs without LoopStructural installed
+    except PackageNotFoundError:
+        pytest.skip("LoopStructural is not installed")
 
     from LoopStructural import GeologicalModel
     from LoopStructural.datasets import load_claudius
