@@ -3205,7 +3205,7 @@ provides-extras = ["tests"]
 
 [[package]]
 name = "loop-interpolation"
-version = "0.1.0"
+version = "0.2.0"
 source = { editable = "packages/loop_interpolation" }
 dependencies = [
     { name = "loop-common" },
@@ -3288,7 +3288,7 @@ wheels = [
 
 [[package]]
 name = "loopstructural"
-version = "1.9.0"
+version = "1.10.0"
 source = { editable = "." }
 dependencies = [
     { name = "loop-common" },
@@ -3369,6 +3369,9 @@ jupyter = [
     { name = "pyvista", version = "0.46.5", source = { registry = "https://pypi.org/simple" }, extra = ["all"], marker = "python_full_version < '3.10'" },
     { name = "pyvista", version = "0.48.4", source = { registry = "https://pypi.org/simple" }, extra = ["all"], marker = "python_full_version >= '3.10'" },
 ]
+native = [
+    { name = "loop-interpolation", extra = ["native"] },
+]
 tests = [
     { name = "pytest", version = "8.4.2", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.10'" },
     { name = "pytest", version = "9.1.1", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.10'" },
@@ -3390,6 +3393,7 @@ requires-dist = [
     { name = "geopandas", marker = "extra == 'docs'" },
     { name = "loop-common", editable = "packages/loop_common" },
     { name = "loop-interpolation", editable = "packages/loop_interpolation" },
+    { name = "loop-interpolation", extras = ["native"], marker = "extra == 'native'", editable = "packages/loop_interpolation" },
     { name = "loopsolver", marker = "extra == 'inequalities'" },
     { name = "loopstructural", extras = ["inequalities"], marker = "extra == 'all'", editable = "." },
     { name = "loopstructuralvisualisation", marker = "extra == 'visualisation'", editable = "packages/loopstructural_visualisation" },
@@ -3419,7 +3423,7 @@ requires-dist = [
     { name = "sphinxcontrib-bibtex", marker = "extra == 'docs'" },
     { name = "tqdm", marker = "extra == 'all'" },
 ]
-provides-extras = ["all", "visualisation", "export", "jupyter", "inequalities", "tests", "dev", "docs"]
+provides-extras = ["all", "visualisation", "export", "jupyter", "inequalities", "native", "tests", "dev", "docs"]
 
 [[package]]
 name = "loopstructuralvisualisation"
