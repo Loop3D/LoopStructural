@@ -62,7 +62,7 @@
   - Wave: 4
   - Done when: python -m pytest tests/fault_evaluation/test_models.py -q passes.
 
-- [ ] T003 [US1] [M] Test golden capture, comparisons and reference write protection.
+- [x] T003 [US1] [M] Test golden capture, comparisons and reference write protection.
   - Do: Test D1 capture keys and shapes, all outputs, exact NaN masks, box-scaled tolerances, boundary-id exception, surface vertex/bounds/area checks including zero, and model/output/max-error messages. Test missing reference and non-write mode. A mismatching fault result must be rejected.
   - Files: `tests/fault_evaluation/test_golden_tools.py`
   - Needs: T002
