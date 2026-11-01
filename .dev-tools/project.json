@@ -1,0 +1,20 @@
+{
+  "schema_version": 1,
+  "project_name": "LoopStructural",
+  "agents": [
+    "claude",
+    "codex",
+    "copilot"
+  ],
+  "commands": {
+    "check": "ruff check LoopStructural packages && pytest",
+    "test": "pytest",
+    "format": "black .",
+    "lint": "ruff check LoopStructural packages"
+  },
+  "documentation": {
+    "architecture": "ROADMAP.md",
+    "specs": "specs",
+    "constitution": ".specify/memory/constitution.md"
+  }
+}
