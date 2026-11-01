@@ -1,6 +1,6 @@
 # Feature spec: Faster evaluation of faulted models
 
-**Feature**: `003-fault-evaluation-performance` | **Created**: 2026-11-01 | **Status**: Draft
+**Feature**: `003-fault-evaluation-performance` | **Created**: 2026-11-01 | **Status**: Clarified 2026-11-01 (C-002 waits for the refined plugin model)
 
 **Input**: The user renders models in the QGIS plugin. A model with faults and
 unconformities is slow to render, and it becomes slower with each fault and
@@ -107,6 +107,11 @@ applications with the baseline.
 3. **Given** the plugin model of `research.md` (one group, six faults, one
    unconformity), **when** the caller evaluates the group at 20 000 points,
    **then** the time is at most half of the baseline.
+4. **Given** a model that the viewer evaluated on a grid, **when** the viewer
+   evaluates the same grid again and the model did not change, **then** the
+   evaluation call makes no fault applications. **When** the model changed
+   before the second call, **then** the result is the result of the changed
+   model.
 
 ### User story 3: Measure the cost with benchmarks (priority: P2)
 
@@ -115,7 +120,8 @@ cases, and writes the results to a file. A second command compares two result
 files and shows which cases became slower or faster.
 
 **Why this priority**: without numbers, nobody can say if a change helps, or
-if a later change makes the code slow again.
+if a later change makes the code slow again. The benchmarks are a tool for
+developers on their own computers. CI does not run them (C-005).
 
 **Independent test**: run the benchmarks two times on the same computer and
 the same code. Compare the two files. No case shows a change of more than the
@@ -211,7 +217,8 @@ the golden tests.
   - two faults where one fault cuts the other;
   - an onlap unconformity and a domain fault;
   - a folded feature with a faulted fold frame;
-  - at least one model made from a dataset in `LoopStructural.datasets`.
+  - the plugin model of `research.md`, after the user refines it (C-002). Its
+    data is stored in the repository.
 - **FR-002**: For each golden model, the golden results MUST contain, at a
   fixed set of points that includes points near faults and near
   unconformities:
@@ -246,12 +253,25 @@ the golden tests.
   the number of fault applications MUST be at most the sum, over the
   different fault sets of the model, of the number of faults in each fault
   set.
-- **FR-009**: No result of one evaluation call MUST be used in a later call,
-  unless the code can prove that the model did not change. A change of the
-  model MUST always give new results.
+- **FR-009**: Restored points MAY be kept between evaluation calls (C-003),
+  only with all of these conditions:
+  - a kept result is used only for the same points and the same fault set;
+  - a change of the model MUST make the kept results invalid. These changes
+    are included: a solve or a build of a fault or of a feature that it
+    cuts, new data, a change of a build argument, a change of a fault
+    displacement, of a fault function or of `steps`, a change of a region,
+    and a change of `faults_enabled`;
+  - a golden test MUST evaluate the same points, change the model, evaluate
+    again, and get the result of the changed model.
 - **FR-010**: The extra memory of one evaluation call MUST be at most the
   restored points of each different fault set (3 floats for each point and
-  each fault set).
+  each fault set). Restored points that are kept between calls MUST have a
+  size limit that the user can set, and MUST be removed first when they are
+  the oldest. The user MUST be able to clear them and to turn the keeping
+  off.
+- **FR-010a**: The evaluation MUST give the same results when two threads
+  evaluate the same model at the same time (the QGIS plugin evaluates in
+  background threads).
 - **FR-011**: The public API MUST stay the same: the same functions, the same
   arguments and the same return values.
 
@@ -268,8 +288,9 @@ the golden tests.
   cost nothing when they are off.
 - **FR-014**: One command MUST run the suite and write one machine-readable
   result file (see user story 3). A second command MUST compare two files.
-- **FR-015**: The benchmarks MUST NOT run in the normal test run. A developer
-  or a CI job MUST start them on purpose.
+- **FR-015**: The benchmarks are for local development only. They MUST NOT
+  run in the normal test run or in CI. A developer starts them on purpose.
+  They use `pytest-benchmark` (C-004), as a development dependency only.
 - **FR-016**: The repository MUST contain the baseline result file of the code
   before this feature, with the computer that made it.
 
@@ -311,6 +332,10 @@ the golden tests.
   computer in `research.md`.
 - **SC-009** (user story 5): the time for each point of one fault application
   is at most 50 % of the baseline (about 34 µs for each point).
+- **SC-010**: A second `evaluate_model` of the same points, with no change of
+  the model, makes 0 fault applications and takes at most 10 % of the first
+  call. After a change of one fault displacement, the second call gives the
+  golden result of the changed model.
 
 ## Out of scope
 
@@ -325,21 +350,26 @@ the golden tests.
 
 ## Clarifications
 
-Open questions. Answer them before the plan.
+Answered on 2026-11-01.
 
 - **C-001 Tolerances.** Are the tolerances of FR-004 correct? A change that
   only reorders floating-point operations can move a point by about 1e-12 of
   the box, and this can change the stratigraphic id of a point that is almost
   on a boundary.
-- **C-002 Real-data model.** Which dataset is the real-data golden model:
-  `load_claudius`, `load_laurent2016`, or the plugin model of `research.md`
-  (if its data can be in the repository)?
-- **C-003 Results between calls.** The viewer often evaluates the same grid
-  again after a small change. Is it in scope to keep restored points between
-  calls when the faults did not change (FR-009 allows it only with proof that
-  the model did not change)?
-- **C-004 Benchmark tool.** Is a new development dependency (for example
-  `pytest-benchmark` or `asv`) allowed, or must the suite use only the
-  standard library and the present dependencies?
-- **C-005 CI.** Must a CI job run the benchmarks (for example on each release
-  or each night), and must it fail on a slower case, or only report?
+  **Answer**: yes, the tolerances of FR-004 are correct.
+- **C-002 Real-data model.** Which dataset is the real-data golden model?
+  **Answer**: the plugin model of `research.md`. Its data can be in the
+  repository. The user refines the model first. The golden results of this
+  model are made after that. The synthetic golden models do not wait for it.
+- **C-003 Results between calls.** Is it in scope to keep restored points
+  between calls when the faults did not change?
+  **Answer**: yes. The risks are stale results after a model change, memory,
+  the cost of the key for many points, and threads. FR-009, FR-010 and
+  FR-010a control them.
+- **C-004 Benchmark tool.** Is a new development dependency allowed?
+  **Answer**: yes, `pytest-benchmark` or `asv`. This spec uses
+  `pytest-benchmark`, because it runs with pytest, writes JSON and compares
+  two runs. The plan can choose `asv` if a history across many commits is
+  necessary.
+- **C-005 CI.** Must a CI job run the benchmarks?
+  **Answer**: no. The benchmarks are for local development only (FR-015).
