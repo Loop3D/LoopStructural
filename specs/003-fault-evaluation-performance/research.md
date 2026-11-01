@@ -127,6 +127,38 @@ Notes:
 - The time is about proportional to the number of fault applications, so
   removing the repeated applications gives most of the gain of user story 2.
 
+## The plugin model as a golden model
+
+`data/plugin_model/` has the plugin model of baseline 1, as it is:
+
+- `recipe.json`: the model box and the stratigraphic column, and the
+  LoopStructural calls that the plugin made, in order. They were recorded from
+  the plugin model manager on 2026-11-01: six `create_and_add_fault` calls
+  (displacement 1000, dip 90), one `add_abutting_fault` (7439 abuts 3496), one
+  `create_and_add_foliation` (Group_0) and one `add_unconformity`.
+- `<feature>.csv`: the data of each feature.
+- `fields.npz` and `fields.json`: the solved field and the grid of each
+  interpolator (three for each fault). 1.2 MB.
+- `qgis_check.npz`: values of the model in QGIS at 5000 fixed points.
+- `plugin_model.py`: builds the model with the stored fields (no solve), or
+  solves it again. Run it to compare with `qgis_check.npz`. The result is the
+  same as in QGIS (difference 0, same NaN points).
+
+Things that a golden model with stored fields must do, found when this model
+was made:
+
+- Use the box of the model with its local transform. The plugin gives a
+  `BoundingBox` with `local_origin = 0`. `GeologicalModel(origin, maximum)`
+  sets the local origin to the box origin, and then the points miss the grids
+  of the faults.
+- Set the grid of each fault. The build makes the grid of a fault larger (the
+  fault buffer), so the grid before a build is smaller than the saved field.
+- Give each feature the faults of its builder (`BaseBuilder.update` does this
+  before a build), but only after all the calls: `add_unconformity` must see
+  the feature before its first build.
+- Mark each interpolator and each builder as up to date, so that an
+  evaluation does not solve again.
+
 ## Notes for the plan
 
 These notes are input for the plan. They are not requirements.

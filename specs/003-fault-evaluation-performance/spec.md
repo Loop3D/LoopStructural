@@ -1,6 +1,6 @@
 # Feature spec: Faster evaluation of faulted models
 
-**Feature**: `003-fault-evaluation-performance` | **Created**: 2026-11-01 | **Status**: Clarified 2026-11-01 (C-002 waits for the refined plugin model)
+**Feature**: `003-fault-evaluation-performance` | **Created**: 2026-11-01 | **Status**: Clarified 2026-11-01
 
 **Input**: The user renders models in the QGIS plugin. A model with faults and
 unconformities is slow to render, and it becomes slower with each fault and
@@ -217,8 +217,12 @@ the golden tests.
   - two faults where one fault cuts the other;
   - an onlap unconformity and a domain fault;
   - a folded feature with a faulted fold frame;
-  - the plugin model of `research.md`, after the user refines it (C-002). Its
-    data is stored in the repository.
+  - the plugin model of `research.md`, as it is (C-002). Its data and its
+    solved fields are in `data/plugin_model/` (see FR-001a).
+- **FR-001a**: A golden model MUST be able to use stored solved fields, so
+  that its golden results do not depend on the solver. The solvers give
+  results that differ by more than the tolerances of FR-004 (`cg` and
+  `native` differ by about 1e-5 of the range).
 - **FR-002**: For each golden model, the golden results MUST contain, at a
   fixed set of points that includes points near faults and near
   unconformities:
@@ -358,9 +362,11 @@ Answered on 2026-11-01.
   on a boundary.
   **Answer**: yes, the tolerances of FR-004 are correct.
 - **C-002 Real-data model.** Which dataset is the real-data golden model?
-  **Answer**: the plugin model of `research.md`. Its data can be in the
-  repository. The user refines the model first. The golden results of this
-  model are made after that. The synthetic golden models do not wait for it.
+  **Answer**: the plugin model of `research.md`, as it is. Its data can be in
+  the repository. It is in `data/plugin_model/`: the calls that the plugin
+  made, the data of each feature, and the solved fields. `plugin_model.py`
+  builds it without QGIS, and gives the same values as the model in QGIS at
+  5000 fixed points (difference 0).
 - **C-003 Results between calls.** Is it in scope to keep restored points
   between calls when the faults did not change?
   **Answer**: yes. The risks are stale results after a model change, memory,
