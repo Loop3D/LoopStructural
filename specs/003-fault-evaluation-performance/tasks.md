@@ -55,7 +55,7 @@
   - Wave: 1
   - Done when: python -m pytest tests/fault_evaluation/test_models.py -q fails for absent model APIs, then passes after T002.
 
-- [ ] T002 [US1] [M] Create deterministic golden models and saved fields.
+- [x] T002 [US1] [M] Create deterministic golden models and saved fields.
   - Do: Implement the exact D1 catalogue/signatures. Extract the synthetic recipe without importing measure_baseline.py. After T034, resume the existing drafts and store solved grids/coefficients and fold state on the corrected pre-performance code. No field archive exists yet. Preserve actual frame-coordinate ownership and skip analytical coordinates; do not repeat the completed T001 test task. Load the supplied plugin data by path. Do not edit input plugin files or tests.
   - Files: `tests/fault_evaluation/__init__.py`, `tests/fault_evaluation/models.py`, `tests/fault_evaluation/data/recipes.json`, `tests/fault_evaluation/data/fields.npz`
   - Needs: T034
