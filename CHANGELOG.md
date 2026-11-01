@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.11.0](https://github.com/Loop3D/LoopStructural/compare/v1.10.0...v1.11.0) (2026-11-01)
+
+
+### Features
+
+* allow loop-interpolation 0.2 and add the native extra ([#381](https://github.com/Loop3D/LoopStructural/issues/381)) ([8996e19](https://github.com/Loop3D/LoopStructural/commit/8996e198b7bdf3a4249d93208d623176dac16e52))
+
 ## [1.10.0](https://github.com/Loop3D/LoopStructural/compare/v1.9.0...v1.10.0) (2026-10-28)
 
 
