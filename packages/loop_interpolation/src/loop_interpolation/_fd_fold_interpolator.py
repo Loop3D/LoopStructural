@@ -73,6 +73,7 @@ class FDFoldInterpolator(FiniteDifferenceInterpolator):
             :meth:`add_fold_constraints`.  Keys are the same as the
             parameters of that method (e.g. ``fold_orientation``,
             ``fold_regularisation``, …).
+
         All other kwargs are forwarded to the parent
         :meth:`FiniteDifferenceInterpolator.setup_interpolator`.
         """

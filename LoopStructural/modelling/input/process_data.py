@@ -217,10 +217,11 @@ class ProcessInputData:
         --------
         Add a isosurfaces to the model coloured by the map colours
 
-        >>> model, processor = GeologicalModel.from_map2loop_directory(directory)
+        >>> processor = Map2LoopProcessor(directory)
+        >>> model = GeologicalModel.from_processor(processor)
         >>> view = Loop3DView(model)
-        >>> view.add_isosurface(model['supergroup_0'],**processor.stratigraphy_cmap('supergroup_0'))
-        >>> view.interactive()
+        >>> view.plot_surface(model['supergroup_0'], **processor.stratigraphy_cmap('supergroup_0'))
+        >>> view.display()
 
 
         Raises

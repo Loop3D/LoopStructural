@@ -56,8 +56,9 @@ The lists are to be formated so that the first level of the list contains the yo
 The next level contains the order of the formations within the conformable group, with them order youngest to oldest.
 In the example below, there are two groups the youngest group contains a,b,c and the older group contains d,e.
 
-.. code-block::
-    [[a,b,c],['d','e]]
+.. code-block:: python
+
+    [['a', 'b', 'c'], ['d', 'e']]
 
 Note: If the stratigraphy can be interpreted as conformable, it is advisable to include all stratigraphy inside a single group. 
 

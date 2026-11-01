@@ -3,10 +3,8 @@
 1c. Visualising models
 ===============================
 The following tutorial will demonstrate how to use the Loop structural visualisation module.
-This module provides a wrapper for the lavavu model that is written by
-Owen Kaluza.
-
-Lavavu allows for interactive visualisation of 3D models within a jupyter
+This module provides a wrapper around the PyVista plotter that allows
+interactive visualisation of 3D models, including within a jupyter
 notebook environment.
 
 """
@@ -28,6 +26,8 @@ data, bb = load_claudius()
 model = GeologicalModel(bb[0, :], bb[1, :])
 model.data = data
 strati = model.create_and_add_foliation("strati",nelements=1e4)
+# the default column ends in an empty 'Basement' group; start from an empty column
+model.stratigraphic_column.clear(basement=False)
 vals = [0, 60, 250, 330, 600]
 for i in range(len(vals) - 1):
     model.stratigraphic_column.add_unit(

@@ -16,6 +16,7 @@ class FoldEvent:
     """Describes fold geometry via a fold frame and two rotation-angle functions.
 
     The fold frame provides two coordinate fields:
+
     - ``foldframe.features[0]``: axial-surface scalar field (gx).  Its gradient
       (``evaluate_gradient``) gives the across-fold direction and its value
       (``evaluate_value``) parameterises the fold limb rotation angle.

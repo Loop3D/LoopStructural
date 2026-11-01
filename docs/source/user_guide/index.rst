@@ -11,10 +11,13 @@ for a list of topics covered in this section.
    
    what_is_a_geological_model
    input_data
+   preparing_data
    geological_model
+   structural_frames
    interpolation_options
    native_solver
    fold_modelling
    fault_modelling
    visualisation
    debugging
+   map2loop

@@ -1,6 +1,6 @@
 """
 2c. Quadratic fold interpolation
-==============================
+================================
 
 ``P2Fold`` uses quadratic tetrahedra and samples the fold constraints inside
 each tetrahedron. Select it when constructing a folded foliation or the first

@@ -1,7 +1,7 @@
 LoopStructural Philosophy
 ==========================
 Loopstructural is an open source 3D geological modelling library with minimal dependencies - *numpy, scipy and scikit-learn for model building and evaluation*. 
-For visualisation *LavaVu and scikit-image* are required. 
+For visualisation *PyVista (through loopstructuralvisualisation) and scikit-image* are required. 
  
 The main entry point for using LoopStructural is to create a GeologicalModel. 
 The GeologicalModel manages the dataset, model area, creating of different elements inside the GeologicalModel.
