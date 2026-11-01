@@ -11,7 +11,7 @@ The interpolation algorithms behind LoopStructural are implementations of resear
 Within LoopStructural we have implemented three discrete interpolation algorithms for implicit 3D modelling:
 
 * A Piecewise Linear Interpolation algorithm where the interpolation is performed on a tetraheral mesh minimising the second derivative of the implicit funtion between neighbouring tetrahedron.
-This interpolation algorithm is an implementation of the discrete smooth interpolation algorithm included in Gocad-Skua, which is heavily based on the work of Frank et al., 2007 and Caumon et al., 2007.
+  This interpolation algorithm is an implementation of the discrete smooth interpolation algorithm included in Gocad-Skua, which is heavily based on the work of Frank et al., 2007 and Caumon et al., 2007.
 
 * This interpolation algorithm can also be framed by minimising the second derivatives using finite different on a regular cartesian grid which has been presented by Irakarama et al.,
 

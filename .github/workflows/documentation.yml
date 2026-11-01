@@ -41,7 +41,7 @@ jobs:
 
       - name: Install PyVista and dependencies
         run: |
-          pip install -e .[docs]
+          python .github/scripts/install_docs_deps.py
 
       - name: Install custom OSMesa VTK variant
         run: |

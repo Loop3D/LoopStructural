@@ -12,6 +12,10 @@ learn them:
    and updating fault geometry after a model has been built.
 4. **Advanced use** - building models directly from geological map data,
    logging, controlling data weighting, and comparing interpolators.
+5. **Interpolation** - how the interpolators behave, measured against synthetic
+   models with a known answer: choosing an interpolator, the regularisation weight, and
+   fold constraints with sparse data, refolded folds, the kinds of orientation data, and
+   the native solver.
 
 Each example is a standalone, runnable Python script. Most examples load
 one of the sample datasets bundled in :code:`LoopStructural.datasets`, so

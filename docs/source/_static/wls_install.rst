@@ -218,7 +218,7 @@ Windows using linux subsystem
 
         **Running LoopStructural**
 
-    To use the model viewing capabilities of LavaVu you need to use MobaXterm or another ssh/terminal client with x forwarding capabilities.
+    To use the interactive 3D model viewer you need to use MobaXterm or another ssh/terminal client with x forwarding capabilities.
     To run the included examples in LoopStructural you can simply run
 
     .. code-block::

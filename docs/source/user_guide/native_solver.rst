@@ -64,6 +64,15 @@ A start value needs 8 more bytes for each node until the solve starts. The memor
 Use ``warm_start`` when you solve again after a small change, for example a new weight. The solve then needs fewer iterations.
 Any other keyword is rejected with a ``NotImplementedError``. The message lists the accepted keywords.
 
+Checking that the solve converged
+---------------------------------
+The solver stops after ``maxiter`` iterations even when it has not reached ``tol``. When this happens it logs a warning
+(``The native solver did not converge``), sets ``interpolator.up_to_date`` to ``False``, and leaves the unfinished field in the interpolator.
+Nothing is raised. On a test problem with about 55 000 unknowns the default limit of 5000 iterations was not enough: the field was far
+from the Python solution, although the residual in the warning was close to ``tol``. Raising ``maxiter`` fixed it.
+Check ``up_to_date`` after a native solve, and raise ``maxiter`` if it is ``False``.
+The gallery example :doc:`/_auto_examples/5_interpolation/plot_6_native_solver` shows this, and the memory saving, on a worked problem.
+
 Unsupported settings
 --------------------
 The native solver does not support these settings. When one of them is set, the solver raises ``NotImplementedError``. The message contains the name of the setting.
