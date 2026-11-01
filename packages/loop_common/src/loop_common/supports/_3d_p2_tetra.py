@@ -417,7 +417,8 @@ class P2UnstructuredTetMesh(UnStructuredTetMesh):
         values[:] = np.nan
         element_gradients, tetra, inside = self.evaluate_shape_derivatives(pos[:, :3])
         values[inside, :] = (
-            element_gradients[:, :, :] * property_array[self.elements[tetra[inside], None, :]]
+            element_gradients[inside, :, :]
+            * property_array[self.elements[tetra[inside], None, :]]
         ).sum(2)
 
         return values

@@ -1,0 +1,34 @@
+{
+  "schema_version": 1,
+  "toolkit_version": "0.1.0",
+  "files": {
+    ".agents/skills/dev-tools-setup/SKILL.md": {
+      "kind": "file",
+      "sha256": "519c26eaa0819e637d10be629904d8a2806f5d0521703727912596132ae5ec0e"
+    },
+    ".agents/skills/dev-tools-setup/references/constitution.md": {
+      "kind": "file",
+      "sha256": "2af67cfaec653012bcb6541a86ba98cd251a135ad922419d3b0e482c42cfefb9"
+    },
+    ".claude/skills/dev-tools-setup/SKILL.md": {
+      "kind": "file",
+      "sha256": "519c26eaa0819e637d10be629904d8a2806f5d0521703727912596132ae5ec0e"
+    },
+    ".claude/skills/dev-tools-setup/references/constitution.md": {
+      "kind": "file",
+      "sha256": "2af67cfaec653012bcb6541a86ba98cd251a135ad922419d3b0e482c42cfefb9"
+    },
+    "CLAUDE.md": {
+      "kind": "block",
+      "sha256": "a61ebcbd643803f44587be7ce11f6a159374e99c607f5fdbbb8397a04416afd2"
+    },
+    "AGENTS.md": {
+      "kind": "block",
+      "sha256": "a61ebcbd643803f44587be7ce11f6a159374e99c607f5fdbbb8397a04416afd2"
+    },
+    ".github/copilot-instructions.md": {
+      "kind": "block",
+      "sha256": "a61ebcbd643803f44587be7ce11f6a159374e99c607f5fdbbb8397a04416afd2"
+    }
+  }
+}
