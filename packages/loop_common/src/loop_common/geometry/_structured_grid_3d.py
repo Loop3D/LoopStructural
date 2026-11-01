@@ -39,6 +39,9 @@ class StructuredGrid3DGeometry:
         self._rotation_xy[2, 2] = 1
         self.rotation_xy = rotation_xy
 
+    def _on_geometry_change(self):
+        """Hook called after origin, step_vector, nsteps or maximum change; subclasses override."""
+
     @property
     def volume(self):
         return np.prod(self.maximum - self.origin)
@@ -69,6 +72,7 @@ class StructuredGrid3DGeometry:
         change_factor = nsteps / self.nsteps
         self._step_vector /= change_factor
         self._nsteps = nsteps
+        self._on_geometry_change()
 
     @property
     def nsteps_cells(self):
@@ -99,6 +103,7 @@ class StructuredGrid3DGeometry:
         newsteps = self._nsteps / change_factor
         self._nsteps = np.ceil(newsteps).astype(int)
         self._step_vector = step_vector
+        self._on_geometry_change()
 
     @property
     def origin(self):
@@ -115,6 +120,7 @@ class StructuredGrid3DGeometry:
             logger.error(f"Cannot resize the grid. The proposed number of steps is {self._nsteps}, these must be all > 0")
             raise ValueError("Cannot resize the grid.")
         self._origin = origin
+        self._on_geometry_change()
 
     @property
     def maximum(self):
@@ -130,6 +136,7 @@ class StructuredGrid3DGeometry:
         if np.any(~(self._nsteps > 0)):
             logger.error(f"Cannot resize the grid. The proposed number of steps is {self._nsteps}, these must be all > 0")
             raise ValueError("Cannot resize the grid.")
+        self._on_geometry_change()
 
     @property
     def n_nodes(self):
@@ -210,27 +217,6 @@ class StructuredGrid3DGeometry:
         if len(pos.shape) != 2:
             raise ValueError("Position array needs to be a list of points or a point")
         return pos
-
-    def neighbour_global_indexes(self, mask=None, **kwargs):
-        indexes = None
-        if "indexes" in kwargs:
-            indexes = kwargs["indexes"]
-        if "indexes" not in kwargs:
-            gi = np.arange(self.n_nodes)
-            indexes = self.global_index_to_node_index(gi)
-            edge_mask = (
-                (indexes[:, 0] > 0) & (indexes[:, 0] < self.nsteps[0] - 1)
-                & (indexes[:, 1] > 0) & (indexes[:, 1] < self.nsteps[1] - 1)
-                & (indexes[:, 2] > 0) & (indexes[:, 2] < self.nsteps[2] - 1)
-            )
-            indexes = indexes[edge_mask, :].T
-        if indexes.ndim != 2:
-            logger.error("indexes.ndim = %s, expected 2", indexes.ndim)
-            return
-        if mask is None:
-            mask = np.array([[-1, 0, 1, -1, 0, 1, -1, 0, 1], [1, 1, 1, 0, 0, 0, -1, -1, -1]])
-        neighbours = indexes[:, None, :] + mask[:, :, None]
-        return (neighbours[0, :, :] + self.nsteps[0, None, None] * neighbours[1, :, :]).astype(np.int64)
 
     def cell_corner_indexes(self, cell_indexes: np.ndarray) -> np.ndarray:
         corner_indexes = np.zeros((cell_indexes.shape[0], 8, 3), dtype=np.int64)
