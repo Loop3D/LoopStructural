@@ -327,6 +327,9 @@ class DiscreteInterpolator(GeologicalInterpolator):
 
         """
         self.constraints = {}
+        # Gradient orthogonal constraints of a native setup, as raw data:
+        # name -> (points, vectors, w). See add_gradient_orthogonal_constraints.
+        self._native_orthogonal = {}
         # setup_interpolator sets these two values again when it ends.
         self._native_setup = False
         self._setup_constraint_names = None

@@ -518,6 +518,19 @@ class FiniteDifferenceInterpolator(DiscreteInterpolator):
         -------
 
         """
+        if getattr(self, "_native_setup", False) and np.all(np.asarray(b) == 0):
+            # The native core reads raw data, not sparse rows. With b = 0 this
+            # constraint is a tangent constraint (gradient . vector = 0), so keep
+            # the points and the vectors for the core (see _native._add_data).
+            # A structural frame adds these for the orthogonal coordinates.
+            if points.shape[0] > 0:
+                self._native_orthogonal[name] = (
+                    np.array(points[:, :3], dtype=float),
+                    np.array(vectors[:, :3], dtype=float),
+                    w,
+                )
+                self.up_to_date = False
+            return
         if points.shape[0] > 0:
             # calculate unit vector for orientation data
             node_idx, inside = self.support.position_to_cell_corners(
