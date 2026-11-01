@@ -794,7 +794,8 @@ just at release time.
   `loop_common.supports.StructuredGrid` (an interpolation support object with
   no properties dict), not the LoopStructural geometry `StructuredGrid`
   dataclass `scalar_field`/`get_block_model` actually need -- those call
-  sites now construct `LoopStructural.geometry.StructuredGrid` directly.
+  sites now construct `LoopStructural.geometry.StructuredGrid` directly. (Superseded: `bounding_box.structured_grid()` now returns a `PropertyGrid`, which
+  holds the properties; the interpolation support is built separately from `step_vector`.)
   Fixed a 2D-bounding-box regression in the new local-frame support-building
   code: `BoundingBox.corners` is 3D-only, so `create_support_from_bbox` and
   `structured_grid(local_coordinates=True)` now project `origin`/`maximum`
