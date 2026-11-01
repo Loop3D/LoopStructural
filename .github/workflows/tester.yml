@@ -15,6 +15,12 @@ on:
       - '**.py'
       - .github/workflows/tester.yml
   workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  # cancel superseded PR runs; let every push to master finish
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
 jobs:
   continuous-integration:
     name: Continuous integration ${{ matrix.os }} python ${{ matrix.python-version }}

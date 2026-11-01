@@ -15,6 +15,11 @@ on:
       - .github/workflows/qgis-compat.yml
   workflow_dispatch:
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  # cancel superseded PR runs; let every push to master finish
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
 permissions:
   contents: read
 

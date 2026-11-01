@@ -2,6 +2,8 @@ name: "✅ Linter"
 
 on:
   push:
+    branches:
+      - master
     paths:
       - '**.py'
       - .github/workflows/linter.yml
@@ -13,6 +15,11 @@ on:
       - '**.py'
       - .github/workflows/linter.yml
   workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  # cancel superseded PR runs; let every push to master finish
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 env:
   # All linted packages in the workspace: the main library plus every
