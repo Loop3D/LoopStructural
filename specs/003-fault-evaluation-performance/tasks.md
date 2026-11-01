@@ -285,7 +285,7 @@
 New IDs follow the previous allocation. Needs and Wave put these tasks before
 field export; existing IDs and completed tasks are unchanged.
 
-- [ ] T033 [Found] [M] Test the faulted-gradient output shape without a solver.
+- [x] T033 [Found] [M] Test the faulted-gradient output shape without a solver.
   - Do: Follow D0. In one new test module, define the BaseFeature identity-fault double with evaluate_value, evaluate_gradient, __getitem__, apply_to_points, copy and get_data; define the linear field f(xyz)=xyz @ [2,-3,0.5]+7. Use two finite points, builder=None, explicit element scale 1 and one or two identity faults. Assert shape (2,3), gradient [2,-3,0.5] at rtol=0/atol=1e-12, a region-masked row remains NaN, and a controlled mixed-sign first coordinate evaluation causes one refinement then returns the same gradient. No solves, saved fields, golden helper import or production change. The current bug must raise the demonstrated shape mismatch; do not assert that exception as the expected final behavior.
   - Files: `tests/unit/modelling/test_faulted_gradient_output.py`
   - Needs: T001
