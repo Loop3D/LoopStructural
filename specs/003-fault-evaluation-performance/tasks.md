@@ -69,7 +69,7 @@
   - Wave: 5
   - Done when: python -m pytest tests/fault_evaluation/test_golden_tools.py -q fails for absent capture/comparison/regeneration APIs, then passes after T004.
 
-- [ ] T004 [US1] [M] Implement golden capture and explicit regeneration.
+- [x] T004 [US1] [M] Implement golden capture and explicit regeneration.
   - Do: Implement D1 capture and assert_matches. The regenerate module exports main(argv=None), loads frozen fields, writes only with --write, and records revision, hashes, versions, seeds, transforms, surface levels, prerequisite_parent_revision, prerequisite_fix_revision and baseline_revision from D0. No evaluation or solver change. Do not modify the tests.
   - Files: `tests/fault_evaluation/golden.py`, `tests/fault_evaluation/regenerate.py`
   - Needs: T003
