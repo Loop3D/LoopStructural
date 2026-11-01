@@ -292,7 +292,7 @@ field export; existing IDs and completed tasks are unchanged.
   - Wave: 2
   - Done when: `python -m pytest tests/unit/modelling/test_faulted_gradient_output.py -q` fails first with the N-by-4/N-by-3 shape mismatch, then passes after T034.
 
-- [ ] T034 [Found] [M] Preserve the N-by-3 gradient output during refinement.
+- [x] T034 [Found] [M] Preserve the N-by-3 gradient output during refinement.
   - Do: Follow D0. In GeologicalFeature.evaluate_gradient, rename only the temporary v assigned by f[0].evaluate_value(...).reshape(N,4) to fault_values, and use fault_values in both sign comparisons that form flag. Keep the original v output allocation and final masked assignment intact. Do not change geometry, masks, fault order, refinement, steps, interpolation arithmetic, solver or signatures. Do not edit tests. Record the raw exception, prerequisite parent revision, exact test commands/results and narrow diff in gradient-prerequisite.md. Commit this correctness change separately before field/golden/timing capture; T004/T005/T011 record its commit as prerequisite_fix_revision, their actual capture revision as baseline_revision and its parent as prerequisite_parent_revision. Do not call this a performance improvement or claim successful raw gradient parity.
   - Files: `LoopStructural/modelling/features/_geological_feature.py`, `specs/003-fault-evaluation-performance/gradient-prerequisite.md`
   - Needs: T033

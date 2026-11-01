@@ -204,12 +204,14 @@ class GeologicalFeature(BaseFeature):
             while not resolved:
                 resolved = True
                 for f in self.faults:
-                    v = (
+                    fault_values = (
                         f[0]
                         .evaluate_value(tetrahedron.reshape(-1, 3), fillnan='nearest')
                         .reshape(tetrahedron.shape[0], 4)
                     )
-                    flag = np.logical_or(np.all(v > 0, axis=1), np.all(v < 0, axis=1))
+                    flag = np.logical_or(
+                        np.all(fault_values > 0, axis=1), np.all(fault_values < 0, axis=1)
+                    )
                     if np.any(~flag):
                         logger.warning(
                             f"Points are too close to fault {f[0].name}. Refining the tetrahedron"
