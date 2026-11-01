@@ -186,6 +186,7 @@ def main(argv: list[str] | None = None) -> int:
 
     manifest = _manifest()
     for name in model_names():
+        print(f"Capturing golden outputs: {name}", flush=True)
         model = build_model(name)
         points, point_categories = _reference_points(model, name, 128, seed=1)
         points_path = REFERENCE_DIR / f"{name}.npz"
@@ -222,11 +223,10 @@ def _reference_points(
     maximum = np.asarray(box.maximum, dtype=float)
     size = float(np.max(maximum - origin))
     offset = max(size * 1e-4, np.finfo(float).eps)
-    center = (origin + maximum) / 2
     faces = []
     for axis in range(3):
         for side, coordinate in ((0, origin[axis] + offset), (1, maximum[axis] - offset)):
-            point = center.copy()
+            point = origin + (maximum - origin) * np.array([0.413, 0.537, 0.619])
             point[axis] = coordinate
             faces.append(point)
     category_points: dict[str, list[np.ndarray]] = {
@@ -246,23 +246,22 @@ def _reference_points(
             return []
         indices = np.flatnonzero(finite)
         chosen = indices[np.argsort(np.abs(values[finite] - level))[:4]]
-        gradient_fn = getattr(feature, "evaluate_gradient", None)
         output = []
         for index in chosen:
             point = candidates[index].copy()
-            for _ in range(8):
+            for _ in range(10):
                 value = float(np.asarray(feature.evaluate_value(point[None, :])).reshape(-1)[0])
                 if not np.isfinite(value):
                     break
-                gradient = (
-                    np.asarray(gradient_fn(point[None, :]), dtype=float).reshape(-1, 3)[0]
-                    if callable(gradient_fn)
-                    else np.zeros(3)
-                )
+                gradient = _value_gradient(feature, point, size)
                 norm_sq = float(np.dot(gradient, gradient))
                 if not np.isfinite(norm_sq) or norm_sq <= 0:
                     break
-                point = np.clip(point - ((value - level) / norm_sq) * gradient, origin, maximum)
+                step = ((value - level) / norm_sq) * gradient
+                step_norm = np.linalg.norm(step)
+                if step_norm > size * 0.25:
+                    step *= size * 0.25 / step_norm
+                point = np.clip(point - step, origin, maximum)
                 if abs(value - level) <= max(1e-8 * max(abs(level), 1.0), 1e-8):
                     break
             final_value = float(np.asarray(feature.evaluate_value(point[None, :])).reshape(-1)[0])
@@ -270,11 +269,7 @@ def _reference_points(
                 1e-5 * max(abs(level), 1.0), 1e-5
             ):
                 continue
-            gradient = (
-                np.asarray(gradient_fn(point[None, :]), dtype=float).reshape(-1, 3)[0]
-                if callable(gradient_fn)
-                else np.array([0.0, 0.0, 1.0])
-            )
+            gradient = _value_gradient(feature, point, size)
             norm = np.linalg.norm(gradient)
             if not np.isfinite(norm) or norm == 0:
                 continue
@@ -322,6 +317,17 @@ def _reference_points(
         for category, items in category_points.items()
     }
     return combined[selected], categories
+
+
+def _value_gradient(feature: Any, point: np.ndarray, box_size: float) -> np.ndarray:
+    """Estimate a scalar field direction using values only, without legacy refinement."""
+    step = max(box_size * 1e-5, np.finfo(float).eps * 100)
+    samples = np.repeat(np.asarray(point, dtype=float)[None, :], 6, axis=0)
+    for axis in range(3):
+        samples[2 * axis, axis] += step
+        samples[2 * axis + 1, axis] -= step
+    values = np.asarray(feature.evaluate_value(samples), dtype=float).reshape(-1)
+    return np.asarray([(values[2 * axis] - values[2 * axis + 1]) / (2 * step) for axis in range(3)])
 
 
 if __name__ == "__main__":
