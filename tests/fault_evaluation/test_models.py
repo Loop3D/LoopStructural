@@ -30,13 +30,24 @@ def _api(name):
     return helper
 
 
-def _builders(feature):
-    builder = feature.builder
-    return list(getattr(builder, "builders", None) or [builder])
-
-
 def _feature_list(model):
     return list(model.features)
+
+
+def _interpolated_features(feature):
+    """Return actual feature coordinates that own stored interpolators."""
+    coordinates = getattr(feature, "features", None)
+    candidates = list(coordinates) if coordinates is not None else []
+    candidates.append(feature)
+    result = []
+    seen = set()
+    for coordinate in candidates:
+        builder = getattr(coordinate, "builder", None)
+        if builder is None or not hasattr(builder, "interpolator") or id(builder) in seen:
+            continue
+        seen.add(id(builder))
+        result.append((coordinate, builder))
+    return result
 
 
 def test_model_names_matches_d1_catalogue():
@@ -69,12 +80,19 @@ def test_build_model_relationships_and_stored_fields(name, monkeypatch):
         len(model.stratigraphic_column.order) > 0
     ), f"{name} stratigraphic column must not be empty"
 
+    checked_fields = set()
     for feature in features:
-        for builder in _builders(feature):
-            assert builder._up_to_date, f"{name}/{feature.name} stored builder state is not current"
+        for coordinate, builder in _interpolated_features(feature):
+            if id(builder) in checked_fields:
+                continue
+            checked_fields.add(id(builder))
+            assert (
+                builder._up_to_date
+            ), f"{name}/{coordinate.name} stored builder state is not current"
             assert (
                 builder.interpolator.up_to_date
-            ), f"{name}/{feature.name} stored field is not current"
+            ), f"{name}/{coordinate.name} stored interpolator field is not current"
+    assert checked_fields, f"{name} must expose at least one actual stored interpolated field"
 
     if name in SYNTHETIC_NAMES:
         fault_count = int(name.split("_u")[0][1:])
@@ -136,7 +154,14 @@ def test_build_model_relationships_and_stored_fields(name, monkeypatch):
         frames = [feature for feature in features if isinstance(feature, FoldFrame)]
         assert folded, "faulted_fold must contain a feature linked to a FoldEvent"
         assert frames, "faulted_fold must contain a FoldFrame"
-        assert any(frame.faults for frame in frames), "faulted_fold frame must be cut by a fault"
+        faulted_frame = next(
+            (frame for frame in frames if any(coordinate.faults for coordinate in frame.features)),
+            None,
+        )
+        assert faulted_frame is not None, "faulted_fold must have a fault on a FoldFrame coordinate"
+        assert any(
+            getattr(feature.fold, "foldframe", None) is faulted_frame for feature in folded
+        ), "faulted_fold feature must use the faulted FoldFrame"
     elif name == "plugin":
         from pathlib import Path
 
