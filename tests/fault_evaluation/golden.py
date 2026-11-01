@@ -77,12 +77,10 @@ def capture(model: Any, points: np.ndarray) -> dict[str, np.ndarray]:
     from copy import deepcopy
 
     for group in _groups(model):
-        try:
-            feature = model.get_feature_by_name(group.name)
-        except (AttributeError, KeyError):
-            feature = next(
-                (f for f in model.features if getattr(f, "name", None) == group.name), None
-            )
+        # Stratigraphic columns can retain legacy group declarations whose
+        # feature is absent from the loaded model (notably plugin columns).
+        # Only capture surfaces for features that actually belong to the model.
+        feature = next((f for f in model.features if getattr(f, "name", None) == group.name), None)
         if feature is None or not callable(getattr(feature, "surfaces", None)):
             continue
         group_levels = sorted(

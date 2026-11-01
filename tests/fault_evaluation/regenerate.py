@@ -301,7 +301,7 @@ def _reference_points(
         value = getattr(unconformity, "value", None)
         parent = getattr(unconformity, "parent", None)
         if value is not None and parent is not None:
-            category_points["unconformities"].extend(near_level(parent, float(value)))
+            category_points["unconformities"].extend(near_level(unconformity, float(value)))
     for fault in getattr(model, "faults", []):
         found = near_level(fault[0], 0.0)
         category_points["fault_surfaces"].extend(found)

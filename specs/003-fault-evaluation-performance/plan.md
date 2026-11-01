@@ -433,3 +433,5 @@ No build, solve or test is required to make this planning edit.
   the user requested spec-planner to add the correctness prerequisite. T033/T034
   define the regression and narrow fix. No production change was made in this
   planning run; golden capture and timing wait for that fix to pass.
+
+- 2026-11-02: The user instructed the implementer to keep working through fixture repair retries, overriding the skill's two-failure stop limit for those repairs. Keep tests and review requirements unchanged.
