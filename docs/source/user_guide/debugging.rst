@@ -43,7 +43,7 @@ Interpolator is taking a long time
 - Check how many elements you are using, :code:`1e5` should take under 5 minutes on a modern laptop
 - How many faults are associated with the feature? :code:`len(feature.faults)`, you can remove the faults by setting this to an empty list
 
-.. code-block:
+.. code-block::
 
     faults = feature.faults 
     feature.faults = []
@@ -74,7 +74,7 @@ No displacement
 - Check that the displacement is large enough that it should be visible. E.g. compare displacement to model bounding box
 - Has the fault frame interpolated correctly? Coordinates 0 and 1 should both have values.
 
-.. code-block:
+.. code-block::
 
     view.add_scalar_field(fault[0])
     view.add_scalar_field(fault[1])
@@ -84,13 +84,13 @@ No displacement
 - Is the fault parallel to the feature being faulted?
 - Has the fault been added to the feature being faulted?
 
-.. code-block:
+.. code-block::
 
     print([f.name for f in faulted_feature.faults])
 
 - Is the fault displacement vector correct? Add the vector field to the visualisation
 
-.. code-block:
+.. code-block::
 
     view = LavaVuModelViewer(model)
     view.add_vector_field(model['fault'][1],locations=model.regular_grid()[::200]) #random 200 locations
