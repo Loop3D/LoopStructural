@@ -131,6 +131,27 @@ class PropertyGrid:
         index[inside] = geometry.global_cell_indices(cell_ijk[inside])
         return index
 
+    def evaluate_value(self, name, points):
+        """Trilinear interpolation of the node property ``name`` at the points.
+
+        This is what is needed to transfer a property onto another support or mesh: pass the
+        other support's node coordinates as ``points``.
+
+        Parameters
+        ----------
+        name : str
+            key of ``properties``; values are per node, in node order (x varies fastest), either
+            ``(n_nodes,)`` or ``(n_nodes, k)``
+        points : array-like
+            N x 3 locations (or one location) in the grid's own frame
+
+        Returns
+        -------
+        np.ndarray
+            ``(N,)`` (or ``(N, k)``) values; NaN for points outside the grid
+        """
+        return self.geometry.evaluate_value(np.asarray(points, dtype=float), self.properties[name])
+
     def cell_value_at(self, name, points):
         """Value of the cell property ``name`` in the cell each point falls in.
 
