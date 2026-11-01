@@ -34,7 +34,7 @@
 
 ## Phase 1: Golden tests
 
-- [ ] T001 [US1] [M] Test the golden model catalogue and stored-field loader.
+- [x] T001 [US1] [M] Test the golden model catalogue and stored-field loader.
   - Do: Test D1 model_names, build_model and sample_points for all 21 names. Assert fault order, group age, unconformity relationships, all special-case topology, stratigraphic columns, deterministic points and no solver calls. Validate plugin coordinates against qgis_check.npz. Name each missing API in the failure.
   - Files: `tests/fault_evaluation/test_models.py`
   - Needs: none
