@@ -12,6 +12,7 @@ feature-construction methods.
 
 from ...modelling.features import FeatureType, UnconformityFeature
 from ...utils import getLogger
+from ._model_serializer import ModelSerializer
 
 logger = getLogger(__name__)
 
@@ -159,6 +160,9 @@ class FeatureRelationshipManager:
             else:
                 f.add_region(uc_feature)
         # now add the unconformity to the feature list
+        ModelSerializer.record_creation(
+            uc_feature, "unconformity", {"feature": feature.name, "value": value, "onlap": False}
+        )
         model._add_feature(uc_feature, index=index)
         return uc_feature
 
@@ -195,6 +199,10 @@ class FeatureRelationshipManager:
                 continue
             if f != feature:
                 f.add_region(uc_feature)
-        model._add_feature(uc_feature.inverse(), index=index)
+        in_model = uc_feature.inverse()
+        ModelSerializer.record_creation(
+            in_model, "unconformity", {"feature": feature.name, "value": value, "onlap": True}
+        )
+        model._add_feature(in_model, index=index)
 
         return uc_feature
