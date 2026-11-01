@@ -1,21 +1,22 @@
 # Implementation plan: Faster evaluation of faulted models
 
 **Feature**: `003-fault-evaluation-performance` | **Date**: 2026-11-01
-**Spec**: [spec.md](spec.md) | **State**: Planned; decision gates remain open
+**Spec**: [spec.md](spec.md) | **State**: Replanned after the gradient prerequisite failure; T001 remains done
 
 ## Open points
 
 | Id | Question and evidence | Resolution rule | Tasks that wait |
 |---|---|---|---|
-| OP1 | What point count and call count apply to gradient and nested-fault work in FR-008 and FR-010? A gradient restores 4N corners, while its region masks evaluate N original points. Different features can refine to different tetrahedron sizes. A fault frame can itself apply faults at each integration step. Thus F total calls for all these different arrays is not established by sharing restored N-point arrays. | Ask the user before gradient changes. Proposed interpretation: one restoration per distinct ordered fault set AND distinct point batch, counting recursive frame batches separately; memory is 3 floats per actual restored point, excluding unchanged baseline work arrays. This is a proposal, not an accepted change. If the user retains the literal bound, use spec-reviewer/spec-planner to design a compatible algorithm before this task runs. Record the answer in Answers; use spec-cascade for changed requirements. | T021, T030, T031, T032 |
+| OP1 (resolved) | Gradient and nested-fault count/memory interpretation. | The user accepted one restoration per distinct ordered fault set and distinct point batch on 2026-11-01. Count recursive frame batches separately and memory per actual restored point, including corners. See Answers. | none |
 | OP2 | Can the complete benchmark matrix satisfy SC-008? There are at least 240 synthetic cases (16 models x 5 functions x 3 sizes), before special cases and repetitions. Research reports 8.65 s for all groups at only 5,000 points for one model. | T011 measures the full legacy run with one timed round per case after warmup. T030 measures the final suite. Never remove cases or reduce point counts to claim success. If either final runtime or run-to-run noise fails, report the failure and ask for an explicit spec decision. Timing success is not assumed. | T031, T032, if measurement fails |
 
 ## Summary
 
-First freeze the current geology with stored solved fields, output references,
-and a reproducible benchmark baseline. Next share restored points within an
-evaluation and between calls. Last, reduce repeated structured-grid lookup
-work inside one fault application. Do not change the solver, displacement law,
+First test and repair the existing gradient output-array defect in a separate
+correctness commit (T033, T034). Then freeze solved fields, golden outputs and
+the benchmark baseline before any performance change. Next share restored
+points within an evaluation and between calls. Last, reduce repeated
+structured-grid lookup work inside one fault application. Do not change the solver, displacement law,
 fault order, integration step count, or surface extraction algorithm.
 
 ## Technical context
@@ -58,18 +59,22 @@ fault order, integration step count, or surface extraction algorithm.
 The requested templates, `specs/README.md`, and
 `docs/development/coding-tools.md` do not exist. Use the 001 and 004 plan/task
 structure as the local precedent. Do not create an invented spec index or
-provider policy. Tier S and M describe task size; the implementer must state
-which runtime models it can use before workers start.
+provider policy. The existing `.agents/model-policy.json` maps Codex simple
+workers to `gpt-6-luna` at low effort and standard workers to `gpt-6-luna` at
+medium effort. Its worker limit is 5; this runtime has 3 available worker slots
+besides the main agent. Resolve runtime availability again before starting work.
 
 Use the existing worktree `C:/Users/lachl/dev/LoopStructural-native`, branch
 `spec/003-fault-evaluation-performance`. It was clean at planning time. Do not
 switch the main checkout or replace this existing branch with another branch.
 The spec text is identical in the main checkout and this branch.
 
-The approved constitution and toolkit update currently belong to the main
-checkout `C:/Users/lachl/dev/LoopStructural`. Before implementation, carry those
-reviewed setup changes to this worktree and run the strict doctor there. Do not
-write production code until this prerequisite passes. The source CLI can be
+The approved constitution and toolkit setup were carried into this worktree
+in commit `d22db4f1`; strict doctor passes. T001 was completed in `c5775418`,
+with a correction for actual fold-frame coordinate dependencies in `667ca332`.
+T002 has uncommitted fixture helper drafts but no generated fields archive.
+Preserve those files; do not treat T002 as complete or repeat T001's red check.
+The new test/fix tasks run before T002 resumes. The source CLI can be
 run with `PYTHONPATH=C:/Users/lachl/dev/dev-tools/src` and
 `python -m dev_tools doctor --require-constitution`; this is a local workaround
 for the broken installed uv launcher, not a new committed project command.
@@ -95,6 +100,53 @@ at the same time. This plan uses its own golden fixture directory.
 | Amendments need maintainer approval | Pass | Constitution accepted in chat on 2026-11-01; no further policy is introduced here. |
 
 ## Design
+
+### D0. Repair the gradient output before baseline capture
+
+The first T002 field-export run failed in
+`GeologicalFeature.evaluate_gradient` at the assignment to `v[mask, :]`.
+The method first allocates `v` as N by 3. Its tetrahedron refinement loop then
+assigns N by 4 fault-coordinate values to the same variable. Reconstruction
+produces N by 3 gradients and raises a shape mismatch. A two-point linear
+field with an identity fault reproduces this without a solver: shape (2,3)
+cannot be assigned into shape (2,4). The failed exporter produced no fields.npz.
+
+T033 writes the standalone regression in
+`tests/unit/modelling/test_faulted_gradient_output.py`. It must not import
+the unfinished golden fixture package or require saved fields. Use a local
+BaseFeature test double that implements evaluate_value, evaluate_gradient,
+copy and get_data, supplies coordinate 0 through __getitem__, and returns
+unchanged points from apply_to_points. Use a field double with
+`evaluate_value(points) = points @ [2.0, -3.0, 0.5] + 7.0`. At two finite
+points away from a fault boundary the expected result has shape (2,3) and
+each row [2.0, -3.0, 0.5], with rtol=0 and atol=1e-12. Test one and two
+identity faults, one masked point remaining NaN, and one controlled refinement
+iteration (mixed coordinate-0 corner signs on the first call, positive on
+the next). Assert the loop refines once and returns the same gradient.
+These cases must fail first with the existing output shape error.
+
+T034 changes only the temporary name inside the refinement loop:
+`v = f[0].evaluate_value(...).reshape(...)` becomes `fault_values = ...`,
+and the two sign tests in `flag` use fault_values. Keep `v` as the original
+gradient output. Do not change the tetrahedra, refinement condition, scale,
+fault order, restored coordinates, solver, integration steps, masks or
+public signature. No cache or performance work belongs in this task.
+Check the diff and commit this correctness fix separately before any capture.
+
+The pre-performance baseline is the code after this correctness fix and
+before caching/grid optimization. Record three immutable revisions in the
+golden manifest and both benchmark result files:
+`prerequisite_parent_revision`, `prerequisite_fix_revision`, and
+`baseline_revision`. Record the original exception and the regression results
+in `gradient-prerequisite.md`; the fix revision is the commit that contains
+only the reviewed fix and its report, after the failing test commit.
+The raw parent has no valid affected-gradient result. Do not claim numerical
+parity for that absent output, replace it with zeros, omit the case, or use
+an optimized run as the baseline. Where supplied pre-fix results do exist
+(the plugin values and restored coordinates), they must still match.
+Golden and timing results must say that this prerequisite was applied.
+This is a correctness prerequisite to FR-002/FR-006 and US4, not a claimed
+speed improvement. Keep the faulted-gradient regression in all later checks.
 
 ### D1. Golden models and immutable references
 
@@ -136,12 +188,12 @@ Failure messages name model, output, maximum difference and failing point index.
 `python -m tests.fault_evaluation.regenerate --write` is the only write command.
 Without --write it validates and exits without changing a file. Normal tests
 must never update references. `manifest.json` records input and output SHA256,
-baseline source revision, field-generation revision, dependency versions,
-coordinate transforms, seeds and levels. Record the actual legacy worktree
-revision, not the historical research revision unless they are the same.
+baseline source revision, the three D0 revision fields, field-generation
+revision, dependency versions, coordinate transforms, seeds and levels. Record
+the actual corrected pre-performance worktree revision, not the historical research revision unless they are the same.
 Binary output hashes and readable summary diffs make regeneration reviewable.
-Capture before changing evaluation code. Test sensitivity by temporarily
-perturbing fault movement by 1% in a scoped monkeypatch; leave no patch active.
+Capture after T034 and before any performance change. Use a scoped monkeypatch
+to perturb fault movement by 1% for the sensitivity test; leave no patch active.
 
 ### D2. Benchmark tools and baseline gate
 
@@ -172,8 +224,8 @@ Use native process APIs via stdlib ctypes/resource, not a runtime dependency.
 
 Result schema v1 has case_id, model, operation, points, cold/warm state, rounds,
 time samples and median seconds, fault calls, field calls, processed point
-counts, peak extra RSS bytes, code revision and dirty state, input hash,
-Python/NumPy/SciPy/LoopStructural versions, OS, CPU and RAM. Reject duplicate
+counts, peak extra RSS bytes, code revision and dirty state, the three D0
+revision fields, input hash, Python/NumPy/SciPy/LoopStructural versions, OS, CPU and RAM. Reject duplicate
 ids and incompatible or missing cases when comparing. Preserve pytest-benchmark
 data in the JSON. `compare BASE NEW --output PATH` writes ratios, noise marks
 above 1.10, fault/unconformity scaling tables and provenance differences.
@@ -182,7 +234,8 @@ cases or compare warm new results with cold baseline results.
 
 T011 writes baseline.json and baseline_repeat.json plus a readable baseline
 report. It records complete runtime and noise. T011 is a hard gate: all golden
-checks must pass and all baseline cases must exist before any evaluation edit.
+checks must pass and all baseline cases must exist before any performance edit.
+The only earlier evaluation edit is the isolated T034 correctness fix.
 If the run fails, capture the exact failing case; do not substitute research
 numbers for a machine-readable measured baseline. SC-007/008 are measured
 requirements, not promised outcomes of planning.
@@ -264,11 +317,12 @@ outputs: only restored coordinates.
 
 Preserve tetrahedron construction, near-fault refinement, element scale and
 gradient reconstruction. Share equal point batches across groups; never reuse
-an N-point restoration for a 4N-point tetrahedron. OP1 blocks implementation
-of a claimed total F-call gradient bound. The gradient tests must show counts
-for original points, corners, refinement and nested fault-frame calls, so the
-decision has concrete evidence. Do not mark FR-008 satisfied from top-level
-value counts alone. If OP1 changes the spec, revise this plan before coding.
+an N-point restoration for a 4N-point tetrahedron. Apply the accepted OP1
+rule: one restoration per distinct ordered fault set and distinct point batch.
+Tests must show counts for original points, corners, refinement and nested
+fault-frame calls. Do not claim a total F-call bound across different batches
+or mark FR-008 satisfied from top-level value counts alone. Retain the D0
+output-array regression while changing gradient reuse.
 
 Use small deterministic unit tests for retained-byte accounting and separate
 local subprocess acceptance cases for 10 million points and peak RSS. Exclude
@@ -303,8 +357,10 @@ changing steps, tolerances or displacements to obtain a passing result.
 
 ## Test strategy and checkpoints
 
-1. Golden harness tests fail first because fixture APIs are absent, then pass.
-   The geology golden checks themselves must pass on unchanged evaluation code.
+1. T001's helper-API red check is complete. Next T033 must fail on the
+   demonstrated gradient shape error and T034 must make it pass. Then resume
+   T002 and the golden harness. The geology golden checks must pass on the
+   corrected pre-performance baseline; the raw failure stays recorded in D0.
    A 1% fault perturbation must fail; test NaN masks and failure messages too.
 2. All legacy golden cases run under 120 seconds; record actual elapsed time.
 3. Benchmark tools have small stub models for fast runner/schema/counter tests.
@@ -320,18 +376,23 @@ changing steps, tolerances or displacements to obtain a passing result.
    SC-010, and measure 10-million-point memory. These runs are not CI tests.
    A missed performance target keeps acceptance open.
 
+The implementation preflight passed 19 existing unit/API tests. Ruff reported
+474 existing findings before any production change. This remains a final merge
+gate failure until addressed; do not suppress rules or call it a pass. The D0
+fix must add no lint findings. Do not mix unrelated lint cleanup into D0.
+
 ## Requirement coverage
 
 | Requirement | Tasks |
 |---|---|
 | FR-001, FR-001a | T001, T002, T005, T006 |
-| FR-002, FR-003, FR-004 | T003, T004, T005, T006 |
-| FR-005, SC-001 | T006, T030, T032 |
-| FR-006 | T006, T015, T021, T027, T032 |
+| FR-002, FR-003, FR-004 | T033, T034, T003, T004, T005, T006; D0 separates the correctness fix from capture |
+| FR-005, SC-001 | T033, T034, T006, T030, T032; pre-performance baseline as defined in D0 |
+| FR-006 | T033, T034, T006, T015, T021, T027, T032 |
 | FR-007 | T014, T015, T018, T019 |
-| FR-008 | T014, T015, T020, T021; OP1 unresolved for gradients/nested calls |
+| FR-008 | T014, T015, T020, T021; apply the accepted OP1 batch rule |
 | FR-009 | T016, T017, T018, T019, T022, T023 |
-| FR-010 | T012, T013, T018, T019, T022, T023, T030; OP1 for gradient budget |
+| FR-010 | T012, T013, T018, T019, T022, T023, T030; accepted OP1 actual-point budget |
 | FR-010a | T022, T023 |
 | FR-011 | T014, T015, T019, T032 |
 | FR-012, FR-013, FR-014, FR-015 | T007, T008, T009, T010, T011 |
@@ -351,9 +412,24 @@ imports and model evaluation signatures. Baseline and golden regeneration are
 explicit developer commands. Do not edit stored references after optimization
 to hide a regression. Do not push, commit or open a PR during planning.
 
+## Resumption order
+
+Keep all existing task IDs and T001's completed checkbox. The newly allocated
+T033 and T034 are appended to tasks.md so no existing ID is reassigned.
+They execute before T002 through dependencies, not by their numeric position.
+T032 remains the final scheduled task and depends on all other tasks.
+Next: T033 regression test -> T034 isolated fix -> finish T002's draft fixture
+loader/exporter -> T003-T011 capture and baseline -> performance work.
+No build, solve or test is required to make this planning edit.
+
 ## Answers
 
 - 2026-11-01: The user approved the constitution draft in the main checkout.
   The draft marker was removed and the stricter pytest/Ruff merge rule activated.
 - OP1, 2026-11-01: The user accepted a limit per distinct ordered fault set and distinct point batch. Count recursive frame batches separately. Measure memory per actual restored point, including tetrahedron corners, excluding unchanged baseline work arrays. This resolves the interpretation for T021 and dependent tasks; the measured targets still apply.
 - OP2: Pending measurements. The 15-minute target and 10% noise limit remain.
+
+- 2026-11-01: After the exporter failed on the existing gradient shape defect,
+  the user requested spec-planner to add the correctness prerequisite. T033/T034
+  define the regression and narrow fix. No production change was made in this
+  planning run; golden capture and timing wait for that fix to pass.
