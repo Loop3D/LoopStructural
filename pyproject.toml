@@ -33,8 +33,8 @@ classifiers = [
     'Programming Language :: Python :: 3.12',
 ]
 dependencies = [
-    "loop-common>=0.0.1,<0.1.0",
-    "loop-interpolation>=0.0.1,<0.1.0",
+    "loop-common>=0.1.0,<0.2.0",
+    "loop-interpolation>=0.2.0,<0.3.0",
     "numpy>=1.18",
     "pandas",
     "scipy",
@@ -48,6 +48,8 @@ visualisation = ["matplotlib", "pyvista", "loopstructuralvisualisation>=0.1.14"]
 export = ["geoh5py", "pyevtk", "dill"]
 jupyter = ["pyvista[all]"]
 inequalities = ["loopsolver"]
+# the Rust solver: solver='native'
+native = ["loop-interpolation[native]"]
 tests = ['pytest']
 dev = ['ruff']
 docs = [
