@@ -132,7 +132,11 @@ def test_build_model_relationships_and_stored_fields(name, monkeypatch):
         faults = [feature for feature in features if getattr(feature, "type", None).name == "FAULT"]
         assert len(faults) >= 2, "cutting_faults must contain at least two faults"
         assert any(
-            any(parent is other for parent in fault.faults) for fault in faults for other in faults
+            any(dependency is other for dependency in coordinate.faults)
+            for fault in faults
+            for coordinate in fault.features
+            for other in faults
+            if other is not fault
         ), "cutting_faults must preserve the fault-on-fault relationship"
     elif name == "onlap_domain":
         from LoopStructural.modelling.features import FeatureType
@@ -212,3 +216,18 @@ def test_sample_points_is_fixed_and_inside_model_box(name):
     assert np.all(first >= box.origin) and np.all(
         first <= box.maximum
     ), f"sample_points({name!r}) must stay inside the model bounding box"
+
+
+@pytest.mark.parametrize("name", SYNTHETIC_NAMES + SPECIAL_NAMES[:-1])
+def test_fixture_column_groups_match_model_and_classify_sample(name):
+    build_model = _api("build_model")
+    sample_points = _api("sample_points")
+    model = build_model(name)
+
+    for group in model.stratigraphic_column.get_groups():
+        assert (
+            group.name in model.feature_name_index
+        ), f"{name} stratigraphic column group {group.name!r} has no matching model feature"
+
+    ids = model.evaluate_model(sample_points(name, 512))
+    assert np.any(ids >= 0), f"{name} stratigraphic column classified no sample point"
