@@ -96,6 +96,32 @@ def _box_size(model: Any) -> float:
     return float(np.max(np.asarray(box.maximum) - np.asarray(box.origin)))
 
 
+def _array_summary(key: str, value: np.ndarray) -> dict[str, Any]:
+    """Return readable statistics for one captured array."""
+    array = np.asarray(value)
+    finite = np.isfinite(array)
+    finite_values = array[finite]
+    summary: dict[str, Any] = {
+        "shape": list(array.shape),
+        "dtype": str(array.dtype),
+        "finite_count": int(np.count_nonzero(finite)),
+        "nan_count": int(np.count_nonzero(np.isnan(array))),
+        "posinf_count": int(np.count_nonzero(np.isposinf(array))),
+        "neginf_count": int(np.count_nonzero(np.isneginf(array))),
+        "finite_min": float(np.min(finite_values)) if finite_values.size else None,
+        "finite_max": float(np.max(finite_values)) if finite_values.size else None,
+    }
+    if key == "model_ids":
+        values, counts = np.unique(array, return_counts=True)
+        summary["histogram"] = {
+            str(value.item() if isinstance(value, np.generic) else value): int(count)
+            for value, count in zip(values, counts)
+        }
+    if key.startswith("surface::"):
+        summary["values"] = array.tolist()
+    return summary
+
+
 def _manifest() -> dict[str, Any]:
     return {
         "schema_version": 1,
@@ -207,7 +233,7 @@ def main(argv: list[str] | None = None) -> int:
                     if key.startswith("surface::")
                 }
             ),
-            "summary": {key: np.asarray(value).shape for key, value in outputs.items()},
+            "summary": {key: _array_summary(key, value) for key, value in outputs.items()},
         }
     manifest_path.write_text(json.dumps(manifest, indent=2, sort_keys=True) + "\n", encoding="utf8")
     return 0
