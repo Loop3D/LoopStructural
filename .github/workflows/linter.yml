@@ -4,19 +4,23 @@ on:
   push:
     paths:
       - '**.py'
+      - .github/workflows/linter.yml
 
   pull_request:
     branches:
       - master
     paths:
       - '**.py'
+      - .github/workflows/linter.yml
   workflow_dispatch:
 
 env:
   # All linted packages in the workspace: the main library plus every
   # package under packages/ (packages/loop_common, packages/loop_interpolation, ...).
   PROJECT_FOLDERS: "LoopStructural packages"
-  PYTHON_VERSION: 3.9
+  # ubuntu-latest (26.04) has no Python 3.9 build. black and ruff still
+  # check against py39 through target-version in pyproject.toml.
+  PYTHON_VERSION: "3.12"
 permissions:
   contents: write
 
