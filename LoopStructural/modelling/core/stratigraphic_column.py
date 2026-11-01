@@ -641,6 +641,7 @@ class StratigraphicColumn(Observable['StratigraphicColumn']):
         """
         return {
             "elements": [element.to_dict() for element in self.order],
+            "group_mapping": dict(self.group_mapping),
         }
 
     def update_from_dict(self, data):
@@ -658,6 +659,7 @@ class StratigraphicColumn(Observable['StratigraphicColumn']):
                 else:
                     element = StratigraphicUnit.from_dict(element_data)
                 self.add_element(element)
+            self.group_mapping = dict(data.get("group_mapping", {}))
 
     @classmethod
     def from_dict(cls, data):
@@ -675,6 +677,7 @@ class StratigraphicColumn(Observable['StratigraphicColumn']):
             else:
                 element = StratigraphicUnit.from_dict(element_data)
             column.add_element(element)
+        column.group_mapping = dict(data.get("group_mapping", {}))
         return column
 
     def get_isovalues(self, where: str = 'bottom') -> dict[str, float]:
