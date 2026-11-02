@@ -10,6 +10,7 @@ from __future__ import annotations
 
 import json
 import os
+import time
 from functools import lru_cache
 from pathlib import Path
 from typing import Any, Callable
@@ -24,6 +25,7 @@ from tests.fault_evaluation.models import build_model
 PASS_ENV = "FAULT_EVAL_PASS"
 CASES_ENV = "FAULT_EVAL_CASES"
 ROUNDS_ENV = "FAULT_EVAL_ROUNDS"
+CHECKPOINT_ENV = "FAULT_EVAL_CHECKPOINT"
 POINT_SEED = 1
 
 
@@ -100,9 +102,37 @@ def _points(model: Any, count: int) -> np.ndarray:
     return rng.random((count, 3)) * (box.maximum - box.origin) + box.origin
 
 
+def write_checkpoint(benchmark: Any, case: dict[str, Any], elapsed_seconds: float) -> None:
+    """Append one JSON line for a finished case to the checkpoint file.
+
+    Write nothing if the checkpoint variable is absent. Flush and fsync the line,
+    so a stop of the process cannot lose a finished case.
+    """
+    path = os.environ.get(CHECKPOINT_ENV)
+    if not path:
+        return
+    # benchmark.stats is a Metadata object. Its .stats attribute holds the numbers.
+    stats = benchmark.stats.stats
+    line = {
+        "case_id": case["case_id"],
+        "stats": {
+            "rounds": int(stats.rounds),
+            "data": [float(value) for value in stats.data],
+            "median": float(stats.median),
+        },
+        "extra_info": dict(benchmark.extra_info),
+        "elapsed_seconds": float(elapsed_seconds),
+    }
+    with open(path, "a", encoding="utf8") as handle:
+        handle.write(json.dumps(line, default=str) + "\n")
+        handle.flush()
+        os.fsync(handle.fileno())
+
+
 @pytest.mark.parametrize("case", _load_cases(), ids=lambda case: case["case_id"])
 def test_fault_evaluation(benchmark: Any, case: dict[str, Any]) -> None:
     """Measure one case in the pass that the runner selected."""
+    started = time.perf_counter()
     pass_kind = os.environ[PASS_ENV]
     rounds = int(os.environ[ROUNDS_ENV])
     model = _model(case["model"])
@@ -121,3 +151,4 @@ def test_fault_evaluation(benchmark: Any, case: dict[str, Any]) -> None:
             benchmark.extra_info["peak_extra_rss_bytes"] = sampler.stop()
     else:
         raise ValueError(f"Unknown pass kind {pass_kind!r}")
+    write_checkpoint(benchmark, case, time.perf_counter() - started)

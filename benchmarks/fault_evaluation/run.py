@@ -15,7 +15,7 @@ import os
 import platform
 import subprocess
 import sys
-import tempfile
+import time
 from functools import lru_cache
 from pathlib import Path
 from typing import Any
@@ -38,6 +38,7 @@ SIZES = (5_000, 50_000, 500_000)
 EXTRA_SIZE = 20_000
 EXTRA_MODELS = ("plugin", "f1_u0")
 STATES = ("cold", "warm")
+_now = time.monotonic  # tests replace the clock
 
 COUNTER_FIELDS = (
     "fault_calls_total",
@@ -231,6 +232,20 @@ def _case_row(case: dict[str, Any], entry: dict[str, Any], pass_kind: str) -> di
     return row
 
 
+def _read_checkpoint(path: Path) -> dict[str, dict[str, Any]]:
+    """Read the checkpoint lines by case id. Skip a line that a stop cut short."""
+    entries: dict[str, dict[str, Any]] = {}
+    if not path.is_file():
+        return entries
+    for line in path.read_text(encoding="utf8").splitlines():
+        try:
+            entry = json.loads(line)
+            entries[entry["case_id"]] = entry
+        except (ValueError, KeyError, TypeError):
+            continue
+    return entries
+
+
 def _run_fresh_process_pass(
     pass_kind: str, cases: list[dict[str, Any]], *, output_path: Path, rounds: int
 ) -> dict[str, Any]:
@@ -240,42 +255,73 @@ def _run_fresh_process_pass(
     output_path = Path(output_path)
     cases_path = output_path.with_suffix(".cases.json")
     benchmark_path = output_path.with_suffix(".benchmark.json")
-    cases_path.write_text(json.dumps(cases), encoding="utf8")
-    environment = {
-        "FAULT_EVAL_PASS": pass_kind,
-        "FAULT_EVAL_CASES": str(cases_path),
-        "FAULT_EVAL_ROUNDS": str(rounds),
-    }
-    previous = {key: os.environ.get(key) for key in environment}
-    os.environ.update(environment)
-    try:
-        args = ["--benchmark-json", str(benchmark_path), "--benchmark-save-data", "-q"]
-        code = _launch_pytest(SUITE, args)
-    finally:
-        for key, value in previous.items():
-            if value is None:
-                os.environ.pop(key, None)
-            else:
-                os.environ[key] = value
-    if code != 0:
-        raise RuntimeError(f"The {pass_kind} pass failed with exit code {code}")
-    raw = json.loads(benchmark_path.read_text(encoding="utf8"))
-    entries = {item["extra_info"]["case_id"]: item for item in raw["benchmarks"]}
+    checkpoint_path = output_path.with_suffix(".checkpoint.jsonl")
+    # Cases that the checkpoint file already holds do not run again.
+    entries = _read_checkpoint(checkpoint_path)
+    pending = [case for case in cases if case["case_id"] not in entries]
+    started = time.monotonic()
+    print(
+        f"[{pass_kind}] start: {len(pending)} of {len(cases)} cases to run",
+        file=sys.stderr,
+        flush=True,
+    )
+    if pending:
+        cases_path.write_text(json.dumps(pending), encoding="utf8")
+        benchmark_path.unlink(missing_ok=True)
+        environment = {
+            "FAULT_EVAL_PASS": pass_kind,
+            "FAULT_EVAL_CASES": str(cases_path),
+            "FAULT_EVAL_ROUNDS": str(rounds),
+            "FAULT_EVAL_CHECKPOINT": str(checkpoint_path),
+        }
+        previous = {key: os.environ.get(key) for key in environment}
+        os.environ.update(environment)
+        try:
+            args = ["--benchmark-json", str(benchmark_path), "--benchmark-save-data", "-v"]
+            code = _launch_pytest(SUITE, args)
+        finally:
+            for key, value in previous.items():
+                if value is None:
+                    os.environ.pop(key, None)
+                else:
+                    os.environ[key] = value
+        if code != 0:
+            raise RuntimeError(f"The {pass_kind} pass failed with exit code {code}")
+        entries = _read_checkpoint(checkpoint_path)
+        if benchmark_path.is_file():
+            # A case without a checkpoint line comes from the raw pytest-benchmark file.
+            raw = json.loads(benchmark_path.read_text(encoding="utf8"))
+            for item in raw["benchmarks"]:
+                entries.setdefault(item["extra_info"]["case_id"], item)
     missing = [case["case_id"] for case in cases if case["case_id"] not in entries]
     if missing:
         raise RuntimeError(f"The {pass_kind} pass has no result for {missing[:5]}")
+    benchmarks = [
+        {
+            "extra_info": entries[case["case_id"]]["extra_info"],
+            "stats": entries[case["case_id"]]["stats"],
+        }
+        for case in cases
+    ]
     payload = {
         "schema_version": SCHEMA_VERSION,
         "pass": pass_kind,
         "cases": [_case_row(case, entries[case["case_id"]], pass_kind) for case in cases],
         "provenance": _provenance(),
-        "pytest_benchmark": {"raw": raw} if pass_kind == "timing" else {},
+        "pytest_benchmark": {"raw": {"benchmarks": benchmarks}} if pass_kind == "timing" else {},
     }
     output_path.write_text(json.dumps(payload, indent=2), encoding="utf8")
+    print(
+        f"[{pass_kind}] end: {len(cases)} cases, {time.monotonic() - started:.1f} s elapsed",
+        file=sys.stderr,
+        flush=True,
+    )
     return payload
 
 
-def _merge(passes: dict[str, dict[str, Any]]) -> dict[str, Any]:
+def _merge(
+    passes: dict[str, dict[str, Any]], suite_wall_seconds: float | None = None
+) -> dict[str, Any]:
     """Combine the timing, counter and memory passes by case id."""
     counters = {row["case_id"]: row for row in passes["counters"]["cases"]}
     memory = {row["case_id"]: row for row in passes["rss"]["cases"]}
@@ -287,12 +333,55 @@ def _merge(passes: dict[str, dict[str, Any]]) -> dict[str, Any]:
         for field in RSS_FIELDS:
             merged[field] = memory[row["case_id"]][field]
         rows.append(merged)
-    return {
+    result = {
         "schema_version": SCHEMA_VERSION,
         "cases": rows,
         "provenance": passes["timing"]["provenance"],
         "pytest_benchmark": passes["timing"]["pytest_benchmark"],
     }
+    if suite_wall_seconds is not None:
+        result["suite_wall_seconds"] = suite_wall_seconds
+    return result
+
+
+def _prepare_work_dir(
+    parser: argparse.ArgumentParser, work_dir: Path, *, resume: bool, rounds: int
+) -> dict[str, Any]:
+    """Check the work directory and return the meta data of the run.
+
+    Stop with a clear error if a resume does not fit the saved run, or if a new
+    run would overwrite saved data.
+    """
+    meta_path = work_dir / "meta.json"
+    current = _revision_metadata()
+    if not resume:
+        if work_dir.exists() and any(work_dir.iterdir()):
+            parser.error(
+                f"The work directory {work_dir} already holds data. "
+                "Pass --resume to continue that run, or delete the directory."
+            )
+    elif meta_path.is_file():
+        meta = json.loads(meta_path.read_text(encoding="utf8"))
+        for key, value in (
+            ("code_revision", current["code_revision"]),
+            ("dirty", current["dirty"]),
+            ("rounds", rounds),
+        ):
+            if meta.get(key) != value:
+                parser.error(
+                    f"Cannot resume: saved {key} {meta.get(key)!r} differs from "
+                    f"current {value!r}. Delete {work_dir} to start again."
+                )
+        return meta
+    work_dir.mkdir(parents=True, exist_ok=True)
+    meta = {
+        "code_revision": current["code_revision"],
+        "dirty": current["dirty"],
+        "rounds": rounds,
+        "wall_seconds": dict.fromkeys(PASS_KINDS, 0.0),
+    }
+    meta_path.write_text(json.dumps(meta, indent=2), encoding="utf8")
+    return meta
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -300,20 +389,38 @@ def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description="Run the fault evaluation benchmarks.")
     parser.add_argument("--output", required=True, type=Path)
     parser.add_argument("--rounds", type=int, default=1)
+    parser.add_argument(
+        "--work-dir",
+        type=Path,
+        default=None,
+        help="Directory for the checkpoint files (default: the --output path plus .work).",
+    )
+    parser.add_argument(
+        "--resume", action="store_true", help="Continue a stopped run in the work directory."
+    )
     options = parser.parse_args(argv)
     if options.rounds < 1:
         parser.error("--rounds must be at least 1")
+    work_dir = options.work_dir or options.output.with_name(options.output.name + ".work")
+    meta = _prepare_work_dir(parser, work_dir, resume=options.resume, rounds=options.rounds)
     cases = enumerate_cases()
     passes = {}
-    with tempfile.TemporaryDirectory() as directory:
-        for pass_kind in PASS_KINDS:
+    for pass_kind in PASS_KINDS:
+        output_path = work_dir / f"{pass_kind}.json"
+        if options.resume and output_path.is_file():
+            passes[pass_kind] = json.loads(output_path.read_text(encoding="utf8"))
+            print(f"[{pass_kind}] already complete, skipped", file=sys.stderr, flush=True)
+            continue
+        started = _now()
+        try:
             passes[pass_kind] = _run_fresh_process_pass(
-                pass_kind,
-                cases,
-                output_path=Path(directory) / f"{pass_kind}.json",
-                rounds=options.rounds,
+                pass_kind, cases, output_path=output_path, rounds=options.rounds
             )
-    result = _merge(passes)
+        finally:
+            # A failed or stopped pass also adds its time.
+            meta["wall_seconds"][pass_kind] += _now() - started
+            (work_dir / "meta.json").write_text(json.dumps(meta, indent=2), encoding="utf8")
+    result = _merge(passes, suite_wall_seconds=float(sum(meta["wall_seconds"].values())))
     validate_result(result)
     options.output.parent.mkdir(parents=True, exist_ok=True)
     options.output.write_text(json.dumps(result, indent=2), encoding="utf8")
