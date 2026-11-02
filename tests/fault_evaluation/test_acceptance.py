@@ -439,7 +439,10 @@ def test_sc_007_missing_repeat_case_still_fails():
 
 
 def test_sc_007_zero_median_in_a_long_case_fails():
-    """A zero median in new or repeat for a case of 1.0 s or more fails SC-007."""
+    """A zero median in new or repeat for a case of 1.0 s or more fails SC-007.
+
+    A zero median is an invalid measurement for every case, long or short.
+    """
     check_acceptance = _check_acceptance()
     for document in ("new", "repeat"):
         base, new = _compliant_pair()
@@ -450,14 +453,30 @@ def test_sc_007_zero_median_in_a_long_case_fails():
         assert result["passed"] is False, document
 
 
-def test_sc_007_zero_baseline_median_counts_as_short_and_is_listed():
-    """A zero baseline median is a short case: listed, and SC-007 does not fail for it."""
+def test_sc_007_zero_baseline_median_fails_and_names_the_case():
+    """A zero baseline median is an invalid measurement. It fails SC-007 and names the case.
+
+    This holds for a case that would otherwise be short.
+    """
     check_acceptance = _check_acceptance()
     base, new = _compliant_pair()
     _set(base, SINGLE_F1U0, median_seconds=0.0)
     result = check_acceptance(base, new)
-    assert result["criteria"]["SC-007"]["passed"] is True
-    assert SINGLE_F1U0 in _short_rows(result)
+    assert result["criteria"]["SC-007"]["passed"] is False
+    assert SINGLE_F1U0 in result["criteria"]["SC-007"]["reason"]
+    assert result["passed"] is False
+
+
+def test_sc_007_zero_repeat_median_in_a_short_case_fails_and_names_the_case():
+    """A zero median in the repeat document fails SC-007 for a short case and names it."""
+    check_acceptance = _check_acceptance()
+    base, new = _compliant_pair()
+    assert _row(base, ALL_F4U0)["median_seconds"] < 1.0
+    _set(new["repeat"], ALL_F4U0, median_seconds=0.0)
+    result = check_acceptance(base, new)
+    assert result["criteria"]["SC-007"]["passed"] is False
+    assert ALL_F4U0 in result["criteria"]["SC-007"]["reason"]
+    assert result["passed"] is False
 
 
 def test_missing_suite_time_fails_sc_008():
