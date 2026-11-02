@@ -30,13 +30,13 @@ The initial replay exposed an incorrect all-NaN expectation; it was corrected
 to the frozen legacy result. Final verification passed all 108 tests in 108.43
 seconds (112.345966 seconds wall time), including the four D0 gradient
 regressions. All 21 archive comparisons, the 1% sensitivity check, and both new
-empty-input regressions passed. The 120-second acceptance gate passed. Pytest
+empty-surface regressions passed. The 120-second acceptance gate passed. Pytest
 reported one existing plugin zero-direction `RuntimeWarning`.
 
-The test harness batches surface queries and reuses grid lookups. No production
+The test harness batches surface queries and reuses sampled grid values. No production
 evaluation behavior changed, and the reference archives remain unchanged from
-baseline `ddc333ea`. Scoped sensitivity recording restores the patched method,
-and the surface summary checks preserve the original mask, finite bounds, and
+baseline `ddc333ea`. The scoped sensitivity patch and surface recording restore patched methods.
+The surface summary checks preserve the original mask, finite bounds, and
 fallback behavior.
 
 Faulted-gradient NaN/exact-fault-plane inputs are intentionally excluded
