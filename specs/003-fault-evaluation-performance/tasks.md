@@ -259,7 +259,7 @@
   - Wave: 12
   - Done when: python -m pytest tests/fault_evaluation/test_acceptance.py -q fails for absent check_acceptance, then passes after T029.
 
-- [ ] T029 [P] [Found] [M] Implement local acceptance and large-memory measurements.
+- [x] T029 [P] [Found] [M] Implement local acceptance and large-memory measurements.
   - Do: Implement D2/D5 check_acceptance and CLI: --baseline PATH --candidate PATH --repeat PATH --output PATH. Follow D2b for SC-006/007/008: the memory limit covers the standard suite; the 10 % noise limit covers only cases with a baseline median of 1.0 s or more; shorter cases go in `short_cases` and never fail SC-007 (T039 changes the tests to say this). Add explicit --memory-points 10000000 local subprocess mode using frozen models and cold/warm/off cache modes. Emit actual RSS, restored batch sizes, retention and FR-010 accounting plus every SC result. Never run this large case via normal pytest.
   - Files: `benchmarks/fault_evaluation/acceptance.py`
   - Needs: T028, T008, T039
@@ -336,7 +336,7 @@ The runner correction of 9610f6a1 and 290edf3d (progress, checkpoint file,
   - Wave: 13
   - Done when: `python -m pytest tests/fault_evaluation/test_acceptance.py -q` fails for absent `check_acceptance` and the new tests name the `short_cases` rule, then passes after T029.
 
-- [ ] T037 [US3] [M] Test the repeat of short cases in the timing pass.
+- [x] T037 [US3] [M] Test the repeat of short cases in the timing pass.
   - Do: Test D2 (short cases) with a fake launcher and no real benchmark. Constants in `run.py`: `SHORT_CASE_SECONDS = 1.0` and `SHORT_CASE_ROUNDS = 5`. After the timing pass, the runner repeats each case with a median below 1.0 s for 5 rounds, and the new samples replace the old ones in the checkpoint rows and the result; a case of 1.0 s or more is not repeated; the counters and memory passes are not repeated; the recorded `rounds` and `time_samples_seconds` of a repeated case are those of the 5 rounds; a stop between the two steps and a `--resume` do not repeat a finished case a second time and do not lose one; the repeat adds its time to `suite_wall_seconds`.
   - Files: `tests/fault_evaluation/test_benchmark_repeat.py`
   - Needs: T036
