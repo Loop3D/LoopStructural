@@ -42,6 +42,8 @@ def _fake_launcher(stop_after: int | None = None, launches: list | None = None):
         if launches is not None:
             launches.append([case["case_id"] for case in cases])
         checkpoint = os.environ.get(CHECKPOINT_ENV)
+        # The runner sets the round count in the environment, like the real suite.
+        rounds = int(os.environ.get("FAULT_EVAL_ROUNDS", "2"))
         for index, case in enumerate(cases):
             if stop_after is not None and index >= stop_after:
                 return 1
@@ -49,8 +51,8 @@ def _fake_launcher(stop_after: int | None = None, launches: list | None = None):
             line = {
                 "case_id": case["case_id"],
                 "stats": {
-                    "rounds": 2,
-                    "data": [0.01 * (number + 1), 0.02 * (number + 1)],
+                    "rounds": rounds,
+                    "data": [0.01 * (number + 1) * (k + 1) for k in range(rounds)],
                     "median": 0.015 * (number + 1),
                 },
                 "extra_info": {
@@ -113,7 +115,12 @@ def test_stopped_and_resumed_pass_equals_straight_pass(monkeypatch, tmp_path, pa
     monkeypatch.setattr(run_module, "_launch_pytest", _fake_launcher(None, launches))
     resumed = run_module._run_fresh_process_pass(pass_kind, cases, output_path=output, rounds=2)
 
-    assert launches == [["tiny:0", "tiny:1", "tiny:2", "tiny:3"], ["tiny:2", "tiny:3"]]
+    all_cases = ["tiny:0", "tiny:1", "tiny:2", "tiny:3"]
+    expected = [all_cases, ["tiny:2", "tiny:3"]]
+    if pass_kind == "timing":
+        # All four cases are short, so the repeat step launches them again.
+        expected.append(all_cases)
+    assert launches == expected
     assert resumed["cases"] == straight["cases"]
     assert resumed["pytest_benchmark"].keys() == straight["pytest_benchmark"].keys()
 

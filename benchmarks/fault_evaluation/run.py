@@ -24,6 +24,9 @@ from benchmarks.fault_evaluation.instrumentation import rss_to_bytes
 from tests.fault_evaluation.models import model_names
 
 SCHEMA_VERSION = 1
+# A timing case with a median below this limit (seconds) runs again with more rounds.
+SHORT_CASE_SECONDS = 1.0
+SHORT_CASE_ROUNDS = 5
 ROOT = Path(__file__).parents[2]
 SUITE = Path(__file__).with_name("bench_cases.py")
 PASS_KINDS = ("timing", "counters", "rss")
@@ -346,13 +349,15 @@ def _run_fresh_process_pass(
         file=sys.stderr,
         flush=True,
     )
-    if pending:
-        cases_path.write_text(json.dumps(pending), encoding="utf8")
+
+    def launch(step_cases: list[dict[str, Any]], step_rounds: int) -> None:
+        """Run one pytest step for the given cases. Raise an error if it fails."""
+        cases_path.write_text(json.dumps(step_cases), encoding="utf8")
         benchmark_path.unlink(missing_ok=True)
         environment = {
             "FAULT_EVAL_PASS": pass_kind,
             "FAULT_EVAL_CASES": str(cases_path),
-            "FAULT_EVAL_ROUNDS": str(rounds),
+            "FAULT_EVAL_ROUNDS": str(step_rounds),
             "FAULT_EVAL_CHECKPOINT": str(checkpoint_path),
         }
         previous = {key: os.environ.get(key) for key in environment}
@@ -368,12 +373,34 @@ def _run_fresh_process_pass(
                     os.environ[key] = value
         if code != 0:
             raise RuntimeError(f"The {pass_kind} pass failed with exit code {code}")
+
+    if pending:
+        launch(pending, rounds)
         entries = _read_checkpoint(checkpoint_path)
         if benchmark_path.is_file():
             # A case without a checkpoint line comes from the raw pytest-benchmark file.
             raw = json.loads(benchmark_path.read_text(encoding="utf8"))
             for item in raw["benchmarks"]:
                 entries.setdefault(item["extra_info"]["case_id"], item)
+    if pass_kind == "timing":
+        # Choose from all lines of the checkpoint file, also those of an earlier launch.
+        # The stored rounds stop a second repeat after a resume.
+        short = [
+            case
+            for case in cases
+            if case["case_id"] in entries
+            and entries[case["case_id"]]["stats"]["median"] < SHORT_CASE_SECONDS
+            and int(entries[case["case_id"]]["stats"]["rounds"]) < SHORT_CASE_ROUNDS
+        ]
+        if short:
+            print(
+                f"[{pass_kind}] repeat: {len(short)} short cases with {SHORT_CASE_ROUNDS} rounds",
+                file=sys.stderr,
+                flush=True,
+            )
+            launch(short, SHORT_CASE_ROUNDS)
+            # The last line of a case replaces the earlier one.
+            entries.update(_read_checkpoint(checkpoint_path))
     missing = [case["case_id"] for case in cases if case["case_id"] not in entries]
     if missing:
         raise RuntimeError(f"The {pass_kind} pass has no result for {missing[:5]}")

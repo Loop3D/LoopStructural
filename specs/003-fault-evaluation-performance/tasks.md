@@ -343,7 +343,7 @@ The runner correction of 9610f6a1 and 290edf3d (progress, checkpoint file,
   - Wave: 14
   - Done when: `python -m pytest tests/fault_evaluation/test_benchmark_repeat.py -q` fails for the absent constants and repeat step, then passes after T038.
 
-- [ ] T038 [US3] [M] Repeat short cases in the timing pass.
+- [x] T038 [US3] [M] Repeat short cases in the timing pass.
   - Do: Implement the repeat step of D2 in `run.py`, with the constants named in T037. Use the checkpoint file and the resume rules that exist. Keep schema v1. Do not change tests, `bench_cases.py` or the other passes.
   - Files: `benchmarks/fault_evaluation/run.py`
   - Needs: T037
