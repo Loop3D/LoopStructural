@@ -76,7 +76,7 @@
   - Wave: 6
   - Done when: python -m pytest tests/fault_evaluation/test_golden_tools.py -q passes.
 
-- [ ] T005 [US1] [M] Freeze all legacy golden outputs and provenance.
+- [x] T005 [US1] [M] Freeze all legacy golden outputs and provenance.
   - Do: Run the sole explicit D1 write command once. Record the actual pre-performance source revision, dirty-state details and all three D0 revision fields; identify the known failing raw parent separately. Confirm plugin outputs match qgis_check.npz. Inspect readable summary/hashes, surface counts and NaN masks. The isolated T034 correctness fix is the sole earlier evaluation change; no performance code may change before this task and T011 pass.
   - Files: `tests/fault_evaluation/data/f0_u0.npz`, `tests/fault_evaluation/data/f0_u1.npz`, `tests/fault_evaluation/data/f0_u2.npz`, `tests/fault_evaluation/data/f0_u3.npz`, `tests/fault_evaluation/data/f1_u0.npz`, `tests/fault_evaluation/data/f1_u1.npz`, `tests/fault_evaluation/data/f1_u2.npz`, `tests/fault_evaluation/data/f1_u3.npz`, `tests/fault_evaluation/data/f2_u0.npz`, `tests/fault_evaluation/data/f2_u1.npz`, `tests/fault_evaluation/data/f2_u2.npz`, `tests/fault_evaluation/data/f2_u3.npz`, `tests/fault_evaluation/data/f4_u0.npz`, `tests/fault_evaluation/data/f4_u1.npz`, `tests/fault_evaluation/data/f4_u2.npz`, `tests/fault_evaluation/data/f4_u3.npz`, `tests/fault_evaluation/data/stopped_fault.npz`, `tests/fault_evaluation/data/cutting_faults.npz`, `tests/fault_evaluation/data/onlap_domain.npz`, `tests/fault_evaluation/data/faulted_fold.npz`, `tests/fault_evaluation/data/plugin.npz`, `tests/fault_evaluation/data/manifest.json`
   - Needs: T004
