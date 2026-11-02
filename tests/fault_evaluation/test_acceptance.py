@@ -42,6 +42,9 @@ OLD_F4U3 = "f4_u3:oldest_value:5000:cold"
 ALL_F4U3 = "f4_u3:all_group_values:5000:cold"
 ALL_F4U0 = "f4_u0:all_group_values:5000:cold"
 WARM_F4U3 = "f4_u3:all_group_values:5000:warm"
+# SC-010 uses evaluate_model, which is the benchmark operation model_ids.
+IDS_COLD_F4U3 = "f4_u3:model_ids:5000:cold"
+IDS_WARM_F4U3 = "f4_u3:model_ids:5000:warm"
 PLUGIN_OLD = "plugin:oldest_value:20000:cold"
 SINGLE_F1U0 = "f1_u0:oldest_value:20000:cold"
 
@@ -52,6 +55,8 @@ BASE_ROWS = [
     ("f4_u3", "all_group_values", 5000, "cold", 8.65, 52, 5000, 1_000_000),
     ("f4_u0", "all_group_values", 5000, "cold", 0.67, 12, 5000, 1_000_000),
     ("f4_u3", "all_group_values", 5000, "warm", 8.0, 52, 5000, 1_000_000),
+    ("f4_u3", "model_ids", 5000, "cold", 8.7, 52, 5000, 1_000_000),
+    ("f4_u3", "model_ids", 5000, "warm", 8.0, 52, 5000, 1_000_000),
     ("plugin", "oldest_value", 20000, "cold", 8.2, 6, 20000, 1_000_000),
     ("f1_u0", "oldest_value", 20000, "cold", 0.68, 2, 20000, 500_000),
 ]
@@ -60,6 +65,8 @@ NEW_ROWS = [
     ("f4_u3", "all_group_values", 5000, "cold", 1.0, 4, 5000, 1_000_000),
     ("f4_u0", "all_group_values", 5000, "cold", 0.8, 4, 5000, 1_000_000),
     ("f4_u3", "all_group_values", 5000, "warm", 0.05, 0, 0, 1_000_000),
+    ("f4_u3", "model_ids", 5000, "cold", 1.0, 4, 5000, 1_000_000),
+    ("f4_u3", "model_ids", 5000, "warm", 0.05, 0, 0, 1_000_000),
     ("plugin", "oldest_value", 20000, "cold", 3.0, 6, 20000, 1_000_000),
     ("f1_u0", "oldest_value", 20000, "cold", 0.2, 2, 20000, 500_000),
 ]
@@ -235,12 +242,12 @@ def test_compliant_pair_passes_every_target():
         ),
         pytest.param(
             "SC-010",
-            lambda base, new: _set(new, WARM_F4U3, median_seconds=0.11),
+            lambda base, new: _set(new, IDS_WARM_F4U3, median_seconds=0.11),
             id="SC-010-warm-time-over-limit",
         ),
         pytest.param(
             "SC-010",
-            lambda base, new: _set(new, WARM_F4U3, fault_calls_total=1),
+            lambda base, new: _set(new, IDS_WARM_F4U3, fault_calls_total=1),
             id="SC-010-warm-calls-not-zero",
         ),
     ],
@@ -278,14 +285,132 @@ def test_missing_case_is_an_explicit_failure():
     assert result["criteria"]["SC-002"]["passed"] is False
 
 
-def test_missing_warm_case_fails_sc_010():
-    """A missing warm case fails SC-010 explicitly, not by skipping it."""
+@pytest.mark.parametrize("missing", [IDS_WARM_F4U3, IDS_COLD_F4U3])
+def test_missing_model_ids_case_fails_sc_010(missing):
+    """A missing model_ids case fails SC-010 explicitly, not by skipping it."""
     check_acceptance = _check_acceptance()
     base, new = _compliant_pair()
-    new["cases"] = [row for row in new["cases"] if row["case_id"] != WARM_F4U3]
+    new["cases"] = [row for row in new["cases"] if row["case_id"] != missing]
     result = check_acceptance(base, new)
     assert result["passed"] is False
     assert result["criteria"]["SC-010"]["passed"] is False
+    assert missing in result["criteria"]["SC-010"]["reason"]
+
+
+@pytest.mark.parametrize(
+    "fields",
+    [{"median_seconds": 0.5}, {"fault_calls_total": 3}],
+    ids=["slow", "fault-calls"],
+)
+def test_sc_010_uses_model_ids_not_all_group_values(fields):
+    """A good all_group_values warm pair does not rescue a bad model_ids warm pair.
+
+    SC-010 says evaluate_model, which is the operation model_ids.
+    """
+    check_acceptance = _check_acceptance()
+    base, new = _compliant_pair()
+    assert _row(new, WARM_F4U3)["fault_calls_total"] == 0
+    _set(new, IDS_WARM_F4U3, **fields)
+    result = check_acceptance(base, new)
+    assert result["criteria"]["SC-010"]["passed"] is False
+    assert IDS_WARM_F4U3 in result["criteria"]["SC-010"]["reason"]
+    assert result["criteria"]["SC-003"]["passed"] is True
+    assert result["passed"] is False
+
+
+def test_sc_010_ignores_a_bad_all_group_values_warm_pair():
+    """A bad all_group_values warm case does not change SC-010."""
+    check_acceptance = _check_acceptance()
+    base, new = _compliant_pair()
+    _set(new, WARM_F4U3, median_seconds=5.0, fault_calls_total=9)
+    result = check_acceptance(base, new)
+    assert result["criteria"]["SC-010"]["passed"] is True
+
+
+class _Fault:
+    def __init__(self, name):
+        self.name = name
+
+
+class _Feature:
+    def __init__(self, *fault_names):
+        self.faults = [_Fault(name) for name in fault_names]
+
+
+class _Model:
+    def __init__(self, features, cache=None):
+        self.features = features
+        if cache is not None:
+            self.evaluation_cache = cache
+
+
+def test_distinct_fault_sets_counts_distinct_ordered_tuples():
+    """Features with equal ordered fault names count once. A reversed order counts twice."""
+    count = _api(ACCEPTANCE_MODULE, "_distinct_fault_sets")
+    model = _Model(
+        [
+            _Feature("a", "b"),
+            _Feature("a", "b"),
+            _Feature("b", "a"),
+            _Feature(),
+            _Feature("c"),
+        ]
+    )
+    assert count(model) == 3
+
+
+def test_distinct_fault_sets_is_zero_without_faults():
+    """A model with no faults has 0 fault sets."""
+    count = _api(ACCEPTANCE_MODULE, "_distinct_fault_sets")
+    assert count(_Model([_Feature(), _Feature()])) == 0
+    assert count(_Model([])) == 0
+
+
+class _GoodCache:
+    retained_bytes = 4096
+
+
+class _NoPropertyCache:
+    pass
+
+
+class _BadPropertyCache:
+    retained_bytes = "many"
+
+
+def test_cache_bytes_reads_only_retained_bytes():
+    """A cache with retained_bytes gives an int and no error."""
+    cache_fields = _api(ACCEPTANCE_MODULE, "_cache_fields")
+    fields = cache_fields(_Model([], _GoodCache()))
+    assert fields == {"cache_available": True, "retained_cache_bytes": 4096}
+
+
+def test_cache_bytes_without_a_cache_is_not_available():
+    """A model with no evaluation_cache is cache_available false, null bytes, no error."""
+    cache_fields = _api(ACCEPTANCE_MODULE, "_cache_fields")
+    fields = cache_fields(_Model([]))
+    assert fields == {"cache_available": False, "retained_cache_bytes": None}
+
+
+@pytest.mark.parametrize("cache", [_NoPropertyCache(), _BadPropertyCache()])
+def test_cache_bytes_missing_property_is_an_error(cache):
+    """A cache without an int retained_bytes gives null bytes and an error text."""
+    cache_fields = _api(ACCEPTANCE_MODULE, "_cache_fields")
+    fields = cache_fields(_Model([], cache))
+    assert fields["cache_available"] is True
+    assert fields["retained_cache_bytes"] is None
+    assert "retained_bytes" in fields["error"]
+
+
+def test_memory_accounting_fields():
+    """The FR-010 accounting uses the distinct fault sets and the restored batches."""
+    accounting = _api(ACCEPTANCE_MODULE, "_fr010_accounting")
+    fields = accounting(points=100, fault_sets=2, batches={100: 2, 50: 1}, peak=9600)
+    assert fields["distinct_fault_sets"] == 2
+    assert fields["allowed_bytes"] == 24 * 100 * 2
+    assert fields["restored_bytes_observed"] == 24 * (200 + 50)
+    assert fields["peak_over_allowed"] == pytest.approx(9600 / 4800)
+    assert accounting(points=100, fault_sets=0, batches={}, peak=5)["peak_over_allowed"] is None
 
 
 def test_duplicate_case_in_new_fails_the_case_check():

@@ -41,6 +41,9 @@ OLD_F4U3 = "f4_u3:oldest_value:5000:cold"
 ALL_F4U3 = "f4_u3:all_group_values:5000:cold"
 ALL_F4U0 = "f4_u0:all_group_values:5000:cold"
 WARM_F4U3 = "f4_u3:all_group_values:5000:warm"
+# SC-010 uses evaluate_model, which is the benchmark operation model_ids.
+IDS_COLD_F4U3 = "f4_u3:model_ids:5000:cold"
+IDS_WARM_F4U3 = "f4_u3:model_ids:5000:warm"
 PLUGIN_OLD = "plugin:oldest_value:20000:cold"
 SINGLE_F1U0 = "f1_u0:oldest_value:20000:cold"
 _PROVENANCE_FIELDS = ("python", "numpy", "scipy", "os", "cpu", "ram_bytes")
@@ -258,20 +261,25 @@ def _sc009(base: dict[str, dict[str, Any]], new: dict[str, dict[str, Any]]) -> d
 
 
 def _sc010(new: dict[str, dict[str, Any]]) -> dict[str, Any]:
-    """SC-010: a warm call makes 0 fault calls and takes at most 10 % of the cold call."""
+    """SC-010: a second evaluate_model call makes 0 fault calls and takes at most 10 %.
+
+    evaluate_model is the benchmark operation ``model_ids``. The cold case of the
+    same document is the reference. SC-003 keeps the operation all_group_values.
+    """
     limit = 0.10
-    reason = _missing(new, WARM_F4U3, ALL_F4U3)
+    reason = _missing(new, IDS_WARM_F4U3, IDS_COLD_F4U3)
     if reason:
         return _row(False, None, limit, reason)
-    cold = new[ALL_F4U3]["median_seconds"]
+    cold = new[IDS_COLD_F4U3]["median_seconds"]
     if cold <= 0:
-        return _row(False, None, limit, f"Case {ALL_F4U3!r} has a median of zero")
-    ratio = new[WARM_F4U3]["median_seconds"] / cold
+        return _row(False, None, limit, f"Case {IDS_COLD_F4U3!r} has a median of zero")
+    ratio = new[IDS_WARM_F4U3]["median_seconds"] / cold
     problems = []
     if ratio > limit + _TOLERANCE:
-        problems.append(f"warm ratio {ratio:.4f} is above {limit}")
-    if new[WARM_F4U3]["fault_calls_total"] != 0:
-        problems.append(f"warm case makes {new[WARM_F4U3]['fault_calls_total']} fault calls")
+        problems.append(f"warm ratio {ratio:.4f} of case {IDS_WARM_F4U3!r} is above {limit}")
+    calls = new[IDS_WARM_F4U3]["fault_calls_total"]
+    if calls != 0:
+        problems.append(f"case {IDS_WARM_F4U3!r} makes {calls} fault calls")
     return _row(not problems, ratio, limit, "; ".join(problems))
 
 
@@ -323,13 +331,65 @@ def check_acceptance(base: dict[str, Any], new: dict[str, Any]) -> dict[str, Any
 # --- Large-memory mode (local only) -------------------------------------------------------
 
 
-def _retained_bytes(cache: Any) -> int | None:
-    """Return the bytes that the cache retains, or None if it does not report them."""
-    for name in ("retained_bytes", "nbytes", "current_bytes"):
-        value = getattr(cache, name, None)
-        if value is not None:
-            return int(value() if callable(value) else value)
-    return None
+def _cache_fields(model: Any) -> dict[str, Any]:
+    """Return the cache fields of a memory record.
+
+    The cache interface (plan D4) has the read-only property ``retained_bytes``:
+    the exact sum of ``nbytes`` of the stored arrays. This function reads only
+    that property. If the model has a cache but the property is missing or is not
+    an int, the record gets null bytes and an ``error`` text. Then the memory
+    mode fails. It never records null without an error.
+    """
+    cache = getattr(model, "evaluation_cache", None)
+    if cache is None:
+        return {"cache_available": False, "retained_cache_bytes": None}
+    value = getattr(cache, "retained_bytes", None)
+    if isinstance(value, int) and not isinstance(value, bool):
+        return {"cache_available": True, "retained_cache_bytes": value}
+    return {
+        "cache_available": True,
+        "retained_cache_bytes": None,
+        "error": f"The evaluation cache has no int property retained_bytes (got {value!r})",
+    }
+
+
+def _distinct_fault_sets(model: Any) -> int:
+    """Return the number of distinct ordered fault sets over the features of the model.
+
+    A fault set is the tuple of fault names of one feature. Features with no
+    faults do not count. A model with no faults gives 0.
+    """
+    sets = set()
+    for feature in getattr(model, "features", None) or []:
+        names = tuple(fault.name for fault in getattr(feature, "faults", None) or [])
+        if names:
+            sets.add(names)
+    return len(sets)
+
+
+def _fr010_accounting(
+    points: int, fault_sets: int, batches: dict[int, int], peak: int
+) -> dict[str, Any]:
+    """Return the FR-010 accounting fields of a memory record.
+
+    ``allowed_bytes`` is 24 bytes x points x distinct fault sets.
+    ``restored_bytes_observed`` is 24 bytes x the sum of (batch size x count) over
+    the batches that the FaultSegment.apply_to_points wrapper counted.
+    ``peak_over_allowed`` is the peak extra RSS over ``allowed_bytes``. It is null
+    when ``allowed_bytes`` is 0.
+
+    This is a report only. The exit code does not depend on it. The accepted OP1
+    rule measures each actual restored point and excludes unchanged baseline work
+    arrays. RSS cannot separate these two parts.
+    """
+    allowed = RESTORED_BYTES_PER_POINT * points * fault_sets
+    restored_points = sum(size * count for size, count in batches.items())
+    return {
+        "distinct_fault_sets": fault_sets,
+        "allowed_bytes": allowed,
+        "restored_bytes_observed": RESTORED_BYTES_PER_POINT * restored_points,
+        "peak_over_allowed": peak / allowed if allowed else None,
+    }
 
 
 def _memory_worker(model_name: str, points: int, mode: str) -> dict[str, Any]:
@@ -341,6 +401,7 @@ def _memory_worker(model_name: str, points: int, mode: str) -> dict[str, Any]:
 
     model = build_model(model_name)
     cache = getattr(model, "evaluation_cache", None)
+    fault_sets = _distinct_fault_sets(model)
     coordinates = _points(model, points)
     if cache is not None:
         cache.clear()
@@ -366,10 +427,10 @@ def _memory_worker(model_name: str, points: int, mode: str) -> dict[str, Any]:
         "model": model_name,
         "mode": mode,
         "points": points,
-        "cache_available": cache is not None,
+        **_cache_fields(model),
         "peak_extra_rss_bytes": peak,
         "restored_batch_sizes": {str(size): count for size, count in sorted(batches.items())},
-        "retained_cache_bytes": _retained_bytes(cache) if cache is not None else None,
+        **_fr010_accounting(points, fault_sets, dict(batches), peak),
         "input_bytes": coordinates.nbytes,
         "fr010": {
             "bytes_per_point_and_fault_set": RESTORED_BYTES_PER_POINT,
@@ -449,6 +510,9 @@ def main(argv: list[str] | None = None) -> int:
         print(f"overall {'PASS' if passed else 'FAIL'}")
     if options.memory_points is not None:
         result["memory"] = run_memory_mode(options.memory_points, options.memory_model or ["f1_u0"])
+        # Only a record with an error fails the run. Do not gate the exit code on RSS:
+        # the OP1 rule counts each actual restored point and excludes unchanged
+        # baseline work arrays, and RSS cannot separate these two parts.
         failed = [record for record in result["memory"]["records"] if "error" in record]
         passed = passed and not failed
     options.output.parent.mkdir(parents=True, exist_ok=True)
