@@ -150,7 +150,7 @@
   - Wave: 18
   - Done when: python -m pytest tests/fault_evaluation/test_cache_storage.py -q passes.
 
-- [ ] T014 [US2] [M] Test one-call restoration sharing and public behavior.
+- [x] T014 [US2] [M] Test one-call restoration sharing and public behavior.
   - Do: Test D3 nested value/region calls and evaluate_model for F=4,U=3: four top-level calls with identical fault sets, correct original mask coordinates and golden values. Test different/reordered sets, reverse, disabled faults, nested scopes, standalone features, child-fault batches, opaque callables and exception cleanup. Check public signatures. Keep total nested counts visible and apply the accepted OP1 rule from Answers.
   - Files: `tests/fault_evaluation/test_context.py`
   - Needs: T013
