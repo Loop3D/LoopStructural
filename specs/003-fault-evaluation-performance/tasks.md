@@ -99,14 +99,14 @@
   - Wave: 9
   - Done when: python -m pytest tests/fault_evaluation/test_benchmark_run.py -q fails for absent benchmark modules, then passes after T008.
 
-- [ ] T008 [P] [US3] [M] Implement benchmark runner and opt-in instrumentation.
+- [x] T008 [P] [US3] [M] Implement benchmark runner and opt-in instrumentation.
   - Do: Implement D2 run/main and case generation using pytest-benchmark. Add it to the dev extra only and update the lock with the repository tool. No production counters. Use cold cache clears outside timed regions and include lookup costs. Record real field/fault calls, provenance, RSS and raw timing samples in schema v1. Keep benchmark suite out of normal pytest collection.
   - Files: `pyproject.toml`, `uv.lock`, `benchmarks/__init__.py`, `benchmarks/fault_evaluation/__init__.py`, `benchmarks/fault_evaluation/run.py`, `benchmarks/fault_evaluation/bench_cases.py`, `benchmarks/fault_evaluation/instrumentation.py`
   - Needs: T007
   - Wave: 10
   - Done when: python -m pytest tests/fault_evaluation/test_benchmark_run.py -q passes.
 
-- [ ] T009 [P] [US3] [S] Test benchmark comparison ratios and missing-case errors.
+- [x] T009 [P] [US3] [S] Test benchmark comparison ratios and missing-case errors.
   - Do: Test compare_results(base: dict, new: dict) -> dict with fixed v1 sample cases: time 2 to 3 gives ratio 1.5 and slower=True; 2 to 2.1 is within 10%; zero denominator gives an explicit undefined ratio. Missing/duplicate cases, different point counts or cold/warm states raise ValueError. Check F/U scaling table and provenance warnings.
   - Files: `tests/fault_evaluation/test_benchmark_compare.py`
   - Needs: T007
