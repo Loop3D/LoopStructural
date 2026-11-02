@@ -92,7 +92,7 @@
 
 ## Phase 2: Benchmark baseline
 
-- [ ] T007 [US3] [M] Test benchmark runner, schema, counters and isolation.
+- [x] T007 [US3] [M] Test benchmark runner, schema, counters and isolation.
   - Do: Use tiny fake models; do not run real benchmarks in CI. Test D2 full case enumeration, cold/warm isolation, separate process passes, schema fields, exceptional unpatch, normal runtime imports without wrappers, explicit suite selection and valid memory units. Assert all 16 F/U combinations, special models and five functions at all three sizes.
   - Files: `tests/fault_evaluation/test_benchmark_run.py`
   - Needs: T006
