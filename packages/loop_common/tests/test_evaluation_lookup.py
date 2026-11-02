@@ -331,6 +331,91 @@ def test_property_array_size_error(grid):
 
 
 # --------------------------------------------------------------------------
+# Clipping of local coordinates inside the tolerance band (plan D6)
+# --------------------------------------------------------------------------
+# On a grid with a large extent the inside test accepts points up to
+# tol = eps * 32 * extent beyond the box. For extent 1000 this is about 7e-12.
+# A point 0.5 * tol beyond the box has an unclipped local coordinate that is
+# outside [0, 1] by more than ATOL. Only the clip to [0, 1] gives exact 0 and 1.
+CLIP_GRIDS = {
+    "long_xy": dict(origin=[0.0, 0.0, 0.0], nsteps=[1000, 1000, 2], step_vector=[1.0, 1.0, 1.0]),
+    "long_yz_offset": dict(
+        origin=[-3.0, 500.5, 20.0], nsteps=[2, 1000, 1000], step_vector=[1.0, 1.0, 1.0]
+    ),
+}
+
+
+def _tol(grid):
+    # Same formula as the inside test of the grid.
+    extent = np.maximum(np.abs(grid.maximum - grid.origin), 1.0)
+    return np.finfo(float).eps * 32.0 * extent
+
+
+def _band_points(grid):
+    """Points in the tolerance band: (points, expected local coordinates)."""
+    lo, hi, half = grid.origin, grid.maximum, 0.5 * _tol(grid)
+    mid = lo + 0.5 * (hi - lo)
+    pts = [hi + half, lo - half, np.where([True, False, True], hi + half, lo - half)]
+    expected = [np.ones(3), np.zeros(3), np.array([1.0, 0.0, 1.0])]
+    # One axis in the band, the other axes inside the box.
+    for axis in range(3):
+        for side, value in ((hi, 1.0), (lo, 0.0)):
+            p = mid.copy()
+            p[axis] = side[axis] + (half[axis] if value == 1.0 else -half[axis])
+            e = np.full(3, np.nan)
+            e[axis] = value
+            pts.append(p)
+            expected.append(e)
+    return np.array(pts), np.array(expected)
+
+
+@pytest.fixture(params=list(CLIP_GRIDS))
+def clip_grid(request):
+    return StructuredGrid(**{k: np.array(v) for k, v in CLIP_GRIDS[request.param].items()})
+
+
+def test_band_points_overshoot_is_larger_than_atol(clip_grid):
+    # Guard for the test data: the clip must matter at these points.
+    assert np.max(_tol(clip_grid)) * 0.5 > 100 * ATOL
+
+
+def test_band_points_are_inside(clip_grid):
+    pts, _ = _band_points(clip_grid)
+    assert np.all(clip_grid.inside(pts))
+    assert np.all(_ref_inside(clip_grid, pts))
+
+
+def test_position_to_local_coordinates_clips_in_tolerance_band(clip_grid):
+    pts, expected = _band_points(clip_grid)
+    local = clip_grid.position_to_local_coordinates(pts)
+    assert np.all((local >= 0.0) & (local <= 1.0))
+    known = ~np.isnan(expected)
+    np.testing.assert_array_equal(local[known], expected[known])
+    np.testing.assert_array_equal(local, _ref_local(clip_grid, pts))
+
+
+def test_lookup_points_clips_in_tolerance_band(clip_grid):
+    pts, expected = _band_points(clip_grid)
+    corners, inside, local = clip_grid._lookup_points(pts)
+    assert np.all(inside)
+    assert np.all(corners >= 0)
+    assert np.all((local >= 0.0) & (local <= 1.0))
+    known = ~np.isnan(expected)
+    np.testing.assert_array_equal(local[known], expected[known])
+    np.testing.assert_array_equal(local, _ref_local(clip_grid, pts))
+
+
+def test_evaluate_in_tolerance_band_matches_reference(clip_grid):
+    pts, _ = _band_points(clip_grid)
+    prop = _node_values(clip_grid)
+    value = clip_grid.evaluate_value(pts, prop)
+    assert not np.isnan(value).any()
+    np.testing.assert_allclose(value, _ref_value(clip_grid, pts, prop), rtol=RTOL, atol=ATOL)
+    gradient = clip_grid.evaluate_gradient(pts, prop)
+    np.testing.assert_allclose(gradient, _ref_gradient(clip_grid, pts, prop), rtol=RTOL, atol=ATOL)
+
+
+# --------------------------------------------------------------------------
 # One cell-index lookup per call
 # --------------------------------------------------------------------------
 @pytest.fixture

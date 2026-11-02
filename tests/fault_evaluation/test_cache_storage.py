@@ -416,26 +416,40 @@ def test_failed_put_keeps_old_entry_of_the_same_key():
     assert cache.retained_bytes == 16
 
 
-def test_failed_copy_step_keeps_count_exact(monkeypatch):
-    """A failure in the copy step of the cache module must not change the count."""
-    module = importlib.import_module(MODULE_NAME)
-    cache = _cache()
-    cache.put("keep", _array(3))
-    numpy_name = next((n for n in ("np", "numpy") if hasattr(module, n)), None)
-    assert numpy_name is not None, f"{MODULE_NAME} must import numpy as np or numpy"
-    numpy_module = getattr(module, numpy_name)
+class _NoCopyArray(np.ndarray):
+    """Real ndarray view where every route to a private copy raises."""
 
-    def fail(*args, **kwargs):
+    def copy(self, *args, **kwargs):
         raise RuntimeError("copy failed")
 
-    for attribute in ("array", "copy", "ascontiguousarray", "asarray"):
-        monkeypatch.setattr(numpy_module, attribute, fail)
-    with pytest.raises(RuntimeError):
-        cache.put("new", np.zeros(4))
-    monkeypatch.undo()
+    def __array__(self, *args, **kwargs):
+        raise RuntimeError("conversion failed")
+
+    def __copy__(self):
+        raise RuntimeError("copy failed")
+
+    def __deepcopy__(self, memo=None):
+        raise RuntimeError("copy failed")
+
+    @property
+    def nbytes(self):
+        raise RuntimeError("nbytes failed")
+
+
+def test_failed_copy_step_keeps_count_exact():
+    """A failure in the copy step must not publish a partial entry or change the count."""
+    cache = _cache()
+    cache.put("keep", _array(3))
+    cache.put("same", _array(2, fill=4.0))
+    bad = np.zeros(4).view(_NoCopyArray)
+    with pytest.raises(Exception):  # noqa: B017
+        cache.put("new", bad)
+    with pytest.raises(Exception):  # noqa: B017
+        cache.put("same", bad)
     assert cache.get("new") is None
-    assert cache.retained_bytes == 24
+    np.testing.assert_array_equal(cache.get("same"), np.full(2, 4.0))
     assert cache.get("keep") is not None
+    assert cache.retained_bytes == 40
 
 
 def test_failed_put_does_not_evict_other_entries():
