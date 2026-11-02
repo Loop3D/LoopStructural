@@ -60,7 +60,7 @@ def run_case(
     """Time one case. Cache clearing and warm priming stay outside the timed call.
 
     Every round clears the cache first. A warm case then evaluates once to fill
-    the cache. ``after_setup`` runs last, just before the timed call.
+    the cache. A model with no cache is not primed. ``after_setup`` runs last, just before the timed call.
     """
     operation = _OPERATIONS[case["operation"]]
     cache = getattr(model, "evaluation_cache", None)
@@ -72,7 +72,8 @@ def run_case(
     def setup() -> None:
         if cache is not None:
             cache.clear()
-        if warm:
+        # A model with no cache has nothing to fill, so a priming call does no work.
+        if warm and cache is not None:
             call()
         if after_setup is not None:
             after_setup()

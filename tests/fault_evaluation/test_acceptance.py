@@ -362,6 +362,104 @@ def test_missing_repeat_run_fails_sc_007():
     assert result["passed"] is False
 
 
+def _short_rows(result: dict) -> dict:
+    """Return the short_cases rows of a result, keyed by case id."""
+    assert "short_cases" in result, "result['short_cases'] is required by D2b"
+    return {row["case_id"]: row for row in result["short_cases"]}
+
+
+def test_sc_007_checks_a_long_case_and_names_it():
+    """A case with a baseline median of 1.0 s or more and noise 1.10 or more fails SC-007."""
+    check_acceptance = _check_acceptance()
+    base, new = _compliant_pair()
+    _set(new["repeat"], PLUGIN_OLD, median_seconds=3.0 * 1.10)
+    result = check_acceptance(base, new)
+    row = result["criteria"]["SC-007"]
+    assert row["passed"] is False
+    assert PLUGIN_OLD in row["reason"]
+    assert result["passed"] is False
+
+
+def test_sc_007_limit_is_a_strict_bound_for_a_long_case():
+    """A noise ratio just below 1.10 passes SC-007 for a case of 1.0 s or more."""
+    check_acceptance = _check_acceptance()
+    base, new = _compliant_pair()
+    _set(new["repeat"], PLUGIN_OLD, median_seconds=3.0 * 1.09)
+    result = check_acceptance(base, new)
+    assert result["criteria"]["SC-007"]["passed"] is True
+    assert PLUGIN_OLD not in _short_rows(result)
+
+
+def test_sc_007_short_case_is_listed_and_does_not_fail():
+    """A case with a baseline median below 1.0 s and noise 1.5 is listed, not failed."""
+    check_acceptance = _check_acceptance()
+    base, new = _compliant_pair()
+    assert _row(base, ALL_F4U0)["median_seconds"] < 1.0
+    _set(new["repeat"], ALL_F4U0, median_seconds=0.8 * 1.5)
+    result = check_acceptance(base, new)
+    assert result["criteria"]["SC-007"]["passed"] is True
+    assert result["criteria"]["SC-007"]["reason"] is None
+    rows = _short_rows(result)
+    assert ALL_F4U0 in rows
+    assert rows[ALL_F4U0]["noise_ratio"] == pytest.approx(1.5)
+
+
+def test_sc_007_short_cases_list_every_short_case_and_no_long_case():
+    """The short_cases list holds each case with a baseline median below 1.0 s."""
+    check_acceptance = _check_acceptance()
+    base, new = _compliant_pair()
+    result = check_acceptance(base, new)
+    rows = _short_rows(result)
+    assert set(rows) == {ALL_F4U0, SINGLE_F1U0}
+    for row in rows.values():
+        assert row["noise_ratio"] == pytest.approx(1.05)
+
+
+def test_sc_007_baseline_median_of_1_0_s_is_checked_not_short():
+    """A baseline median of exactly 1.0 s is a checked case, not a short case."""
+    check_acceptance = _check_acceptance()
+    base, new = _compliant_pair()
+    _set(base, ALL_F4U0, median_seconds=1.0)
+    _set(new["repeat"], ALL_F4U0, median_seconds=0.8 * 1.5)
+    result = check_acceptance(base, new)
+    assert ALL_F4U0 not in _short_rows(result)
+    assert result["criteria"]["SC-007"]["passed"] is False
+    assert ALL_F4U0 in result["criteria"]["SC-007"]["reason"]
+
+
+def test_sc_007_missing_repeat_case_still_fails():
+    """A case that is missing from the repeat document fails SC-007."""
+    check_acceptance = _check_acceptance()
+    base, new = _compliant_pair()
+    new["repeat"]["cases"] = [row for row in new["repeat"]["cases"] if row["case_id"] != PLUGIN_OLD]
+    result = check_acceptance(base, new)
+    assert result["criteria"]["SC-007"]["passed"] is False
+    assert PLUGIN_OLD in result["criteria"]["SC-007"]["reason"]
+    assert result["passed"] is False
+
+
+def test_sc_007_zero_median_in_a_long_case_fails():
+    """A zero median in new or repeat for a case of 1.0 s or more fails SC-007."""
+    check_acceptance = _check_acceptance()
+    for document in ("new", "repeat"):
+        base, new = _compliant_pair()
+        target = new if document == "new" else new["repeat"]
+        _set(target, PLUGIN_OLD, median_seconds=0.0)
+        result = check_acceptance(base, new)
+        assert result["criteria"]["SC-007"]["passed"] is False, document
+        assert result["passed"] is False, document
+
+
+def test_sc_007_zero_baseline_median_counts_as_short_and_is_listed():
+    """A zero baseline median is a short case: listed, and SC-007 does not fail for it."""
+    check_acceptance = _check_acceptance()
+    base, new = _compliant_pair()
+    _set(base, SINGLE_F1U0, median_seconds=0.0)
+    result = check_acceptance(base, new)
+    assert result["criteria"]["SC-007"]["passed"] is True
+    assert SINGLE_F1U0 in _short_rows(result)
+
+
 def test_missing_suite_time_fails_sc_008():
     """Without the suite wall time SC-008 cannot pass, and the result fails."""
     check_acceptance = _check_acceptance()

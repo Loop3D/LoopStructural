@@ -34,7 +34,7 @@ OPERATIONS = (
     "oldest_gradient",
     "model_gradient",
 )
-SIZES = (5_000, 50_000, 500_000)
+SIZES = (5_000, 50_000, 100_000, 500_000)
 EXTRA_SIZE = 20_000
 EXTRA_MODELS = ("plugin", "f1_u0")
 STATES = ("cold", "warm")
@@ -90,6 +90,60 @@ def enumerate_cases() -> list[dict[str, Any]]:
         for count in sizes
         for state in STATES
     ]
+
+
+# The 24 large cases of the standard suite (plan D2). They were drawn once with
+# numpy.random.default_rng(2003). The pool for each size was the cases of f0_u0..f0_u3,
+# f1_u0..f1_u3, stopped_fault, onlap_domain and faulted_fold (five operations, cold and
+# warm), sorted by case id. For each size, in the order 50,000 then 100,000 and with one
+# generator, rng.choice(len(pool), size=12, replace=False) chose the cases. The ids are
+# sorted in the order of the full list. Do not draw them again: the text is the source.
+STANDARD_LARGE_CASES: tuple[str, ...] = (
+    "f0_u0:all_group_values:100000:warm",
+    "f0_u0:oldest_gradient:100000:warm",
+    "f0_u1:oldest_value:100000:warm",
+    "f0_u1:model_ids:50000:warm",
+    "f0_u1:model_gradient:100000:cold",
+    "f0_u2:oldest_value:50000:warm",
+    "f0_u3:model_ids:100000:warm",
+    "f1_u0:all_group_values:100000:warm",
+    "f1_u1:oldest_value:50000:cold",
+    "f1_u1:model_gradient:100000:cold",
+    "f1_u2:oldest_value:100000:warm",
+    "f1_u2:oldest_gradient:50000:warm",
+    "f1_u3:oldest_value:50000:cold",
+    "f1_u3:all_group_values:100000:warm",
+    "stopped_fault:model_ids:50000:cold",
+    "stopped_fault:model_ids:50000:warm",
+    "stopped_fault:oldest_gradient:50000:cold",
+    "stopped_fault:oldest_gradient:50000:warm",
+    "onlap_domain:model_ids:50000:cold",
+    "onlap_domain:model_ids:50000:warm",
+    "onlap_domain:oldest_gradient:100000:cold",
+    "onlap_domain:model_gradient:100000:warm",
+    "faulted_fold:oldest_value:50000:warm",
+    "faulted_fold:all_group_values:100000:cold",
+)
+SUITE_NAMES = ("standard", "full")
+
+
+def standard_cases() -> list[dict[str, Any]]:
+    """Return the standard suite: all small cases and the 24 large cases, in full-list order."""
+    large = set(STANDARD_LARGE_CASES)
+    return [
+        case
+        for case in enumerate_cases()
+        if case["points"] in (SIZES[0], EXTRA_SIZE) or case["case_id"] in large
+    ]
+
+
+def select_cases(suite: str) -> list[dict[str, Any]]:
+    """Return the cases of the named suite. Raise ValueError for an unknown name."""
+    if suite == "standard":
+        return standard_cases()
+    if suite == "full":
+        return enumerate_cases()
+    raise ValueError(f"Unknown suite {suite!r}. Use one of {SUITE_NAMES}.")
 
 
 def validate_result(result: dict[str, Any]) -> None:
@@ -430,6 +484,12 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument(
         "--resume", action="store_true", help="Continue a stopped run in the work directory."
     )
+    parser.add_argument(
+        "--suite",
+        choices=SUITE_NAMES,
+        default="standard",
+        help="Cases to run: the standard suite (default) or the full suite.",
+    )
     options = parser.parse_args(argv)
     if options.rounds < 1:
         parser.error("--rounds must be at least 1")
@@ -437,7 +497,7 @@ def main(argv: list[str] | None = None) -> int:
     # The work directory and the output file are not changes of the code.
     _set_dirty_excludes(work_dir, options.output)
     meta = _prepare_work_dir(parser, work_dir, resume=options.resume, rounds=options.rounds)
-    cases = enumerate_cases()
+    cases = select_cases(options.suite)
     passes = {}
     for pass_kind in PASS_KINDS:
         output_path = work_dir / f"{pass_kind}.json"

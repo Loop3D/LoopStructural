@@ -322,14 +322,14 @@ The runner correction of 9610f6a1 and 290edf3d (progress, checkpoint file,
   - Wave: 12
   - Done when: `python -m pytest tests/fault_evaluation/test_benchmark_suites.py tests/fault_evaluation/test_benchmark_run.py tests/fault_evaluation/test_benchmark_resume.py -q` fails for absent `standard_cases`, `select_cases` and the `--suite` option, then passes after T036.
 
-- [ ] T036 [US3] [M] Implement the standard suite, the suite option and the priming skip.
+- [x] T036 [US3] [M] Implement the standard suite, the suite option and the priming skip.
   - Do: Implement D2. Add 100,000 to the sizes of the full suite. Add `STANDARD_LARGE_CASES` (a tuple of 24 literal case ids): draw it once, with `numpy.random.default_rng(2003)`, 12 cases for each of the sizes 50,000 and 100,000, from the pool of cases of the models named in D2; write the ids as text and keep a comment that says how they were drawn. Add `standard_cases()`, `select_cases(suite)` and `--suite {standard,full}` (default `standard`) to `main`. Keep `enumerate_cases()` as the full suite. In `bench_cases.run_case`, skip the priming call of a warm case when the model has no `evaluation_cache`. Do not change tests. Do not add counters or a production change.
   - Files: `benchmarks/fault_evaluation/run.py`, `benchmarks/fault_evaluation/bench_cases.py`
   - Needs: T035
   - Wave: 13
   - Done when: `python -m pytest tests/fault_evaluation/test_benchmark_suites.py tests/fault_evaluation/test_benchmark_run.py tests/fault_evaluation/test_benchmark_resume.py tests/fault_evaluation/test_benchmark_compare.py -q` passes.
 
-- [ ] T039 [P] [Found] [M] Change the acceptance tests for the SC-007 rule of short cases.
+- [x] T039 [P] [Found] [M] Change the acceptance tests for the SC-007 rule of short cases.
   - Do: CHANGES to done work: T028 treats every case in the same way for SC-007 (the larger ratio between the two runs must be below 1.10). Follow D2b: only cases with a baseline median of 1.0 s or more are checked. Add tests: a case of 1.0 s or more with a noise ratio of 1.10 or more fails SC-007 and names the case; a case with a baseline median below 1.0 s and a noise ratio of 1.5 does not fail SC-007 and appears in `result["short_cases"]` with its noise ratio; a missing repeat document or a zero median still fails. Change a fixture or an existing assertion only where the new rule makes it wrong, and say which in the final report. Keep all other tests of T028 as they are.
   - Files: `tests/fault_evaluation/test_acceptance.py`
   - Needs: T028
