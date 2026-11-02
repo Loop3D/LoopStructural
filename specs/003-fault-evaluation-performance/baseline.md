@@ -23,9 +23,16 @@ changes of spec 003. It was measured on 2026-11-02. The numbers come from
   python -m benchmarks.fault_evaluation.compare baseline.json baseline_repeat.json --output <path>
   ```
 
-- **Rounds**: every case runs one round first. A timing case with a median below
-  1.0 s runs again for 5 rounds (130 of 254 cases). 124 cases have a median of 1.0
-  s or more.
+- **Rounds**: every case runs one round first. A timing case with a first-round
+  median below 1.0 s runs again for 5 rounds. In run 1, 142 cases have 5 rounds:
+  the 130 cases with a final median below 1.0 s, and 12 cases whose 5-round
+  median is 1.0 s or more (1.02 s to 1.17 s). In run 2, 131 cases have 5 rounds.
+  The other cases have one round. 124 cases have a final median of 1.0 s or
+  more.
+- **Source of the pass times**: the times of each pass in the table below come
+  from the run logs and the `meta.json` files of the work directories, which are
+  not committed. The result files hold only the total, `suite_wall_seconds`
+  (3,270.6 s and 3,425.6 s).
 
 ## Runtime of the suite
 
@@ -81,10 +88,13 @@ Observations, not conclusions:
   same in most groups, which points to a drift of the computer (heat, background
   load) more than to random noise in single cases. This record cannot prove the
   cause.
-- A case of 1.0 s or more has one timed round in the first step, so it has no
-  averaging. Only a case that the first step measured below 1.0 s has 5 rounds.
-- The compare tool marks 98 cases as slower than the noise limit. The count ratios
-  (fault and field calls) are exactly 1.0 for every case.
+- A case that the first step measured at 1.0 s or more has one timed round, so it
+  has no averaging (112 of the 124 checked cases). The other 12 checked cases have
+  5 rounds.
+- The compare tool marks 98 cases as slower than the noise limit. The fault and
+  field counts and the point counts are equal in every case between the two runs.
+  The compare tool gives an undefined ratio where the count is 0 (94 count fields,
+  for example the fault counts of the models with no fault).
 
 The scaling tables of the compare tool (median ratio of run 2 to run 1, by group):
 
