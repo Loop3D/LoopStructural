@@ -26,6 +26,16 @@ COUNT_FIELDS = (
     "field_points_total",
 )
 _MODEL_PATTERN = re.compile(r"^f(\d+)_u(\d+)$")
+_CASE_PROVENANCE_FIELDS = (
+    "input_hash",
+    "code_revision",
+    "dirty",
+    "prerequisite_parent_revision",
+    "prerequisite_fix_revision",
+    "baseline_revision",
+)
+# Marks a key that is absent from a case. Absent in both cases is not a difference.
+_MISSING = object()
 
 
 def _ratio(base: float, new: float) -> tuple[float | None, str]:
@@ -135,6 +145,26 @@ def _provenance_warnings(base: dict[str, Any], new: dict[str, Any]) -> list[str]
     return warnings
 
 
+def _case_provenance_warnings(
+    case_id: str, base_case: dict[str, Any], new_case: dict[str, Any]
+) -> list[str]:
+    """Return one provenance warning for each per-case field that differs.
+
+    The warning names the case id and the field. Times are not comparable when
+    the input hash differs, so the warning must be read before the ratios.
+    """
+    warnings = []
+    for field in _CASE_PROVENANCE_FIELDS:
+        base_value = base_case.get(field, _MISSING)
+        new_value = new_case.get(field, _MISSING)
+        if base_value != new_value:
+            warnings.append(
+                f"Provenance field {field} differs for case {case_id!r}: "
+                f"base {base_case.get(field)!r}, new {new_case.get(field)!r}"
+            )
+    return warnings
+
+
 def compare_results(base: dict[str, Any], new: dict[str, Any]) -> dict[str, Any]:
     """Compare two schema v1 results case by case.
 
@@ -155,6 +185,7 @@ def compare_results(base: dict[str, Any], new: dict[str, Any]) -> dict[str, Any]
         if case_id not in base_cases:
             raise ValueError(f"Case {case_id!r} is missing from the base result")
     rows = []
+    case_warnings = []
     for case_id, base_case in base_cases.items():
         new_case = new_cases[case_id]
         if base_case["points"] != new_case["points"]:
@@ -168,12 +199,13 @@ def compare_results(base: dict[str, Any], new: dict[str, Any]) -> dict[str, Any]
                 f"base {base_case['state']!r}, new {new_case['state']!r}"
             )
         rows.append(_case_row(base_case, new_case))
+        case_warnings.extend(_case_provenance_warnings(case_id, base_case, new_case))
     return {
         "schema_version": SCHEMA_VERSION,
         "noise_limit": NOISE_LIMIT,
         "cases": rows,
         "scaling": _scaling(rows),
-        "warnings": _provenance_warnings(base, new),
+        "warnings": _provenance_warnings(base, new) + case_warnings,
     }
 
 
