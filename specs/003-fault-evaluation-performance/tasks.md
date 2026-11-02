@@ -113,7 +113,7 @@
   - Wave: 10
   - Done when: python -m pytest tests/fault_evaluation/test_benchmark_compare.py -q fails for absent compare_results, then passes after T010.
 
-- [ ] T010 [US3] [S] Implement benchmark result comparison.
+- [x] T010 [US3] [S] Implement benchmark result comparison.
   - Do: Implement D2 compare_results(base: dict, new: dict) -> dict and main(argv=None). Parse base/new paths and --output. Emit time and count ratios, >1.10 noise marks, F/U scaling and provenance differences. Use only stdlib. Do not change tests.
   - Files: `benchmarks/fault_evaluation/compare.py`
   - Needs: T009, T008
