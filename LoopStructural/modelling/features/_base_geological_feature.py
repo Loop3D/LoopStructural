@@ -9,6 +9,8 @@ from LoopStructural.modelling.features import FeatureType
 from LoopStructural.utils import LoopIsosurfacer, LoopValueError, getLogger, surface_list
 from LoopStructural.utils.typing import NumericInput
 
+from ._evaluation import evaluation_scope
+
 logger = getLogger(__name__)
 
 
@@ -223,8 +225,9 @@ class BaseFeature(metaclass=ABCMeta):
         pos : NumericInput
             An array or arraylike object with locations
         """
-        value = self.evaluate_value(pos)
-        return (value - self.min()) / (self.max() - self.min())
+        with evaluation_scope(self.model):
+            value = self.evaluate_value(pos)
+            return (value - self.min()) / (self.max() - self.min())
 
     def _calculate_mask(self, evaluation_points: np.ndarray, ignore_regions=False) -> np.ndarray:
         """Calculate the mask for which evaluation points need to be calculated
@@ -274,7 +277,7 @@ class BaseFeature(metaclass=ABCMeta):
         """
         Evaluate the gradient of the feature at a given position.
         """
-    
+
         raise NotImplementedError
 
     def min(self):
@@ -338,7 +341,7 @@ class BaseFeature(metaclass=ABCMeta):
                 raise ValueError("Must specify bounding box")
             bounding_box = self.model.bounding_box
         regions = self.regions
-        
+
         try:
             # A region can also be a plain callable (e.g. the lambdas
             # add_domain_fault_below/above attach for a domain-fault crop),
@@ -435,6 +438,7 @@ class BaseFeature(metaclass=ABCMeta):
         )
         grid.cell_properties[self.name] = value
         return grid
+
     def vector_field(self, bounding_box=None, tolerance=0.05, scale=1.0):
         """Create a vector field for the feature
 

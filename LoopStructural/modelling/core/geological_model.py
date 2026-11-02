@@ -1,6 +1,7 @@
 """
 Main entry point for creating a geological model
 """
+
 from __future__ import annotations
 
 import warnings
@@ -25,6 +26,8 @@ from ...utils.helper import (
     all_heading,
     gradient_vec_names,
 )
+from ..features._evaluation import evaluation_scope
+from ..features._evaluation_cache import RestorationCache
 from ..features._feature_converters import (
     add_fold_to_feature as _add_fold_to_feature,
 )
@@ -135,6 +138,17 @@ class GeologicalModel:
 
         self.tol = 1e-10 * np.max(self.bounding_box.maximum - self.bounding_box.origin)
         self._dtm = None
+        self._evaluation_cache = RestorationCache()
+
+    @property
+    def evaluation_cache(self) -> RestorationCache:
+        """RestorationCache: Storage for restored fault coordinates.
+
+        The evaluation scope does not read or write it yet.
+        """
+        if getattr(self, "_evaluation_cache", None) is None:
+            self._evaluation_cache = RestorationCache()
+        return self._evaluation_cache
 
     @public_api(tier="stable")
     def to_dict(self):
@@ -312,13 +326,17 @@ class GeologicalModel:
                     logger.warning(f"Cannot add splay {edge[1]} or {edge[0]} are not in the model")
                     continue
                 splay = False
-                if "angle" in properties and float(properties["angle"]) < 30 and (
-                    "dip_dir" not in processor.stratigraphic_column["faults"][edge[0]]
-                    or np.abs(
-                        processor.stratigraphic_column["faults"][edge[0]]["dip_dir"]
-                        - processor.stratigraphic_column["faults"][edge[1]]["dip_dir"]
+                if (
+                    "angle" in properties
+                    and float(properties["angle"]) < 30
+                    and (
+                        "dip_dir" not in processor.stratigraphic_column["faults"][edge[0]]
+                        or np.abs(
+                            processor.stratigraphic_column["faults"][edge[0]]["dip_dir"]
+                            - processor.stratigraphic_column["faults"][edge[1]]["dip_dir"]
+                        )
+                        < 90
                     )
-                    < 90
                 ):
                     # splay
                     region = model[edge[1]].builder.add_splay(model[edge[0]])
@@ -663,12 +681,10 @@ class GeologicalModel:
                     min_val = stratigraphic_column[g][u]["min"]
                     max_val = stratigraphic_column[g][u].get("max", None)
                     thickness = max_val - min_val if max_val is not None else None
-                logger.info(
-                    f"""
+                logger.info(f"""
                                model.stratigraphic_column.add_unit({u},
                                colour={stratigraphic_column[g][u].get("colour", None)},
-                                 thickness={thickness})"""
-                )
+                                 thickness={thickness})""")
                 self.stratigraphic_column.add_unit(
                     u,
                     colour=stratigraphic_column[g][u].get("colour", None),
@@ -1221,15 +1237,17 @@ class GeologicalModel:
             return strat_id
 
         s_id = 0
-        for g in reversed(self.stratigraphic_column.get_groups()):
-            feature_id = self.feature_name_index.get(g.name, -1)
-            if feature_id >= 0:
-                vals = self.features[feature_id].evaluate_value(xyz)
-                for u in g.units:
-                    strat_id[np.logical_and(vals < u.max(), vals > u.min())] = s_id
-                    s_id += 1
-            if feature_id == -1:
-                logger.error(f"Model does not contain {g.name}")
+        # one scope for all groups: they share the restorations of equal fault sets
+        with evaluation_scope(self):
+            for g in reversed(self.stratigraphic_column.get_groups()):
+                feature_id = self.feature_name_index.get(g.name, -1)
+                if feature_id >= 0:
+                    vals = self.features[feature_id].evaluate_value(xyz)
+                    for u in g.units:
+                        strat_id[np.logical_and(vals < u.max(), vals > u.min())] = s_id
+                        s_id += 1
+                if feature_id == -1:
+                    logger.error(f"Model does not contain {g.name}")
 
         return strat_id
 
@@ -1283,10 +1301,11 @@ class GeologicalModel:
         # `scale` is retained for API-signature compatibility only -- see
         # evaluate_model.
         vals = np.zeros(points.shape[0])
-        for f in self.features:
-            if f.type == FeatureType.FAULT:
-                disp = f.displacementfeature.evaluate_value(points)
-                vals[~np.isnan(disp)] += disp[~np.isnan(disp)]
+        with evaluation_scope(self):
+            for f in self.features:
+                if f.type == FeatureType.FAULT:
+                    disp = f.displacementfeature.evaluate_value(points)
+                    vals[~np.isnan(disp)] += disp[~np.isnan(disp)]
         return vals  # convert from restoration magnutude to displacement
 
     @public_api(tier="stable")
@@ -1355,7 +1374,8 @@ class GeologicalModel:
         # evaluate_model.
         feature = self.get_feature_by_name(feature_name)
         if feature:
-            return feature.evaluate_value(xyz)
+            with evaluation_scope(self):
+                return feature.evaluate_value(xyz)
         else:
             return np.zeros(xyz.shape[0])
 
@@ -1403,10 +1423,8 @@ class GeologicalModel:
                 total_dof += f.interpolator.dof
                 continue
         if verbose:
-            logger.info(
-                f"Updating geological model. There are: \n {nfeatures} \
-                    geological features that need to be interpolated\n"
-            )
+            logger.info(f"Updating geological model. There are: \n {nfeatures} \
+                    geological features that need to be interpolated\n")
 
         with timed_stage(logger, "update", nfeatures=nfeatures, total_dof=total_dof):
             if progressbar:
@@ -1474,7 +1492,8 @@ class GeologicalModel:
 # ModelFeatureFactory.build_* staticmethod; new feature types register here
 # without modifying GeologicalModel's source.
 FeatureBuilderRegistry.register(
-    "foliation", lambda model, name, **params: ModelFeatureFactory.build_foliation(model, name, **params)
+    "foliation",
+    lambda model, name, **params: ModelFeatureFactory.build_foliation(model, name, **params),
 )
 FeatureBuilderRegistry.register(
     "fold_frame",
@@ -1486,7 +1505,9 @@ FeatureBuilderRegistry.register(
 )
 FeatureBuilderRegistry.register(
     "folded_fold_frame",
-    lambda model, name, **params: ModelFeatureFactory.build_folded_fold_frame(model, name, **params),
+    lambda model, name, **params: ModelFeatureFactory.build_folded_fold_frame(
+        model, name, **params
+    ),
 )
 FeatureBuilderRegistry.register(
     "intrusion",

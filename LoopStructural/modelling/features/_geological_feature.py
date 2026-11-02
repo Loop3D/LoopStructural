@@ -3,6 +3,7 @@
 This module contains classes for representing geometrical elements in geological
 models such as foliations, fault planes, and fold rotation angles.
 """
+
 from __future__ import annotations
 
 import numpy as np
@@ -11,6 +12,7 @@ from LoopStructural.utils.maths import gradient_from_tetrahedron, regular_tetrah
 
 from ...geometry import ValuePoints, VectorPoints
 from ._base_geological_feature import BaseFeature
+from ._evaluation import evaluation_scope, restore
 from . import FeatureType
 from ...utils import LoopValueError, getLogger
 
@@ -131,30 +133,33 @@ class GeologicalFeature(BaseFeature):
         """
         if pos.shape[1] != 3:
             raise LoopValueError("Need Nx3 array of xyz points to evaluate value")
-        # TODO need to add a generic type checker for all methods
-        # if evaluation_points is not a numpy array try and convert
-        # otherwise error
-        evaluation_points = np.asarray(pos)
-        # if there is a builder lets make sure that the feature is up to date
-        if self.builder is not None:
-            self.builder.up_to_date()
-        # check if the points are within the display region
-        v = np.zeros(evaluation_points.shape[0])
-        v[:] = np.nan
-        mask = self._calculate_mask(pos, ignore_regions=ignore_regions)
-        evaluation_points = self._apply_faults(evaluation_points)
-        if mask.dtype not in [int, bool]:
-            logger.error(f"Unable to evaluate value for {self.name}")
-        else:
-            v[mask] = self.interpolator.evaluate_value(evaluation_points[mask, :])
-        if fillnan == 'nearest':
-            from scipy import spatial
+        # The scope shares the fault restorations of this call and of all nested calls.
+        with evaluation_scope(self.model):
+            # TODO need to add a generic type checker for all methods
+            # if evaluation_points is not a numpy array try and convert
+            # otherwise error
+            evaluation_points = np.asarray(pos)
+            # if there is a builder lets make sure that the feature is up to date
+            if self.builder is not None:
+                self.builder.up_to_date()
+            # check if the points are within the display region
+            v = np.zeros(evaluation_points.shape[0])
+            v[:] = np.nan
+            # the masks use the original points, never the restored points
+            mask = self._calculate_mask(pos, ignore_regions=ignore_regions)
+            evaluation_points = restore(self, evaluation_points)
+            if mask.dtype not in [int, bool]:
+                logger.error(f"Unable to evaluate value for {self.name}")
+            else:
+                v[mask] = self.interpolator.evaluate_value(evaluation_points[mask, :])
+            if fillnan == 'nearest':
+                from scipy import spatial
 
-            nanmask = np.isnan(v)
-            tree = spatial.cKDTree(evaluation_points[~nanmask, :])
-            _d, i = tree.query(evaluation_points[nanmask, :])
-            v[nanmask] = v[~nanmask][i]
-        return v
+                nanmask = np.isnan(v)
+                tree = spatial.cKDTree(evaluation_points[~nanmask, :])
+                _d, i = tree.query(evaluation_points[nanmask, :])
+                v[nanmask] = v[~nanmask][i]
+            return v
 
     def evaluate_gradient(
         self, pos: np.ndarray, ignore_regions=False, element_scale_parameter=None
