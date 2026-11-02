@@ -8,6 +8,8 @@ from __future__ import annotations
 import importlib
 import json
 import os
+import shutil
+import subprocess
 from pathlib import Path
 from types import SimpleNamespace
 
@@ -229,3 +231,92 @@ def test_no_checkpoint_is_written_without_the_environment_variable(monkeypatch, 
     assert line["stats"] == {"rounds": 2, "data": [0.1, 0.2], "median": 0.15}
     assert line["extra_info"]["case_id"] == "a"
     assert line["elapsed_seconds"] == 1.5
+
+
+# The real function, taken before the autouse fixture replaces it.
+_REAL_REVISION_METADATA = run_module._revision_metadata
+
+
+def _git_repo(path: Path) -> Path:
+    """Make a real git repository with one commit."""
+    path.mkdir()
+    for command in (
+        ["init", "-q"],
+        ["config", "user.email", "test@example.com"],
+        ["config", "user.name", "Test"],
+        ["config", "commit.gpgsign", "false"],
+    ):
+        subprocess.run(["git", *command], cwd=path, check=True)
+    (path / "tracked.txt").write_text("content", encoding="utf8")
+    subprocess.run(["git", "add", "tracked.txt"], cwd=path, check=True)
+    subprocess.run(["git", "commit", "-q", "-m", "first"], cwd=path, check=True)
+    return path
+
+
+@pytest.fixture
+def real_git(monkeypatch, tmp_path):
+    """Point the runner at a real temporary repository and use the real metadata function."""
+    repo = _git_repo(tmp_path / "repo")
+    monkeypatch.setattr(run_module, "ROOT", repo)
+    monkeypatch.setattr(run_module, "_revision_metadata", _REAL_REVISION_METADATA)
+    _REAL_REVISION_METADATA.cache_clear()
+    yield repo
+    _REAL_REVISION_METADATA.cache_clear()
+
+
+def _repo_argv(repo):
+    return ["--output", str(repo / "out" / "result.json")]
+
+
+def test_work_dir_and_output_inside_repo_do_not_set_dirty(monkeypatch, real_git):
+    """Untracked work directory and output file never set dirty, also not on a resume."""
+    _prepare_main(monkeypatch, _cases(2))
+    monkeypatch.setattr(run_module, "_launch_pytest", _fake_launcher(1))
+    with pytest.raises(RuntimeError):
+        run_module.main(_repo_argv(real_git))
+    work = real_git / "out" / "result.json.work"
+    assert json.loads((work / "meta.json").read_text(encoding="utf8"))["dirty"] is False
+
+    _REAL_REVISION_METADATA.cache_clear()  # a new process
+    monkeypatch.setattr(run_module, "_launch_pytest", _fake_launcher())
+    assert run_module.main([*_repo_argv(real_git), "--resume"]) == 0
+    result = json.loads((real_git / "out" / "result.json").read_text(encoding="utf8"))
+    assert {row["dirty"] for row in result["cases"]} == {False}
+
+    # A second run with the same output, next to the leftover output file, is also clean.
+    shutil.rmtree(work)
+    _REAL_REVISION_METADATA.cache_clear()
+    assert run_module.main(_repo_argv(real_git)) == 0
+    second = json.loads((real_git / "out" / "result.json").read_text(encoding="utf8"))
+    assert {row["dirty"] for row in second["cases"]} == {False}
+
+
+def test_other_untracked_file_in_repo_sets_dirty(monkeypatch, real_git):
+    """Only the work directory and the output are excluded: any other file sets dirty."""
+    _prepare_main(monkeypatch, _cases(2))
+    monkeypatch.setattr(run_module, "_launch_pytest", _fake_launcher())
+    (real_git / "other.txt").write_text("x", encoding="utf8")
+    assert run_module.main(_repo_argv(real_git)) == 0
+    result = json.loads((real_git / "out" / "result.json").read_text(encoding="utf8"))
+    assert {row["dirty"] for row in result["cases"]} == {True}
+
+    # A file next to the output, in the same directory, also sets dirty.
+    _REAL_REVISION_METADATA.cache_clear()
+    (real_git / "other.txt").unlink()
+    (real_git / "out" / "neighbour.txt").write_text("x", encoding="utf8")
+    assert run_module.main(["--output", str(real_git / "out" / "second.json")]) == 0
+    second = json.loads((real_git / "out" / "second.json").read_text(encoding="utf8"))
+    assert {row["dirty"] for row in second["cases"]} == {True}
+
+
+def test_resume_without_meta_is_refused(monkeypatch, tmp_path, capsys):
+    """--resume with a work directory that holds data but no meta.json is refused."""
+    _prepare_main(monkeypatch, _cases(2))
+    monkeypatch.setattr(run_module, "_launch_pytest", _fake_launcher())
+    work = tmp_path / "work"
+    work.mkdir()
+    (work / "timing.json").write_text("{}", encoding="utf8")
+    with pytest.raises(SystemExit) as error:
+        run_module.main(_argv(tmp_path, "--resume"))
+    assert error.value.code != 0
+    assert "meta.json" in capsys.readouterr().err

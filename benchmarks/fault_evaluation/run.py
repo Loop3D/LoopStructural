@@ -197,13 +197,40 @@ def _launch_pytest(suite: Path | str, args: list[str]) -> int:
     return subprocess.run(command, cwd=ROOT, check=False).returncode
 
 
+# Paths that the runner writes itself. They never make the repository dirty.
+_DIRTY_EXCLUDES: tuple[Path, ...] = ()
+
+
+def _set_dirty_excludes(*paths: Path) -> None:
+    """Set the paths that the dirty flag ignores. Call this before the first metadata call."""
+    global _DIRTY_EXCLUDES
+    _DIRTY_EXCLUDES = tuple(Path(path).resolve() for path in paths)
+    cache_clear = getattr(_revision_metadata, "cache_clear", None)
+    if cache_clear is not None:
+        cache_clear()
+
+
+def _is_dirty() -> bool:
+    """Return True if the repository has changes, ignoring the paths of the runner."""
+    root = ROOT.resolve()
+    pathspecs = ["."]
+    for path in _DIRTY_EXCLUDES:
+        try:
+            relative = path.relative_to(root)
+        except ValueError:
+            continue  # The path is outside the repository.
+        if relative.parts:
+            pathspecs.append(":(exclude,literal)" + relative.as_posix())
+    return bool(_git("status", "--porcelain", "--", *pathspecs))
+
+
 @lru_cache(maxsize=1)
 def _revision_metadata() -> dict[str, Any]:
     """Return the revision and input fields that every case row shares."""
     code_revision = _git("rev-parse", "HEAD")
     return {
         "code_revision": code_revision,
-        "dirty": bool(_git("status", "--porcelain")),
+        "dirty": _is_dirty(),
         "prerequisite_parent_revision": PREREQUISITE_PARENT_REVISION,
         "prerequisite_fix_revision": PREREQUISITE_FIX_REVISION,
         "baseline_revision": _baseline_revision(code_revision),
@@ -354,6 +381,11 @@ def _prepare_work_dir(
     """
     meta_path = work_dir / "meta.json"
     current = _revision_metadata()
+    if resume and not meta_path.is_file() and work_dir.exists() and any(work_dir.iterdir()):
+        parser.error(
+            f"Cannot resume: the work directory {work_dir} holds data but no meta.json. "
+            "Delete the directory to start again."
+        )
     if not resume:
         if work_dir.exists() and any(work_dir.iterdir()):
             parser.error(
@@ -402,6 +434,8 @@ def main(argv: list[str] | None = None) -> int:
     if options.rounds < 1:
         parser.error("--rounds must be at least 1")
     work_dir = options.work_dir or options.output.with_name(options.output.name + ".work")
+    # The work directory and the output file are not changes of the code.
+    _set_dirty_excludes(work_dir, options.output)
     meta = _prepare_work_dir(parser, work_dir, resume=options.resume, rounds=options.rounds)
     cases = enumerate_cases()
     passes = {}
