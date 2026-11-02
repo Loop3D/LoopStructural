@@ -143,7 +143,7 @@
   - Wave: 17
   - Done when: python -m pytest tests/fault_evaluation/test_cache_storage.py -q fails for absent RestorationCache, then passes after T013.
 
-- [ ] T013 [P] [Found] [M] Implement bounded restoration cache storage.
+- [x] T013 [P] [Found] [M] Implement bounded restoration cache storage.
   - Do: Implement D4 RestorationCache using OrderedDict and RLock with exact array-byte accounting. Store restored arrays read-only. No input arrays, masks or final outputs are retained. Keep metadata accounting explicit. Do not yet add public evaluation reuse.
   - Files: `LoopStructural/modelling/features/_evaluation_cache.py`
   - Needs: T012
@@ -229,7 +229,7 @@
   - Wave: 17
   - Done when: python -m pytest packages/loop_common/tests/test_evaluation_lookup.py -q fails for absent _lookup_points/_gradient_weights, then passes after T025.
 
-- [ ] T025 [P] [US5] [M] Remove repeated structured-grid cell searches.
+- [x] T025 [P] [US5] [M] Remove repeated structured-grid cell searches.
   - Do: Implement D6 _lookup_points and _gradient_weights and route value/gradient evaluation through them. Preserve boundary and NaN behavior, summation order and scale factors. Leave other support types and solvers unchanged. Do not alter tests or tolerances.
   - Files: `packages/loop_common/src/loop_common/supports/_3d_structured_grid.py`
   - Needs: T024
