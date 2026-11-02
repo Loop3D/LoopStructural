@@ -245,7 +245,7 @@
 
 ## Phase 5: Acceptance tools and final checks
 
-- [ ] T028 [P] [Found] [S] Test numerical performance acceptance reporting.
+- [x] T028 [P] [Found] [S] Test numerical performance acceptance reporting.
   - Do: Test check_acceptance(base: dict, new: dict) -> dict with fixed schema-v1 files. Check SC-002 <=0.40, SC-003 <=0.15, SC-004 <=1.5, SC-005 <=0.50, SC-006 <=1.20, SC-007 <10%, SC-008 <900s, SC-009 <=0.50, SC-010 zero calls and <=0.10. Missing cases, incompatible provenance and missing gradient decision are explicit failures. Never turn a failed target into a warning.
   - Files: `tests/fault_evaluation/test_acceptance.py`
   - Needs: T010
