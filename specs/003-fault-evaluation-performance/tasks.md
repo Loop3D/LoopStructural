@@ -127,7 +127,7 @@
   - Wave: 11
   - Done when: python -m pytest tests/fault_evaluation/test_benchmark_compare.py -q passes.
 
-- [ ] T011 [P] [US3] [M] Record the complete pre-change baseline of the standard suite twice.
+- [x] T011 [P] [US3] [M] Record the complete pre-change baseline of the standard suite twice.
   - Do: CHANGED by the replan of 2026-11-02: the earlier text asked for the full 650-case matrix, which did not finish in 4 hours (stopped, no result file). Now run the STANDARD suite (254 cases, D2) twice, after T038 and before any performance edit, as the notes on long runs say: `python -m benchmarks.fault_evaluation.run --output <dir>/baseline.json --work-dir <dir>/run1.work` and the same with `baseline_repeat.json` and `run2.work`; `<dir>` is an absolute path outside the repository. Use `--resume` after a stop. The runs must start from a clean committed tree. Store machine identity, actual revision, input hashes, full times/counts/peak memory, `suite_wall_seconds` and the three D0 revision fields. Raw failing gradients have no numeric baseline; use the corrected pre-performance revision. Copy the two files into the spec folder. Run the compare CLI. Write baseline.md with the runtime of each run, the cases below 1 s, and the SC-007 noise (D2b). Record SC-007/008 failures honestly and activate OP2 if they fail. Missing/failed cases block this task; do not replace with research numbers or a reduced suite. If one run takes more than 90 minutes, stop and report.
   - Files: `specs/003-fault-evaluation-performance/baseline.json`, `specs/003-fault-evaluation-performance/baseline_repeat.json`, `specs/003-fault-evaluation-performance/baseline.md`
   - Needs: T006, T010, T038
