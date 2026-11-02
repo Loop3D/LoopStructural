@@ -514,6 +514,11 @@ tasks.md says so.
   and 100,000 points each (cheaper models only), a 10% noise limit for cases
   of 1 s or more, and a 15-minute limit after the change (spec C-006 to C-010).
   The user also chose that every time is measured and none is inferred.
+- OP2, answered 2026-11-03: the baseline of the standard suite failed SC-007 (35 of
+  124 cases of 1.0 s or more differ by 10 % or more between the two runs; see
+  baseline.md). The user chose to continue with the cache and grid tasks and to
+  decide at T030, after a new measurement on a quiet computer. SC-007 is not
+  changed. A failed SC-007 at T030 still keeps acceptance open.
 - 2026-11-02, planner decisions that follow from this and need no user answer:
   the runner skips the useless priming call when the model has no cache;
   short cases repeat for five rounds in a second step; the list of large cases

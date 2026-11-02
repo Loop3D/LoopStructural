@@ -136,7 +136,7 @@
 
 ## Phase 3: Evaluation sharing and cache
 
-- [ ] T012 [P] [Found] [M] Test restoration cache storage and exact byte limits.
+- [x] T012 [P] [Found] [M] Test restoration cache storage and exact byte limits.
   - Do: Test D4 constructor/defaults, get/put, LRU access and eviction, overwrite accounting, max_bytes shrink, negative limit, zero/disabled modes, oversize entries, clear/invalidate, immutable arrays and exception-safe publication. Count ndarray.nbytes and reject a second retained copy.
   - Files: `tests/fault_evaluation/test_cache_storage.py`
   - Needs: T011
@@ -222,7 +222,7 @@
 
 ## Phase 4: Fault-step cost
 
-- [ ] T024 [P] [US5] [M] Test structured-grid lookup equivalence and boundaries.
+- [x] T024 [P] [US5] [M] Test structured-grid lookup equivalence and boundaries.
   - Do: Test D6 exact private helper tuple and weights against frozen legacy calculations for random/interior/corner/face/outside/NaN/empty points and non-unit grids. Compare evaluate_value/evaluate_gradient with old arithmetic. Assert one cell-index lookup per call and unchanged scale/corner ordering. No timing assertions in unit tests.
   - Files: `packages/loop_common/tests/test_evaluation_lookup.py`
   - Needs: T011
