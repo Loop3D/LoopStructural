@@ -164,7 +164,7 @@
   - Wave: 20
   - Done when: python -m pytest tests/fault_evaluation/test_context.py tests/fault_evaluation/test_golden.py -q passes.
 
-- [ ] T016 [US2] [M] Test complete cache invalidation and direct mutations.
+- [x] T016 [US2] [M] Test complete cache invalidation and direct mutations.
   - Do: Test D4 setters plus direct/in-place mutations of points, coefficients, data, support transforms, build arguments, fault order, regions/thresholds/sign, faults_enabled, displacement, steps, faultfunction, build and solve. Test dependency frames and opaque callables. Compare every second result to cache-disabled changed-model evaluation and assert no stale cache lookup is used. Test dirty lazy-build occurs exactly once.
   - Files: `tests/fault_evaluation/test_invalidation.py`
   - Needs: T015
