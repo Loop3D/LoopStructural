@@ -1,6 +1,6 @@
 # Feature spec: Faster evaluation of faulted models
 
-**Feature**: `003-fault-evaluation-performance` | **Created**: 2026-11-01 | **Status**: Clarified 2026-11-01
+**Feature**: `003-fault-evaluation-performance` | **Created**: 2026-11-01 | **Status**: Clarified 2026-11-02 (standard suite added)
 
 **Input**: The user renders models in the QGIS plugin. A model with faults and
 unconformities is slow to render, and it becomes slower with each fault and
@@ -51,9 +51,16 @@ The analysis of the present code and the baseline numbers are in research.md.
     tests build again in the same way each time.
   - **golden result**: a stored output of a golden model, made with the code
     before this feature. The tests compare the new output with it.
-  - **benchmark case**: one golden model, one evaluation function and one
-    number of points.
-  - **baseline**: the benchmark results of the code before this feature.
+  - **benchmark state**: *cold* if the restored points are removed before the
+    timed call, *warm* if an earlier call of the same points filled them.
+  - **benchmark case**: one golden model, one evaluation function, one number
+    of points and one benchmark state.
+  - **standard suite**: the set of benchmark cases that a developer runs
+    for each measurement (FR-012).
+  - **full suite**: all the cases of FR-012, including the large ones that the
+    standard suite leaves out. A developer starts it on purpose.
+  - **baseline**: the benchmark results of the standard suite on the code
+    before this feature.
 
 ## User scenarios and tests
 
@@ -112,6 +119,12 @@ applications with the baseline.
    evaluation call makes no fault applications. **When** the model changed
    before the second call, **then** the result is the result of the changed
    model.
+5. **Given** one model, **when** two threads evaluate it at the same time,
+   **then** each thread gets the result that it gets when it runs alone
+   (FR-010a).
+6. **Given** the public evaluation functions before and after this feature,
+   **when** a caller uses them with the same arguments, **then** the
+   functions, the arguments and the return types are the same (FR-011).
 
 ### User story 3: Measure the cost with benchmarks (priority: P2)
 
@@ -282,11 +295,33 @@ the golden tests.
 **Benchmarks**
 
 - **FR-012**: The repository MUST contain a benchmark suite that uses the
-  golden models. The cases MUST cover:
+  golden models. The full suite MUST cover:
   - `evaluate_value` of the oldest group, all groups one by one,
     `evaluate_model`, `evaluate_gradient` and `evaluate_model_gradient`;
-  - 5 000, 50 000 and 500 000 points;
-  - all the fault and unconformity counts of FR-001.
+  - 5 000, 20 000 (the plugin model and the model with one fault and no
+    unconformity only), 50 000, 100 000 and 500 000 points;
+  - all the fault and unconformity counts of FR-001;
+  - the cold state and the warm state.
+- **FR-012a**: The standard suite MUST be a part of the full suite. It MUST
+  contain every case that a success criterion (SC-002 to SC-010) uses. One
+  run of the standard suite, with all its passes (time, counts and memory),
+  MUST take about 1 hour on the code before this feature, on the computer in
+  `research.md`. The standard suite MUST contain:
+  - all the 5 000-point cases (every golden model, every function, cold and
+    warm);
+  - the 20 000-point cases of the plugin model and of the model with one fault
+    and no unconformity;
+  - 12 cases at 50 000 points and 12 cases at 100 000 points. A fixed random
+    choice (fixed seed) picks them from the cases of the models with 0 or 1
+    faults and of the stopped-fault, onlap-domain and faulted-fold models.
+    The models that cost the most (the models with 2 or 4 faults, the
+    cutting-faults model and the plugin model) are not in this choice, because
+    they are measured at 5 000 and 20 000 points. The choice is the same in
+    every run, so two result files have the same cases.
+  The full suite is not limited in time. It is the standard suite plus all the
+  other cases of FR-012.
+- **FR-012b**: The command that runs the suite MUST run the standard suite by
+  default, and MUST run the full suite only when the developer asks for it.
 - **FR-013**: The suite MUST count the fault applications and the field
   evaluations of each case. The counters MUST be off in normal use, and MUST
   cost nothing when they are off.
@@ -295,8 +330,9 @@ the golden tests.
 - **FR-015**: The benchmarks are for local development only. They MUST NOT
   run in the normal test run or in CI. A developer starts them on purpose.
   They use `pytest-benchmark` (C-004), as a development dependency only.
-- **FR-016**: The repository MUST contain the baseline result file of the code
-  before this feature, with the computer that made it.
+- **FR-016**: The repository MUST contain the baseline result file of the
+  standard suite on the code before this feature, with the computer that made
+  it. A baseline of the full suite is not required.
 
 ### Key entities
 
@@ -304,10 +340,11 @@ the golden tests.
   settings and a fixed seed. It has a name and a list of the features it has.
 - **Golden result**: the stored outputs of one golden model at its fixed
   points (FR-002), with the version of the code that made them.
-- **Benchmark case**: a golden model, an evaluation function and a number of
-  points.
+- **Benchmark case**: a golden model, an evaluation function, a number of
+  points and a benchmark state (cold or warm).
 - **Benchmark result file**: the results of all cases of one run, with the
   versions and the computer.
+- **Suite**: the standard suite or the full suite (see Context).
 - **Fault set**: the ordered list of faults that a feature applies. Two
   features with the same faults in the same order have the same fault set.
 
@@ -315,25 +352,27 @@ the golden tests.
 
 - **SC-001**: All golden tests pass on the code before this feature and on
   the code after it.
-- **SC-002**: For the golden model with 4 faults and 3 unconformities and
-  5 000 points, `evaluate_value` of the oldest group makes 4 fault
+- **SC-002**: For the golden model with 4 faults and 3 unconformities, 5 000
+  points and the cold state, `evaluate_value` of the oldest group makes 4 fault
   applications (baseline: 16) and takes at most 40 % of the baseline time
   (baseline: 2.55 s on the computer in `research.md`).
 - **SC-003**: For the same model, evaluating all groups makes 4 fault
   applications (baseline: 52) and takes at most 15 % of the baseline time
   (baseline: 8.65 s).
-- **SC-004**: For the golden models with 4 faults, the time to evaluate all
-  groups with 3 unconformities is at most 1.5 times the time with 0
-  unconformities (baseline: 12.9 times).
+- **SC-004**: For the golden models with 4 faults, 5 000 points and the cold
+  state, the time to evaluate all groups with 3 unconformities is at most 1.5
+  times the time with 0 unconformities (baseline: 12.9 times).
 - **SC-005**: For the plugin model of `research.md`, the evaluation of the
   group at 20 000 points takes at most 50 % of the baseline (baseline: 8.2 s).
-- **SC-006**: The peak memory of each benchmark case is at most 120 % of the
-  baseline.
-- **SC-007**: Two runs of the benchmarks on the same computer and the same
+- **SC-006**: The peak memory of each case of the standard suite is at most
+  120 % of the baseline.
+- **SC-007**: Two runs of the standard suite on the same computer and the same
   code differ by less than 10 % in each case. The comparison report uses this
-  value as the noise limit.
-- **SC-008**: The full benchmark suite takes less than 15 minutes on the
-  computer in `research.md`.
+  value as the noise limit. The limit covers the cases with a baseline time of
+  1 s or more. A shorter case uses more rounds, and the report shows its
+  noise, but the case does not fail this criterion.
+- **SC-008**: The standard suite takes less than 15 minutes on the computer in
+  `research.md`, on the code after this feature.
 - **SC-009** (user story 5): the time for each point of one fault application
   is at most 50 % of the baseline (about 34 µs for each point).
 - **SC-010**: A second `evaluate_model` of the same points, with no change of
@@ -379,3 +418,35 @@ Answered on 2026-11-01.
   necessary.
 - **C-005 CI.** Must a CI job run the benchmarks?
   **Answer**: no. The benchmarks are for local development only (FR-015).
+
+Open on 2026-11-02. The first full run of the 650 cases on the code before this
+feature did not finish in 4 hours. The 500 000-point cases were 90 % of the
+time that was measured. No success criterion uses them.
+
+Answered on 2026-11-02.
+
+- **C-006 Suite time budget.** What is the time budget of one run of the
+  standard suite?
+  **Answer**: about 1 hour on the code before this feature, with all passes
+  (FR-012a).
+- **C-007 Standard suite content.** Which cases are in the standard suite?
+  **Answer**: all the 5 000-point cases; the 20 000-point cases of the plugin
+  model and of the model with 1 fault and no unconformity; the 50 000-point
+  cases of the target models; a few 500 000-point cases of the model with 1
+  fault and no unconformity. The full suite stays available on request
+  (FR-012a, FR-012b).
+- **C-008 Noise limit and short cases.** How does SC-007 treat short cases?
+  **Answer**: the 10 % limit covers the cases with a baseline time of 1 s or
+  more. Short cases use more rounds and are reported, but they do not fail the
+  criterion (SC-007).
+- **C-009 Time limit after the change.** What is the limit of SC-008?
+  **Answer**: 15 minutes for the standard suite on the code after this
+  feature (SC-008).
+- **C-010 Large point counts.** A measurement on 2026-11-02 shows that the
+  cutting-faults model needs 13 to 66 s for one call at 5 000 points, and the
+  model with 4 faults and 3 unconformities needs 42 s for the five functions.
+  At 50 000 points these models would need hours. How does the standard suite
+  keep the 1 hour budget?
+  **Answer**: a fixed random choice of cases at 50 000 and 100 000 points,
+  taken from the cheaper models. Every time is measured; no time is inferred
+  (FR-012a). The success criteria use only the 5 000 and 20 000-point cases.

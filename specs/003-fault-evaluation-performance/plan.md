@@ -1,14 +1,14 @@
 # Implementation plan: Faster evaluation of faulted models
 
 **Feature**: `003-fault-evaluation-performance` | **Date**: 2026-11-01
-**Spec**: [spec.md](spec.md) | **State**: Replanned after the gradient prerequisite failure; T001 remains done
+**Spec**: [spec.md](spec.md) | **State**: Replanned 2026-11-02 for the standard benchmark suite (T035-T039); T001-T010 and T028 are done
 
 ## Open points
 
 | Id | Question and evidence | Resolution rule | Tasks that wait |
 |---|---|---|---|
 | OP1 (resolved) | Gradient and nested-fault count/memory interpretation. | The user accepted one restoration per distinct ordered fault set and distinct point batch on 2026-11-01. Count recursive frame batches separately and memory per actual restored point, including corners. See Answers. | none |
-| OP2 | Can the complete benchmark matrix satisfy SC-008? There are at least 240 synthetic cases (16 models x 5 functions x 3 sizes), before special cases and repetitions. Research reports 8.65 s for all groups at only 5,000 points for one model. | T011 measures the full legacy run with one timed round per case after warmup. T030 measures the final suite. Never remove cases or reduce point counts to claim success. If either final runtime or run-to-run noise fails, report the failure and ask for an explicit spec decision. Timing success is not assumed. | T031, T032, if measurement fails |
+| OP2 | Can the standard suite meet its time budget (about 1 hour before this feature, SC-008 15 minutes after it) and the SC-007 noise limit? The first run of the 860-case full matrix did not finish in 4 hours and was stopped on 2026-11-02. 500,000-point cases were 90 % of the time measured. | The spec now defines a standard suite (C-006 to C-010). T011 measures the standard suite twice before any performance edit. T030 measures it again after. If the baseline run of the standard suite takes more than 90 minutes, or if SC-007 or SC-008 fail, report the measured result and ask for a spec decision. Never remove cases from the standard suite to claim success. | T031, T032, if measurement fails |
 
 ## Summary
 
@@ -203,14 +203,59 @@ files. pytest's existing testpaths=[tests] keeps benchmark tests out of CI.
 The suite file is `benchmarks/fault_evaluation/bench_cases.py`; it is selected
 explicitly by the runner. Never add an autouse runtime counter or CI job.
 
-`python -m benchmarks.fault_evaluation.run --output PATH --rounds 1` calls
-pytest-benchmark with each of the 21 models, five operations (oldest value,
-all group values, model ids, oldest gradient, model gradient), and 5,000,
-50,000 and 500,000 points. Add 20,000-point plugin and single-fault cases,
-5,000-point SC-002/003 cases, and warm second calls. Reuse stored fields;
-exclude model construction from timed evaluation. Time cold calls after
-clearing the cache, then warm calls separately. Warmup must not turn a cold
-case into a cache hit. Include the cost of hashing and invalidation in timing.
+`python -m benchmarks.fault_evaluation.run --output PATH [--rounds 1]
+[--suite standard|full] [--work-dir PATH] [--resume]` calls pytest-benchmark.
+The runner keeps `--suite standard` as the default (FR-012b). The runner
+already shows progress, saves each finished case to a checkpoint file and can
+resume (commits 9610f6a1 and 290edf3d). Put `--output` and `--work-dir`
+outside the repository for a real run, because the dirty flag counts untracked
+files, and use `--resume` after a stop.
+
+Case lists (all in `run.py`):
+
+- `enumerate_cases()` keeps its name and returns the FULL suite: 21 models, five
+  operations (oldest value, all group values, model ids, oldest gradient, model
+  gradient), cold and warm states, and 5,000, 50,000, 100,000 and 500,000
+  points, plus the 20,000-point cases of `plugin` and `f1_u0`. That is 860
+  cases. The order is stable. The tests of T007 depend on this function.
+- `standard_cases()` returns the STANDARD suite, a subset of the full list in the
+  same order: (a) all 210 cases at 5,000 points; (b) the 20 cases at 20,000
+  points; (c) 24 cases at 50,000 and 100,000 points, 12 for each size, taken
+  from a fixed list of case ids `STANDARD_LARGE_CASES` in `run.py`. T036 draws the
+  list once with `numpy.random.default_rng(2003)` from the pool of cases of
+  these models: `f0_u0..f0_u3`, `f1_u0..f1_u3`, `stopped_fault`, `onlap_domain`
+  and `faulted_fold`. The code stores the ids as literal text, because the
+  random stream of NumPy can change between versions. That is 254 cases.
+- `select_cases(suite: str) -> list[dict]` returns `standard_cases()` for
+  `"standard"` and `enumerate_cases()` for `"full"`, and raises ValueError for
+  any other name. `main` uses it.
+
+Every case that SC-002 to SC-010 use is in the standard suite: `f4_u3` and
+`f4_u0` at 5,000 points (SC-002 to SC-004, SC-010), `plugin` at 20,000 points
+(SC-005) and `f1_u0` at 20,000 points (SC-009).
+
+Reuse stored fields; exclude model construction from timed evaluation. Time cold
+calls after clearing the cache, then warm calls separately. A warm case primes
+the cache with one untimed call before the timed call, but only if the model
+has an `evaluation_cache`. On the code before this feature the model has none,
+so the priming call is useless and the runner skips it: this makes a warm
+legacy case cost one call, not two, and changes no measured value. Warmup must
+not turn a cold case into a cache hit. Include the cost of hashing and
+invalidation in timing.
+
+Short cases (SC-007): the timing pass runs every case with one round. When it
+finishes, the runner repeats each case with a median below 1.0 s for five
+rounds in a second step, and the new samples replace the old ones for that
+case. The counters and memory passes keep one round. The comparison and the
+acceptance check use the rule in D2b.
+
+Measured costs on 2026-11-02, on the development computer, for one cold call at
+5,000 points: `f4_u3` 42 s for the five operations, `cutting_faults` 164 s,
+`plugin` 11 s, `f4_u0` 9 s, `f1_u0` 2 s, other models under 3 s. The cold sum
+over all 21 models is about 320 s. A case costs one call in the cold state and
+two in the warm state on the code before this feature (one call with the
+priming skip), in each of three passes. The standard suite should take about
+50 minutes for the whole run.
 
 Run time, counters and peak RSS in separate fresh-process passes so wrappers
 and memory tracing do not distort timings. `instrumentation.py` patches
@@ -232,13 +277,27 @@ above 1.10, fault/unconformity scaling tables and provenance differences.
 Report undefined ratios for zero baselines explicitly. Do not silently skip
 cases or compare warm new results with cold baseline results.
 
-T011 writes baseline.json and baseline_repeat.json plus a readable baseline
-report. It records complete runtime and noise. T011 is a hard gate: all golden
-checks must pass and all baseline cases must exist before any performance edit.
-The only earlier evaluation edit is the isolated T034 correctness fix.
-If the run fails, capture the exact failing case; do not substitute research
-numbers for a machine-readable measured baseline. SC-007/008 are measured
-requirements, not promised outcomes of planning.
+T011 writes baseline.json and baseline_repeat.json (the standard suite, run
+twice) plus a readable baseline report. It records complete runtime and noise.
+T011 is a hard gate: all golden checks must pass and all baseline cases must
+exist before any performance edit. The only earlier evaluation edit is the
+isolated T034 correctness fix. If the run fails, capture the exact failing
+case; do not substitute research numbers for a machine-readable measured
+baseline. SC-007/008 are measured requirements, not promised outcomes of
+planning. Run T011 from a clean committed tree, with `--output` and
+`--work-dir` outside the repository, then copy the result files into the spec
+folder. Start no other task and edit no tracked file while a run is active.
+
+### D2b. How the acceptance check treats noise and memory
+
+SC-006 compares the peak memory of each case of the standard suite. SC-007
+uses the second run (`new["repeat"]`): for each case whose baseline median is
+1.0 s or more, the larger ratio of the two runs must be below 1.10. A case with a
+shorter baseline median is reported with its noise ratio, in a separate list
+`short_cases`, and never fails SC-007. A missing repeat file or a zero median
+still fails. SC-008 compares `suite_wall_seconds` of the standard suite with 900
+s. The old acceptance test of T028 treats every case the same way for SC-007;
+T039 changes it.
 
 ### D3. Evaluation scope and restoration sharing
 
@@ -396,10 +455,11 @@ fix must add no lint findings. Do not mix unrelated lint cleanup into D0.
 | FR-010a | T022, T023 |
 | FR-011 | T014, T015, T019, T032 |
 | FR-012, FR-013, FR-014, FR-015 | T007, T008, T009, T010, T011 |
+| FR-012a, FR-012b | T035, T036, T037, T038, T011 |
 | FR-016 | T011 |
 | SC-002, SC-003, SC-004, SC-005 | T028, T029, T030 |
-| SC-006 | T022, T023, T028, T029, T030 |
-| SC-007, SC-008 | T011, T028, T029, T030; OP2 measurement gate |
+| SC-006 | T022, T023, T028, T039, T029, T030 |
+| SC-007, SC-008 | T011, T028, T037, T038, T039, T029, T030; OP2 measurement gate |
 | SC-009 | T024, T025, T026, T027, T030 |
 | SC-010 | T016, T017, T018, T019, T028, T029, T030 |
 
@@ -422,12 +482,23 @@ Next: T033 regression test -> T034 isolated fix -> finish T002's draft fixture
 loader/exporter -> T003-T011 capture and baseline -> performance work.
 No build, solve or test is required to make this planning edit.
 
+## Replan of 2026-11-02 (standard suite)
+
+New task ids T035-T039 are appended; no id is reused and the done tasks T001-T010
+and T028 keep their `[x]`. Order: T035 test suite selection -> T036 implement
+suite selection and the priming skip -> T037 test short-case repeats -> T038
+implement the repeats -> T011 baseline of the standard suite. T039 (acceptance
+test change) runs beside T036 and T037, and T029 needs it. Waves from T011
+onward move by four; the dependencies of T012-T032 are unchanged except where
+tasks.md says so.
+
 ## Answers
 
 - 2026-11-01: The user approved the constitution draft in the main checkout.
   The draft marker was removed and the stricter pytest/Ruff merge rule activated.
 - OP1, 2026-11-01: The user accepted a limit per distinct ordered fault set and distinct point batch. Count recursive frame batches separately. Measure memory per actual restored point, including tetrahedron corners, excluding unchanged baseline work arrays. This resolves the interpretation for T021 and dependent tasks; the measured targets still apply.
 - OP2: Pending measurements. The 15-minute target and 10% noise limit remain.
+  Both now apply to the standard suite (see the 2026-11-02 answers below).
 
 - 2026-11-01: After the exporter failed on the existing gradient shape defect,
   the user requested spec-planner to add the correctness prerequisite. T033/T034
@@ -435,3 +506,16 @@ No build, solve or test is required to make this planning edit.
   planning run; golden capture and timing wait for that fix to pass.
 
 - 2026-11-02: The user instructed the implementer to keep working through fixture repair retries, overriding the skill's two-failure stop limit for those repairs. Keep tests and review requirements unchanged.
+
+- 2026-11-02: The first run of the full 650-case suite did not finish in 4
+  hours and the user stopped it. The user asked for a suite of about 1 hour.
+  Through the spec-reviewer skill the user chose: a standard suite of about 1
+  hour on the code before this feature, with 12 fixed random cases at 50,000
+  and 100,000 points each (cheaper models only), a 10% noise limit for cases
+  of 1 s or more, and a 15-minute limit after the change (spec C-006 to C-010).
+  The user also chose that every time is measured and none is inferred.
+- 2026-11-02, planner decisions that follow from this and need no user answer:
+  the runner skips the useless priming call when the model has no cache;
+  short cases repeat for five rounds in a second step; the list of large cases
+  is stored as literal ids. The runner correction (progress output, checkpoint
+  file, `--resume`, `--work-dir`, `suite_wall_seconds`) is already committed.

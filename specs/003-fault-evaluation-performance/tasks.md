@@ -1,7 +1,7 @@
 # Tasks: Faster evaluation of faulted models
 
 **Input**: spec.md and plan.md in `specs/003-fault-evaluation-performance/`
-**State**: Replanned; T001 complete. Run T033/T034 before resuming T002.
+**State**: Replanned 2026-11-02 for the standard benchmark suite. T001-T010, T028, T033 and T034 are done. Next: T035 (wave 12), then T036, T037, T038, T011.
 
 ## Orchestrator notes
 
@@ -13,11 +13,18 @@
   change only Files; do not commit, change branches or run competing checks.
   The orchestrator runs tests and records the expected failure before the next
   implementation task. Use ASD-STE100 comments and docs.
-- **Tiers**: 3 [S], 31 [M]. Resolve the actual worker models from
+- **Tiers**: 3 [S], 36 [M]. Resolve the actual worker models from
   `.agents/model-policy.json` and available runtime tools. Codex workers use
   gpt-6-luna (low effort for S; medium for M). Limit is 5 workers, capped by
   runtime slots (currently 3 besides the orchestrator). Report unavailable models.
-- **Waves**: 26. Use parallel workers only for ready tasks with disjoint Files.
+- **Waves**: 30. Use parallel workers only for ready tasks with disjoint Files.
+- **Long benchmark runs (T011, T030)**: run them from a clean committed tree, with
+  `--output` and `--work-dir` as absolute paths OUTSIDE the repository (for
+  example `C:/Users/lachl/dev/ls-bench-003/`). Use `--suite standard` (the default)
+  and `--resume` after a stop. Do not start another task or edit a tracked file
+  while a run is active; an edit would make the baseline invalid. Copy the result
+  files into the spec folder when the runs finish. Stop and report if one run of
+  the standard suite takes more than 90 minutes. Never reduce the case list.
 - **After each wave**: one relevant pytest run plus Ruff for changed production
   files; new test tasks must fail for the stated reason. No Cargo command is
   appropriate. Staged tests may fail at named missing private APIs.
@@ -29,8 +36,8 @@
 - **Capture gate**: D0/T034 is the only evaluation edit allowed before T005/T011.
   Record prerequisite parent/fix/baseline revisions; never capture after a
   performance change or remove a failing gradient case. T001 stays complete.
-- **Task IDs**: T033/T034 are appended to preserve existing IDs. Schedule from
-  Needs and Wave. Next task is T033, not T002. T032 is the final scheduled task.
+- **Task IDs**: T033/T034 and T035-T039 are appended to preserve existing IDs.
+  Schedule from Needs and Wave, not from the number. T032 is the final scheduled task.
 - **Python environment**: the shared environment is
   C:/Users/lachl/dev/LoopStructural/.venv/Scripts/python.exe. Set PYTHONPATH to
   this worktree root plus packages/loop_common/src and packages/loop_interpolation/src
@@ -120,12 +127,12 @@
   - Wave: 11
   - Done when: python -m pytest tests/fault_evaluation/test_benchmark_compare.py -q passes.
 
-- [ ] T011 [P] [US3] [M] Record the complete pre-change benchmark baseline twice.
-  - Do: Run D2 runner twice after T034 but before any performance edit. Store machine identity, actual revision, input hashes, full times/counts/peak memory, total duration and the three D0 revision fields. Raw failing gradients have no numeric baseline; use the corrected pre-performance revision for complete comparisons. Run the compare CLI. Record SC-007/008 failures honestly and activate OP2 if they fail. Missing/failed cases block this task; do not replace with research numbers or a reduced suite.
+- [ ] T011 [P] [US3] [M] Record the complete pre-change baseline of the standard suite twice.
+  - Do: CHANGED by the replan of 2026-11-02: the earlier text asked for the full 650-case matrix, which did not finish in 4 hours (stopped, no result file). Now run the STANDARD suite (254 cases, D2) twice, after T038 and before any performance edit, as the notes on long runs say: `python -m benchmarks.fault_evaluation.run --output <dir>/baseline.json --work-dir <dir>/run1.work` and the same with `baseline_repeat.json` and `run2.work`; `<dir>` is an absolute path outside the repository. Use `--resume` after a stop. The runs must start from a clean committed tree. Store machine identity, actual revision, input hashes, full times/counts/peak memory, `suite_wall_seconds` and the three D0 revision fields. Raw failing gradients have no numeric baseline; use the corrected pre-performance revision. Copy the two files into the spec folder. Run the compare CLI. Write baseline.md with the runtime of each run, the cases below 1 s, and the SC-007 noise (D2b). Record SC-007/008 failures honestly and activate OP2 if they fail. Missing/failed cases block this task; do not replace with research numbers or a reduced suite. If one run takes more than 90 minutes, stop and report.
   - Files: `specs/003-fault-evaluation-performance/baseline.json`, `specs/003-fault-evaluation-performance/baseline_repeat.json`, `specs/003-fault-evaluation-performance/baseline.md`
-  - Needs: T006, T010
-  - Wave: 12
-  - Done when: Both complete legacy benchmark result files exist, have identical case ids and are accepted by the compare command; baseline.md records runtime and noise.
+  - Needs: T006, T010, T038
+  - Wave: 16
+  - Done when: Both complete standard-suite result files exist, have identical case ids (254) and are accepted by the compare command; baseline.md records runtime and noise.
 
 ## Phase 3: Evaluation sharing and cache
 
@@ -133,84 +140,84 @@
   - Do: Test D4 constructor/defaults, get/put, LRU access and eviction, overwrite accounting, max_bytes shrink, negative limit, zero/disabled modes, oversize entries, clear/invalidate, immutable arrays and exception-safe publication. Count ndarray.nbytes and reject a second retained copy.
   - Files: `tests/fault_evaluation/test_cache_storage.py`
   - Needs: T011
-  - Wave: 13
+  - Wave: 17
   - Done when: python -m pytest tests/fault_evaluation/test_cache_storage.py -q fails for absent RestorationCache, then passes after T013.
 
 - [ ] T013 [P] [Found] [M] Implement bounded restoration cache storage.
   - Do: Implement D4 RestorationCache using OrderedDict and RLock with exact array-byte accounting. Store restored arrays read-only. No input arrays, masks or final outputs are retained. Keep metadata accounting explicit. Do not yet add public evaluation reuse.
   - Files: `LoopStructural/modelling/features/_evaluation_cache.py`
   - Needs: T012
-  - Wave: 14
+  - Wave: 18
   - Done when: python -m pytest tests/fault_evaluation/test_cache_storage.py -q passes.
 
 - [ ] T014 [US2] [M] Test one-call restoration sharing and public behavior.
   - Do: Test D3 nested value/region calls and evaluate_model for F=4,U=3: four top-level calls with identical fault sets, correct original mask coordinates and golden values. Test different/reordered sets, reverse, disabled faults, nested scopes, standalone features, child-fault batches, opaque callables and exception cleanup. Check public signatures. Keep total nested counts visible and apply the accepted OP1 rule from Answers.
   - Files: `tests/fault_evaluation/test_context.py`
   - Needs: T013
-  - Wave: 15
+  - Wave: 19
   - Done when: python -m pytest tests/fault_evaluation/test_context.py -q fails on repeated legacy restoration counts, then passes after T015.
 
 - [ ] T015 [US2] [M] Share value restorations inside an evaluation scope.
   - Do: Implement D3 EvaluationContext, evaluation_scope and restore. Wrap value/model entry points, build before lookup, use original points for masks, preserve ordering/priority/world coordinates and reset ContextVar in finally. Model initializes an additive cache property but persistent reuse stays off until T019. Do not alter the gradient algorithm or tests.
   - Files: `LoopStructural/modelling/features/_evaluation.py`, `LoopStructural/modelling/features/_base_geological_feature.py`, `LoopStructural/modelling/features/_geological_feature.py`, `LoopStructural/modelling/core/geological_model.py`
   - Needs: T014
-  - Wave: 16
+  - Wave: 20
   - Done when: python -m pytest tests/fault_evaluation/test_context.py tests/fault_evaluation/test_golden.py -q passes.
 
 - [ ] T016 [US2] [M] Test complete cache invalidation and direct mutations.
   - Do: Test D4 setters plus direct/in-place mutations of points, coefficients, data, support transforms, build arguments, fault order, regions/thresholds/sign, faults_enabled, displacement, steps, faultfunction, build and solve. Test dependency frames and opaque callables. Compare every second result to cache-disabled changed-model evaluation and assert no stale cache lookup is used. Test dirty lazy-build occurs exactly once.
   - Files: `tests/fault_evaluation/test_invalidation.py`
   - Needs: T015
-  - Wave: 17
+  - Wave: 21
   - Done when: python -m pytest tests/fault_evaluation/test_invalidation.py -q fails for absent revision/fingerprint invalidation, then passes after T017.
 
 - [ ] T017 [US2] [M] Implement revision hooks and conservative state fingerprints.
   - Do: Implement D4 monotonic revision hooks and bounded-memory dependency fingerprints. Keep property assignment semantics and detect bypass mutations. Invalidate on build/solve/data/geometry/relationship changes. Traverse faults, frames and region parents cycle-safely; bypass persistent entries for opaque dependencies. Do not monkeypatch global NumPy or change solver math. Do not modify tests.
   - Files: `LoopStructural/modelling/features/_evaluation_cache.py`, `LoopStructural/modelling/features/_base_geological_feature.py`, `LoopStructural/modelling/features/fault/_fault_segment.py`, `LoopStructural/modelling/features/builders/_base_builder.py`, `LoopStructural/modelling/features/builders/_geological_feature_builder.py`, `packages/loop_interpolation/src/loop_interpolation/_discrete_interpolator.py`, `LoopStructural/modelling/core/geological_model.py`
   - Needs: T016
-  - Wave: 18
+  - Wave: 22
   - Done when: python -m pytest tests/fault_evaluation/test_invalidation.py -q passes.
 
 - [ ] T018 [US2] [M] Test reuse between calls and additive controls.
   - Do: Test D4 model.evaluation_cache enabled/max_bytes/clear, identical copies, strided rows, row reorder, input mutation, different models/sets/reverse, oversized results, LRU and scope/cache shared storage. Second same-grid evaluate_model must make zero fault calls; changes must restore again and match changed references. Assert full lookup hashing occurs outside no timed shortcut.
   - Files: `tests/fault_evaluation/test_persistent.py`
   - Needs: T017
-  - Wave: 19
+  - Wave: 23
   - Done when: python -m pytest tests/fault_evaluation/test_persistent.py -q fails while cross-call reuse is off, then passes after T019.
 
 - [ ] T019 [US2] [M] Enable persistent restoration reuse with safe invalidation.
   - Do: Connect D3 scopes to D4 model cache, default enabled 64 MiB, content/state keys and conservative bypass. Compute fingerprints after builds and include lookup work in real call path. Reuse one stored array between scope and persistent cache. Clear on revision changes and do not publish partial work. Preserve existing public call signatures.
   - Files: `LoopStructural/modelling/features/_evaluation.py`, `LoopStructural/modelling/features/_evaluation_cache.py`, `LoopStructural/modelling/core/geological_model.py`
   - Needs: T018
-  - Wave: 20
+  - Wave: 24
   - Done when: python -m pytest tests/fault_evaluation/test_persistent.py tests/fault_evaluation/test_invalidation.py tests/fault_evaluation/test_golden.py -q passes.
 
 - [ ] T020 [P] [US4] [M] Test gradient batch counts and legacy numerical behavior.
   - Do: Test original mask batches, 4N corners, different element scales, tetrahedron refinement, repeated groups, different fault sets, child-fault frames, reverse/disabled faults and faulted fold frames. Assert golden gradients and model gradient group priority. Produce explicit batch/count/memory diagnostics under the accepted OP1 distinct-batch rule and retain the D0 output-array regression.
   - Files: `tests/fault_evaluation/test_gradient_context.py`
   - Needs: T019
-  - Wave: 21
+  - Wave: 25
   - Done when: python -m pytest tests/fault_evaluation/test_gradient_context.py -q exposes repeated equal-batch work, then passes after T021 under the accepted OP1 rule.
 
 - [ ] T021 [P] [US4] [M] Share equal gradient batches after the count decision.
   - Do: Implement D5 with the accepted OP1 count and memory rule recorded in Answers. Reuse identical original/corner batches; retain tetrahedron refinement and gradient arithmetic. If the decision requires a new algorithm, stop for a revised plan. Do not weaken tests or claim F total calls from a top-level-only counter.
   - Files: `LoopStructural/modelling/features/_evaluation.py`, `LoopStructural/modelling/features/_geological_feature.py`, `LoopStructural/modelling/core/geological_model.py`
   - Needs: T020
-  - Wave: 22
+  - Wave: 26
   - Done when: python -m pytest tests/fault_evaluation/test_gradient_context.py tests/fault_evaluation/test_golden.py -q passes under the recorded OP1 decision.
 
 - [ ] T022 [P] [US2] [M] Test simultaneous calls, cleanup and memory accounting.
   - Do: Test D4/D5 two threads evaluating one model against serial references, first-build once, separate models and context isolation, exception release and invalidation under lock. Unit tests use small batches and exact retained bytes. The local large RSS case is added by T029, not run in normal pytest. Test no duplicate scope/cache arrays and bounded hashing workspace.
   - Files: `tests/fault_evaluation/test_concurrency.py`, `tests/fault_evaluation/test_memory.py`
   - Needs: T019
-  - Wave: 21
+  - Wave: 25
   - Done when: python -m pytest tests/fault_evaluation/test_concurrency.py tests/fault_evaluation/test_memory.py -q fails on missing synchronization/accounting behavior, then passes after T023.
 
 - [ ] T023 [US2] [M] Complete locking and bounded-memory integration.
   - Do: Use per-model reentrant lock for full outer evaluation, builds, revisions and cache publication; nested calls reuse it. ContextVar tokens reset on exceptions. Enforce byte limits and bounded fingerprint chunks; keep faults use_threads off. Different models must not share a global lock. Do not change tests.
   - Files: `LoopStructural/modelling/features/_evaluation.py`, `LoopStructural/modelling/features/_evaluation_cache.py`, `LoopStructural/modelling/core/geological_model.py`
   - Needs: T022, T021
-  - Wave: 23
+  - Wave: 27
   - Done when: python -m pytest tests/fault_evaluation/test_concurrency.py tests/fault_evaluation/test_memory.py -q passes.
 
 ## Phase 4: Fault-step cost
@@ -219,28 +226,28 @@
   - Do: Test D6 exact private helper tuple and weights against frozen legacy calculations for random/interior/corner/face/outside/NaN/empty points and non-unit grids. Compare evaluate_value/evaluate_gradient with old arithmetic. Assert one cell-index lookup per call and unchanged scale/corner ordering. No timing assertions in unit tests.
   - Files: `packages/loop_common/tests/test_evaluation_lookup.py`
   - Needs: T011
-  - Wave: 13
+  - Wave: 17
   - Done when: python -m pytest packages/loop_common/tests/test_evaluation_lookup.py -q fails for absent _lookup_points/_gradient_weights, then passes after T025.
 
 - [ ] T025 [P] [US5] [M] Remove repeated structured-grid cell searches.
   - Do: Implement D6 _lookup_points and _gradient_weights and route value/gradient evaluation through them. Preserve boundary and NaN behavior, summation order and scale factors. Leave other support types and solvers unchanged. Do not alter tests or tolerances.
   - Files: `packages/loop_common/src/loop_common/supports/_3d_structured_grid.py`
   - Needs: T024
-  - Wave: 14
+  - Wave: 18
   - Done when: python -m pytest packages/loop_common/tests/test_evaluation_lookup.py -q passes.
 
 - [ ] T026 [P] [US5] [M] Test fault-frame shared lookup and fallback.
   - Do: Test D6 common-grid frame values and coordinate-1 gradients, initial/precomputed_gx path, all steps, masks and restored-point equivalence. Test differing geometry/transforms, child faults, opaque regions and alternate supports use the legacy fallback. Assert shared lookup counts and unchanged integration step count.
   - Files: `tests/fault_evaluation/test_fault_frame_lookup.py`
   - Needs: T025, T019
-  - Wave: 21
+  - Wave: 25
   - Done when: python -m pytest tests/fault_evaluation/test_fault_frame_lookup.py -q fails for absent _evaluate_frame fast path, then passes after T027.
 
 - [ ] T027 [P] [US5] [M] Reuse frame grid lookup within each fault step.
   - Do: Implement D6 private _evaluate_frame with a guarded common-geometry fast path and legacy fallback. Use the existing transform/mask semantics; preserve every step and floating-point operation order required by the golden tolerances. Do not change displacement functions, default steps or thread setting.
   - Files: `LoopStructural/modelling/features/fault/_fault_segment.py`, `packages/loop_common/src/loop_common/supports/_3d_structured_grid.py`
   - Needs: T026
-  - Wave: 22
+  - Wave: 26
   - Done when: python -m pytest tests/fault_evaluation/test_fault_frame_lookup.py tests/fault_evaluation/test_golden.py -q passes.
 
 ## Phase 5: Acceptance tools and final checks
@@ -253,31 +260,31 @@
   - Done when: python -m pytest tests/fault_evaluation/test_acceptance.py -q fails for absent check_acceptance, then passes after T029.
 
 - [ ] T029 [P] [Found] [M] Implement local acceptance and large-memory measurements.
-  - Do: Implement D2/D5 check_acceptance and CLI: --baseline PATH --candidate PATH --repeat PATH --output PATH. Add explicit --memory-points 10000000 local subprocess mode using frozen models and cold/warm/off cache modes. Emit actual RSS, restored batch sizes, retention and FR-010 accounting plus every SC result. Never run this large case via normal pytest.
+  - Do: Implement D2/D5 check_acceptance and CLI: --baseline PATH --candidate PATH --repeat PATH --output PATH. Follow D2b for SC-006/007/008: the memory limit covers the standard suite; the 10 % noise limit covers only cases with a baseline median of 1.0 s or more; shorter cases go in `short_cases` and never fail SC-007 (T039 changes the tests to say this). Add explicit --memory-points 10000000 local subprocess mode using frozen models and cold/warm/off cache modes. Emit actual RSS, restored batch sizes, retention and FR-010 accounting plus every SC result. Never run this large case via normal pytest.
   - Files: `benchmarks/fault_evaluation/acceptance.py`
-  - Needs: T028, T008
-  - Wave: 13
+  - Needs: T028, T008, T039
+  - Wave: 14
   - Done when: python -m pytest tests/fault_evaluation/test_acceptance.py -q passes.
 
 - [ ] T030 [US3] [M] Measure full before/after results and all success criteria.
-  - Do: Run the full D2 suite twice with identical baseline case ids and machine/environment. Run D5 large-memory cases and acceptance CLI. Include gradients, total recursive counts and warm invalidation. Record raw provenance, peak memory and complete elapsed times. A target miss is a failed task, not permission to remove a case or alter golden references. OP2 requires a user decision only if runtime/noise targets fail; it does not block starting measurement.
+  - Do: Run the STANDARD D2 suite twice with identical baseline case ids and machine/environment, in the way the notes on long runs say (outside the repository, clean tree, `suite_wall_seconds` recorded for SC-008). The full suite is not required. Run D5 large-memory cases and acceptance CLI. Include gradients, total recursive counts and warm invalidation. Record raw provenance, peak memory and complete elapsed times. A target miss is a failed task, not permission to remove a case or alter golden references. OP2 requires a user decision only if runtime/noise targets fail; it does not block starting measurement.
   - Files: `specs/003-fault-evaluation-performance/candidate.json`, `specs/003-fault-evaluation-performance/candidate_repeat.json`, `specs/003-fault-evaluation-performance/acceptance.json`, `specs/003-fault-evaluation-performance/measurements.md`
   - Needs: T021, T023, T027, T029
-  - Wave: 24
+  - Wave: 28
   - Done when: The acceptance command exits 0 for every SC, all golden tests pass under 120 seconds, and measurements.md records the 10-million-point memory result.
 
 - [ ] T031 [Finish] [M] Document cache controls, benchmark workflow and achieved limits.
-  - Do: Document D1 regeneration/review, D2 run/compare/acceptance, model.evaluation_cache enabled/max_bytes/clear, invalidation/opaque fallback, serialized same-model calls, memory accounting and measured limits. Update ROADMAP only for stages actually complete. Map every FR and SC to exact test node or measured case and acceptance result. Do not create specs/README.md because no index exists.
+  - Do: Document D1 regeneration/review, D2 run/compare/acceptance (including `--suite standard|full`, `--work-dir`, `--resume`, and why the work directory and outputs belong outside the repository), model.evaluation_cache enabled/max_bytes/clear, invalidation/opaque fallback, serialized same-model calls, memory accounting and measured limits. Update ROADMAP only for stages actually complete. Map every FR and SC to exact test node or measured case and acceptance result. Do not create specs/README.md because no index exists.
   - Files: `doc/advanced/fault_evaluation.rst`, `ROADMAP.md`, `specs/003-fault-evaluation-performance/coverage.md`
   - Needs: T030
-  - Wave: 25
+  - Wave: 29
   - Done when: Documentation contains runnable commands, all cache controls, accepted decision text, measured results and a requirement-to-test/measurement table with no unproved pass.
 
 - [ ] T032 [Finish] [M] Run final project and package checks and record the result.
   - Do: Run python -m black --check LoopStructural tests/fault_evaluation benchmarks/fault_evaluation packages/loop_common/src/loop_common/supports/_3d_structured_grid.py; python -m ruff check LoopStructural packages; python -m pytest; python -m pytest packages/loop_common/tests; python -m pytest packages/loop_interpolation/tests. Use the prepared development environment. Record failures exactly. No Cargo command is needed. Do not claim done with any failed task or unresolved acceptance gate.
   - Files: `specs/003-fault-evaluation-performance/validation.md`
-  - Needs: T001, T002, T003, T004, T005, T006, T007, T008, T009, T010, T011, T012, T013, T014, T015, T016, T017, T018, T019, T020, T021, T022, T023, T024, T025, T026, T027, T028, T029, T030, T031, T033, T034
-  - Wave: 26
+  - Needs: T001, T002, T003, T004, T005, T006, T007, T008, T009, T010, T011, T012, T013, T014, T015, T016, T017, T018, T019, T020, T021, T022, T023, T024, T025, T026, T027, T028, T029, T030, T031, T033, T034, T035, T036, T037, T038, T039
+  - Wave: 30
   - Done when: Black, Ruff, root pytest, loop_common pytest and loop_interpolation pytest all exit 0; validation.md records commands, revisions, golden runtime and acceptance status.
 
 ## Added foundation prerequisite (execute before T002)
@@ -299,18 +306,65 @@ field export; existing IDs and completed tasks are unchanged.
   - Wave: 3
   - Done when: `python -m pytest tests/unit/modelling/test_faulted_gradient_output.py tests/unit/modelling/test_geological_feature.py tests/unit/modelling/test_unconformity_feature.py tests/unit/modelling/test_faults_segment.py tests/unit/test_public_api_contract.py -q` passes; the report records the raw failure and the correctness-fix provenance.
 
+## Added standard-suite tasks (replan of 2026-11-02)
+
+The first run of the full matrix did not finish in 4 hours. The spec now defines a
+standard suite of about 1 hour (FR-012a, FR-012b, C-006 to C-010; plan D2, D2b).
+These tasks add it. The done tasks T007, T008 and T010 are not reopened: T035 and
+T036 change the case lists they created, and T039 changes the tests of T028.
+The runner correction of 9610f6a1 and 290edf3d (progress, checkpoint file,
+`--resume`, `--work-dir`, `suite_wall_seconds`) is already in the code.
+
+- [ ] T035 [US3] [M] Test the standard and full suite selection and the priming skip.
+  - Do: CHANGES to done work: T007 tests the case list with `enumerate_cases()`; that function stays and now returns the full suite of 860 cases (sizes 5,000, 50,000, 100,000, 500,000, plus the 20,000-point cases of `plugin` and `f1_u0`). In a new file test D2: `standard_cases()` returns 254 cases (210 at 5,000 points, 20 at 20,000, 24 in `STANDARD_LARGE_CASES`: 12 at 50,000 and 12 at 100,000 points); every standard id is in the full list, in the same order; the 24 large ids use only the models `f0_u0..f0_u3`, `f1_u0..f1_u3`, `stopped_fault`, `onlap_domain`, `faulted_fold`; the ids are literal text; the standard list contains every case that SC-002 to SC-010 use (`f4_u3` and `f4_u0` at 5,000 points, cold and warm, all five operations; `plugin` and `f1_u0` at 20,000 points); `select_cases("standard")`, `select_cases("full")` and ValueError for another name; `main` has `--suite` with default `standard`, and `--suite full` selects the full list. Test the priming rule with a fake model: a warm case on a model with no `evaluation_cache` makes one call in each round (no priming call); with a cache object it primes once and clears the cache before each round; a cold case clears the cache and never primes. Also edit the two existing tests that replace `enumerate_cases` with a fake list and call `main` with no suite option (`test_benchmark_run.py` near the fake `enumerate_cases`, `test_benchmark_resume.py` near the fake `enumerate_cases`): they must pass `--suite full`. Change nothing else in those two files.
+  - Files: `tests/fault_evaluation/test_benchmark_suites.py`, `tests/fault_evaluation/test_benchmark_run.py`, `tests/fault_evaluation/test_benchmark_resume.py`
+  - Needs: T010
+  - Wave: 12
+  - Done when: `python -m pytest tests/fault_evaluation/test_benchmark_suites.py tests/fault_evaluation/test_benchmark_run.py tests/fault_evaluation/test_benchmark_resume.py -q` fails for absent `standard_cases`, `select_cases` and the `--suite` option, then passes after T036.
+
+- [ ] T036 [US3] [M] Implement the standard suite, the suite option and the priming skip.
+  - Do: Implement D2. Add 100,000 to the sizes of the full suite. Add `STANDARD_LARGE_CASES` (a tuple of 24 literal case ids): draw it once, with `numpy.random.default_rng(2003)`, 12 cases for each of the sizes 50,000 and 100,000, from the pool of cases of the models named in D2; write the ids as text and keep a comment that says how they were drawn. Add `standard_cases()`, `select_cases(suite)` and `--suite {standard,full}` (default `standard`) to `main`. Keep `enumerate_cases()` as the full suite. In `bench_cases.run_case`, skip the priming call of a warm case when the model has no `evaluation_cache`. Do not change tests. Do not add counters or a production change.
+  - Files: `benchmarks/fault_evaluation/run.py`, `benchmarks/fault_evaluation/bench_cases.py`
+  - Needs: T035
+  - Wave: 13
+  - Done when: `python -m pytest tests/fault_evaluation/test_benchmark_suites.py tests/fault_evaluation/test_benchmark_run.py tests/fault_evaluation/test_benchmark_resume.py tests/fault_evaluation/test_benchmark_compare.py -q` passes.
+
+- [ ] T039 [P] [Found] [M] Change the acceptance tests for the SC-007 rule of short cases.
+  - Do: CHANGES to done work: T028 treats every case in the same way for SC-007 (the larger ratio between the two runs must be below 1.10). Follow D2b: only cases with a baseline median of 1.0 s or more are checked. Add tests: a case of 1.0 s or more with a noise ratio of 1.10 or more fails SC-007 and names the case; a case with a baseline median below 1.0 s and a noise ratio of 1.5 does not fail SC-007 and appears in `result["short_cases"]` with its noise ratio; a missing repeat document or a zero median still fails. Change a fixture or an existing assertion only where the new rule makes it wrong, and say which in the final report. Keep all other tests of T028 as they are.
+  - Files: `tests/fault_evaluation/test_acceptance.py`
+  - Needs: T028
+  - Wave: 13
+  - Done when: `python -m pytest tests/fault_evaluation/test_acceptance.py -q` fails for absent `check_acceptance` and the new tests name the `short_cases` rule, then passes after T029.
+
+- [ ] T037 [US3] [M] Test the repeat of short cases in the timing pass.
+  - Do: Test D2 (short cases) with a fake launcher and no real benchmark. Constants in `run.py`: `SHORT_CASE_SECONDS = 1.0` and `SHORT_CASE_ROUNDS = 5`. After the timing pass, the runner repeats each case with a median below 1.0 s for 5 rounds, and the new samples replace the old ones in the checkpoint rows and the result; a case of 1.0 s or more is not repeated; the counters and memory passes are not repeated; the recorded `rounds` and `time_samples_seconds` of a repeated case are those of the 5 rounds; a stop between the two steps and a `--resume` do not repeat a finished case a second time and do not lose one; the repeat adds its time to `suite_wall_seconds`.
+  - Files: `tests/fault_evaluation/test_benchmark_repeat.py`
+  - Needs: T036
+  - Wave: 14
+  - Done when: `python -m pytest tests/fault_evaluation/test_benchmark_repeat.py -q` fails for the absent constants and repeat step, then passes after T038.
+
+- [ ] T038 [US3] [M] Repeat short cases in the timing pass.
+  - Do: Implement the repeat step of D2 in `run.py`, with the constants named in T037. Use the checkpoint file and the resume rules that exist. Keep schema v1. Do not change tests, `bench_cases.py` or the other passes.
+  - Files: `benchmarks/fault_evaluation/run.py`
+  - Needs: T037
+  - Wave: 15
+  - Done when: `python -m pytest tests/fault_evaluation/test_benchmark_repeat.py tests/fault_evaluation/test_benchmark_suites.py tests/fault_evaluation/test_benchmark_run.py tests/fault_evaluation/test_benchmark_resume.py -q` passes.
+
 ## Dependencies
 
 T001 is complete. T033 depends on it, proves the existing gradient output
 defect without a solver, and must fail before T034 repairs it. T002 waits for
 T034 and resumes its saved drafts. T003-T006 then capture and check all golden
-outputs on the corrected pre-performance revision; T011 freezes both full
-benchmark baseline runs before any cache or grid optimization. D0 is the sole
-earlier evaluation edit. The accepted OP1 batch rule applies to gradients.
-OP2 is resolved by measurement; a failed runtime/noise target triggers a user
-decision and never counts as passing acceptance. Cache and grid tasks keep
-their prior dependency branches. T030 joins them, T031 documents passing
-results, and T032 is the final scheduled task and depends on every other task.
+outputs on the corrected pre-performance revision. The benchmark tools T007-T010
+exist. T035 -> T036 add the standard suite and T037 -> T038 add the repeat of
+short cases; T039 (acceptance tests) runs beside them and T029 needs it. T011
+freezes both baseline runs of the standard suite before any cache or grid
+optimization, so it needs T038. D0 is the sole earlier evaluation edit. The
+accepted OP1 batch rule applies to gradients. OP2 is resolved by measurement; a
+failed runtime/noise target triggers a user decision and never counts as
+passing acceptance. Cache and grid tasks keep their prior dependency branches
+and start after T011. T030 joins them, T031 documents passing results, and T032
+is the final scheduled task and depends on every other task.
 
 ## Wave table
 
@@ -327,24 +381,28 @@ results, and T032 is the final scheduled task and depends on every other task.
 | 9 | T007 | 0 | 1 |
 | 10 | T008, T009 | 1 | 1 |
 | 11 | T010 | 1 | 0 |
-| 12 | T011, T028 | 1 | 1 |
-| 13 | T012, T024, T029 | 0 | 3 |
-| 14 | T013, T025 | 0 | 2 |
-| 15 | T014 | 0 | 1 |
-| 16 | T015 | 0 | 1 |
-| 17 | T016 | 0 | 1 |
-| 18 | T017 | 0 | 1 |
-| 19 | T018 | 0 | 1 |
-| 20 | T019 | 0 | 1 |
-| 21 | T020, T022, T026 | 0 | 3 |
-| 22 | T021, T027 | 0 | 2 |
-| 23 | T023 | 0 | 1 |
-| 24 | T030 | 0 | 1 |
-| 25 | T031 | 0 | 1 |
-| 26 | T032 | 0 | 1 |
+| 12 | T035, T028 | 1 | 1 |
+| 13 | T036, T039 | 0 | 2 |
+| 14 | T037, T029 | 0 | 2 |
+| 15 | T038 | 0 | 1 |
+| 16 | T011 | 0 | 1 |
+| 17 | T012, T024 | 0 | 2 |
+| 18 | T013, T025 | 0 | 2 |
+| 19 | T014 | 0 | 1 |
+| 20 | T015 | 0 | 1 |
+| 21 | T016 | 0 | 1 |
+| 22 | T017 | 0 | 1 |
+| 23 | T018 | 0 | 1 |
+| 24 | T019 | 0 | 1 |
+| 25 | T020, T022, T026 | 0 | 3 |
+| 26 | T021, T027 | 0 | 2 |
+| 27 | T023 | 0 | 1 |
+| 28 | T030 | 0 | 1 |
+| 29 | T031 | 0 | 1 |
+| 30 | T032 | 0 | 1 |
 
 ## Critical path
 
-T001 -> T033 -> T034 -> T002 -> T003 -> T004 -> T005 -> T006 -> T007 -> T009 -> T010 -> T011 -> T012 -> T013 -> T014 -> T015 -> T016 -> T017 -> T018 -> T019 -> T020 -> T021 -> T023 -> T030 -> T031 -> T032
+T001 -> T033 -> T034 -> T002 -> T003 -> T004 -> T005 -> T006 -> T007 -> T009 -> T010 -> T035 -> T036 -> T037 -> T038 -> T011 -> T012 -> T013 -> T014 -> T015 -> T016 -> T017 -> T018 -> T019 -> T020 -> T021 -> T023 -> T030 -> T031 -> T032
 
-26 sequential waves; T001 is already complete. Performance acceptance can extend this path.
+30 sequential waves; T001-T010, T028, T033 and T034 are already complete. Performance acceptance can extend this path.
