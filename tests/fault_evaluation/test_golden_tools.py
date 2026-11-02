@@ -95,6 +95,37 @@ def test_capture_has_flat_numeric_keys_for_all_d1_output_families(monkeypatch):
     np.testing.assert_allclose(captured[f"{summary}::area"], [0.5])
 
 
+def test_capture_records_empty_surfaces_when_all_levels_are_outside_range(monkeypatch):
+    from tests.fault_evaluation.golden import capture
+    from tests.fault_evaluation.models import build_model, sample_points
+
+    model = build_model("f0_u0")
+    group = model.stratigraphic_column.get_groups()[0]
+    for index, unit in enumerate(group.units):
+        unit.min_value, unit.max_value = 2000 + index * 100, 2100 + index * 100
+    feature = next(feature for feature in model.features if feature.name == group.name)
+    monkeypatch.setattr(feature, "surfaces", lambda values, bounding_box, **kwargs: [])
+    captured = capture(model, sample_points("f0_u0", 2))
+    summaries = [key.rsplit("::", 1)[0] for key in captured if key.endswith("::vertex_count")]
+    assert summaries
+    for summary in summaries:
+        np.testing.assert_array_equal(captured[f"{summary}::vertex_count"], [0])
+        np.testing.assert_array_equal(captured[f"{summary}::bounds"], np.zeros((2, 3)))
+        np.testing.assert_array_equal(captured[f"{summary}::area"], [0.0])
+
+
+def test_capture_rejects_unexpected_empty_surfaces(monkeypatch):
+    from tests.fault_evaluation.golden import capture
+    from tests.fault_evaluation.models import build_model, sample_points
+
+    model = build_model("f0_u0")
+    group = model.stratigraphic_column.get_groups()[0]
+    feature = next(feature for feature in model.features if feature.name == group.name)
+    monkeypatch.setattr(feature, "surfaces", lambda values, bounding_box, **kwargs: [])
+    with pytest.raises(ValueError, match="Empty surface"):
+        capture(model, sample_points("f0_u0", 2))
+
+
 def test_comparator_accepts_box_scaled_tolerance_and_boundary_id_only():
     compare = _api("tests.fault_evaluation.golden", "assert_matches")
     actual, expected = _pair()
