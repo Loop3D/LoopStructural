@@ -193,44 +193,24 @@ def test_evaluate_model_restores_once_per_fault():
     assert counts["fault_calls_top_level"] == 4
 
 
-def test_evaluate_gradient_follows_the_op1_rule():
-    """The gradient of the oldest group uses 2 distinct point batches.
+def test_gradient_values_stay_frozen():
+    """The gradient algorithm is not changed by this task (T015 wraps value entry points only).
 
-    Batch 1 is the original N points. The 3 regions use it for their masks.
-    Batch 2 is the 4N corners of the tetrahedra, used by the gradient itself.
-    Never reuse the N result for the 4N batch. Expected: 4 + 4 = 8 applications.
-    Legacy: 16 (3 regions x 4 on N points, plus 4 on the 4N points).
-    No tetrahedron needed a refinement for the golden points.
+    The gradient of ``group_3`` and the model gradient equal the stored golden output.
+    No count is checked here: the sharing of gradient batches is task T020/T021.
     """
     model, golden = build_model("f4_u3"), _golden("f4_u3")
     points = golden["points"]
-    gradient, counts = _counted(lambda: _group(model, 3).evaluate_gradient(points))
+    gradient = _group(model, 3).evaluate_gradient(points)
     _assert_golden("f4_u3", {"points": points, "feature::group_3::gradient": gradient})
-    assert counts["fault_calls_total"] == 8
-    assert counts["fault_calls_top_level"] == 8
-    assert counts["fault_points_total"] == 4 * len(points) + 4 * 4 * len(points)
-
-
-def test_evaluate_model_gradient_follows_the_op1_rule():
-    """``evaluate_model_gradient`` is one top-level call with the same 2 batches.
-
-    All 4 groups use the same original N points and the same 4N tetrahedron
-    corners, because the element scale is the same for the whole model.
-    Expected: 4 (original N points) + 4 (4N corners) = 8 applications.
-    Legacy: 52 (9 region uses x 4 on N points, plus 4 groups x 4 on 4N points).
-    """
-    model, golden = build_model("f4_u3"), _golden("f4_u3")
-    points = golden["points"]
-    gradient, counts = _counted(lambda: model.evaluate_model_gradient(points))
+    model_gradient = model.evaluate_model_gradient(points)
     # The model gradient is the gradient of the youngest group that is not NaN.
     expected = np.zeros(points.shape)
     for group in reversed(model.stratigraphic_column.get_groups()):
         group_gradient = golden[f"feature::{group.name}::gradient"]
         valid = ~np.isnan(group_gradient).any(axis=1)
         expected[valid] = group_gradient[valid]
-    np.testing.assert_allclose(gradient, expected, rtol=0.0, atol=1e-8 * 1000.0)
-    assert counts["fault_calls_total"] == 8
-    assert counts["fault_calls_top_level"] == 8
+    np.testing.assert_allclose(model_gradient, expected, rtol=0.0, atol=1e-8 * 1000.0)
 
 
 # ---------------------------------------------------------------------------
@@ -285,11 +265,17 @@ def test_reordered_fault_list_is_a_different_set():
     )
 
 
-def test_reordered_fault_list_in_evaluate_model():
-    """The model call with sets A and B applies each ordered set once: 4 + 4 = 8."""
-    model, golden = build_model("f4_u3"), _golden("f4_u3")
+def _reordered_model() -> GeologicalModel:
+    """Return ``f4_u3`` where group_1 has the faults in the reverse order (sets A and B)."""
+    model = build_model("f4_u3")
     group = _group(model, 1)
     group.faults = list(reversed(group.faults))
+    return model
+
+
+def test_reordered_fault_list_in_evaluate_model():
+    """The model call with sets A and B applies each ordered set once: 4 + 4 = 8."""
+    model, golden = _reordered_model(), _golden("f4_u3")
     ids, counts = _counted(lambda: model.evaluate_model(golden["points"]))
     assert counts["fault_calls_total"] == 8
     assert ids.shape == (len(golden["points"]),)
@@ -321,6 +307,56 @@ def test_disabled_faults_make_no_application():
     assert counts["fault_calls_total"] == 0
     np.testing.assert_allclose(values, _reference_value(feature, points), atol=1e-8, equal_nan=True)
     assert not np.allclose(values, golden["feature::group_3::value"], equal_nan=True)
+
+
+def test_group_disabled_but_regions_enabled():
+    """Only the group has ``faults_enabled = False``. Its regions keep the same ordered faults.
+
+    The key includes ``faults_enabled``, so the group must not use the restoration of
+    its regions (and the regions must not use the empty result of the group).
+    Expected: 4 applications (the regions; the group applies none). Legacy: 12.
+    """
+    model, golden = build_model("f4_u3"), _golden("f4_u3")
+    points = golden["points"]
+    feature = _group(model, 3)
+    feature.faults_enabled = False
+    values, counts = _counted(lambda: feature.evaluate_value(points))
+    np.testing.assert_allclose(values, _reference_value(feature, points), atol=1e-8, equal_nan=True)
+    assert counts["fault_calls_total"] == 4
+
+
+def test_restore_enabled_and_disabled_feature_in_one_scope():
+    """Same points and same ordered faults, one feature enabled and one disabled, one scope.
+
+    The enabled feature applies the faults (4). The disabled feature gets equal points and
+    makes no new application. The result must not depend on the order of the two calls.
+    """
+    scope, restore = _api("evaluation_scope"), _api("restore")
+    model, golden = build_model("f4_u3"), _golden("f4_u3")
+    points, disabled = golden["points"], _group(model, 3)
+    enabled = next(
+        region
+        for region in disabled.regions
+        if isinstance(region, BaseFeature) and region.faults == disabled.faults
+    )
+    expected = _manual_restore(enabled, points)
+    disabled.faults_enabled = False
+    try:
+
+        def run(first, second):
+            with scope(model):
+                return restore(first, points), restore(second, points)
+
+        (restored_on, restored_off), counts = _counted(lambda: run(enabled, disabled))
+        assert counts["fault_calls_total"] == 4
+        np.testing.assert_array_equal(restored_on, expected)
+        np.testing.assert_array_equal(restored_off, points)
+        (restored_off, restored_on), counts = _counted(lambda: run(disabled, enabled))
+        assert counts["fault_calls_total"] == 4
+        np.testing.assert_array_equal(restored_on, expected)
+        np.testing.assert_array_equal(restored_off, points)
+    finally:
+        disabled.faults_enabled = True
 
 
 def test_disabled_faults_in_evaluate_model():
@@ -442,21 +478,6 @@ def test_child_fault_frame_batches_are_counted_separately():
     assert counts["fault_calls_total"] <= 42
 
 
-def test_child_fault_gradient_is_not_larger_than_legacy():
-    """The gradient of ``cutting_faults`` has more batches (original, corners, nested frames).
-
-    Legacy: 46 total, 6 top level. Measured for the golden points: 25 distinct
-    (fault, batch) pairs. The total depends on the refinement of the tetrahedra,
-    which is deterministic for the golden points. The values must equal the golden values.
-    """
-    model, golden = build_model("cutting_faults"), _golden("cutting_faults")
-    points = golden["points"]
-    gradient, counts = _counted(lambda: _group(model, 0).evaluate_gradient(points))
-    _assert_golden("cutting_faults", {"points": points, "feature::group_0::gradient": gradient})
-    assert counts["fault_calls_total"] == 25
-    assert counts["fault_calls_total"] < 46
-
-
 # ---------------------------------------------------------------------------
 # Opaque callables
 # ---------------------------------------------------------------------------
@@ -527,21 +548,65 @@ def test_exception_in_a_fault_application_resets_the_scope(entry, monkeypatch):
     _assert_no_stale_scope(_group(model, 3), points, model)
 
 
+def test_exception_after_a_complete_set_resets_the_scope(monkeypatch):
+    """Set A is complete and the failure happens in set B (call 6 of 8).
+
+    The model has 2 ordered fault sets, A and B, with 8 applications. A scope that is not
+    reset in ``finally`` keeps set A, and a published partial set B is reused. Both give
+    fewer than 8 applications in the next call. The values must equal an unscoped reference.
+    """
+    golden = _golden("f4_u3")
+    points = golden["points"]
+    reference = _reordered_model().evaluate_model(points)
+    model = _reordered_model()
+    original = FaultSegment.apply_to_points
+    state = {"calls": 0}
+
+    def failing(self, pts, *args, **kwargs):
+        state["calls"] += 1
+        if state["calls"] == 6:
+            raise RuntimeError("injected failure")
+        return original(self, pts, *args, **kwargs)
+
+    with monkeypatch.context() as scoped:
+        scoped.setattr(FaultSegment, "apply_to_points", failing)
+        with pytest.raises(RuntimeError, match="injected failure"):
+            model.evaluate_model(points)
+    assert state["calls"] == 6
+    ids, counts = _counted(lambda: model.evaluate_model(points))
+    assert counts["fault_calls_total"] == 8
+    np.testing.assert_array_equal(ids, reference)
+
+
 # ---------------------------------------------------------------------------
 # Standalone feature
 # ---------------------------------------------------------------------------
 
 
-def test_standalone_feature_uses_a_temporary_scope():
-    """A feature without a model shares the restorations inside its own call only.
+def _detach_model(feature, seen: set[int] | None = None) -> None:
+    """Remove the model from a feature and from all its region features."""
+    seen = set() if seen is None else seen
+    if id(feature) in seen or not isinstance(feature, BaseFeature):
+        return
+    seen.add(id(feature))
+    feature._model = None
+    for region in feature.regions:
+        _detach_model(region, seen)
 
+
+def test_standalone_feature_uses_a_temporary_scope():
+    """A feature and its regions without a model share the restorations inside one call only.
+
+    D3: a standalone feature uses a temporary scope. The regions have no model either, so
+    their scope is the same temporary scope (a region with a model would be another scope).
     After the call no scope is active. Legacy: 16 applications.
     """
     model, golden = build_model("f4_u3"), _golden("f4_u3")
     points = golden["points"]
     feature = _group(model, 3)
-    feature._model = None
+    _detach_model(feature)
     assert feature.model is None
+    assert all(region.model is None for region in feature.regions)
     values, counts = _counted(lambda: feature.evaluate_value(points))
     _assert_golden("f4_u3", {"points": points, "feature::group_3::value": values})
     assert counts["fault_calls_total"] == 4
@@ -579,18 +644,17 @@ def test_nested_scope_reuses_the_context():
 
 def test_scope_is_reset_after_exit_and_after_an_exception():
     """After the outer scope exits, also by an exception, a new scope is a new context."""
-    scope = _api("evaluation_scope")
-    model = build_model("f1_u0")
-    with scope(model) as first:
-        pass
-    with scope(model) as second:
-        pass
-    assert second is not first
-    with pytest.raises(RuntimeError, match="inside"), scope(model) as third:
+    scope, restore = _api("evaluation_scope"), _api("restore")
+    model, golden = build_model("f4_u3"), _golden("f4_u3")
+    points, feature = golden["points"], _group(model, 3)
+    with scope(model):
+        restore(feature, points)
+    # No stored entry stays: a restore after the exit applies the faults again.
+    _assert_no_stale_scope(feature, points, model)
+    with pytest.raises(RuntimeError, match="inside"), scope(model):
+        restore(feature, points)
         raise RuntimeError("inside")
-    with scope(model) as fourth:
-        pass
-    assert fourth is not third
+    _assert_no_stale_scope(feature, points, model)
 
 
 def test_scope_of_another_model_is_separate():
@@ -680,7 +744,10 @@ def test_restore_with_disabled_faults_returns_the_points():
 
 
 def test_public_calls_leave_no_scope_active():
-    """After a top-level call, a new scope has no stored restoration (value and gradient)."""
+    """After a top-level call, a new scope has no stored restoration (value and model value).
+
+    The gradient call is only used to check that it leaves no scope active. No count is checked.
+    """
     model, golden = build_model("f4_u3"), _golden("f4_u3")
     points, feature = golden["points"], _group(model, 3)
     feature.evaluate_value(points)
