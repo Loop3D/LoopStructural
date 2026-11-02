@@ -19,11 +19,6 @@ specific choice; do not silently pick a new rule.
 
 ## Draft before requesting review
 
-Use the setup interview to settle governance decisions that repository evidence
-does not answer. Carry accepted decisions from `.dev-tools/setup-notes.md` into
-the draft and retain deferred questions as unresolved. Answers to individual
-interview questions do not replace the final review of the complete constitution.
-
 Write a sibling draft alongside the intended constitution, for example
 `.specify/memory/constitution.draft.md`. If a draft already exists, read it and
 preserve user edits. Do not overwrite an existing constitution. If the intended

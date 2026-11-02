@@ -4,19 +4,19 @@
   "files": {
     ".agents/skills/dev-tools-setup/SKILL.md": {
       "kind": "file",
-      "sha256": "025a95504cb8b63a48dd822e9e4b11f9752805e4cf2cd8e32690efd1c88126d7"
+      "sha256": "519c26eaa0819e637d10be629904d8a2806f5d0521703727912596132ae5ec0e"
     },
     ".agents/skills/dev-tools-setup/references/constitution.md": {
       "kind": "file",
-      "sha256": "0757c22cd1c26727fd0dc8983f3e009b4cde07beccc3c67db5cf6dc9d4360c8f"
+      "sha256": "2af67cfaec653012bcb6541a86ba98cd251a135ad922419d3b0e482c42cfefb9"
     },
     ".claude/skills/dev-tools-setup/SKILL.md": {
       "kind": "file",
-      "sha256": "025a95504cb8b63a48dd822e9e4b11f9752805e4cf2cd8e32690efd1c88126d7"
+      "sha256": "519c26eaa0819e637d10be629904d8a2806f5d0521703727912596132ae5ec0e"
     },
     ".claude/skills/dev-tools-setup/references/constitution.md": {
       "kind": "file",
-      "sha256": "0757c22cd1c26727fd0dc8983f3e009b4cde07beccc3c67db5cf6dc9d4360c8f"
+      "sha256": "2af67cfaec653012bcb6541a86ba98cd251a135ad922419d3b0e482c42cfefb9"
     },
     "CLAUDE.md": {
       "kind": "block",
