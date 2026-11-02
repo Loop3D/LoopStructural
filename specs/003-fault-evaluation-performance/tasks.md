@@ -83,7 +83,7 @@
   - Wave: 7
   - Done when: python -m tests.fault_evaluation.regenerate --write completes after T034 on the corrected pre-performance baseline and records all 21 models with D0 provenance.
 
-- [ ] T006 [US1] [M] Add the passing legacy golden suite and prove sensitivity.
+- [x] T006 [US1] [M] Add the passing legacy golden suite and prove sensitivity.
   - Do: Load every D1 output and reference; never regenerate in tests. Cover stopped/cutting faults, onlap/domain, faulted fold, reverse, ignore_regions, faults_enabled, zero displacement, empty/outside/NaN points and first-use build. The sensitivity test expects assert_matches to raise under a temporary 1% fault-movement monkeypatch. Document that geology tests pass before optimization; unlike new feature tests these must pass on the corrected pre-performance baseline defined in D0.
   - Files: `tests/fault_evaluation/test_golden.py`, `tests/fault_evaluation/test_edges.py`, `tests/fault_evaluation/legacy-check.md`
   - Needs: T005

@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from typing import Any
+from unittest.mock import patch
 
 import numpy as np
 
@@ -48,6 +49,74 @@ def _groups(model: Any) -> list[Any]:
     return list(column.get_groups()) if column is not None and hasattr(column, "get_groups") else []
 
 
+def _surface_sample_capture(feature: Any, points: np.ndarray):
+    """Return a scoped evaluator wrapper for known pointwise geological fields."""
+    try:
+        from LoopStructural.modelling.features._base_geological_feature import BaseFeature
+        from LoopStructural.modelling.features._geological_feature import GeologicalFeature
+        from LoopStructural.modelling.features._unconformity_feature import UnconformityFeature
+        from loop_common.supports._3d_structured_grid import StructuredGrid as SupportGrid
+        from loop_interpolation._discrete_interpolator import DiscreteInterpolator
+        from loop_interpolation._geological_interpolator import GeologicalInterpolator
+    except ImportError:
+        return None
+
+    evaluator = getattr(feature, "evaluate_value", None)
+    interpolator = getattr(feature, "interpolator", None)
+    if (
+        not isinstance(feature, GeologicalFeature)
+        or getattr(evaluator, "__func__", None) is not GeologicalFeature.evaluate_value
+        or getattr(getattr(feature, "_calculate_mask", None), "__func__", None)
+        is not BaseFeature._calculate_mask
+        or getattr(getattr(feature, "_apply_faults", None), "__func__", None)
+        is not BaseFeature._apply_faults
+        or not isinstance(interpolator, DiscreteInterpolator)
+        or getattr(getattr(interpolator, "_evaluate_value_local", None), "__func__", None)
+        is not DiscreteInterpolator._evaluate_value_local
+        or getattr(getattr(interpolator, "evaluate_value", None), "__func__", None)
+        is not GeologicalInterpolator.evaluate_value
+        or type(getattr(interpolator, "support", None)) is not SupportGrid
+        or any(
+            type(region) is not UnconformityFeature
+            or getattr(getattr(region, "evaluate_value", None), "__func__", None)
+            is not GeologicalFeature.evaluate_value
+            for region in (getattr(feature, "regions", None) or [])
+        )
+    ):
+        return None
+
+    original = evaluator
+    recorded: dict[str, np.ndarray] = {}
+    depth = 0
+
+    def record(pos, *args, **kwargs):
+        nonlocal depth
+        outermost = depth == 0
+        depth += 1
+        try:
+            values = original(pos, *args, **kwargs)
+            ignore_regions = kwargs.get("ignore_regions", args[0] if args else False)
+            fillnan = kwargs.get("fillnan", args[1] if len(args) > 1 else None)
+            array = np.asarray(pos)
+            if (
+                outermost
+                and not recorded
+                and points.shape == (8000, 3)
+                and array.shape == points.shape
+                and np.array_equal(array, points)
+                and ignore_regions is False
+                and fillnan is None
+            ):
+                value_array = np.asarray(values)
+                if value_array.shape == (8000,):
+                    recorded["values"] = value_array.copy()
+            return values
+        finally:
+            depth -= 1
+
+    return patch.object(feature, "evaluate_value", record), recorded
+
+
 def capture(model: Any, points: np.ndarray) -> dict[str, np.ndarray]:
     """Capture flat numeric model, feature, restoration and surface outputs."""
     points = np.asarray(points, dtype=float)
@@ -90,36 +159,109 @@ def capture(model: Any, points: np.ndarray) -> dict[str, np.ndarray]:
             continue
         box = deepcopy(bounds)
         box.nsteps = np.array([20, 20, 20])
-        for level in group_levels:
+        surface_points = box.regular_grid(local=False, order="C")
+        surface_names = [f"golden-level:{level!r}" for level in group_levels]
+        scoped_capture = _surface_sample_capture(feature, surface_points)
+        if scoped_capture is None:
+            meshes = list(feature.surfaces(group_levels, box, name=surface_names))
+            recorded_sample = None
+        else:
+            evaluator_patch, recorded_sample = scoped_capture
+            with evaluator_patch:
+                meshes = list(feature.surfaces(group_levels, box, name=surface_names))
 
-            def record_expected_empty() -> None:
-                """Accept emptiness only when the sampled field proves it."""
-                grid_points = box.regular_grid(local=False, order="F")
+        names_to_levels = dict(zip(surface_names, group_levels))
+        meshes_by_level: dict[float, Any] = {}
+        all_metadata_absent = bool(meshes) and all(
+            not hasattr(mesh, "values") and not hasattr(mesh, "name") for mesh in meshes
+        )
+        if all_metadata_absent:
+            if len(meshes) != len(group_levels):
+                raise ValueError(
+                    f"Ambiguous surface count for {group.name}: {len(meshes)} != {len(group_levels)}"
+                )
+            meshes_by_level = dict(zip(group_levels, meshes))
+        else:
+            for mesh in meshes:
+                vertices = np.asarray(getattr(mesh, "vertices", np.empty((0, 3))))
+                mesh_name = getattr(mesh, "name", None)
+                named_level = names_to_levels.get(mesh_name)
+                has_values = hasattr(mesh, "values")
+                values = np.asarray(getattr(mesh, "values", []), dtype=float).reshape(-1)
+
+                if values.size:
+                    if not np.all(np.isfinite(values)) or not np.all(values == values[0]):
+                        raise ValueError(
+                            f"Non-constant or non-finite surface value for {group.name}"
+                        )
+                    mesh_level = float(values[0])
+                    if mesh_level not in group_levels:
+                        raise ValueError(f"Unexpected surface value for {group.name}: {mesh_level}")
+                    if mesh_name is not None and (named_level is None or named_level != mesh_level):
+                        raise ValueError(f"Surface name/value mismatch for {group.name}")
+                elif len(vertices) == 0 and has_values and named_level is not None:
+                    # Actual Surface removes NaN vertices during construction,
+                    # leaving an empty values array. The explicit requested
+                    # name is the only reliable level identity in that case.
+                    mesh_level = named_level
+                else:
+                    raise ValueError(f"Unrecognized surface level for {group.name}")
+
+                if mesh_level in meshes_by_level:
+                    raise ValueError(f"Duplicate surface value for {group.name}: {mesh_level}")
+                meshes_by_level[mesh_level] = mesh
+        grid_points = (
+            surface_points if recorded_sample is not None and "values" in recorded_sample else None
+        )
+        finite_min = finite_max = None
+        visible = None
+        mask_checked = False
+        if recorded_sample is not None and "values" in recorded_sample:
+            grid_points = surface_points
+            original_mask = feature._calculate_mask(grid_points)
+            diagnostic_values = recorded_sample["values"]
+            if diagnostic_values.shape == (len(grid_points),):
+                diagnostic_finite = diagnostic_values[
+                    original_mask & np.isfinite(diagnostic_values)
+                ]
+                if diagnostic_finite.size:
+                    finite_min = float(diagnostic_finite.min())
+                    finite_max = float(diagnostic_finite.max())
+                visible = original_mask
+                mask_checked = True
+        for level in group_levels:
+            mesh = meshes_by_level.get(level)
+            if mesh is None:
+                vertices = np.empty((0, 3))
+                triangles = np.empty((0, 3), dtype=int)
+            else:
+                vertices = np.asarray(getattr(mesh, "vertices", np.empty((0, 3))))
+                triangles = np.asarray(getattr(mesh, "triangles", np.empty((0, 3), dtype=int)))
+            if len(vertices):
+                _store_surface(result, feature.name, level, vertices, triangles)
+                continue
+
+            # Reuse one field sample and its mask diagnostics for all empty levels.
+            if finite_min is None and not mask_checked:
+                if grid_points is None:
+                    grid_points = box.regular_grid(local=False, order="F")
                 samples = np.asarray(feature.evaluate_value(grid_points))
                 finite = samples[np.isfinite(samples)]
+                if finite.size:
+                    finite_min, finite_max = float(finite.min()), float(finite.max())
+            outside_range = finite_min is not None and (level < finite_min or level > finite_max)
+            fully_eroded = False
+            if not outside_range and not mask_checked:
                 mask_fn = getattr(feature, "_calculate_mask", None)
+                if grid_points is None:
+                    grid_points = box.regular_grid(local=False, order="F")
                 visible = mask_fn(grid_points) if callable(mask_fn) else None
-                fully_eroded = visible is not None and not np.any(visible)
-                outside_range = finite.size and (level < finite.min() or level > finite.max())
-                if not fully_eroded and not outside_range:
-                    raise ValueError(f"Empty surface for {group.name} at {level:g}")
-                _store_surface(result, feature.name, level, None, None)
-
-            meshes = feature.surfaces([level], box)
-            if len(meshes) > 1:
-                raise ValueError(
-                    f"Unexpected surface count for {group.name} at {level:g}: {len(meshes)}"
-                )
-            mesh = meshes[0] if meshes else None
-            if mesh is None:
-                record_expected_empty()
-                continue
-            vertices = np.asarray(getattr(mesh, "vertices", np.empty((0, 3))))
-            triangles = np.asarray(getattr(mesh, "triangles", np.empty((0, 3), dtype=int)))
-            if not len(vertices):
-                record_expected_empty()
-                continue
-            _store_surface(result, feature.name, level, vertices, triangles)
+                mask_checked = True
+            if not outside_range and visible is not None:
+                fully_eroded = not np.any(visible)
+            if not fully_eroded and not outside_range:
+                raise ValueError(f"Empty surface for {group.name} at {level:g}")
+            _store_surface(result, feature.name, level, None, None)
 
     distances = np.empty((len(points), 0), dtype=float)
     for group in _groups(model):
