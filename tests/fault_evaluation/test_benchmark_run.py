@@ -350,7 +350,7 @@ def test_runner_separates_passes_and_writes_merged_case_metrics(monkeypatch, tmp
     monkeypatch.setattr(run_module, "_run_fresh_process_pass", fake_pass)
     monkeypatch.setattr(run_module, "_launch_pytest", lambda *args: 0)
     output = tmp_path / "merged.json"
-    assert run_main(["--output", str(output), "--rounds", "2"]) == 0
+    assert run_main(["--output", str(output), "--rounds", "2", "--suite", "full"]) == 0
     assert [call[0] for call in calls] == ["timing", "counters", "rss"]
     assert all(call[1] == ["tiny:cold", "tiny:warm"] and call[2] == 2 for call in calls)
     merged = json.loads(output.read_text(encoding="utf8"))

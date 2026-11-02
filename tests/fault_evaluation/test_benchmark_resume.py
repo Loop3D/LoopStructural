@@ -150,6 +150,8 @@ def _argv(tmp_path, *extra):
         str(tmp_path / "result.json"),
         "--work-dir",
         str(tmp_path / "work"),
+        "--suite",
+        "full",  # the fake enumerate_cases list is the full suite
         *extra,
     ]
 
@@ -265,7 +267,7 @@ def real_git(monkeypatch, tmp_path):
 
 
 def _repo_argv(repo):
-    return ["--output", str(repo / "out" / "result.json")]
+    return ["--output", str(repo / "out" / "result.json"), "--suite", "full"]
 
 
 def test_work_dir_and_output_inside_repo_do_not_set_dirty(monkeypatch, real_git):
@@ -304,7 +306,9 @@ def test_other_untracked_file_in_repo_sets_dirty(monkeypatch, real_git):
     _REAL_REVISION_METADATA.cache_clear()
     (real_git / "other.txt").unlink()
     (real_git / "out" / "neighbour.txt").write_text("x", encoding="utf8")
-    assert run_module.main(["--output", str(real_git / "out" / "second.json")]) == 0
+    assert (
+        run_module.main(["--output", str(real_git / "out" / "second.json"), "--suite", "full"]) == 0
+    )
     second = json.loads((real_git / "out" / "second.json").read_text(encoding="utf8"))
     assert {row["dirty"] for row in second["cases"]} == {True}
 
