@@ -157,6 +157,22 @@ Create `tests/fault_evaluation/models.py` with
 `model_names() -> list[str]`, `build_model(name: str) -> GeologicalModel`, and
 `sample_points(name: str, count: int, seed: int = 1) -> np.ndarray`.
 The 16 synthetic names are `f{F}_u{U}` for F in 0,1,2,4 and U in 0,1,2,3.
+Coordinate contract and reference epochs (spec 005, 2026-11-03): public
+model inputs, fixed query points, restored points and public evaluation outputs
+are in world coordinates. Arrays at a support or solver boundary are in that
+support's computational coordinates; convert once at the boundary. The mapping
+is the support transform. Spec 005 owns repairs to frame construction and
+world/local conversion. This spec fingerprints the current restoration
+transform to prevent stale cache use. Spec 005's coordinate owner rebuilds
+dependent local state after an accepted transform change or rejects the change
+before mutation. Existing golden and benchmark manifests remain valid
+historical records. If a future reviewed correction changes a reference, append
+its correctness revision and affected-reference record; do not rewrite prior
+provenance. Performance comparisons require matching cases, run state,
+correctness reference epoch and equivalent machine/environment provenance.
+Report correctness changes separately from measured performance. T004's
+existing capture remains valid for its recorded reference epoch.
+
 Use the data recipe of measure_baseline.py without importing it: that script
 patches FaultSegment globally and runs measurements at import time. Identify
 the oldest group from creation order and assert its identity in the model test.
@@ -167,8 +183,14 @@ assert them. Include a stratigraphic column for every applicable model.
 Put fixed recipes in `tests/fault_evaluation/data/recipes.json`, and frozen
 fields/grids in `fields.npz`. Keep the supplied plugin files in place and load
 them explicitly by path. Do not change those input fields during optimization.
-Each synthetic stored field includes support type, grid geometry, local
-transform, coefficient array and builder state. The folded case records its
+Each synthetic stored field includes support type, grid geometry, the explicit
+support-local-to-world transform and its inverse world-to-local mapping,
+coefficient array and builder state. Do not infer or apply an unspecified
+transform twice. If a future field input has no recoverable transform, require a
+supplied transform or explicit identity declaration; otherwise fail before
+publishing a partial field. Preserve existing captured fields and manifests as
+valid historical records. Spec 005 owns shared frame and coordinate-conversion
+repairs. The folded case records its
 fold frame and folded feature fields. Never solve in a normal golden test.
 
 `golden.py` defines `capture(model, points) -> dict[str, np.ndarray]` and
@@ -190,10 +212,14 @@ Failure messages name model, output, maximum difference and failing point index.
 
 `python -m tests.fault_evaluation.regenerate --write` is the only write command.
 Without --write it validates and exits without changing a file. Normal tests
-must never update references. `manifest.json` records input and output SHA256,
-baseline source revision, the three D0 revision fields, field-generation
-revision, dependency versions, coordinate transforms, seeds and levels. Record
-the actual corrected pre-performance worktree revision, not the historical research revision unless they are the same.
+must never update references. `manifest.json` records input and output SHA256, baseline source revision, the
+three D0 revision fields, field-generation revision, dependency versions,
+coordinate transforms, seeds and levels. Preserve this as a valid historical
+record. If a future reviewed correction changes references, append a distinct
+correctness revision and affected-file record; keep performance baseline
+revision and provenance separate. Record the actual corrected pre-performance
+worktree revision, not the historical research revision unless they are the
+same. Do not compare across correctness epochs as if only performance changed.
 Binary output hashes and readable summary diffs make regeneration reviewable.
 Capture after T034 and before any performance change. Use a scoped monkeypatch
 to perturb fault movement by 1% for the sensitivity test; leave no patch active.
@@ -383,6 +409,10 @@ state of the whole model in the key. T030 shows two defects. The 4 groups of
 separate top-level calls never share an entry. The model-wide token costs 74 %
 of a warm `evaluate_model`. All other rules of D4 stay (bounded LRU, content
 hash of the points, opaque bypass, in-place edit detection, no cached masks).
+The transform owner in spec 005 defines whether a transform mutation is accepted
+and rebuilt or rejected before mutation. D4a only fingerprints the current
+restoration transform and prevents a stale cache hit; it does not implement
+coordinate-state mutation or rebuilding.
 
 What a restoration depends on. `FaultSegment.apply_to_points` and
 `_evaluate_frame` (`_fault_segment.py`) read only the fault itself: its
@@ -402,7 +432,7 @@ Names and signatures (all private, no public API change):
   `state.node(fault, True)` for each fault in order. A value that is not a
   feature, or `_Opaque`, gives None. Do not change `dependency_fingerprint`
   or its tests; the new function reuses `_StateHasher`.
-- `_update_interpolator` also writes the bounding-box transform:
+- `_update_interpolator` also writes the current bounding-box transform:
   `box = getattr(interpolator, "bounding_box", None)`; with a box, write
   `np.asarray(box.world_to_local_matrix, dtype=float)` with `_encode`; without
   a box, write `b"Nbox;"`. `_project_points` uses this transform, and the old
@@ -532,12 +562,12 @@ fix must add no lint findings. Do not mix unrelated lint cleanup into D0.
 | Requirement | Tasks |
 |---|---|
 | FR-001, FR-001a | T001, T002, T005, T006 |
-| FR-002, FR-003, FR-004 | T033, T034, T003, T004, T005, T006; D0 separates the correctness fix from capture |
-| FR-005, SC-001 | T033, T034, T006, T030, T032; pre-performance baseline as defined in D0 |
-| FR-006 | T033, T034, T006, T015, T021, T027, T032 |
+| FR-002, FR-003, FR-004 | T033, T034, T003, T004, T005, T006; D0 separates the correctness fix from capture; C-006 permits only reviewed affected-reference changes and requires separate correctness provenance |
+| FR-005, SC-001 | T033, T034, T003-T006, T030, T032; pre-performance baseline as defined in D0; C-006 records correctness and performance epochs separately and requires comparable provenance |
+| FR-006 | T033, T034, T006, T015, T021, T027, T032; C-006 keeps correctness and performance epochs distinct and preserves unaffected results and numeric limits |
 | FR-007 | T014, T015, T018, T019, T040, T041 |
 | FR-008 | T014, T015, T020, T021, T040, T041; apply the accepted OP1 batch rule |
-| FR-009 | T016, T017, T018, T019, T022, T023, T040, T041 (D4a keeps every invalidation of a fault dependency) |
+| FR-009 | T016, T017, T018, T019, T022, T023, T040, T041 (the coordinate owner controls accepted/rejected transform mutation; D4a fingerprints the current transform and prevents stale cache reuse) |
 | FR-010 | T012, T013, T018, T019, T022, T023, T030; accepted OP1 actual-point budget |
 | FR-010a | T022, T023 |
 | FR-011 | T014, T015, T019, T032 |
@@ -551,6 +581,15 @@ fix must add no lint findings. Do not mix unrelated lint cleanup into D0.
 | SC-010 | T016, T017, T018, T019, T028, T029, T040, T041, T042, T030; OP5 |
 
 ## Handover and release
+
+Spec 005 owns frame construction defects, shared world/local conversion
+repairs, and mutation policy for coordinate-owner state, including persistence
+metadata and copy behavior. This spec owns world-coordinate evaluation outputs
+and fingerprinting restoration transforms so the cache cannot reuse a stale
+result. Record separate correctness and performance epochs only when a future
+reviewed correction changes references; preserve current manifest and reference
+records. Keep benchmark comparisons within a matching correctness epoch. Preserve existing timing, memory, count and numeric limits;
+report actual failures without claiming a gate passed.
 
 Private names added by D4a: `fault_set_fingerprint`,
 `RestorationCache.sync_revision`, the test field `Mutation.touches_faults`. No
