@@ -436,8 +436,9 @@ def _build_reachable(root: object) -> None:
 class _StateHasher:
     """Write the state of a feature graph into one SHA256 digest.
 
-    A node is written once. A second visit writes only the index of the first visit,
-    so a cycle ends. The digest holds no object id, only the state and the visit order.
+    A node is written once for each mode (shallow and deep). A second visit in the same
+    mode writes only the index of the first visit, so a cycle ends. A deep visit of a
+    node that has only a shallow record writes the full state. The digest holds no object id, only the state and the visit order.
     """
 
     def __init__(self) -> None:
@@ -452,10 +453,13 @@ class _StateHasher:
         are not written. Its data, build arguments and regions are written.
         """
         hasher = self.hasher
-        if id(node) in self._visited:
-            hasher.update(f"R{self._visited[id(node)]};".encode())
-            return
-        self._visited[id(node)] = len(self._visited)
+        # A deep record holds all of the state, so it also answers a shallow visit.
+        # A shallow record leaves out the field, so a deep visit must write it in full.
+        for key in ((id(node), True), (id(node), deep)):
+            if key in self._visited:
+                hasher.update(f"R{self._visited[key]};".encode())
+                return
+        self._visited[(id(node), deep)] = len(self._visited)
         kind = type(node)
         if deep and kind not in _known_feature_types():
             raise _Opaque
