@@ -1,7 +1,7 @@
 # Implementation plan: Faster evaluation of faulted models
 
 **Feature**: `003-fault-evaluation-performance` | **Date**: 2026-11-01
-**Spec**: [spec.md](spec.md) | **State**: Replanned 2026-11-03 for the fault-set cache key (D4a, T040-T043) after the failed T030; T001-T029 and T033-T039 are done; T030 is blocked
+**Spec**: [spec.md](spec.md) | **State**: Replanned 2026-11-04 for a faster frame digest (D4b, T044-T045) after the failed key-time gate of T042; T001-T029, T033-T041 and T043 are done; T030 is blocked by OP3 and OP4
 
 ## Open points
 
@@ -11,7 +11,7 @@
 | OP2 | Can the standard suite meet its time budget (about 1 hour before this feature, SC-008 15 minutes after it) and the SC-007 noise limit? The first run of the 860-case full matrix did not finish in 4 hours and was stopped on 2026-11-02. 500,000-point cases were 90 % of the time measured. | The spec now defines a standard suite (C-006 to C-010). T011 measures the standard suite twice before any performance edit. T030 measures it again after. If the baseline run of the standard suite takes more than 90 minutes, or if SC-007 or SC-008 fail, report the measured result and ask for a spec decision. Never remove cases from the standard suite to claim success. | T031, T032, if measurement fails |
 | OP3 | SC-008 (15 minutes for the standard suite). T030 measured 3,017 s (baseline 3,271 s). The sum of the candidate medians is only 334 s. About 2,000 s is work that is not evaluation: counters pass, memory pass, warm priming and process starts. Faster faults cannot reach 900 s. | Needs a spec decision. Options: (a) change the SC-008 target to a measured value; (b) cut the fixed cost of the passes (for example, fewer process starts); (c) make the standard suite smaller. (b) and (c) change FR-012a. T043 splits the wall time by pass, so the user decides with numbers. Recommendation: (b), then (a) for the part that stays. Never remove cases to claim success. | T030, T031 |
 | OP4 | SC-006 (peak memory at most 120 % of the baseline). T030 shows many cases above 1.2. Several have a very small baseline memory, so a few MB of cache or hash workspace gives a large ratio. | T043 lists each failing case with the baseline bytes, the candidate bytes, and the cause (cache retention, hash workspace, or other). The user then decides whether the rule needs an absolute allowance for small baselines. This is a spec change. Do not change the 1.20 limit in code without that answer. | T030 |
-| OP5 | Can SC-010 (warm `evaluate_model` at most 10 % of the cold call) be met? T030 diagnosis: a warm call with no fault calls and no tokens takes about 0.017 s. The cold call is about 0.22 s after the fix of D4a. The limit is then about 0.022 s, so the key work may use about 5 ms. | T042 measures the key time and the warm and cold times. If the ratio is above 0.10 after D4a, report the numbers and ask the user. Do not cache the key per revision: that hides in-place edits (D4). | T030 |
+| OP5 | Can SC-010 (warm `evaluate_model` at most 10 % of the cold call) be met? T030 diagnosis: a warm call with no fault calls and no tokens takes about 0.017 s. The cold call is about 0.22 s after the fix of D4a. The limit is then about 0.022 s, so the key work may use about 5 ms. | T042 measures the key time and the warm and cold times. If the ratio is above 0.10 after D4a, report the numbers and ask the user. Do not cache the key per revision: that hides in-place edits (D4). T042 at 598ef21e: about 8 ms and a ratio of 0.109 for `f4_u3`. D4b (T044, T045) makes the frame digest cheaper; a prototype gave 2.7 ms. T042 then measures again. | T042, T030 |
 
 ## Summary
 
@@ -489,6 +489,99 @@ Measured gates for T042 (report them; a miss is a failed task):
   the baseline (0.92 s). It was 2.52 s on 2026-11-03. No success criterion
   uses it; the number goes into measurements.md.
 
+### D4b. Faster frame digest (replan of 2026-11-04)
+
+This section corrects only `_update_frame` of D4a. T042 measured about 8 ms for
+`fault_set_fingerprint` of the 4 faults of `f4_u3` (gate: 5 ms). The cause is
+the cost of pandas for each column, not the data size.
+
+Facts (planner probe at c4ea58e1, Python 3.13.12, pandas 3.0.5, NumPy 2.4.6):
+
+- One fingerprint of `f4_u3` reads 12 builder frames. Each frame has 2 to 5
+  rows and 22 columns: 21 `float64` columns and 1 column `feature_name` with
+  the pandas `str` dtype (`StringDtype`). Pandas 3 gives text this dtype, so
+  `column.to_numpy()` gives an object array and the current code calls
+  `pd.util.hash_pandas_object` for it.
+- The current `_update_frame` takes about 490 microseconds for each frame
+  (about 6.4 ms for the 12 frames). `frame.to_numpy()` takes about 20
+  microseconds, and `repr(frame.to_numpy().tolist())` about 31 microseconds.
+- For a frame of 100,000 rows and 22 columns, the current column loop takes
+  about 14 ms, and `repr(frame.to_numpy().tolist())` about 300 ms. A large
+  frame must therefore keep the column loop.
+- A prototype of the design below gave these medians of 50 calls of
+  `fault_set_fingerprint(faults, build=False)`: `f4_u3` 2.70 ms (old 7.14 ms),
+  `f4_u0` 2.79 ms (old 7.25 ms), `onlap_domain` 2.15 ms (old 2.93 ms).
+
+Design (private names, no public API change):
+
+- New module constant in `_evaluation_cache.py`, after `_CHUNK_BYTES`:
+  `_SMALL_FRAME_CELLS = 2048`. Comment: a frame with at most this number of
+  cells is read with one call; below this size, the cost of each column is
+  larger than the cost of each cell.
+- `_update_frame(hasher: _Updatable, frame: object) -> None` keeps its
+  signature, its docstring purpose and its `_Opaque` rule for a value that is
+  not a `pd.DataFrame`. The new body after that check:
+
+  ```python
+  dtypes = frame.dtypes.tolist()
+  texts = {dtype: str(dtype) for dtype in set(dtypes)}
+  hasher.update(f"D{frame.shape};".encode())
+  _encode(hasher, [repr(name) for name in frame.columns.tolist()])
+  _encode(hasher, [texts[dtype] for dtype in dtypes])
+  if frame.size <= _SMALL_FRAME_CELLS:
+      # One call reads all cells. ``repr`` of a float is exact, and it keeps
+      # the type of each value in an object column (1 is not 1.0 or "1").
+      hasher.update(b"V;")
+      _encode(hasher, repr(frame.to_numpy().tolist()))
+      return
+  for _, column in frame.items():
+      values = column.to_numpy()
+      if values.dtype.hasobject:
+          values = pd.util.hash_pandas_object(column, index=False).to_numpy()
+      _update_array(hasher, values)
+  ```
+
+- The index of the frame stays out of the digest, as before.
+- Each call reads all cells, so an in-place edit of a cell still changes the
+  digest (D4). Do not cache a digest for each frame object or each revision
+  (OP5).
+- The digest bytes change. Only equality inside one process matters, so no
+  stored file changes.
+- An object value with a default `repr` (with a memory address) can give a
+  different digest for an equal frame that holds other objects. That gives a
+  cache miss, never a stale hit. Builder data holds numbers and text.
+
+Tests (T044, in `tests/fault_evaluation/test_fault_set_key.py`, section (6)):
+
+- Helper `_small_frame_cells() -> int`: read `_SMALL_FRAME_CELLS` from
+  `_evaluation_cache` with `getattr`, and assert that it is present, with the
+  message "D4b needs _SMALL_FRAME_CELLS". Helper
+  `_sized_frame(rows: int) -> pd.DataFrame`: the columns of `_frame()` (`X`
+  float64, `n` int64, `name` text) with `rows` rows, values
+  `X = np.arange(rows) * 0.5`, `n = np.arange(rows, dtype=np.int64)`,
+  `name = [f"s{i}" for i in range(rows)]`. The two sizes are `small` (3 rows)
+  and `large` (`_small_frame_cells() // 3 + 1` rows, above the limit). Give
+  the size to the tests as a string parameter (`"small"`, `"large"`) and
+  compute the rows inside the test, so that collection does not need the
+  constant.
+- `test_equal_frames_have_equal_digests` and
+  `test_changed_frame_has_another_digest`: parametrize also over the two sizes
+  and use `_sized_frame`. Keep the 4 changes (value, column name, dtype, object
+  value). The value change and the object-value change edit row 0 of a copy.
+- New `test_in_place_edit_changes_the_digest`, over the two sizes and two
+  edits: `frame.iloc[1, 0] = 99.25` and `frame.loc[1, "name"] = "edited"`.
+  Take the digest, edit the same object, and assert that the digest changed.
+- New `test_object_values_of_other_types_have_other_digests`: two small frames
+  with one column of dtype `object`, values `[1, "a"]` and `[1.0, "a"]`. The
+  digests differ.
+- New `test_small_frame_does_not_hash_each_column`: with `monkeypatch`, replace
+  `pd.util.hash_pandas_object` and `pd.DataFrame.items` with functions that
+  raise `AssertionError("per-column path used for a small frame")`. Then
+  `_frame_digest(_frame())` must end with no error. This test is red before
+  T045, because the current code calls both for the text column.
+- No time test in pytest, because a timing assertion is not stable. T042
+  measures the time.
+
 ### D5. Gradient decision and thread/memory checks
 
 Preserve tetrahedron construction, near-fault refinement, element scale and
@@ -567,7 +660,7 @@ fix must add no lint findings. Do not mix unrelated lint cleanup into D0.
 | FR-006 | T033, T034, T006, T015, T021, T027, T032; C-006 keeps correctness and performance epochs distinct and preserves unaffected results and numeric limits |
 | FR-007 | T014, T015, T018, T019, T040, T041 |
 | FR-008 | T014, T015, T020, T021, T040, T041; apply the accepted OP1 batch rule |
-| FR-009 | T016, T017, T018, T019, T022, T023, T040, T041 (the coordinate owner controls accepted/rejected transform mutation; D4a fingerprints the current transform and prevents stale cache reuse) |
+| FR-009 | T016, T017, T018, T019, T022, T023, T040, T041, T044, T045 (the coordinate owner controls accepted/rejected transform mutation; D4a fingerprints the current transform and prevents stale cache reuse) |
 | FR-010 | T012, T013, T018, T019, T022, T023, T030; accepted OP1 actual-point budget |
 | FR-010a | T022, T023 |
 | FR-011 | T014, T015, T019, T032 |
@@ -578,7 +671,7 @@ fix must add no lint findings. Do not mix unrelated lint cleanup into D0.
 | SC-006 | T022, T023, T028, T039, T029, T043, T030; OP4 |
 | SC-007, SC-008 | T011, T028, T037, T038, T039, T029, T043, T030; OP2 measurement gate; OP3 gap (no plan can reach 900 s without a spec decision) |
 | SC-009 | T024, T025, T026, T027, T030 |
-| SC-010 | T016, T017, T018, T019, T028, T029, T040, T041, T042, T030; OP5 |
+| SC-010 | T016, T017, T018, T019, T028, T029, T040, T041, T044, T045, T042, T030; OP5 |
 
 ## Handover and release
 
@@ -594,6 +687,8 @@ report actual failures without claiming a gate passed.
 Private names added by D4a: `fault_set_fingerprint`,
 `RestorationCache.sync_revision`, the test field `Mutation.touches_faults`. No
 public name changes. `dependency_fingerprint` stays and keeps its tests.
+D4b adds one private constant, `_SMALL_FRAME_CELLS`, and changes only the body
+of the private `_update_frame`. Other specs use neither name.
 
 No protocol, schema, generated solver fixtures or Rust package changes.
 The loop_common change is a separate package release concern. Run its tests
@@ -663,6 +758,38 @@ OP4 are recorded; then it is set to `[ ]` and run again. Order:
 The orchestrator must not edit `specs/003-fault-evaluation-performance/spec.md`.
 OP3 and OP4 need the spec-interview or spec-reviewer skill and then the
 spec-cascade skill.
+
+## Replan of 2026-11-04 (faster frame digest)
+
+Cause: T042 failed its key-time gate (about 8 ms against 5 ms; see Answers,
+"T042, 2026-11-04"). The user chose a replan. D4b gives the design. All other
+results of D4a stay. The changes of the earlier replans stay.
+
+New task ids T044 and T045 are appended; no id is reused. T040, T041 and T043
+keep their `[x]`. T042 changes from `[!]` to `[ ]` and runs again after T045.
+Order:
+
+1. T044 (tests, red): the tests of D4b. Files:
+   `tests/fault_evaluation/test_fault_set_key.py`. Needs T041. Done when the
+   new test `test_small_frame_does_not_hash_each_column` fails, and each test
+   that uses `_small_frame_cells()` fails, because `_SMALL_FRAME_CELLS` is
+   absent; all other tests of `tests/fault_evaluation` pass.
+2. T045 (code): D4b. Files:
+   `LoopStructural/modelling/features/_evaluation_cache.py`. Needs T044. Done
+   when `pytest tests/fault_evaluation -q` passes, the golden tests stay under
+   120 s, and Ruff finds nothing new in the file.
+3. T042 runs again with the same gates and the same report file
+   (`profile-d4a.md`; add a section for the new run and keep the first run).
+   Needs T045. It also reports again the OP5 ratio warm / cold
+   `evaluate_model` for `f4_u3`, `f4_u0` and `onlap_domain`. The
+   `onlap_domain` ratio (0.284 at 598ef21e) has no gate in T042. If it stays
+   above 0.10, T042 reports it and T030 decides it (SC-010).
+4. T030, T031 and T032 are unchanged. T030 still needs T042 and the answers to
+   OP3 and OP4.
+
+Constitution check for this replan: every row of the "Constitution check"
+table stays Pass. The change is in one private module and one test file. It
+adds no dependency and no public name, and it keeps the existing results.
 
 ## Answers
 

@@ -1,7 +1,7 @@
 # Tasks: Faster evaluation of faulted models
 
 **Input**: spec.md and plan.md in `specs/003-fault-evaluation-performance/`
-**State**: Replanned 2026-11-03 for the fault-set cache key (plan D4a). T001-T029 and T033-T039 are done. The first T030 run failed. Next: T040 and T043 (in parallel), then T041, T042. T030 then waits for OP3 and OP4.
+**State**: Replanned 2026-11-04 for a faster frame digest (plan D4b). T001-T029, T033-T041 and T043 are done. T042 failed its key-time gate and is open again. Next: T044, then T045, then T042 again. T030 then waits for OP3 and OP4.
 
 ## Orchestrator notes
 
@@ -13,11 +13,11 @@
   change only Files; do not commit, change branches or run competing checks.
   The orchestrator runs tests and records the expected failure before the next
   implementation task. Use ASD-STE100 comments and docs.
-- **Tiers**: 3 [S], 40 [M]. Resolve the actual worker models from
+- **Tiers**: 4 [S], 41 [M]. Resolve the actual worker models from
   `.agents/model-policy.json` and available runtime tools. Codex workers use
   gpt-6-luna (low effort for S; medium for M). Limit is 5 workers, capped by
   runtime slots (currently 3 besides the orchestrator). Report unavailable models.
-- **Waves**: 33. Use parallel workers only for ready tasks with disjoint Files.
+- **Waves**: 35. Use parallel workers only for ready tasks with disjoint Files.
 - **Correctness and performance epochs**: if a future analytic correction
   changes references, append provenance for the reviewed affected results.
   Keep current references and manifests as valid historical records. Preserve
@@ -47,7 +47,7 @@
 - **Capture gate**: D0/T034 is the only evaluation edit allowed before T005/T011.
   Record prerequisite parent/fix/baseline revisions; never capture after a
   performance change or remove a failing gradient case. T001 stays complete.
-- **Task IDs**: T033/T034, T035-T039 and T040-T043 are appended to preserve existing IDs.
+- **Task IDs**: T033/T034, T035-T039, T040-T043 and T044/T045 are appended to preserve existing IDs.
   Schedule from Needs and Wave, not from the number. T032 is the final scheduled task.
 - **Python environment**: the shared environment is
   C:/Users/lachl/dev/LoopStructural/.venv/Scripts/python.exe. Set PYTHONPATH to
@@ -281,7 +281,7 @@
   - Do: SECOND RUN. The first run (revision c8e3f9f1, 2026-11-03) failed SC-003, SC-004, SC-006, SC-007, SC-008 and SC-010; its raw files stay in `C:/Users/lachl/dev/ls-bench-003/cand/`. Use a new output folder. Do not change `acceptance.py`: SC-010 divides the warm call by the cold call of the same candidate run. Use the SC-006 and SC-008 rules as the answers to OP3 and OP4 in plan.md give them. Put the `onlap_domain` number of T042 in measurements.md. Run the STANDARD D2 suite twice with identical baseline case ids and machine/environment, in the way the notes on long runs say (outside the repository, clean tree, `suite_wall_seconds` recorded for SC-008). The full suite is not required. Run D5 large-memory cases and acceptance CLI. Include gradients, total recursive counts and warm invalidation. Record raw provenance, peak memory and complete elapsed times. A target miss is a failed task, not permission to remove a case or alter golden references. OP2 requires a user decision only if runtime/noise targets fail; it does not block starting measurement.
   - Files: `specs/003-fault-evaluation-performance/candidate.json`, `specs/003-fault-evaluation-performance/candidate_repeat.json`, `specs/003-fault-evaluation-performance/acceptance.json`, `specs/003-fault-evaluation-performance/measurements.md`
   - Needs: T027, T029, T042, T043
-  - Wave: 31
+  - Wave: 33
   - Blocked by: OP3, OP4
   - Done when: The acceptance command exits 0 for every SC, all golden tests pass under 120 seconds, and measurements.md records the 10-million-point memory result.
 
@@ -289,14 +289,14 @@
   - Do: Document D1 regeneration/review, D2 run/compare/acceptance (including `--suite standard|full`, `--work-dir`, `--resume`, and why the work directory and outputs belong outside the repository), model.evaluation_cache enabled/max_bytes/clear, invalidation/opaque fallback, the D4a fault-set key (groups with equal ordered faults share one entry; the revision term is conservative: any setter change of the model, for example `GeologicalModel.update()`, clears reuse; in-place edits of the root feature do not invalidate because they do not change a restoration), serialized same-model calls, memory accounting and measured limits. Update ROADMAP only for stages actually complete. Map every FR and SC to exact test node or measured case and acceptance result. Do not create specs/README.md because no index exists.
   - Files: `doc/advanced/fault_evaluation.rst`, `ROADMAP.md`, `specs/003-fault-evaluation-performance/coverage.md`
   - Needs: T030
-  - Wave: 32
+  - Wave: 34
   - Done when: Documentation contains runnable commands, all cache controls, accepted decision text, measured results and a requirement-to-test/measurement table with no unproved pass.
 
 - [ ] T032 [Finish] [M] Run final project and package checks and record the result.
   - Do: Run python -m black --check LoopStructural tests/fault_evaluation benchmarks/fault_evaluation packages/loop_common/src/loop_common/supports/_3d_structured_grid.py; python -m ruff check LoopStructural packages; python -m pytest; python -m pytest packages/loop_common/tests; python -m pytest packages/loop_interpolation/tests. Use the prepared development environment. Record failures exactly. No Cargo command is needed. Do not claim done with any failed task or unresolved acceptance gate.
   - Files: `specs/003-fault-evaluation-performance/validation.md`
-  - Needs: T001, T002, T003, T004, T005, T006, T007, T008, T009, T010, T011, T012, T013, T014, T015, T016, T017, T018, T019, T020, T021, T022, T023, T024, T025, T026, T027, T028, T029, T030, T031, T033, T034, T035, T036, T037, T038, T039, T040, T041, T042, T043
-  - Wave: 33
+  - Needs: T001, T002, T003, T004, T005, T006, T007, T008, T009, T010, T011, T012, T013, T014, T015, T016, T017, T018, T019, T020, T021, T022, T023, T024, T025, T026, T027, T028, T029, T030, T031, T033, T034, T035, T036, T037, T038, T039, T040, T041, T042, T043, T044, T045
+  - Wave: 35
   - Done when: Black, Ruff, root pytest, loop_common pytest and loop_interpolation pytest all exit 0; validation.md records commands, revisions, golden runtime and acceptance status.
 
 ## Added foundation prerequisite (execute before T002)
@@ -388,11 +388,11 @@ decisions OP3 and OP4. T030 waits for T042, T043 and those decisions.
   - Done when: `python -m pytest tests/fault_evaluation -q` passes, the golden tests take less than 120 s, and `ruff check LoopStructural/modelling/features/_evaluation_cache.py LoopStructural/modelling/features/_evaluation.py` shows no finding that was not there before.
   - Context: `_update_interpolator`: `box = getattr(interpolator, "bounding_box", None)`; with a box, `_encode(hasher, np.asarray(box.world_to_local_matrix, dtype=float))`; without a box, `hasher.update(b"Nbox;")`. `_update_frame` keeps the shape record, column names, dtypes and the `pd.util.hash_pandas_object(column, index=False)` hash for object columns. `sync_revision(revision)`: under `self._lock`, if `revision` differs from the stored value (start None), call `self._clear_locked()` and store it; docstring says it is for internal use. `EvaluationContext._fingerprint(faults: tuple, cache)` memoises in `self._fingerprints` by `tuple(id(f) for f in faults)` (store the faults with the digest, so the ids stay valid) and calls `fault_set_fingerprint(faults)` under `cache.lock`. In `restore`: read `revision = int(getattr(self.model, "evaluation_revision", 0))` AFTER the fingerprint (the fingerprint builds dirty builders), call `cache.sync_revision(revision)`, then use the key `("persistent", digest, points.shape, points.dtype.str, bool(reverse), fingerprint, revision)`. After the faults are applied, read the revision again; if it changed, keep the result in the scope only and do not call `cache.put`. Pickle defect (plan.md, Answers): add `RestorationCache.__getstate__` (keep `enabled` and `max_bytes`; drop the lock, the entries, the byte count and the stored revision) and `__setstate__` (make a new `threading.RLock`, empty entries, revision None). Rules: Ruff `D` and `ANN`, NumPy docstrings, Python 3.9 target; ASD-STE100 comments. Environment: as in T040.
 
-- [!] T042 [US3] [M] Measure the D4a gates and write the profile report. Failed: gate G4, `fault_set_fingerprint` takes about 8 ms (target 5 ms); replan for a faster frame hash (plan.md, Answers, "T042, 2026-11-04").
-  - Do: Read-only for tracked code. On the clean committed tree, measure `f4_u3`, `f4_u0` and `onlap_domain` at 5,000 points, cold and warm, all five operations, with the D2 tools. Put any script in the scratchpad, outside the repository, and delete it at the end. Write `profile-d4a.md` with: fault calls (total) for each case; the cold `f4_u3` `model_ids` time with the cache on and with `model.evaluation_cache.enabled = False`, and their ratio; the warm `model_ids` fault calls; the median time of `fault_set_fingerprint` for the 4 faults of `f4_u3` (with `build=False`, 20 repeats); warm and cold `evaluate_model` times and their ratio (OP5); the `onlap_domain` `model_gradient` cold time against the baseline 0.92 s. Give the revision, the Python path and the commands. Mark each gate pass or fail. A miss is a failed task. If the SC-003 count is not 4, stop and report: the plan must change.
+- [ ] T042 [US3] [M] Measure the D4a gates and write the profile report.
+  - Do: SECOND RUN, after T045 (plan D4b). The first run (598ef21e, 2026-11-04) failed gate G4: `fault_set_fingerprint` took about 8 ms. Keep the first run in `profile-d4a.md` and add a new section for this run. Report again the OP5 ratio warm / cold `evaluate_model` for `f4_u3`, `f4_u0` and `onlap_domain`; the `onlap_domain` ratio (0.284 in the first run) has no gate here: if it stays above 0.10, report it, and T030 decides it (SC-010). Read-only for tracked code. On the clean committed tree, measure `f4_u3`, `f4_u0` and `onlap_domain` at 5,000 points, cold and warm, all five operations, with the D2 tools. Put any script in the scratchpad, outside the repository, and delete it at the end. Write `profile-d4a.md` with: fault calls (total) for each case; the cold `f4_u3` `model_ids` time with the cache on and with `model.evaluation_cache.enabled = False`, and their ratio; the warm `model_ids` fault calls; the median time of `fault_set_fingerprint` for the 4 faults of `f4_u3` (with `build=False`, 20 repeats); warm and cold `evaluate_model` times and their ratio (OP5); the `onlap_domain` `model_gradient` cold time against the baseline 0.92 s. Give the revision, the Python path and the commands. Mark each gate pass or fail. A miss is a failed task. If the SC-003 count is not 4, stop and report: the plan must change.
   - Files: `specs/003-fault-evaluation-performance/profile-d4a.md`
-  - Needs: T041
-  - Wave: 30
+  - Needs: T045
+  - Wave: 32
   - Done when: `profile-d4a.md` shows, for `f4_u3` at 5,000 points: cold `all_group_values` and `model_ids` each 4 fault calls; cold `model_ids` cache-on time at most 1.10 times cache-off time; warm `model_ids` 0 fault calls; the `fault_set_fingerprint` time (target at most 5 ms) and the `onlap_domain` number reported.
   - Context: Case ids are `"{model}:{operation}:{points}:{state}"`; operations `oldest_value`, `all_group_values`, `model_ids`, `oldest_gradient`, `model_gradient`. `benchmarks.fault_evaluation.run.enumerate_cases()` gives the full case list; filter it by model and `points == 5000`. `benchmarks.fault_evaluation.bench_cases.run_case(benchmark, model, points, case, rounds=...)` clears the cache, primes a warm case and times one call; the points come from `bench_cases._points(model, count)`. Count calls with `benchmarks.fault_evaluation.instrumentation.EvaluationInstrumentation` (`snapshot()["fault_calls_total"]`). `fault_set_fingerprint(faults, build=False)` is in `LoopStructural/modelling/features/_evaluation_cache.py`; the faults of a group are `feature.faults`. The `--suite` runner has no case filter: do not change it. Use `time.perf_counter`, the median of 5 rounds for each time. Environment: as in T040. Rule: every time is measured, none is inferred (plan.md, Answers 2026-11-02).
 
@@ -403,6 +403,30 @@ decisions OP3 and OP4. T030 waits for T042, T043 and those decisions.
   - Wave: 15
   - Done when: `t030-diagnosis.md` has the SC-006 table with one row for each case of `acceptance_cand.json` above 1.20, and the SC-008 table whose pass times add up to the measured `suite_wall_seconds` of each run within 1 %.
   - Context: Result schema v1 (`benchmarks/fault_evaluation/run.py`): rows have `case_id`, `model`, `operation`, `points`, `state`, `rounds`, `time_samples_seconds`, median seconds, fault and field calls, peak extra RSS bytes, and the provenance fields; the document has `suite_wall_seconds`. The acceptance output (`benchmarks/fault_evaluation/acceptance.py`, `_sc006`, `_sc008`) has one row for each SC. The SC-006 limit is 1.20 and the SC-008 limit is 900 s. Known values: candidate 3,017 s, baseline 3,271 s, sum of candidate medians 334 s (plan.md, Answers, "T030 diagnosis"). These facts serve OP3 (SC-008 target) and OP4 (SC-006 for small baselines); do not propose a resolution as fact.
+
+## Added faster frame digest tasks (replan of 2026-11-04)
+
+T042 failed its key-time gate: `fault_set_fingerprint` for the 4 faults of
+`f4_u3` took about 8 ms (target 5 ms; plan.md, Answers, "T042, 2026-11-04").
+The cause is the pandas cost for each column of the 12 small builder frames.
+Plan D4b changes only the body of the private `_update_frame`: a small frame is
+read with one call. T040, T041 and T043 stay done. T042 runs again after T045.
+
+- [ ] T044 [US2] [M] Test the D4b frame digest for small and large frames and in-place edits.
+  - Do: Change section (6) of the test file only. Add two helpers after `_frame()`: `_small_frame_cells() -> int` reads `_SMALL_FRAME_CELLS` from the module `_evaluation_cache` with `getattr(module, "_SMALL_FRAME_CELLS", None)` and asserts that it is not None, with the message "D4b needs _SMALL_FRAME_CELLS"; `_sized_frame(rows: int) -> pd.DataFrame` gives the columns of `_frame()` with `rows` rows (see Context). Add a size parameter `"small"` / `"large"` (a string, so that collection does not need the constant; compute the rows inside the test). Parametrize `test_equal_frames_have_equal_digests` and `test_changed_frame_has_another_digest` also over the size, and use `_sized_frame`. Keep the 4 changes (`value`, `column_name`, `dtype`, `object_value`); the value change and the object-value change edit row 0 of a copy. New `test_in_place_edit_changes_the_digest`, over the two sizes and two edits (`frame.iloc[1, 0] = 99.25`, `frame.loc[1, "name"] = "edited"`): take the digest, edit the same object, assert that the digest changed. New `test_object_values_of_other_types_have_other_digests`: two small frames with one column of dtype `object`, values `[1, "a"]` and `[1.0, "a"]`; the digests differ. New `test_small_frame_does_not_hash_each_column`: with `monkeypatch`, replace `pd.util.hash_pandas_object` and `pd.DataFrame.items` with functions that raise `AssertionError("per-column path used for a small frame")`; then `_frame_digest(_frame())` must end with no error. No time test. Change no other section and no code.
+  - Files: `tests/fault_evaluation/test_fault_set_key.py`
+  - Needs: T041
+  - Wave: 30
+  - Done when: `pytest tests/fault_evaluation/test_fault_set_key.py -q` fails only for `test_small_frame_does_not_hash_each_column` and for each test that calls `_small_frame_cells()` (the constant is absent), and `pytest tests/fault_evaluation -q` has no other failure; then all pass after T045.
+  - Context: Existing helpers in section (6): `_frame_digest(frame: pd.DataFrame) -> bytes` (a `hashlib.sha256()` given to `_update_frame`, then `digest()`) and `_frame()` (`X` float64 `[1.0, 2.0, 3.0]`, `n` int64 `[1, 2, 3]`, `name` text `["a", "b", "c"]`). The file imports `_update_frame` from `LoopStructural.modelling.features._evaluation_cache`; import the module itself for `getattr` (for example `from LoopStructural.modelling.features import _evaluation_cache`). `_sized_frame(rows)`: `X = np.arange(rows) * 0.5`, `n = np.arange(rows, dtype=np.int64)`, `name = [f"s{i}" for i in range(rows)]`. Sizes: `small` = 3 rows; `large` = `_small_frame_cells() // 3 + 1` rows (above the limit). The large path keeps the column loop and `pd.util.hash_pandas_object` for object columns; the small path calls `repr(frame.to_numpy().tolist())` once. The current code (before T045) calls both patched functions for the text column, so the new no-column test is red. Rules: pytest; NumPy docstrings and type hints (Ruff `D`, `ANN`); Python 3.9 target; ASD-STE100 docstrings. Environment: as in T040.
+
+- [ ] T045 [US2] [S] Read a small DataFrame with one call in the frame digest (D4b).
+  - Do: In `_evaluation_cache.py`, add the module constant `_SMALL_FRAME_CELLS = 2048` after `_CHUNK_BYTES`, with the comment: a frame with at most this number of cells is read with one call; below this size, the cost of each column is larger than the cost of each cell. In `_update_frame(hasher: _Updatable, frame: object) -> None`, keep the signature, the docstring purpose, `import pandas as pd` and the `raise _Opaque` check for a value that is not a `pd.DataFrame`. Replace the rest of the body with the code in Context, exactly. Do not cache a digest for each frame or each revision (OP5). Change no other function and no test. No public API change.
+  - Files: `LoopStructural/modelling/features/_evaluation_cache.py`
+  - Needs: T044
+  - Wave: 31
+  - Done when: `pytest tests/fault_evaluation -q` passes, the golden tests take less than 120 s, and `ruff check LoopStructural/modelling/features/_evaluation_cache.py` shows no finding that was not there before.
+  - Context: New body after the type check: `dtypes = frame.dtypes.tolist()`; `texts = {dtype: str(dtype) for dtype in set(dtypes)}`; `hasher.update(f"D{frame.shape};".encode())`; `_encode(hasher, [repr(name) for name in frame.columns.tolist()])`; `_encode(hasher, [texts[dtype] for dtype in dtypes])`; `if frame.size <= _SMALL_FRAME_CELLS:` then the comment "One call reads all cells. ``repr`` of a float is exact, and it keeps the type of each value in an object column (1 is not 1.0 or "1").", then `hasher.update(b"V;")`, `_encode(hasher, repr(frame.to_numpy().tolist()))`, `return`. After the `if`: `for _, column in frame.items():` `values = column.to_numpy()`; `if values.dtype.hasobject: values = pd.util.hash_pandas_object(column, index=False).to_numpy()`; `_update_array(hasher, values)`. The index stays out of the digest. Existing helpers in the file: `_encode(hasher, value)`, `_update_array(hasher, array)`, `_Opaque`. The digest bytes change; only equality in one process matters, so no stored file changes. Rules: Ruff `D` and `ANN`; Python 3.9 target; ASD-STE100 comments. Environment: as in T040.
 
 ## Dependencies
 
@@ -417,8 +441,8 @@ optimization, so it needs T038. D0 is the sole earlier evaluation edit. The
 accepted OP1 batch rule applies to gradients. OP2 is resolved by measurement; a
 failed runtime/noise target triggers a user decision and never counts as
 passing acceptance. Cache and grid tasks keep their prior dependency branches
-and start after T011. The first T030 run failed (2026-11-03). T040 -> T041 ->
-T042 fix and measure the D4a fault-set key; T043 splits the failed results by
+and start after T011. The first T030 run failed (2026-11-03). T040 -> T041 fix the D4a fault-set key;
+T044 -> T045 make the frame digest faster (D4b), and T042 then measures D4a; T043 splits the failed results by
 cause and can run at any time after T029. T030 joins T042 and T043, and waits
 for the spec decisions OP3 (SC-008) and OP4 (SC-006). T031 documents passing
 results, and T032 is the final scheduled task and depends on every other task.
@@ -460,13 +484,15 @@ unaffected baselines fixed; compare equivalent correctness and run provenance.
 | 27 | T023 | 0 | 1 |
 | 28 | T040 | 0 | 1 |
 | 29 | T041 | 0 | 1 |
-| 30 | T042 | 0 | 1 |
-| 31 | T030 | 0 | 1 |
-| 32 | T031 | 0 | 1 |
-| 33 | T032 | 0 | 1 |
+| 30 | T044 | 0 | 1 |
+| 31 | T045 | 1 | 0 |
+| 32 | T042 | 0 | 1 |
+| 33 | T030 | 0 | 1 |
+| 34 | T031 | 0 | 1 |
+| 35 | T032 | 0 | 1 |
 
 ## Critical path
 
-T001 -> T033 -> T034 -> T002 -> T003 -> T004 -> T005 -> T006 -> T007 -> T008 -> T010 -> T035 -> T036 -> T037 -> T038 -> T011 -> T012 -> T013 -> T014 -> T015 -> T016 -> T017 -> T018 -> T019 -> T020 -> T021 -> T023 -> T040 -> T041 -> T042 -> T030 -> T031 -> T032
+T001 -> T033 -> T034 -> T002 -> T003 -> T004 -> T005 -> T006 -> T007 -> T008 -> T010 -> T035 -> T036 -> T037 -> T038 -> T011 -> T012 -> T013 -> T014 -> T015 -> T016 -> T017 -> T018 -> T019 -> T020 -> T021 -> T023 -> T040 -> T041 -> T044 -> T045 -> T042 -> T030 -> T031 -> T032
 
-33 sequential waves. T001-T029 and T033-T039 are complete. T030 is blocked by OP3 and OP4. Performance acceptance can extend this path.
+35 sequential waves. T001-T029, T033-T041 and T043 are complete. T030 is blocked by OP3 and OP4. Performance acceptance can extend this path.
