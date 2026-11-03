@@ -524,3 +524,47 @@ tasks.md says so.
   short cases repeat for five rounds in a second step; the list of large cases
   is stored as literal ids. The runner correction (progress output, checkpoint
   file, `--resume`, `--work-dir`, `suite_wall_seconds`) is already committed.
+- T030, 2026-11-03: the first acceptance measurement failed. Code at revision
+  c8e3f9f1 (T001 to T029 done). Two runs of the standard suite (254 cases),
+  outside the repository, clean tree. The raw results are in
+  `C:/Users/lachl/dev/ls-bench-003/cand/` (`candidate.json`,
+  `candidate_repeat.json`, `acceptance_cand.json`, logs). Passed: SC-002,
+  SC-005, SC-009. Failed: SC-003 (16 fault calls, not 4; time ratio 0.214),
+  SC-004 (6.16 against 1.5), SC-006 (many cases above 1.2; several have a very
+  small baseline memory, check the rule), SC-007 (cases above 1.10; the same
+  noise problem as the baseline), SC-008 (3,017 s against 900 s; baseline
+  3,271 s), SC-010 (0.48 against 0.10).
+- T030 diagnosis, 2026-11-03 (read-only profile of `f4_u3`, 5,000 points):
+  (a) The persistent key uses `dependency_fingerprint(feature)` of the whole
+  feature, with its own data and build arguments. The 4 groups have the same
+  ordered faults but 4 different fingerprints, so separate top-level calls
+  never share an entry (16 fault calls with the cache on and off). (b) The
+  model-wide state token `_state_of_model` is rebuilt in every scope. It costs
+  0.137 s of a 0.185 s warm `evaluate_model` (74 %), mostly pandas `iloc`
+  calls in `_update_frame`. The cache makes cold `evaluate_model` 0.135 s
+  slower (0.355 s against 0.220 s). (c) SC-010 in `acceptance.py` divides the
+  warm case by the candidate COLD case (0.213 s / 0.445 s), not by the
+  baseline. Against the baseline (6.4 s) the warm ratio is already 0.033.
+  Warm time with zero fault calls and no tokens is about 0.017 s. (d) SC-008:
+  the sum of the candidate medians is 334 s (baseline 943 s), but the suite
+  takes 3,017 s. About 2,000 s is not evaluation (counters pass, memory pass,
+  warm priming, process starts). The two `onlap_domain` 100,000-point gradient
+  cases take about 128 s per pass and are almost unchanged. Faster faults alone
+  cannot reach 900 s. (e) `onlap_domain` is slower than the baseline at 5,000
+  points (`model_gradient` cold 2.52 s against 0.92 s); the token and
+  fingerprint cost is the probable cause (not profiled).
+- T030 decision, 2026-11-03: the user chose to fix the cache design. Proposed
+  by the diagnosis, for the spec-planner skill to turn into tasks: (A) the
+  persistent key comes from the ordered fault set and the state of those faults
+  only (not the root data, build arguments or regions of the feature, which
+  cannot change a fault restoration; check `FaultSegment` for this); this needs
+  a correction of D4 and a change of the T016/T017 invalidation tests that
+  expect root data edits to invalidate; (B) the model-state token must be O(1)
+  per call, for example cached per `(model, evaluation_revision)`, or removed
+  if A covers it; every in-place edit that no setter sees must then be decided
+  in D4; (C) optional: cache `dependency_fingerprint` per revision; hash
+  `_update_frame` through `frame.items()`. SC-003 and SC-004 should then be
+  reachable; SC-010 needs a warm call of about 0.02 s. The SC-008 choice (change
+  the target or shorten the suite) is not yet decided by the user. T030 stays
+  `[!]` until the new tasks are done. The implementer stops here: a plan change
+  needs the spec-planner skill.
