@@ -306,13 +306,13 @@ def test_scopes_of_two_threads_are_separate(monkeypatch):
     """Each thread has its own context. No context is seen in two threads."""
     model = build_model("f4_u3")
     points = _points("f4_u3")
-    seen: dict[str, set[int]] = {}
+    seen: dict[str, list] = {}
     original = _evaluation.EvaluationContext.restore
     guard = threading.Lock()
 
     def recording(context, feature, pts, reverse=False):
         with guard:
-            seen.setdefault(threading.current_thread().name, set()).add(id(context))
+            seen.setdefault(threading.current_thread().name, []).append(context)
         return original(context, feature, pts, reverse)
 
     monkeypatch.setattr(_evaluation.EvaluationContext, "restore", recording)
@@ -331,7 +331,10 @@ def test_scopes_of_two_threads_are_separate(monkeypatch):
     _join_all(*workers)
     assert _evaluation._ACTIVE.get() is None
     assert set(seen) == {"scope-0", "scope-1"}
-    assert seen["scope-0"].isdisjoint(seen["scope-1"]), "a context was shared between threads"
+    # The lists hold the context objects, so no id can be reused.
+    first_ids = {id(context) for context in seen["scope-0"]}
+    second_ids = {id(context) for context in seen["scope-1"]}
+    assert first_ids.isdisjoint(second_ids), "a context was shared between threads"
     np.testing.assert_array_equal(workers[0].result, workers[1].result)
 
 

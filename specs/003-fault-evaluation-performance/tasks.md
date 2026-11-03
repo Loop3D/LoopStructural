@@ -213,7 +213,7 @@
   - Wave: 25
   - Done when: python -m pytest tests/fault_evaluation/test_concurrency.py tests/fault_evaluation/test_memory.py -q fails on missing synchronization/accounting behavior, then passes after T023.
 
-- [ ] T023 [US2] [M] Complete locking and bounded-memory integration.
+- [x] T023 [US2] [M] Complete locking and bounded-memory integration.
   - Do: Use per-model reentrant lock for full outer evaluation, builds, revisions and cache publication; nested calls reuse it. ContextVar tokens reset on exceptions. Enforce byte limits and bounded fingerprint chunks; keep faults use_threads off. Different models must not share a global lock. Do not change tests.
   - Files: `LoopStructural/modelling/features/_evaluation.py`, `LoopStructural/modelling/features/_evaluation_cache.py`, `LoopStructural/modelling/core/geological_model.py`
   - Needs: T022, T021

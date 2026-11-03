@@ -35,14 +35,26 @@ _ACTIVE: ContextVar = ContextVar("loopstructural_evaluation_context", default=No
 def _digest(points: np.ndarray) -> bytes:
     """Return a digest of the exact content of ``points``.
 
-    The digest is made in chunks of bounded size, so no large copy is made for a
-    contiguous array.
+    The digest is made in blocks of bounded size. A contiguous array is not copied.
+    A non-contiguous array is copied one block of rows at a time, never as a whole.
+    The digest is the same for equal content in any memory layout.
     """
-    array = np.ascontiguousarray(points)
+    array = np.asarray(points)
     hasher = hashlib.blake2b(digest_size=16)
-    flat = array.reshape(-1).view(np.uint8) if array.size else array.reshape(-1)
-    for start in range(0, flat.size, _CHUNK_BYTES):
-        hasher.update(flat[start : start + _CHUNK_BYTES])
+    if array.size == 0:
+        return hasher.digest()
+    if array.ndim == 0:
+        array = array.reshape(1)
+    if array.flags.c_contiguous:
+        blocks = [array]
+    else:
+        row_bytes = max(1, array.itemsize * int(np.prod(array.shape[1:], dtype=np.int64)))
+        rows = max(1, _CHUNK_BYTES // row_bytes)
+        blocks = (array[start : start + rows] for start in range(0, array.shape[0], rows))
+    for block in blocks:
+        flat = np.ascontiguousarray(block).reshape(-1).view(np.uint8)
+        for start in range(0, flat.size, _CHUNK_BYTES):
+            hasher.update(flat[start : start + _CHUNK_BYTES])
     return hasher.digest()
 
 
@@ -237,15 +249,25 @@ def evaluation_scope(model: GeologicalModel | None = None) -> Iterator[Evaluatio
     if active is not None and (model is None or active.model is model):
         yield active
         return
-    context = EvaluationContext(model)
-    token = _ACTIVE.set(context)
+    # The outermost scope of a model holds the lock of that model for the full
+    # evaluation. Nested calls in the same thread use the same re-entrant lock.
+    cache = getattr(model, "evaluation_cache", None)
+    lock = getattr(cache, "lock", None)
+    if lock is not None:
+        lock.acquire()
     try:
-        yield context
-    except BaseException:
-        context._withdraw()
-        raise
+        context = EvaluationContext(model)
+        token = _ACTIVE.set(context)
+        try:
+            yield context
+        except BaseException:
+            context._withdraw()
+            raise
+        finally:
+            _ACTIVE.reset(token)
     finally:
-        _ACTIVE.reset(token)
+        if lock is not None:
+            lock.release()
 
 
 def restore(feature: BaseFeature, points: np.ndarray, reverse: bool = False) -> np.ndarray:
