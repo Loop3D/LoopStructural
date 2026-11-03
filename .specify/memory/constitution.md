@@ -1,4 +1,3 @@
-<!-- dev-tools:constitution-draft -->
 # LoopStructural Constitution
 
 ## Purpose and scope
@@ -17,8 +16,12 @@ Evidence: `ROADMAP.md`, `packages/`, `pyproject.toml`.
   `.pre-commit-config.yaml`.
 
 ## Merge gate
-A change must pass `pytest` and `ruff check` before merge. This matches CI.
-No minimum review count is set.
+- Existing CI runs `pytest`. The lint workflow applies Black and Ruff fixes,
+  but runs Ruff with `--exit-zero`, so lint errors do not fail that step.
+  Evidence: `.github/workflows/tester.yml`, `.github/workflows/linter.yml`.
+- A change must pass `pytest` and
+  `ruff check LoopStructural packages` before merge.
+- No minimum review count is set.
 
 ## Code conventions
 - Ruff enforces numpy-style docstrings (`D`) and type hints (`ANN`) going
@@ -38,5 +41,7 @@ No minimum review count is set.
   (`.release-please-config.json`).
 
 ## Amendments
+The maintainer accepted this constitution on 2026-11-01.
+
 Propose a change in a pull request that edits this file. The repository
 maintainer accepts or rejects it.
