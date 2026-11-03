@@ -1,0 +1,11 @@
+{
+  "spec": "003-fault-evaluation-performance",
+  "worktree": "C:/Users/lachl/dev/LoopStructural-native",
+  "branch": "spec/003-fault-evaluation-performance",
+  "review_mode": "wave",
+  "start_commit": "21616db7d1c2fa09f823092dd1b3d6dff880eec2",
+  "baseline": { "ruff_findings": 474, "pytest": "pending" },
+  "waves": [],
+  "runs": {},
+  "findings": { "found": 0, "rejected": 0, "dropped": 0, "fixed": 0, "open_minor": [] }
+}

@@ -701,3 +701,13 @@ spec-cascade skill.
   the target or shorten the suite) is not yet decided by the user. T030 stays
   `[!]` until the new tasks are done. The implementer stops here: a plan change
   needs the spec-planner skill.
+- Pickle defect, 2026-11-03: the orchestrator found it in the check before the
+  T040 wave. `RestorationCache` (T013, T023) keeps a `threading.RLock` and has no
+  `__getstate__`. After a `dill` round trip (`GeologicalModel.to_file`, then
+  `from_file`) the lock cannot be acquired, so the first evaluation of a loaded
+  model waits forever in `evaluation_scope`
+  (`tests/integration/test_p2fold_model.py::test_p2fold_save_load` hangs). The
+  user chose to add the fix to T040 and T041: T040 adds a red regression test,
+  and T041 adds `RestorationCache.__getstate__` and `__setstate__`. The state
+  keeps `enabled` and `max_bytes`, drops the entries, and makes a new `RLock`
+  on load. A loaded cache starts empty, with no stored revision.
