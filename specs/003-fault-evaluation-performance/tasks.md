@@ -199,7 +199,7 @@
   - Wave: 25
   - Done when: python -m pytest tests/fault_evaluation/test_gradient_context.py -q exposes repeated equal-batch work, then passes after T021 under the accepted OP1 rule.
 
-- [ ] T021 [P] [US4] [M] Share equal gradient batches after the count decision.
+- [x] T021 [P] [US4] [M] Share equal gradient batches after the count decision.
   - Do: Implement D5 with the accepted OP1 count and memory rule recorded in Answers. Reuse identical original/corner batches; retain tetrahedron refinement and gradient arithmetic. If the decision requires a new algorithm, stop for a revised plan. Do not weaken tests or claim F total calls from a top-level-only counter.
   - Files: `LoopStructural/modelling/features/_evaluation.py`, `LoopStructural/modelling/features/_geological_feature.py`, `LoopStructural/modelling/core/geological_model.py`
   - Needs: T020
@@ -243,7 +243,7 @@
   - Wave: 25
   - Done when: python -m pytest tests/fault_evaluation/test_fault_frame_lookup.py -q fails for absent _evaluate_frame fast path, then passes after T027.
 
-- [ ] T027 [P] [US5] [M] Reuse frame grid lookup within each fault step.
+- [x] T027 [P] [US5] [M] Reuse frame grid lookup within each fault step.
   - Do: Implement D6 private _evaluate_frame with a guarded common-geometry fast path and legacy fallback. Use the existing transform/mask semantics; preserve every step and floating-point operation order required by the golden tolerances. Do not change displacement functions, default steps or thread setting.
   - Files: `LoopStructural/modelling/features/fault/_fault_segment.py`, `packages/loop_common/src/loop_common/supports/_3d_structured_grid.py`
   - Needs: T026

@@ -1291,13 +1291,15 @@ class GeologicalModel:
         # evaluate_model.
         xyz = np.array(points)
         grad = np.zeros(xyz.shape)
-        for g in reversed(self.stratigraphic_column.get_groups()):
-            feature_id = self.feature_name_index.get(g.name, -1)
-            if feature_id >= 0:
-                gradt = self.features[feature_id].evaluate_gradient(xyz)
-                grad[~np.isnan(gradt).any(axis=1)] = gradt[~np.isnan(gradt).any(axis=1)]
-            if feature_id == -1:
-                logger.error(f"Model does not contain {g.name}")
+        # one scope for all groups: they share the restorations of equal fault sets
+        with evaluation_scope(self):
+            for g in reversed(self.stratigraphic_column.get_groups()):
+                feature_id = self.feature_name_index.get(g.name, -1)
+                if feature_id >= 0:
+                    gradt = self.features[feature_id].evaluate_gradient(xyz)
+                    grad[~np.isnan(gradt).any(axis=1)] = gradt[~np.isnan(gradt).any(axis=1)]
+                if feature_id == -1:
+                    logger.error(f"Model does not contain {g.name}")
 
         return grad
 

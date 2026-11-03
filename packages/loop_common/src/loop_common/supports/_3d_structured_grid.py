@@ -316,11 +316,66 @@ class StructuredGrid(BaseStructuredSupport):
         else:
             idc, inside = self.position_to_cell_corners(evaluation_points)
             coefs = self.position_to_dof_coefs(evaluation_points[inside, :])
+        return self._values_from_coefficients(idc, inside, coefs, property_array)
+
+    @staticmethod
+    def _values_from_coefficients(idc, inside, coefs, property_array):
+        """Sum the corner values of the cells, weighted by the coefficients.
+
+        Parameters
+        ----------
+        idc : np.array((N,8),dtype=int)
+            corner node indexes of the cells
+        inside : np.array((N,),dtype=bool)
+            true for each point that is inside the grid
+        coefs : np.array((M,8),dtype=float)
+            trilinear coefficients of the M points that are inside
+        property_array : np.array
+            node values
+
+        Returns
+        -------
+        np.array((N,),dtype=float)
+            values, NaN for the points that are outside
+        """
         v = np.zeros(idc.shape)
         v[:, :] = np.nan
         v[inside, :] = coefs
         v[inside, :] *= property_array[idc[inside, :]]
         return np.sum(v, axis=1)
+
+    def _evaluate_value_from_lookup(self, lookup, property_array):
+        """Get the values from the result of _lookup_points.
+
+        The result is the same as the result of evaluate_value for the
+        points of the lookup. The cell search is not repeated.
+        """
+        idc, inside, local_coords = lookup
+        coefs = self.trilinear(local_coords[inside, :])
+        return self._values_from_coefficients(idc, inside, coefs, property_array)
+
+    def _evaluate_gradient_from_lookup(self, lookup, property_array):
+        """Get the gradients from the result of _lookup_points.
+
+        The result is the same as the result of evaluate_gradient for the
+        points of the lookup. The cell search is not repeated.
+        """
+        idc, inside, local_coords = lookup
+        weights = self._gradient_weights(local_coords[inside, :])
+        T = np.zeros((idc.shape[0], 3, 8))
+        T[inside, :, :] = weights
+        if np.any(inside) and np.max(idc[inside, :]) > property_array.shape[0]:
+            raise ValueError("index does not match number of nodes")
+        T[inside, 0, :] *= property_array[idc[inside, :]]
+        T[inside, 1, :] *= property_array[idc[inside, :]]
+        T[inside, 2, :] *= property_array[idc[inside, :]]
+        return np.array(
+            [
+                np.sum(T[:, 0, :], axis=1),
+                np.sum(T[:, 1, :], axis=1),
+                np.sum(T[:, 2, :], axis=1),
+            ]
+        ).T
 
     def evaluate_gradient(self, evaluation_points, property_array) -> np.ndarray:
         """Evaluate the gradient at a location given node values

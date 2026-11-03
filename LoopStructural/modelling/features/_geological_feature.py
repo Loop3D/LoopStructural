@@ -176,6 +176,14 @@ class GeologicalFeature(BaseFeature):
 
 
         """
+        # The scope shares the fault restorations of equal point batches.
+        with evaluation_scope(self.model):
+            return self._evaluate_gradient_in_scope(pos, ignore_regions, element_scale_parameter)
+
+    def _evaluate_gradient_in_scope(
+        self, pos: np.ndarray, ignore_regions, element_scale_parameter
+    ) -> np.ndarray:
+        """Evaluate the gradient. An evaluation scope must be active."""
         if pos.shape[1] != 3:
             raise LoopValueError("Need Nx3 array of xyz points to evaluate gradient")
         logger.info(f'Calculating gradient for {self.name}')
@@ -225,7 +233,7 @@ class GeologicalFeature(BaseFeature):
                         tetrahedron = regular_tetraherdron_for_points(pos, element_scale_parameter)
                         resolved = False
 
-            tetrahedron_faulted = self._apply_faults(np.array(tetrahedron.reshape(-1, 3))).reshape(
+            tetrahedron_faulted = restore(self, tetrahedron.reshape(-1, 3)).reshape(
                 tetrahedron.shape
             )
 
