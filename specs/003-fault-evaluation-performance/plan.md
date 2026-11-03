@@ -1,7 +1,7 @@
 # Implementation plan: Faster evaluation of faulted models
 
 **Feature**: `003-fault-evaluation-performance` | **Date**: 2026-11-01
-**Spec**: [spec.md](spec.md) | **State**: Replanned 2026-11-02 for the standard benchmark suite (T035-T039); T001-T010 and T028 are done
+**Spec**: [spec.md](spec.md) | **State**: Replanned 2026-11-03 for the fault-set cache key (D4a, T040-T043) after the failed T030; T001-T029 and T033-T039 are done; T030 is blocked
 
 ## Open points
 
@@ -9,6 +9,9 @@
 |---|---|---|---|
 | OP1 (resolved) | Gradient and nested-fault count/memory interpretation. | The user accepted one restoration per distinct ordered fault set and distinct point batch on 2026-11-01. Count recursive frame batches separately and memory per actual restored point, including corners. See Answers. | none |
 | OP2 | Can the standard suite meet its time budget (about 1 hour before this feature, SC-008 15 minutes after it) and the SC-007 noise limit? The first run of the 860-case full matrix did not finish in 4 hours and was stopped on 2026-11-02. 500,000-point cases were 90 % of the time measured. | The spec now defines a standard suite (C-006 to C-010). T011 measures the standard suite twice before any performance edit. T030 measures it again after. If the baseline run of the standard suite takes more than 90 minutes, or if SC-007 or SC-008 fail, report the measured result and ask for a spec decision. Never remove cases from the standard suite to claim success. | T031, T032, if measurement fails |
+| OP3 | SC-008 (15 minutes for the standard suite). T030 measured 3,017 s (baseline 3,271 s). The sum of the candidate medians is only 334 s. About 2,000 s is work that is not evaluation: counters pass, memory pass, warm priming and process starts. Faster faults cannot reach 900 s. | Needs a spec decision. Options: (a) change the SC-008 target to a measured value; (b) cut the fixed cost of the passes (for example, fewer process starts); (c) make the standard suite smaller. (b) and (c) change FR-012a. T043 splits the wall time by pass, so the user decides with numbers. Recommendation: (b), then (a) for the part that stays. Never remove cases to claim success. | T030, T031 |
+| OP4 | SC-006 (peak memory at most 120 % of the baseline). T030 shows many cases above 1.2. Several have a very small baseline memory, so a few MB of cache or hash workspace gives a large ratio. | T043 lists each failing case with the baseline bytes, the candidate bytes, and the cause (cache retention, hash workspace, or other). The user then decides whether the rule needs an absolute allowance for small baselines. This is a spec change. Do not change the 1.20 limit in code without that answer. | T030 |
+| OP5 | Can SC-010 (warm `evaluate_model` at most 10 % of the cold call) be met? T030 diagnosis: a warm call with no fault calls and no tokens takes about 0.017 s. The cold call is about 0.22 s after the fix of D4a. The limit is then about 0.022 s, so the key work may use about 5 ms. | T042 measures the key time and the warm and cold times. If the ratio is above 0.10 after D4a, report the numbers and ask the user. Do not cache the key per revision: that hides in-place edits (D4). | T030 |
 
 ## Summary
 
@@ -372,6 +375,90 @@ safe because output depends on the full current state. Clear old entries on
 revision change to avoid retained obsolete data. Never cache masks or geology
 outputs: only restored coordinates.
 
+### D4a. Cache key from the fault set (replan of 2026-11-03)
+
+This section corrects D4. D4 puts the fingerprint of the whole feature and the
+state of the whole model in the key. T030 shows two defects. The 4 groups of
+`f4_u3` have the same ordered faults but 4 different feature fingerprints, so
+separate top-level calls never share an entry. The model-wide token costs 74 %
+of a warm `evaluate_model`. All other rules of D4 stay (bounded LRU, content
+hash of the points, opaque bypass, in-place edit detection, no cached masks).
+
+What a restoration depends on. `FaultSegment.apply_to_points` and
+`_evaluate_frame` (`_fault_segment.py`) read only the fault itself: its
+frame members (fields, supports, builder data and build arguments, the member
+regions that make the mask, the faults of the frame), `displacement`, `steps`,
+`faultfunction`, and the bounding-box transform of the interpolator. They never
+read the feature that owns the fault list. So the key uses the ordered fault set
+and nothing of the root feature (its data, build arguments, regions, parent,
+`value` and `sign`).
+
+Names and signatures (all private, no public API change):
+
+- `fault_set_fingerprint(faults: Sequence[BaseFeature], build: bool = True) ->
+  bytes | None` in `_evaluation_cache.py`. With `build`, call
+  `_build_reachable(fault)` for each fault in order. Then make one
+  `_StateHasher`, write `f"S{len(faults)};"`, and call
+  `state.node(fault, True)` for each fault in order. A value that is not a
+  feature, or `_Opaque`, gives None. Do not change `dependency_fingerprint`
+  or its tests; the new function reuses `_StateHasher`.
+- `_update_interpolator` also writes the bounding-box transform:
+  `box = getattr(interpolator, "bounding_box", None)`; with a box, write
+  `np.asarray(box.world_to_local_matrix, dtype=float)` with `_encode`; without
+  a box, write `b"Nbox;"`. `_project_points` uses this transform, and the old
+  fingerprint did not read it. This also strengthens `dependency_fingerprint`.
+- `_update_frame` is rewritten to loop over `frame.items()`, with no `iloc`
+  call. It keeps the column names, dtypes, shape and object-column hashing.
+  The digest bytes may change; only equality inside one process matters.
+- `RestorationCache.sync_revision(revision: int) -> None`: under the lock, if
+  `revision` differs from the stored revision (start value None), call
+  `_clear_locked()` and store it. It is for internal use; document that.
+- `EvaluationContext.restore` changes as follows. `_fingerprint` takes the
+  tuple of faults and memoises by `tuple(id(f) for f in faults)` in
+  `self._fingerprints` (the scope holds the faults, so ids stay valid). It calls
+  `fault_set_fingerprint(faults)` under `cache.lock`. Delete
+  `_state_of_model` and `self._model_state`. Read
+  `revision = int(getattr(self.model, "evaluation_revision", 0))` after the
+  fingerprint, because the fingerprint builds dirty builders. Call
+  `cache.sync_revision(revision)`. The persistent key is
+  `("persistent", digest, points.shape, points.dtype.str, bool(reverse),
+  fingerprint, revision)`. After the faults are applied, read the revision
+  again. If it changed, keep the result in the scope only and do not call
+  `cache.put` (D3: a build or solve during a scope voids the entry).
+- The scope key (`_fault_state`) stays as it is.
+
+Result. Groups with equal ordered faults share one entry, also across top-level
+calls. The cost of the key is one fingerprint for each distinct ordered fault
+tuple for each scope, not one for each feature plus the whole model. The
+revision term is O(1). It also clears reuse when anything in the model changes
+through a setter, for example `GeologicalModel.update()` (it always bumps the
+revision). This is conservative and the documentation (T031) must say so.
+Edits in place to the root feature (its data, regions) do not change a
+restoration, so they no longer invalidate; edits in place to anything that a
+fault reaches still change the fingerprint.
+
+Tests that change (T040): `Mutation` in `test_invalidation.py` gets a field
+`touches_faults: bool = True`, and the four root-region mutations
+(`region_add`, `region_remove_inplace`, `region_threshold`, `region_sign`) get
+False. `test_mutated_model_gives_a_fresh_changed_result` then asserts equal
+results always, equal fault-call counts when `touches_faults`, and cached
+calls not above the cache-off calls otherwise.
+`test_persistent.py::test_model_change_restores_again_and_matches_the_changed_reference`
+asserts `calls > 0` when `touches_faults or mutation.revision`, and result
+equality always. All other T016/T017/T018 tests stay.
+
+Measured gates for T042 (report them; a miss is a failed task):
+
+- `f4_u3`, 5,000 points, cold, cache on: `all_group_values` and `model_ids`
+  each make 4 fault calls (SC-003).
+- `f4_u3` cold `model_ids` with the cache on is at most 1.10 times the cold
+  call with the cache off (the cache must not slow a first call).
+- Warm `model_ids`: 0 fault calls; the time of `fault_set_fingerprint` for
+  `f4_u3` is reported; the target is at most 5 ms (OP5).
+- `onlap_domain`, 5,000 points, `model_gradient` cold: report the time against
+  the baseline (0.92 s). It was 2.52 s on 2026-11-03. No success criterion
+  uses it; the number goes into measurements.md.
+
 ### D5. Gradient decision and thread/memory checks
 
 Preserve tetrahedron construction, near-fault refinement, element scale and
@@ -448,22 +535,26 @@ fix must add no lint findings. Do not mix unrelated lint cleanup into D0.
 | FR-002, FR-003, FR-004 | T033, T034, T003, T004, T005, T006; D0 separates the correctness fix from capture |
 | FR-005, SC-001 | T033, T034, T006, T030, T032; pre-performance baseline as defined in D0 |
 | FR-006 | T033, T034, T006, T015, T021, T027, T032 |
-| FR-007 | T014, T015, T018, T019 |
-| FR-008 | T014, T015, T020, T021; apply the accepted OP1 batch rule |
-| FR-009 | T016, T017, T018, T019, T022, T023 |
+| FR-007 | T014, T015, T018, T019, T040, T041 |
+| FR-008 | T014, T015, T020, T021, T040, T041; apply the accepted OP1 batch rule |
+| FR-009 | T016, T017, T018, T019, T022, T023, T040, T041 (D4a keeps every invalidation of a fault dependency) |
 | FR-010 | T012, T013, T018, T019, T022, T023, T030; accepted OP1 actual-point budget |
 | FR-010a | T022, T023 |
 | FR-011 | T014, T015, T019, T032 |
 | FR-012, FR-013, FR-014, FR-015 | T007, T008, T009, T010, T011 |
 | FR-012a, FR-012b | T035, T036, T037, T038, T011 |
 | FR-016 | T011 |
-| SC-002, SC-003, SC-004, SC-005 | T028, T029, T030 |
-| SC-006 | T022, T023, T028, T039, T029, T030 |
-| SC-007, SC-008 | T011, T028, T037, T038, T039, T029, T030; OP2 measurement gate |
+| SC-002, SC-003, SC-004, SC-005 | T028, T029, T040, T041, T042, T030 |
+| SC-006 | T022, T023, T028, T039, T029, T043, T030; OP4 |
+| SC-007, SC-008 | T011, T028, T037, T038, T039, T029, T043, T030; OP2 measurement gate; OP3 gap (no plan can reach 900 s without a spec decision) |
 | SC-009 | T024, T025, T026, T027, T030 |
-| SC-010 | T016, T017, T018, T019, T028, T029, T030 |
+| SC-010 | T016, T017, T018, T019, T028, T029, T040, T041, T042, T030; OP5 |
 
 ## Handover and release
+
+Private names added by D4a: `fault_set_fingerprint`,
+`RestorationCache.sync_revision`, the test field `Mutation.touches_faults`. No
+public name changes. `dependency_fingerprint` stays and keeps its tests.
 
 No protocol, schema, generated solver fixtures or Rust package changes.
 The loop_common change is a separate package release concern. Run its tests
@@ -491,6 +582,48 @@ implement the repeats -> T011 baseline of the standard suite. T039 (acceptance
 test change) runs beside T036 and T037, and T029 needs it. Waves from T011
 onward move by four; the dependencies of T012-T032 are unchanged except where
 tasks.md says so.
+
+## Replan of 2026-11-03 (fault-set cache key)
+
+Cause: T030 failed SC-003, SC-004, SC-006, SC-007, SC-008 and SC-010 (see the
+Answers section for the numbers and the diagnosis). The user chose to fix the
+cache design. D4a gives the design. Changes of the first replan stay.
+
+New task ids T040-T043 are appended; no id is reused. All done tasks keep
+their `[x]`. T030 stays `[!]` until T041, T042 and the decisions for OP3 and
+OP4 are recorded; then it is set to `[ ]` and run again. Order:
+
+1. T040 (tests, red): fault-set key, revision term, publish guard, bounding-box
+   term, `_update_frame` equality, and the two changed existing tests.
+   Files: `tests/fault_evaluation/test_fault_set_key.py` (new),
+   `tests/fault_evaluation/test_invalidation.py`,
+   `tests/fault_evaluation/test_persistent.py`.
+2. T041 (code): D4a. Files: `LoopStructural/modelling/features/_evaluation_cache.py`,
+   `LoopStructural/modelling/features/_evaluation.py`. Needs T040. Done when
+   `pytest tests/fault_evaluation -q` passes, the golden tests stay under 120 s,
+   and Ruff finds nothing new in the two files.
+3. T042 (measure, read-only for code): run the D4a gates on the clean tree with
+   the runner of D2 for the cases `f4_u3`, `f4_u0` and `onlap_domain` at 5,000
+   points, cold and warm, all five operations; write
+   `specs/003-fault-evaluation-performance/profile-d4a.md` with fault calls,
+   key time, cold and warm times, and the `onlap_domain` numbers. Needs T041.
+   If SC-003 count (4) fails, stop and replan.
+4. T043 (diagnosis, read-only for code): from the raw results in
+   `C:/Users/lachl/dev/ls-bench-003/cand/` write
+   `specs/003-fault-evaluation-performance/t030-diagnosis.md`: (a) SC-006,
+   each failing case with baseline bytes, candidate bytes and cause; (b) SC-008,
+   the wall time split by pass (timing, repeat of short cases, counters,
+   memory, warm priming, process starts) and the two `onlap_domain` 100,000-point
+   gradient cases. It makes the facts for OP3 and OP4. Needs T029 only, so it
+   can run beside T040. It changes no tracked file other than the report.
+5. T030 runs again after T041, T042 and the answers to OP3 and OP4. `acceptance.py`
+   is not changed: SC-010 divides the warm call by the cold call of the same
+   candidate run, and that is what the spec says ("the first call").
+6. T031 must also document D4a, including the conservative revision term.
+
+The orchestrator must not edit `specs/003-fault-evaluation-performance/spec.md`.
+OP3 and OP4 need the spec-interview or spec-reviewer skill and then the
+spec-cascade skill.
 
 ## Answers
 
