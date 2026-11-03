@@ -178,7 +178,7 @@
   - Wave: 22
   - Done when: python -m pytest tests/fault_evaluation/test_invalidation.py -q passes.
 
-- [ ] T018 [US2] [M] Test reuse between calls and additive controls.
+- [x] T018 [US2] [M] Test reuse between calls and additive controls.
   - Do: Test D4 model.evaluation_cache enabled/max_bytes/clear, identical copies, strided rows, row reorder, input mutation, different models/sets/reverse, oversized results, LRU and scope/cache shared storage. Second same-grid evaluate_model must make zero fault calls; changes must restore again and match changed references. Assert full lookup hashing occurs outside no timed shortcut.
   - Files: `tests/fault_evaluation/test_persistent.py`
   - Needs: T017
