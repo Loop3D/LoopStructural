@@ -33,6 +33,15 @@
         "T041"
       ],
       "base": "a02a413c45c0dda7726653511de80a5f1f975771",
+      "commit": "7d865f7c106750bc6f3f815921ba951c69af3075",
+      "review": "pass (sonnet), 1 minor kept, 2 rejected"
+    },
+    {
+      "wave": 30,
+      "tasks": [
+        "T042"
+      ],
+      "base": "7d865f7c106750bc6f3f815921ba951c69af3075",
       "commit": null,
       "review": null
     }
@@ -66,15 +75,16 @@
     ]
   },
   "findings": {
-    "found": 3,
-    "rejected": 0,
+    "found": 6,
+    "rejected": 2,
     "dropped": 0,
     "fixed": 0,
     "open_minor": [
       "T040 test_fault_set_key.py:188 publish-guard result equality is weak; retained_bytes == 0 is the real check",
       "T040 test_fault_set_key.py: no test for the b'Nbox;' branch (interpolator with no bounding box)",
       "T040 test_fault_set_key.py:93-112: no fingerprint-level test for one fault edit (covered through the cache in test_invalidation.py)",
-      "T040 fix test_persistent.py:550 helper _evaluation_fingerprint has no caller now"
+      "T040 fix test_persistent.py:550 helper _evaluation_fingerprint has no caller now",
+      "T041 stale docs: _evaluation.py restore comment and module docstring, _evaluation_cache.py 'Invalidation' section, _StateHasher.node docstring still describe the old key (fix in T031 or a follow-up)"
     ]
   }
 }
