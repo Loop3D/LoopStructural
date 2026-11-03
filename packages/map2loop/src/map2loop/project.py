@@ -8,7 +8,14 @@ from .sampler import Sampler, SamplerDecimator, SamplerSpacing
 from .thickness_calculator import InterpolatedStructure, ThicknessCalculator
 from .throw_calculator import ThrowCalculator, ThrowCalculatorAlpha
 from .fault_orientation import FaultOrientation
-from .sorter import Sorter, SorterAgeBased, SorterAlpha, SorterUseNetworkX, SorterUseHint
+from .sorter import (
+    Sorter,
+    SorterAgeBased,
+    SorterAlpha,
+    SorterHierarchical,
+    SorterUseNetworkX,
+    SorterUseHint,
+)
 from .stratigraphic_column import StratigraphicColumn
 from .deformation_history import DeformationHistory
 from .topology import Topology
@@ -603,21 +610,25 @@ class Project(object):
             self.stratigraphic_column.column = column
         else:
             logger.info(f'Calculating stratigraphic column using sorter {self.sorter.sorter_label}')
-            # Update sorter with current data based on what it needs
-            if hasattr(self.sorter, 'unit_relationships') and self.sorter.unit_relationships is None:
-                self.sorter.unit_relationships = self.topology.get_unit_unit_relationships()
-            if hasattr(self.sorter, 'contacts') and self.sorter.contacts is None:
-                self.sorter.contacts = self.contact_extractor.contacts
-            if hasattr(self.sorter, 'geology_data') and self.sorter.geology_data is None:
-                self.sorter.geology_data = self.map_data.get_map_data(Datatype.GEOLOGY)
-            if hasattr(self.sorter, 'structure_data') and self.sorter.structure_data is None:
-                self.sorter.structure_data = self.map_data.get_map_data(Datatype.STRUCTURE)
-            if hasattr(self.sorter, 'dtm_data') and self.sorter.dtm_data is None:
-                self.sorter.dtm_data = self.map_data.get_map_data(Datatype.DTM)
-            if hasattr(self.sorter, 'min_age_column') and self.sorter.min_age_column is None:
-                self.sorter.min_age_column = self.stratigraphic_column.get_min_age_column()
-            if hasattr(self.sorter, 'max_age_column') and self.sorter.max_age_column is None:
-                self.sorter.max_age_column = self.stratigraphic_column.get_max_age_column()
+            # Update sorter with current data based on what it needs. A hierarchical
+            # sorter gives the data to the sorter that it uses at each level.
+            sorter = self.sorter
+            if isinstance(sorter, SorterHierarchical):
+                sorter = sorter.sorter
+            if hasattr(sorter, 'unit_relationships') and sorter.unit_relationships is None:
+                sorter.unit_relationships = self.topology.get_unit_unit_relationships()
+            if hasattr(sorter, 'contacts') and sorter.contacts is None:
+                sorter.contacts = self.contact_extractor.contacts
+            if hasattr(sorter, 'geology_data') and sorter.geology_data is None:
+                sorter.geology_data = self.map_data.get_map_data(Datatype.GEOLOGY)
+            if hasattr(sorter, 'structure_data') and sorter.structure_data is None:
+                sorter.structure_data = self.map_data.get_map_data(Datatype.STRUCTURE)
+            if hasattr(sorter, 'dtm_data') and sorter.dtm_data is None:
+                sorter.dtm_data = self.map_data.get_map_data(Datatype.DTM)
+            if hasattr(sorter, 'min_age_column') and sorter.min_age_column is None:
+                sorter.min_age_column = self.stratigraphic_column.get_min_age_column()
+            if hasattr(sorter, 'max_age_column') and sorter.max_age_column is None:
+                sorter.max_age_column = self.stratigraphic_column.get_max_age_column()
             
             self.stratigraphic_column.column = self.sorter.sort(
                 self.stratigraphic_column.stratigraphicUnits,
