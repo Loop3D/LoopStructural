@@ -61,7 +61,10 @@ The analysis of the present code and the baseline numbers are in research.md.
 
 A developer changes the evaluation code to make it faster. The tests tell
 them at once if the model output changes: a unit moves, a fault moves, or a
-surface changes.
+surface changes. A correctness reference may change only for an affected result
+when analytic evidence proves a coordinate defect and the review records the
+expected physical effect (C-006). Geometry and frame construction repairs
+belong to spec 005.
 
 **Why this priority**: a faster model that gives a different geology is a
 defect. The golden tests must exist and pass on the present code before any
@@ -72,8 +75,10 @@ They pass. Change one fault displacement in the code by 1 %. They fail.
 
 **Acceptance scenarios**:
 
-1. **Given** the golden results made with the present code, **when** the
-   golden tests run on the same code, **then** all of them pass.
+1. **Given** the golden results for a recorded correctness epoch, **when**
+   the golden tests run on that code, **then** all of them pass. A later
+   reference may replace an affected result only under C-006; all unaffected
+   results stay fixed.
 2. **Given** a change that moves the points of one fault by a small amount,
    **when** the golden tests run, **then** at least one test fails and its
    message names the golden model, the output and the largest difference.
@@ -198,8 +203,11 @@ the golden tests.
 - **A feature that is not built.** The first evaluation call still builds the
   feature (the builder is called), and builds it only one time.
 - **The model changes between two evaluation calls.** A second call after a
-  change (new data, new fault displacement, a solve) must use the new model.
-  No result of the first call can stay in use.
+  change (new data, new fault displacement, a solve, or an accepted and rebuilt
+  restoration transform) must use the new model and agree with cache-off
+  evaluation. No stale result of the first call can stay in use. If the
+  coordinate owner rejects a transform change, it must do so before mutation;
+  model state, fingerprints, and results stay unchanged.
 - **Very many points.** Extra memory must stay within FR-010, also for 10
   million points.
 - **Threads.** `use_threads` in `_fault_segment.py` must give the same results
@@ -234,7 +242,10 @@ the golden tests.
 - **FR-003**: The golden results MUST be made with the code before this
   feature, and MUST be stored in the repository. A developer MUST be able to
   make them again only with one explicit command, and a change of the golden
-  results MUST be visible in the review of a pull request.
+  results MUST be visible in the review of a pull request. A reviewed analytic
+  correctness correction MAY update an affected result (C-006). The review
+  record MUST name the coordinate defect, its expected physical effect, and
+  the result files that change. Unaffected results MUST stay unchanged.
 - **FR-004**: The golden tests MUST use these tolerances unless the
   clarification of tolerances (C-001) changes them:
   - values, gradients and restored points: an absolute difference of at most
@@ -249,7 +260,11 @@ the golden tests.
 **Evaluation**
 
 - **FR-006**: After this feature, all public evaluation functions MUST give
-  the golden results within FR-004.
+  the golden results within FR-004. A reviewed analytic correctness correction
+  may define a new correctness reference epoch for affected results (C-006).
+  It MUST NOT change numeric tolerances, performance limits, or unaffected
+  results. A correctness epoch MUST identify its code revision and reference
+  files separately from the performance baseline epoch.
 - **FR-007**: In one evaluation call, each fault set MUST be applied to a set
   of points at most once, also when the feature and the regions of the
   feature use the same fault set.
@@ -260,13 +275,17 @@ the golden tests.
 - **FR-009**: Restored points MAY be kept between evaluation calls (C-003),
   only with all of these conditions:
   - a kept result is used only for the same points and the same fault set;
-  - a change of the model MUST make the kept results invalid. These changes
-    are included: a solve or a build of a fault or of a feature that it
-    cuts, new data, a change of a build argument, a change of a fault
-    displacement, of a fault function or of `steps`, a change of a region,
-    and a change of `faults_enabled`;
-  - a golden test MUST evaluate the same points, change the model, evaluate
-    again, and get the result of the changed model.
+  - a change to any state that affects restoration MUST prevent use of the
+    previous result. This includes a solve or a build of a fault frame or a
+    feature that it cuts, new data, a build argument, a fault displacement,
+    fault function or `steps`, a region, `faults_enabled`, and the transform
+    used to map points into the fault frame. The coordinate owner rebuilds or
+    rejects changed coordinate state; this cache work fingerprints that state
+    and prevents a stale cache hit;
+  - a golden test MUST evaluate the same points, change a restoration dependency,
+    evaluate again, and get the changed-model result with the cache on and off.
+    For a transform change, test the owner's accepted-and-rebuilt behavior or
+    its rejected-before-mutation behavior, as applicable.
 - **FR-010**: The extra memory of one evaluation call MUST be at most the
   restored points of each different fault set (3 floats for each point and
   each fault set). Restored points that are kept between calls MUST have a
@@ -313,8 +332,13 @@ the golden tests.
 
 ## Success criteria
 
-- **SC-001**: All golden tests pass on the code before this feature and on
-  the code after it.
+- **SC-001**: All golden tests pass on the recorded pre-performance correctness
+  reference and on the code after this feature. An affected result can change
+  only under C-006. If a future correction changes a reference, its new
+  correctness revision and affected files MUST be recorded separately from the
+  performance baseline. Existing reference and manifest records remain valid
+  historical records. A performance comparison MUST use comparable correctness
+  epochs and MUST report correctness changes separately from performance.
 - **SC-002**: For the golden model with 4 faults and 3 unconformities and
   5 000 points, `evaluate_value` of the oldest group makes 4 fault
   applications (baseline: 16) and takes at most 40 % of the baseline time
@@ -338,12 +362,16 @@ the golden tests.
   is at most 50 % of the baseline (about 34 µs for each point).
 - **SC-010**: A second `evaluate_model` of the same points, with no change of
   the model, makes 0 fault applications and takes at most 10 % of the first
-  call. After a change of one fault displacement, the second call gives the
-  golden result of the changed model.
+  call. After a change of a fault displacement or restoration transform, the
+  second call gives the changed-model result and agrees with a cache-off
+  evaluation. If the coordinate owner rejects the transform change before
+  mutation, the prior model state, fingerprints, and result stay unchanged.
 
 ## Out of scope
 
-- A change of the fault geometry, the fault displacement or the kinematics.
+- A change of the fault geometry, the fault displacement or the kinematics
+  as part of this performance feature. Spec 005 owns the separate frame and
+  coordinate repairs. Their affected references may change only under C-006.
 - A change of the default number of fault steps, unless the golden tests pass
   with the new value (this is part of user story 5).
 - Changes to the solvers (`cg`, `admm`, `native`).
@@ -354,7 +382,10 @@ the golden tests.
 
 ## Clarifications
 
-Answered on 2026-11-01.
+Answered on 2026-11-01. Coordinate-frame amendments from spec
+`005-coordinate-frame-correctness` were added on 2026-11-03. They define the
+contract at this feature's boundary; spec 005 owns repair of frame construction
+and world/local conversion defects.
 
 - **C-001 Tolerances.** Are the tolerances of FR-004 correct? A change that
   only reorders floating-point operations can move a point by about 1e-12 of
@@ -379,3 +410,21 @@ Answered on 2026-11-01.
   necessary.
 - **C-005 CI.** Must a CI job run the benchmarks?
   **Answer**: no. The benchmarks are for local development only (FR-015).
+- **C-006 Coordinate contract and reviewed correctness epoch** (from spec
+  `005-coordinate-frame-correctness`, 2026-11-03). Which coordinate space do
+  the inputs, restored points, references, and low-level arrays use, and may a
+  demonstrated coordinate defect change a frozen result?
+  **Answer**: public modelling inputs, fixed query points, restored points,
+  and public evaluation results use world coordinates. Arrays submitted to a
+  support or solver use that support's computational coordinates; each boundary
+  converts once. The transform is the mapping between those spaces and is part
+  of the restoration dependency. The coordinate owner must rebuild dependent
+  local state after an accepted change or reject the change before mutation.
+  The restoration cache must fingerprint the current transform and must not use
+  a stale result. A future result may change
+  only when analytic evidence proves the defect and the review records its
+  expected physical effect. Append new correctness provenance for that change;
+  keep current references and manifests as valid historical records. Keep
+  unaffected references, numeric tolerances, and performance limits fixed.
+  Record each changed correctness reference separately from its performance
+  baseline, with provenance that permits comparable runs.
