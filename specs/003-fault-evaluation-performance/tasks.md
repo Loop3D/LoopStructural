@@ -266,7 +266,7 @@
   - Wave: 14
   - Done when: python -m pytest tests/fault_evaluation/test_acceptance.py -q passes.
 
-- [ ] T030 [US3] [M] Measure full before/after results and all success criteria.
+- [!] T030 [US3] [M] Measure full before/after results and all success criteria.
   - Do: Run the STANDARD D2 suite twice with identical baseline case ids and machine/environment, in the way the notes on long runs say (outside the repository, clean tree, `suite_wall_seconds` recorded for SC-008). The full suite is not required. Run D5 large-memory cases and acceptance CLI. Include gradients, total recursive counts and warm invalidation. Record raw provenance, peak memory and complete elapsed times. A target miss is a failed task, not permission to remove a case or alter golden references. OP2 requires a user decision only if runtime/noise targets fail; it does not block starting measurement.
   - Files: `specs/003-fault-evaluation-performance/candidate.json`, `specs/003-fault-evaluation-performance/candidate_repeat.json`, `specs/003-fault-evaluation-performance/acceptance.json`, `specs/003-fault-evaluation-performance/measurements.md`
   - Needs: T021, T023, T027, T029
