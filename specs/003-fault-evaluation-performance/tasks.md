@@ -192,7 +192,7 @@
   - Wave: 24
   - Done when: python -m pytest tests/fault_evaluation/test_persistent.py tests/fault_evaluation/test_invalidation.py tests/fault_evaluation/test_golden.py -q passes.
 
-- [ ] T020 [P] [US4] [M] Test gradient batch counts and legacy numerical behavior.
+- [x] T020 [P] [US4] [M] Test gradient batch counts and legacy numerical behavior.
   - Do: Test original mask batches, 4N corners, different element scales, tetrahedron refinement, repeated groups, different fault sets, child-fault frames, reverse/disabled faults and faulted fold frames. Assert golden gradients and model gradient group priority. Produce explicit batch/count/memory diagnostics under the accepted OP1 distinct-batch rule and retain the D0 output-array regression.
   - Files: `tests/fault_evaluation/test_gradient_context.py`
   - Needs: T019
@@ -206,7 +206,7 @@
   - Wave: 26
   - Done when: python -m pytest tests/fault_evaluation/test_gradient_context.py tests/fault_evaluation/test_golden.py -q passes under the recorded OP1 decision.
 
-- [ ] T022 [P] [US2] [M] Test simultaneous calls, cleanup and memory accounting.
+- [x] T022 [P] [US2] [M] Test simultaneous calls, cleanup and memory accounting.
   - Do: Test D4/D5 two threads evaluating one model against serial references, first-build once, separate models and context isolation, exception release and invalidation under lock. Unit tests use small batches and exact retained bytes. The local large RSS case is added by T029, not run in normal pytest. Test no duplicate scope/cache arrays and bounded hashing workspace.
   - Files: `tests/fault_evaluation/test_concurrency.py`, `tests/fault_evaluation/test_memory.py`
   - Needs: T019
@@ -236,7 +236,7 @@
   - Wave: 18
   - Done when: python -m pytest packages/loop_common/tests/test_evaluation_lookup.py -q passes.
 
-- [ ] T026 [P] [US5] [M] Test fault-frame shared lookup and fallback.
+- [x] T026 [P] [US5] [M] Test fault-frame shared lookup and fallback.
   - Do: Test D6 common-grid frame values and coordinate-1 gradients, initial/precomputed_gx path, all steps, masks and restored-point equivalence. Test differing geometry/transforms, child faults, opaque regions and alternate supports use the legacy fallback. Assert shared lookup counts and unchanged integration step count.
   - Files: `tests/fault_evaluation/test_fault_frame_lookup.py`
   - Needs: T025, T019
