@@ -456,18 +456,23 @@ NOOPS = [
     _noop_evaluate_model_gradient,
     _noop_evaluate_feature_value,
     _noop_fingerprint_call,
+    _noop_same_build_arguments,
+]
+
+# A setter may always increase the revision, also for an equal value. The plan (D4) does not
+# forbid this. For these cases only the fingerprint is checked.
+SAME_VALUE_ASSIGNMENTS = [
     _noop_same_displacement,
     _noop_same_steps,
     _noop_same_faults_enabled,
     _noop_same_faults,
     _noop_same_faultfunction,
-    _noop_same_build_arguments,
 ]
 
 
 @pytest.mark.parametrize("noop", NOOPS, ids=[noop.__name__[6:] for noop in NOOPS])
 def test_noop_keeps_the_fingerprint_and_the_revision(noop):
-    """A pure evaluation, a digest call and an assignment of the same value change nothing."""
+    """A pure evaluation and a digest call change neither the fingerprint nor the revision."""
     model = build_model("f4_u3")
     features = [_group(model, 3), _group(model, 0), _fault(model, 0)]
     before = [_fingerprint(feature) for feature in features]
@@ -475,6 +480,21 @@ def test_noop_keeps_the_fingerprint_and_the_revision(noop):
     noop(model)
     assert [_fingerprint(feature) for feature in features] == before
     assert _revision(model) == revision
+
+
+@pytest.mark.parametrize(
+    "assign", SAME_VALUE_ASSIGNMENTS, ids=[assign.__name__[6:] for assign in SAME_VALUE_ASSIGNMENTS]
+)
+def test_same_value_assignment_keeps_the_fingerprint(assign):
+    """An assignment of an equal value does not change the fingerprint.
+
+    The revision is not checked. A setter may increase it, also for an equal value.
+    """
+    model = build_model("f4_u3")
+    features = [_group(model, 3), _group(model, 0), _fault(model, 0)]
+    before = [_fingerprint(feature) for feature in features]
+    assign(model)
+    assert [_fingerprint(feature) for feature in features] == before
 
 
 def test_revision_is_a_read_only_int_that_never_decreases():
