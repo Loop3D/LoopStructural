@@ -1,4 +1,4 @@
-"""Evaluation scope that shares fault restorations inside one top-level call.
+"""Evaluation scope that shares fault restorations inside and between calls.
 
 An evaluation scope is a short-lived :class:`EvaluationContext`. It stores the restored
 coordinates of the faults of a feature. The key of an entry holds the exact content of the
@@ -21,9 +21,12 @@ from typing import TYPE_CHECKING
 
 import numpy as np
 
+from ._evaluation_cache import dependency_fingerprint
+
 if TYPE_CHECKING:
     from LoopStructural import GeologicalModel
     from LoopStructural.modelling.features._base_geological_feature import BaseFeature
+    from LoopStructural.modelling.features._evaluation_cache import RestorationCache
 
 _CHUNK_BYTES = 1 << 20
 _ACTIVE: ContextVar = ContextVar("loopstructural_evaluation_context", default=None)
@@ -60,6 +63,10 @@ class EvaluationContext:
     def __init__(self, model: GeologicalModel | None = None) -> None:
         self.model = model
         self._restorations: dict = {}
+        self._fingerprints: dict = {}
+        self._published: list = []
+        self._opaque = False
+        self._model_state: tuple | None = None
 
     def restore(
         self, feature: BaseFeature, points: np.ndarray, reverse: bool = False
@@ -92,8 +99,11 @@ class EvaluationContext:
             builder = getattr(fault, "builder", None)
             if builder is not None:
                 builder.up_to_date()
+        digest = _digest(points)
+        # The scope key holds the faults only. Features with the same ordered faults share
+        # one restoration inside the scope. The model does not change inside one scope.
         key = (
-            _digest(points),
+            digest,
             points.shape,
             points.dtype.str,
             tuple(_fault_state(fault) for fault in faults),
@@ -103,6 +113,25 @@ class EvaluationContext:
         restored = self._restorations.get(key)
         if restored is not None:
             return restored
+        # The persistent key holds the full dependency state of the feature. An opaque
+        # state or a cache that is off gives no persistent key.
+        cache = self._persistent_cache()
+        fingerprint = self._fingerprint(feature, cache)
+        persistent_key = None
+        if fingerprint is not None:
+            persistent_key = (
+                "persistent",
+                digest,
+                points.shape,
+                points.dtype.str,
+                bool(reverse),
+                fingerprint,
+                self._state_of_model(cache),
+            )
+            restored = cache.get(persistent_key)
+            if restored is not None:
+                self._restorations[key] = restored
+                return restored
         restored = points
         for fault in faults:
             restored = fault.apply_to_points(restored, reverse=reverse)
@@ -110,9 +139,80 @@ class EvaluationContext:
         if restored is points or np.shares_memory(restored, points):
             restored = restored.copy()
         restored.flags.writeable = False
+        if persistent_key is not None:
+            # The cache keeps one private read-only copy. The scope shares that copy,
+            # so the result is retained once. A result that is too large stays in the
+            # scope only.
+            cache.put(persistent_key, restored)
+            stored = cache.get(persistent_key)
+            if stored is not None:
+                restored = stored
+                self._published.append(persistent_key)
         # The entry is stored only after all faults are applied.
         self._restorations[key] = restored
         return restored
+
+    def _persistent_cache(self) -> RestorationCache | None:
+        """Return the cache of the model when it can keep entries, else None.
+
+        After the scope meets an opaque dependency, it uses no persistent entry.
+        """
+        if self._opaque:
+            return None
+        cache = getattr(self.model, "evaluation_cache", None)
+        if cache is None or not cache.enabled or cache.max_bytes == 0:
+            return None
+        return cache
+
+    def _fingerprint(self, feature: BaseFeature, cache: RestorationCache | None) -> bytes | None:
+        """Return the dependency fingerprint of ``feature``, once for each scope.
+
+        The function returns None when the cache is off or a dependency is opaque.
+        The lazy build of dirty builders runs under the lock of the cache, so it
+        happens once.
+        """
+        if cache is None:
+            return None
+        known = self._fingerprints.get(id(feature))
+        if known is not None:
+            return known[1]
+        with cache.lock:
+            fingerprint = dependency_fingerprint(feature)
+        # The scope holds the feature, so its id stays valid until the scope ends.
+        self._fingerprints[id(feature)] = (feature, fingerprint)
+        if fingerprint is None:
+            self._opaque = True
+        return fingerprint
+
+    def _state_of_model(self, cache: RestorationCache) -> bytes:
+        """Return a digest of the state of all features of the model, once for each scope.
+
+        An entry is valid only while the whole model has the state in which it was made.
+        A change in one feature, also an edit in place that no setter sees, therefore
+        makes all older entries unreachable. The function builds nothing, so it does not
+        change which builders are built. A feature that cannot be read makes the digest
+        None, and the scope then uses no persistent entry.
+        """
+        if self._model_state is None:
+            hasher = hashlib.sha256()
+            with cache.lock:
+                for item in getattr(self.model, "features", None) or ():
+                    fingerprint = dependency_fingerprint(item, build=False)
+                    hasher.update(fingerprint if fingerprint is not None else b"opaque")
+            self._model_state = (hasher.digest(),)
+        return self._model_state[0]
+
+    def _withdraw(self) -> None:
+        """Remove the entries that this scope published, after an exception.
+
+        A call that fails must not leave the result of an unfinished evaluation in
+        the cache of the model.
+        """
+        cache = getattr(self.model, "evaluation_cache", None)
+        if cache is not None:
+            for key in self._published:
+                cache.discard(key)
+        self._published.clear()
 
 
 @contextmanager
@@ -141,6 +241,9 @@ def evaluation_scope(model: GeologicalModel | None = None) -> Iterator[Evaluatio
     token = _ACTIVE.set(context)
     try:
         yield context
+    except BaseException:
+        context._withdraw()
+        raise
     finally:
         _ACTIVE.reset(token)
 

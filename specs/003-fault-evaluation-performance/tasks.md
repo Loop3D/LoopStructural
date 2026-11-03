@@ -185,7 +185,7 @@
   - Wave: 23
   - Done when: python -m pytest tests/fault_evaluation/test_persistent.py -q fails while cross-call reuse is off, then passes after T019.
 
-- [ ] T019 [US2] [M] Enable persistent restoration reuse with safe invalidation.
+- [x] T019 [US2] [M] Enable persistent restoration reuse with safe invalidation.
   - Do: Connect D3 scopes to D4 model cache, default enabled 64 MiB, content/state keys and conservative bypass. Compute fingerprints after builds and include lookup work in real call path. Reuse one stored array between scope and persistent cache. Clear on revision changes and do not publish partial work. Preserve existing public call signatures.
   - Files: `LoopStructural/modelling/features/_evaluation.py`, `LoopStructural/modelling/features/_evaluation_cache.py`, `LoopStructural/modelling/core/geological_model.py`
   - Needs: T018

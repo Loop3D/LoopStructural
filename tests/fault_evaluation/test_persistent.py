@@ -290,7 +290,8 @@ def test_fault_data_change_with_rebuild_restores_again():
     _, warm_calls = _calls(lambda: group.evaluate_value(points))
     assert warm_calls == 0
     before = _reference(model, lambda: group.evaluate_value(points))
-    builder = _fault(model, 0).builder
+    # The fault builder holds no data. Its member builders hold the data frames.
+    builder = _fault(model, 0).builder.builders[0]
     revision = _revision(model)
     builder.data.loc[builder.data["val"] == 0.0, "X"] += 150.0
     builder.set_not_up_to_date(None)

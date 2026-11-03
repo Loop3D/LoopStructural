@@ -139,7 +139,13 @@ def _disable_faults(feature, seen: set[int] | None = None) -> None:
 
 
 def _assert_no_stale_scope(feature, points: np.ndarray, model=None) -> None:
-    """Show that no scope is active: a new scope must apply every fault of ``feature`` again."""
+    """Show that no scope is active: a new scope must apply every fault of ``feature`` again.
+
+    The model cache is off. Then a scope is the only thing that can remove a fault call.
+    A fault call that is missing means that a scope is still active.
+    """
+    if model is not None:
+        model.evaluation_cache.enabled = False
     scope, restore = _api("evaluation_scope"), _api("restore")
     _, counts = _counted(lambda: _enter_and_restore(scope, restore, model, feature, points))
     assert counts["fault_calls_total"] == len(feature.faults), "a scope is still active"
@@ -333,6 +339,8 @@ def test_restore_enabled_and_disabled_feature_in_one_scope():
     """
     scope, restore = _api("evaluation_scope"), _api("restore")
     model, golden = build_model("f4_u3"), _golden("f4_u3")
+    # The cache is off: only the scope can share a restoration in this test.
+    model.evaluation_cache.enabled = False
     points, disabled = golden["points"], _group(model, 3)
     enabled = next(
         region
@@ -646,6 +654,7 @@ def test_scope_is_reset_after_exit_and_after_an_exception():
     """After the outer scope exits, also by an exception, a new scope is a new context."""
     scope, restore = _api("evaluation_scope"), _api("restore")
     model, golden = build_model("f4_u3"), _golden("f4_u3")
+    model.evaluation_cache.enabled = False  # only a scope may share restorations here
     points, feature = golden["points"], _group(model, 3)
     with scope(model):
         restore(feature, points)

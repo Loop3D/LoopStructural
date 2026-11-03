@@ -73,6 +73,11 @@ class RestorationCache:
         self._enabled = bool(enabled)
 
     @property
+    def lock(self) -> threading.RLock:
+        """RLock: The lock of the cache. It is re-entrant."""
+        return self._lock
+
+    @property
     def enabled(self) -> bool:
         """bool: Whether the cache retains and returns entries."""
         with self._lock:
@@ -142,6 +147,11 @@ class RestorationCache:
             self._entries[key] = stored
             self._retained_bytes += size
             self._evict_locked(self._max_bytes)
+
+    def discard(self, key: Hashable) -> None:
+        """Remove the entry of ``key`` when it exists."""
+        with self._lock:
+            self._discard_locked(key)
 
     def clear(self) -> None:
         """Remove all entries. The settings do not change."""
@@ -547,7 +557,7 @@ class _StateHasher:
             raise _Opaque
 
 
-def dependency_fingerprint(feature: object) -> bytes | None:
+def dependency_fingerprint(feature: object, build: bool = True) -> bytes | None:
     """Return a SHA256 digest of the state that the faults of ``feature`` depend on.
 
     The digest covers the ordered faults, the frames of the faults, the regions and
@@ -555,7 +565,7 @@ def dependency_fingerprint(feature: object) -> bytes | None:
     and the geometry of the supports, and the displacement, the steps and the function
     of each fault. It holds no revision and no object id.
 
-    A dirty builder that the feature reaches is built first, once. The function reads
+    With ``build`` a dirty builder that the feature reaches is built first, once. The function reads
     the model and changes nothing else. Arrays are hashed in chunks, with no copy of
     a whole array. A cycle in the graph ends the walk.
 
@@ -563,6 +573,10 @@ def dependency_fingerprint(feature: object) -> bytes | None:
     ----------
     feature : BaseFeature
         The feature whose restoration is stored.
+    build : bool, default True
+        Build the dirty builders that the feature reaches before the state is read.
+        With False the function builds nothing. A feature that is not built has no
+        readable field, so its digest is None.
 
     Returns
     -------
@@ -571,7 +585,8 @@ def dependency_fingerprint(feature: object) -> bytes | None:
         function as a region, a custom interpolator or an unknown support). Persistent
         entries must then be bypassed.
     """
-    _build_reachable(feature)
+    if build:
+        _build_reachable(feature)
     state = _StateHasher()
     try:
         state.node(feature, False)

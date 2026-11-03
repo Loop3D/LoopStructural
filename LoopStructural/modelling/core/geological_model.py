@@ -159,7 +159,8 @@ class GeologicalModel:
     def evaluation_cache(self) -> RestorationCache:
         """RestorationCache: Storage for restored fault coordinates.
 
-        The evaluation scope does not read or write it yet.
+        The evaluation scope keeps restorations here between calls. It is enabled
+        by default and holds at most 64 MiB.
         """
         if getattr(self, "_evaluation_cache", None) is None:
             self._evaluation_cache = RestorationCache()
