@@ -1,25 +1,44 @@
 {
   "max_workers": 5,
   "roles": {
-    "spec-reviewer": "  ",
+    "spec-reviewer": "strong",
     "spec-planner": "strong",
+    "spec-tasks": "strong",
     "spec-cascade": "strong",
+    "spec-cascade-apply": "standard",
     "spec-implementer": "standard",
     "spec-orchestrator": "standard",
     "worker-S": "simple",
     "worker-M": "standard",
-    "code-reviewer": "strong"
+    "code-reviewer-wave": "standard",
+    "code-reviewer-spec": "strong",
+    "review-verifier": "strong"
   },
   "providers": {
     "claude": {
-      "simple": { "model": "haiku" },
-      "standard": { "model": "sonnet" },
-      "strong": { "model": "opus" }
+      "simple": {
+        "model": "haiku"
+      },
+      "standard": {
+        "model": "sonnet"
+      },
+      "strong": {
+        "model": "opus"
+      }
     },
     "codex": {
-      "simple": { "model": "gpt-6-luna", "reasoning_effort": "low" },
-      "standard": { "model": "gpt-6.1-sol", "reasoning_effort": "low" },
-      "strong": { "model": "gpt-6.1-sol", "reasoning_effort": "medium" }
+      "simple": {
+        "model": "gpt-6-luna",
+        "reasoning_effort": "low"
+      },
+      "standard": {
+        "model": "gpt-6-luna",
+        "reasoning_effort": "medium"
+      },
+      "strong": {
+        "model": "gpt-6.1-sol",
+        "reasoning_effort": "medium"
+      }
     }
   }
 }
