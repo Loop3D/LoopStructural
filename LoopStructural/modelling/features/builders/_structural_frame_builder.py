@@ -222,6 +222,8 @@ class StructuralFrameBuilder(BaseBuilder):
 
         """
         step = kwargs.get("step", 10)
+        # where the orthogonality constraints are sampled, see add_orthogonal_feature
+        sample_rule = kwargs.pop("orthogonal_sample_rule", None)
         if "gxxgy" in kwargs:
             logger.warning("gxxgy deprecated please use w1")
             w1 = kwargs["gxxgy"]
@@ -250,16 +252,22 @@ class StructuralFrameBuilder(BaseBuilder):
         if len(self.builders[2].data) > 0:
             logger.info(f"Building {self.name} coordinate 2")
             if w2 > 0:
-                self.builders[2].add_orthogonal_feature(self.builders[0].feature, w2, step=step)
+                self.builders[2].add_orthogonal_feature(
+                    self.builders[0].feature, w2, step=step, sample_rule=sample_rule
+                )
             kwargs["regularisation"] = regularisation[2]
             self.builders[2].update_build_arguments(kwargs)
 
         if len(self.builders[1].data) > 0:
             logger.info(f"Building {self.name} coordinate 1")
             if w1 > 0:
-                self.builders[1].add_orthogonal_feature(self.builders[0].feature, w1, step=step)
+                self.builders[1].add_orthogonal_feature(
+                    self.builders[0].feature, w1, step=step, sample_rule=sample_rule
+                )
             if w3 > 0 and len(self.builders[2].data) > 0:
-                self.builders[1].add_orthogonal_feature(self.builders[2].feature, w3, step=step)
+                self.builders[1].add_orthogonal_feature(
+                    self.builders[2].feature, w3, step=step, sample_rule=sample_rule
+                )
             kwargs["regularisation"] = regularisation[1]
             self.builders[1].update_build_arguments(kwargs)
 

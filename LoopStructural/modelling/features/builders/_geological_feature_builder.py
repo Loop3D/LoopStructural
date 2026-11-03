@@ -123,7 +123,9 @@ class GeologicalFeatureBuilder(BaseBuilder):
         self.data = data_frame.copy()
         bump_revision(self)
 
-    def add_orthogonal_feature(self, feature, w=1.0, region=None, step=1, B=0):
+    def add_orthogonal_feature(
+        self, feature, w=1.0, region=None, step=1, B=0, sample_rule=None
+    ):
         """
         Add a constraint to the interpolator so that the gradient of an exisitng
         feature is orthogonal to the feature being built. E.g. dot product
@@ -138,6 +140,11 @@ class GeologicalFeatureBuilder(BaseBuilder):
         region : unused
         step : int
             numpy slicing step size to see how many tetras to add
+        sample_rule : {None, "centroid", "gauss4"}, optional
+            where the constraint is sampled in each tetrahedron. None uses the
+            barycentre. "gauss4" uses 4 quadrature points per tetrahedron, which
+            a piecewise quadratic interpolator needs because its gradient is
+            linear inside a tetrahedron. Rows are weighted by w * sqrt(q).
 
         Returns
         -------
@@ -152,7 +159,7 @@ class GeologicalFeatureBuilder(BaseBuilder):
         except ValueError:
             logger.error(f"Cannot cast {step} as integer, setting step to 1")
             step = 1
-        self._orthogonal_features[feature.name] = [feature, w, region, step, B]
+        self._orthogonal_features[feature.name] = [feature, w, region, step, B, sample_rule]
 
         logger.info(f"Adding orthogonal constraint {feature.name} to {self.name}")
         self._up_to_date = False
@@ -299,26 +306,31 @@ class GeologicalFeatureBuilder(BaseBuilder):
     def install_gradient_constraint(self):
         if issubclass(type(self.interpolator), DiscreteInterpolator):
             for g in self._orthogonal_features.values():
-                feature, w, _region, step, B = g
+                feature, w, _region, step, B, sample_rule = g
                 if w == 0:
                     continue
                 logger.info(f"Adding gradient orthogonal constraint {feature.name} to {self.name}")
                 logger.info(f'Evaluating gradient {feature.name} for {self.name}')
+                support = self.interpolator.support
+                tets = np.arange(support.n_elements)[::step]
+                if sample_rule is None:
+                    points = support.barycentre[tets, :]
+                    weight = w
+                else:
+                    from loop_interpolation._quadrature import tet_quadrature_points
+
+                    points, _, q = tet_quadrature_points(
+                        support.nodes, support.elements[tets], sample_rule
+                    )
+                    weight = w * np.sqrt(q)
                 # don't worry about masking for unconformities here
-                vector = feature.evaluate_gradient(
-                    self.interpolator.support.barycentre, ignore_regions=True
-                )
-
+                vector = feature.evaluate_gradient(points, ignore_regions=True)
                 norm = np.linalg.norm(vector, axis=1)
-
                 vector[norm > 0] /= norm[norm > 0, None]
-                element_idx = np.arange(self.interpolator.support.n_elements)
-                logger.info(f"Adding to least squares matrix: {self.name}")
-
                 self.interpolator.add_gradient_orthogonal_constraints(
-                    self.interpolator.support.barycentre[element_idx[::step], :],
-                    vector[element_idx[::step], :],
-                    w=w,
+                    points,
+                    vector,
+                    w=weight,
                     b=B,
                     name=f'{feature.name}_orthogonal',
                 )
