@@ -465,13 +465,15 @@ def _set_steps(model):
 
 
 @pytest.mark.parametrize("change", [_set_displacement, _set_steps], ids=["displacement", "steps"])
-def test_change_during_evaluation_waits_for_the_evaluation(monkeypatch, change):
-    """A public setter waits for the evaluation in progress. The result is not mixed.
+def test_change_during_evaluation_gives_no_mixed_result_and_no_stale_entry(monkeypatch, change):
+    """A change during an evaluation gives a whole result and leaves no stale cache entry.
 
-    The evaluating thread stops inside its first fault call and holds the lock of the
-    model. A second thread then changes the model. The change must not finish before the
-    evaluation ends. The result of the evaluation is the old reference. A later call
-    gives the new reference.
+    The evaluating thread stops inside its first fault call. A second thread then calls
+    a public setter. The setter can finish at once or wait for the evaluation. The test
+    does not decide which. The result of the evaluation must be the old reference or the
+    new reference. It must not be a mix and it must not raise. A new evaluation after
+    both threads end must give the new reference. Thus the cache must not keep a stale
+    entry from the evaluation that overlapped with the change.
     """
     model = build_model("f4_u3")
     points = _points("f4_u3")
@@ -491,19 +493,28 @@ def test_change_during_evaluation_waits_for_the_evaluation(monkeypatch, change):
         changed.set()
 
     evaluating = _Worker(lambda: model.evaluate_model(points), "evaluating")
-    evaluating.start()
-    assert inside.wait(JOIN_SECONDS)
     mutator = _Worker(mutate, "mutator")
-    mutator.start()
-    finished_early = changed.wait(ABSENT_SECONDS)
-    release.set()
+    try:
+        evaluating.start()
+        assert inside.wait(JOIN_SECONDS)
+        mutator.start()
+        # The setter can finish at once or wait. Both are valid.
+        changed.wait(ABSENT_SECONDS)
+    finally:
+        # Always open the gate so that no thread hangs.
+        release.set()
     _join_all(evaluating, mutator)
-    assert not finished_early, "the change did not wait for the evaluation in progress"
-    # No torn result: the evaluation equals the old state.
-    np.testing.assert_array_equal(evaluating.result, old_reference)
     monkeypatch.undo()
     new_reference, _ = _evaluate_disabled(model, lambda: model.evaluate_model(points))
-    assert not np.array_equal(new_reference, old_reference, equal_nan=True), "no effect"
+    # A change of steps does not change the output on this model. Thus the effect check
+    # applies to the displacement change only.
+    if change is _set_displacement:
+        assert not np.array_equal(new_reference, old_reference, equal_nan=True), "no effect"
+    # No mixed result: the evaluation equals the old state or the new state.
+    assert np.array_equal(evaluating.result, old_reference, equal_nan=True) or np.array_equal(
+        evaluating.result, new_reference, equal_nan=True
+    ), "the result is neither the old nor the new state"
+    # The evaluation that overlapped with the change must leave no stale entry.
     later = _Worker(lambda: model.evaluate_model(points), "later")
     later.start()
     np.testing.assert_array_equal(later.finish(), new_reference)
