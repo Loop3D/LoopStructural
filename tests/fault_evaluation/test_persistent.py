@@ -144,8 +144,9 @@ def test_strided_rows_with_equal_content_hit():
     strided = wide[::2]
     assert not strided.flags.c_contiguous
     contiguous = np.ascontiguousarray(strided)
-    group.evaluate_value(contiguous)
+    # Make the reference first. A cache-disabled call clears all entries of the model.
     reference = _reference(model, lambda: group.evaluate_value(contiguous))
+    group.evaluate_value(contiguous)
     for variant in (strided, np.asfortranarray(contiguous)):
         result, calls = _calls(lambda variant=variant: group.evaluate_value(variant))
         assert calls == 0
@@ -154,11 +155,16 @@ def test_strided_rows_with_equal_content_hit():
 
 def test_row_reorder_restores_again_and_matches_the_reference():
     """The same rows in another order are another point batch. They must restore again."""
-    model, points, first = _warm_model()
+    model = build_model("f1_u0")
+    points = _points("f1_u0")
     order = np.random.default_rng(7).permutation(len(points))
     shuffled = points[order]
     assert not np.array_equal(shuffled, points)
+    # Make the reference first. A cache-disabled call clears all entries of the model,
+    # so it must not run after the warm call.
     reference = _reference(model, lambda: model.evaluate_model(shuffled))
+    first, first_calls = _calls(lambda: model.evaluate_model(points))
+    assert first_calls > 0, "the first call must restore points"
     result, calls = _calls(lambda: model.evaluate_model(shuffled))
     assert calls > 0, "a reordered batch must not hit the entry of the original order"
     np.testing.assert_array_equal(result, reference)
