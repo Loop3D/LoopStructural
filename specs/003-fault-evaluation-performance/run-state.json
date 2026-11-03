@@ -24,6 +24,15 @@
         "T040"
       ],
       "base": "a1989c492d37b0f9e1e325b830696a20791ed220",
+      "commit": "a02a413c45c0dda7726653511de80a5f1f975771",
+      "review": "pass (sonnet), 3 minor"
+    },
+    {
+      "wave": 29,
+      "tasks": [
+        "T041"
+      ],
+      "base": "a02a413c45c0dda7726653511de80a5f1f975771",
       "commit": null,
       "review": null
     }
@@ -43,14 +52,29 @@
       {
         "model": "sonnet",
         "result": "pass: 12 red for the expected reasons, changed existing tests pass"
+      },
+      {
+        "model": "sonnet",
+        "result": "pass: test fix after D4a (user answer), 1 follow-up question answered from the plan"
+      }
+    ],
+    "T041": [
+      {
+        "model": "sonnet",
+        "result": "blocked: 4 old D4 tests; code kept"
       }
     ]
   },
   "findings": {
-    "found": 0,
+    "found": 3,
     "rejected": 0,
     "dropped": 0,
     "fixed": 0,
-    "open_minor": []
+    "open_minor": [
+      "T040 test_fault_set_key.py:188 publish-guard result equality is weak; retained_bytes == 0 is the real check",
+      "T040 test_fault_set_key.py: no test for the b'Nbox;' branch (interpolator with no bounding box)",
+      "T040 test_fault_set_key.py:93-112: no fingerprint-level test for one fault edit (covered through the cache in test_invalidation.py)",
+      "T040 fix test_persistent.py:550 helper _evaluation_fingerprint has no caller now"
+    ]
   }
 }

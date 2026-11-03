@@ -757,3 +757,19 @@ spec-cascade skill.
   change of the bounding-box transform, both fingerprints change, the cache
   gives no stale hit, and the cache-on result equals the cache-off result. The
   test of the selected owner policy belongs to spec 005 (its SC-016).
+- D4 tests after D4a, 2026-11-04: T041 made the D4a code. Four existing tests
+  still asserted the old D4 key. D4a keys each nested fault set on its own
+  faults, so after an in-place edit of a fault list (`faults_inplace_reverse`,
+  `faults_inplace_pop`) or of one frame (`frame_c_inplace_child`) the nested
+  sets that did not change are reused correctly: the results equal cache-off,
+  with fewer fault calls (4 vs 8, 3 vs 7, 20 vs 22). The user chose:
+  `test_mutated_model_gives_a_fresh_changed_result` always asserts equal results
+  and cached calls <= cache-off calls, and when `touches_faults` also cached
+  calls > 0. `test_opaque_dependency_bypasses_persistent_entries` puts the
+  opaque region on a fault of `cutting_faults`, not on the root group (D4a does
+  not read root regions; they change the mask, never the restoration). It keeps
+  the check of a hidden change of the closure state. T041 code stays as it is.
+  Detail (orchestrator, from D4a): `FaultSegment.regions` is read only in
+  `evaluate_gradient`; the restoration reads the regions of the frame members
+  `fault[0..2]`. The opaque closure therefore goes on
+  `_fault(model, 0)[0].regions` of `cutting_faults`.

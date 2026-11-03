@@ -21,7 +21,7 @@ from typing import TYPE_CHECKING
 
 import numpy as np
 
-from ._evaluation_cache import dependency_fingerprint
+from ._evaluation_cache import fault_set_fingerprint
 
 if TYPE_CHECKING:
     from LoopStructural import GeologicalModel
@@ -78,7 +78,6 @@ class EvaluationContext:
         self._fingerprints: dict = {}
         self._published: list = []
         self._opaque = False
-        self._model_state: tuple | None = None
 
     def restore(
         self, feature: BaseFeature, points: np.ndarray, reverse: bool = False
@@ -128,9 +127,13 @@ class EvaluationContext:
         # The persistent key holds the full dependency state of the feature. An opaque
         # state or a cache that is off gives no persistent key.
         cache = self._persistent_cache()
-        fingerprint = self._fingerprint(feature, cache)
+        fingerprint = self._fingerprint(faults, cache)
         persistent_key = None
+        revision = 0
         if fingerprint is not None:
+            # The revision is read after the fingerprint, because it builds dirty builders.
+            revision = int(getattr(self.model, "evaluation_revision", 0))
+            cache.sync_revision(revision)
             persistent_key = (
                 "persistent",
                 digest,
@@ -138,7 +141,7 @@ class EvaluationContext:
                 points.dtype.str,
                 bool(reverse),
                 fingerprint,
-                self._state_of_model(cache),
+                revision,
             )
             restored = cache.get(persistent_key)
             if restored is not None:
@@ -151,6 +154,11 @@ class EvaluationContext:
         if restored is points or np.shares_memory(restored, points):
             restored = restored.copy()
         restored.flags.writeable = False
+        if persistent_key is not None and (
+            int(getattr(self.model, "evaluation_revision", 0)) != revision
+        ):
+            # The model changed during the faults. The result stays in the scope only.
+            persistent_key = None
         if persistent_key is not None:
             # The cache keeps one private read-only copy. The scope shares that copy,
             # so the result is retained once. A result that is too large stays in the
@@ -176,8 +184,8 @@ class EvaluationContext:
             return None
         return cache
 
-    def _fingerprint(self, feature: BaseFeature, cache: RestorationCache | None) -> bytes | None:
-        """Return the dependency fingerprint of ``feature``, once for each scope.
+    def _fingerprint(self, faults: tuple, cache: RestorationCache | None) -> bytes | None:
+        """Return the fingerprint of the ordered ``faults``, once for each scope.
 
         The function returns None when the cache is off or a dependency is opaque.
         The lazy build of dirty builders runs under the lock of the cache, so it
@@ -185,34 +193,17 @@ class EvaluationContext:
         """
         if cache is None:
             return None
-        known = self._fingerprints.get(id(feature))
+        ids = tuple(id(fault) for fault in faults)
+        known = self._fingerprints.get(ids)
         if known is not None:
             return known[1]
         with cache.lock:
-            fingerprint = dependency_fingerprint(feature)
-        # The scope holds the feature, so its id stays valid until the scope ends.
-        self._fingerprints[id(feature)] = (feature, fingerprint)
+            fingerprint = fault_set_fingerprint(faults)
+        # The scope holds the faults, so their ids stay valid until the scope ends.
+        self._fingerprints[ids] = (faults, fingerprint)
         if fingerprint is None:
             self._opaque = True
         return fingerprint
-
-    def _state_of_model(self, cache: RestorationCache) -> bytes:
-        """Return a digest of the state of all features of the model, once for each scope.
-
-        An entry is valid only while the whole model has the state in which it was made.
-        A change in one feature, also an edit in place that no setter sees, therefore
-        makes all older entries unreachable. The function builds nothing, so it does not
-        change which builders are built. A feature that cannot be read makes the digest
-        None, and the scope then uses no persistent entry.
-        """
-        if self._model_state is None:
-            hasher = hashlib.sha256()
-            with cache.lock:
-                for item in getattr(self.model, "features", None) or ():
-                    fingerprint = dependency_fingerprint(item, build=False)
-                    hasher.update(fingerprint if fingerprint is not None else b"opaque")
-            self._model_state = (hasher.digest(),)
-        return self._model_state[0]
 
     def _withdraw(self) -> None:
         """Remove the entries that this scope published, after an exception.

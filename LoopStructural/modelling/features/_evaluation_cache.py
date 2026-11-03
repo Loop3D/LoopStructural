@@ -32,7 +32,7 @@ from __future__ import annotations
 import hashlib
 import threading
 from collections import OrderedDict
-from collections.abc import Hashable
+from collections.abc import Hashable, Sequence
 from typing import Protocol
 
 import numpy as np
@@ -71,6 +71,24 @@ class RestorationCache:
         self._retained_bytes = 0
         self._max_bytes = _check_max_bytes(max_bytes)
         self._enabled = bool(enabled)
+        self._revision: int | None = None
+
+    def __getstate__(self) -> dict:
+        """Return the settings only.
+
+        A lock cannot be pickled, and a stored entry is not valid in another process.
+        The entries, the byte count and the revision are therefore not kept.
+        """
+        return {"enabled": self._enabled, "max_bytes": self._max_bytes}
+
+    def __setstate__(self, state: dict) -> None:
+        """Restore the settings with a new lock and no entries."""
+        self._lock = threading.RLock()
+        self._entries = OrderedDict()
+        self._retained_bytes = 0
+        self._max_bytes = state["max_bytes"]
+        self._enabled = state["enabled"]
+        self._revision = None
 
     @property
     def lock(self) -> threading.RLock:
@@ -161,6 +179,16 @@ class RestorationCache:
     def invalidate(self) -> None:
         """Remove all entries because their source data changed."""
         self.clear()
+
+    def sync_revision(self, revision: int) -> None:
+        """Remove all entries when ``revision`` is not the stored revision.
+
+        This method is for internal use. The evaluation scope calls it before a lookup.
+        """
+        with self._lock:
+            if revision != self._revision:
+                self._clear_locked()
+                self._revision = revision
 
     def _discard_locked(self, key: Hashable) -> None:
         old = self._entries.pop(key, None)
@@ -297,9 +325,8 @@ def _update_frame(hasher: _Updatable, frame: object) -> None:
     if not isinstance(frame, pd.DataFrame):
         raise _Opaque
     hasher.update(f"D{frame.shape};".encode())
-    for position in range(frame.shape[1]):
-        column = frame.iloc[:, position]
-        _encode(hasher, repr(frame.columns[position]))
+    for name, column in frame.items():
+        _encode(hasher, repr(name))
         values = column.to_numpy()
         if values.dtype.hasobject:
             values = pd.util.hash_pandas_object(column, index=False).to_numpy()
@@ -374,6 +401,12 @@ def _update_interpolator(hasher: _Updatable, interpolator: object) -> None:
     hasher.update(f"C{type(interpolator).__name__};".encode())
     _update_array(hasher, coefficients)
     _update_support(hasher, getattr(interpolator, "support", None))
+    # The restoration projects points with the transform of the box.
+    box = getattr(interpolator, "bounding_box", None)
+    if box is not None:
+        _encode(hasher, np.asarray(box.world_to_local_matrix, dtype=float))
+    else:
+        hasher.update(b"Nbox;")
 
 
 def _known_feature_types() -> tuple:
@@ -590,6 +623,39 @@ def dependency_fingerprint(feature: object, build: bool = True) -> bytes | None:
     state = _StateHasher()
     try:
         state.node(feature, False)
+    except _Opaque:
+        return None
+    return state.hasher.digest()
+
+
+def fault_set_fingerprint(faults: Sequence[object], build: bool = True) -> bytes | None:
+    """Return a SHA256 digest of the state that the restoration of ``faults`` depends on.
+
+    The restoration reads only the faults, in order. The digest holds nothing of the
+    feature that owns the fault list.
+
+    Parameters
+    ----------
+    faults : Sequence[BaseFeature]
+        The ordered faults.
+    build : bool, default True
+        Build the dirty builders that the faults reach before the state is read.
+
+    Returns
+    -------
+    bytes or None
+        A 32-byte digest, or None when a value is not a feature or a dependency is opaque.
+    """
+    if build:
+        for fault in faults:
+            _build_reachable(fault)
+    state = _StateHasher()
+    state.hasher.update(f"S{len(faults)};".encode())
+    try:
+        for fault in faults:
+            if not _is_feature(fault):
+                raise _Opaque
+            state.node(fault, True)
     except _Opaque:
         return None
     return state.hasher.digest()

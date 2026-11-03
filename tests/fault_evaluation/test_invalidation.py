@@ -334,9 +334,11 @@ def test_mutated_model_gives_a_fresh_changed_result(mutation):
     """After a mutation the cached evaluation equals the cache-disabled evaluation.
 
     The first evaluation warms the cache. After the mutation the cached evaluation must
-    apply as many faults as the cache-disabled one, so no stale lookup is used. The guard
-    shows that the mutation really changes the output: a mutation without effect would
-    let every other test pass for a wrong reason.
+    apply no more fault calls than the cache-disabled one, because nested fault sets that
+    did not change are reused. When the mutation touches faults, the cached evaluation must
+    also make at least one fault call, so no full stale hit is used. The guard shows that
+    the mutation really changes the output: a mutation without effect would let every other
+    test pass for a wrong reason.
     """
     model = build_model(mutation.model)
     feature = model.get_feature_by_name(mutation.target)
@@ -355,10 +357,9 @@ def test_mutated_model_gives_a_fresh_changed_result(mutation):
         disabled_ids, _ = _evaluate_disabled(model, lambda: model.evaluate_model(points))
         np.testing.assert_array_equal(cached, disabled)
         np.testing.assert_array_equal(cached_ids, disabled_ids)
+        assert cached_counts["fault_calls_total"] <= disabled_counts["fault_calls_total"]
         if mutation.touches_faults:
-            assert cached_counts["fault_calls_total"] == disabled_counts["fault_calls_total"]
-        else:
-            assert cached_counts["fault_calls_total"] <= disabled_counts["fault_calls_total"]
+            assert cached_counts["fault_calls_total"] > 0, "a full stale hit"
         if mutation.effect:
             assert not np.array_equal(disabled, before, equal_nan=True), "no effect"
     finally:

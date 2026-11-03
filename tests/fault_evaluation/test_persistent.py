@@ -27,7 +27,10 @@ import pytest
 from benchmarks.fault_evaluation.instrumentation import EvaluationInstrumentation
 from LoopStructural import GeologicalModel
 from LoopStructural.modelling.features import _evaluation
-from LoopStructural.modelling.features._evaluation_cache import RestorationCache
+from LoopStructural.modelling.features._evaluation_cache import (
+    RestorationCache,
+    fault_set_fingerprint,
+)
 from tests.fault_evaluation.models import build_model
 from tests.fault_evaluation.test_invalidation import (
     MUTATION_IDS,
@@ -512,7 +515,11 @@ def test_mutated_points_are_hashed_again_and_not_trusted(monkeypatch):
 
 
 def test_opaque_dependency_bypasses_persistent_entries():
-    """A plain function as a region has hidden state. The fingerprint is None, so no reuse."""
+    """A plain function as a region of a fault has hidden state. The key is None, so no reuse.
+
+    The closure is on a frame member of a fault, because the restoration reads the regions of
+    the frame members and not ``FaultSegment.regions``.
+    """
     model = build_model("cutting_faults")
     points = _points("cutting_faults")
     group = _group(model, 0)
@@ -521,8 +528,8 @@ def test_opaque_dependency_bypasses_persistent_entries():
     def predicate(xyz):
         return xyz[:, 0] < state["limit"]
 
-    group.regions.append(predicate)
-    assert _evaluation_fingerprint(group) is None
+    _fault(model, 0)[0].regions.append(predicate)
+    assert fault_set_fingerprint(tuple(group.faults)) is None
     cache = _cache(model)
     reference = _reference(model, lambda: group.evaluate_value(points))
     first, first_calls = _calls(lambda: group.evaluate_value(points))
