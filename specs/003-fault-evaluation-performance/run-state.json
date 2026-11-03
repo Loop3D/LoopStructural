@@ -43,7 +43,7 @@
       ],
       "base": "7d865f7c106750bc6f3f815921ba951c69af3075",
       "commit": null,
-      "review": null
+      "review": "none: report only"
     }
   ],
   "runs": {
@@ -72,6 +72,12 @@
         "model": "sonnet",
         "result": "blocked: 4 old D4 tests; code kept"
       }
+    ],
+    "T042": [
+      {
+        "model": "sonnet",
+        "result": "fail: gate G4 fingerprint 8 ms > 5 ms (measurement correct, verified)"
+      }
     ]
   },
   "findings": {
@@ -86,5 +92,6 @@
       "T040 fix test_persistent.py:550 helper _evaluation_fingerprint has no caller now",
       "T041 stale docs: _evaluation.py restore comment and module docstring, _evaluation_cache.py 'Invalidation' section, _StateHasher.node docstring still describe the old key (fix in T031 or a follow-up)"
     ]
-  }
+  },
+  "paused": "2026-11-04: stopped for a replan (faster _update_frame), user answer. Run spec-planner, then spec-tasks, then resume."
 }

@@ -773,3 +773,17 @@ spec-cascade skill.
   `evaluate_gradient`; the restoration reads the regions of the frame members
   `fault[0..2]`. The opaque closure therefore goes on
   `_fault(model, 0)[0].regions` of `cutting_faults`.
+- T042, 2026-11-04: measured at 598ef21e with Python 3.13.12 (see
+  profile-d4a.md). Passed: SC-003 count (4 and 4 fault calls), cold
+  `model_ids` cache on / off 1.07 (an earlier run 0.93), warm `model_ids` 0
+  fault calls, `onlap_domain` `model_gradient` cold 0.56 s (baseline 0.92 s).
+  Failed: `fault_set_fingerprint` for the 4 faults of `f4_u3` takes about 8 ms
+  (target 5 ms; the orchestrator measured 8.7 ms median, 6.9 ms minimum). OP5
+  ratio warm / cold `evaluate_model`: `f4_u3` 0.109, `f4_u0` 0.040,
+  `onlap_domain` 0.284. A profile of 20 calls gives 0.388 s of 0.459 s in
+  `_update_frame` (pandas overhead for each column; 12 frames for each call).
+  The user chose a replan: add a test task and a code task that make
+  `_update_frame` cheaper (for example hash each dtype block of the frame once,
+  not each column) and keep the detection of in-place edits; then run T042
+  again. Do not cache the key per revision (OP5). This needs the spec-planner
+  skill, then the spec-tasks skill.
