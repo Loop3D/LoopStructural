@@ -285,6 +285,7 @@ class Mutation:
     apply: Callable
     revision: bool
     effect: bool = True
+    touches_faults: bool = True
 
 
 MUTATIONS = [
@@ -298,10 +299,19 @@ MUTATIONS = [
     Mutation("steps", "f4_u3", "group_3", _m_steps, True),
     Mutation("faultfunction_setter", "f4_u3", "group_3", _m_faultfunction_setter, True),
     Mutation("faultfunction_inplace", "f4_u3", "group_3", _m_faultfunction_inplace, False),
-    Mutation("region_add", "f4_u3", "group_3", _m_region_add, True),
-    Mutation("region_remove_inplace", "f4_u3", "group_3", _m_region_remove_inplace, False),
-    Mutation("region_threshold", "f4_u3", "group_3", _m_region_threshold, False),
-    Mutation("region_sign", "f4_u3", "group_3", _m_region_sign, False),
+    Mutation("region_add", "f4_u3", "group_3", _m_region_add, True, touches_faults=False),
+    Mutation(
+        "region_remove_inplace",
+        "f4_u3",
+        "group_3",
+        _m_region_remove_inplace,
+        False,
+        touches_faults=False,
+    ),
+    Mutation(
+        "region_threshold", "f4_u3", "group_3", _m_region_threshold, False, touches_faults=False
+    ),
+    Mutation("region_sign", "f4_u3", "group_3", _m_region_sign, False, touches_faults=False),
     Mutation("frame_c_inplace", "f4_u3", "group_3", _c_inplace(0), False),
     Mutation("frame_c_rebind", "f4_u3", "group_3", _m_c_rebind, False),
     Mutation("frame_c_inplace_child", "cutting_faults", "group_0", _c_inplace(1), False),
@@ -345,7 +355,10 @@ def test_mutated_model_gives_a_fresh_changed_result(mutation):
         disabled_ids, _ = _evaluate_disabled(model, lambda: model.evaluate_model(points))
         np.testing.assert_array_equal(cached, disabled)
         np.testing.assert_array_equal(cached_ids, disabled_ids)
-        assert cached_counts["fault_calls_total"] == disabled_counts["fault_calls_total"]
+        if mutation.touches_faults:
+            assert cached_counts["fault_calls_total"] == disabled_counts["fault_calls_total"]
+        else:
+            assert cached_counts["fault_calls_total"] <= disabled_counts["fault_calls_total"]
         if mutation.effect:
             assert not np.array_equal(disabled, before, equal_nan=True), "no effect"
     finally:

@@ -750,3 +750,10 @@ spec-cascade skill.
   and T041 adds `RestorationCache.__getstate__` and `__setstate__`. The state
   keeps `enabled` and `max_bytes`, drops the entries, and makes a new `RLock`
   on load. A loaded cache starts empty, with no stored revision.
+- T040 transform test, 2026-11-04 (orchestrator, from the cascade text): spec
+  005 has no plan and selects no transform policy (its FR-020 allows rebuild or
+  reject before mutation). Today a transform change is a direct in-place edit.
+  T040 group (5) therefore tests only the rule that both policies need: after a
+  change of the bounding-box transform, both fingerprints change, the cache
+  gives no stale hit, and the cache-on result equals the cache-off result. The
+  test of the selected owner policy belongs to spec 005 (its SC-016).

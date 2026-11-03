@@ -6,7 +6,7 @@
   "start_commit": "21616db7d1c2fa09f823092dd1b3d6dff880eec2",
   "baseline": {
     "ruff_findings": 474,
-    "pytest": "pending"
+    "pytest": "1283 passed, 4 skipped, 1 deselected (test_p2fold_save_load hangs: pickle defect) in 660 s, at 89f797d3"
   },
   "waves": [
     {
@@ -15,8 +15,17 @@
         "T043"
       ],
       "base": "89f797d39359ec4d4cb603025aec54ba5d136c5b",
-      "commit": null,
+      "commit": "8e2a0f108f1a19fc1ce6d14ceda9beda89143a7b",
       "review": "skipped: report only, no code"
+    },
+    {
+      "wave": 28,
+      "tasks": [
+        "T040"
+      ],
+      "base": "a1989c492d37b0f9e1e325b830696a20791ed220",
+      "commit": null,
+      "review": null
     }
   ],
   "runs": {
@@ -24,6 +33,16 @@
       {
         "model": "sonnet",
         "result": "pass"
+      }
+    ],
+    "T040": [
+      {
+        "model": "sonnet",
+        "result": "red as expected (11 failed, 154 passed); held: cascade changed the task text of test (5)"
+      },
+      {
+        "model": "sonnet",
+        "result": "pass: 12 red for the expected reasons, changed existing tests pass"
       }
     ]
   },
