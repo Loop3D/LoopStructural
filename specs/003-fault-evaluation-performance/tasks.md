@@ -171,7 +171,7 @@
   - Wave: 21
   - Done when: python -m pytest tests/fault_evaluation/test_invalidation.py -q fails for absent revision/fingerprint invalidation, then passes after T017.
 
-- [ ] T017 [US2] [M] Implement revision hooks and conservative state fingerprints.
+- [x] T017 [US2] [M] Implement revision hooks and conservative state fingerprints.
   - Do: Implement D4 monotonic revision hooks and bounded-memory dependency fingerprints. Keep property assignment semantics and detect bypass mutations. Invalidate on build/solve/data/geometry/relationship changes. Traverse faults, frames and region parents cycle-safely; bypass persistent entries for opaque dependencies. Do not monkeypatch global NumPy or change solver math. Do not modify tests.
   - Files: `LoopStructural/modelling/features/_evaluation_cache.py`, `LoopStructural/modelling/features/_base_geological_feature.py`, `LoopStructural/modelling/features/fault/_fault_segment.py`, `LoopStructural/modelling/features/builders/_base_builder.py`, `LoopStructural/modelling/features/builders/_geological_feature_builder.py`, `packages/loop_interpolation/src/loop_interpolation/_discrete_interpolator.py`, `LoopStructural/modelling/core/geological_model.py`
   - Needs: T016

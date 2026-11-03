@@ -10,6 +10,7 @@ from ....modelling.features.fault._fault_function_feature import (
     FaultDisplacementFeature,
 )
 from ....utils import NegativeRegion, PositiveRegion, getLogger
+from .._evaluation_cache import bump_revision, values_differ
 
 logger = getLogger(__name__)
 
@@ -59,22 +60,48 @@ class FaultSegment(StructuralFrame):
         self.fault_offset = 0.0
 
     @property
+    def displacement(self):
+        return self._displacement
+
+    @displacement.setter
+    def displacement(self, value):
+        changed = values_differ(getattr(self, "_displacement", None), value)
+        self._displacement = value
+        if changed:
+            bump_revision(self)
+
+    @property
+    def steps(self):
+        return self._steps
+
+    @steps.setter
+    def steps(self, value):
+        changed = values_differ(getattr(self, "_steps", None), value)
+        self._steps = value
+        if changed:
+            bump_revision(self)
+
+    @property
     def faultfunction(self):
         return self._faultfunction
 
     @faultfunction.setter
     def faultfunction(self, value):
-        if callable(value):
-            self._faultfunction = value
-        if issubclass(FaultDisplacement, type(value)):
-            self._faultfunction = value
+        try:
+            if callable(value):
+                self._faultfunction = value
+            if issubclass(FaultDisplacement, type(value)):
+                self._faultfunction = value
 
-        elif isinstance(value, str) and value == "BaseFault":
-            self._faultfunction = BaseFault().fault_displacement
-        elif isinstance(value, str) and value == "BaseFault3D":
-            self._faultfunction = BaseFault3D().fault_displacement
-        else:
-            raise ValueError("Fault function must be a function or BaseFault")
+            elif isinstance(value, str) and value == "BaseFault":
+                self._faultfunction = BaseFault().fault_displacement
+            elif isinstance(value, str) and value == "BaseFault3D":
+                self._faultfunction = BaseFault3D().fault_displacement
+            else:
+                raise ValueError("Fault function must be a function or BaseFault")
+        finally:
+            # The function can change before an error. The revision must grow also then.
+            bump_revision(self)
 
     @property
     def fault_normal_vector(self):
@@ -180,8 +207,10 @@ class FaultSegment(StructuralFrame):
         """
         if scale and self.model is not None:
             self.displacement = displacement / self.model.scale_factor
+            bump_revision(self)
         elif not scale:
             self.displacement = displacement
+            bump_revision(self)
         else:
             logger.warning("Displacement not updated")
 

@@ -1,5 +1,7 @@
 from LoopStructural.utils import getLogger
 
+from .._evaluation_cache import bump_revision
+
 logger = getLogger(__name__)
 
 
@@ -34,6 +36,7 @@ class BaseBuilder:
             f"Setting {self.name} to not up to date from an instance of {caller.__class__.__name__}"
         )
         self._up_to_date = False
+        bump_revision(self)
 
     @property
     def model(self):
@@ -62,12 +65,14 @@ class BaseBuilder:
                 self._build_arguments[k] = i
                 ## if build_arguments change then flag to reinterpolate
                 self._up_to_date = False
+                bump_revision(self)
 
     def update(self):
         if self._up_to_date:
             logger.info(f"{self.name} is up to date")
             return
         logger.info(f"Updating {self.name}")
+        bump_revision(self)
         self._feature.faults = self.faults
         self.build(**self.build_arguments)
 
@@ -123,3 +128,4 @@ class BaseBuilder:
         logger.info(f'Adding fault {fault.name} to {self.name}')
         self._up_to_date = False
         self.faults.append(fault)
+        bump_revision(self)

@@ -10,6 +10,7 @@ from LoopStructural.utils import LoopIsosurfacer, LoopValueError, getLogger, sur
 from LoopStructural.utils.typing import NumericInput
 
 from ._evaluation import evaluation_scope
+from ._evaluation_cache import bump_revision
 
 logger = getLogger(__name__)
 
@@ -114,6 +115,18 @@ class BaseFeature(metaclass=ABCMeta):
                 )
 
         self._faults = _faults
+        bump_revision(self)
+
+    @property
+    def faults_enabled(self):
+        return self._faults_enabled
+
+    @faults_enabled.setter
+    def faults_enabled(self, value):
+        changed = getattr(self, "_faults_enabled", None) != value
+        self._faults_enabled = value
+        if changed:
+            bump_revision(self)
 
     def to_json(self):
         """
@@ -194,6 +207,7 @@ class BaseFeature(metaclass=ABCMeta):
 
         """
         self.regions.append(region)
+        bump_revision(self)
 
     def __call__(self, xyz):
         """Calls evaluate_value method

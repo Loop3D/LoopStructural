@@ -138,7 +138,22 @@ class GeologicalModel:
 
         self.tol = 1e-10 * np.max(self.bounding_box.maximum - self.bounding_box.origin)
         self._dtm = None
+        self._evaluation_revision = 0
         self._evaluation_cache = RestorationCache()
+
+    @property
+    def evaluation_revision(self) -> int:
+        """int: Monotonic counter of the changes that can change fault restorations.
+
+        The value increases when a build, a solve, the data, a fault, a region, a
+        relationship between features or a model setting changes. A pure evaluation
+        does not change it. The value is read-only.
+        """
+        return getattr(self, "_evaluation_revision", 0)
+
+    def _bump_evaluation_revision(self) -> None:
+        """Increase :attr:`evaluation_revision` by one."""
+        self._evaluation_revision = self.evaluation_revision + 1
 
     @property
     def evaluation_cache(self) -> RestorationCache:
@@ -458,6 +473,7 @@ class GeologicalModel:
         if not callable(dtm):
             raise TypeError("DTM must be a callable function")
         self._dtm = dtm
+        self._bump_evaluation_revision()
 
     @property
     def faults(self):
@@ -557,6 +573,7 @@ class GeologicalModel:
         if feature.type == FeatureType.INTERPOLATED:
             FeatureRelationshipManager.add_unconformity_above(self, feature)
         feature.model = self
+        self._bump_evaluation_revision()
 
     def data_for_feature(self, feature_name: str) -> pd.DataFrame:
         """Get all of the data associated with a geological feature
@@ -608,6 +625,7 @@ class GeologicalModel:
                 raise LoopValueError("Cannot load data") from e
         logger.info(f"Adding data to GeologicalModel with {len(data)} data points")
         self._data = data.copy()
+        self._bump_evaluation_revision()
         # self._data[['X','Y','Z']] = self.bounding_box.project(self._data[['X','Y','Z']].to_numpy())
 
     def set_model_data(self, data):
@@ -640,6 +658,7 @@ class GeologicalModel:
         elif not isinstance(stratigraphic_column, StratigraphicColumn):
             raise TypeError("stratigraphic_column must be a StratigraphicColumn object")
         self._stratigraphic_column = stratigraphic_column
+        self._bump_evaluation_revision()
 
     def set_stratigraphic_column(self, stratigraphic_column, cmap="tab20"):
         """
@@ -1407,6 +1426,7 @@ class GeologicalModel:
 
     @public_api(tier="stable")
     def update(self, verbose=False, progressbar=True):
+        self._bump_evaluation_revision()
         total_dof = 0
         nfeatures = 0
         for f in self.features:

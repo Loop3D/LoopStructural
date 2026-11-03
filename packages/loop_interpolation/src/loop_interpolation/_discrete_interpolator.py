@@ -46,6 +46,10 @@ def _drop_nan_rows(A, B, idc, w, name):
 class DiscreteInterpolator(GeologicalInterpolator):
     """ """
 
+    # Optional callable without arguments. The builder of the interpolator sets it, so
+    # the model can see each new solve (evaluation revision). None means no listener.
+    _revision_hook = None
+
     def __init__(self, support, data=None, c=None, up_to_date=False):
         """
         Base class for a discrete interpolator e.g. piecewise linear or finite difference which is
@@ -1300,6 +1304,9 @@ class DiscreteInterpolator(GeologicalInterpolator):
             True if the interpolation is run
 
         """
+        # The solve changes the field. Tell the listener before any state changes.
+        if self._revision_hook is not None:
+            self._revision_hook()
         solver_choice = self._normalise_solver_choice(solver)
         # A native setup builds no sparse rows. A matrix solver needs them.
         # Check this before _pre_solve, so that the old field stays.
