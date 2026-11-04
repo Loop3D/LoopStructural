@@ -7,15 +7,17 @@ The constitution (.specify/memory/constitution.md) has priority. -->
 
 ## Open points
 
-- **OP1**: This plan gives the exact design only for stages S1 and S2 (S1: shared
-  transform, reference-constraint boundary and fault frame; S2: fold, P2,
-  directional-regularisation and constant-norm cells). The spec-planner
-  limit is 10 code files, and the maintainer selected a staged plan on
-  2026-11-04. S2 has its exact design since 2026-11-04 ("Stage S2 design").
-  Stages S3 to S6 have a stage map, a file list from a grep
-  survey and a requirement allocation, but no exact signatures. Owner: the
-  spec-planner skill, one run for each stage, after S1 merges. Blocks: the
-  tasks of S3 to S6. The spec-tasks skill makes the S2 tasks next (S1 is done).
+- **OP1**: This plan gives the exact design only for stages S1, S2 and S3 (S1:
+  shared transform, reference-constraint boundary and fault frame; S2: fold, P2,
+  directional-regularisation and constant-norm cells; S3: saved frames, copies
+  and transform changes). The spec-planner limit is 10 code files, and the
+  maintainer selected a staged plan on 2026-11-04. S2 has its exact design
+  since 2026-11-04 ("Stage S2 design"). S3 has its exact design since
+  2026-11-05 ("Stage S3 design"). Stages S4 to S6 have a stage map, a file
+  list from a grep survey and a requirement allocation, but no exact
+  signatures. Owner: the spec-planner skill, one run for each stage. Blocks:
+  the tasks of S4 to S6. The spec-tasks skill makes the S3 tasks next (S1 is
+  merged; S2 is in pull request #396).
 - **OP2**: Run time of the mandatory R2 and R5 matrices. R2 needs 4 anchors x
   3 rotations x 2 centre modes x 2 engines = 48 solves (FDI with 20000
   requested cells). R5 needs 3 buffers x 3 rotations x 2 centre modes x 2
@@ -33,6 +35,29 @@ The constitution (.specify/memory/constitution.md) has priority. -->
   a solver-accuracy question, not a coordinate question, and the maintainer
   decides a separate tolerance or an iteration setting. Blocks: only the
   constant-norm test task. Default until an answer: the SC-002 limits.
+
+- **OP4** (closed 2026-11-05, see "Answers"): The policy for a transform change after an interpolator holds data
+  (FR-020). S3 uses "reject at use": the interpolator raises `StaleFrameError`
+  at the next set, evaluate or save, and changes no state. It cannot stop
+  `BoundingBox.set_local_transform` itself, because the box is shared by all
+  interpolators of a model and does not know them. Owner: the maintainer.
+  Decision needed: accept this policy, or require a hard rejection inside the
+  bounding box (an observer on the box) or an automatic rebuild (it must also
+  resize the support, and an unstructured mesh cannot be resized). Default
+  until an answer: reject at use. Blocks: nothing in the S3 design; a
+  different answer changes the lifecycle tasks only.
+- **OP5** (closed 2026-11-05, see "Answers"): SC-017 asks for "1 actionable failure" when a reader from before S3
+  loads a new-format file. That reader cannot be changed, because the rollback
+  target is the S2 merge. It fails with `TypeError: ... unexpected keyword
+  argument 'format_version'` and makes no object. Owner: the maintainer.
+  Decision needed: accept this error, which names the key, as the documented
+  rollback behaviour. Default until an answer: accept it. Blocks: the S3
+  rollback check wording only.
+- **OP6**: The feature `copy()` methods under `LoopStructural/modelling/features`
+  were not read. If one of them calls `interpolator.copy()`, the frame now
+  stays on the result. Owner: the S3 copy test task (it runs `git grep -n
+  'interpolator.*copy('` first). Default until an answer: no change in S3.
+  Blocks: nothing.
 
 ## Answers
 
@@ -57,6 +82,19 @@ The constitution (.specify/memory/constitution.md) has priority. -->
 - 2026-11-04 (OP2, maintainer decision, spec C-007): the R2 and R5 matrix
   stays in the default `pytest` run with no marker. Measured S1 time: about
   5 minutes for the four new test files. OP2 is closed.
+
+- 2026-11-05 (S3 plan, OP4, maintainer decision): the policy for a transform
+  change after an interpolator holds data is "reject at use". The interpolator
+  raises `StaleFrameError` at the next set, evaluate or save and changes no
+  state. S3 builds no rejection inside `BoundingBox` and no automatic rebuild.
+  OP4 is closed.
+- 2026-11-05 (S3 plan, OP5, maintainer decision): the `TypeError` that names
+  `format_version`, raised by a reader from before S3, is the accepted
+  rollback behaviour for SC-017. S3 ships no reader patch. OP5 is closed.
+- 2026-11-05 (S3 plan, maintainer decision): the legacy-load break (FR-019)
+  gets a ROADMAP.md decision and a `COMPAT.md` row with a major-version note.
+  No warning-only identity fallback exists. The release that contains S3 must
+  be a major version, or the maintainer records another decision.
 
 - 2026-11-04 (S2 wave 9, user decision): T022 found an existing defect.
   `ConstantNormFDIInterpolator` always fails with `IndexError` in
@@ -88,9 +126,10 @@ S1 repairs the shared boundary and the fault frame:
    requested buffer and forced geometry, infers a 3D centre, and adds one
    extent-direction row at the centre.
 
-S2 to S6 repair fold paths, persistence and lifecycle, display consumers,
-grid and diagnostics, and the auxiliary utilities and validation matrix
-(see "Stages and rollback").
+S2 repairs the fold paths. S3 makes saved interpolators, copies and transform
+changes keep the frame ("Stage S3 design"). S4 to S6 repair display
+consumers, grid and diagnostics, and the auxiliary utilities and validation
+matrix (see "Stages and rollback").
 
 ## Technical context
 
@@ -115,7 +154,7 @@ grid and diagnostics, and the auxiliary utilities and validation matrix
   point; `fault_buffer` and `force_mesh_geometry` keep their effect; an
   inferred centre keeps its elevation; `BoundingBox.set_local_transform` and
   `rotation_xy` reject a non-rigid matrix.
-- **Saved-data format changes**: none in S1. S3 adds a format version (FR-016).
+- **Saved-data format changes**: none in S1 and S2. S3 adds `format_version: 2`, `constraint_space`, `transform` and `bounding_box` to the interpolator payload (FR-016; see "S3 saved format").
 - **Coordinate contract**:
 
   | Boundary | Input space | Output space | Function |
@@ -156,7 +195,7 @@ grid and diagnostics, and the auxiliary utilities and validation matrix
 
 ## Design
 
-S1 and S2 have the exact design below. S3 to S6 have scope only (OP1).
+S1, S2 and S3 have the exact design below. S4 to S6 have scope only (OP1).
 
 ### Types and data
 
@@ -678,13 +717,464 @@ one of these tests encodes the old local callback contract under a frame
 that is not the identity, record it under "Golden review" (C-004) before
 any change.
 
+### Stage S3 design
+
+S3 makes saved interpolators, copies and transform changes keep the
+coordinate frame (FR-016 to FR-020; U3.1 to U3.3 and U3.6 to U3.10). Base: the
+S2 branch `feat/005-s2-fold-frames` (pull request #396). If S2 changes before
+it merges, run this planner again on the merged result.
+
+#### S3 facts from the code (read on 2026-11-05)
+
+- `GeologicalInterpolator.to_dict` (`_geological_interpolator.py:880`) writes
+  `type`, `data` (the stored arrays, which are local), `up_to_date`, `valid`
+  and `support`. `DiscreteInterpolator.to_dict` (`_discrete_interpolator.py:1522`)
+  adds `c` and merges `**super().to_dict()`. No key holds the transform, the
+  bounding box, a format version or the coordinate space.
+- `InterpolatorFactory.from_dict` (`_interpolator_factory.py:74`) pops `type`,
+  `support`, `data`, `c`, `up_to_date` and `valid`. It passes every other key
+  as `**d` to `create_interpolator`. It sets the arrays with
+  `set_*_constraints`. The loaded interpolator has `bounding_box = None`, so
+  `_project_constraint_array` does nothing and the arrays are not converted
+  again. But the transform is lost, so a loaded rotated model evaluates world
+  points as local points. If a loader attached the bounding box before the
+  `set_*_constraints` calls, the setters would convert the local arrays a
+  second time (the FR-017 defect).
+- `from_dict` is also a creation call: `{"type", "boundingbox", "nelements"}`
+  with no `support` dict builds an empty interpolator
+  (`test_from_dict_builds_interpolator`). That use has no saved arrays and
+  stays as it is.
+- `BoundingBox.to_dict` and `from_dict` (`_bounding_box.py:672`, `:690`)
+  already carry `local_origin` and `local_rotation`. `from_dict` validates them
+  with `set_local_transform` (S1). The transform maps `local = R @ (world -
+  origin)`, so `world = R.T @ local + origin`.
+- `interpolator.bounding_box` is a plain attribute. The factory gives every
+  interpolator of a model the same `BoundingBox` object as the model
+  (`create_interpolator`, line 68). `BoundingBox.set_local_transform` changes
+  that object in place. The interpolator gets no notice. After such a change
+  `evaluate_value` joins the new transform to the old coefficients, and a later
+  `set_*_constraints` call joins the new transform to old stored rows.
+- Three `copy()` methods exist: `FiniteDifferenceInterpolator.copy`
+  (`:247`), `P2Interpolator.copy` (`:106`) and `P2FoldInterpolator.copy`
+  (`:64`, keeps `fold`). Each returns a new interpolator on the same support
+  with `bounding_box = None`. The frame is lost. The piecewise linear
+  interpolator has no `copy`. The fold feature `copy` methods under
+  `LoopStructural/modelling/features` copy features, not interpolators (not
+  read; OP6).
+- No restored-point cache exists. `git grep -i -E 'cache|_restored'` over
+  `LoopStructural/modelling`, `LoopStructural/interpolators` and
+  `loop_common/supports` finds only geometry caches in
+  `_3d_unstructured_tetra.py:77` and `_p2_structured_tetra.py:73`. They reset
+  on a geometry change, and a transform change does not touch them. The state
+  that depends on the frame is `data`, `c`, `up_to_date` and
+  `latest_diagnostics_report`. Fault restoration reads the fault frame
+  through `evaluate_value` and `evaluate_gradient` (the test task confirms
+  this in `FaultSegment.apply_to_points` before it writes the R2 test).
+- `_model_serializer.py` has no `interpolator` match. S3 does not change model
+  persistence. `_support_factory.py` already rebuilds a support from
+  `support.to_dict()`. S3 does not change it, and it does not change
+  `_fault_segment.py` or `_discrete_interpolator.py` (the survey of S3 files
+  in "Later stages" was too wide).
+- `BoundingBox.fit` (`_bounding_box.py:472`) sets origin, maximum and the
+  local transform. The model calls its bounding-box set-up before it makes
+  builders. If a library path calls `fit` or `set_local_transform` after an
+  interpolator holds data, the frame check of S3 raises there. The full
+  `pytest` run finds such a path (see "S3 risks").
+
+#### S3 decisions
+
+1. **Policy for a transform change (FR-020): reject at use.** An interpolator
+   that holds data in one frame refuses every use in another frame with
+   `StaleFrameError`. The refusal changes no state. The caller makes a new
+   interpolator in the new frame, or calls `clean()` and sets the constraints
+   again. S3 adds no automatic rebuild: a rebuild must also resize the
+   support, and an unstructured mesh cannot be resized. The bounding box is
+   shared and does not know its interpolators, so S3 does not reject inside
+   `BoundingBox.set_local_transform` (OP4).
+2. **Format version 2.** A payload with `format_version: 2` carries
+   `constraint_space`, `transform` and `bounding_box`. A payload with no
+   `format_version` is legacy. A payload with a higher version is not
+   supported. No code wrote version 1, so version 1 is malformed.
+3. **Saved payload or creation call.** A dict is a saved payload if and only
+   if `support` is a dict. Other dicts keep the creation behaviour.
+4. **Legacy payload.** It has no recoverable transform (old `to_dict` never
+   wrote one). The caller must pass `local_origin` and `local_rotation`, or
+   `declare_identity=True`. The loader never guesses.
+5. **Copy.** A copy shares the `BoundingBox` object of its source, as the
+   factory does for the interpolators of one model. A loaded interpolator
+   gets its own `BoundingBox`.
+
+#### S3 contracts
+
+| Boundary | Input | Output | Owner |
+|---|---|---|---|
+| `GeologicalInterpolator.to_dict` `data` arrays | stored local arrays | same arrays, declared `constraint_space: "local"` | `_geological_interpolator.py` |
+| `transform` in the payload | `bounding_box.local_origin`, `local_rotation` | `local = R @ (world - origin)` | `frame_payload` |
+| Loader of a saved payload | payload, optional caller frame | interpolator, or `InterpolatorFormatError` (nothing returned) | `InterpolatorFactory.from_dict` |
+| Loaded `data` arrays | local arrays | stored as they are, with no conversion | `_restore_local_constraints` |
+| Copy | interpolator | empty interpolator, same support, same `bounding_box` object | `_inherit_frame` |
+| Use after a frame change | stored data, new transform | `StaleFrameError`, no state change | `_check_frame` |
+
+#### S3 saved format
+
+Three keys follow the existing keys of `to_dict`, in this order:
+
+```json
+{
+  "type": "FINITE_DIFFERENCE",
+  "support": {"...": "unchanged"},
+  "c": [0.0],
+  "data": {"...": "unchanged, local arrays"},
+  "up_to_date": true,
+  "valid": true,
+  "format_version": 2,
+  "constraint_space": "local",
+  "transform": {
+    "dimensions": 3,
+    "local_origin": [500000.0, 6500000.0, 100.0],
+    "local_rotation": [[1.0, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, 1.0]]
+  },
+  "bounding_box": {"origin": [0.0, 0.0, 0.0], "maximum": [8.0, 10.0, 12.0], "nsteps": [6, 7, 8]}
+}
+```
+
+`bounding_box` is `BoundingBox.to_dict()` without its two `local_*` keys. It
+is `null` when `interpolator.bounding_box is None`; then `transform` is the
+identity. `format_version` is the first new key. A reader from before S3 passes
+the unknown keys to `create_interpolator` as `**d`, so it fails with `TypeError:
+... unexpected keyword argument 'format_version'` before it makes an object
+(OP5).
+
+#### S3 functions and signatures
+
+New module `packages/loop_interpolation/src/loop_interpolation/_frame_persistence.py`:
+
+```python
+FORMAT_VERSION: int = 2
+CONSTRAINT_SPACE: str = "local"
+REASONS: tuple[str, ...] = ("legacy_no_transform", "unsupported_version", "malformed", "conflict")
+
+class InterpolatorFormatError(ValueError):
+    reason: str  # one of REASONS
+    def __init__(self, reason: str, message: str) -> None: ...
+
+class StaleFrameError(ValueError): ...
+
+def frame_payload(bounding_box: BoundingBox | None, dimensions: int) -> dict: ...
+def payload_kind(payload: dict, caller_frame: bool) -> str: ...  # "v2" or "legacy"
+def resolve_frame(
+    payload: dict,
+    kind: str,
+    support: object,
+    dimensions: int,
+    *,
+    local_origin: np.ndarray | None = None,
+    local_rotation: np.ndarray | None = None,
+    declare_identity: bool = False,
+) -> BoundingBox | None: ...
+def bounding_box_from_support(
+    support: object, dimensions: int, local_origin: np.ndarray, local_rotation: np.ndarray
+) -> BoundingBox: ...
+```
+
+`frame_payload` returns the dict `{"format_version", "constraint_space",
+"transform", "bounding_box"}` in that order. Arrays become lists.
+
+`payload_kind(payload, caller_frame)`, in this order:
+
+1. `version = payload.get("format_version")`.
+2. `version is None`: if any of `constraint_space`, `transform` or
+   `bounding_box` is present, raise `malformed` ("legacy payload has frame
+   keys but no format_version"). If `caller_frame` is false, raise
+   `legacy_no_transform`. Else return `"legacy"`.
+3. `version` is not an `int`, is a `bool`, or is below 1: `malformed`.
+4. `version > FORMAT_VERSION`: `unsupported_version`.
+5. `version == 1`: `malformed` ("no reader writes format_version 1").
+6. Return `"v2"`.
+
+`resolve_frame` returns the `BoundingBox` to attach, or `None` for an identity
+frame with no box. `caller_frame` is `local_origin is not None or
+local_rotation is not None or declare_identity`.
+
+1. `declare_identity` with `local_origin` or `local_rotation`: `conflict`.
+2. Caller frame: `origin = zeros(dimensions)` if `declare_identity` or
+   `local_origin is None`, else `local_origin`; `rotation = eye(dimensions)`
+   if `declare_identity` or `local_rotation is None`, else `local_rotation`.
+   Check with `validate_rigid_rotation` and finite, correctly shaped origin.
+   An error is `malformed`.
+3. Kind `"legacy"`: if `declare_identity`, return `None`. Else return
+   `bounding_box_from_support(support, dimensions, origin, rotation)`.
+4. Kind `"v2"`: read `constraint_space` (must equal `"local"`), `transform`
+   (keys `dimensions`, `local_origin`, `local_rotation`; `dimensions` must
+   equal `dimensions`) and `bounding_box` (a dict with `origin`, `maximum`,
+   `nsteps`, or `None`). A missing or wrong item is `malformed`. A
+   `RigidRotationError` or `LoopValueError` is `malformed` (raise from the
+   original). If `bounding_box` is `None` and the transform is not the
+   identity, `malformed`.
+5. Kind `"v2"` with a caller frame: the caller transform must equal the saved
+   one (`np.allclose(rtol=0, atol=1e-12)` on origin and rotation). If not,
+   `conflict`. The message names the saved and the supplied value.
+6. Kind `"v2"`: return `None` if `bounding_box` is `None`, else
+   `BoundingBox.from_dict({**bounding_box, "local_origin": ..., "local_rotation": ...})`.
+
+`bounding_box_from_support` finds the local box of `support.nodes` (`min` and
+`max` on axis 0). It maps the `2**dimensions` corners to world with
+`world = corners @ rotation + origin`. It makes
+`BoundingBox(dimensions=dimensions, origin=world_min, maximum=world_max)` and
+calls `set_local_transform(local_origin=origin, rotation_matrix=rotation)`.
+The extent is an envelope. Only `local_enclosure` and display use it, never
+evaluation.
+
+Messages (tests match the start of each):
+
+- `legacy_no_transform`: `legacy interpolator payload has no transform: pass local_origin and local_rotation, or declare_identity=True`
+- `unsupported_version`: `unsupported interpolator format_version {v}: this reader supports version {FORMAT_VERSION}`
+- `malformed`: `malformed interpolator payload: {detail}`
+- `conflict`: `conflicting transform: {detail}`
+- `StaleFrameError`: `the local transform changed after constraints were stored; the stored constraints and coefficients use the previous frame. Call clean() and set the constraints again, or build a new interpolator`
+
+Changes to `GeologicalInterpolator` (`_geological_interpolator.py`):
+
+```python
+def frame_signature(self) -> tuple[bytes, bytes]: ...
+def _note_frame(self, rows: int) -> None: ...
+def _check_frame(self) -> None: ...
+def _inherit_frame(self, other: GeologicalInterpolator) -> GeologicalInterpolator: ...
+def _restore_local_constraints(self, data: dict) -> None: ...
+@classmethod
+def from_dict(cls, data, *, local_origin=None, local_rotation=None, declare_identity=False): ...
+@classmethod
+def from_json(cls, json_str, *, local_origin=None, local_rotation=None, declare_identity=False): ...
+@classmethod
+def from_yaml(cls, yaml_str, *, local_origin=None, local_rotation=None, declare_identity=False): ...
+```
+
+- `frame_signature`: `(local_origin.tobytes(), local_rotation.tobytes())` of
+  `self.bounding_box`. If `bounding_box is None`, use `np.zeros(dimensions)`
+  and `np.eye(dimensions)` (both `float64`). Spec 003 caches use this value as
+  their key.
+- `__init__` sets `self._frame_at_data = None`. `clean()` sets it to `None`.
+- `_note_frame(rows)`: if `rows > 0` and `self._frame_at_data is None`, set it
+  to `self.frame_signature()`.
+- `_check_frame()`: if `self._frame_at_data` is not `None` and
+  `self.frame_signature() != self._frame_at_data`, raise `StaleFrameError`.
+  The comparison is by value, so a restored transform makes the data usable
+  again.
+- Each `set_*_constraints` calls `self._check_frame()` as the first line of its
+  `try` block. It calls `self._note_frame(points.shape[0])` after it stores the
+  array. `StaleFrameError` is not wrapped in `ValidationError`.
+- `evaluate_value`, `evaluate_gradient` and `to_dict` call `self._check_frame()`
+  first. `to_dict` then ends with `payload.update(frame_payload(self.bounding_box,
+  self.dimensions))`. `DiscreteInterpolator.to_dict` needs no change, because
+  it merges `super().to_dict()`.
+- `_inherit_frame(other)`: `other.bounding_box = self.bounding_box`; return
+  `other`.
+- `_restore_local_constraints(data)`: for each key in `value`, `gradient`,
+  `normal`, `tangent`, `interface`, `inequality`, `inequality_pairs`, if the
+  array has rows, validate it with the same coercer as the setter
+  (`_coerce_value_constraint`; `_coerce_gradient_constraint`, with
+  `is_normal=True` for `normal`; `_coerce_interface_constraint`;
+  `_coerce_inequality_constraint`; `_coerce_inequality_pair_constraint`).
+  Store `array.copy()` in `self.data[key]` with no projection. Set `n_i`
+  (`value`), `n_g` (`gradient`), `n_n` (`normal`) and `n_t` (`tangent`) as the
+  setters do. Then call `self._note_frame(total_rows)`. The method does not
+  convert, so FR-017 holds.
+- `from_dict`, `from_json` and `from_yaml` pass the three keyword arguments to
+  `InterpolatorFactory.from_dict` only when the caller gave them. Then the
+  existing test `test_geological_interpolator_from_dict_delegates_to_factory`
+  (its fake takes one argument) passes with no change.
+
+Change to `InterpolatorFactory.from_dict` (`_interpolator_factory.py`):
+
+```python
+@staticmethod
+def from_dict(d, *, local_origin=None, local_rotation=None, declare_identity=False): ...
+```
+
+1. `d = d.copy()`. `caller_frame` as in `resolve_frame`.
+2. If `d.get("support")` is not a dict: if `caller_frame`, raise `malformed`
+   ("frame arguments apply only to a saved payload"). Else run the existing code
+   path with no change (creation call).
+3. `kind = payload_kind(d, caller_frame)`. This raises before any work.
+4. Pop `format_version`, `constraint_space`, `transform` and `bounding_box`
+   from `d` into one dict `frame_keys` (`resolve_frame` reads it). Pop the
+   other known keys as the existing code does.
+5. Build the support and the interpolator as the existing code does.
+6. `interpolator.bounding_box = resolve_frame(frame_keys, kind, support,
+   interpolator.dimensions, local_origin=..., local_rotation=...,
+   declare_identity=...)`.
+7. `interpolator._restore_local_constraints(data)` if `data` is not `None`.
+8. Set `c`, `up_to_date` and `valid` as the existing code does. If `c` is set
+   and `_frame_at_data` is `None`, call `interpolator._note_frame(1)`. Return.
+
+Every raise happens before the return. The input dict stays unchanged (step 1
+copies it, and `resolve_frame` reads only). A caller `BoundingBox` is never
+changed.
+
+The three `copy()` methods become:
+
+```python
+def copy(self):  # FiniteDifferenceInterpolator
+    return self._inherit_frame(FiniteDifferenceInterpolator(self.support))
+def copy(self):  # P2Interpolator
+    return self._inherit_frame(P2Interpolator(self.support))
+def copy(self):  # P2FoldInterpolator
+    return self._inherit_frame(P2FoldInterpolator(self.support, fold=self.fold))
+```
+
+Their docstrings say "empty copy on the same support, with the same
+coordinate frame".
+
+`packages/loop_interpolation/src/loop_interpolation/__init__.py` exports
+`InterpolatorFormatError` and `StaleFrameError` (additive). All new names were
+free on 2026-11-05 (`git grep -w`: zero matches each).
+
+#### S3 tests
+
+`tests/fixtures/coordinate_frames.py` gets only the helpers that S2 left out. A
+helper builds a populated R1 interpolator for engine in `fdi`, `pli`, `p2`,
+`cn_fdi`, `cn_pli`, anchor and rotation, in two ways: the exact nodal field
+(set `c` from the analytic world field) and the 27-observation fit. A second
+helper removes the new keys from a payload (a legacy payload). The task checks
+the names that S2 added before it adds any.
+
+`tests/unit/modelling/test_frame_persistence.py` (new):
+
+| Test function | Cells | Checks |
+|---|---|---|
+| `test_payload_declares_frame` | 3 engines (`fdi`, `pli`, `p2`) x 4 anchors x 3 rotations | version 2, `constraint_space`, `transform` equals the box, `bounding_box` extent; the first new key is `format_version` (U3.8; FR-016) |
+| `test_round_trip_world_values` | the same 36 | values within `1e-12*F`, gradients within `1e-12*max(1,\|g\|)` at the 2 world query offsets (U3.1; SC-006) |
+| `test_local_arrays_unchanged_after_two_cycles` | the same 36 | stored arrays equal bit for bit; the payloads of cycle 1 and 2 declare the same version, transform and space (U3.2, U3.8; FR-017; SC-006) |
+| `test_json_and_yaml_carry_frame` | 3 engines, 1 rotated frame | `to_json`/`from_json` and `to_yaml`/`from_yaml` keep the transform |
+| `test_legacy_payload_requires_choice` | 3 engines | `reason == "legacy_no_transform"`, message names `local_origin` and `declare_identity`; the source dict equals its deep copy (U3.6; FR-019; SC-012) |
+| `test_legacy_with_supplied_transform` | 3 engines x 4 anchors x 3 rotations | world values and gradients meet SC-006 (U3.7; SC-012) |
+| `test_legacy_with_identity_declaration` | 3 engines, anchor 0 rotation 0 | values meet SC-006 |
+| `test_conflicting_inputs` | 4 cases | `declare_identity` with `local_origin`; v2 with another origin; v2 with another rotation; v2 rotated with `declare_identity`. `reason == "conflict"`, message names both values |
+| `test_malformed_metadata` | 8 cases | missing `transform`; wrong `constraint_space`; scale-2 rotation; NaN origin; wrong shape; `bounding_box` null with a rotated transform; legacy payload with frame keys; `format_version` of type `str`. `reason == "malformed"`; 1 failure; source dict unchanged (SC-012) |
+| `test_unsupported_future_version` | versions 3 and 99 | `reason == "unsupported_version"`; nothing returned (SC-017) |
+| `test_creation_call_unchanged` | 2 cases | `{"type","boundingbox","nelements"}` builds an empty interpolator; the same call with `declare_identity=True` raises `malformed` |
+| `test_old_reader_would_name_format_version` | 1 case | pop the keys that the old reader pops; the first key left is `format_version` (SC-017, OP5) |
+
+`tests/unit/modelling/test_frame_copy_and_lifecycle.py` (new):
+
+| Test function | Cells | Checks |
+|---|---|---|
+| `test_copy_keeps_frame` | `fdi`, `p2`, `p2_fold` x 12 frames | `copy.bounding_box is source.bounding_box`; the four conversion methods agree with the source; 0 stored rows; the same support; `fold` kept for P2 fold (U3.3; FR-018) |
+| `test_stale_frame_rejected_without_state_change` | `fdi`, `pli`, `p2`, `cn_fdi`, `cn_pli` | after the SC-016 change (local origin `O+(3,-2,1)`, 30 degrees about z), `evaluate_value`, `evaluate_gradient`, `set_value_constraints` and `to_dict` each raise `StaleFrameError` once; `data`, `c`, `up_to_date`, `valid`, `n_*` and `latest_diagnostics_report` equal their values before (U3.9; FR-020; SC-016) |
+| `test_restored_transform_is_usable` | `fdi` | set the old transform back; evaluation works and equals the first result |
+| `test_rebuild_in_new_frame_preserves_world_evaluation` | the same 5 | the documented recipe: build R1 again in the new frame; world values and gradients meet SC-002 (SC-016 acceptance) |
+| `test_fault_restoration_uses_current_frame` | R2, FDI and PLI | after a transform change, restoring points through the fault frame raises `StaleFrameError`; after a new build, the restored world points equal a fresh control within `Tp` (SC-016 cache part; no restoration cache exists) |
+
+Pre-fix evidence (FR-031). The names `InterpolatorFormatError`,
+`StaleFrameError`, `frame_signature` and the keyword arguments do not exist
+before S3, so those tests fail first on the missing name. The task also records
+the behavioural defects with the production path and writes them in
+`verification.md`: the world error of a rotated round trip, the copy that has
+`bounding_box is None`, and the stale evaluation that returns a value after a
+transform change. A test that fails only on a missing name does not count as
+evidence of a defect.
+
+The existing tests that must pass with no change:
+`test_geological_interpolator.py::test_interpolator_json_yaml_round_trip`,
+`test_geological_interpolator.py::test_geological_interpolator_from_dict_delegates_to_factory`,
+`test_p2_fold_registration.py::test_to_dict_from_dict_round_trip`,
+`test_interpolator_factory.py::test_from_dict_builds_interpolator` and
+`::test_from_dict_missing_type_raises`, and the S1 and S2 test files. If any
+existing test loads a saved payload that has no `format_version`, record it
+under "S3 golden review" (C-004) before any change.
+
+#### S3 backend and capability cells
+
+| Cell | Result in S3 |
+|---|---|
+| Python FDI, PLI/P1, P2: persistence, copy (FDI, P2 and P2 fold have `copy`), transform lifecycle | Mandatory. Tests above. PLI has no `copy`. This is a documented unsupported case that S3 does not add. |
+| FDI and PLI constant-norm: transform lifecycle | Mandatory. `cn_fdi` and `cn_pli` in the stale-frame tests. |
+| FDI-fold, PLI discrete fold, P2-fold | `copy` for P2 fold only. The fold object is not saved (existing behaviour). |
+| Common 2D and 3D geometry | No change. S1 covers it. |
+| Native and Surfe | S6. The native adapter does not call `to_dict`. |
+
+#### S3 risks
+
+- A library path that calls `BoundingBox.fit` or `set_local_transform` after
+  an interpolator holds data now raises `StaleFrameError`. Before S3 the same
+  path gave a silent stale result. The full `pytest` run is the check. A
+  failure there is a real defect. Report it; do not weaken the check.
+- `evaluate_value` and `evaluate_gradient` now make two small `tobytes` calls
+  for each call. Spec 003 measures fault evaluation time. The S3 test task
+  runs the spec 003 key-time check if the 003 worktree has one, and records
+  the result. Else it records that no measure exists.
+- The legacy rule is a breaking change for callers that loaded old files with
+  no choice (FR-019 exception, FR-028). It needs the ROADMAP.md decision and
+  the major-version note below.
+
+#### S3 constitution check
+
+| Project rule | Result | How S3 agrees |
+|---|---|---|
+| Work stays within the existing packages | Pass | One new private module in `loop_interpolation`. No new package. |
+| Gates `pytest` and `ruff check LoopStructural packages` | Pass | The S3 row of "Stages and rollback" names both. Also run the package tests. |
+| numpy docstrings, type hints, py39 | Pass | New functions use numpy docstrings and `from __future__ import annotations`. |
+| `ROADMAP.md` owns decisions; update it when one changes | Pass | S3 adds the decision "Legacy interpolator payloads (spec 005, FR-019)" under "Decisions" and a status-log line when S3 completes. |
+| The public API stays compatible; a break needs a ROADMAP.md decision and a major-version note | Pass, with the approved exception | Signatures only gain keyword arguments with defaults. Loading a legacy payload with no choice now raises. That is the FR-019 exception (C-003). The ROADMAP.md decision and a `COMPAT.md` row with a major-version note record it. |
+| Stages can be tested and reversed independently | Pass | S3 reverts to the S2 merge. |
+| Feature documents stay under `specs/NNN-name/` | Pass | Only `plan.md`, `tasks.md` and `verification.md` change there. |
+
+#### S3 files
+
+| File | Change |
+|---|---|
+| `packages/loop_interpolation/src/loop_interpolation/_frame_persistence.py` | New: `FORMAT_VERSION`, `CONSTRAINT_SPACE`, `REASONS`, `InterpolatorFormatError`, `StaleFrameError`, `frame_payload`, `payload_kind`, `resolve_frame`, `bounding_box_from_support` |
+| `packages/loop_interpolation/src/loop_interpolation/_geological_interpolator.py` | `frame_signature`, `_note_frame`, `_check_frame`, `_inherit_frame`, `_restore_local_constraints`; checks in the setters, `evaluate_*` and `to_dict`; `to_dict` frame keys; `from_dict`, `from_json`, `from_yaml` keywords; `clean` resets the frame |
+| `packages/loop_interpolation/src/loop_interpolation/_interpolator_factory.py` | `from_dict` loader steps |
+| `packages/loop_interpolation/src/loop_interpolation/_finite_difference_interpolator.py` | `copy` keeps the frame |
+| `packages/loop_interpolation/src/loop_interpolation/_p2interpolator.py` | `copy` keeps the frame |
+| `packages/loop_interpolation/src/loop_interpolation/_p2_fold_interpolator.py` | `copy` keeps the frame |
+| `packages/loop_interpolation/src/loop_interpolation/__init__.py` | Export the two errors |
+| `tests/fixtures/coordinate_frames.py` | Persistence helpers (only the missing ones) |
+| `tests/unit/modelling/test_frame_persistence.py` | New |
+| `tests/unit/modelling/test_frame_copy_and_lifecycle.py` | New |
+| `tests/fixtures/api_surface_snapshot.json` | Add the new public names, only if the file lists `loop_interpolation` names (additive) |
+| `COMPAT.md` | S3 migration notice with the major-version note |
+| `ROADMAP.md` | FR-019 decision under "Decisions"; status-log line when S3 completes |
+| `specs/005-coordinate-frame-correctness/verification.md` | S3 pre-fix, post-fix, golden review, backend matrix, rollback and run-time sections |
+
+Not changed (the survey in "Later stages" listed them): `_support_factory.py`,
+`_fault_segment.py`, `_discrete_interpolator.py` and `_model_serializer.py`.
+
+The `COMPAT.md` row says: loading a legacy interpolator payload (no
+`format_version`) assumed an identity frame without a message. It now needs
+`local_origin` and `local_rotation`, or `declare_identity=True`, and raises
+`InterpolatorFormatError` otherwise. New payloads carry `format_version: 2`.
+`copy()` keeps the frame. A transform change after constraints exist raises
+`StaleFrameError` at the next use. Major-version note: the release that
+contains S3 must be a major version, or the maintainer records another
+decision in `ROADMAP.md`.
+
+#### S3 task order (for the spec-tasks skill)
+
+1. `_frame_persistence.py` and the tests of its pure functions (no
+   dependency).
+2. `GeologicalInterpolator` frame methods, the checks and `to_dict`; then the
+   factory loader (it needs 1 and the frame methods).
+3. The three `copy()` methods (they need only `_inherit_frame`).
+4. Tests: write each test file before the code it checks. The two test files
+   and the fixture helpers have separate owners.
+5. `COMPAT.md`, `ROADMAP.md`, `verification.md` last. The finish task runs the
+   full gates and the rollback check of "Stages and rollback".
+
+S3 rollback check (SC-017). On a throw-away worktree at the S2 merge, save R1
+for FDI, PLI and P2 with its `to_dict`. On the S3 code, load each legacy file
+with `declare_identity=True` (or the supplied transform) and compare with
+SC-006. On the S2 reader, load a file that S3 wrote; expect the `TypeError`
+that names `format_version` and no object. Record both in `verification.md`.
+
 ### Stages and rollback
 
 | Stage | Files and behaviour | Acceptance check | Rollback target and compatibility check |
 |---|---|---|---|
 | S1 | Shared transform boundary, reference relationships for FDI and PLI, fault frame, buffer and forced geometry, rotation check, resize stability (this design) | New S1 tests pass for FDI and PLI; `pytest`; `ruff check LoopStructural packages`; `pytest packages/loop_common/tests packages/loop_interpolation/tests` | Revert the S1 commits to master `ebc7c699`. Check: the existing `tests/unit/modelling/test__fault_builder.py` and `packages/loop_common/tests/test_bounding_box.py` pass on the reverted tree. No saved format changed. |
 | S2 | Fold geometry, directional regularisation, quadrature, masks, sign alignment for FDI-fold, PLI discrete fold, P2 and P2-fold; constant-norm variants (FR-008; R3 for P2; R4) ("Stage S2 design") | New S2 tests (SC-002 for constant norm; SC-007, SC-008 and SC-013 for every mandatory fold and P2 cell); the existing fold package tests pass with no change; `pytest`; `ruff check LoopStructural packages`; package tests | Revert to the S1 merge. Check: the S1 tests still pass. No saved format changed. |
-| S3 | Persistence format version, transform and coordinate-space metadata; no second projection at load; copies keep the frame; legacy load requires a transform or identity declaration; transform change policy and restored-point cache invalidation (FR-016 to FR-020); ROADMAP.md decision for FR-019; `COMPAT.md` migration note | SC-006, SC-012, SC-016, SC-017 | Revert to the S2 merge. Check: old-format R1 files load through their documented path; a new-format file fails with 1 actionable error and 0 state changes on the old reader (SC-017). |
+| S3 | Persistence format version, transform and coordinate-space metadata ("Stage S3 design"); no second projection at load; copies keep the frame; legacy load requires a transform or identity declaration; transform change policy and restored-point cache invalidation (FR-016 to FR-020); ROADMAP.md decision for FR-019; `COMPAT.md` migration note | SC-006, SC-012, SC-016, SC-017 | Revert to the S2 merge. Check: old-format R1 files load through their documented path; a new-format file fails with 1 actionable error and 0 state changes on the old reader (SC-017). |
 | S4 | Display, export of observation geometry, fault-centre geometry and intrusion classification use stored world locations (FR-022) | World-location comparison within `Tp` (U3.4, U3.5) | Revert to the S3 merge. Check: viewer import paths unchanged. |
 | S5 | Cell-centre sampling, remaining resize paths, non-mutating diagnostics, residual and exclusion report (FR-014 remainder, FR-015, FR-023, FR-024) | SC-009, SC-011 | Revert to the S4 merge. Check: diagnostics report fields unchanged for callers. |
 | S6 | Auxiliary point transformations and duplicate entry points (FR-025); displacement validation R2 (FR-026, FR-027); backend matrix incl. native and Surfe (FR-030); golden review (FR-029); 005 completion line in ROADMAP.md | SC-004, SC-010, SC-014, SC-015, SC-018 | Revert to the S5 merge. Check: `LoopStructural.utils` and `loop_common.math` import paths unchanged. |
@@ -746,7 +1236,7 @@ current tree is recorded as "not reproduced"; its test stays as a guard.
   `tests/fixtures/api_surface_snapshot.json` lists public methods of
   `GeologicalInterpolator` or `BoundingBox`, add the new names to it (additive).
 - **Round-trip tests**: S1 covers point and direction round trips (SC-001).
-  Persistence round trips are S3.
+  Persistence round trips (SC-006) are S3: `test_frame_persistence.py`.
 - **Backend coverage**: S1 covers Python FDI and PLI/P1 cells for R2, R3 and
   R5. S2 covers P2, FDI-fold, PLI discrete fold, P2-fold and the FDI and PLI
   constant-norm variants ("Stage S2 design"). S6 covers native and Surfe
@@ -841,12 +1331,9 @@ The next planner runs read and confirm these files. The lists come from a
 grep survey on 2026-11-04 and are not final.
 
 - **S2**: planned. See "Stage S2 design" and "S2 files".
-- **S3**: `_geological_interpolator.py` (`to_dict`, `from_dict`),
-  `_interpolator_factory.py`, `_finite_difference_interpolator.py` (`copy`),
-  `_p2interpolator.py` (`copy`), `_p2_fold_interpolator.py` (`copy`),
-  `packages/loop_common/src/loop_common/supports/_support_factory.py`,
-  `LoopStructural/modelling/features/fault/_fault_segment.py` (restoration
-  cache), `ROADMAP.md`, `COMPAT.md`.
+- **S3**: planned. See "Stage S3 design" and "S3 files". The survey listed
+  `_support_factory.py` and `_fault_segment.py`; the code shows that S3 does
+  not change them (no restoration cache exists).
 - **S4**: `packages/loopstructural_visualisation/src/loopstructuralvisualisation/_3d_viewer.py`,
   `LoopStructural/modelling/intrusions/intrusion_builder.py`,
   `LoopStructural/modelling/intrusions/intrusion_frame_builder.py`,
@@ -882,19 +1369,19 @@ grep survey on 2026-11-04 and are not final.
 | FR-013 | `local_enclosure`; `set_interpolation_geometry` | SC-005; enclosure unit test | None |
 | FR-014 | `_cells_for_length`; setters | Resize-10-times test | Other supports S5, OP1 |
 | FR-015 | S5 | S5 | OP1 |
-| FR-016 | S3 | S3 | OP1 |
-| FR-017 | S3 | S3 | OP1 |
-| FR-018 | S3 | S3 | OP1 |
-| FR-019 | S3 | S3 | OP1 |
-| FR-020 | S3 | S3 | OP1 |
-| FR-021 | `validate_rigid_rotation` in `set_local_transform` and `rotation_xy` | `test_rigid_transform_contract.py` | Saved-metadata part S3, OP1 |
+| FR-016 | `frame_payload`; `to_dict` frame keys; format version 2 ("S3 saved format") | `test_frame_persistence.py::test_payload_declares_frame` | None |
+| FR-017 | `_restore_local_constraints` stores local arrays with no conversion | `test_local_arrays_unchanged_after_two_cycles` | None |
+| FR-018 | `_inherit_frame` in the three `copy()` methods | `test_frame_copy_and_lifecycle.py::test_copy_keeps_frame` | PLI has no `copy` (documented, not added); OP6 |
+| FR-019 | `payload_kind`, `resolve_frame`, `InterpolatorFormatError`; ROADMAP.md decision; `COMPAT.md` row | `test_legacy_*`, `test_conflicting_inputs`, `test_malformed_metadata`, `test_unsupported_future_version` | None |
+| FR-020 | `frame_signature`, `_check_frame`, `StaleFrameError` (reject at use) | `test_stale_frame_rejected_without_state_change`, `test_fault_restoration_uses_current_frame` | Policy choice OP4; no restoration cache exists |
+| FR-021 | `validate_rigid_rotation` in `set_local_transform` and `rotation_xy`; saved metadata checked in `resolve_frame` | `test_rigid_transform_contract.py`; `test_malformed_metadata` | None |
 | FR-022 | S4 | S4 | OP1 |
 | FR-023 | S5 | S5 | OP1 |
 | FR-024 | `excluded_rows` (S1 part) | Restricted-support exclusion count | Report integration S5, OP1 |
 | FR-025 | S6 | S6 | OP1 |
 | FR-026 | S1: values, gradients, residuals (SC-003, SC-008); displacement S6 | `test_fault_frame_analytic.py` | Displacement OP1 |
 | FR-027 | S6 | S6 | OP1 |
-| FR-028 | No signature change; `COMPAT.md` note | API contract tests | FR-019 exception S3, OP1 |
+| FR-028 | No signature change except new keyword arguments; `COMPAT.md` note; FR-019 exception recorded in ROADMAP.md | API contract tests; existing round-trip tests unchanged | None |
 | FR-029 | `verification.md` golden review section | Review record per changed result | None |
 | FR-030 | S1 FDI and PLI cells; S2 P2, fold and constant-norm cells | S1 and S2 tests | Native and Surfe cells S6, OP1 |
 | FR-031 | Pre-fix rule in "Test strategy" | `verification.md` | None |
@@ -904,18 +1391,18 @@ grep survey on 2026-11-04 and are not final.
 | SC-003 | Fault design | `test_fault_frame_analytic.py` | Run time OP2 |
 | SC-004 | S6 | S6 | OP1 |
 | SC-005 | Fault and enclosure design | `test_fault_buffer_bounds.py` | Run time OP2 |
-| SC-006 | S3 | S3 | OP1 |
+| SC-006 | Format version 2; local arrays restored with no conversion | `test_round_trip_world_values`, `test_local_arrays_unchanged_after_two_cycles` | None |
 | SC-007 | Reference sampling; S2 fold sampling and P2 | `test_reference_constraint_frames.py`; `test_fold_constraint_frames.py` | None |
 | SC-008 | Reference sampling; S2 fold rows and P2 | `test_reference_constraint_frames.py` (FDI, PLI, P2); `test_fold_constraint_frames.py` | None |
 | SC-009 | S5 | S5 | OP1 |
 | SC-010 | S6 | S6 | OP1 |
 | SC-011 | `_cells_for_length` (resize part) | Resize test | Cell centres S5, OP1 |
-| SC-012 | Rotation part in S1 | `test_rigid_transform_contract.py` | Metadata and legacy part S3, OP1 |
+| SC-012 | Rotation part in S1; metadata and legacy part in S3 | `test_rigid_transform_contract.py`; `test_legacy_*`, `test_malformed_metadata` | None |
 | SC-013 | Extent-direction row; S2 fold R4 directions | `test_fault_frame_analytic.py`; `test_fold_constraint_frames.py` | None |
 | SC-014 | Merge gates in every stage | `pytest`, ruff, package tests | None |
 | SC-015 | `verification.md` golden review | Review record; 0 tolerance changes | None |
-| SC-016 | S3 | S3 | OP1 |
-| SC-017 | Rollback column; format part S3 | `verification.md` | OP1 |
+| SC-016 | Reject at use; rebuild recipe in a new frame | `test_stale_frame_rejected_without_state_change`, `test_rebuild_in_new_frame_preserves_world_evaluation`, `test_fault_restoration_uses_current_frame` | Acceptance by automatic rebuild is not built (OP4) |
+| SC-017 | Rollback column; format part S3 ("S3 rollback check") | `test_unsupported_future_version`, `test_old_reader_would_name_format_version`; `verification.md` | Old-reader error wording OP5 |
 | SC-018 | S1 and S2 cells; matrix S6 | `verification.md` backend matrix | Native and Surfe S6, OP1 |
 | SC-019 | Gate checked on 2026-11-04: 003 spec (C-006, main and native worktree copies identical) and 004 spec (2026-11-03 source-005 entries) contain the amendments | Document check | None |
 
@@ -929,7 +1416,8 @@ grep survey on 2026-11-04 and are not final.
   the core gets local, unrotated grid inputs.
 - **Rotation check (owner: `loop_common`)**:
   `loop_common.geometry.validate_rigid_rotation(matrix, dimensions, atol=1e-10)`
-  and `RigidRotationError(ValueError)`. S3 uses them for saved metadata.
+  and `RigidRotationError(ValueError)`. S3 uses them for saved metadata
+  (`resolve_frame`).
 - **Box enclosure (owner: `loop_common`)**:
   `BoundingBox.local_enclosure(origin=None, maximum=None) -> (local_min, local_max)`.
 - **Callback contracts**: feature-facing reference callbacks and region
@@ -941,13 +1429,22 @@ grep survey on 2026-11-04 and are not final.
   `loop_interpolation._fold_setup.sample_fold_geometry(interpolator, fold, local_points)`
   and `world_norm_constraints(interpolator)`. Spec 004 builds directional
   terms on this contract. The native adapter follows it.
+- **S3 saved frame and frame check (owner: `loop_interpolation`)**:
+  `GeologicalInterpolator.to_dict` writes `format_version: 2`,
+  `constraint_space: "local"`, `transform` and `bounding_box`. `from_dict`,
+  `from_json` and `from_yaml` take `local_origin`, `local_rotation` and
+  `declare_identity`. `InterpolatorFormatError(reason)` and `StaleFrameError`
+  are exported. `GeologicalInterpolator.frame_signature() -> tuple[bytes,
+  bytes]` is the key for any cache that depends on the frame; spec 003 keys
+  its caches on it and clears them when it changes. `copy()` keeps the
+  `bounding_box` object of its source.
 - **Exclusion record**: `GeologicalFeatureBuilder.excluded_rows:
   dict[str, dict[str, int]]`. S5 connects it to the diagnostics report.
 - **Fault geometry**: an explicit `fault_center` is a world point; the
   generated centre extent row is `coord=2` with `strike_unit / major_axis`.
   Spec 003 golden fault models can change only under C-006/C-004 with a
   record in `verification.md`. Spec 003 cache invalidation for transform
-  changes is S3.
+  changes uses `frame_signature` (S3).
 - **Shared files**: `_geological_interpolator.py`, `_discrete_interpolator.py`
   and `_fault_builder.py` are also in the scope of specs 003 and 004.
   Coordinate the merge order with the active 003 worktree
