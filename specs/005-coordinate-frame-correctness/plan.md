@@ -58,6 +58,17 @@ The constitution (.specify/memory/constitution.md) has priority. -->
   stays in the default `pytest` run with no marker. Measured S1 time: about
   5 minutes for the four new test files. OP2 is closed.
 
+- 2026-11-04 (S2 wave 9, user decision): T022 found an existing defect.
+  `ConstantNormFDIInterpolator` always fails with `IndexError` in
+  `ConstantNormInterpolator.add_constant_norm` (`_constant_norm.py`),
+  because `StructuredGrid.element_size` is one scalar and the code indexes
+  it per element. The defect does not depend on the frame. The statement
+  "S2 adds tests only" for the constant-norm variants is changed: new task
+  T032 (wave 10, `[S]`) changes only `_constant_norm.py` and uses the
+  scalar for each selected element. T022 keeps the `cn_fdi` cells; they
+  fail before T032 and pass after it. T030 and T031 also need T032. The
+  PLI control meets SC-002 (value error 1.8e-12, gradient error 1.3e-10).
+
 ## Summary
 
 Observations, fault geometry, masks and public queries stay in world

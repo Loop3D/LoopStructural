@@ -22,8 +22,12 @@ def resolve_fold_norm_target(
     ----------
     fold
         Fold event used to evaluate dgz at normal-constraint locations.
+        Its ``get_deformed_orientation`` takes world points and returns
+        world unit directions.
     normal_constraints : np.ndarray
-        Normal constraints in ``xyz|nx ny nz|w`` format.
+        Normal constraints in world coordinates, ``xyz|nx ny nz|w`` format.
+        Use ``loop_interpolation._fold_setup.world_norm_constraints`` to
+        convert the stored local constraints.
     fold_norm : float or None
         Requested fold_norm target. If None, ``default_fold_norm`` is used.
     dgz_alignment : {"none", "warn", "correct"} or None

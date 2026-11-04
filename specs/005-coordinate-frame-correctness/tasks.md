@@ -9,7 +9,7 @@ Rules:
   Run the test and see it fail first.
 - [P] = can be done at the same time as the other [P] tasks of the same wave.
 - Written in ASD-STE100 Simplified Technical English.
-- This file covers stages S1 (T001 to T017, done) and S2 (T018 to T031) of
+- This file covers stages S1 (T001 to T017, done) and S2 (T018 to T032) of
   plan.md. Stages S3 to S6 wait for OP1 (a later spec-planner run for each
   stage, then a new spec-tasks run).
 -->
@@ -434,7 +434,7 @@ use world points and local directions, and the P2 and constant-norm cells
 satisfy R3 and R1.
 **Independent test**: `pytest tests/unit/modelling/test_fold_constraint_frames.py tests/unit/modelling/test_constant_norm_frames.py`.
 
-- [ ] T020 [US2] [M] Test: fold, directional-regularisation and P2 weight-callback frames (R3, R4).
+- [x] T020 [US2] [M] Test: fold, directional-regularisation and P2 weight-callback frames (R3, R4).
   - Files: `tests/unit/modelling/test_fold_constraint_frames.py`
   - Needs: T018, T019
   - Wave: 9
@@ -474,13 +474,15 @@ satisfy R3 and R1.
     reuse 168. Keep all tolerances (SC-007 `Tp`, SC-008 `1e-10`). If a P2
     test fails, report the first error. Do not change production code.
 
-- [ ] T022 [P] [US2] [M] Test: constant-norm FDI and PLI fits under rotated frames (R1, SC-002).
+- [x] T022 [P] [US2] [M] Test: constant-norm FDI and PLI fits under rotated frames (R1, SC-002).
   - Files: `tests/unit/modelling/test_constant_norm_frames.py`
   - Needs: T018
   - Wave: 9
-  - Done when: `pytest tests/unit/modelling/test_constant_norm_frames.py`
-    passes. If the unrotated anchor-0 control fails SC-002, stop and report
-    the errors (plan OP3). Do not relax a limit.
+  - Done when: `pytest tests/unit/modelling/test_constant_norm_frames.py -k cn_pli`
+    passes, and the `cn_fdi` cells fail with the `IndexError` at
+    `_constant_norm.py` `add_constant_norm` (T032 fixes it; plan.md
+    "Answers"). If the unrotated anchor-0 PLI control fails SC-002, stop and
+    report the errors (plan OP3). Do not relax a limit.
   - Context: Classes `ConstantNormFDIInterpolator` and
     `ConstantNormP1Interpolator` from `loop_interpolation` (read
     `packages/loop_interpolation/src/loop_interpolation/_constant_norm.py`
@@ -494,6 +496,27 @@ satisfy R3 and R1.
     Limits: value error `<= 1e-8 * F` with `F = max(1, max|r1_value|)`;
     gradient component error `<= 1e-8 * max(1, |R1_GRADIENT|)`. Ids
     `cn_fdi`, `cn_pli`. Run the unrotated anchor-0 control first.
+    Measured PLI control (2026-11-04): value error 1.8e-12, gradient error
+    1.3e-10. Do not mark the `cn_fdi` cells xfail or skip them.
+
+- [ ] T032 [P] [US2] [S] Accept a scalar `element_size` in `add_constant_norm`.
+  - Files: `packages/loop_interpolation/src/loop_interpolation/_constant_norm.py`
+  - Needs: T022
+  - Wave: 10
+  - Done when: `pytest tests/unit/modelling/test_constant_norm_frames.py`
+    passes (all `cn_fdi` and `cn_pli` cells), and
+    `pytest packages/loop_interpolation/tests -k constant_norm` passes.
+  - Context: Existing defect found by T022 (plan.md "Answers",
+    2026-11-04). In `ConstantNormInterpolator.add_constant_norm`, the line
+    `volume = self.support.element_size[element_indices]` fails with
+    `IndexError: invalid index to scalar variable` for a `StructuredGrid`,
+    because `StructuredGrid.element_size` returns one scalar
+    (`np.prod(step_vector)`, all cells have the same size). Replace it with:
+    `element_size = np.asarray(self.support.element_size, dtype=float)`;
+    `volume = element_size[element_indices] if element_size.ndim > 0 else np.full(element_indices.shape[0], float(element_size))`.
+    No other change. Do not change `loop_common`. If the `cn_fdi` cells then
+    fail an SC-002 limit, stop and report the errors (plan OP3); do not
+    relax a limit or change a solver setting.
 
 - [ ] T023 [P] [US2] [S] Use the world contract in `add_directional_regularisation`.
   - Files: `packages/loop_interpolation/src/loop_interpolation/_discrete_interpolator.py`
@@ -593,7 +616,7 @@ satisfy R3 and R1.
     Docstring of `wtfunc`: "receives the world barycentres of the weighted
     elements and returns one weight for each". No signature change.
 
-- [ ] T029 [P] [US2] [S] Document the world contract of `resolve_fold_norm_target`.
+- [x] T029 [P] [US2] [S] Document the world contract of `resolve_fold_norm_target`.
   - Files: `packages/loop_interpolation/src/loop_interpolation/_fold_norm_alignment.py`
   - Needs: T019
   - Wave: 9
@@ -611,7 +634,7 @@ satisfy R3 and R1.
 
 - [ ] T030 [P] [Finish] [S] Add the S2 migration notice to `COMPAT.md`.
   - Files: `COMPAT.md`
-  - Needs: T023, T024, T025, T026, T027, T028
+  - Needs: T023, T024, T025, T026, T027, T028, T032
   - Wave: 12
   - Done when: the "Migration notices" table in `COMPAT.md` has the new row
     with the S2 date.
@@ -627,7 +650,7 @@ satisfy R3 and R1.
 
 - [ ] T031 [Finish] [M] Record the S2 evidence, backend cells and gates in `verification.md`.
   - Files: `specs/005-coordinate-frame-correctness/verification.md`
-  - Needs: T020, T021, T022, T023, T024, T025, T026, T027, T028, T029, T030
+  - Needs: T020, T021, T022, T023, T024, T025, T026, T027, T028, T029, T030, T032
   - Wave: 13
   - Done when: `ruff check LoopStructural packages && pytest` and
     `pytest packages/loop_common/tests packages/loop_interpolation/tests`
@@ -658,7 +681,7 @@ satisfy R3 and R1.
 | 7 | T017 | 0 | 1 |
 | 8 | T018, T019, T021 | 2 | 1 |
 | 9 | T020, T022, T029 | 1 | 2 |
-| 10 | T023, T024, T027, T028 | 3 | 1 |
+| 10 | T023, T024, T027, T028, T032 | 4 | 1 |
 | 11 | T025, T026 | 0 | 2 |
 | 12 | T030 | 1 | 0 |
 | 13 | T031 | 0 | 1 |
@@ -680,6 +703,7 @@ T003 -> T004 -> T005 -> T010 -> T013 -> T015 -> T017 -> T018 -> T020 -> T023 -> 
   cells) and T022 (constant norm) are coverage tests.
 - S2 code: T023 (directional contract) -> T025, T026 (FDI and PLI fold use
   it); T024 (native), T027 (P2 fold), T028 (P2 weights) after T020; T029
-  (docstring) after T019.
+  (docstring) after T019. T032 (scalar `element_size` fix, found by T022)
+  after T022.
 - Finish: T030 after the code tasks; T031 last.
 - Stages S3 to S6 have no tasks yet (OP1 in plan.md).

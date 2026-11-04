@@ -27,7 +27,19 @@
         "T019",
         "T021"
       ],
-      "check": "scope pass; ruff pass; black pass on 3 files; fixtures 0 tests; fold_setup import ok; reference file -k P2 156 passed (worker: whole file 468 passed); full pytest deferred to T031"
+      "check": "scope pass; ruff pass; black pass on 3 files; fixtures 0 tests; fold_setup import ok; reference file -k P2 156 passed (worker: whole file 468 passed); full pytest deferred to T031",
+      "commit": "4dc93cf16eef4559f38fff0611d34851233060c1",
+      "review": "pass: sonnet, no findings"
+    },
+    {
+      "wave": 9,
+      "base": "4dc93cf16eef4559f38fff0611d34851233060c1",
+      "tasks": [
+        "T020",
+        "T022",
+        "T029"
+      ],
+      "check": "scope pass; ruff pass; black pass on 2 test files (_fold_norm_alignment.py not black-clean before T029, docstring-only change); fold frames 230 failed / 94 passed (all assertion failures, pre-fix as planned); constant norm cn_pli 13 pass, cn_fdi 13 IndexError (T032); -k fold_norm 6 pass 5 skip"
     }
   ],
   "runs": {
@@ -47,6 +59,28 @@
       {
         "model": "sonnet",
         "result": "pass: P2 in 9 engine parametrisations; -k P2 156 pass; P2TetMesh nsteps= is cell count"
+      }
+    ],
+    "T029": [
+      {
+        "model": "haiku",
+        "result": "pass: docstring only; ruff pass; -k fold_norm 6 pass, 5 skip"
+      }
+    ],
+    "T022": [
+      {
+        "model": "sonnet",
+        "result": "blocked: ConstantNormFDIInterpolator IndexError (scalar StructuredGrid.element_size); PLI control value 1.8e-12, gradient 1.3e-10"
+      },
+      {
+        "model": "sonnet",
+        "result": "pass: cn_pli 13 pass; cn_fdi 13 fail IndexError _constant_norm.py:84 as planned"
+      }
+    ],
+    "T020": [
+      {
+        "model": "sonnet",
+        "result": "pass: 8 functions (curved split fdi / pli_p2), 324 cells; pre-fix 230 fail 94 pass; P2 directional = documented NotImplementedError"
       }
     ]
   },
@@ -408,5 +442,20 @@
         "status": "S1 implemented; S2-S6 need planning (OP1)"
       }
     }
+  },
+  "answers": [
+    "2026-11-04: user chose a fix task: T032 [S] wave 10 changes _constant_norm.py for a scalar element_size; T022 keeps cn_fdi cells (fail before T032)"
+  ],
+  "pre_fix_evidence": {
+    "T020": [
+      "fold_geometry_sampled_at_world_points: 44/48 fail, only anchor0 rot0 pass (fold got local points)",
+      "fold_rows_affine_residual: 32/48 fail, rotation 0 pass",
+      "curved_directions_fdi: 11/12 fail; curved_directions_pli_p2: 33/36 fail",
+      "fold_mask_receives_world_points: 44/48 fail",
+      "fold_norm_alignment_uses_world_normals: 16/48 fail (rotation 90 only; [1.0] == [-1.0])",
+      "directional_regularisation_world_contract: 38/72 fail (callable at all non-control cells; array at rotated cells); p2 24 pass (rejection)",
+      "p2_steepness_wtfunc: 12/12 fail ((1050,3) vs (690,3); old code ValueError)"
+    ],
+    "T022": "cn_fdi 13/13 IndexError (scalar element_size, frame-independent); cn_pli 13/13 pass (coverage, no frame defect)"
   }
 }
