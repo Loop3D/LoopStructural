@@ -721,7 +721,7 @@ satisfy R3 and R1.
 frame. A legacy file needs an explicit choice. A frame change never gives a stale result.
 **Independent test**: `pytest tests/unit/modelling/test_frame_persistence.py tests/unit/modelling/test_frame_copy_and_lifecycle.py`.
 
-- [ ] T035 [P] [US3] [M] Test: payload frame keys, round trips and two save/load cycles (U3.1, U3.2, U3.8; SC-006).
+- [x] T035 [P] [US3] [M] Test: payload frame keys, round trips and two save/load cycles (U3.1, U3.2, U3.8; SC-006).
   - Files: `tests/unit/modelling/test_frame_persistence.py`
   - Needs: T033, T034
   - Wave: 15
@@ -765,7 +765,7 @@ frame. A legacy file needs an explicit choice. A frame change never gives a stal
     with `declare_identity=True` raises `malformed`. `test_old_reader_would_name_format_version`: pop `type`, `support`, `data`, `c`,
     `up_to_date`, `valid` from a payload copy; `next(iter(rest)) == "format_version"`.
 
-- [ ] T037 [P] [US3] [M] Test: copies keep the frame, a frame change is rejected without state change, and the rebuild recipe (U3.3, U3.9; SC-016).
+- [x] T037 [P] [US3] [M] Test: copies keep the frame, a frame change is rejected without state change, and the rebuild recipe (U3.3, U3.9; SC-016).
   - Files: `tests/unit/modelling/test_frame_copy_and_lifecycle.py`
   - Needs: T033, T034
   - Wave: 15
@@ -785,7 +785,7 @@ frame. A legacy file needs an explicit choice. A frame change never gives a stal
     once. The snapshot is unchanged. `test_restored_transform_is_usable` (`fdi`): set the old transform back; `evaluate_value` equals the first result.
     `test_rebuild_in_new_frame_preserves_world_evaluation` (5 engines): the documented recipe, `r1_interpolator(engine, anchor, 30.0, exact=False)`
     (a new interpolator in the new frame, `ANCHORS[1]`); values and gradients at `anchor + QUERY_OFFSETS` meet SC-002
-    (`1e-8 * F`; `1e-8 * max(1, abs(R1_GRADIENT).max())`). If a P2 fit misses SC-002, stop and report (not a frame defect).
+    (`1e-8 * F`; `1e-8 * max(1, abs(R1_GRADIENT).max())`). Exception (OP7, decided 2026-11-05): the `p2` cell uses `exact=True` because the P2 fit misses SC-002 in every frame; do not change the limit.
 
 - [ ] T038 [P] [US3] [M] Test: fault restoration after a transform change (SC-016, cache part).
   - Files: `tests/unit/modelling/test_frame_copy_and_lifecycle.py`

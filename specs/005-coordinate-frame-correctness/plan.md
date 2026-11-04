@@ -53,6 +53,15 @@ The constitution (.specify/memory/constitution.md) has priority. -->
   Decision needed: accept this error, which names the key, as the documented
   rollback behaviour. Default until an answer: accept it. Blocks: the S3
   rollback check wording only.
+- **OP7**: The P2 value-only fit of R1 (6 x 6 x 6 cells, ridge and gradient
+  regularisation, `cg` with the SC-003 settings) misses the SC-002 limits in every
+  frame, also the unrotated control at `ANCHORS[0]`: value error `1.8e-8` (limit
+  `1e-8*F`, F = 7.5) and gradient error `3.9e-7` (limit `4e-9`). The cause is solver
+  and regularisation accuracy, not a frame defect. FDI and PLI meet SC-002. Owner:
+  the maintainer or the solver owner. Decision needed: improve the P2 fit set-up
+  (production solver code, a separate task), or record P2 fitting as outside
+  SC-002. Default until an answer: the S3 P2 cells use the exact nodal control.
+  Blocks: nothing in S3.
 - **OP6**: The feature `copy()` methods under `LoopStructural/modelling/features`
   were not read. If one of them calls `interpolator.copy()`, the frame now
   stays on the result. Owner: the S3 copy test task (it runs `git grep -n
@@ -88,6 +97,11 @@ The constitution (.specify/memory/constitution.md) has priority. -->
   raises `StaleFrameError` at the next set, evaluate or save and changes no
   state. S3 builds no rejection inside `BoundingBox` and no automatic rebuild.
   OP4 is closed.
+- 2026-11-05 (S3 wave 15, maintainer decision, OP7): the P2 cell of
+  `test_rebuild_in_new_frame_preserves_world_evaluation` (T037) uses the exact
+  nodal control (`exact=True`). The spec allows it ("Exact evaluation control").
+  No tolerance changes. The P2 fit accuracy is open point OP7. `fdi`, `pli`,
+  `cn_fdi` and `cn_pli` keep the fit (`exact=False`).
 - 2026-11-05 (S3 plan, OP5, maintainer decision): the `TypeError` that names
   `format_version`, raised by a reader from before S3, is the accepted
   rollback behaviour for SC-017. S3 ships no reader patch. OP5 is closed.

@@ -32,6 +32,15 @@
       "check": "scope pass (VERIFY); ruff pass; black pass; fixture collects 0 tests; 5 engines build (exact: errors <= 2e-10 at anchor 3 rot 30; cn fit errors 4e-9 and 1.3e-11 at anchor 0); imports from the S3 worktree",
       "commit": "c7a6802dd750bcfb0417828fe9b37a1269605f70",
       "review": "pass: sonnet, no findings"
+    },
+    {
+      "wave": 15,
+      "base": "5cd6013450bf1aecc419f29cf0443fa879b71e20",
+      "tasks": [
+        "T035",
+        "T037"
+      ],
+      "check": "scope pass (VERIFY); ruff and black pass. Pre-fix: test_frame_persistence.py 108 failed 3 passed (identity cells); test_frame_copy_and_lifecycle.py 41 failed 6 passed (copy 36/36, stale 5/5 fail; restored 1 and rebuild 5 pass = coverage, no defect). First errors: KeyError format_version/transform; nan after rotated round trip; copy().bounding_box is None; DID NOT RAISE StaleFrameError"
     }
   ],
   "runs": {
@@ -46,6 +55,22 @@
         "model": "haiku",
         "result": "pass: stubs and exports; import placed in sorted order (ruff I001), not directly after ._diagnostics"
       }
+    ],
+    "T035": [
+      {
+        "model": "sonnet",
+        "result": "pass: 4 test functions, 111 cells, fail for the right reason"
+      }
+    ],
+    "T037": [
+      {
+        "model": "sonnet",
+        "result": "blocked: P2 fit misses SC-002 in every frame (value 1.8e-8, gradient 3.9e-7 at the unrotated control); decision OP7"
+      },
+      {
+        "model": "sonnet",
+        "result": "fix pass: p2 rebuild cell uses exact=True; 5 rebuild cells pass"
+      }
     ]
   },
   "findings": {
@@ -56,7 +81,8 @@
     "open_minor": []
   },
   "answers": [
-    "2026-11-05: OP4 reject at use; OP5 accept TypeError naming format_version; major-version note in COMPAT/ROADMAP (plan.md Answers)"
+    "2026-11-05: OP4 reject at use; OP5 accept TypeError naming format_version; major-version note in COMPAT/ROADMAP (plan.md Answers)",
+    "2026-11-05 (wave 15, OP7): p2 rebuild cell uses the exact nodal control; P2 fit accuracy is open point OP7 (plan.md)"
   ],
   "history": {
     "S1": {
@@ -662,5 +688,5 @@
       }
     }
   },
-  "status": "wave 14 done and reviewed"
+  "status": "wave 15 done, review pending"
 }
