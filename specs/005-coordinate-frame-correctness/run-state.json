@@ -1,10 +1,10 @@
 {
   "spec": "005-coordinate-frame-correctness",
-  "stage": "S2",
-  "worktree": "C:/Users/lachl/dev/LoopStructural-005-s2",
-  "branch": "feat/005-s2-fold-frames",
+  "stage": "S3",
+  "worktree": "C:/Users/lachl/dev/LoopStructural-005-s3",
+  "branch": "feat/005-s3-frame-persistence",
   "review_mode": "wave",
-  "start_commit": "9e7b05f7cdab7f2270bb9e5d13f450d926100bc3",
+  "start_commit": "91ffca4a269252c32cefe077261edd27f10a4b14",
   "runtime": {
     "runtime": "claude",
     "max_workers": 5,
@@ -14,208 +14,25 @@
     "review_spec": "opus",
     "review_verifier": "opus"
   },
-  "env": "PYTHONPATH=<worktree>;<worktree>/packages/loop_common/src;<worktree>/packages/loop_interpolation/src; python = main checkout .venv",
+  "env": "PYTHONPATH=<worktree>;<worktree>/packages/loop_common/src;<worktree>/packages/loop_interpolation/src; python = main checkout .venv (C:/Users/lachl/dev/LoopStructural/.venv/Scripts/python.exe); run the root pytest and the package tests in separate calls, one heavy run at a time (low memory)",
   "baseline": {
-    "lint": "pass: ruff check LoopStructural packages",
-    "pytest": "1206 passed, 5 skipped, 21 warnings in 937.41 s (S2 start 9e7b05f7, collected before wave 8 edits)"
+    "lint": "pass: ruff check LoopStructural packages (S3 worktree, start commit)",
+    "pytest": "1760 passed, 5 skipped, 13 warnings in 1052.40 s at 662d2713 (S2 code; commits after it change only specs/README/docs). Not run again at S3 start because of low memory.",
+    "packages": "912 passed, 47 skipped, 2 xfailed in 126.56 s at 662d2713"
   },
-  "waves": [
-    {
-      "wave": 8,
-      "base": "9e7b05f7cdab7f2270bb9e5d13f450d926100bc3",
-      "tasks": [
-        "T018",
-        "T019",
-        "T021"
-      ],
-      "check": "scope pass; ruff pass; black pass on 3 files; fixtures 0 tests; fold_setup import ok; reference file -k P2 156 passed (worker: whole file 468 passed); full pytest deferred to T031",
-      "commit": "4dc93cf16eef4559f38fff0611d34851233060c1",
-      "review": "pass: sonnet, no findings"
-    },
-    {
-      "wave": 9,
-      "base": "4dc93cf16eef4559f38fff0611d34851233060c1",
-      "tasks": [
-        "T020",
-        "T022",
-        "T029"
-      ],
-      "check": "scope pass; ruff pass; black pass on 2 test files (_fold_norm_alignment.py not black-clean before T029, docstring-only change); fold frames 230 failed / 94 passed (all assertion failures, pre-fix as planned); constant norm cn_pli 13 pass, cn_fdi 13 IndexError (T032); -k fold_norm 6 pass 5 skip",
-      "commit": "35f75f8fae977fe0fbcbd03cae28889dcb4fb27d",
-      "review": "pass after one fixed major finding; recheck sonnet: no findings",
-      "fix_commit": "e7dcc9278f15543c99e6a9ab65e3381355b7e3f1"
-    },
-    {
-      "wave": 10,
-      "base": "e7dcc9278f15543c99e6a9ab65e3381355b7e3f1",
-      "tasks": [
-        "T023",
-        "T024",
-        "T027",
-        "T028",
-        "T032"
-      ],
-      "check": "scope pass for 5 tasks + T020 test-helper fix (owned by T020); ruff pass; black status unchanged per file; fold frames -k directional/p2_fold/steepness 204 pass; pli fold_regularisation 24 pass (T023 alone fixes the PLI provider path); constant norm 26 pass; fold/regularisation/native package tests 75 pass 1 skip (native not installed); P2 package 102 pass 12 skip; -k constant_norm 2 pass 5 skip",
-      "commit": "d28cfb4494b936fb09cc7b7b830f9606c63c0b8e",
-      "review": "pass: sonnet, no findings"
-    },
-    {
-      "wave": 11,
-      "base": "d28cfb4494b936fb09cc7b7b830f9606c63c0b8e",
-      "tasks": [
-        "T025",
-        "T026"
-      ],
-      "check": "scope pass; ruff pass; phase check: fold frames + constant norm + reference frames 866 passed in 24 s; existing fold/regularisation/native package tests 75 pass 1 skip (native not installed), no test changed",
-      "commit": "290dea028c698777bf21b6f3bb3af466704b759e",
-      "review": "pass: sonnet, no findings"
-    },
-    {
-      "wave": 12,
-      "base": "290dea028c698777bf21b6f3bb3af466704b759e",
-      "tasks": [
-        "T030"
-      ],
-      "check": "scope pass; COMPAT row at end of Migration notices table, dated 2026-11-04",
-      "commit": "662d271360c5521f3678ee274c1e85d655bc9dcc",
-      "review": "pass: sonnet, no findings"
-    },
-    {
-      "wave": 13,
-      "base": "662d271360c5521f3678ee274c1e85d655bc9dcc",
-      "tasks": [
-        "T031"
-      ],
-      "gate": {
-        "lint": "pass: ruff check LoopStructural packages (HEAD 662d2713)",
-        "pytest_root": "1760 passed, 5 skipped, 13 warnings in 1111.71 s (HEAD 662d2713)",
-        "pytest_packages": "912 passed, 47 skipped, 2 xfailed, 7 warnings in 126.56 s (HEAD 662d2713, orchestrator resume 2026-11-04)",
-        "pytest_root_resume": "1760 passed, 5 skipped, 13 warnings in 1052.40 s (same result as the first run)"
-      },
-      "commit": "864a23b0fbfd11f7275fe55d0e4888708c0649bb",
-      "review": "pass: sonnet, 2 minor (recorded in open_minor)"
-    }
-  ],
-  "runs": {
-    "T018": [
-      {
-        "model": "haiku",
-        "result": "pass: R1 helpers, AnalyticFold; r4 labels confirmed (coord0 surface, coord2 extent)"
-      }
-    ],
-    "T019": [
-      {
-        "model": "haiku",
-        "result": "pass: two helpers, import ok, ruff pass"
-      }
-    ],
-    "T021": [
-      {
-        "model": "sonnet",
-        "result": "pass: P2 in 9 engine parametrisations; -k P2 156 pass; P2TetMesh nsteps= is cell count"
-      }
-    ],
-    "T029": [
-      {
-        "model": "haiku",
-        "result": "pass: docstring only; ruff pass; -k fold_norm 6 pass, 5 skip"
-      }
-    ],
-    "T022": [
-      {
-        "model": "sonnet",
-        "result": "blocked: ConstantNormFDIInterpolator IndexError (scalar StructuredGrid.element_size); PLI control value 1.8e-12, gradient 1.3e-10"
-      },
-      {
-        "model": "sonnet",
-        "result": "pass: cn_pli 13 pass; cn_fdi 13 fail IndexError _constant_norm.py:84 as planned"
-      }
-    ],
-    "T020": [
-      {
-        "model": "sonnet",
-        "result": "pass: 8 functions (curved split fdi / pli_p2), 324 cells; pre-fix 230 fail 94 pass; P2 directional = documented NotImplementedError"
-      },
-      {
-        "model": "sonnet",
-        "result": "review fix pass: test_fold_regularisation_world_contract (fdi_fold/pli_fold x nomask/mask); pre-fix 44 fail 4 pass; file 274 fail 98 pass"
-      },
-      {
-        "model": "sonnet",
-        "result": "test fix pass: _set_world_normal passes world rows (setter projects); p2_fold 120 pass"
-      }
-    ],
-    "T023": [
-      {
-        "model": "haiku",
-        "result": "pass: -k directional_regularisation_world_contract 72 pass; regularisation_api 7 pass"
-      }
-    ],
-    "T024": [
-      {
-        "model": "haiku",
-        "result": "pass: native parity 1 skipped (extension not installed); ruff pass"
-      }
-    ],
-    "T027": [
-      {
-        "model": "sonnet",
-        "result": "blocked: code complete; 30 p2_fold cells failed from T020 helper double projection"
-      }
-    ],
-    "T028": [
-      {
-        "model": "haiku",
-        "result": "pass: steepness_wtfunc 12 pass; P2 package 102 pass"
-      }
-    ],
-    "T032": [
-      {
-        "model": "haiku",
-        "result": "pass: constant norm 26 pass (cn_fdi SC-002 met); -k constant_norm 2 pass"
-      }
-    ],
-    "T025": [
-      {
-        "model": "sonnet",
-        "result": "pass: -k fdi_fold 84 pass; test_fd_fold_interpolator 27 pass"
-      }
-    ],
-    "T026": [
-      {
-        "model": "sonnet",
-        "result": "pass: -k pli_fold 84 pass; test_discrete_fold_interpolator 21 pass; provider already correct after T023 (comment only)"
-      }
-    ],
-    "T030": [
-      {
-        "model": "haiku",
-        "result": "pass: row added after S1 row"
-      }
-    ],
-    "T031": [
-      {
-        "model": "sonnet",
-        "result": "record written (6 S2 sections); prefix worktree removed; ROOT_GATE_PENDING placeholder open; pre-fix fold 274 fail/98 pass, cn 13/13 (cn_fdi IndexError), P2 ref 156 pass"
-      },
-      {
-        "model": "orchestrator",
-        "result": "pass: ROOT_GATE_PENDING replaced with ruff, package and root results; T031 marked [x]"
-      }
-    ]
-  },
+  "base_note": "Built from docs/005-s3-plan (S2 code from feat/005-s2-fold-frames, PR #396 not merged). Rebase onto master after #396 merges.",
+  "waves": [],
+  "runs": {},
   "findings": {
-    "found": 8,
+    "found": 0,
     "rejected": 0,
     "dropped": 0,
-    "fixed": 5,
-    "open_minor": [
-      "T020: no test of the T024 native adapter world contract (rotated supports are rejected in test_native_parity.py); record in verification (T031)",
-      "T020 test_directional_regularisation_world_contract: p2 callable/array cells run the same NotImplementedError check twice",
-      "T020: tp(50,50) point tolerance at anchor 6.5e6 has about 4x margin over the round-trip error; watch in T031",
-      "Outside S2 scope (pre-existing): P2 minimise_grad_steepness drops w when wtfunc is given."
-    ]
+    "fixed": 0,
+    "open_minor": []
   },
+  "answers": [
+    "2026-11-05: OP4 reject at use; OP5 accept TypeError naming format_version; major-version note in COMPAT/ROADMAP (plan.md Answers)"
+  ],
   "history": {
     "S1": {
       "stage": "S1",
@@ -566,35 +383,259 @@
         "test_packages": "pytest packages/loop_common/tests packages/loop_interpolation/tests: 912 passed, 47 skipped, 2 xfailed in 117 s",
         "status": "S1 implemented; S2-S6 need planning (OP1)"
       }
+    },
+    "S2": {
+      "spec": "005-coordinate-frame-correctness",
+      "stage": "S2",
+      "worktree": "C:/Users/lachl/dev/LoopStructural-005-s2",
+      "branch": "feat/005-s2-fold-frames",
+      "review_mode": "wave",
+      "start_commit": "9e7b05f7cdab7f2270bb9e5d13f450d926100bc3",
+      "runtime": {
+        "runtime": "claude",
+        "max_workers": 5,
+        "worker_S": "haiku",
+        "worker_M": "sonnet",
+        "review_wave": "sonnet",
+        "review_spec": "opus",
+        "review_verifier": "opus"
+      },
+      "env": "PYTHONPATH=<worktree>;<worktree>/packages/loop_common/src;<worktree>/packages/loop_interpolation/src; python = main checkout .venv",
+      "baseline": {
+        "lint": "pass: ruff check LoopStructural packages",
+        "pytest": "1206 passed, 5 skipped, 21 warnings in 937.41 s (S2 start 9e7b05f7, collected before wave 8 edits)"
+      },
+      "waves": [
+        {
+          "wave": 8,
+          "base": "9e7b05f7cdab7f2270bb9e5d13f450d926100bc3",
+          "tasks": [
+            "T018",
+            "T019",
+            "T021"
+          ],
+          "check": "scope pass; ruff pass; black pass on 3 files; fixtures 0 tests; fold_setup import ok; reference file -k P2 156 passed (worker: whole file 468 passed); full pytest deferred to T031",
+          "commit": "4dc93cf16eef4559f38fff0611d34851233060c1",
+          "review": "pass: sonnet, no findings"
+        },
+        {
+          "wave": 9,
+          "base": "4dc93cf16eef4559f38fff0611d34851233060c1",
+          "tasks": [
+            "T020",
+            "T022",
+            "T029"
+          ],
+          "check": "scope pass; ruff pass; black pass on 2 test files (_fold_norm_alignment.py not black-clean before T029, docstring-only change); fold frames 230 failed / 94 passed (all assertion failures, pre-fix as planned); constant norm cn_pli 13 pass, cn_fdi 13 IndexError (T032); -k fold_norm 6 pass 5 skip",
+          "commit": "35f75f8fae977fe0fbcbd03cae28889dcb4fb27d",
+          "review": "pass after one fixed major finding; recheck sonnet: no findings",
+          "fix_commit": "e7dcc9278f15543c99e6a9ab65e3381355b7e3f1"
+        },
+        {
+          "wave": 10,
+          "base": "e7dcc9278f15543c99e6a9ab65e3381355b7e3f1",
+          "tasks": [
+            "T023",
+            "T024",
+            "T027",
+            "T028",
+            "T032"
+          ],
+          "check": "scope pass for 5 tasks + T020 test-helper fix (owned by T020); ruff pass; black status unchanged per file; fold frames -k directional/p2_fold/steepness 204 pass; pli fold_regularisation 24 pass (T023 alone fixes the PLI provider path); constant norm 26 pass; fold/regularisation/native package tests 75 pass 1 skip (native not installed); P2 package 102 pass 12 skip; -k constant_norm 2 pass 5 skip",
+          "commit": "d28cfb4494b936fb09cc7b7b830f9606c63c0b8e",
+          "review": "pass: sonnet, no findings"
+        },
+        {
+          "wave": 11,
+          "base": "d28cfb4494b936fb09cc7b7b830f9606c63c0b8e",
+          "tasks": [
+            "T025",
+            "T026"
+          ],
+          "check": "scope pass; ruff pass; phase check: fold frames + constant norm + reference frames 866 passed in 24 s; existing fold/regularisation/native package tests 75 pass 1 skip (native not installed), no test changed",
+          "commit": "290dea028c698777bf21b6f3bb3af466704b759e",
+          "review": "pass: sonnet, no findings"
+        },
+        {
+          "wave": 12,
+          "base": "290dea028c698777bf21b6f3bb3af466704b759e",
+          "tasks": [
+            "T030"
+          ],
+          "check": "scope pass; COMPAT row at end of Migration notices table, dated 2026-11-04",
+          "commit": "662d271360c5521f3678ee274c1e85d655bc9dcc",
+          "review": "pass: sonnet, no findings"
+        },
+        {
+          "wave": 13,
+          "base": "662d271360c5521f3678ee274c1e85d655bc9dcc",
+          "tasks": [
+            "T031"
+          ],
+          "gate": {
+            "lint": "pass: ruff check LoopStructural packages (HEAD 662d2713)",
+            "pytest_root": "1760 passed, 5 skipped, 13 warnings in 1111.71 s (HEAD 662d2713)",
+            "pytest_packages": "912 passed, 47 skipped, 2 xfailed, 7 warnings in 126.56 s (HEAD 662d2713, orchestrator resume 2026-11-04)",
+            "pytest_root_resume": "1760 passed, 5 skipped, 13 warnings in 1052.40 s (same result as the first run)"
+          },
+          "commit": "864a23b0fbfd11f7275fe55d0e4888708c0649bb",
+          "review": "pass: sonnet, 2 minor (recorded in open_minor)"
+        }
+      ],
+      "runs": {
+        "T018": [
+          {
+            "model": "haiku",
+            "result": "pass: R1 helpers, AnalyticFold; r4 labels confirmed (coord0 surface, coord2 extent)"
+          }
+        ],
+        "T019": [
+          {
+            "model": "haiku",
+            "result": "pass: two helpers, import ok, ruff pass"
+          }
+        ],
+        "T021": [
+          {
+            "model": "sonnet",
+            "result": "pass: P2 in 9 engine parametrisations; -k P2 156 pass; P2TetMesh nsteps= is cell count"
+          }
+        ],
+        "T029": [
+          {
+            "model": "haiku",
+            "result": "pass: docstring only; ruff pass; -k fold_norm 6 pass, 5 skip"
+          }
+        ],
+        "T022": [
+          {
+            "model": "sonnet",
+            "result": "blocked: ConstantNormFDIInterpolator IndexError (scalar StructuredGrid.element_size); PLI control value 1.8e-12, gradient 1.3e-10"
+          },
+          {
+            "model": "sonnet",
+            "result": "pass: cn_pli 13 pass; cn_fdi 13 fail IndexError _constant_norm.py:84 as planned"
+          }
+        ],
+        "T020": [
+          {
+            "model": "sonnet",
+            "result": "pass: 8 functions (curved split fdi / pli_p2), 324 cells; pre-fix 230 fail 94 pass; P2 directional = documented NotImplementedError"
+          },
+          {
+            "model": "sonnet",
+            "result": "review fix pass: test_fold_regularisation_world_contract (fdi_fold/pli_fold x nomask/mask); pre-fix 44 fail 4 pass; file 274 fail 98 pass"
+          },
+          {
+            "model": "sonnet",
+            "result": "test fix pass: _set_world_normal passes world rows (setter projects); p2_fold 120 pass"
+          }
+        ],
+        "T023": [
+          {
+            "model": "haiku",
+            "result": "pass: -k directional_regularisation_world_contract 72 pass; regularisation_api 7 pass"
+          }
+        ],
+        "T024": [
+          {
+            "model": "haiku",
+            "result": "pass: native parity 1 skipped (extension not installed); ruff pass"
+          }
+        ],
+        "T027": [
+          {
+            "model": "sonnet",
+            "result": "blocked: code complete; 30 p2_fold cells failed from T020 helper double projection"
+          }
+        ],
+        "T028": [
+          {
+            "model": "haiku",
+            "result": "pass: steepness_wtfunc 12 pass; P2 package 102 pass"
+          }
+        ],
+        "T032": [
+          {
+            "model": "haiku",
+            "result": "pass: constant norm 26 pass (cn_fdi SC-002 met); -k constant_norm 2 pass"
+          }
+        ],
+        "T025": [
+          {
+            "model": "sonnet",
+            "result": "pass: -k fdi_fold 84 pass; test_fd_fold_interpolator 27 pass"
+          }
+        ],
+        "T026": [
+          {
+            "model": "sonnet",
+            "result": "pass: -k pli_fold 84 pass; test_discrete_fold_interpolator 21 pass; provider already correct after T023 (comment only)"
+          }
+        ],
+        "T030": [
+          {
+            "model": "haiku",
+            "result": "pass: row added after S1 row"
+          }
+        ],
+        "T031": [
+          {
+            "model": "sonnet",
+            "result": "record written (6 S2 sections); prefix worktree removed; ROOT_GATE_PENDING placeholder open; pre-fix fold 274 fail/98 pass, cn 13/13 (cn_fdi IndexError), P2 ref 156 pass"
+          },
+          {
+            "model": "orchestrator",
+            "result": "pass: ROOT_GATE_PENDING replaced with ruff, package and root results; T031 marked [x]"
+          }
+        ]
+      },
+      "findings": {
+        "found": 8,
+        "rejected": 0,
+        "dropped": 0,
+        "fixed": 5,
+        "open_minor": [
+          "T020: no test of the T024 native adapter world contract (rotated supports are rejected in test_native_parity.py); record in verification (T031)",
+          "T020 test_directional_regularisation_world_contract: p2 callable/array cells run the same NotImplementedError check twice",
+          "T020: tp(50,50) point tolerance at anchor 6.5e6 has about 4x margin over the round-trip error; watch in T031",
+          "Outside S2 scope (pre-existing): P2 minimise_grad_steepness drops w when wtfunc is given."
+        ]
+      },
+      "answers": [
+        "2026-11-04: user chose a fix task: T032 [S] wave 10 changes _constant_norm.py for a scalar element_size; T022 keeps cn_fdi cells (fail before T032)"
+      ],
+      "pre_fix_evidence": {
+        "T020": [
+          "fold_geometry_sampled_at_world_points: 44/48 fail, only anchor0 rot0 pass (fold got local points)",
+          "fold_rows_affine_residual: 32/48 fail, rotation 0 pass",
+          "curved_directions_fdi: 11/12 fail; curved_directions_pli_p2: 33/36 fail",
+          "fold_mask_receives_world_points: 44/48 fail",
+          "fold_norm_alignment_uses_world_normals: 16/48 fail (rotation 90 only; [1.0] == [-1.0])",
+          "directional_regularisation_world_contract: 38/72 fail (callable at all non-control cells; array at rotated cells); p2 24 pass (rejection)",
+          "p2_steepness_wtfunc: 12/12 fail ((1050,3) vs (690,3); old code ValueError)",
+          "fold_regularisation_world_contract: 44/48 fail (anchor0 rot0 pass)"
+        ],
+        "T022": "cn_fdi 13/13 IndexError (scalar element_size, frame-independent); cn_pli 13/13 pass (coverage, no frame defect)"
+      },
+      "status": "S2 complete: T031 done, wave 13 and end spec review pass; open minors listed; rebase onto S1 branch needed before the pull request",
+      "notes": [
+        "feat/005-coordinate-frame-correctness was rebased (new S1 hashes) and gained 82ff9680 (golden gradient tolerance, test_golden.py only); S2 branch must be rebased onto it before its pull request"
+      ],
+      "spec_review": {
+        "stage": "S2",
+        "model": "opus",
+        "range": "9e7b05f7..e37d4753",
+        "verdict": "pass",
+        "major": 0,
+        "minor": 1,
+        "checks": "fold 372, constant norm 26, P2 reference 156, package fake-fold tests 75: pass"
+      },
+      "final": {
+        "head": "1a67ba7f",
+        "status": "S2 implemented; PR #396 open; end spec review pass (opus); gates at 662d2713: ruff pass, packages 912 passed 47 skipped 2 xfailed, root 1760 passed 5 skipped"
+      }
     }
   },
-  "answers": [
-    "2026-11-04: user chose a fix task: T032 [S] wave 10 changes _constant_norm.py for a scalar element_size; T022 keeps cn_fdi cells (fail before T032)"
-  ],
-  "pre_fix_evidence": {
-    "T020": [
-      "fold_geometry_sampled_at_world_points: 44/48 fail, only anchor0 rot0 pass (fold got local points)",
-      "fold_rows_affine_residual: 32/48 fail, rotation 0 pass",
-      "curved_directions_fdi: 11/12 fail; curved_directions_pli_p2: 33/36 fail",
-      "fold_mask_receives_world_points: 44/48 fail",
-      "fold_norm_alignment_uses_world_normals: 16/48 fail (rotation 90 only; [1.0] == [-1.0])",
-      "directional_regularisation_world_contract: 38/72 fail (callable at all non-control cells; array at rotated cells); p2 24 pass (rejection)",
-      "p2_steepness_wtfunc: 12/12 fail ((1050,3) vs (690,3); old code ValueError)",
-      "fold_regularisation_world_contract: 44/48 fail (anchor0 rot0 pass)"
-    ],
-    "T022": "cn_fdi 13/13 IndexError (scalar element_size, frame-independent); cn_pli 13/13 pass (coverage, no frame defect)"
-  },
-  "status": "S2 complete: T031 done, wave 13 and end spec review pass; open minors listed; rebase onto S1 branch needed before the pull request",
-  "notes": [
-    "feat/005-coordinate-frame-correctness was rebased (new S1 hashes) and gained 82ff9680 (golden gradient tolerance, test_golden.py only); S2 branch must be rebased onto it before its pull request"
-  ],
-  "spec_review": {
-    "stage": "S2",
-    "model": "opus",
-    "range": "9e7b05f7..e37d4753",
-    "verdict": "pass",
-    "major": 0,
-    "minor": 1,
-    "checks": "fold 372, constant norm 26, P2 reference 156, package fake-fold tests 75: pass"
-  }
+  "status": "S3 started; no wave done"
 }
