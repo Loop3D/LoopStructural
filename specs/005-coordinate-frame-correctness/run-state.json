@@ -87,7 +87,16 @@
         "T016"
       ],
       "check": "scope pass; test__fault_builder.py 6 pass (unchanged, no golden change); golden npz entry matches orchestrator key comparison; COMPAT row in Migration notices table",
-      "review": "pending"
+      "review": "pass: sonnet, 1 minor (golden entry omits 33 round-off keys) - fixed in T017",
+      "commit": "10fd4dea59d47c86da99aad90c66e437092ffe3b"
+    },
+    {
+      "wave": 7,
+      "base": "10fd4dea59d47c86da99aad90c66e437092ffe3b",
+      "tasks": [
+        "T017"
+      ],
+      "check": "root ruff pass; root pytest 1204 passed, 5 skipped in 1082.66 s (orchestrator, HEAD 10fd4dea); packages 912 passed, 47 skipped, 2 xfailed; S1 files 491 passed in 291 s; rollback at ebc7c699 15 passed; all 6 verification headings filled; prefix worktree removed"
     }
   ],
   "runs": {
@@ -250,13 +259,19 @@
         "model": "haiku",
         "result": "pass: row added at end of Migration notices table"
       }
+    ],
+    "T017": [
+      {
+        "model": "sonnet",
+        "result": "pass: pre-fix evidence (contract not runnable, 278/53/84 failures), rollback 15 pass, timing, backend matrix, golden round-off note"
+      }
     ]
   },
   "findings": {
-    "found": 2,
+    "found": 3,
     "rejected": 0,
     "dropped": 0,
-    "fixed": 1,
+    "fixed": 2,
     "open_minor": [
       "T012 _fault_builder.py create_data_from_geometry: np.asarray(fault_normal_vector, dtype=float) then in-place /= changes a caller float64 array; use np.array"
     ]

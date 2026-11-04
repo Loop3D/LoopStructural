@@ -353,7 +353,7 @@ world location, with the requested buffer.
     work around these defects are no longer necessary (spec 005)". Since:
     2026-11-04.
 
-- [ ] T017 [Finish] [M] Record pre-fix evidence, gates, run time and rollback.
+- [x] T017 [Finish] [M] Record pre-fix evidence, gates, run time and rollback.
   - Files: `specs/005-coordinate-frame-correctness/verification.md`
   - Needs: T003, T004, T005, T006, T007, T008, T009, T010, T011, T012, T013, T014, T015, T016
   - Wave: 7
