@@ -25,6 +25,7 @@ import pandas as pd
 import pytest
 
 from benchmarks.fault_evaluation.instrumentation import EvaluationInstrumentation
+from LoopStructural.modelling.features import _evaluation_cache
 from LoopStructural.modelling.features._evaluation_cache import (
     RestorationCache,
     _update_frame,
@@ -284,25 +285,117 @@ def _frame() -> pd.DataFrame:
     )
 
 
-def test_equal_frames_have_equal_digests():
+def _small_frame_cells() -> int:
+    """Return the limit of cells for the small-frame path of the digest.
+
+    Returns
+    -------
+    int
+        The value of ``_SMALL_FRAME_CELLS`` in the module ``_evaluation_cache``.
+    """
+    limit = getattr(_evaluation_cache, "_SMALL_FRAME_CELLS", None)
+    assert limit is not None, "D4b needs _SMALL_FRAME_CELLS"
+    return limit
+
+
+def _sized_frame(rows: int) -> pd.DataFrame:
+    """Make a frame with the columns of ``_frame()`` and ``rows`` rows.
+
+    Parameters
+    ----------
+    rows : int
+        The number of rows.
+
+    Returns
+    -------
+    pd.DataFrame
+        A frame with one float, one integer and one text column.
+    """
+    return pd.DataFrame(
+        {
+            "X": np.arange(rows) * 0.5,
+            "n": np.arange(rows, dtype=np.int64),
+            "name": [f"s{i}" for i in range(rows)],
+        }
+    )
+
+
+def _rows_for(size: str) -> int:
+    """Return the number of rows for the size ``"small"`` or ``"large"``."""
+    if size == "small":
+        return 3
+    return _small_frame_cells() // 3 + 1
+
+
+def _edit_value(frame: pd.DataFrame) -> pd.DataFrame:
+    changed = frame.copy()
+    changed.iloc[0, 0] = 99.5
+    return changed
+
+
+def _edit_object_value(frame: pd.DataFrame) -> pd.DataFrame:
+    changed = frame.copy()
+    changed.loc[0, "name"] = "edited"
+    return changed
+
+
+@pytest.mark.parametrize("size", ["small", "large"])
+def test_equal_frames_have_equal_digests(size):
     """Two frames with equal content, also an independent copy, give equal bytes."""
-    assert _frame_digest(_frame()) == _frame_digest(_frame().copy())
+    frame = _sized_frame(_rows_for(size))
+    assert _frame_digest(frame) == _frame_digest(frame.copy())
 
 
+@pytest.mark.parametrize("size", ["small", "large"])
 @pytest.mark.parametrize(
     "change",
     [
-        lambda frame: frame.assign(X=[1.0, 2.0, 3.5]),
+        _edit_value,
         lambda frame: frame.rename(columns={"X": "Y"}),
         lambda frame: frame.astype({"n": np.float64}),
-        lambda frame: frame.assign(name=["a", "b", "d"]),
+        _edit_object_value,
     ],
     ids=["value", "column_name", "dtype", "object_value"],
 )
-def test_changed_frame_has_another_digest(change):
+def test_changed_frame_has_another_digest(size, change):
     """A value, a column name, a dtype or a value of an object column changes the digest."""
-    frame = _frame()
+    frame = _sized_frame(_rows_for(size))
     assert _frame_digest(change(frame)) != _frame_digest(frame)
+
+
+@pytest.mark.parametrize("size", ["small", "large"])
+@pytest.mark.parametrize(
+    "edit",
+    [
+        lambda frame: frame.iloc.__setitem__((1, 0), 99.25),
+        lambda frame: frame.loc.__setitem__((1, "name"), "edited"),
+    ],
+    ids=["number", "text"],
+)
+def test_in_place_edit_changes_the_digest(size, edit):
+    """An edit of the same frame object changes the digest."""
+    frame = _sized_frame(_rows_for(size))
+    before = _frame_digest(frame)
+    edit(frame)
+    assert _frame_digest(frame) != before
+
+
+def test_object_values_of_other_types_have_other_digests():
+    """An integer and a float with an equal number in an object column differ."""
+    first = pd.DataFrame({"v": pd.Series([1, "a"], dtype=object)})
+    second = pd.DataFrame({"v": pd.Series([1.0, "a"], dtype=object)})
+    assert _frame_digest(first) != _frame_digest(second)
+
+
+def test_small_frame_does_not_hash_each_column(monkeypatch):
+    """A small frame is hashed in one step, without a loop over the columns."""
+
+    def _forbidden(*args, **kwargs):
+        raise AssertionError("per-column path used for a small frame")
+
+    monkeypatch.setattr(pd.util, "hash_pandas_object", _forbidden)
+    monkeypatch.setattr(pd.DataFrame, "items", _forbidden)
+    _frame_digest(_frame())
 
 
 # ---------------------------------------------------------------------------

@@ -44,6 +44,13 @@
       "base": "7d865f7c106750bc6f3f815921ba951c69af3075",
       "commit": "3ef8cb1ff6e0aa72fb1d4cd5293f82e0421be271",
       "review": "none: report only"
+    },
+    {
+      "wave": 30,
+      "tasks": [
+        "T044"
+      ],
+      "base": "465688ec9e71c7aa364362ad5fba14283eed97f6"
     }
   ],
   "runs": {
@@ -78,6 +85,12 @@
         "model": "sonnet",
         "result": "fail: gate G4 fingerprint 8 ms > 5 ms (measurement correct, verified)"
       }
+    ],
+    "T044": [
+      {
+        "model": "sonnet",
+        "result": "pass: 8 red for the expected reasons (7 absent constant, 1 per-column path), 21 pass"
+      }
     ]
   },
   "findings": {
@@ -93,5 +106,5 @@
       "T041 stale docs: _evaluation.py restore comment and module docstring, _evaluation_cache.py 'Invalidation' section, _StateHasher.node docstring still describe the old key (fix in T031 or a follow-up)"
     ]
   },
-  "paused": "2026-11-04: stopped for a replan (faster _update_frame), user answer. Run spec-planner, then spec-tasks, then resume."
+  "resumed": "2026-11-04: resumed after the D4b replan (465688ec). tests/fault_evaluation baseline: 550 passed in 89 s."
 }
