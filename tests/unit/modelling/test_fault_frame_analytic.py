@@ -90,7 +90,7 @@ def test_parallel_slip_raises():
 
 def test_extent_direction_row_at_centre():
     anchor = ANCHORS[0]
-    fault = _fault(anchor, 0, "FDI")
+    fault = _fault(anchor, 0, "FDI", explicit_center=False)
     coordinate2 = fault.builder.builders[2].data
     directions = coordinate2[["nx", "ny", "nz"]].to_numpy()
     finite = np.all(np.isfinite(directions), axis=1)

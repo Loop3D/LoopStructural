@@ -39,8 +39,9 @@
         "T011",
         "T014"
       ],
-      "review": "pending",
-      "check": "scope, Black and Ruff pass; validator 13 pass; parent regression run 373 expected failures, 28 pass, 48 analytic cells deselected, 39.85 s; worker previously ran all 48 analytic cells red"
+      "review": "changes needed: one major T011 test setup dependency; fix verified, recheck pending",
+      "check": "scope, Black and Ruff pass; validator 13 pass; parent regression run 373 expected failures, 28 pass, 48 analytic cells deselected, 39.85 s; worker previously ran all 48 analytic cells red",
+      "commit": "dd7078d62b7eedf8cde4e453ac622fda8ccafb73"
     }
   ],
   "runs": {
@@ -116,14 +117,19 @@
         "model": "gpt-6-luna",
         "reasoning_effort": "medium",
         "result": "pass: actual nonorthogonal input, single extent row, all-finite probes; 4 expected representative failures; Black/Ruff pass"
+      },
+      {
+        "model": "gpt-6-luna",
+        "reasoning_effort": "medium",
+        "result": "review fix pass: extent-row test uses inferred centre to isolate T012; parent confirms expected zero-row failure, lint pass"
       }
     ]
   },
   "findings": {
-    "found": 0,
+    "found": 1,
     "rejected": 0,
     "dropped": 0,
-    "fixed": 0,
+    "fixed": 1,
     "open_minor": []
   },
   "implementation_notes": [
@@ -142,5 +148,15 @@
       "90-degree frames raise resize ValueError before fixes"
     ],
     "wave2_parent": "373 expected failures, 28 pass, 48 deselected in 39.85 s; first failure of each reference, centre, slip, extent and buffer group independently confirmed"
-  }
+  },
+  "review_fixes": [
+    {
+      "wave": 2,
+      "task": "T011",
+      "severity": "major",
+      "problem": "extent test depended on later explicit-centre factory fix",
+      "fix": "use inferred centre for isolated extent test",
+      "status": "fixed, recheck pending"
+    }
+  ]
 }
