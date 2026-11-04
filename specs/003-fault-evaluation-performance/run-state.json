@@ -59,7 +59,16 @@
       "tasks": [
         "T045"
       ],
-      "base": "c1250aba42c7ad6b46bdf9f2e0cd67f2b25934a6"
+      "base": "c1250aba42c7ad6b46bdf9f2e0cd67f2b25934a6",
+      "commit": "e492ac7a9407845c887fad1036386c576487a70c",
+      "review": "pass (sonnet), no findings"
+    },
+    {
+      "wave": 32,
+      "tasks": [
+        "T042"
+      ],
+      "base": null
     }
   ],
   "runs": {
