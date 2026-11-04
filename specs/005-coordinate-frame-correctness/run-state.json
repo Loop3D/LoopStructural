@@ -51,7 +51,9 @@
         "T036",
         "T038"
       ],
-      "check": "scope pass (VERIFY); ruff and black pass. Pre-fix: legacy/conflicting/malformed/unsupported/creation_call/old_reader 58 failed (TypeError unexpected keyword declare_identity or format_version; DID NOT RAISE); T035 file 166 failed 3 passed (identity cells); fault_restoration 2 failed (DID NOT RAISE StaleFrameError). apply_to_points reaches the interpolators through evaluate_value/evaluate_gradient of the frame features. Later part of the fault test (rebuild vs control) ran clean with the raise check off (FDI 18.6 s, PLI 4.2 s)"
+      "check": "scope pass (VERIFY); ruff and black pass. Pre-fix: legacy/conflicting/malformed/unsupported/creation_call/old_reader 58 failed (TypeError unexpected keyword declare_identity or format_version; DID NOT RAISE); T035 file 166 failed 3 passed (identity cells); fault_restoration 2 failed (DID NOT RAISE StaleFrameError). apply_to_points reaches the interpolators through evaluate_value/evaluate_gradient of the frame features. Later part of the fault test (rebuild vs control) ran clean with the raise check off (FDI 18.6 s, PLI 4.2 s)",
+      "commit": "d3813ce2a22be699a3ef768a904b25a9dc19c883",
+      "review": "changes needed: sonnet, 1 major (loader message and unchanged-source checks) + 1 minor confirmed vacuous by the orchestrator (R2 fixture moves 0 of 6859 probes) fixed; 2 minor open; recheck pending"
     }
   ],
   "runs": {
@@ -105,14 +107,17 @@
     ]
   },
   "findings": {
-    "found": 3,
+    "found": 7,
     "rejected": 1,
     "dropped": 0,
-    "fixed": 0,
+    "fixed": 2,
     "open_minor": [
       "T037 test_stale_frame_rejected_without_state_change: origin and rotation change together; a signature that ignores one of them still passes. Add origin-only and rotation-only cells (not in the plan; can be done in T042 or later).",
       "T035 test_round_trip_world_values: compares the loaded values with the analytic field only; add a comparison with the source evaluation (optional).",
-      "T035 and T037 define F differently in the task text (query points in T035, observations in T037). The spec definition is the observations; T035 is stricter."
+      "T035 and T037 define F differently in the task text (query points in T035, observations in T037). The spec definition is the observations; T035 is stricter.",
+      "T036: no positive cases: v2 payload with a caller transform equal to the saved one must load; legacy payload with only local_origin or only local_rotation (other defaults to identity).",
+      "T036 test_creation_call_unchanged: also check local_origin/local_rotation arguments raise malformed, and that the input dict is unchanged.",
+      "T038: the R2 fixture fault displaces none of its probes (0 of 6859 moved); the test compares restored points (trivially equal) and the fault-frame coordinates. A fixture with real displacement would test restoration itself (S6)."
     ]
   },
   "answers": [
@@ -723,5 +728,5 @@
       }
     }
   },
-  "status": "wave 16 done, review pending"
+  "status": "wave 16 fix round committed, recheck pending"
 }

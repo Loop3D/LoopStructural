@@ -944,7 +944,10 @@ Messages (tests match the start of each):
 - `legacy_no_transform`: `legacy interpolator payload has no transform: pass local_origin and local_rotation, or declare_identity=True`
 - `unsupported_version`: `unsupported interpolator format_version {v}: this reader supports version {FORMAT_VERSION}`
 - `malformed`: `malformed interpolator payload: {detail}`
-- `conflict`: `conflicting transform: {detail}`
+- `conflict`: `conflicting transform: {detail}`. For a caller frame against a saved
+  transform, `detail` contains the words `saved` and `supplied` and the name of the item
+  (`local_origin` or `local_rotation`). For `declare_identity` with a transform, `detail`
+  contains `declare_identity`.
 - `StaleFrameError`: `the local transform changed after constraints were stored; the stored constraints and coefficients use the previous frame. Call clean() and set the constraints again, or build a new interpolator`
 
 Changes to `GeologicalInterpolator` (`_geological_interpolator.py`):

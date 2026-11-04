@@ -209,6 +209,15 @@ def test_conflicting_inputs(rotation, kwargs):
     with pytest.raises(InterpolatorFormatError) as excinfo:
         GeologicalInterpolator.from_dict(payload, **kwargs)
     _assert_format_error(excinfo, "conflict", "conflicting transform")
+    message = str(excinfo.value)
+    if "local_origin" in kwargs and "declare_identity" in kwargs:
+        assert "declare_identity" in message
+    else:
+        assert "saved" in message
+        assert "supplied" in message
+        for name in ("local_origin", "local_rotation"):
+            if name in kwargs:
+                assert name in message
     _assert_same(payload, before)
 
 
@@ -274,7 +283,7 @@ def test_malformed_metadata(mutate):
     before = copy.deepcopy(payload)
     with pytest.raises(InterpolatorFormatError) as excinfo:
         GeologicalInterpolator.from_dict(payload)
-    assert excinfo.value.reason == "malformed"
+    _assert_format_error(excinfo, "malformed", "malformed interpolator payload")
     _assert_same(payload, before)
 
 
@@ -284,9 +293,15 @@ def test_unsupported_future_version(version):
     interp, _ = _build("fdi", 1, 30.0)
     payload = _with_frame_keys(interp.to_dict(), interp)
     payload["format_version"] = version
+    before = copy.deepcopy(payload)
     with pytest.raises(InterpolatorFormatError) as excinfo:
         GeologicalInterpolator.from_dict(payload)
-    assert excinfo.value.reason == "unsupported_version"
+    _assert_format_error(
+        excinfo,
+        "unsupported_version",
+        f"unsupported interpolator format_version {version}: this reader supports version 2",
+    )
+    _assert_same(payload, before)
 
 
 def test_creation_call_unchanged():

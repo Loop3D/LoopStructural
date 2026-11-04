@@ -153,11 +153,12 @@ def test_rebuild_in_new_frame_preserves_world_evaluation(engine):
 def test_fault_restoration_uses_current_frame(engine):
     """A stale frame is refused when points are restored through a fault frame.
 
-    No restoration cache exists in the code. The check is that a stale
-    frame is refused and that a rebuild equals an uncached control.
+    No restoration cache exists in the code. The R2 fixture displaces none of
+    its probes, so a rebuild is compared with an uncached control through the
+    restored points and through the fault-frame coordinates.
     """
     anchor = ANCHORS[1]
-    points = r2_probes(anchor)[:200]
+    points = r2_probes(anchor)[::34]
     fault = _fault(anchor, 0.0, engine)
     # Restore once, so that a cache (if it existed) would hold this result.
     fault.apply_to_points(points)
@@ -168,8 +169,20 @@ def test_fault_restoration_uses_current_frame(engine):
         fault.apply_to_points(points)
     # Build the same fault in a fresh model with the new frame, and in a second
     # fresh model as the uncached control.
-    rebuilt = _fault(anchor, 30.0, engine).apply_to_points(points)
-    control = _fault(anchor, 30.0, engine).apply_to_points(points)
+    rebuilt_fault = _fault(anchor, 30.0, engine)
+    control_fault = _fault(anchor, 30.0, engine)
+    rebuilt = rebuilt_fault.apply_to_points(points)
+    control = control_fault.apply_to_points(points)
     tolerance = tp(20.0, np.abs(points).max())
     assert np.all(np.isfinite(rebuilt))
     assert np.max(np.abs(rebuilt - control)) <= tolerance
+    for i in range(3):
+        rebuilt_coord = rebuilt_fault.__getitem__(i).evaluate_value(points)
+        control_coord = control_fault.__getitem__(i).evaluate_value(points)
+        np.testing.assert_allclose(
+            rebuilt_coord,
+            control_coord,
+            rtol=0,
+            atol=1e-9 * max(1.0, np.abs(control_coord).max()),
+        )
+        assert np.ptp(control_coord) > 1e-3
