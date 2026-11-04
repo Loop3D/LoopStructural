@@ -53,9 +53,20 @@
         "T008",
         "T012"
       ],
-      "review": "pending",
+      "review": "pass: sonnet, 1 minor (T012 asarray in-place change of caller normal)",
       "status": "committed",
-      "check": "scope pass (T006 golden file added to Files by user decision); ruff pass; black pass; loop_common + loop_interpolation tests 912 passed, 47 skipped, 2 xfailed; conversion filter 24 pass; T012 filter 4 pass; test_base.py errors not reproduced"
+      "check": "scope pass (T006 golden file added to Files by user decision); ruff pass; black pass; loop_common + loop_interpolation tests 912 passed, 47 skipped, 2 xfailed; conversion filter 24 pass; T012 filter 4 pass; test_base.py errors not reproduced",
+      "commit": "d2909aa5de619d9e83c49b818dfc7d1333700d51"
+    },
+    {
+      "wave": 4,
+      "base": "d2909aa5de619d9e83c49b818dfc7d1333700d51",
+      "tasks": [
+        "T009",
+        "T010"
+      ],
+      "check": "scope pass; ruff pass; tests/unit/modelling (without T013 files) 551 passed, 2 skipped; reference file 312 pass; loop_interpolation tests 606 passed, 47 skipped, 2 xfailed",
+      "review": "pending"
     }
   ],
   "runs": {
@@ -111,6 +122,10 @@
         "model": "gpt-6-luna",
         "reasoning_effort": "medium",
         "result": "pass: corrected real APIs, complete Cartesian matrix, fixed world affine controls, wrapper checks, physical restoration, and exclusion counts; lint/format pass"
+      },
+      {
+        "model": "sonnet",
+        "result": "fix pass: exact field without large-coordinate cancellation, atol 1e-10 kept; file 312 pass"
       }
     ],
     "T014": [
@@ -180,14 +195,28 @@
         "model": "haiku",
         "result": "pass: 4 public conversion methods; conversion filter 24 pass"
       }
+    ],
+    "T009": [
+      {
+        "model": "haiku",
+        "result": "pass: inequality 48 pass; task hunks only, no full-file black reformat"
+      }
+    ],
+    "T010": [
+      {
+        "model": "sonnet",
+        "result": "blocked: 12 affine-residual failures at anchor 6.5e6 from test cancellation; code otherwise complete"
+      }
     ]
   },
   "findings": {
-    "found": 1,
+    "found": 2,
     "rejected": 0,
     "dropped": 0,
     "fixed": 1,
-    "open_minor": []
+    "open_minor": [
+      "T012 _fault_builder.py create_data_from_geometry: np.asarray(fault_normal_vector, dtype=float) then in-place /= changes a caller float64 array; use np.array"
+    ]
   },
   "implementation_notes": [
     "T004 import position follows project Ruff ordering without suppression; validator behavior and exports match the plan."
@@ -228,8 +257,5 @@
   },
   "answers": [
     "2026-11-04: golden structured_support_reference.npz added to T006 Files; T015 records it (plan.md Answers)"
-  ],
-  "open_minor_candidates": [
-    "T012: np.asarray(fault_normal_vector, dtype=float) then in-place /= can mutate a caller float array; prefer np.array copy"
   ]
 }

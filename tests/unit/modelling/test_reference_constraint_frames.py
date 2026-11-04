@@ -106,7 +106,11 @@ def test_orthogonal_rows_affine_residual(frame_case, engine, sample_rule):
         builder.add_orthogonal_feature(reference, B=target, sample_rule=sample_rule)
     builder.install_gradient_constraint()
     support = builder.interpolator.support
-    exact = model.bounding_box.reproject(support.nodes)[:, 1] - anchor[1]
+    bounding_box = model.bounding_box
+    # Use the rigid structure to avoid cancellation at large world coordinates.
+    exact = bounding_box.reproject_vectors(support.nodes)[:, 1] + (
+        bounding_box.local_origin[1] - anchor[1]
+    )
     for name in ("x_orthogonal", "y_orthogonal"):
         constraint = builder.interpolator.constraints[name]
         residual = constraint["matrix"] @ exact - constraint["b"]

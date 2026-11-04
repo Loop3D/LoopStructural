@@ -194,7 +194,7 @@ the target-local basis.
     (numpy style): input `(N, d)` or `(d,)`, same output shape; vectors use
     rotation only; with `bounding_box is None` the input is returned.
 
-- [ ] T009 [P] [US2] [S] Sample `add_inequality_feature` at world nodes.
+- [x] T009 [P] [US2] [S] Sample `add_inequality_feature` at world nodes.
   - Files: `packages/loop_interpolation/src/loop_interpolation/_discrete_interpolator.py`
   - Needs: T008
   - Wave: 4
@@ -209,7 +209,7 @@ the target-local basis.
     "`points` are target-local support points; `vectors` are target-local
     unit directions." No signature changes.
 
-- [ ] T010 [P] [US2] [M] Sample reference features at world points in the feature builder.
+- [x] T010 [P] [US2] [M] Sample reference features at world points in the feature builder.
   - Files: `LoopStructural/modelling/features/builders/_geological_feature_builder.py`
   - Needs: T005, T008
   - Wave: 4
