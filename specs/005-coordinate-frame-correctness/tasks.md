@@ -88,7 +88,7 @@ Rules:
     `StructuredGrid3DGeometry` to their own values 10 times: 0 changes to
     origin, maximum, step_vector, nsteps). Import from `loop_common.geometry`.
 
-- [ ] T004 [Found] [S] Add `validate_rigid_rotation` and `RigidRotationError`.
+- [x] T004 [Found] [S] Add `validate_rigid_rotation` and `RigidRotationError`.
   - Files: `packages/loop_common/src/loop_common/geometry/_rigid.py`,
     `packages/loop_common/src/loop_common/geometry/__init__.py`
   - Needs: T003
@@ -150,7 +150,7 @@ Rules:
 the target-local basis.
 **Independent test**: `pytest tests/unit/modelling/test_reference_constraint_frames.py`.
 
-- [ ] T007 [P] [US2] [M] Test: R3 reference relationships for FDI and PLI.
+- [x] T007 [P] [US2] [M] Test: R3 reference relationships for FDI and PLI.
   - Files: `tests/unit/modelling/test_reference_constraint_frames.py`
   - Needs: T002
   - Wave: 2
@@ -234,7 +234,7 @@ the target-local basis.
 world location, with the requested buffer.
 **Independent test**: `pytest tests/unit/modelling/test_fault_frame_analytic.py tests/unit/modelling/test_fault_buffer_bounds.py`.
 
-- [ ] T011 [P] [US1] [M] Test: R2 planar frame, centre handling and R4 extent row.
+- [x] T011 [P] [US1] [M] Test: R2 planar frame, centre handling and R4 extent row.
   - Files: `tests/unit/modelling/test_fault_frame_analytic.py`
   - Needs: T002
   - Wave: 2
@@ -292,7 +292,7 @@ world location, with the requested buffer.
     `force_mesh_geometry`. No signature change. An explicit `fault_center`
     is a world point (FR-010).
 
-- [ ] T014 [P] [US1] [M] Test: R5 buffer and forced-geometry bounds.
+- [x] T014 [P] [US1] [M] Test: R5 buffer and forced-geometry bounds.
   - Files: `tests/unit/modelling/test_fault_buffer_bounds.py`
   - Needs: T002
   - Wave: 2
