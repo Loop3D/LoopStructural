@@ -748,8 +748,6 @@ class ModelFeatureFactory:
         model._add_faults(fault_frame_builder, features=faults)
         # add data
 
-        if fault_center is not None and ~np.isnan(fault_center).any():
-            fault_center = model.scale(fault_center, inplace=False)
         # Keep the supplied fault-axis values unchanged; the previous self-assignment
         # was only present to satisfy a linter and did not affect behavior.
         fault_frame_builder.create_data_from_geometry(
@@ -768,8 +766,6 @@ class ModelFeatureFactory:
             fault_dip_anisotropy=fault_dip_anisotropy,
             fault_pitch=fault_pitch,
         )
-        if "force_mesh_geometry" not in kwargs:
-            fault_frame_builder.set_mesh_geometry(kwargs.get("fault_buffer", 0.2), 0)
         if "splay" in kwargs and "splayregion" in kwargs:
             fault_frame_builder.add_splay(kwargs["splay"], kwargs["splayregion"])
 

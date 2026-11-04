@@ -281,7 +281,7 @@ world location, with the requested buffer.
     coord 2, w. Early return (no trace): call
     `self.set_mesh_geometry(fault_buffer, None)` before `return`.
 
-- [ ] T013 [US1] [S] Stop the centre projection and the buffer override in the fault factory.
+- [x] T013 [US1] [S] Stop the centre projection and the buffer override in the fault factory.
   - Files: `LoopStructural/modelling/core/_model_feature_factory.py`
   - Needs: T006, T010, T012
   - Wave: 5

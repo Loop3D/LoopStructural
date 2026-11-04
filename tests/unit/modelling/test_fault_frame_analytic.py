@@ -38,8 +38,15 @@ def _fault(anchor, rotation_deg, interpolatortype, explicit_center=True, slip=SL
         fault_trace_anisotropy=0,
         fault_dip_anisotropy=0,
     )
+    # These are the CG solve settings of SC-003. The builder ignores
+    # top-level rtol, atol and maxiter, so they go in solver_kwargs.
     fault.builder.build(
-        solver="cg", rtol=1e-10, atol=1e-12, maxiter=20_000, w1=1, w2=1, w3=1, step=10
+        solver="cg",
+        solver_kwargs={"rtol": 1e-10, "atol": 1e-12, "maxiter": 20_000},
+        w1=1,
+        w2=1,
+        w3=1,
+        step=10,
     )
     return fault
 

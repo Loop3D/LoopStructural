@@ -66,6 +66,16 @@
         "T010"
       ],
       "check": "scope pass; ruff pass; tests/unit/modelling (without T013 files) 551 passed, 2 skipped; reference file 312 pass; loop_interpolation tests 606 passed, 47 skipped, 2 xfailed",
+      "review": "pass: sonnet, no findings (2 notes, not findings)",
+      "commit": "35e05b01c858f619cb667af446f507046cc78fb3"
+    },
+    {
+      "wave": 5,
+      "base": "35e05b01c858f619cb667af446f507046cc78fb3",
+      "tasks": [
+        "T013"
+      ],
+      "check": "scope pass; ruff pass; tests/unit/modelling 688 passed, 2 skipped in 300 s; R2+R5 files 137 passed in 209 s",
       "review": "pending"
     }
   ],
@@ -159,6 +169,10 @@
       {
         "model": "sonnet",
         "result": "fix pass: slip row expectation [0,0,-1]/intermediate_axis per spec.md R2 table; T012 filter 4 pass"
+      },
+      {
+        "model": "sonnet",
+        "result": "fix pass: SC-003 CG settings through solver_kwargs (top-level rtol/atol/maxiter were ignored; solver used atol 2e-9); R2+R5 137 pass"
       }
     ],
     "T005": [
@@ -207,6 +221,12 @@
         "model": "sonnet",
         "result": "blocked: 12 affine-residual failures at anchor 6.5e6 from test cancellation; code otherwise complete"
       }
+    ],
+    "T013": [
+      {
+        "model": "haiku",
+        "result": "code as Context; Done-when failed 48 R2 cells at 1e-4 because the T011 test passed CG settings outside solver_kwargs; pass after T011 fix"
+      }
     ]
   },
   "findings": {
@@ -219,7 +239,8 @@
     ]
   },
   "implementation_notes": [
-    "T004 import position follows project Ruff ordering without suppression; validator behavior and exports match the plan."
+    "T004 import position follows project Ruff ordering without suppression; validator behavior and exports match the plan.",
+    "Orchestrator diagnosis wave 5: with solver_kwargs the anchor-0 R2 error is 2e-12 to 1e-10 (FDI and PLI); ridge regularisation has no effect. Top-level rtol/atol/maxiter on builder.build are ignored silently; possible later issue, not in S1 scope."
   ],
   "pre_fix_evidence": {
     "T011": [
