@@ -282,7 +282,8 @@ world location, with the requested buffer.
     `self.set_mesh_geometry(fault_buffer, None)` before `return`.
 
 - [x] T013 [US1] [S] Stop the centre projection and the buffer override in the fault factory.
-  - Files: `LoopStructural/modelling/core/_model_feature_factory.py`
+  - Files: `LoopStructural/modelling/core/_model_feature_factory.py`,
+    `LoopStructural/modelling/features/fault/_fault_segment.py`
   - Needs: T006, T010, T012
   - Wave: 5
   - Done when: `pytest tests/unit/modelling/test_fault_frame_analytic.py tests/unit/modelling/test_fault_buffer_bounds.py`
@@ -295,6 +296,9 @@ world location, with the requested buffer.
     `create_data_from_geometry` already applies `fault_buffer` and
     `force_mesh_geometry`. No signature change. An explicit `fault_center`
     is a world point (FR-010).
+    Answer (plan.md "Answers", 2026-11-04): in `FaultSegment.fault_ellipsoid`
+    use `self.fault_centre[None, :]` with no `model.rescale`; the centre is a
+    world point.
 
 - [x] T014 [P] [US1] [M] Test: R5 buffer and forced-geometry bounds.
   - Files: `tests/unit/modelling/test_fault_buffer_bounds.py`

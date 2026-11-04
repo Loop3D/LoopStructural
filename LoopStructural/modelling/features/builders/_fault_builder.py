@@ -420,9 +420,10 @@ class FaultBuilder(StructuralFrameBuilder):
             if fault_center.shape[0] != 3:
                 raise ValueError("fault_center must be a 3 element array")
             # Assign to properties (these won't trigger _on_geometry_change because suspend flag is True)
-            normal = np.asarray(fault_normal_vector, dtype=float)
+            # Copy the input so the array of the caller does not change.
+            normal = np.array(fault_normal_vector, dtype=float)
             normal /= np.linalg.norm(normal)
-            slip = np.asarray(fault_slip_vector, dtype=float)
+            slip = np.array(fault_slip_vector, dtype=float)
             slip_perp = slip - np.dot(slip, normal) * normal
             slip_norm = np.linalg.norm(slip_perp)
             if slip_norm < 1e-12:

@@ -34,6 +34,15 @@ The constitution (.specify/memory/constitution.md) has priority. -->
   the `Files` of T006. T006 regenerates it with
   `python packages/loop_common/tests/test_structured_support_reference.py --update`.
   T015 records the change under `## Golden review (C-004)`.
+- 2026-11-04 (spec review, user decision): `FaultSegment.fault_ellipsoid`
+  called `model.rescale` on `builder.fault_centre`, which S1 makes a world
+  point. `LoopStructural/modelling/features/fault/_fault_segment.py` is added
+  to the `Files` of T013. The ellipsoid uses the world centre with no
+  `rescale`. A regression test goes in `test_fault_frame_analytic.py` (T011).
+- 2026-11-04 (spec review, user decision): fix two minor record findings in
+  S1. The golden file keeps only the 27 FR-014 changes; the 33 other keys
+  get their old values back. `verification.md` gets the correct FR ranges in
+  its "Pre-fix failures" titles.
 
 ## Summary
 

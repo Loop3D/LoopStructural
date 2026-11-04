@@ -20,12 +20,12 @@ both imports came from the throw-away worktree. The worktree is removed
 | `tests/unit/modelling/test_fault_frame_analytic.py` | 53 failed, 0 passed | 88 s |
 | `tests/unit/modelling/test_fault_buffer_bounds.py` | 84 failed, 0 passed | 12 s |
 
-### Rigid-transform contract (R1, FR-001 to FR-004)
+### Rigid-transform contract (no R1 fixture; FR-003, FR-013, FR-014, FR-021; SC-001, SC-011, SC-012)
 The file cannot import pre-fix, because `RigidRotationError` does not exist.
 All 42 contract checks are "not runnable" pre-fix. None is "reproduced" or
 "not reproduced" by a test result. The missing class is itself the evidence.
 
-### Reference constraints (R3, FR-011 to FR-019)
+### Reference constraints (R3; FR-003 to FR-007, FR-009, FR-013, FR-024; SC-007, SC-008)
 | Test function | Failed / passed | Representative failing id and value |
 |---|---|---|
 | `test_world_local_conversion_methods` | 24 / 0 | `[frame_case0-FDI]`: `AttributeError: 'FiniteDifferenceInterpolator' object has no attribute 'world_to_local_points'` (same for `P1Interpolator`) |
@@ -37,7 +37,7 @@ All 42 contract checks are "not runnable" pre-fix. None is "reproduced" or
 | `test_set_interpolation_geometry_encloses_rotated_box` | 24 / 0 | `[frame_case0-FDI]`: grid maximum [6.4, 8.33, 10.29] does not enclose the box corner [0, 10, 12]; also `ValueError: Cannot resize the grid` in some cells |
 | `test_support_expansion_contains_restored_points` | 24 / 0 | `[frame_case0-FDI]`: grid maximum [27.2, 8.67, 13.71] does not enclose the restored points |
 
-### Fault frame analytic (R2, FR-005 to FR-010)
+### Fault frame analytic (R2, R4; FR-001, FR-002, FR-010, FR-011, FR-026; SC-003, SC-013)
 All 5 single tests fail. The 48 planar cells all fail (12 for each of
 FDI/PLI x centre mode).
 
@@ -50,7 +50,7 @@ FDI/PLI x centre mode).
 | `test_extent_direction_row_at_centre` | 1 / 0 | the count of rows at the centre is 0, expected 1 |
 | `test_planar_fault_frame_matches_analytic` | 48 / 0 | `[FDI-True-0.0-anchor0]`: maximum field error 0.830 (limit 1e-6). Error range over cells: 1.7e-3 to 0.84. 12 cells show exactly 0.45. |
 
-### Fault buffer bounds (R5, FR-024 to FR-028)
+### Fault buffer bounds (R5; FR-012, FR-013; SC-005)
 | Test function | Failed / passed | Representative failing id and value |
 |---|---|---|
 | `test_buffer_bounds_match_request` | 36 / 0 | `[0.0-True-0.0-FDI-20000]`: lower bound 0 vs the allowed -4 (bounds do not cover the buffer) |
@@ -103,7 +103,7 @@ One golden change is made in S1 (task T006, commit d2909aa5).
 |---|---|---|---|---|
 | `packages/loop_common/tests/data/structured_support_reference.npz`: 27 values `<cls>/<grid>/after_origin.nsteps`, `after_maximum.nsteps`, `after_maximum.maximum` for cls StructuredGrid, TetMesh, P2TetMesh and grid unit, aniso, small | unit: origin nsteps [4 4 4], maximum nsteps [6 6 6], maximum [6.142857 x3]. aniso: [3 6 4], [5 7 5], [14.6 6.909091 7.857143]. small: [5 5 5], [8 8 8], [5.0 x3] | unit: [5 5 5], [8 8 8], [9.0 x3]. aniso: [4 7 5], [7 9 7], [17.4 10.545455 11.285714]. small: [6 6 6], [10 10 10], [6.714286 x3] | The origin and maximum setters stored a cell count as the node count. The support lost one cell and did not reach the requested maximum (FR-014). Old values did not enclose the requested bounds (for example unit: requested maximum [7.714286 x3]). | The support now encloses the requested bounds, within one cell, outward. |
 
-The regenerated file also re-records 33 other keys (for example evaluate_value, evaluate_gradient, rotate) that differ by at most 5.7e-14 (round-off). No tolerance was relaxed.
+The other keys of the file keep their values from before S1 (the 33 keys that `--update` re-recorded with round-off changes were restored after the spec review). No tolerance was relaxed.
 
 
 ## Backend matrix

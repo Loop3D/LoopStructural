@@ -96,7 +96,8 @@
       "tasks": [
         "T017"
       ],
-      "check": "root ruff pass; root pytest 1204 passed, 5 skipped in 1082.66 s (orchestrator, HEAD 10fd4dea); packages 912 passed, 47 skipped, 2 xfailed; S1 files 491 passed in 291 s; rollback at ebc7c699 15 passed; all 6 verification headings filled; prefix worktree removed"
+      "check": "root ruff pass; root pytest 1204 passed, 5 skipped in 1082.66 s (orchestrator, HEAD 10fd4dea); packages 912 passed, 47 skipped, 2 xfailed; S1 files 491 passed in 291 s; rollback at ebc7c699 15 passed; all 6 verification headings filled; prefix worktree removed",
+      "commit": "0abc31ecc4d95d1a2b7c205701eb265416c23a2c"
     }
   ],
   "runs": {
@@ -268,12 +269,17 @@
     ]
   },
   "findings": {
-    "found": 3,
+    "found": 12,
     "rejected": 0,
     "dropped": 0,
-    "fixed": 2,
+    "fixed": 6,
     "open_minor": [
-      "T012 _fault_builder.py create_data_from_geometry: np.asarray(fault_normal_vector, dtype=float) then in-place /= changes a caller float64 array; use np.array"
+      "T011 test_extent_direction_row_at_centre: 15-degree check uses only the r4_frame fixture; production row not compared at O+(0,+-6,0) (SC-013 negative case)",
+      "T011 test_explicit_centre_rows_not_projected: builders[0] check is always true (R2 has an observation at the centre)",
+      "T007 test_equality_region_selects_world_nodes: 168 of 336 count for rotation 0 not asserted",
+      "T007 test_set_interpolation_geometry_encloses_rotated_box: passes rotation in degrees, which also sets support.rotation_xy (double rotation in setup)",
+      "T010/T005: no test for the evaluation_error branch of excluded_rows or for non-finite local_origin rejection (code checked correct by scratch test)",
+      "Later stage note: _on_geometry_change passes fault_trace_anisotropy=1.0 and fault_dip_anisotropy=1.0, so a property change adds anisotropy rows even when the caller set 0"
     ]
   },
   "implementation_notes": [
@@ -316,5 +322,19 @@
   },
   "answers": [
     "2026-11-04: golden structured_support_reference.npz added to T006 Files; T015 records it (plan.md Answers)"
-  ]
+  ],
+  "spec_review": {
+    "model": "opus",
+    "range": "3881ef32..0abc31ec",
+    "verdict": "changes needed",
+    "major": 2,
+    "minor": 7,
+    "fixed": [
+      "major: T012 caller normal changed in place (np.array copy) + test_caller_normal_not_mutated",
+      "major: T013 fault_ellipsoid double conversion of world centre (_fault_segment.py added to T013 Files by user) + test_fault_ellipsoid_centre_is_world",
+      "minor (user asked): verification.md Pre-fix titles FR ranges corrected",
+      "minor (user asked): golden npz keeps only the 27 FR-014 changes; 33 round-off keys restored"
+    ],
+    "fix_check": "scope pass; ruff pass; tests/unit/modelling + loop_common (without planar matrix) 948 passed, 2 skipped"
+  }
 }

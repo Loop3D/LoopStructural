@@ -149,3 +149,81 @@ def test_planar_fault_frame_matches_analytic(
     angles = np.rad2deg(np.arccos(np.clip(dot / denom, -1, 1)))
     assert np.all(np.isfinite(angles))
     assert np.max(angles) <= 0.01
+
+
+def test_caller_normal_not_mutated():
+    # The builder must copy the normal vector of the caller.
+    anchor = ANCHORS[1]
+    model = model_with_frame(anchor - HALF_SIZE, anchor + HALF_SIZE, 30)
+    data = r2_fault_data(anchor)
+    model.data = data
+    normal = np.array([2.0, 0.0, 0.0])
+    slip = np.array([0.0, 0.0, -2.0])
+    model.create_and_add_fault(
+        "fault",
+        0,
+        data=data,
+        interpolatortype="FDI",
+        fault_center=anchor,
+        fault_normal_vector=normal,
+        fault_slip_vector=slip,
+        major_axis=20,
+        minor_axis=10,
+        intermediate_axis=20,
+        fault_buffer=0.2,
+        nelements=20_000,
+        fault_trace_anisotropy=0,
+        fault_dip_anisotropy=0,
+    )
+    np.testing.assert_array_equal(normal, [2.0, 0.0, 0.0])
+    np.testing.assert_array_equal(slip, [0.0, 0.0, -2.0])
+
+
+def test_fault_ellipsoid_centre_is_world(monkeypatch):
+    # fault_centre is a world point, so the ellipsoid must not convert it again.
+    import sys
+    import types
+
+    received = {}
+
+    class FakePolyData:
+        def __init__(self, pts):
+            received["pts"] = np.array(pts, dtype=float)
+            self._data = {}
+
+        def __setitem__(self, key, value):
+            self._data[key] = value
+
+        def __getitem__(self, key):
+            return self._data[key]
+
+        def glyph(self, **kwargs):
+            return self
+
+    fake = types.ModuleType("pyvista")
+    fake.PolyData = FakePolyData
+    fake.ParametricEllipsoid = lambda *args: object()
+    monkeypatch.setitem(sys.modules, "pyvista", fake)
+
+    anchor = ANCHORS[1]
+    model = model_with_frame(anchor - HALF_SIZE, anchor + HALF_SIZE, 30)
+    data = r2_fault_data(anchor)
+    model.data = data
+    fault = model.create_and_add_fault(
+        "fault",
+        0,
+        data=data,
+        interpolatortype="FDI",
+        fault_center=anchor,
+        fault_normal_vector=NORMAL,
+        fault_slip_vector=SLIP,
+        major_axis=20,
+        minor_axis=10,
+        intermediate_axis=20,
+        fault_buffer=0.2,
+        nelements=20_000,
+        fault_trace_anisotropy=0,
+        fault_dip_anisotropy=0,
+    )
+    fault.fault_ellipsoid()
+    np.testing.assert_allclose(received["pts"][0], anchor, atol=1e-9)
