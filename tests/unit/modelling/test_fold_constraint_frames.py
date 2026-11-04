@@ -141,10 +141,10 @@ def _record_orthogonal(monkeypatch, interpolator):
 
 
 def _set_world_normal(interpolator, world_point, world_normal):
-    """Store one normal constraint. The stored row is local."""
-    local_point = interpolator.world_to_local_points(np.asarray(world_point, dtype=float)[None])
-    local_normal = interpolator.world_to_local_vectors(np.asarray(world_normal, dtype=float)[None])
-    interpolator.set_normal_constraints(np.hstack([local_point, local_normal, [[1.0]]]))
+    """Store one normal constraint from a world row. The setter projects it to local."""
+    point = np.asarray(world_point, dtype=float)[None]
+    normal = np.asarray(world_normal, dtype=float)[None]
+    interpolator.set_normal_constraints(np.hstack([point, normal, [[1.0]]]))
 
 
 @pytest.mark.parametrize("family", FOLD_FAMILIES)

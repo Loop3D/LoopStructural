@@ -16,7 +16,8 @@
   },
   "env": "PYTHONPATH=<worktree>;<worktree>/packages/loop_common/src;<worktree>/packages/loop_interpolation/src; python = main checkout .venv",
   "baseline": {
-    "lint": "pass: ruff check LoopStructural packages"
+    "lint": "pass: ruff check LoopStructural packages",
+    "pytest": "1206 passed, 5 skipped, 21 warnings in 937.41 s (S2 start 9e7b05f7, collected before wave 8 edits)"
   },
   "waves": [
     {
@@ -41,7 +42,20 @@
       ],
       "check": "scope pass; ruff pass; black pass on 2 test files (_fold_norm_alignment.py not black-clean before T029, docstring-only change); fold frames 230 failed / 94 passed (all assertion failures, pre-fix as planned); constant norm cn_pli 13 pass, cn_fdi 13 IndexError (T032); -k fold_norm 6 pass 5 skip",
       "commit": "35f75f8fae977fe0fbcbd03cae28889dcb4fb27d",
-      "review": "changes needed: sonnet, 1 major (fold_regularisation path of FDI/PLI not tested), 3 minor"
+      "review": "pass after one fixed major finding; recheck sonnet: no findings",
+      "fix_commit": "e7dcc9278f15543c99e6a9ab65e3381355b7e3f1"
+    },
+    {
+      "wave": 10,
+      "base": "e7dcc9278f15543c99e6a9ab65e3381355b7e3f1",
+      "tasks": [
+        "T023",
+        "T024",
+        "T027",
+        "T028",
+        "T032"
+      ],
+      "check": "scope pass for 5 tasks + T020 test-helper fix (owned by T020); ruff pass; black status unchanged per file; fold frames -k directional/p2_fold/steepness 204 pass; pli fold_regularisation 24 pass (T023 alone fixes the PLI provider path); constant norm 26 pass; fold/regularisation/native package tests 75 pass 1 skip (native not installed); P2 package 102 pass 12 skip; -k constant_norm 2 pass 5 skip"
     }
   ],
   "runs": {
@@ -87,14 +101,48 @@
       {
         "model": "sonnet",
         "result": "review fix pass: test_fold_regularisation_world_contract (fdi_fold/pli_fold x nomask/mask); pre-fix 44 fail 4 pass; file 274 fail 98 pass"
+      },
+      {
+        "model": "sonnet",
+        "result": "test fix pass: _set_world_normal passes world rows (setter projects); p2_fold 120 pass"
+      }
+    ],
+    "T023": [
+      {
+        "model": "haiku",
+        "result": "pass: -k directional_regularisation_world_contract 72 pass; regularisation_api 7 pass"
+      }
+    ],
+    "T024": [
+      {
+        "model": "haiku",
+        "result": "pass: native parity 1 skipped (extension not installed); ruff pass"
+      }
+    ],
+    "T027": [
+      {
+        "model": "sonnet",
+        "result": "blocked: code complete; 30 p2_fold cells failed from T020 helper double projection"
+      }
+    ],
+    "T028": [
+      {
+        "model": "haiku",
+        "result": "pass: steepness_wtfunc 12 pass; P2 package 102 pass"
+      }
+    ],
+    "T032": [
+      {
+        "model": "haiku",
+        "result": "pass: constant norm 26 pass (cn_fdi SC-002 met); -k constant_norm 2 pass"
       }
     ]
   },
   "findings": {
-    "found": 4,
+    "found": 5,
     "rejected": 0,
     "dropped": 0,
-    "fixed": 1,
+    "fixed": 2,
     "open_minor": [
       "T020: no test of the T024 native adapter world contract (rotated supports are rejected in test_native_parity.py); record in verification (T031)",
       "T020 test_directional_regularisation_world_contract: p2 callable/array cells run the same NotImplementedError check twice",

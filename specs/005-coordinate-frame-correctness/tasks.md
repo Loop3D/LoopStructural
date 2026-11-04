@@ -499,7 +499,7 @@ satisfy R3 and R1.
     Measured PLI control (2026-11-04): value error 1.8e-12, gradient error
     1.3e-10. Do not mark the `cn_fdi` cells xfail or skip them.
 
-- [ ] T032 [P] [US2] [S] Accept a scalar `element_size` in `add_constant_norm`.
+- [x] T032 [P] [US2] [S] Accept a scalar `element_size` in `add_constant_norm`.
   - Files: `packages/loop_interpolation/src/loop_interpolation/_constant_norm.py`
   - Needs: T022
   - Wave: 10
@@ -518,7 +518,7 @@ satisfy R3 and R1.
     fail an SC-002 limit, stop and report the errors (plan OP3); do not
     relax a limit or change a solver setting.
 
-- [ ] T023 [P] [US2] [S] Use the world contract in `add_directional_regularisation`.
+- [x] T023 [P] [US2] [S] Use the world contract in `add_directional_regularisation`.
   - Files: `packages/loop_interpolation/src/loop_interpolation/_discrete_interpolator.py`
   - Needs: T020
   - Wave: 10
@@ -535,7 +535,7 @@ satisfy R3 and R1.
     and returns world directions; an array gives world directions, one row
     for each sample point. No signature change.
 
-- [ ] T024 [P] [US2] [S] Use the same world contract in the native adapter.
+- [x] T024 [P] [US2] [S] Use the same world contract in the native adapter.
   - Files: `packages/loop_interpolation/src/loop_interpolation/_native.py`
   - Needs: T020
   - Wave: 10
@@ -587,7 +587,7 @@ satisfy R3 and R1.
     mask with `mask_fn(points)`, return world vectors (the base converts).
     Docstring: `mask_fn` receives world barycentres.
 
-- [ ] T027 [P] [US2] [M] Sample fold geometry at world quadrature points in `P2FoldInterpolator`.
+- [x] T027 [P] [US2] [M] Sample fold geometry at world quadrature points in `P2FoldInterpolator`.
   - Files: `packages/loop_interpolation/src/loop_interpolation/_p2_fold_interpolator.py`
   - Needs: T019, T020
   - Wave: 10
@@ -603,7 +603,7 @@ satisfy R3 and R1.
     `normal_constraints=world_norm_constraints(self)`. Docstring: `mask_fn`
     receives world sample points.
 
-- [ ] T028 [P] [US2] [S] Give `steepness_wtfunc` the world barycentres of the weighted elements.
+- [x] T028 [P] [US2] [S] Give `steepness_wtfunc` the world barycentres of the weighted elements.
   - Files: `packages/loop_interpolation/src/loop_interpolation/_p2interpolator.py`
   - Needs: T020
   - Wave: 10

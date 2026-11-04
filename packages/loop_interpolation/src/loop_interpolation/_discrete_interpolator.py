@@ -451,6 +451,21 @@ class DiscreteInterpolator(GeologicalInterpolator):
         self,
         directional_regularisation,
     ) -> tuple[DirectionalRegularisation, ...]:
+        """Add directional regularisation terms to the interpolator.
+
+        Parameters
+        ----------
+        directional_regularisation
+            Directional regularisation terms. Each term has a weight, a name
+            and a direction. A callable direction receives world sample
+            points and returns world directions. An array gives world
+            directions, one row for each sample point.
+
+        Returns
+        -------
+        tuple[DirectionalRegularisation, ...]
+            The directional terms that were resolved from the input.
+        """
         directional_terms = self.resolve_regularisation_config(
             directional_regularisation=directional_regularisation
         ).directional
@@ -458,13 +473,14 @@ class DiscreteInterpolator(GeologicalInterpolator):
             return directional_terms
 
         sample_points = np.asarray(self.get_regularisation_sample_points(), dtype=float)
+        world_samples = self.local_to_world_points(sample_points)
         expected_shape = sample_points.shape
 
         for term in directional_terms:
             if term.weight == 0:
                 continue
 
-            vectors = term.direction(sample_points) if callable(term.direction) else term.direction
+            vectors = term.direction(world_samples) if callable(term.direction) else term.direction
             vectors = np.asarray(vectors, dtype=float)
             if vectors.shape != expected_shape:
                 logger.warning(
@@ -474,6 +490,7 @@ class DiscreteInterpolator(GeologicalInterpolator):
                     vectors.shape,
                 )
                 continue
+            vectors = self.world_to_local_vectors(vectors)
             self._add_directional_regularisation(term.weight, vectors, name=term.name)
 
         return directional_terms

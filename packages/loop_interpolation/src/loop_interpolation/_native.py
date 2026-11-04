@@ -469,10 +469,11 @@ def _add_regularisation(problem, interpolator, setup_kwargs) -> None:
     if len(config.directional) == 0:
         return
     sample_points = np.asarray(interpolator.get_regularisation_sample_points(), dtype=float)
+    world_samples = interpolator.local_to_world_points(sample_points)
     for term in config.directional:
         if term.weight == 0:
             continue
-        vectors = term.direction(sample_points) if callable(term.direction) else term.direction
+        vectors = term.direction(world_samples) if callable(term.direction) else term.direction
         vectors = np.asarray(vectors, dtype=float)
         if vectors.shape != sample_points.shape:
             logger.warning(
@@ -482,6 +483,7 @@ def _add_regularisation(problem, interpolator, setup_kwargs) -> None:
                 vectors.shape,
             )
             continue
+        vectors = interpolator.world_to_local_vectors(vectors)
         problem.add_directional_regularisation(_flat(vectors), float(term.weight))
 
 
