@@ -1,10 +1,11 @@
 """Pure 3D regular grid geometry: origin/nsteps/step_vector indexing."""
 
-
 import numpy as np
 
 from loop_common.logging import get_logger as getLogger
 from loop_common.utils import LoopException
+
+from ._rigid import validate_rigid_rotation
 
 logger = getLogger(__name__)
 
@@ -87,11 +88,41 @@ class StructuredGrid3DGeometry:
         if rotation_xy is None:
             return
         if isinstance(rotation_xy, (float, int)):
-            rotation_xy = np.array([[np.cos(np.deg2rad(rotation_xy)), -np.sin(np.deg2rad(rotation_xy)), 0], [np.sin(np.deg2rad(rotation_xy)), np.cos(np.deg2rad(rotation_xy)), 0], [0, 0, 1]])
-        rotation_xy = np.array(rotation_xy)
-        if rotation_xy.shape != (3, 3):
-            raise ValueError(f"Rotation matrix should be 3x3, not {rotation_xy.shape}")
-        self._rotation_xy = rotation_xy
+            rotation_xy = np.array(
+                [
+                    [np.cos(np.deg2rad(rotation_xy)), -np.sin(np.deg2rad(rotation_xy)), 0],
+                    [np.sin(np.deg2rad(rotation_xy)), np.cos(np.deg2rad(rotation_xy)), 0],
+                    [0, 0, 1],
+                ]
+            )
+        self._rotation_xy = validate_rigid_rotation(rotation_xy, 3)
+
+    def _cells_for_length(self, length: np.ndarray) -> np.ndarray:
+        """Return cell counts that cover the requested axis lengths.
+
+        Parameters
+        ----------
+        length : np.ndarray
+            Requested support length along each grid axis.
+
+        Returns
+        -------
+        np.ndarray
+            Number of cells required along each axis.
+
+        Raises
+        ------
+        ValueError
+            If any requested cell count is negative.
+        """
+        cells = np.ceil(length / self.step_vector - 1e-9).astype(np.int64)
+        cells[cells == 0] = 2
+        if np.any(cells < 0):
+            logger.error(
+                f"Cannot resize the grid. The proposed number of cells is {cells}, these must be all >= 0"
+            )
+            raise ValueError("Cannot resize the grid.")
+        return cells
 
     @property
     def step_vector(self):
@@ -112,13 +143,8 @@ class StructuredGrid3DGeometry:
     @origin.setter
     def origin(self, origin):
         origin = np.array(origin)
-        length = self.maximum - origin
-        length /= self.step_vector
-        self._nsteps = np.ceil(length).astype(np.int64)
-        self._nsteps[self._nsteps == 0] = 3
-        if np.any(~(self._nsteps > 0)):
-            logger.error(f"Cannot resize the grid. The proposed number of steps is {self._nsteps}, these must be all > 0")
-            raise ValueError("Cannot resize the grid.")
+        maximum = self.maximum
+        self._nsteps = self._cells_for_length(maximum - origin) + 1
         self._origin = origin
         self._on_geometry_change()
 
@@ -129,13 +155,7 @@ class StructuredGrid3DGeometry:
     @maximum.setter
     def maximum(self, maximum):
         maximum = np.array(maximum, dtype=float)
-        length = maximum - self.origin
-        length /= self.step_vector
-        self._nsteps = np.ceil(length).astype(np.int64)
-        self._nsteps[self._nsteps == 0] = 3
-        if np.any(~(self._nsteps > 0)):
-            logger.error(f"Cannot resize the grid. The proposed number of steps is {self._nsteps}, these must be all > 0")
-            raise ValueError("Cannot resize the grid.")
+        self._nsteps = self._cells_for_length(maximum - self.origin) + 1
         self._on_geometry_change()
 
     @property
@@ -223,16 +243,26 @@ class StructuredGrid3DGeometry:
         xcorner = np.array([0, 1, 0, 1, 0, 1, 0, 1])
         ycorner = np.array([0, 0, 1, 1, 0, 0, 1, 1])
         zcorner = np.array([0, 0, 0, 0, 1, 1, 1, 1])
-        corner_indexes[:, :, 0] = cell_indexes[:, None, 0] + corner_indexes[:, :, 0] + xcorner[None, :]
-        corner_indexes[:, :, 1] = cell_indexes[:, None, 1] + corner_indexes[:, :, 1] + ycorner[None, :]
-        corner_indexes[:, :, 2] = cell_indexes[:, None, 2] + corner_indexes[:, :, 2] + zcorner[None, :]
+        corner_indexes[:, :, 0] = (
+            cell_indexes[:, None, 0] + corner_indexes[:, :, 0] + xcorner[None, :]
+        )
+        corner_indexes[:, :, 1] = (
+            cell_indexes[:, None, 1] + corner_indexes[:, :, 1] + ycorner[None, :]
+        )
+        corner_indexes[:, :, 2] = (
+            cell_indexes[:, None, 2] + corner_indexes[:, :, 2] + zcorner[None, :]
+        )
         return corner_indexes
 
     def global_index_to_cell_index(self, global_index):
         cell_indexes = np.zeros((global_index.shape[0], 3), dtype=np.int64)
         cell_indexes[:, 0] = global_index % self.nsteps_cells[0, None]
-        cell_indexes[:, 1] = (global_index // self.nsteps_cells[0, None]) % self.nsteps_cells[1, None]
-        cell_indexes[:, 2] = global_index // self.nsteps_cells[0, None] // self.nsteps_cells[1, None]
+        cell_indexes[:, 1] = (global_index // self.nsteps_cells[0, None]) % self.nsteps_cells[
+            1, None
+        ]
+        cell_indexes[:, 2] = (
+            global_index // self.nsteps_cells[0, None] // self.nsteps_cells[1, None]
+        )
         return cell_indexes
 
     def global_index_to_node_index(self, global_index):

@@ -418,7 +418,9 @@ class DiscreteInterpolator(GeologicalInterpolator):
     def add_gradient_orthogonal_constraints(
         self, points: np.ndarray, vectors: np.ndarray, w: float = 1.0
     ):
-        pass
+        """`points` are target-local support points; `vectors` are target-local
+        unit directions.
+        """
 
     def get_regularisation_sample_points(self) -> np.ndarray:
         raise NotImplementedError(
@@ -629,6 +631,9 @@ class DiscreteInterpolator(GeologicalInterpolator):
         Evaluate the feature at the interpolation nodes.
         Can provide a boolean mask to restrict to only some parts
 
+        `feature` receives world points and returns one value for
+        each support node.
+
         Parameters
         ----------
         feature : BaseFeature
@@ -642,7 +647,7 @@ class DiscreteInterpolator(GeologicalInterpolator):
         # flag lower determines whether the feature is a lower bound or upper bound
         # mask is just a boolean array determining which nodes to apply it to
 
-        value = feature(self.support.nodes)
+        value = feature(self.local_to_world_points(self.support.nodes))
         if mask is None:
             mask = np.ones(value.shape[0], dtype=bool)
         l = np.zeros(value.shape[0]) - np.inf

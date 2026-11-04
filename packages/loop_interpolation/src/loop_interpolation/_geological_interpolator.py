@@ -3,6 +3,7 @@
 This module contains the abstract base class for all geological interpolators
 used in LoopStructural geological modelling framework.
 """
+
 from __future__ import annotations
 
 import json
@@ -209,9 +210,7 @@ class GeologicalInterpolator(BaseRepresentation, metaclass=ABCMeta):
         except (TypeError, ValueError) as e:
             raise LoopTypeError(str(e))
 
-    def _coerce_value_constraint(
-        self, points: np.ndarray | ValueConstraint
-    ) -> ValueConstraint:
+    def _coerce_value_constraint(self, points: np.ndarray | ValueConstraint) -> ValueConstraint:
         if isinstance(points, ValueConstraint):
             return points
         return ValueConstraint.from_array(points, dimensions=self.dimensions)
@@ -284,6 +283,88 @@ class GeologicalInterpolator(BaseRepresentation, metaclass=ABCMeta):
         if has_vector:
             array[:, d : 2 * d] = self._project_vectors(array[:, d : 2 * d])
         return array
+
+    def world_to_local_points(self, points: np.ndarray) -> np.ndarray:
+        """Convert point locations from world to local coordinates.
+
+        Parameters
+        ----------
+        points : np.ndarray
+            World coordinates, shape ``(N, d)`` or ``(d,)``.
+
+        Returns
+        -------
+        np.ndarray
+            Local coordinates with the same shape as ``points``. The input is
+            returned unchanged if no ``bounding_box`` is set.
+
+        Notes
+        -----
+        The conversion applies the translation and the rotation of the
+        bounding box.
+        """
+        return self._project_points(points)
+
+    def local_to_world_points(self, points: np.ndarray) -> np.ndarray:
+        """Convert point locations from local to world coordinates.
+
+        Parameters
+        ----------
+        points : np.ndarray
+            Local coordinates, shape ``(N, d)`` or ``(d,)``.
+
+        Returns
+        -------
+        np.ndarray
+            World coordinates with the same shape as ``points``. The input is
+            returned unchanged if no ``bounding_box`` is set.
+
+        Notes
+        -----
+        The conversion applies the rotation and the translation of the
+        bounding box.
+        """
+        return self._reproject_points(points)
+
+    def world_to_local_vectors(self, vectors: np.ndarray) -> np.ndarray:
+        """Convert direction vectors from world to local coordinates.
+
+        Parameters
+        ----------
+        vectors : np.ndarray
+            World direction vectors, shape ``(N, d)`` or ``(d,)``.
+
+        Returns
+        -------
+        np.ndarray
+            Local direction vectors with the same shape as ``vectors``. The
+            input is returned unchanged if no ``bounding_box`` is set.
+
+        Notes
+        -----
+        Vectors use the rotation only. The translation does not apply.
+        """
+        return self._project_vectors(vectors)
+
+    def local_to_world_vectors(self, vectors: np.ndarray) -> np.ndarray:
+        """Convert direction vectors from local to world coordinates.
+
+        Parameters
+        ----------
+        vectors : np.ndarray
+            Local direction vectors, shape ``(N, d)`` or ``(d,)``.
+
+        Returns
+        -------
+        np.ndarray
+            World direction vectors with the same shape as ``vectors``. The
+            input is returned unchanged if no ``bounding_box`` is set.
+
+        Notes
+        -----
+        Vectors use the rotation only. The translation does not apply.
+        """
+        return self._reproject_vectors(vectors)
 
     @abstractmethod
     def set_region(self, **kwargs):
