@@ -76,7 +76,22 @@
       "tasks": [
         "T030"
       ],
-      "check": "scope pass; COMPAT row at end of Migration notices table, dated 2026-11-04"
+      "check": "scope pass; COMPAT row at end of Migration notices table, dated 2026-11-04",
+      "commit": "662d271360c5521f3678ee274c1e85d655bc9dcc",
+      "review": "pass: sonnet, no findings"
+    },
+    {
+      "wave": 13,
+      "base": "662d271360c5521f3678ee274c1e85d655bc9dcc",
+      "tasks": [
+        "T031"
+      ],
+      "gate": {
+        "lint": "pass: ruff check LoopStructural packages (HEAD 662d2713)",
+        "pytest_root": "1760 passed, 5 skipped, 13 warnings in 1111.71 s (HEAD 662d2713)",
+        "pytest_packages": "912 passed, 47 skipped, 2 xfailed, 7 warnings in 126.56 s (HEAD 662d2713, orchestrator resume 2026-11-04)",
+        "pytest_root_resume": "1760 passed, 5 skipped, 13 warnings in 1052.40 s (same result as the first run)"
+      }
     }
   ],
   "runs": {
@@ -174,6 +189,16 @@
       {
         "model": "haiku",
         "result": "pass: row added after S1 row"
+      }
+    ],
+    "T031": [
+      {
+        "model": "sonnet",
+        "result": "record written (6 S2 sections); prefix worktree removed; ROOT_GATE_PENDING placeholder open; pre-fix fold 274 fail/98 pass, cn 13/13 (cn_fdi IndexError), P2 ref 156 pass"
+      },
+      {
+        "model": "orchestrator",
+        "result": "pass: ROOT_GATE_PENDING replaced with ruff, package and root results; T031 marked [x]"
       }
     ]
   },
@@ -555,5 +580,9 @@
       "fold_regularisation_world_contract: 44/48 fail (anchor0 rot0 pass)"
     ],
     "T022": "cn_fdi 13/13 IndexError (scalar element_size, frame-independent); cn_pli 13/13 pass (coverage, no frame defect)"
-  }
+  },
+  "status": "T031 done, wave 13 awaiting commit and review; end spec review (opus) not started",
+  "notes": [
+    "feat/005-coordinate-frame-correctness was rebased (new S1 hashes) and gained 82ff9680 (golden gradient tolerance, test_golden.py only); S2 branch must be rebased onto it before its pull request"
+  ]
 }

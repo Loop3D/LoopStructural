@@ -63,6 +63,61 @@ failing cell. The partial passes (for example 24 of 72 in
 `test_orthogonal_rows_affine_residual`) are cells where the case does not
 exercise the defect.
 
+## S2 pre-fix failures
+
+Method. A throw-away worktree at `9e7b05f7` (the S2 start commit) held the 3 S2
+test files and `tests/fixtures/coordinate_frames.py`. The
+`test_reference_constraint_frames.py` file is the S1 file with the P2 cells; it
+ran with `-k P2`. The run used
+`PYTHONPATH=<tmp>;<tmp>/packages/loop_common/src;<tmp>/packages/loop_interpolation/src`.
+Before the runs, `loop_interpolation`, `loop_common` and `LoopStructural` were
+imported from the throw-away worktree. The worktree is removed
+(`git worktree remove --force`, then `git worktree prune`).
+
+| Test file | Result at `9e7b05f7` | Time |
+|---|---|---|
+| `test_fold_constraint_frames.py` | 274 failed, 98 passed | 16.7 s |
+| `test_constant_norm_frames.py` | 13 failed, 13 passed | 5.2 s |
+| `test_reference_constraint_frames.py -k P2` | 156 passed, 0 failed | 9.1 s |
+
+### Fold constraints (FR-008; SC-007, SC-008, SC-013)
+| Test function | Failed / total | Representative failing id and value |
+|---|---|---|
+| `test_fold_geometry_sampled_at_world_points` | 44 / 48 | `[frame_case1-fdi_fold]`: 672 of 1008 differ; `[0, 0]`: -5.0 vs -4.330 (atol 5e-9) |
+| `test_fold_rows_affine_residual` | 32 / 48 | `[frame_case1-fdi_fold]`: 336 of 336 residuals differ; first -0.843 vs 0.0 (atol 1e-10) |
+| `test_fold_rows_follow_curved_directions_fdi` | 11 / 12 | `[frame_case1-fdi_fold]`: 336 of 336 differ; first -0.0 vs -0.559 |
+| `test_fold_rows_follow_curved_directions_pli_p2` | 33 / 36 | `[frame_case1-pli_fold]`: 3360 of 4200 differ; first 0.664 vs 0.223 |
+| `test_fold_mask_receives_world_points` | 44 / 48 | `[frame_case1-fdi_fold]`: 672 of 1008 differ; first -5.0 vs -4.330 |
+| `test_fold_norm_alignment_uses_world_normals` | 16 / 48 | `[frame_case2-fdi_fold]`: `assert [1.0] == [-1.0]` (the sign flips in the wrong frame) |
+| `test_directional_regularisation_world_contract` | 38 / 72 | `[frame_case1-fdi-array]`: 672 of 1008 differ; first 0.828 vs 0.532 |
+| `test_fold_regularisation_world_contract` | 44 / 48 | `[frame_case1-fdi_fold-nomask]`: 336 of 336 differ; first 1.0 vs 0.829 |
+| `test_p2_steepness_wtfunc_receives_world_barycentres` | 12 / 12 | all frame cases: shape (1050, 3) vs expected (690, 3) |
+
+The passing cells (98 of 372) are cells of the unrotated anchor, or cells that
+do not exercise the defect. Each test function has at least one failing cell.
+
+### Constant norm (FR-008; SC-002)
+| Test function | Failed / total | Representative failing id and value |
+|---|---|---|
+| `test_unrotated_anchor_zero_control` | 1 / 2 | `[cn_fdi]`: `IndexError: invalid index to scalar variable.` |
+| `test_constant_norm_fit_recovers_r1_in_rotated_frame` | 12 / 24 | all 12 `cn_fdi` cells: the same `IndexError`; all 12 `cn_pli` cells pass |
+
+This is an existing defect, not a frame defect. `ConstantNormFDIInterpolator`
+raised `IndexError` for every frame, because `StructuredGrid.element_size` is a
+scalar. It also fails on the unrotated control. Task T032 fixes it. The PLI
+constant-norm control meets SC-002 pre-fix (value 1.8e-12, gradient 1.3e-10).
+So `cn_pli` is "coverage, no defect".
+
+### Reference constraints on P2 (FR-008; SC-007, SC-008)
+All 156 P2 cells pass pre-fix. The S1 changes already give the P2 reference
+path the world contract. These cells are "coverage, no defect": they show that
+P2 has the same behaviour as FDI and PLI, and that the S2 fixtures work for P2.
+
+### Findings that are "not reproduced"
+None in the fold file and the `cn_fdi` cells. The `cn_pli` cells and the 156 P2
+reference cells are "coverage, no defect". They are not defects that the
+fix removed.
+
 ## Post-fix results
 
 Spec worktree, HEAD `10fd4dea`, worktree `PYTHONPATH`. A check of
@@ -89,6 +144,36 @@ tolerance was relaxed.
 - T011: the helper passes the SC-003 CG settings through `solver_kwargs`.
   Top-level values were ignored, so the solver used atol 2e-9.
 
+## S2 post-fix results
+
+Spec worktree `feat/005-s2-fold-frames`, HEAD `662d2713`, worktree `PYTHONPATH`.
+A check showed that `loop_interpolation.__file__` and `LoopStructural.__file__`
+come from `C:\Users\lachl\dev\LoopStructural-005-s2`.
+
+| Command | Result |
+|---|---|
+| `test_fold_constraint_frames.py` | 372 passed in 12.2 s |
+| `test_constant_norm_frames.py` | 26 passed in 8.8 s |
+| `test_reference_constraint_frames.py` (S1 file, now with P2 cells) | 468 passed (312 S1 cells and 156 P2 cells) in 18.9 s |
+| The 3 S2 files in one run | 866 passed in 35.6 s |
+| Existing package tests `test_fd_fold_interpolator.py` (27), `test_discrete_fold_interpolator.py` (21), `test_p2_fold_interpolator.py` (20), `test_regularisation_api.py` (7) | pass with no change; `test_native_parity.py` is skipped (see Backend matrix) |
+| `ruff check LoopStructural packages` (orchestrator, HEAD `662d2713`) | All checks passed |
+| `pytest packages/loop_common/tests packages/loop_interpolation/tests` (orchestrator) | 912 passed, 47 skipped, 2 xfailed, 7 warnings in 126.56 s |
+| Root `pytest` (orchestrator, full) | 1760 passed, 5 skipped, 13 warnings in 1052.40 s. Baseline at `9e7b05f7`: 1206 passed, 5 skipped, 21 warnings in 937.41 s. The 554 new passes are the S2 cells. |
+
+Test groups and the requirements that they check:
+- Fold rows, fold mask, fold norm alignment, fold geometry, fold and
+  directional regularisation, P2 steepness weights: FR-008; SC-007, SC-008,
+  SC-013.
+- Constant norm: FR-008; SC-002.
+- P2 cells of the reference file: FR-008; SC-007, SC-008.
+- Tolerances: SC-015. No tolerance was relaxed in S2.
+
+Test-setup correction (fact for the record). The first version of
+`_set_world_normal` in the fold test file projected the normal row twice. It was
+fixed before T025 to T028 were accepted. The pre-fix run below uses the
+corrected file.
+
 ## Golden review (C-004)
 
 No golden change in S1 for `tests/unit/modelling/test__fault_builder.py`.
@@ -105,6 +190,16 @@ One golden change is made in S1 (task T006, commit d2909aa5).
 
 The other keys of the file keep their values from before S1 (the 33 keys that `--update` re-recorded with round-off changes were restored after the spec review). No tolerance was relaxed.
 
+## S2 golden review (C-004)
+
+No golden change in S2. `git diff --stat 9e7b05f7..HEAD -- tests packages/*/tests`
+shows only these files:
+- `tests/fixtures/coordinate_frames.py` (new helpers, +85 lines).
+- `tests/unit/modelling/test_fold_constraint_frames.py` (new, 411 lines).
+- `tests/unit/modelling/test_constant_norm_frames.py` (new, 69 lines).
+- `tests/unit/modelling/test_reference_constraint_frames.py` (S1 file, +31 -13). The change adds the `P2` engine to the builder helper and to the `engine` parametrisation. No assertion and no tolerance changed.
+
+No existing test file and no data file in `packages/*/tests` changed.
 
 ## Backend matrix
 
@@ -119,12 +214,35 @@ S1 tests use Python backends only.
 No native, browser or RBF backend is in S1 scope. FR-030 states that such
 backends are not a prerequisite.
 
+## S2 backend matrix
+
+| Requirement | Backends | Cells |
+|---|---|---|
+| Fold rows, mask, norm alignment, geometry, regularisation (FR-008; SC-007, SC-008, SC-013) | Python FDI-fold, PLI discrete fold, P2-fold (`fdi_fold`, `pli_fold`, `p2_fold`, with the sample rules in the test ids) | `test_fold_constraint_frames.py`: 372 cells over the frame cases |
+| P2 steepness weight function (SC-013) | P2 | 12 cells |
+| Reference constraints on P2 (FR-008; SC-007, SC-008) | P2 (`P2Interpolator`, `P2TetMesh`) | 156 cells (`-k P2`) |
+| Constant norm (FR-008; SC-002) | `cn_fdi` (`ConstantNormFDIInterpolator`), `cn_pli` (`ConstantNormInterpolator`) | 26 cells: 4 anchors x 3 rotations x 2 backends, plus 1 unrotated zero control for each backend |
+
+Native. `packages/loop_interpolation/tests/test_native_parity.py` is skipped,
+because the native extension `loop_interpolation_core` is not installed. The
+adapter `_native.py` has the same world contract (T024), but no test covers it
+under a rotated frame. The native path rejects rotated supports. This is an
+open coverage gap. FR-030 states that native is not a prerequisite.
+
 ## Rollback checks
 
 On a throw-away worktree at `ebc7c699` (imports checked as above):
 `python -m pytest tests/unit/modelling/test__fault_builder.py packages/loop_common/tests/test_bounding_box.py -p no:cacheprovider -q`
 gives 15 passed in 0.5 s. The two files pass on the pre-spec code, so the
 rollback target is sound.
+
+## S2 rollback checks
+
+At the S2 start commit `9e7b05f7` the full root suite passed:
+`pytest` gives 1206 passed, 5 skipped, 21 warnings in 937.41 s (run by the
+orchestrator on 2026-11-04). This run includes all S1 tests. The S1 tests
+therefore pass on the code from before S2, and the rollback target is sound.
+The full suite was not run again at the start commit.
 
 ## Test run time (OP2)
 
@@ -135,3 +253,15 @@ rollback target is sound.
 | `test_fault_buffer_bounds.py` | 20 s (26 s wall) |
 | `test_reference_constraint_frames.py` | 5.6 s (12 s wall) |
 | `test_rigid_transform_contract.py` | 0.1 s (4 s wall) |
+
+## S2 test run time (OP2)
+
+| Item | Time |
+|---|---|
+| All 3 S2 files, 866 cells, one run | 35.6 s test time (about 45 s wall, measured while the orchestrator ran the gates in parallel) |
+| `test_fold_constraint_frames.py` (372 cells) | 12.2 s |
+| `test_reference_constraint_frames.py` (468 cells) | 18.9 s |
+| `test_constant_norm_frames.py` (26 cells) | 8.8 s |
+
+The times come from runs under load, so they are an upper bound. The slowest
+single cell is 0.65 s.

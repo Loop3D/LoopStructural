@@ -648,7 +648,7 @@ satisfy R3 and R1.
     changes (spec 005, stage S2)". Since: the date of the task run
     (YYYY-MM-DD).
 
-- [ ] T031 [Finish] [M] Record the S2 evidence, backend cells and gates in `verification.md`.
+- [x] T031 [Finish] [M] Record the S2 evidence, backend cells and gates in `verification.md`.
   - Files: `specs/005-coordinate-frame-correctness/verification.md`
   - Needs: T020, T021, T022, T023, T024, T025, T026, T027, T028, T029, T030, T032
   - Wave: 13
