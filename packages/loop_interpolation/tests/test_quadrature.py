@@ -3,7 +3,6 @@ from math import factorial
 
 import numpy as np
 import pytest
-
 from loop_interpolation._quadrature import tet_quadrature, tet_quadrature_points
 
 RULES = ["centroid", "gauss4"]
@@ -21,9 +20,7 @@ def test_weights_sum_to_one(rule):
     assert np.allclose(bary.sum(axis=1), 1.0)
 
 
-@pytest.mark.parametrize(
-    "rule,max_degree", [("centroid", 1), ("gauss4", 2)]
-)
+@pytest.mark.parametrize("rule,max_degree", [("centroid", 1), ("gauss4", 2)])
 def test_exact_for_polynomials(rule, max_degree):
     bary, w = tet_quadrature(rule)
     rst = bary[:, 1:]
@@ -42,9 +39,7 @@ def test_unknown_rule():
 
 
 def test_mapping_indices_and_points():
-    nodes = np.array(
-        [[0, 0, 0], [1, 0, 0], [0, 1, 0], [0, 0, 1], [1, 1, 1]], dtype=float
-    )
+    nodes = np.array([[0, 0, 0], [1, 0, 0], [0, 1, 0], [0, 0, 1], [1, 1, 1]], dtype=float)
     elements = np.array([[0, 1, 2, 3], [1, 2, 3, 4]])
     pts, idx, w = tet_quadrature_points(nodes, elements, "gauss4")
     assert pts.shape == (8, 3)
@@ -53,6 +48,6 @@ def test_mapping_indices_and_points():
     for e in range(2):
         mean = (w[idx == e, None] * pts[idx == e]).sum(axis=0)
         assert np.allclose(mean, nodes[elements[e]].mean(axis=0))
-    pc, ic, wc = tet_quadrature_points(nodes, elements, "centroid")
+    pc, ic, _ = tet_quadrature_points(nodes, elements, "centroid")
     assert np.array_equal(ic, [0, 1])
     assert np.allclose(pc, nodes[elements].mean(axis=1))

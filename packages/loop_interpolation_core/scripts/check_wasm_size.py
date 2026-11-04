@@ -3,6 +3,7 @@
 Run with: python -I packages/loop_interpolation_core/scripts/check_wasm_size.py
 Exit code 1 if the gzip size is above the limit.
 """
+
 import gzip
 import pathlib
 import sys
@@ -11,6 +12,7 @@ LIMIT = 2_000_000  # bytes, gzip level 9 (SC-010)
 
 
 def main() -> int:
+    """Check the gzip size of generated wasm files."""
     # Find pkg/ from the script file, not from the current directory.
     pkg = pathlib.Path(__file__).resolve().parent.parent / "pkg"
     files = sorted(pkg.glob("*_bg.wasm"))

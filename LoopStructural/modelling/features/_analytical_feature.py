@@ -2,9 +2,9 @@ from __future__ import annotations
 
 import numpy as np
 
-from ._base_geological_feature import BaseFeature
-from . import FeatureType
 from ...utils import getLogger
+from . import FeatureType
+from ._base_geological_feature import BaseFeature
 
 logger = getLogger(__name__)
 

@@ -2,20 +2,23 @@ from LoopStructural.modelling.features.builders import FoldedFeatureBuilder, Str
 from LoopStructural.modelling.features.fold import FoldEvent, FoldFrame
 
 
+class _InvalidFoldFrameError(TypeError, ValueError):
+    """Report an invalid fold frame and keep ValueError compatibility."""
+
+
 def add_fold_to_feature(feature, fold_frame, **kwargs):
     if not isinstance(fold_frame, FoldFrame):
-        raise ValueError("fold_frame must be a FoldFrame instance")
+        raise _InvalidFoldFrameError("fold_frame must be a FoldFrame instance")
 
-    fold = FoldEvent(fold_frame, name=f"Fold_{feature.name}", invert_norm=kwargs.get('invert_fold_norm', False))
-
-    builder = FoldedFeatureBuilder.from_feature_builder(
-        feature.builder,
-        fold, 
-        **kwargs
+    fold = FoldEvent(
+        fold_frame, name=f"Fold_{feature.name}", invert_norm=kwargs.get('invert_fold_norm', False)
     )
+
+    builder = FoldedFeatureBuilder.from_feature_builder(feature.builder, fold, **kwargs)
     feature = builder.feature
     feature.fold = fold
     return feature
+
 
 def convert_feature_to_structural_frame(feature, **kwargs):
     """
@@ -25,7 +28,7 @@ def convert_feature_to_structural_frame(feature, **kwargs):
     ----------
     feature : GeologicalFeature
         the geological feature to convert
-    
+
     Returns
     -------
     StructuralFrame
@@ -33,9 +36,5 @@ def convert_feature_to_structural_frame(feature, **kwargs):
     """
     builder = feature.builder
 
-    new_builder = StructuralFrameBuilder.from_feature_builder(
-        builder,
-        **kwargs
-    )
+    new_builder = StructuralFrameBuilder.from_feature_builder(builder, **kwargs)
     return new_builder.frame
-    

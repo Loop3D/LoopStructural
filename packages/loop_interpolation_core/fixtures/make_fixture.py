@@ -105,18 +105,33 @@ GRADIENT_WEIGHT = 1.0
 TANGENT_WEIGHT = 1.0
 INTERFACE_WEIGHT = 1.0
 
-BLOCK_NAMES = (
-    "origin counts step reg border ridge "
-    "value_points value_values value_weights "
-    "gradient_points gradient_vectors gradient_weights "
-    "normal_points normal_vectors normal_weights "
-    "tangent_points tangent_vectors tangent_weights "
-    "interface_points interface_ids interface_weight "
-    "expected_field"
-).split()
+BLOCK_NAMES = [
+    "origin",
+    "counts",
+    "step",
+    "reg",
+    "border",
+    "ridge",
+    "value_points",
+    "value_values",
+    "value_weights",
+    "gradient_points",
+    "gradient_vectors",
+    "gradient_weights",
+    "normal_points",
+    "normal_vectors",
+    "normal_weights",
+    "tangent_points",
+    "tangent_vectors",
+    "tangent_weights",
+    "interface_points",
+    "interface_ids",
+    "interface_weight",
+    "expected_field",
+]
 
 
-def _field(p):
+def _field(p: np.ndarray) -> np.ndarray:
     """Smooth scalar field that makes the test data."""
     x = (p[:, 0] - ORIGIN[0]) / 19.0
     y = (p[:, 1] - ORIGIN[1]) / 19.0
@@ -124,7 +139,7 @@ def _field(p):
     return 3.0 * x + 1.5 * np.sin(2.0 * y) + 2.0 * z * z + 0.5 * x * y
 
 
-def _field_gradient(p):
+def _field_gradient(p: np.ndarray) -> np.ndarray:
     x = (p[:, 0] - ORIGIN[0]) / 19.0
     y = (p[:, 1] - ORIGIN[1]) / 19.0
     z = (p[:, 2] - ORIGIN[2]) / 19.0
@@ -140,7 +155,7 @@ def make_inputs() -> dict:
     lo = ORIGIN + 1.5 * STEP
     hi = ORIGIN + (COUNTS - 1 - 1.5) * STEP
 
-    def pts(n):
+    def pts(n: int) -> np.ndarray:
         return rng.uniform(lo, hi, size=(n, 3))
 
     vp = pts(60)
@@ -184,15 +199,15 @@ def make_inputs() -> dict:
 
 def solve_reference(d: dict) -> np.ndarray:
     """Solve the problem of ``d`` with the Python matrix solver (cg)."""
-    from loop_common.supports import StructuredGrid  # noqa: PLC0415
-    from loop_interpolation import FiniteDifferenceInterpolator  # noqa: PLC0415
+    from loop_common.supports import StructuredGrid
+    from loop_interpolation import FiniteDifferenceInterpolator
 
     counts = d["counts"].astype(int)
     grid = StructuredGrid(origin=d["origin"], nsteps_cells=counts - 1, step_vector=d["step"])
     assert tuple(np.asarray(grid.nsteps).astype(int)) == tuple(counts), grid.nsteps
     interp = FiniteDifferenceInterpolator(grid)
 
-    def rows(name, k):
+    def rows(name: str, k: int) -> np.ndarray:
         return np.asarray(d[name], dtype=float).reshape(-1, k)
 
     interp.set_value_constraints(
@@ -241,6 +256,7 @@ def solve_reference(d: dict) -> np.ndarray:
 
 
 def write(path: Path, d: dict, expected: np.ndarray) -> None:
+    """Write the fixture arrays to a binary file."""
     with open(path, "wb") as f:
         f.write(MAGIC)
         for name in BLOCK_NAMES:
@@ -251,6 +267,7 @@ def write(path: Path, d: dict, expected: np.ndarray) -> None:
 
 
 def read(path: Path) -> dict:
+    """Read fixture arrays from a binary file."""
     raw = path.read_bytes()
     if raw[:4] != MAGIC:
         raise ValueError("bad magic")
@@ -267,6 +284,7 @@ def read(path: Path) -> dict:
 
 
 def main(argv: list[str]) -> int:
+    """Check the fixture or write a new reference fixture."""
     if "--check" in argv:
         d = read(FIXTURE)
         n = int(np.prod(d["counts"]))

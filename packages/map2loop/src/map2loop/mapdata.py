@@ -1,32 +1,41 @@
 # internal imports
-from .m2l_enums import Datatype, Datastate, VerboseLevel
-from .config import Config
-from .aus_state_urls import AustraliaStateUrls
-from .utils import generate_random_hex_colors, calculate_minimum_fault_length
-from .data_checks import check_geology_fields_validity, check_structure_fields_validity, check_fault_fields_validity, check_fold_fields_validity
+from __future__ import annotations
+
+import pathlib
+from typing import Union
 
 # external imports
 import geopandas
-import pandas
 import numpy
-import pathlib
+import pandas
 import shapely
 from osgeo import gdal, osr
+
+from .aus_state_urls import AustraliaStateUrls
+from .config import Config
+from .data_checks import (
+    check_fault_fields_validity,
+    check_fold_fields_validity,
+    check_geology_fields_validity,
+    check_structure_fields_validity,
+)
+from .m2l_enums import Datastate, Datatype, VerboseLevel
+from .utils import calculate_minimum_fault_length, generate_random_hex_colors
+
 gdal.UseExceptions()
-from owslib.wcs import WebCoverageService
+import os
+import tempfile
 import urllib
 from gzip import GzipFile
-from uuid import uuid4
-import beartype
-import os
 from io import BytesIO
-from typing import Union
-import tempfile
+from uuid import uuid4
 
+import beartype
+from owslib.wcs import WebCoverageService
 
 from .logging import getLogger
-logger = getLogger(__name__)  
 
+logger = getLogger(__name__)
 
 
 class MapData:
@@ -94,7 +103,7 @@ class MapData:
 
     @property
     @beartype.beartype
-    def minimum_fault_length(self) -> Union[int,float]:
+    def minimum_fault_length(self) -> Union[int, float]:
         return self.config.fault_config["minimum_fault_length"]
 
     @minimum_fault_length.setter
@@ -112,7 +121,7 @@ class MapData:
         """
 
         if issubclass(type(projection), int):
-            projection = f"EPSG:{str(projection)}"
+            projection = f"EPSG:{projection!s}"
             self.working_projection = projection
         elif issubclass(type(projection), str):
             self.working_projection = projection
@@ -123,7 +132,7 @@ class MapData:
         if self.bounding_box is not None:
             self.recreate_bounding_box_str()
         logger.info(f"Setting working projection to {self.working_projection}")
-        
+
     def get_working_projection(self):
         """
         Get the working projection
@@ -252,13 +261,11 @@ class MapData:
         if self.data_states != Datastate.UNNAMED:
             return self.filenames[datatype]
         else:
-            logger.warning(f"Requested filename for {str(type(datatype))} is not set\n")
+            logger.warning(f"Requested filename for {type(datatype)!s} is not set\n")
             return None
 
     @beartype.beartype
-    def set_config_filename(
-        self, filename: Union[pathlib.Path, str],  lower: bool = False
-    ):
+    def set_config_filename(self, filename: Union[pathlib.Path, str], lower: bool = False):
         """
         Set the config filename and update the config structure
 
@@ -269,9 +276,9 @@ class MapData:
                 Flag to convert the config file to lowercase. Defaults to False.
         """
         logger.info('Setting config filename to {filename}')
-        
-        self.config.update_from_file(filename,  lower=lower)
-        
+
+        self.config.update_from_file(filename, lower=lower)
+
         logger.info(f"Config is: {self.config.to_dict()}")
 
     def get_config_filename(self):
@@ -388,22 +395,20 @@ class MapData:
             lower = state == "SA"
 
             # Check if this is running a documentation test and use local datasets if so
-            if os.environ.get("DOCUMENTATION_TEST", False):
+            if os.environ.get("DOCUMENTATION_TEST"):
                 import map2loop
 
                 # because doc tests runs on docker from within the m2l folder
                 module_path = map2loop.__file__.replace("__init__.py", "")
 
-                config_path_str = '_datasets/config_files/{}.json'.format(state)
+                config_path_str = f'_datasets/config_files/{state}.json'
                 self.set_config_filename(pathlib.Path(module_path) / pathlib.Path(config_path_str))
 
-                colour_file_str = '_datasets/clut_files/{}_clut.csv'.format(state)
+                colour_file_str = f'_datasets/clut_files/{state}_clut.csv'
                 self.set_colour_filename(pathlib.Path(module_path) / pathlib.Path(colour_file_str))
 
             else:
-                self.set_config_filename(
-                    AustraliaStateUrls.aus_config_urls[state],  lower=lower
-                )
+                self.set_config_filename(AustraliaStateUrls.aus_config_urls[state], lower=lower)
                 self.set_colour_filename(AustraliaStateUrls.aus_clut_urls[state])
         else:
             raise ValueError(f"Australian state {state} not in state url database")
@@ -421,7 +426,7 @@ class MapData:
             bool: true if the filename is set, false otherwise
         """
         if self.filenames[datatype] is None or self.filenames[datatype] == "":
-            logger.warning(f"Warning: Filename for {str(datatype)} is not set")
+            logger.warning(f"Warning: Filename for {datatype!s} is not set")
             return False
         return True
 
@@ -478,8 +483,10 @@ class MapData:
                     self.raw_data[datatype] = geopandas.read_file(map_filename)
                     self.data_states[datatype] = Datastate.LOADED
                 except Exception:
-                    logger.error(
-                        f"Failed to open {datatype.name} file called '{self.filenames[datatype]}'\n"
+                    logger.exception(
+                        "Failed to open %s file called '%s'",
+                        datatype.name,
+                        self.filenames[datatype],
                     )
                     logger.error(f"Cannot continue as {datatype.name} was not loaded\n")
                     return
@@ -568,7 +575,9 @@ class MapData:
 
         if filename.lower() == "aus" or filename.lower() == "au":
             logger.info('Using Geoscience Australia DEM')
-            url = "https://services.ga.gov.au/gis/services/Bathymetry_Topography/MapServer/WCSServer?"
+            url = (
+                "https://services.ga.gov.au/gis/services/Bathymetry_Topography/MapServer/WCSServer?"
+            )
             wcs = WebCoverageService(url, version="1.0.0")
 
             coverage = wcs.getCoverage(
@@ -591,9 +600,7 @@ class MapData:
             logger.info('Using Hawaii DEM')
             import netCDF4
 
-            bbox_str = (
-                f"[({str(bb_ll[1])}):1:({str(bb_ll[3])})][({str(bb_ll[0])}):1:({str(bb_ll[2])})]"
-            )
+            bbox_str = f"[({bb_ll[1]!s}):1:({bb_ll[3]!s})][({bb_ll[0]!s}):1:({bb_ll[2]!s})]"
 
             filename = f"https://pae-paha.pacioos.hawaii.edu/erddap/griddap/srtm30plus_v11_land.nc?elev{bbox_str}"
             try:
@@ -614,7 +621,7 @@ class MapData:
             srs.ImportFromEPSG(4326)
             driver = gdal.GetDriverByName("GTiff")
             tif = driver.Create(
-                f"/vsimem/{str(uuid4())}",
+                f"/vsimem/{uuid4()!s}",
                 xsize=ds.dimensions["longitude"].size,
                 ysize=ds.dimensions["latitude"].size,
                 bands=1,
@@ -632,7 +639,7 @@ class MapData:
                 return None
             if image_data is None:
                 return None
-            mmap_name = f"/vsimem/{str(uuid4())}"
+            mmap_name = f"/vsimem/{uuid4()!s}"
             gdal.FileFromMemBuffer(mmap_name, image_data.read())
             tif = gdal.Open(mmap_name)
         else:
@@ -671,7 +678,7 @@ class MapData:
                         outputType=gdal.GDT_Float32,
                     )
                 except Exception:
-                    logger.error(f"Warp failed for {datatype.name}\n")
+                    logger.exception("Warp failed for %s", datatype.name)
                     return
                 self.data_states[datatype] = Datastate.REPROJECTED
             if self.data_states[datatype] == Datastate.REPROJECTED:
@@ -707,35 +714,35 @@ class MapData:
                 The datatype to check
         """
         func = None
-        #check and parse geology data
+        # check and parse geology data
         if datatype == Datatype.GEOLOGY:
-            validity_check, message = check_geology_fields_validity(mapdata = self)
+            validity_check, message = check_geology_fields_validity(mapdata=self)
             if validity_check:
                 logger.error(f"Datatype GEOLOGY - data validation failed: {message}")
                 raise ValueError(f"Datatype GEOLOGY - data validation failed: {message}")
             func = self.parse_geology_map
-            
-        #check and parse structure data
+
+        # check and parse structure data
         elif datatype == Datatype.STRUCTURE:
-            validity_check, message = check_structure_fields_validity(mapdata = self)
+            validity_check, message = check_structure_fields_validity(mapdata=self)
             if validity_check:
                 logger.error(f"Datatype STRUCTURE - data validation failed: {message}")
                 raise ValueError(f"Datatype STRUCTURE - data validation failed: {message}")
             func = self.parse_structure_map
-        
-        #check and parse fault data
+
+        # check and parse fault data
         elif datatype == Datatype.FAULT:
-            validity_check, message = check_fault_fields_validity(mapdata = self)
+            validity_check, message = check_fault_fields_validity(mapdata=self)
             if validity_check:
                 raise ValueError(f"Datatype FAULT - data validation failed: {message}")
             func = self.parse_fault_map
-        
+
         elif datatype == Datatype.FAULT_ORIENTATION:
             func = self.parse_fault_orientations
-            
-        #check and parse fold data
+
+        # check and parse fold data
         elif datatype == Datatype.FOLD:
-            validity_check, message = check_fold_fields_validity(mapdata = self)
+            validity_check, message = check_fold_fields_validity(mapdata=self)
             if validity_check:
                 logger.error(f"Datatype FOLD - data validation failed: {message}")
                 raise ValueError(f"Datatype FOLD - data validation failed: {message}")
@@ -805,17 +812,15 @@ class MapData:
         else:
             fault_orientations["ID"] = numpy.arange(len(fault_orientations))
         self.data[Datatype.FAULT_ORIENTATION] = fault_orientations
-        
+
         if config["featureid_column"] in self.raw_data[Datatype.FAULT_ORIENTATION]:
             fault_orientations["featureId"] = self.raw_data[Datatype.FAULT_ORIENTATION][
                 config["featureid_column"]
             ]
         else:
             fault_orientations["featureId"] = numpy.arange(len(fault_orientations))
-            
-        return (False, "")
 
-    
+        return (False, "")
 
     @beartype.beartype
     def parse_geology_map(self) -> tuple:
@@ -957,7 +962,6 @@ class MapData:
         if config["dip_column"] in self.raw_data[Datatype.STRUCTURE]:
             structure["DIP"] = self.raw_data[Datatype.STRUCTURE][config["dip_column"]]
 
-
         # Add bedding and overturned booleans
         if config["overturned_column"] in self.raw_data[Datatype.STRUCTURE]:
             structure["OVERTURNED"] = (
@@ -986,7 +990,6 @@ class MapData:
         self.data[Datatype.STRUCTURE] = structure
         return (False, "")
 
-
     @beartype.beartype
     def parse_fault_map(self) -> tuple:
         """
@@ -1008,26 +1011,34 @@ class MapData:
                 bbox=self.bounding_box, area_percentage=0.05
             )
         logger.info(f"Calculated minimum fault length - {self.minimum_fault_length}")
-        
+
         # crop
         faults = faults.loc[faults.geometry.length >= self.minimum_fault_length]
-        
+
         if config["structtype_column"] in self.raw_data[Datatype.FAULT]:
             faults["FEATURE"] = self.raw_data[Datatype.FAULT][config["structtype_column"]]
-               # Check if the string contains commas indicating multiple substrings
+            # Check if the string contains commas indicating multiple substrings
             if ',' in config["fault_text"]:
                 import re
+
                 fault_text = config["fault_text"].split(',')
                 search_terms = [term.strip().strip("'").strip('"') for term in fault_text]
                 escaped_terms = [re.escape(term) for term in search_terms]
                 # Combine the escaped terms using the pipe '|' symbol for alternation
                 fault_text_pattern = '|'.join(escaped_terms)
-                faults = faults[faults["FEATURE"].astype(str).str.contains(fault_text_pattern, case=False, regex=True, na=False)]
-            if self.verbose_level > VerboseLevel.NONE:
-                if len(faults) < len(self.raw_data[Datatype.GEOLOGY]) and len(faults) == 0:
-                    msg = f"Fault map reduced to 0 faults as structtype_column ({config['structtype_column']}) does not contains as row with fault_text \"{config['fault_text']}\""
-                    print(msg)
-                    logger.warning(msg)
+                faults = faults[
+                    faults["FEATURE"]
+                    .astype(str)
+                    .str.contains(fault_text_pattern, case=False, regex=True, na=False)
+                ]
+            if (
+                self.verbose_level > VerboseLevel.NONE
+                and len(faults) < len(self.raw_data[Datatype.GEOLOGY])
+                and len(faults) == 0
+            ):
+                msg = f"Fault map reduced to 0 faults as structtype_column ({config['structtype_column']}) does not contains as row with fault_text \"{config['fault_text']}\""
+                print(msg)
+                logger.warning(msg)
 
         if config["name_column"] in self.raw_data[Datatype.FAULT]:
             faults["NAME"] = self.raw_data[Datatype.FAULT][config["name_column"]].astype(str)
@@ -1045,16 +1056,18 @@ class MapData:
 
         # Issue a warning if there are any non-existing codes
         if non_existing_codes:
-            logger.info(f"Warning: {non_existing_codes} set to fault ignore codes are not in the provided data. Skipping")
+            logger.info(
+                f"Warning: {non_existing_codes} set to fault ignore codes are not in the provided data. Skipping"
+            )
 
         # Filter the DataFrame to remove rows where 'NAME' is in the existing_codes
         if existing_codes:
             faults = faults[~faults["NAME"].isin(existing_codes)]
-            logger.info(f"The following faults were found and removed as per the config: {existing_codes}")
+            logger.info(
+                f"The following faults were found and removed as per the config: {existing_codes}"
+            )
         else:
             logger.info("None of the fault ignore codes exist in the original fault data.")
-            pass
-            
 
         # parse dip column
         if config["dip_column"] in self.raw_data[Datatype.FAULT]:
@@ -1101,9 +1114,9 @@ class MapData:
                     "south": 180.0,
                     "west": 270.0,
                 }
-                for direction in direction_map:
+                for direction, direction_value in direction_map.items():
                     dipdir_text_estimates = dipdir_text_estimates.astype(str).str.replace(
-                        f".*{direction}.*", direction_map[direction], regex=True
+                        f".*{direction}.*", direction_value, regex=True
                     )
                 # Catch all for any field that still contains anything that isn't a number
                 dipdir_text_estimates = dipdir_text_estimates.astype(str).str.replace(
@@ -1137,9 +1150,6 @@ class MapData:
 
         return (False, "")
 
-   
-
-    
     @beartype.beartype
     def parse_fold_map(self) -> tuple:
         """
@@ -1159,19 +1169,25 @@ class MapData:
             ]
             if ',' in config["fold_text"]:
                 import re
+
                 fold_text = config["fold_text"].split(',')
                 search_terms = [term.strip().strip("'").strip('"') for term in fold_text]
                 escaped_terms = [re.escape(term) for term in search_terms]
                 # Combine the escaped terms using the pipe '|' symbol for alternation
                 fold_text_pattern = '|'.join(escaped_terms)
                 folds = folds[
-                    folds[config["structtype_column"]].astype(str).str.contains(fold_text_pattern,  case=False, regex=True, na=False)
+                    folds[config["structtype_column"]]
+                    .astype(str)
+                    .str.contains(fold_text_pattern, case=False, regex=True, na=False)
                 ]
-            if self.verbose_level > VerboseLevel.NONE:
-                if len(folds) < len(self.raw_data[Datatype.GEOLOGY]) and len(folds) == 0:
-                    msg = f"Fold map reduced to 0 folds as structtype_column ({config['structtype_column']}) does not contains any row with fold_text \"{config['fold_text']}\""
-                    logger.warning(msg)
-                    print(msg)
+            if (
+                self.verbose_level > VerboseLevel.NONE
+                and len(folds) < len(self.raw_data[Datatype.GEOLOGY])
+                and len(folds) == 0
+            ):
+                msg = f"Fold map reduced to 0 folds as structtype_column ({config['structtype_column']}) does not contains any row with fold_text \"{config['fold_text']}\""
+                logger.warning(msg)
+                print(msg)
 
         if config["foldname_column"] in self.raw_data[Datatype.FOLD]:
             folds["NAME"] = self.raw_data[Datatype.FOLD][config["foldname_column"]].astype(str)
@@ -1257,7 +1273,9 @@ class MapData:
             raw_data = self.raw_data[datatype]
 
             if raw_data is None:
-                logger.info(f"No data available for {datatype.name}. Skipping saving to file {filename}.")
+                logger.info(
+                    f"No data available for {datatype.name}. Skipping saving to file {filename}."
+                )
                 return
 
             if extension == ".csv":
@@ -1266,8 +1284,8 @@ class MapData:
                 self.raw_data[datatype].to_file(filename)
 
         except Exception as e:
-            logger.error(f"Failed to save {datatype.name} to file named {filename}\nError: {str(e)}")
-            print(f"Failed to save {datatype.name} to file named {filename}\nError: {str(e)}")
+            logger.exception("Failed to save %s to file named %s", datatype.name, filename)
+            print(f"Failed to save {datatype.name} to file named {filename}\nError: {e!s}")
 
     @beartype.beartype
     def get_raw_map_data(self, datatype: Datatype):
@@ -1368,8 +1386,9 @@ class MapData:
                 "maxy": bounds[3],
             }, geology_data.crs
         except Exception:
-            logger.error(
-                f"Could not open geology file {temp_geology_filename} so no bounding box or projection found"
+            logger.exception(
+                "Could not open geology file %s so no bounding box or projection found",
+                temp_geology_filename,
             )
             return None, None
 
@@ -1465,8 +1484,6 @@ class MapData:
         val = data.ReadAsArray(px, py, 1, 1)[0][0]
         return val
 
-
-
     @beartype.beartype
     def colour_units(
         self, stratigraphic_units: pandas.DataFrame, random: bool = False
@@ -1498,9 +1515,9 @@ class MapData:
         if self.colour_filename is None:
             logger.info("\nNo colour configuration file found. Assigning random colors to units")
             missing_colour_n = len(stratigraphic_units["colour"])
-            stratigraphic_units.loc[
-                stratigraphic_units["colour"].isna(), "colour"
-            ] = generate_random_hex_colors(missing_colour_n)
+            stratigraphic_units.loc[stratigraphic_units["colour"].isna(), "colour"] = (
+                generate_random_hex_colors(missing_colour_n)
+            )
 
         colour_lookup["colour"] = colour_lookup["colour"].str.upper()
         # if there are duplicates in the clut file, drop.
@@ -1514,9 +1531,9 @@ class MapData:
                 suffixes=("_old", ""),
                 how="left",
             )
-            stratigraphic_units.loc[
-                stratigraphic_units["colour"].isna(), "colour"
-            ] = generate_random_hex_colors(int(stratigraphic_units["colour"].isna().sum()))
+            stratigraphic_units.loc[stratigraphic_units["colour"].isna(), "colour"] = (
+                generate_random_hex_colors(int(stratigraphic_units["colour"].isna().sum()))
+            )
             stratigraphic_units.drop(columns=["UNITNAME", "colour_old"], inplace=True)
         else:
             logger.warning(
