@@ -914,3 +914,9 @@ adds no dependency and no public name, and it keeps the existing results.
   not each column) and keep the detection of in-place edits; then run T042
   again. Do not cache the key per revision (OP5). This needs the spec-planner
   skill, then the spec-tasks skill.
+- T045, 2026-11-04: the D4b code as written gives a new Ruff finding,
+  PERF102 (ruff 0.17.3), for `for _, column in frame.items():` because the
+  key is not used. The user chose this loop form for frames above
+  `_SMALL_FRAME_CELLS`: `for item in frame.items():` and then
+  `column = item[1]`. It keeps the behavior, also for duplicate column
+  names, and it uses no `iloc`. Do not add `noqa`.

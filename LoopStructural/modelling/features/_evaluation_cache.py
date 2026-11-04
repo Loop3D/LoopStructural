@@ -39,6 +39,9 @@ import numpy as np
 
 DEFAULT_MAX_BYTES = 64 * 1024 * 1024
 _CHUNK_BYTES = 1 << 20
+# A frame with at most this number of cells is read with one call. Below this size, the
+# cost of each column is larger than the cost of each cell.
+_SMALL_FRAME_CELLS = 2048
 
 
 def _check_max_bytes(max_bytes: int) -> int:
@@ -324,9 +327,19 @@ def _update_frame(hasher: _Updatable, frame: object) -> None:
 
     if not isinstance(frame, pd.DataFrame):
         raise _Opaque
+    dtypes = frame.dtypes.tolist()
+    texts = {dtype: str(dtype) for dtype in set(dtypes)}
     hasher.update(f"D{frame.shape};".encode())
-    for name, column in frame.items():
-        _encode(hasher, repr(name))
+    _encode(hasher, [repr(name) for name in frame.columns.tolist()])
+    _encode(hasher, [texts[dtype] for dtype in dtypes])
+    if frame.size <= _SMALL_FRAME_CELLS:
+        # One call reads all cells. ``repr`` of a float is exact, and it keeps
+        # the type of each value in an object column (1 is not 1.0 or "1").
+        hasher.update(b"V;")
+        _encode(hasher, repr(frame.to_numpy().tolist()))
+        return
+    for item in frame.items():
+        column = item[1]
         values = column.to_numpy()
         if values.dtype.hasobject:
             values = pd.util.hash_pandas_object(column, index=False).to_numpy()

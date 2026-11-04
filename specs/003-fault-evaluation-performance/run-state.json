@@ -50,7 +50,16 @@
       "tasks": [
         "T044"
       ],
-      "base": "465688ec9e71c7aa364362ad5fba14283eed97f6"
+      "base": "465688ec9e71c7aa364362ad5fba14283eed97f6",
+      "commit": "c1250aba42c7ad6b46bdf9f2e0cd67f2b25934a6",
+      "review": "pass (sonnet), no findings"
+    },
+    {
+      "wave": 31,
+      "tasks": [
+        "T045"
+      ],
+      "base": "c1250aba42c7ad6b46bdf9f2e0cd67f2b25934a6"
     }
   ],
   "runs": {
@@ -90,6 +99,16 @@
       {
         "model": "sonnet",
         "result": "pass: 8 red for the expected reasons (7 absent constant, 1 per-column path), 21 pass"
+      }
+    ],
+    "T045": [
+      {
+        "model": "haiku",
+        "result": "blocked: plan code gave Ruff PERF102; tests pass"
+      },
+      {
+        "model": "haiku",
+        "result": "pass: loop form from user answer; 561 passed, golden 19 s, ruff clean"
       }
     ]
   },
