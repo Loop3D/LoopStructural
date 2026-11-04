@@ -336,6 +336,57 @@ def test_directional_regularisation_world_contract(frame_case, family, use_array
     )
 
 
+@pytest.mark.parametrize("use_mask", [False, True], ids=["nomask", "mask"])
+@pytest.mark.parametrize("family", FOLD_FAMILIES[:2])
+def test_fold_regularisation_world_contract(frame_case, family, use_mask, monkeypatch):
+    """The fold regularisation gets local vectors that come from world fold vectors."""
+    anchor, _, model = frame_case
+    fold = AnalyticFold.r4(anchor)
+    interpolator = _fold_interpolator(family, model, fold)
+    recorded = {}
+
+    def spy(weight, vectors, name="directional regularisation"):
+        recorded[name] = np.array(vectors, dtype=float)
+
+    monkeypatch.setattr(interpolator, "_add_directional_regularisation", spy)
+
+    def mask_fn(points):
+        return points[:, 0] - anchor[0] > 4.0
+
+    kwargs = {"mask_fn": mask_fn} if use_mask else {}
+    _add_fold(
+        interpolator,
+        family,
+        fold_regularisation=[1.0, 1.0, 1.0],
+        dgz_alignment="none",
+        **kwargs,
+    )
+    # FDI samples the nodes. PLI samples the regularisation sample points.
+    if family == "fdi_fold":
+        local_samples = interpolator.support.nodes
+    else:
+        local_samples = interpolator.get_regularisation_sample_points()
+    world = interpolator.local_to_world_points(local_samples)
+    excluded = mask_fn(world) if use_mask else np.zeros(len(world), dtype=bool)
+    if use_mask:
+        assert 0 < np.count_nonzero(excluded) < len(world)
+    components = {
+        "fold regularisation 1": fold.dgz_fn,
+        "fold regularisation 2": fold.deformed_fn,
+        "fold regularisation 3": fold.axis_fn,
+    }
+    assert set(recorded) == set(components)
+    for name, function in components.items():
+        world_vectors = function(world).copy()
+        world_vectors[excluded] = 0.0
+        expected = interpolator.world_to_local_vectors(world_vectors)
+        assert recorded[name].shape == expected.shape
+        for column in range(3):
+            np.testing.assert_allclose(
+                recorded[name][:, column], expected[:, column], rtol=0, atol=1e-10
+            )
+
+
 def test_p2_steepness_wtfunc_receives_world_barycentres(frame_case):
     _, _, model = frame_case
     interpolator = _interpolator(_PLAIN_CLASSES, "p2", model)

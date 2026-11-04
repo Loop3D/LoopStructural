@@ -39,7 +39,9 @@
         "T022",
         "T029"
       ],
-      "check": "scope pass; ruff pass; black pass on 2 test files (_fold_norm_alignment.py not black-clean before T029, docstring-only change); fold frames 230 failed / 94 passed (all assertion failures, pre-fix as planned); constant norm cn_pli 13 pass, cn_fdi 13 IndexError (T032); -k fold_norm 6 pass 5 skip"
+      "check": "scope pass; ruff pass; black pass on 2 test files (_fold_norm_alignment.py not black-clean before T029, docstring-only change); fold frames 230 failed / 94 passed (all assertion failures, pre-fix as planned); constant norm cn_pli 13 pass, cn_fdi 13 IndexError (T032); -k fold_norm 6 pass 5 skip",
+      "commit": "35f75f8fae977fe0fbcbd03cae28889dcb4fb27d",
+      "review": "changes needed: sonnet, 1 major (fold_regularisation path of FDI/PLI not tested), 3 minor"
     }
   ],
   "runs": {
@@ -81,15 +83,23 @@
       {
         "model": "sonnet",
         "result": "pass: 8 functions (curved split fdi / pli_p2), 324 cells; pre-fix 230 fail 94 pass; P2 directional = documented NotImplementedError"
+      },
+      {
+        "model": "sonnet",
+        "result": "review fix pass: test_fold_regularisation_world_contract (fdi_fold/pli_fold x nomask/mask); pre-fix 44 fail 4 pass; file 274 fail 98 pass"
       }
     ]
   },
   "findings": {
-    "found": 0,
+    "found": 4,
     "rejected": 0,
     "dropped": 0,
-    "fixed": 0,
-    "open_minor": []
+    "fixed": 1,
+    "open_minor": [
+      "T020: no test of the T024 native adapter world contract (rotated supports are rejected in test_native_parity.py); record in verification (T031)",
+      "T020 test_directional_regularisation_world_contract: p2 callable/array cells run the same NotImplementedError check twice",
+      "T020: tp(50,50) point tolerance at anchor 6.5e6 has about 4x margin over the round-trip error; watch in T031"
+    ]
   },
   "history": {
     "S1": {
@@ -454,7 +464,8 @@
       "fold_mask_receives_world_points: 44/48 fail",
       "fold_norm_alignment_uses_world_normals: 16/48 fail (rotation 90 only; [1.0] == [-1.0])",
       "directional_regularisation_world_contract: 38/72 fail (callable at all non-control cells; array at rotated cells); p2 24 pass (rejection)",
-      "p2_steepness_wtfunc: 12/12 fail ((1050,3) vs (690,3); old code ValueError)"
+      "p2_steepness_wtfunc: 12/12 fail ((1050,3) vs (690,3); old code ValueError)",
+      "fold_regularisation_world_contract: 44/48 fail (anchor0 rot0 pass)"
     ],
     "T022": "cn_fdi 13/13 IndexError (scalar element_size, frame-independent); cn_pli 13/13 pass (coverage, no frame defect)"
   }
