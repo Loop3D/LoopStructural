@@ -43,6 +43,15 @@
       "check": "scope pass (VERIFY); ruff and black pass. Pre-fix: test_frame_persistence.py 108 failed 3 passed (identity cells); test_frame_copy_and_lifecycle.py 41 failed 6 passed (copy 36/36, stale 5/5 fail; restored 1 and rebuild 5 pass = coverage, no defect). First errors: KeyError format_version/transform; nan after rotated round trip; copy().bounding_box is None; DID NOT RAISE StaleFrameError",
       "commit": "87928866225cc1f56b1634d791fa75ceec2b72da",
       "review": "pass after rejecting 1 major: sonnet, 1 major rejected (F in spec SC definition is the max abs reference scalar value = observations; S2 test_constant_norm_frames uses the same scale), 2 minor open"
+    },
+    {
+      "wave": 16,
+      "base": "acef571f5ed93c72ccf7b00b4161865e348213e7",
+      "tasks": [
+        "T036",
+        "T038"
+      ],
+      "check": "scope pass (VERIFY); ruff and black pass. Pre-fix: legacy/conflicting/malformed/unsupported/creation_call/old_reader 58 failed (TypeError unexpected keyword declare_identity or format_version; DID NOT RAISE); T035 file 166 failed 3 passed (identity cells); fault_restoration 2 failed (DID NOT RAISE StaleFrameError). apply_to_points reaches the interpolators through evaluate_value/evaluate_gradient of the frame features. Later part of the fault test (rebuild vs control) ran clean with the raise check off (FDI 18.6 s, PLI 4.2 s)"
     }
   ],
   "runs": {
@@ -62,6 +71,10 @@
       {
         "model": "sonnet",
         "result": "pass: 4 test functions, 111 cells, fail for the right reason"
+      },
+      {
+        "model": "sonnet",
+        "result": "fix pass (same fix): test_round_trip_world_values compares loaded with source"
       }
     ],
     "T037": [
@@ -72,6 +85,22 @@
       {
         "model": "sonnet",
         "result": "fix pass: p2 rebuild cell uses exact=True; 5 rebuild cells pass"
+      }
+    ],
+    "T036": [
+      {
+        "model": "sonnet",
+        "result": "pass with 2 test bugs found by the orchestrator"
+      },
+      {
+        "model": "sonnet",
+        "result": "fix pass: loaded compared with the source (not the analytic field, which differs by 2e-10 at anchor 3 rot 30); old-reader test uses the real to_dict"
+      }
+    ],
+    "T038": [
+      {
+        "model": "sonnet",
+        "result": "pass: test_fault_restoration_uses_current_frame (FDI, PLI)"
       }
     ]
   },
@@ -694,5 +723,5 @@
       }
     }
   },
-  "status": "wave 15 done and reviewed"
+  "status": "wave 16 done, review pending"
 }

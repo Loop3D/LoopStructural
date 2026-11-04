@@ -19,8 +19,11 @@ from tests.fixtures.coordinate_frames import (
     r1_interpolator,
     r1_observations,
     r1_value,
+    r2_probes,
     rot_z,
+    tp,
 )
+from tests.unit.modelling.test_fault_frame_analytic import _fault
 
 COPY_ENGINES = ("fdi", "p2", "p2_fold")
 POINTS_OFFSETS = np.array([[1.5, 2.5, 3.5], [4.0, 5.0, 6.0], [7.0, 8.0, 9.0]])
@@ -144,3 +147,29 @@ def test_rebuild_in_new_frame_preserves_world_evaluation(engine):
     gradient_error = np.abs(interp.evaluate_gradient(points) - R1_GRADIENT).max()
     assert value_error <= 1e-8 * scale
     assert gradient_error <= 1e-8 * max(1.0, np.abs(R1_GRADIENT).max())
+
+
+@pytest.mark.parametrize("engine", ("FDI", "PLI"))
+def test_fault_restoration_uses_current_frame(engine):
+    """A stale frame is refused when points are restored through a fault frame.
+
+    No restoration cache exists in the code. The check is that a stale
+    frame is refused and that a rebuild equals an uncached control.
+    """
+    anchor = ANCHORS[1]
+    points = r2_probes(anchor)[:200]
+    fault = _fault(anchor, 0.0, engine)
+    # Restore once, so that a cache (if it existed) would hold this result.
+    fault.apply_to_points(points)
+    fault.builder.model.bounding_box.set_local_transform(
+        local_origin=anchor + (3, -2, 1), rotation_matrix=rot_z(30.0)
+    )
+    with pytest.raises(StaleFrameError, match="^the local transform changed"):
+        fault.apply_to_points(points)
+    # Build the same fault in a fresh model with the new frame, and in a second
+    # fresh model as the uncached control.
+    rebuilt = _fault(anchor, 30.0, engine).apply_to_points(points)
+    control = _fault(anchor, 30.0, engine).apply_to_points(points)
+    tolerance = tp(20.0, np.abs(points).max())
+    assert np.all(np.isfinite(rebuilt))
+    assert np.max(np.abs(rebuilt - control)) <= tolerance

@@ -742,7 +742,7 @@ frame. A legacy file needs an explicit choice. A frame change never gives a stal
     `test_json_and_yaml_carry_frame`: `engine in PERSIST_ENGINES`, `ANCHORS[3]`, 30 degrees; use `to_json`/`from_json`
     and `to_yaml`/`from_yaml`; the loaded transform equals the source.
 
-- [ ] T036 [US3] [M] Test: legacy, conflicting, malformed and unsupported payloads, and the creation call (U3.6, U3.7; SC-012, SC-017).
+- [x] T036 [US3] [M] Test: legacy, conflicting, malformed and unsupported payloads, and the creation call (U3.6, U3.7; SC-012, SC-017).
   - Files: `tests/unit/modelling/test_frame_persistence.py`
   - Needs: T035
   - Wave: 16
@@ -787,7 +787,7 @@ frame. A legacy file needs an explicit choice. A frame change never gives a stal
     (a new interpolator in the new frame, `ANCHORS[1]`); values and gradients at `anchor + QUERY_OFFSETS` meet SC-002
     (`1e-8 * F`; `1e-8 * max(1, abs(R1_GRADIENT).max())`). Exception (OP7, decided 2026-11-05): the `p2` cell uses `exact=True` because the P2 fit misses SC-002 in every frame; do not change the limit.
 
-- [ ] T038 [P] [US3] [M] Test: fault restoration after a transform change (SC-016, cache part).
+- [x] T038 [P] [US3] [M] Test: fault restoration after a transform change (SC-016, cache part).
   - Files: `tests/unit/modelling/test_frame_copy_and_lifecycle.py`
   - Needs: T037
   - Wave: 16
