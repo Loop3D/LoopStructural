@@ -66,7 +66,17 @@
         "T025",
         "T026"
       ],
-      "check": "scope pass; ruff pass; phase check: fold frames + constant norm + reference frames 866 passed in 24 s; existing fold/regularisation/native package tests 75 pass 1 skip (native not installed), no test changed"
+      "check": "scope pass; ruff pass; phase check: fold frames + constant norm + reference frames 866 passed in 24 s; existing fold/regularisation/native package tests 75 pass 1 skip (native not installed), no test changed",
+      "commit": "290dea028c698777bf21b6f3bb3af466704b759e",
+      "review": "pass: sonnet, no findings"
+    },
+    {
+      "wave": 12,
+      "base": "290dea028c698777bf21b6f3bb3af466704b759e",
+      "tasks": [
+        "T030"
+      ],
+      "check": "scope pass; COMPAT row at end of Migration notices table, dated 2026-11-04"
     }
   ],
   "runs": {
@@ -158,6 +168,12 @@
       {
         "model": "sonnet",
         "result": "pass: -k pli_fold 84 pass; test_discrete_fold_interpolator 21 pass; provider already correct after T023 (comment only)"
+      }
+    ],
+    "T030": [
+      {
+        "model": "haiku",
+        "result": "pass: row added after S1 row"
       }
     ]
   },

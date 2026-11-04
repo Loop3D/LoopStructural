@@ -632,7 +632,7 @@ satisfy R3 and R1.
 
 ## Phase 8: Stage S2 finish
 
-- [ ] T030 [P] [Finish] [S] Add the S2 migration notice to `COMPAT.md`.
+- [x] T030 [P] [Finish] [S] Add the S2 migration notice to `COMPAT.md`.
   - Files: `COMPAT.md`
   - Needs: T023, T024, T025, T026, T027, T028, T032
   - Wave: 12
