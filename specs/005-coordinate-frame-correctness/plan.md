@@ -7,13 +7,15 @@ The constitution (.specify/memory/constitution.md) has priority. -->
 
 ## Open points
 
-- **OP1**: This plan gives the exact design only for stage S1 (shared
-  transform, reference-constraint boundary and fault frame). The spec-planner
+- **OP1**: This plan gives the exact design only for stages S1 and S2 (S1: shared
+  transform, reference-constraint boundary and fault frame; S2: fold, P2,
+  directional-regularisation and constant-norm cells). The spec-planner
   limit is 10 code files, and the maintainer selected a staged plan on
-  2026-11-04. Stages S2 to S6 have a stage map, a file list from a grep
+  2026-11-04. S2 has its exact design since 2026-11-04 ("Stage S2 design").
+  Stages S3 to S6 have a stage map, a file list from a grep
   survey and a requirement allocation, but no exact signatures. Owner: the
   spec-planner skill, one run for each stage, after S1 merges. Blocks: the
-  tasks of S2 to S6. The spec-tasks skill must make tasks for S1 only.
+  tasks of S3 to S6. The spec-tasks skill makes the S2 tasks next (S1 is done).
 - **OP2**: Run time of the mandatory R2 and R5 matrices. R2 needs 4 anchors x
   3 rotations x 2 centre modes x 2 engines = 48 solves (FDI with 20000
   requested cells). R5 needs 3 buffers x 3 rotations x 2 centre modes x 2
@@ -23,6 +25,14 @@ The constitution (.specify/memory/constitution.md) has priority. -->
   Default until an answer: the full matrix runs in the default `pytest` run.
   The S1 test task measures the time and records it in `verification.md`. Blocks:
   nothing in S1 design; it can change the test layout only.
+
+- **OP3**: The constant-norm variants solve with 20 fixed outer iterations.
+  This plan does not know if the unrotated R1 control reaches the SC-002
+  limits (`1e-8*F`). Owner: the S2 constant-norm test task (it measures
+  first), then the maintainer. If the unrotated control fails, the limit is
+  a solver-accuracy question, not a coordinate question, and the maintainer
+  decides a separate tolerance or an iteration setting. Blocks: only the
+  constant-norm test task. Default until an answer: the SC-002 limits.
 
 ## Answers
 
@@ -135,7 +145,7 @@ grid and diagnostics, and the auxiliary utilities and validation matrix
 
 ## Design
 
-S1 has the exact design below. S2 to S6 have scope only (OP1).
+S1 and S2 have the exact design below. S3 to S6 have scope only (OP1).
 
 ### Types and data
 
@@ -384,12 +394,285 @@ frame is added to the builder.
 Cache invalidation: S1 changes no cache. S3 owns transform changes after
 population (FR-020).
 
+### Stage S2 design
+
+S2 makes the fold families, the directional regularisation, the fold masks,
+the fold sign check, P2 reference rows and the constant-norm variants follow
+the S1 boundary contract. Base: branch `feat/005-coordinate-frame-correctness`
+(S1, pull request #392). If S1 changes before it merges, run this planner
+again on the merged result.
+
+#### S2 facts from the code (read on 2026-11-04)
+
+- Both fold providers, `LoopStructural.modelling.features.fold.FoldEvent`
+  and `loop_interpolation.FoldEvent`, give the points to fold-frame
+  features. Those features take world points. So
+  `get_deformed_orientation(points)` takes world points and returns world
+  unit directions `(deformed_orientation, fold_axis, dgz)`, each `(N, 3)`.
+  Rows with invalid geometry contain NaN.
+- `FDFoldInterpolator.add_fold_constraints` calls the provider with
+  `self.support.nodes` (local) and uses the result as local vectors.
+  `mask_fn` gets local nodes.
+- `DiscreteFoldInterpolator.add_fold_constraints` calls the provider with
+  `self.support.barycentre` (local) and multiplies the result with local
+  element gradients. `mask_fn` gets local barycentres. Its regularisation
+  provider calls the fold provider with the sample points that the base
+  method gives (local).
+- `P2FoldInterpolator.add_fold_constraints` calls the provider with local
+  quadrature points from `tet_quadrature_points`. `mask_fn` gets the same
+  local points.
+- `resolve_fold_norm_target` (`_fold_norm_alignment.py`) gets the stored
+  normal constraints, which are local (`get_norm_constraints()`), and calls
+  the provider with their local points. It then compares the world `dgz`
+  with the local normals.
+- `DiscreteInterpolator.add_directional_regularisation` calls a callable
+  `direction` with `get_regularisation_sample_points()` (local: FDI nodes,
+  P1 shared-face centres) and uses array or callable results as local
+  vectors. The public setup argument `directional_regularisation` reaches
+  this method. `_native.py` (`_add_regularisation`, lines 465 to
+  485) repeats the same logic for the native core.
+- `P2Interpolator.minimise_grad_steepness` calls the public
+  `steepness_wtfunc` with all local barycentres, but it applies the weights
+  only to the masked interior elements. The two lengths differ when the
+  mask removes elements.
+- `ConstantNormInterpolator.add_constant_norm` uses only local gradients of
+  the current solution and a scalar norm target. A rigid rotation keeps a
+  gradient norm. So it needs no code change. S2 adds tests only.
+- `P2Interpolator.add_gradient_orthogonal_constraints` already follows the
+  S1 local row contract, and `tet_quadrature_points` uses only the 4 corner
+  nodes of a P2 element. So the S1 builder path works for P2. S2 adds tests
+  only.
+- `LoopStructural/interpolators/_discrete_fold_interpolator.py` is not
+  imported. `LoopStructural.interpolators` re-exports the
+  `loop_interpolation` class. S2 does not change this unused module.
+- `_quadrature.py`, `_regularisation.py`, `_finite_difference_interpolator.py`,
+  `_p1interpolator.py`, `_constant_norm.py` and `_folded_feature_builder.py`
+  have no world/local crossing. S2 does not change them.
+
+#### S2 contracts
+
+| Boundary | Input space | Output space | Owner |
+|---|---|---|---|
+| Fold provider `get_deformed_orientation(points)` | world points | world unit directions | fold provider (unchanged; now documented) |
+| Fold `mask_fn(points)` | world points | boolean, one for each point | caller callback (documented) |
+| `DirectionalRegularisation.direction` as a callable | world points | world directions, one for each point | caller (documented) |
+| `DirectionalRegularisation.direction` as an array | none | world directions, one for each sample point | caller (documented) |
+| `steepness_wtfunc(points)` (P2) | world points | weights, one for each weighted element | caller (documented) |
+| `resolve_fold_norm_target(normal_constraints=...)` | world points and world normals | float | `_fold_norm_alignment.py` |
+| Fold rows and directional terms in the assembly | local points, local unit directions | rows | interpolator (internal) |
+
+Fold directions are not normalised again after the rotation, because a
+rigid rotation keeps the length. NaN rows stay NaN.
+
+#### S2 functions
+
+- `packages/loop_interpolation/src/loop_interpolation/_fold_setup.py`, two
+  new functions (numpy docstrings, type hints, `from __future__ import
+  annotations`):
+
+  ```python
+  def sample_fold_geometry(
+      interpolator, fold, local_points: np.ndarray
+  ) -> tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray]:
+      """Return (world_points, deformed_world, axis_world, dgz_world)."""
+      world_points = interpolator.local_to_world_points(np.asarray(local_points, dtype=float))
+      deformed, axis, dgz = fold.get_deformed_orientation(world_points)
+      return (
+          world_points,
+          np.asarray(deformed, dtype=float),
+          np.asarray(axis, dtype=float),
+          np.asarray(dgz, dtype=float),
+      )
+
+
+  def world_norm_constraints(interpolator) -> np.ndarray:
+      """Return the stored normal constraints as world xyz|nx ny nz|w rows."""
+  ```
+
+  `world_norm_constraints`: set
+  `n = np.asarray(interpolator.get_norm_constraints(), dtype=float)`. If
+  `n.ndim != 2`, or `n.shape[0] == 0`, or `n.shape[1] < 6`, return `n`.
+  Else return a copy where columns 0:3 are
+  `interpolator.local_to_world_points(n[:, 0:3])` and columns 3:6 are
+  `interpolator.local_to_world_vectors(n[:, 3:6])`. The other columns do
+  not change.
+- `_fd_fold_interpolator.py`, `FDFoldInterpolator.add_fold_constraints`
+  (no signature change):
+  1. `world_nodes, deformed_w, axis_w, dgz_w = sample_fold_geometry(self, self.fold, self.support.nodes)`.
+  2. `deformed = self.world_to_local_vectors(deformed_w)`. Do the same for
+     `axis` and `dgz`.
+  3. `weight[mask_fn(world_nodes)] = 0.0`.
+  4. The orientation, axis and normalisation rows use the local `deformed`,
+     `axis` and `dgz` at the local `active_pos`. The other code does not
+     change.
+  5. `resolve_fold_norm_target(..., normal_constraints=world_norm_constraints(self), ...)`.
+  6. The directional regularisation gets the masked WORLD arrays
+     (`_masked_direction(dgz_w)`, `_masked_direction(deformed_w)`,
+     `_masked_direction(axis_w)`). The base method converts them (see the
+     contracts).
+  7. Docstring: `mask_fn` receives world node positions.
+- `_discrete_fold_interpolator.py`, `DiscreteFoldInterpolator.add_fold_constraints`:
+  1. `world_bc, deformed_w, axis_w, dgz_w = sample_fold_geometry(self, self.fold, self.support.barycentre)`.
+     Convert the three directions to local with `world_to_local_vectors`.
+     Use the local vectors in the three `einsum` rows.
+  2. `weight[mask_fn(world_bc)] = 0`.
+  3. `normal_constraints=world_norm_constraints(self)`.
+  4. The `_masked_fold_direction` provider now receives WORLD points from
+     the base method. It calls `self.fold.get_deformed_orientation(points)`
+     with those points, masks with `mask_fn(points)` and returns world
+     vectors. The base method converts them.
+  5. Docstring: `mask_fn` receives world barycentres.
+- `_p2_fold_interpolator.py`, `P2FoldInterpolator.add_fold_constraints`:
+  after `tet_quadrature_points`, call
+  `world_points, deformed_w, axis_w, dgz_w = sample_fold_geometry(self, self.fold, points)`.
+  Convert the three directions to local. Call `mask_fn(world_points)`. Use
+  `normal_constraints=world_norm_constraints(self)`. `dN` and `inside`
+  stay on the local points. Docstring: `mask_fn` receives world sample
+  points.
+- `_fold_norm_alignment.py`, `resolve_fold_norm_target`: no code change.
+  Docstring of `normal_constraints`: "Normal constraints in world
+  coordinates, ``xyz|nx ny nz|w``. Use ``world_norm_constraints``."
+- `_discrete_interpolator.py`, `DiscreteInterpolator.add_directional_regularisation`:
+  1. Keep `sample_points` (local). Add
+     `world_samples = self.local_to_world_points(sample_points)`.
+  2. Callable: `vectors = term.direction(world_samples)`. Array:
+     `vectors = term.direction`.
+  3. Keep the shape check against `sample_points.shape`.
+  4. `vectors = self.world_to_local_vectors(vectors)`, then
+     `self._add_directional_regularisation(term.weight, vectors, name=term.name)`.
+  5. New numpy docstring: a callable direction receives world sample points
+     and returns world directions. An array gives world directions, one row
+     for each sample point.
+- `_native.py`, `_add_regularisation` (`_native.py:454`; the directional part is lines 465 to 485): the
+  same 4 steps, with `interpolator.local_to_world_points` and
+  `interpolator.world_to_local_vectors`. The rotated-support rejection
+  (`_native.py:170`) does not change.
+- `_p2interpolator.py`, `P2Interpolator.minimise_grad_steepness`: when
+  `wtfunc` is callable, set
+  `wt = wtfunc(self.local_to_world_points(self.support.barycentre[elements[mask]])) * self.support.element_size[elements[mask]]`.
+  Docstring: `wtfunc` receives the world barycentres of the weighted
+  elements.
+
+#### S2 test data
+
+`tests/fixtures/coordinate_frames.py` gets these helpers, with no tests:
+
+- `R1_GRADIENT = np.array([0.2, -0.3, 0.4])`;
+  `r1_value(points, anchor)` returns `2 + (points - anchor) @ R1_GRADIENT`;
+  `r1_gradient(points, anchor)` returns `R1_GRADIENT` tiled to `(N, 3)`;
+  `r1_observations(anchor) -> pd.DataFrame` returns the 27 R1 fit points
+  with columns X, Y, Z, val, feature_name ("r1") and w (1).
+- `class AnalyticFold` with `__init__(self, deformed_fn, axis_fn, dgz_fn)`.
+  `get_deformed_orientation(points)` returns the three functions at
+  `points` and appends a copy of `points` to `self.seen_points` (a list).
+  Class methods: `AnalyticFold.constant(deformed, axis, dgz)` (three world
+  vectors) and `AnalyticFold.r4(anchor)`, which uses `r4_frame`: deformed
+  is the unit extent gradient, axis is `(0,0,1)` and dgz is the unit
+  surface gradient.
+
+#### S2 tests
+
+- `tests/unit/modelling/test_fold_constraint_frames.py` (new). Families:
+  `FDFoldInterpolator` on `StructuredGrid`, `DiscreteFoldInterpolator` on
+  `TetMesh`, and `P2FoldInterpolator` on `P2TetMesh` with the sample rules
+  `centroid` and `gauss4`. Box `O` to `O+(8,10,12)`, 5x6x7 cells, 4 anchors
+  x 3 rotations. The support is the local enclosure of the box, and
+  `interpolator.bounding_box = model.bounding_box`. Use the same pattern as
+  `_builder` in `test_reference_constraint_frames.py`. Tests:
+  - `test_fold_geometry_sampled_at_world_points`: with `AnalyticFold.r4`,
+    each array in `fold.seen_points` equals `local_to_world_points` of the
+    local sample points of the family within `Tp` (FDI nodes, PLI
+    barycentres, P2 quadrature points; the norm check sees the world normal
+    points).
+  - `test_fold_rows_affine_residual`: field `f = y'`. Compute the exact
+    local coefficients as in the S1 affine test (no large-coordinate
+    cancellation). Use `AnalyticFold.constant((1,0,0), (0,0,1), (0,1,0))`,
+    `fold_norm=1.0` and `dgz_alignment="none"`. The rows "fold
+    orientation" and "fold axis" (target 0) and "fold normalisation"
+    (target 1) have `|A @ c - b| <= 1e-10` under the normalisation of each
+    assembler (SC-008).
+  - `test_fold_rows_follow_curved_directions`: with `AnalyticFold.r4`. For
+    FDI, spy on `add_gradient_orthogonal_constraints` and check that the
+    vectors equal `world_to_local_vectors(analytic(world point))` for each
+    component within `1e-10` (SC-013). For PLI and P2, check the local
+    directions that `sample_fold_geometry` and `world_to_local_vectors`
+    give at the sample points of the family, and check that the
+    orientation row of each element is `vol * (v . eg)` (PLI) or
+    `v . dN` (P2) for that local `v` within `1e-10`. If the code uses the
+    centre direction at every sample, this check fails.
+  - `test_fold_mask_receives_world_points`: a recording `mask_fn` that
+    excludes `x' > 4` receives world points equal to the sample points
+    within `Tp`. Excluded rows have zero weight, and their count equals the
+    analytic count.
+  - `test_fold_norm_alignment_uses_world_normals`: one stored normal
+    constraint with world normal `(0,-1,0)` and `dgz = (0,1,0)`. With
+    `dgz_alignment="correct"`, the target is `-fold_norm` for every
+    rotation and anchor. The unrotated control and the rotated cells agree.
+  - `test_directional_regularisation_world_contract`: for FDI, PLI and P2,
+    use the public `directional_regularisation=[{"direction": f, "weight": 1}]`
+    with a recording callable `f`. `f` receives the world sample points
+    within `Tp`. A spy on `_add_directional_regularisation` receives
+    `world_to_local_vectors(f(world))` within `1e-10`. Repeat with an array
+    of world directions.
+  - `test_p2_steepness_wtfunc_receives_world_barycentres`: a recording
+    `steepness_wtfunc` receives the world barycentres of the weighted
+    elements, one for each row.
+- `tests/unit/modelling/test_reference_constraint_frames.py` (S1 file,
+  extend): add the engine `"P2"` (support `P2TetMesh`, interpolator
+  `P2Interpolator`) to each R3 test that takes `engine`. The expected
+  equality set comes from the world P2 nodes. Do not reuse 168.
+- `tests/unit/modelling/test_constant_norm_frames.py` (new): the FDI and
+  PLI constant-norm variants, R1, 4 anchors x 3 rotations, norm target
+  `sqrt(0.29)`, the 27 R1 observations, and the SC-003 solve settings
+  through `solver_kwargs`. At the two R1 query offsets: value error
+  `<= 1e-8*F` and gradient component error `<= 1e-8*max(1, |gradient|)`
+  (SC-002). The test task runs the unrotated anchor-0 control first. If
+  the control fails SC-002, the task stops and reports it (OP3).
+
+#### S2 constitution check
+
+| Project rule | Result | How S2 agrees |
+|---|---|---|
+| Work stays within the existing packages | Pass | Changes stay in `loop_interpolation`. No new module; two new functions in `_fold_setup.py`. |
+| Gates `pytest` and `ruff check LoopStructural packages` | Pass | The S2 row of "Stages and rollback" names both. Also run the package tests. |
+| numpy docstrings, type hints, py39 | Pass | New functions and changed docstrings use numpy style. |
+| The public API stays compatible | Pass | No signature change. The callback contracts of `mask_fn`, `directional_regularisation` and `steepness_wtfunc` change from local to world. A caller with an identity frame sees no change. `COMPAT.md` gets one "Migration notices" row. |
+| Stages can be tested and reversed independently | Pass | S2 reverts to the S1 merge. |
+| Feature documents stay under `specs/NNN-name/` | Pass | Only `plan.md`, `tasks.md` and `verification.md` change. |
+
+#### S2 files
+
+| File | Change |
+|---|---|
+| `packages/loop_interpolation/src/loop_interpolation/_fold_setup.py` | Add `sample_fold_geometry` and `world_norm_constraints` |
+| `packages/loop_interpolation/src/loop_interpolation/_fd_fold_interpolator.py` | World sampling, local rows, world mask, world norm check, world directional arrays |
+| `packages/loop_interpolation/src/loop_interpolation/_discrete_fold_interpolator.py` | The same for barycentres and the regularisation provider |
+| `packages/loop_interpolation/src/loop_interpolation/_p2_fold_interpolator.py` | The same for quadrature points |
+| `packages/loop_interpolation/src/loop_interpolation/_fold_norm_alignment.py` | Docstring only |
+| `packages/loop_interpolation/src/loop_interpolation/_discrete_interpolator.py` | World contract in `add_directional_regularisation` |
+| `packages/loop_interpolation/src/loop_interpolation/_native.py` | The same contract in `_add_regularisation` |
+| `packages/loop_interpolation/src/loop_interpolation/_p2interpolator.py` | World `steepness_wtfunc` with the correct length |
+| `tests/fixtures/coordinate_frames.py` | R1 helpers and `AnalyticFold` |
+| `tests/unit/modelling/test_fold_constraint_frames.py` | New |
+| `tests/unit/modelling/test_reference_constraint_frames.py` | Add the P2 engine |
+| `tests/unit/modelling/test_constant_norm_frames.py` | New |
+| `COMPAT.md` | S2 migration notice |
+| `specs/005-coordinate-frame-correctness/verification.md` | S2 pre-fix and post-fix records, backend matrix rows |
+
+The existing package tests with fake folds (`test_fd_fold_interpolator.py`,
+`test_discrete_fold_interpolator.py`, `test_p2_fold_interpolator.py`,
+`test_regularisation_api.py` and `test_native_parity.py`) must pass with no
+change. With `bounding_box is None`, the conversions return their input. If
+one of these tests encodes the old local callback contract under a frame
+that is not the identity, record it under "Golden review" (C-004) before
+any change.
+
 ### Stages and rollback
 
 | Stage | Files and behaviour | Acceptance check | Rollback target and compatibility check |
 |---|---|---|---|
 | S1 | Shared transform boundary, reference relationships for FDI and PLI, fault frame, buffer and forced geometry, rotation check, resize stability (this design) | New S1 tests pass for FDI and PLI; `pytest`; `ruff check LoopStructural packages`; `pytest packages/loop_common/tests packages/loop_interpolation/tests` | Revert the S1 commits to master `ebc7c699`. Check: the existing `tests/unit/modelling/test__fault_builder.py` and `packages/loop_common/tests/test_bounding_box.py` pass on the reverted tree. No saved format changed. |
-| S2 | Fold geometry, directional regularisation, quadrature, masks, sign alignment for FDI-fold, PLI discrete fold, P2 and P2-fold; constant-norm variants (FR-008; R3 for P2; R4) | SC-007, SC-008, SC-013 for every mandatory fold and P2 cell | Revert to the S1 merge. Check: S1 tests still pass. |
+| S2 | Fold geometry, directional regularisation, quadrature, masks, sign alignment for FDI-fold, PLI discrete fold, P2 and P2-fold; constant-norm variants (FR-008; R3 for P2; R4) ("Stage S2 design") | New S2 tests (SC-002 for constant norm; SC-007, SC-008 and SC-013 for every mandatory fold and P2 cell); the existing fold package tests pass with no change; `pytest`; `ruff check LoopStructural packages`; package tests | Revert to the S1 merge. Check: the S1 tests still pass. No saved format changed. |
 | S3 | Persistence format version, transform and coordinate-space metadata; no second projection at load; copies keep the frame; legacy load requires a transform or identity declaration; transform change policy and restored-point cache invalidation (FR-016 to FR-020); ROADMAP.md decision for FR-019; `COMPAT.md` migration note | SC-006, SC-012, SC-016, SC-017 | Revert to the S2 merge. Check: old-format R1 files load through their documented path; a new-format file fails with 1 actionable error and 0 state changes on the old reader (SC-017). |
 | S4 | Display, export of observation geometry, fault-centre geometry and intrusion classification use stored world locations (FR-022) | World-location comparison within `Tp` (U3.4, U3.5) | Revert to the S3 merge. Check: viewer import paths unchanged. |
 | S5 | Cell-centre sampling, remaining resize paths, non-mutating diagnostics, residual and exclusion report (FR-014 remainder, FR-015, FR-023, FR-024) | SC-009, SC-011 | Revert to the S4 merge. Check: diagnostics report fields unchanged for callers. |
@@ -454,7 +737,9 @@ current tree is recorded as "not reproduced"; its test stays as a guard.
 - **Round-trip tests**: S1 covers point and direction round trips (SC-001).
   Persistence round trips are S3.
 - **Backend coverage**: S1 covers Python FDI and PLI/P1 cells for R2, R3 and
-  R5. S2 and S6 cover the other cells (OP1).
+  R5. S2 covers P2, FDI-fold, PLI discrete fold, P2-fold and the FDI and PLI
+  constant-norm variants ("Stage S2 design"). S6 covers native and Surfe
+  (OP1).
 - **Cross-language fixtures**: Not applicable in S1.
 - **Grid and display checks**: S1 checks support enclosure and resize. Cell
   centres and display are S4 and S5.
@@ -544,12 +829,7 @@ requests.
 The next planner runs read and confirm these files. The lists come from a
 grep survey on 2026-11-04 and are not final.
 
-- **S2**: `packages/loop_interpolation/src/loop_interpolation/_fd_fold_interpolator.py`,
-  `_discrete_fold_interpolator.py`, `_p2_fold_interpolator.py`,
-  `_p2interpolator.py`, `_fold_setup.py`, `_fold_norm_alignment.py`,
-  `_quadrature.py`, `_regularisation.py`, `_constant_norm.py`,
-  `_finite_difference_interpolator.py`, `_p1interpolator.py`;
-  `LoopStructural/modelling/features/builders/_folded_feature_builder.py`.
+- **S2**: planned. See "Stage S2 design" and "S2 files".
 - **S3**: `_geological_interpolator.py` (`to_dict`, `from_dict`),
   `_interpolator_factory.py`, `_finite_difference_interpolator.py` (`copy`),
   `_p2interpolator.py` (`copy`), `_p2_fold_interpolator.py` (`copy`),
@@ -580,10 +860,10 @@ grep survey on 2026-11-04 and are not final.
 | FR-002 | Factory keeps explicit centre in world; builder rows in world | `test_fault_frame_analytic.py` U1.1 | None |
 | FR-003 | Public conversion methods; builder uses each once | `test_rigid_transform_contract.py`; `test_reference_constraint_frames.py` | Load path (U3.2) is S3, OP1 |
 | FR-004 | `install_gradient_constraint`, `install_equality_constraints`, `add_inequality_feature`; documented callbacks | `test_reference_constraint_frames.py` | None |
-| FR-005 | `world_to_local_vectors` in `install_gradient_constraint` | SC-007, SC-008 tests | P2 is S2, OP1 |
+| FR-005 | `world_to_local_vectors` in `install_gradient_constraint`; S2 fold rows and directional terms | SC-007, SC-008 tests; S2 P2 cells | None |
 | FR-006 | `install_equality_constraints` | 168-node check, rotated sets | None |
 | FR-007 | `add_inequality_feature` | Bounds equal `h` at world nodes | None |
-| FR-008 | S2 | S2 | OP1 |
+| FR-008 | "Stage S2 design": `sample_fold_geometry`, fold interpolators, `add_directional_regularisation`, native adapter, `world_norm_constraints` | `test_fold_constraint_frames.py` | None |
 | FR-009 | `check_interpolation_geometry` | U2.7 test | None |
 | FR-010 | Factory (no `model.scale`); 3D inferred centre | SC-003 explicit and inferred | None |
 | FR-011 | Slip orthogonalisation; extent-direction row | SC-003, SC-013 | None |
@@ -605,27 +885,27 @@ grep survey on 2026-11-04 and are not final.
 | FR-027 | S6 | S6 | OP1 |
 | FR-028 | No signature change; `COMPAT.md` note | API contract tests | FR-019 exception S3, OP1 |
 | FR-029 | `verification.md` golden review section | Review record per changed result | None |
-| FR-030 | S1 FDI and PLI cells | S1 tests | Other cells S2, S6, OP1 |
+| FR-030 | S1 FDI and PLI cells; S2 P2, fold and constant-norm cells | S1 and S2 tests | Native and Surfe cells S6, OP1 |
 | FR-031 | Pre-fix rule in "Test strategy" | `verification.md` | None |
 | FR-032 | "Stages and rollback" | Rollback checks in `verification.md` | None |
 | SC-001 | `_rigid.py`, `BoundingBox` | `test_rigid_transform_contract.py` | None |
-| SC-002 | R1 evaluation | S2/S3 (R1 lifecycle and fits) | OP1 |
+| SC-002 | R1 fit for the constant-norm variants (S2) | `test_constant_norm_frames.py` | Other R1 cells and lifecycle S3, OP1; OP3 |
 | SC-003 | Fault design | `test_fault_frame_analytic.py` | Run time OP2 |
 | SC-004 | S6 | S6 | OP1 |
 | SC-005 | Fault and enclosure design | `test_fault_buffer_bounds.py` | Run time OP2 |
 | SC-006 | S3 | S3 | OP1 |
-| SC-007 | Reference sampling | `test_reference_constraint_frames.py` | Fold and P2 S2, OP1 |
-| SC-008 | Reference sampling | `test_reference_constraint_frames.py` (FDI, PLI) | P2 S2, OP1 |
+| SC-007 | Reference sampling; S2 fold sampling and P2 | `test_reference_constraint_frames.py`; `test_fold_constraint_frames.py` | None |
+| SC-008 | Reference sampling; S2 fold rows and P2 | `test_reference_constraint_frames.py` (FDI, PLI, P2); `test_fold_constraint_frames.py` | None |
 | SC-009 | S5 | S5 | OP1 |
 | SC-010 | S6 | S6 | OP1 |
 | SC-011 | `_cells_for_length` (resize part) | Resize test | Cell centres S5, OP1 |
 | SC-012 | Rotation part in S1 | `test_rigid_transform_contract.py` | Metadata and legacy part S3, OP1 |
-| SC-013 | Extent-direction row | `test_fault_frame_analytic.py` | Fold R4 geometry S2, OP1 |
+| SC-013 | Extent-direction row; S2 fold R4 directions | `test_fault_frame_analytic.py`; `test_fold_constraint_frames.py` | None |
 | SC-014 | Merge gates in every stage | `pytest`, ruff, package tests | None |
 | SC-015 | `verification.md` golden review | Review record; 0 tolerance changes | None |
 | SC-016 | S3 | S3 | OP1 |
 | SC-017 | Rollback column; format part S3 | `verification.md` | OP1 |
-| SC-018 | S1 cells; matrix S6 | `verification.md` backend matrix | OP1 |
+| SC-018 | S1 and S2 cells; matrix S6 | `verification.md` backend matrix | Native and Surfe S6, OP1 |
 | SC-019 | Gate checked on 2026-11-04: 003 spec (C-006, main and native worktree copies identical) and 004 spec (2026-11-03 source-005 entries) contain the amendments | Document check | None |
 
 ## Handover
@@ -644,6 +924,12 @@ grep survey on 2026-11-04 and are not final.
 - **Callback contracts**: feature-facing reference callbacks and region
   callbacks receive world points. `add_gradient_orthogonal_constraints`
   receives target-local points and target-local unit vectors.
+- **S2 callback contracts (owner: `loop_interpolation`)**: fold providers,
+  fold `mask_fn`, `DirectionalRegularisation.direction` (callable or array)
+  and the P2 `steepness_wtfunc` work in world coordinates. Helpers:
+  `loop_interpolation._fold_setup.sample_fold_geometry(interpolator, fold, local_points)`
+  and `world_norm_constraints(interpolator)`. Spec 004 builds directional
+  terms on this contract. The native adapter follows it.
 - **Exclusion record**: `GeologicalFeatureBuilder.excluded_rows:
   dict[str, dict[str, int]]`. S5 connects it to the diagnostics report.
 - **Fault geometry**: an explicit `fault_center` is a world point; the
