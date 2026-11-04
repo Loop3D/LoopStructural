@@ -7,7 +7,6 @@ import pandas as pd
 
 from ....interpolators import DiscreteInterpolator, GeologicalInterpolator, InterpolatorFactory
 from ....modelling.features import GeologicalFeature
-from ._base_builder import BaseBuilder
 from ....utils import getLogger
 from ....utils._api_registry import public_api
 from ....utils.helper import (
@@ -24,6 +23,7 @@ from ....utils.helper import (
     weight_name,
     xyz_names,
 )
+from ._base_builder import BaseBuilder
 
 logger = getLogger(__name__)
 
@@ -57,7 +57,7 @@ class GeologicalFeatureBuilder(BaseBuilder):
             nelements=nelements,
             buffer=kwargs.get("buffer", 0.2),
         )
-        
+
         if not issubclass(type(interpolator), GeologicalInterpolator):
             raise TypeError(
                 f"interpolator is {type(interpolator)} and must be a GeologicalInterpolator"
@@ -84,7 +84,15 @@ class GeologicalFeatureBuilder(BaseBuilder):
         self._orthogonal_features = {}
         self._equality_constraints = {}
         # add default parameters
-        self.update_build_arguments({'cpw':1.0,'npw':1.0,'regularisation':1.,'nelements':self.interpolator.n_elements})
+        self.update_build_arguments(
+            {
+                'cpw': 1.0,
+                'npw': 1.0,
+                'regularisation': 1.0,
+                'nelements': self.interpolator.n_elements,
+            }
+        )
+
     def set_not_up_to_date(self, caller):
         logger.info(
             f"Setting {self.name} to not up to date from an instance of {caller.__class__.__name__}"
@@ -118,9 +126,7 @@ class GeologicalFeatureBuilder(BaseBuilder):
         """
         self.data = data_frame.copy()
 
-    def add_orthogonal_feature(
-        self, feature, w=1.0, region=None, step=1, B=0, sample_rule=None
-    ):
+    def add_orthogonal_feature(self, feature, w=1.0, region=None, step=1, B=0, sample_rule=None):
         """
         Add a constraint to the interpolator so that the gradient of an exisitng
         feature is orthogonal to the feature being built. E.g. dot product
@@ -429,6 +435,7 @@ class GeologicalFeatureBuilder(BaseBuilder):
             )
         else:
             return np.zeros((0, 5))
+
     # def get_inequality_pair_constraints(self):
     #     mask = np.all(~np.isnan(self.data.loc[:,pairs_name()].to_numpy(float())),axis=1)
     #     if mask.shape[0] > 0:
@@ -504,7 +511,8 @@ class GeologicalFeatureBuilder(BaseBuilder):
             ]
             self.interpolator.support.origin = origin
             self.interpolator.support.maximum = maximum
-            self.update_build_arguments({'nelements':self.interpolator.n_elements})
+            self.update_build_arguments({'nelements': self.interpolator.n_elements})
+
     def build(self, data_region=None, **kwargs):
         """
         Runs the interpolation and builds the geological feature
@@ -533,7 +541,9 @@ class GeologicalFeatureBuilder(BaseBuilder):
             logger.info(f'Kwargs has {kwargs["nelements"]} elements')
             if self.interpolator.n_elements != kwargs['nelements']:
                 logger.info('Setting nelements to {} for {}'.format(kwargs['nelements'], self.name))
-                self.build_arguments['nelements'] = self.interpolator.set_nelements(kwargs['nelements'])
+                self.build_arguments['nelements'] = self.interpolator.set_nelements(
+                    kwargs['nelements']
+                )
                 logger.info(f'Interpolator nelements {self.interpolator.n_elements}')
                 self._up_to_date = False
         if domain:
@@ -545,24 +555,20 @@ class GeologicalFeatureBuilder(BaseBuilder):
             # if self.model.reuse_supports == False:
             if np.any(np.min(bb[0, :]) < self.interpolator.support.origin):
                 neworigin = np.min([self.interpolator.support.origin, bb[0, :]], axis=0)
-                logger.info(
-                    f"Changing origin of support for {self.name} from \
+                logger.info(f"Changing origin of support for {self.name} from \
                         {self.interpolator.support.origin[0]} \
                         {self.interpolator.support.origin[1]} \
                         {self.interpolator.support.origin[2]} \
-                        to {neworigin[0]} {neworigin[1]} {neworigin[2]}"
-                )
+                        to {neworigin[0]} {neworigin[1]} {neworigin[2]}")
 
                 self.interpolator.support.origin = neworigin
             if np.any(np.max(bb[0, :]) < self.interpolator.support.maximum):
                 newmax = np.max([self.interpolator.support.maximum, bb[0, :]], axis=0)
-                logger.info(
-                    f"Changing origin of support for {self.name} from \
+                logger.info(f"Changing origin of support for {self.name} from \
                         from {self.interpolator.support.maximum[0]} \
                         {self.interpolator.support.maximum[1]} \
                             {self.interpolator.support.maximum[2]} \
-                                to {newmax[0]} {newmax[1]} {newmax[2]}"
-                )
+                                to {newmax[0]} {newmax[1]} {newmax[2]}")
 
                 self.interpolator.support.maximum = newmax
             self.interpolator.set_region(region=region)

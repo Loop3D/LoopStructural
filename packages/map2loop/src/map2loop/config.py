@@ -1,10 +1,13 @@
-import urllib.error
-import beartype
+from __future__ import annotations
+
 import json
-import urllib
-import time
 import pathlib
+import time
+import urllib
+import urllib.error
 from typing import Union
+
+import beartype
 
 from .logging import getLogger
 
@@ -100,19 +103,19 @@ class Config:
         Args:
             dictionary (dict): The dictionary to update from
         """
-        
+
         if "structure" in dictionary:
             self.structure_config.update(dictionary["structure"])
-            for key in dictionary["structure"].keys():
+            for key in dictionary["structure"]:
                 if key not in self.structure_config:
                     logger.warning(
                         f"Config dictionary structure segment contained {key} which is not used"
                     )
             dictionary.pop("structure")
-            
+
         if "geology" in dictionary:
             self.geology_config.update(dictionary["geology"])
-            for key in dictionary["geology"].keys():
+            for key in dictionary["geology"]:
                 if key not in self.geology_config:
                     logger.warning(
                         f"Config dictionary geology segment contained {key} which is not used"
@@ -120,7 +123,7 @@ class Config:
             dictionary.pop("geology")
         if "fault" in dictionary:
             self.fault_config.update(dictionary["fault"])
-            for key in dictionary["fault"].keys():
+            for key in dictionary["fault"]:
                 if key not in self.fault_config:
                     logger.warning(
                         f"Config dictionary fault segment contained {key} which is not used"
@@ -128,7 +131,7 @@ class Config:
             dictionary.pop("fault")
         if "fold" in dictionary:
             self.fold_config.update(dictionary["fold"])
-            for key in dictionary["fold"].keys():
+            for key in dictionary["fold"]:
                 if key not in self.fold_config:
                     logger.warning(
                         f"Config dictionary fold segment contained {key} which is not used"
@@ -137,11 +140,8 @@ class Config:
         if len(dictionary):
             logger.warning(f"Unused keys from config format {list(dictionary.keys())}")
 
-
     @beartype.beartype
-    def update_from_file(
-        self, filename: Union[pathlib.Path, str],  lower: bool = False
-    ):
+    def update_from_file(self, filename: Union[pathlib.Path, str], lower: bool = False):
         """
         Update the config dictionary from the provided json filename or url
 
@@ -155,7 +155,7 @@ class Config:
             filename = str(filename)
 
             # if url, open the url
-            if filename.startswith("http") or filename.startswith("ftp"):
+            if filename.startswith(("http", "ftp")):
                 try_count = 5
                 success = False
                 # try 5 times to access the URL
@@ -202,11 +202,12 @@ class Config:
         except FileNotFoundError:
             raise
 
-        except Exception:
+        except Exception as e:
+            logger.exception("Failed to parse config file %s", filename)
             err_string = f"There is a problem parsing the config file ({filename}).\n"
             if filename.startswith("http"):
                 err_string += "Please check the file is accessible online and then\n"
             else:
                 err_string += "Please check the file exists and is accessible then\n"
             err_string += "Check the contents for mismatched quotes or brackets!"
-            raise Exception(err_string)
+            raise ValueError(err_string) from e

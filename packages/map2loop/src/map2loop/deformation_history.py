@@ -1,13 +1,12 @@
-import pandas
-import numpy
-import beartype
-import geopandas
 import math
 
-from .utils import calculate_minimum_fault_length
-
+import beartype
+import geopandas
+import numpy
+import pandas
 
 from .logging import getLogger
+from .utils import calculate_minimum_fault_length
 
 logger = getLogger(__name__)
 
@@ -38,7 +37,7 @@ class DeformationHistory:
         self.history = []
         self.fault_fault_relationships = []
         self.project = project
-        
+
         # Create empty fault and fold dataframes
         self.faultColumns = numpy.dtype(
             [
@@ -68,7 +67,7 @@ class DeformationHistory:
         )
         self.faults = pandas.DataFrame(numpy.empty(0, dtype=self.faultColumns))
         # self.faults = self.faults.set_index("name")
-        
+
         self.foldColumns = numpy.dtype(
             [
                 ("eventId", int),
@@ -86,9 +85,7 @@ class DeformationHistory:
         )
         self.folds = pandas.DataFrame(numpy.empty(0, dtype=self.foldColumns))
         # self.folds = self.folds.set_index("name")
-        
-        
-        
+
     def findfault(self, id):
         """
         Find the fault in the summary based on its eventId
@@ -138,15 +135,15 @@ class DeformationHistory:
                 The fault information to add
         """
         if issubclass(type(fault), pandas.DataFrame) or issubclass(type(fault), dict):
-            if "name" in fault.keys():
+            if "name" in fault:
                 if fault["name"] in self.faults.index:
-                    logger.warning("Replacing fault", fault["name"])
+                    logger.warning("Replacing fault %s", fault["name"])
                 self.faults[fault["name"]] = fault
-                logger.info("Adding fault", fault["name"])
+                logger.info("Adding fault %s", fault["name"])
             else:
-                logger.error("No name field in fault", fault)
+                logger.error("No name field in fault: %s", fault)
         else:
-            logger.error("Cannot add fault to dataframe with type", type(fault))
+            logger.error("Cannot add fault to dataframe with type %s", type(fault))
 
     def removeFaultByName(self, name: str):
         """
@@ -179,15 +176,15 @@ class DeformationHistory:
                 The fold information to add
         """
         if issubclass(type(fold), pandas.DataFrame) or issubclass(type(fold), dict):
-            if "name" in fold.keys():
+            if "name" in fold:
                 if fold["name"] in self.folds.index:
-                    logger.warning("Replacing fold", fold["name"])
-                logger.info("Adding fold", fold["name"])
+                    logger.warning("Replacing fold %s", fold["name"])
+                logger.info("Adding fold %s", fold["name"])
                 self.folds[fold["name"]] = fold
             else:
-                logger.error("No name field in fold", fold)
+                logger.error("No name field in fold: %s", fold)
         else:
-            logger.error("Cannot add fold to dataframe with type", type(fold))
+            logger.error("Cannot add fold to dataframe with type %s", type(fold))
 
     @beartype.beartype
     def populate(self, faults_map_data: geopandas.GeoDataFrame):
@@ -262,8 +259,7 @@ class DeformationHistory:
             self.faults.at[index, "centreX"] = numpy.mean(observations["X"])
             self.faults.at[index, "centreY"] = numpy.mean(observations["Y"])
             self.faults.at[index, "centreZ"] = numpy.mean(observations["Z"])
-    
-    
+
     def get_faults_for_export(self):
         """
         Get the faults for export (removes any fault that is shorter than the cutoff)
@@ -273,9 +269,9 @@ class DeformationHistory:
         """
         # if no minimum fault length is set, calculate it
         if self.project.get_minimum_fault_length() < 0:
-            self.project.set_minimum_fault_length( calculate_minimum_fault_length(
-                bbox=self.project.bounding_box, area_percentage=0.05
-            ))
+            self.project.set_minimum_fault_length(
+                calculate_minimum_fault_length(bbox=self.project.bounding_box, area_percentage=0.05)
+            )
         return self.faults[self.faults["length"] >= self.project.get_minimum_fault_length()].copy()
 
     @beartype.beartype

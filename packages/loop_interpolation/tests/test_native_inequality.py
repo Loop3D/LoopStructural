@@ -13,8 +13,8 @@ import pytest
 # Skip the whole file when the native core is not installed.
 pytest.importorskip("loop_interpolation_core")
 
-from loop_interpolation import FiniteDifferenceInterpolator as FDI  # noqa: E402
-from loop_interpolation import StructuredGrid  # noqa: E402
+from loop_interpolation import FiniteDifferenceInterpolator as FDI
+from loop_interpolation import StructuredGrid
 
 VIOLATION_TOL = 1e-4  # fraction of the field range
 FIELD_TOL = 1e-3  # fraction of the field range
@@ -86,9 +86,7 @@ def _solve_value_bounds(solver):
     bound_xyz = np.array(
         [[0.3, 0.3, 0.7], [0.5, 0.5, 0.7], [0.7, 0.7, 0.7], [0.4, 0.6, 0.8], [0.6, 0.4, 0.8]]
     )
-    bounds = np.column_stack(
-        [bound_xyz, np.full(5, -5.0), np.full(5, 0.5), np.ones(5)]
-    )
+    bounds = np.column_stack([bound_xyz, np.full(5, -5.0), np.full(5, 0.5), np.ones(5)])
     interpolator.set_value_inequality_constraints(bounds)
     interpolator.setup()
     interpolator.solve_system(solver=solver, solver_kwargs=dict(SOLVER_KWARGS[solver]))

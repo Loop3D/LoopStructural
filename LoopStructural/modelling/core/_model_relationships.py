@@ -10,7 +10,15 @@ helpers also delegate, since they're called throughout GeologicalModel's
 feature-construction methods.
 """
 
-from ...modelling.features import FeatureType, UnconformityFeature
+from __future__ import annotations
+
+from typing import TYPE_CHECKING
+
+from ...modelling.features import FeatureType, GeologicalFeature, UnconformityFeature
+from ...modelling.features.builders import GeologicalFeatureBuilder, StructuralFrameBuilder
+
+if TYPE_CHECKING:
+    from .geological_model import GeologicalModel
 from ...utils import getLogger
 
 logger = getLogger(__name__)
@@ -18,8 +26,12 @@ logger = getLogger(__name__)
 
 class FeatureRelationshipManager:
     @staticmethod
-    def add_faults(model, feature_builder, features=None):
-        """Adds all existing faults to a geological feature builder
+    def add_faults(
+        model: GeologicalModel,
+        feature_builder: GeologicalFeatureBuilder | StructuralFrameBuilder,
+        features: list[GeologicalFeature | str] | None = None,
+    ) -> None:
+        """Add all existing faults to a geological feature builder.
 
         Parameters
         ----------
@@ -38,9 +50,10 @@ class FeatureRelationshipManager:
                 feature_builder.add_fault(f)
 
     @staticmethod
-    def add_domain_fault_above(model, feature):
-        """
-        Looks through the feature list and adds any domain faults to the feature. The domain fault masks everything
+    def add_domain_fault_above(model: GeologicalModel, feature: GeologicalFeatureBuilder) -> None:
+        """Add the active domain fault above the feature.
+
+        The domain fault masks everything
         where the fault scalar field is < 0 as being active when added to feature.
 
         Parameters
@@ -63,9 +76,10 @@ class FeatureRelationshipManager:
                 break
 
     @staticmethod
-    def add_domain_fault_below(model, domain_fault):
-        """
-        Looks through the feature list and adds any the domain_fault to the features
+    def add_domain_fault_below(model: GeologicalModel, domain_fault: GeologicalFeature) -> None:
+        """Add the domain fault to features below it.
+
+        The domain fault is added to features
         that already exist in the stack until an unconformity or another domain
         fault is reached (that boundary is not cropped). domain faults
         to the feature. The domain fault masks everything where the fault scalar field
@@ -92,9 +106,10 @@ class FeatureRelationshipManager:
             f.add_region(region)
 
     @staticmethod
-    def add_unconformity_above(model, feature):
-        """
-        Adds a region to the feature to prevent the value from being
+    def add_unconformity_above(model: GeologicalModel, feature: GeologicalFeature) -> None:
+        """Add a region that excludes values above the unconformity.
+
+        This prevents the value from being
         interpolated where the unconformities exists above e.g.
         if there is another feature above and the unconformity is at 0
         then the features added below (after) will only be visible where the
@@ -105,7 +120,6 @@ class FeatureRelationshipManager:
         model : GeologicalModel
         feature - GeologicalFeature
         """
-
         if feature.type == FeatureType.FAULT:
             return
         for f in reversed(model.features):
@@ -117,7 +131,9 @@ class FeatureRelationshipManager:
                 break
 
     @staticmethod
-    def add_unconformity(model, feature, value, index=None):
+    def add_unconformity(
+        model: GeologicalModel, feature: GeologicalFeature, value: float, index: int | None = None
+    ) -> UnconformityFeature:
         """
         Use an existing feature to add an unconformity to the model.
 
@@ -163,7 +179,9 @@ class FeatureRelationshipManager:
         return uc_feature
 
     @staticmethod
-    def add_onlap_unconformity(model, feature, value, index=None):
+    def add_onlap_unconformity(
+        model: GeologicalModel, feature: GeologicalFeature, value: float, index: int | None = None
+    ) -> UnconformityFeature | None:
         """
         Use an existing feature to add an unconformity to the model.
 

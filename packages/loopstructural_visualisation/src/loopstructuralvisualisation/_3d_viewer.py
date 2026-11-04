@@ -1,16 +1,16 @@
 from __future__ import annotations
 
-import pyvista as pv
-import numpy as np
 import re
+from typing import Callable
 
-from LoopStructural.geometry import BoundingBox, VectorPoints, ValuePoints
-from LoopStructural.modelling.features import BaseFeature, StructuralFrame
+import numpy as np
+import pyvista as pv
 
-from LoopStructural.modelling.features.fault import FaultSegment
 from LoopStructural import GeologicalModel
+from LoopStructural.geometry import BoundingBox, ValuePoints, VectorPoints
+from LoopStructural.modelling.features import BaseFeature, StructuralFrame
+from LoopStructural.modelling.features.fault import FaultSegment
 from LoopStructural.utils import getLogger
-from typing import Callable, Union, Optional, List
 
 logger = getLogger(__name__)
 
@@ -83,7 +83,7 @@ class Loop3DView(pv.Plotter):
             raise ValueError("No model provided")
         return model
 
-    def _get_vector_scale(self, scale: Optional[Union[float, int]]) -> float:
+    def _get_vector_scale(self, scale: float | None) -> float:
         autoscale = 1.0
         if self.model is not None:
             # automatically scale vector data to be 5% of the bounding box length
@@ -102,18 +102,18 @@ class Loop3DView(pv.Plotter):
     def plot_surface(
         self,
         geological_feature: BaseFeature,
-        value: Optional[Union[float, int]] = None,
-        paint_with: Optional[BaseFeature] = None,
-        colour: Optional[str] = "red",
-        cmap: Optional[str] = None,
-        opacity: Optional[float] = None,
-        vmin: Optional[float] = None,
-        vmax: Optional[float] = None,
-        pyvista_kwargs: Optional[dict] = None,
+        value: float | None = None,
+        paint_with: BaseFeature | None = None,
+        colour: str | None = "red",
+        cmap: str | None = None,
+        opacity: float | None = None,
+        vmin: float | None = None,
+        vmax: float | None = None,
+        pyvista_kwargs: dict | None = None,
         show_scalar_bar: bool = False,
         slicer: bool = False,
-        name: Optional[str] = None,
-        bounding_box: Optional[BoundingBox] = None,
+        name: str | None = None,
+        bounding_box: BoundingBox | None = None,
     ):
         """Add an isosurface of a geological feature to the model
 
@@ -200,14 +200,14 @@ class Loop3DView(pv.Plotter):
         self,
         geological_feature: BaseFeature,
         cmap: str = "viridis",
-        vmin: Optional[float] = None,
-        vmax: Optional[float] = None,
-        opacity: Optional[float] = None,
-        pyvista_kwargs: Optional[dict] = None,
+        vmin: float | None = None,
+        vmax: float | None = None,
+        opacity: float | None = None,
+        pyvista_kwargs: dict | None = None,
         show_scalar_bar: bool = False,
         slicer: bool = False,
-        name: Optional[str] = None,
-        bounding_box: Optional[BoundingBox] = None,
+        name: str | None = None,
+        bounding_box: BoundingBox | None = None,
     ):
         """Plot a volume with the scalar field as the property
         calls feature.scalar_field() to get the scalar field and
@@ -270,8 +270,8 @@ class Loop3DView(pv.Plotter):
         pyvista_kwargs=None,
         show_scalar_bar: bool = False,
         slicer: bool = False,
-        threshold: Optional[Union[float, List[float]]] = None,
-        name: Optional[str] = None,
+        threshold: float | list[float] | None = None,
+        name: str | None = None,
     ):
         """Plot a voxel model where the stratigraphic id is the active scalar.
         It will use the colours defined in the stratigraphic column of the model
@@ -300,7 +300,7 @@ class Loop3DView(pv.Plotter):
         if name is None:
             name = "block_model"
         name = self.increment_name(name)  # , 'block_model')
-        block, codes = model.get_block_model()
+        block, _ = model.get_block_model()
         block = block.vtk()
         block.set_active_scalars("stratigraphy")
         actor = None
@@ -322,13 +322,13 @@ class Loop3DView(pv.Plotter):
 
     def plot_fault_displacements(
         self,
-        fault_list: Optional[List[FaultSegment]] = None,
-        bounding_box: Optional[BoundingBox] = None,
+        fault_list: list[FaultSegment] | None = None,
+        bounding_box: BoundingBox | None = None,
         model=None,
         cmap="rainbow",
         pyvista_kwargs=None,
         show_scalar_bar: bool = False,
-        name: Optional[str] = None,
+        name: str | None = None,
     ):
         """Plot the dispalcement magnitude for faults in the model
         on a voxel block
@@ -372,12 +372,12 @@ class Loop3DView(pv.Plotter):
         self,
         strati: bool = True,
         faults: bool = True,
-        cmap: Optional[str] = None,
-        model: Optional[GeologicalModel] = None,
+        cmap: str | None = None,
+        model: GeologicalModel | None = None,
         fault_colour: str = "black",
-        pyvista_kwargs: Optional[dict] = None,
+        pyvista_kwargs: dict | None = None,
         show_scalar_bar: bool = False,
-        name: Optional[str] = None,
+        name: str | None = None,
     ):
         """Plot the surfaces of the model
 
@@ -447,14 +447,14 @@ class Loop3DView(pv.Plotter):
     def plot_vector_field(
         self,
         geological_feature: BaseFeature,
-        scale: Optional[float] = None,
-        name: Optional[str] = None,
+        scale: float | None = None,
+        name: str | None = None,
         geom="arrow",
-        scalars: Optional[np.ndarray] = None,
+        scalars: np.ndarray | None = None,
         normalise: bool = False,
-        scale_function: Optional[Callable[[np.ndarray], np.ndarray]] = None,
-        pyvista_kwargs: Optional[dict] = None,
-        bounding_box: Optional[BoundingBox] = None,
+        scale_function: Callable[[np.ndarray], np.ndarray] | None = None,
+        pyvista_kwargs: dict | None = None,
+        bounding_box: BoundingBox | None = None,
     ) -> pv.Actor:
         """Plot a vector field
 
@@ -494,16 +494,16 @@ class Loop3DView(pv.Plotter):
 
     def plot_data(
         self,
-        feature: Union[BaseFeature, StructuralFrame],
+        feature: BaseFeature | StructuralFrame,
         value: bool = True,
         vector: bool = True,
-        scale: Optional[Union[float, int]] = None,
+        scale: float | None = None,
         geom: str = "arrow",
-        name: Optional[str] = None,
-        scalars: Optional[np.ndarray] = None,
+        name: str | None = None,
+        scalars: np.ndarray | None = None,
         normalise: bool = True,
-        pyvista_kwargs: Optional[dict] = None,
-    ) -> List[pv.Actor]:
+        pyvista_kwargs: dict | None = None,
+    ) -> list[pv.Actor]:
         """Add the data associated with a feature to the plotter
 
         Parameters
@@ -547,39 +547,35 @@ class Loop3DView(pv.Plotter):
         bb = self.model.bounding_box if self.model is not None else None
         for f in feature:
             for d in f.get_data() or []:
-                if isinstance(d, ValuePoints):
-                    if value:
-                        if name is None:
-                            object_name = d.name + "_values"
-                        else:
-                            object_name = f"{d.name}_values_{name}"
-                        object_name = self.increment_name(object_name)  # , 'values')
-                        actors.append(
-                            self.add_mesh(
-                                d.vtk(scalars=scalars), name=object_name, **pyvista_kwargs
-                            )
+                if isinstance(d, ValuePoints) and value:
+                    if name is None:
+                        object_name = d.name + "_values"
+                    else:
+                        object_name = f"{d.name}_values_{name}"
+                    object_name = self.increment_name(object_name)  # , 'values')
+                    actors.append(
+                        self.add_mesh(d.vtk(scalars=scalars), name=object_name, **pyvista_kwargs)
+                    )
+                if isinstance(d, VectorPoints) and vector:
+                    if name is None:
+                        object_name = d.name + "_vectors"
+                    else:
+                        object_name = f"{d.name}_vectors_{name}"
+                    object_name = self.increment_name(object_name)  # , 'vectors')
+                    actors.append(
+                        self.add_mesh(
+                            d.vtk(
+                                geom=geom,
+                                scale=scale,
+                                scalars=scalars,
+                                bb=bb,
+                                tolerance=None,
+                                normalise=normalise,
+                            ),
+                            name=object_name,
+                            **pyvista_kwargs,
                         )
-                if isinstance(d, VectorPoints):
-                    if vector:
-                        if name is None:
-                            object_name = d.name + "_vectors"
-                        else:
-                            object_name = f"{d.name}_vectors_{name}"
-                        object_name = self.increment_name(object_name)  # , 'vectors')
-                        actors.append(
-                            self.add_mesh(
-                                d.vtk(
-                                    geom=geom,
-                                    scale=scale,
-                                    scalars=scalars,
-                                    bb=bb,
-                                    tolerance=None,
-                                    normalise=normalise,
-                                ),
-                                name=object_name,
-                                **pyvista_kwargs,
-                            )
-                        )
+                    )
         return actors
 
     def plot_fold(self, folded_feature: BaseFeature, pyvista_kwargs=None):
@@ -594,12 +590,12 @@ class Loop3DView(pv.Plotter):
         slip_vector: bool = True,
         displacement_scale_vector: bool = True,
         fault_volume: bool = True,
-        vector_scale: Optional[Union[float, int]] = None,
-        name: Optional[str] = None,
+        vector_scale: float | None = None,
+        name: str | None = None,
         geom: str = "arrow",
-        pyvista_kwargs: Optional[dict] = None,
-        bounding_box: Optional[BoundingBox] = None,
-    ) -> List[pv.Actor]:
+        pyvista_kwargs: dict | None = None,
+        bounding_box: BoundingBox | None = None,
+    ) -> list[pv.Actor]:
         """Plot a fault including the surface, slip vector and displacement volume
 
         Parameters
@@ -674,7 +670,7 @@ class Loop3DView(pv.Plotter):
         return actors
 
     def plot_fault_ellipsoid(
-        self, fault: FaultSegment, name: Optional[str] = None, pyvista_kwargs: Optional[dict] = None
+        self, fault: FaultSegment, name: str | None = None, pyvista_kwargs: dict | None = None
     ) -> pv.Actor:
         """Plot the fault ellipsoid
 

@@ -1,14 +1,17 @@
-import pytest
 import geopandas as gpd
+import pytest
 import shapely.geometry
-from map2loop.mapdata import MapData
+
 from map2loop.data_checks import check_geology_fields_validity
+from map2loop.mapdata import MapData
+
 
 # Datatype Enum
 class Datatype:
     GEOLOGY = 0
 
-# Config 
+
+# Config
 class MockConfig:
     def __init__(self):
         self.geology_config = {
@@ -24,6 +27,7 @@ class MockConfig:
             "objectid_column": "ID",
             "ignore_lithology_codes": [],
         }
+
 
 @pytest.mark.parametrize(
     "geology_data, expected_validity, expected_message",
@@ -155,7 +159,7 @@ class MockConfig:
                 "ROCKTYPE2": ["Quartz", "FDS"],
                 "MIN_AGE": [150.0, 200],
                 "MAX_AGE": [200.0, 250],
-                "ID": [1, None],  
+                "ID": [1, None],
             },
             True,
             "Datatype GEOLOGY: Column 'ID' (config key: 'objectid_column') contains non-numeric or NaN values. Please rectify the values, or remove this key from the config dictionary to let map2loop assign IDs.",
@@ -183,9 +187,6 @@ class MockConfig:
         ),
     ],
 )
-
-
-
 def test_check_geology_fields_validity(geology_data, expected_validity, expected_message):
     # Create a GeoDataFrame
     geology_gdf = gpd.GeoDataFrame(geology_data, crs="EPSG:4326")

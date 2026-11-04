@@ -1,4 +1,5 @@
 """Tests for P2FoldInterpolator."""
+
 import numpy as np
 import pytest
 from loop_interpolation import P2Interpolator, P2UnstructuredTetMesh
@@ -93,9 +94,12 @@ def test_update_replays_setup_kwargs(mesh):
         np.testing.assert_allclose(c["w"], w * np.sqrt(0.0 + _q_centroid(mesh)))
     assert i._setup_kwargs["regularisation"] == 0.3
     assert i._setup_kwargs["fold_weights"] == fw
-    assert i.interpolation_weights["cgw"] == i.resolve_regularisation_config(
-        regularisation=0.3, directional_regularisation=None
-    ).isotropic
+    assert (
+        i.interpolation_weights["cgw"]
+        == i.resolve_regularisation_config(
+            regularisation=0.3, directional_regularisation=None
+        ).isotropic
+    )
 
 
 def _q_centroid(mesh):
@@ -213,14 +217,18 @@ def test_nan_fold_rows_build_and_log_count(mesh, caplog):
 
 @pytest.mark.parametrize("alignment,expected_sign", [("none", -1), ("warn", -1), ("correct", 1)])
 def test_fold_norm_sign_matches_dfi(mesh, alignment, expected_sign):
-    from loop_interpolation import DiscreteFoldInterpolator, TetMesh
-    from loop_interpolation._fold_norm_alignment import resolve_fold_norm_target
     from unittest.mock import Mock
 
-    normals = np.array([[0.5, 0.5, 0.5, -1., 0., 0.]])
+    from loop_interpolation import DiscreteFoldInterpolator, TetMesh
+    from loop_interpolation._fold_norm_alignment import resolve_fold_norm_target
+
+    normals = np.array([[0.5, 0.5, 0.5, -1.0, 0.0, 0.0]])
     target = resolve_fold_norm_target(
-        fold=SimpleFold(), normal_constraints=normals, fold_norm=-1.,
-        dgz_alignment=alignment, logger=Mock(),
+        fold=SimpleFold(),
+        normal_constraints=normals,
+        fold_norm=-1.0,
+        dgz_alignment=alignment,
+        logger=Mock(),
     )
     assert np.sign(target) == expected_sign
     dfi = DiscreteFoldInterpolator(
@@ -236,14 +244,15 @@ def test_fold_norm_sign_matches_dfi(mesh, alignment, expected_sign):
 @pytest.mark.parametrize("angle", [0.0, 30.0])
 def test_constant_fold_without_orientation_data(mesh, angle):
     theta = np.deg2rad(angle)
-    orientation = np.array([np.sin(theta), 0., np.cos(theta)])
-    dgz = np.array([np.cos(theta), 0., -np.sin(theta)])
+    orientation = np.array([np.sin(theta), 0.0, np.cos(theta)])
+    dgz = np.array([np.cos(theta), 0.0, -np.sin(theta)])
     expected = -dgz  # normalisation target -1
 
     class ConstantAngleFold:
         def get_deformed_orientation(self, points):
-            return tuple(np.tile(v, (len(points), 1)) for v in
-                         (orientation, np.array([0., 1., 0.]), dgz))
+            return tuple(
+                np.tile(v, (len(points), 1)) for v in (orientation, np.array([0.0, 1.0, 0.0]), dgz)
+            )
 
     i = P2FoldInterpolator(mesh, fold=ConstantAngleFold())
     contacts = np.array([[0.5, 0.5, 0.5], [1.5, 1.5, 1.5]])
@@ -253,7 +262,7 @@ def test_constant_fold_without_orientation_data(mesh, angle):
     points = np.random.default_rng(83).uniform(0.1, 1.9, (100, 3))
     gradient = i.evaluate_gradient(points)
     assert np.isfinite(gradient).all()
-    angles = np.degrees(np.arccos(np.clip(
-        gradient @ expected / np.linalg.norm(gradient, axis=1), -1., 1.
-    )))
+    angles = np.degrees(
+        np.arccos(np.clip(gradient @ expected / np.linalg.norm(gradient, axis=1), -1.0, 1.0))
+    )
     assert np.median(angles) < 1.0

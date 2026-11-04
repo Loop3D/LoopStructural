@@ -1,7 +1,9 @@
 from abc import ABC, abstractmethod
+
 import beartype
-import pandas
 import geopandas
+import pandas
+
 from .mapdata import MapData
 
 
@@ -49,7 +51,6 @@ class ThrowCalculator(ABC):
         Returns:
             pandas.DataFrame: fault data frame with throw values (avgDisplacement and avgDownthrowDir) filled in
         """
-        pass
 
 
 class ThrowCalculatorAlpha(ThrowCalculator):

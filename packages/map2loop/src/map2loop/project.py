@@ -1,38 +1,41 @@
 # internal imports
-from map2loop.fault_orientation import FaultOrientationNearest
-from .utils import hex_to_rgb, set_z_values_from_raster_df
-from .m2l_enums import VerboseLevel, ErrorState, Datatype
-from .mapdata import MapData
-from .contact_extractor import ContactExtractor
-from .sampler import Sampler, SamplerDecimator, SamplerSpacing
-from .thickness_calculator import InterpolatedStructure, ThicknessCalculator
-from .throw_calculator import ThrowCalculator, ThrowCalculatorAlpha
-from .fault_orientation import FaultOrientation
-from .sorter import Sorter, SorterAgeBased, SorterAlpha, SorterUseNetworkX, SorterUseHint
-from .stratigraphic_column import StratigraphicColumn
-from .deformation_history import DeformationHistory
-from .topology import Topology
-from .data_checks import validate_config_dictionary
-
 # external imports
 import LoopProjectFile as LPF
 from osgeo import gdal
+
+from map2loop.fault_orientation import FaultOrientationNearest
+
+from .contact_extractor import ContactExtractor
+from .data_checks import validate_config_dictionary
+from .deformation_history import DeformationHistory
+from .fault_orientation import FaultOrientation
+from .m2l_enums import Datatype, ErrorState, VerboseLevel
+from .mapdata import MapData
+from .sampler import Sampler, SamplerDecimator, SamplerSpacing
+from .sorter import Sorter, SorterAgeBased, SorterAlpha, SorterUseHint, SorterUseNetworkX
+from .stratigraphic_column import StratigraphicColumn
+from .thickness_calculator import InterpolatedStructure, ThicknessCalculator
+from .throw_calculator import ThrowCalculator, ThrowCalculatorAlpha
+from .topology import Topology
+from .utils import hex_to_rgb, set_z_values_from_raster_df
+
 gdal.UseExceptions()
-import geopandas
-import beartype
-from beartype.typing import Union, List, Dict, Any
+import os
 import pathlib
+import re
+
+import beartype
+import geopandas
 import numpy
 import pandas
-import os
-import re
+from beartype.typing import Any, Dict, List, Optional, Union
 
 from .logging import getLogger
 
 logger = getLogger(__name__)
 
 
-class Project(object):
+class Project:
     """
     The main entry point into using map2loop
 
@@ -71,12 +74,12 @@ class Project(object):
         fold_filename: str = "",
         dtm_filename: str = "",
         config_filename: Union[pathlib.Path, str] = "",
-        config_dictionary: dict = {},
+        config_dictionary: Optional[dict] = None,
         clut_filename: Union[pathlib.Path, str] = "",
         save_pre_checked_map_data: bool = False,
         loop_project_filename: str = "",
         overwrite_loopprojectfile: bool = False,
-    ):  
+    ):
         """
         The initialiser for the map2loop project
 
@@ -120,9 +123,9 @@ class Project(object):
             TypeError: Type of bounding_box not a dict or tuple
             ValueError: use_australian_state_data not in state list ['WA', 'SA', 'QLD', 'NSW', 'TAS', 'VIC', 'ACT', 'NT']
         """
-        
+
         # make sure all the needed arguments are provided
-        if not use_australian_state_data: # this check has to skip if using Loop server data
+        if not use_australian_state_data:  # this check has to skip if using Loop server data
             self.validate_required_inputs(
                 bounding_box=bounding_box,
                 working_projection=working_projection,
@@ -132,7 +135,7 @@ class Project(object):
                 config_dictionary=config_dictionary,
                 config_filename=config_filename,
             )
-        
+
         self._error_state = ErrorState.NONE
         self._error_state_msg = ""
         self.verbose_level = verbose_level
@@ -149,8 +152,7 @@ class Project(object):
         self.loop_filename = loop_project_filename
         self.overwrite_lpf = overwrite_loopprojectfile
         self.active_thickness = None
-        
-        
+
         # initialise the dataframes to store data in
         self.fault_orientations = pandas.DataFrame(
             columns=["ID", "DIPDIR", "DIP", "X", "Y", "Z", "featureId"]
@@ -211,20 +213,21 @@ class Project(object):
             self.map_data.set_filename(Datatype.DTM, dtm_filename)
         if fault_orientation_filename != "":
             self.map_data.set_filename(Datatype.FAULT_ORIENTATION, fault_orientation_filename)
-       
+
         if config_filename != "":
             self.map_data.set_config_filename(config_filename)
 
+        if config_dictionary is None:
+            config_dictionary = {}
         if config_dictionary != {}:
             validate_config_dictionary(config_dictionary)
             self.map_data.config.update_from_dictionary(config_dictionary)
             # print(self.map_data.config)
             # self.map_data.config.validate_config_dictionary(config_dictionary)
-            
+
         if clut_filename != "":
             self.map_data.set_colour_filename(clut_filename)
-            
-        
+
         # Load all data (both shape and raster)
         self.map_data.load_all_map_data()
 
@@ -241,15 +244,15 @@ class Project(object):
         self.stratigraphic_column.populate(self.map_data.get_map_data(Datatype.GEOLOGY))
         self.deformation_history.populate(self.map_data.get_map_data(Datatype.FAULT))
         self.topology = Topology(
-            self.map_data.get_map_data(Datatype.GEOLOGY), 
-            self.map_data.get_map_data(Datatype.FAULT)
+            self.map_data.get_map_data(Datatype.GEOLOGY), self.map_data.get_map_data(Datatype.FAULT)
+        )
+        self.thickness_calculator = [
+            InterpolatedStructure(
+                dtm_data=self.map_data.get_map_data(Datatype.DTM),
+                bounding_box=self.bounding_box,
+                is_strike=False,
             )
-        self.thickness_calculator = [InterpolatedStructure(
-            dtm_data=self.map_data.get_map_data(Datatype.DTM),
-            bounding_box=self.bounding_box,
-            is_strike=False
-        )]
-
+        ]
 
     @beartype.beartype
     def validate_required_inputs(
@@ -259,13 +262,16 @@ class Project(object):
         geology_filename: str,
         structure_filename: str,
         dtm_filename: str,
-        config_filename: str = None,
-        config_dictionary: Dict[str, Any] = {},
+        config_filename: Optional[str] = None,
+        config_dictionary: Optional[Dict[str, Any]] = None,
     ) -> None:
+
+        if config_dictionary is None:
+            config_dictionary = {}
 
         required_inputs = {
             "bounding_box": bounding_box,
-            "working_projection": working_projection, # this may be removed when fix is added for https://github.com/Loop3D/map2loop/issues/103
+            "working_projection": working_projection,  # this may be removed when fix is added for https://github.com/Loop3D/map2loop/issues/103
             "geology_filename": geology_filename,
             "structure_filename": structure_filename,
             "dtm_filename": dtm_filename,
@@ -291,7 +297,7 @@ class Project(object):
                 "A config file is required to run map2loop - use either 'config_filename' or 'config_dictionary' to initialise the project."
             )
             raise ValueError(
-                 "A config file is required to run map2loop - use either 'config_filename' or 'config_dictionary' to initialise the project."
+                "A config file is required to run map2loop - use either 'config_filename' or 'config_dictionary' to initialise the project."
             )
         if config_filename and config_dictionary:
             logger.error(
@@ -301,8 +307,6 @@ class Project(object):
                 "Both 'config_filename' and 'config_dictionary' were provided. Please specify only one config."
             )
 
-            
-    
     # Getters and Setters
     @beartype.beartype
     def set_ignore_lithology_codes(self, codes: list):
@@ -479,7 +483,7 @@ class Project(object):
         """
         return float(self.map_data.config.fault_config['minimum_fault_length'])
 
-    @beartype.beartype    
+    @beartype.beartype
     def set_active_thickness(self, thickness_calculator: ThicknessCalculator):
         """
         Sets the active_thickness attribute based on the provided thickness_calculator.
@@ -491,13 +495,15 @@ class Project(object):
         Raises:
             ValueError: If the thickness calculator label cannot be determined.
         """
-        
+
         try:
             label = thickness_calculator.thickness_calculator_label
         except AttributeError:
-            raise ValueError("The provided thickness calculator object does not have a 'thickness_calculator_label' attribute.")
+            raise ValueError(
+                "The provided thickness calculator object does not have a 'thickness_calculator_label' attribute."
+            )
         self.active_thickness = label
-    
+
     @beartype.beartype
     def get_active_thickness(self) -> str:
         """
@@ -507,7 +513,7 @@ class Project(object):
             str: The label of the active thickness calculator.
         """
         return self.active_thickness
-            
+
     # Processing functions
     def sample_map_data(self):
         """
@@ -515,20 +521,30 @@ class Project(object):
         """
         geology_data = self.map_data.get_map_data(Datatype.GEOLOGY)
         dtm_data = self.map_data.get_map_data(Datatype.DTM)
-        
-        logger.info(f"Sampling geology map data using {self.samplers[Datatype.GEOLOGY].sampler_label}")
+
+        logger.info(
+            f"Sampling geology map data using {self.samplers[Datatype.GEOLOGY].sampler_label}"
+        )
         self.geology_samples = self.samplers[Datatype.GEOLOGY].sample(geology_data)
 
-        logger.info(f"Sampling structure map data using {self.samplers[Datatype.STRUCTURE].sampler_label}")
+        logger.info(
+            f"Sampling structure map data using {self.samplers[Datatype.STRUCTURE].sampler_label}"
+        )
         self.samplers[Datatype.STRUCTURE].dtm_data = dtm_data
         self.samplers[Datatype.STRUCTURE].geology_data = geology_data
-        self.structure_samples = self.samplers[Datatype.STRUCTURE].sample(self.map_data.get_map_data(Datatype.STRUCTURE))
+        self.structure_samples = self.samplers[Datatype.STRUCTURE].sample(
+            self.map_data.get_map_data(Datatype.STRUCTURE)
+        )
 
         logger.info(f"Sampling fault map data using {self.samplers[Datatype.FAULT].sampler_label}")
-        self.fault_samples = self.samplers[Datatype.FAULT].sample(self.map_data.get_map_data(Datatype.FAULT))
+        self.fault_samples = self.samplers[Datatype.FAULT].sample(
+            self.map_data.get_map_data(Datatype.FAULT)
+        )
 
         logger.info(f"Sampling fold map data using {self.samplers[Datatype.FOLD].sampler_label}")
-        self.fold_samples = self.samplers[Datatype.FOLD].sample(self.map_data.get_map_data(Datatype.FOLD))
+        self.fold_samples = self.samplers[Datatype.FOLD].sample(
+            self.map_data.get_map_data(Datatype.FOLD)
+        )
 
     def extract_geology_contacts(self):
         """
@@ -542,7 +558,9 @@ class Project(object):
             )
             self.contact_extractor.extract_all_contacts()
 
-        basal_contacts = self.contact_extractor.extract_basal_contacts(self.stratigraphic_column.column)
+        basal_contacts = self.contact_extractor.extract_basal_contacts(
+            self.stratigraphic_column.column
+        )
 
         # sample the contacts
         self.map_data.sampled_contacts = self.samplers[Datatype.GEOLOGY].sample(basal_contacts)
@@ -580,9 +598,7 @@ class Project(object):
                 for sorter in sorters
             ]
             basal_contacts = [
-                self.contact_extractor.extract_basal_contacts(
-                    column, save_contacts=False
-                )
+                self.contact_extractor.extract_basal_contacts(column, save_contacts=False)
                 for column in columns
             ]
             basal_lengths = [
@@ -604,7 +620,10 @@ class Project(object):
         else:
             logger.info(f'Calculating stratigraphic column using sorter {self.sorter.sorter_label}')
             # Update sorter with current data based on what it needs
-            if hasattr(self.sorter, 'unit_relationships') and self.sorter.unit_relationships is None:
+            if (
+                hasattr(self.sorter, 'unit_relationships')
+                and self.sorter.unit_relationships is None
+            ):
                 self.sorter.unit_relationships = self.topology.get_unit_unit_relationships()
             if hasattr(self.sorter, 'contacts') and self.sorter.contacts is None:
                 self.sorter.contacts = self.contact_extractor.contacts
@@ -618,14 +637,16 @@ class Project(object):
                 self.sorter.min_age_column = self.stratigraphic_column.get_min_age_column()
             if hasattr(self.sorter, 'max_age_column') and self.sorter.max_age_column is None:
                 self.sorter.max_age_column = self.stratigraphic_column.get_max_age_column()
-            
+
             self.stratigraphic_column.column = self.sorter.sort(
                 self.stratigraphic_column.stratigraphicUnits,
             )
 
     @beartype.beartype
     def set_thickness_calculator(
-        self, thickness_calculator: Union['ThicknessCalculator', List['ThicknessCalculator']], is_strike: bool = False
+        self,
+        thickness_calculator: Union['ThicknessCalculator', List['ThicknessCalculator']],
+        is_strike: bool = False,
     ) -> None:
         """
         Sets the thickness_calculator attribute for the object.
@@ -747,7 +768,7 @@ class Project(object):
         self.thickness_calculator_labels = labels
         if self.active_thickness is None:
             self.active_thickness = labels[0]
-            
+
     def calculate_fault_orientations(self):
         if self.map_data.get_map_data(Datatype.FAULT_ORIENTATION) is not None:
             logger.info(f"Calculating fault orientations using {self.fault_orientation.label}")
@@ -842,8 +863,8 @@ class Project(object):
         logger.info('Saving data into loop project file')
         if not self.loop_filename:
             logger.info('No loop project file specified, creating a new one')
-            output_dir = pathlib.Path.cwd()  
-            output_dir.mkdir(parents=True, exist_ok=True) 
+            output_dir = pathlib.Path.cwd()
+            output_dir.mkdir(parents=True, exist_ok=True)
             filename = "new_project.loop3d"
             self.loop_filename = str(output_dir / filename)
 
@@ -858,7 +879,7 @@ class Project(object):
                     logger.info(f"\nExisting file '{self.loop_filename}' was successfully deleted.")
                 except Exception as e:
                     logger.error(f"\nFailed to delete existing file '{self.loop_filename}': {e}")
-                    raise e
+                    raise
             else:
                 logger.error(
                     f"\nThere is an existing '{self.loop_filename}' with the same name as specified in project. map2loop process may fail. Set 'overwrite_loopprojectfile' to True to avoid this"
@@ -879,7 +900,7 @@ class Project(object):
                 logger.error(
                     f"       Cannot export loop project file as current file of name {self.loop_filename} is not a loop project file"
                 )
-                raise Exception(
+                raise ValueError(
                     f"Cannot export loop project file as current file of name {self.loop_filename} is not a loop project file"
                 )
 
@@ -922,8 +943,9 @@ class Project(object):
             len(self.stratigraphic_column.stratigraphicUnits), LPF.stratigraphicLayerType
         )
         stratigraphic_thicknesses = numpy.zeros(
-            len(self.stratigraphic_column.stratigraphicUnits), LPF.stratigraphicThicknessType)
-        
+            len(self.stratigraphic_column.stratigraphicUnits), LPF.stratigraphicThicknessType
+        )
+
         stratigraphic_data["layerId"] = self.stratigraphic_column.stratigraphicUnits["layerId"]
         stratigraphic_data["minAge"] = self.stratigraphic_column.stratigraphicUnits["minAge"]
         stratigraphic_data["maxAge"] = self.stratigraphic_column.stratigraphicUnits["maxAge"]
@@ -931,18 +953,30 @@ class Project(object):
         stratigraphic_data["group"] = self.stratigraphic_column.stratigraphicUnits["group"]
         stratigraphic_data["enabled"] = 1
 
-        stratigraphic_thicknesses['name']= self.stratigraphic_column.stratigraphicUnits["name"]
-        
+        stratigraphic_thicknesses['name'] = self.stratigraphic_column.stratigraphicUnits["name"]
+
         # store all of the thickness estimates in a separate table
         for i, label in enumerate(self.thickness_calculator_labels):
-            stratigraphic_thicknesses[f'thickness{i+1}_mean'] = self.stratigraphic_column.stratigraphicUnits.get(f'{label}_mean',0)
-            stratigraphic_thicknesses[f'thickness{i+1}_median'] = self.stratigraphic_column.stratigraphicUnits.get(f'{label}_median',0)
-            stratigraphic_thicknesses[f'thickness{i+1}_stddev'] = self.stratigraphic_column.stratigraphicUnits.get(f'{label}_stddev',0)
-        
+            stratigraphic_thicknesses[f'thickness{i+1}_mean'] = (
+                self.stratigraphic_column.stratigraphicUnits.get(f'{label}_mean', 0)
+            )
+            stratigraphic_thicknesses[f'thickness{i+1}_median'] = (
+                self.stratigraphic_column.stratigraphicUnits.get(f'{label}_median', 0)
+            )
+            stratigraphic_thicknesses[f'thickness{i+1}_stddev'] = (
+                self.stratigraphic_column.stratigraphicUnits.get(f'{label}_stddev', 0)
+            )
+
         # store the active thickness calculator as the default thickness
-        stratigraphic_data["ThicknessMean"] = self.stratigraphic_column.stratigraphicUnits.get(f'{self.active_thickness}_mean',0)
-        stratigraphic_data["ThicknessMedian"] = self.stratigraphic_column.stratigraphicUnits.get(f'{self.active_thickness}_median',0)
-        stratigraphic_data["ThicknessStdDev"] = self.stratigraphic_column.stratigraphicUnits.get(f'{self.active_thickness}_stddev',0) 
+        stratigraphic_data["ThicknessMean"] = self.stratigraphic_column.stratigraphicUnits.get(
+            f'{self.active_thickness}_mean', 0
+        )
+        stratigraphic_data["ThicknessMedian"] = self.stratigraphic_column.stratigraphicUnits.get(
+            f'{self.active_thickness}_median', 0
+        )
+        stratigraphic_data["ThicknessStdDev"] = self.stratigraphic_column.stratigraphicUnits.get(
+            f'{self.active_thickness}_stddev', 0
+        )
 
         # Assign colours to startigraphic data
         stratigraphic_data["colour1Red"] = [
@@ -962,14 +996,16 @@ class Project(object):
         stratigraphic_data["colour2Blue"] = [
             int(a * 0.95) for a in stratigraphic_data["colour1Blue"]
         ]
-        
+
         n_thick_calcs = len(self.thickness_calculator_labels)
         # get thickness calculator labels, and fill up with None if empty values up to 5 placeholders
         while len(self.thickness_calculator_labels) < 5:
             self.thickness_calculator_labels.append("None")
 
-        headers = 'name;'+';'.join([f'{l}_mean;{l}_median;{l}_stddev' for l in self.thickness_calculator_labels[:5]])
-        headers = headers.split(';') # split into list
+        headers = 'name;' + ';'.join(
+            [f'{l}_mean;{l}_median;{l}_stddev' for l in self.thickness_calculator_labels[:5]]
+        )
+        headers = headers.split(';')  # split into list
 
         # save into LPF
         LPF.Set(
@@ -978,12 +1014,15 @@ class Project(object):
             data=stratigraphic_data,
             verbose=False,
         )
-        LPF.Set(self.loop_filename,
-                "stratigraphicThicknesses",
-                data=stratigraphic_thicknesses,
-                headers=headers,
-                ncols=1+3*n_thick_calcs, # index and mean, median, stddev for each thickness calculator
-                verbose=False)
+        LPF.Set(
+            self.loop_filename,
+            "stratigraphicThicknesses",
+            data=stratigraphic_thicknesses,
+            headers=headers,
+            ncols=1
+            + 3 * n_thick_calcs,  # index and mean, median, stddev for each thickness calculator
+            verbose=False,
+        )
 
         # Save contacts
         contacts_data = numpy.zeros(len(self.map_data.sampled_contacts), LPF.contactObservationType)
@@ -1007,9 +1046,9 @@ class Project(object):
         faults_obs_data["dipDir"][0 : len(self.fault_samples)] = numpy.nan
         faults_obs_data["dip"][0 : len(self.fault_samples)] = numpy.nan
         faults_obs_data["posOnly"][0 : len(self.fault_samples)] = 1
-        faults_obs_data[
-            "displacement"
-        ] = 100  # self.fault_samples["DISPLACEMENT"] #TODO remove note needed
+        faults_obs_data["displacement"] = (
+            100  # self.fault_samples["DISPLACEMENT"] #TODO remove note needed
+        )
 
         faults_obs_data["eventId"][len(self.fault_samples) :] = self.fault_orientations["ID"]
         faults_obs_data["easting"][len(self.fault_samples) :] = self.fault_orientations["X"]
@@ -1101,9 +1140,9 @@ class Project(object):
             base = geol.plot(color=geol["colour_rgba"])
         if overlay != "":
             if overlay == "basal_contacts":
-                self.contact_extractor.basal_contacts[self.contact_extractor.basal_contacts["type"] == "BASAL"].plot(
-                    ax=base
-                )
+                self.contact_extractor.basal_contacts[
+                    self.contact_extractor.basal_contacts["type"] == "BASAL"
+                ].plot(ax=base)
 
                 return
             elif overlay == "contacts":
@@ -1121,7 +1160,9 @@ class Project(object):
         gdf.plot(ax=base, marker="o", color="red", markersize=5)
 
     @beartype.beartype
-    def save_mapdata_to_files(self, save_path: Union[pathlib.Path,str], extension: str = ".shp.zip"):
+    def save_mapdata_to_files(
+        self, save_path: Union[pathlib.Path, str], extension: str = ".shp.zip"
+    ):
         """
         Saves the map data frames to csv files
 
@@ -1131,8 +1172,8 @@ class Project(object):
             extension (str, optional):
                 An alternate extension to save the GeoDataFrame in. Defaults to ".csv".
         """
-        
-        save_path=pathlib.Path(save_path)
+
+        save_path = pathlib.Path(save_path)
         if not save_path.exists():
             os.makedirs(save_path)
         self.map_data.save_all_map_data(save_path, extension)

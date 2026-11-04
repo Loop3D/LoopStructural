@@ -1,14 +1,14 @@
-import pandas
 import geopandas
 import numpy
+import pandas
 
+from map2loop.m2l_enums import Datatype
 from map2loop.mapdata import MapData
 from map2loop.thickness_calculator import InterpolatedStructure
 from map2loop.utils.load_map2loop_data import (
-    load_hamersley_geology,
     load_hamersley_dtm,
+    load_hamersley_geology,
 )
-from map2loop.m2l_enums import Datatype
 
 ##########################################################################
 ### Define the test data for ThicknessCalculator InterpolatedStructure ###
@@ -1682,9 +1682,9 @@ def test_calculate_thickness_InterpolatedStructure():
         "base": -3200,
         "top": 3000,
     }
-    thickness_calculator = InterpolatedStructure(dtm_data=md.get_map_data(Datatype.DTM),
-                                                 bounding_box=md.bounding_box,
-                                                 is_strike=False)
+    thickness_calculator = InterpolatedStructure(
+        dtm_data=md.get_map_data(Datatype.DTM), bounding_box=md.bounding_box, is_strike=False
+    )
 
     result = thickness_calculator.compute(
         units=st_units,

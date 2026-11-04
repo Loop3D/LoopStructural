@@ -212,7 +212,7 @@ def test_import_does_not_import_core():
         "bad = [m for m in sys.modules if m.startswith('loop_interpolation_core')]; "
         "sys.exit(1 if bad else 0)"
     )
-    result = subprocess.run([sys.executable, "-c", code], capture_output=True)
+    result = subprocess.run([sys.executable, "-c", code], check=False, capture_output=True)
     assert result.returncode == 0, result.stderr.decode()
 
 

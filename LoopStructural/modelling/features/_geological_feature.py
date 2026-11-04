@@ -3,6 +3,7 @@
 This module contains classes for representing geometrical elements in geological
 models such as foliations, fault planes, and fold rotation angles.
 """
+
 from __future__ import annotations
 
 import numpy as np
@@ -10,9 +11,9 @@ import numpy as np
 from LoopStructural.utils.maths import gradient_from_tetrahedron, regular_tetraherdron_for_points
 
 from ...geometry import ValuePoints, VectorPoints
-from ._base_geological_feature import BaseFeature
-from . import FeatureType
 from ...utils import LoopValueError, getLogger
+from . import FeatureType
+from ._base_geological_feature import BaseFeature
 
 logger = getLogger(__name__)
 
