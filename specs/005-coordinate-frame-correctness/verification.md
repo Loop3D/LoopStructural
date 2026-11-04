@@ -171,7 +171,7 @@ Test groups and the requirements that they check:
 
 Test-setup correction (fact for the record). The first version of
 `_set_world_normal` in the fold test file projected the normal row twice. It was
-fixed before T025 to T028 were accepted. The pre-fix run below uses the
+fixed before T025 to T028 were accepted. The pre-fix run above uses the
 corrected file.
 
 ## Golden review (C-004)
@@ -240,9 +240,10 @@ rollback target is sound.
 
 At the S2 start commit `9e7b05f7` the full root suite passed:
 `pytest` gives 1206 passed, 5 skipped, 21 warnings in 937.41 s (run by the
-orchestrator on 2026-11-04). This run includes all S1 tests. The S1 tests
+orchestrator on 2026-11-04; collected before the wave 8 edits). This run includes all S1 tests. The S1 tests
 therefore pass on the code from before S2, and the rollback target is sound.
-The full suite was not run again at the start commit.
+The full suite was not run again at the start commit. The S1 test files were
+not run alone in a throw-away worktree at `9e7b05f7`.
 
 ## Test run time (OP2)
 
