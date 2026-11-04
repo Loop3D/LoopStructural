@@ -670,7 +670,7 @@ satisfy R3 and R1.
 
 ## Phase 9: Stage S3 foundation
 
-- [ ] T033 [P] [Found] [M] Add the S3 persistence and lifecycle helpers to the shared fixtures.
+- [x] T033 [P] [Found] [M] Add the S3 persistence and lifecycle helpers to the shared fixtures.
   - Files: `tests/fixtures/coordinate_frames.py`
   - Needs: T031
   - Wave: 14
@@ -696,7 +696,7 @@ satisfy R3 and R1.
     Add `strip_frame_keys(payload: dict) -> dict`: a deep copy without the keys `format_version`,
     `constraint_space`, `transform` and `bounding_box` (a legacy payload).
 
-- [ ] T034 [P] [Found] [S] Add the S3 module stubs and export the two errors.
+- [x] T034 [P] [Found] [S] Add the S3 module stubs and export the two errors.
   - Files: `packages/loop_interpolation/src/loop_interpolation/_frame_persistence.py`, `packages/loop_interpolation/src/loop_interpolation/__init__.py`
   - Needs: T031
   - Wave: 14
@@ -834,6 +834,7 @@ frame. A legacy file needs an explicit choice. A frame change never gives a stal
     `support.nodes`; the `2**dimensions` corners; `world = corners @ rotation + origin`; `BoundingBox(dimensions=dimensions, origin=world.min(0),
     maximum=world.max(0))` then `set_local_transform(local_origin=origin, rotation_matrix=rotation)`. Import `BoundingBox` from
     `loop_common.geometry`. Rule: py39 syntax with `from __future__ import annotations`; numpy docstrings.
+    Also fix two docstrings from T034: the module docstring must not mention stubs; `StaleFrameError` is raised when the local transform changed after constraints were stored.
 
 - [ ] T041 [P] [US3] [M] Implement `resolve_frame`.
   - Files: `packages/loop_interpolation/src/loop_interpolation/_frame_persistence.py`

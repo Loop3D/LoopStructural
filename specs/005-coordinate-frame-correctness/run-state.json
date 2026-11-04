@@ -21,8 +21,31 @@
     "packages": "912 passed, 47 skipped, 2 xfailed in 126.56 s at 662d2713"
   },
   "base_note": "Built from docs/005-s3-plan (S2 code from feat/005-s2-fold-frames, PR #396 not merged). Rebase onto master after #396 merges.",
-  "waves": [],
-  "runs": {},
+  "waves": [
+    {
+      "wave": 14,
+      "base": "b32707fd62957ccb5d4c606c2bbe5bff22a6b7a9",
+      "tasks": [
+        "T033",
+        "T034"
+      ],
+      "check": "scope pass (VERIFY); ruff pass; black pass; fixture collects 0 tests; 5 engines build (exact: errors <= 2e-10 at anchor 3 rot 30; cn fit errors 4e-9 and 1.3e-11 at anchor 0); imports from the S3 worktree"
+    }
+  ],
+  "runs": {
+    "T033": [
+      {
+        "model": "sonnet",
+        "result": "pass: r1_interpolator, strip_frame_keys, engine tuples, QUERY_OFFSETS"
+      }
+    ],
+    "T034": [
+      {
+        "model": "haiku",
+        "result": "pass: stubs and exports; import placed in sorted order (ruff I001), not directly after ._diagnostics"
+      }
+    ]
+  },
   "findings": {
     "found": 0,
     "rejected": 0,
@@ -637,5 +660,5 @@
       }
     }
   },
-  "status": "S3 started; no wave done"
+  "status": "wave 14 done, review pending"
 }

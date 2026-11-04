@@ -19,6 +19,7 @@ __all__ = [
     "FoldRotationType",
     "FourierSeriesFoldRotationAngleProfile",
     "GeologicalInterpolator",
+    "InterpolatorFormatError",
     "InterpolatorType",
     "LambdaFoldRotationAngleProfile",
     "P1Interpolator",
@@ -30,6 +31,7 @@ __all__ = [
     "PiecewiseLinearInterpolator",
     "RegionCoverageDiagnostics",
     "RegularisationConfig",
+    "StaleFrameError",
     "StructuredGrid",
     "StructuredGrid2D",
     "SurfeRBFInterpolator",
@@ -68,6 +70,7 @@ from ._fd_fold_interpolator import FDFoldInterpolator
 from ._finite_difference_interpolator import (
     FiniteDifferenceInterpolator,
 )
+from ._frame_persistence import InterpolatorFormatError, StaleFrameError
 from ._geological_interpolator import GeologicalInterpolator
 from ._p1interpolator import P1Interpolator
 from ._p1interpolator import (
