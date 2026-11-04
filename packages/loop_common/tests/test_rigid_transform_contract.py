@@ -61,6 +61,7 @@ def test_point_and_direction_round_trips(anchor, dimensions, angle):
     box = BoundingBox(
         origin=anchor - np.array([100.0, 200.0, 50.0][:dimensions]),
         maximum=anchor + np.array([100.0, 200.0, 50.0][:dimensions]),
+        dimensions=dimensions,
     )
     radians = np.deg2rad(angle)
     rotation = np.array([[np.cos(radians), -np.sin(radians)], [np.sin(radians), np.cos(radians)]])

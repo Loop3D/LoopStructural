@@ -68,7 +68,9 @@ def test_slip_vector_made_orthogonal():
     assert abs(np.dot(normal, slip)) <= 1e-12
     coordinate1 = fault.builder.builders[1].data
     gradients = coordinate1[["nx", "ny", "nz"]].to_numpy()
-    assert np.any(np.all(np.isclose(gradients, [0, 0, -1], atol=1e-12), axis=1))
+    # The coordinate 1 gradient is the unit in-plane slip divided by the intermediate axis.
+    expected = np.array([0.0, 0.0, -1.0]) / fault.builder.fault_intermediate_axis
+    assert np.any(np.all(np.isclose(gradients, expected, rtol=0, atol=1e-12), axis=1))
 
 
 def test_parallel_slip_raises():

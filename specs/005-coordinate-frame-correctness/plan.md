@@ -26,7 +26,14 @@ The constitution (.specify/memory/constitution.md) has priority. -->
 
 ## Answers
 
-<!-- Leave this section empty until an open point has an answer. -->
+- 2026-11-04 (wave 3, user decision): the T006 resize repair changes the
+  golden file `packages/loop_common/tests/data/structured_support_reference.npz`.
+  27 values change: `after_origin.nsteps` and `after_maximum.nsteps` and
+  `after_maximum.maximum`, for 3 support classes and 3 grids. The old values
+  did not enclose the requested bounds (FR-014 defect). The file is added to
+  the `Files` of T006. T006 regenerates it with
+  `python packages/loop_common/tests/test_structured_support_reference.py --update`.
+  T015 records the change under `## Golden review (C-004)`.
 
 ## Summary
 

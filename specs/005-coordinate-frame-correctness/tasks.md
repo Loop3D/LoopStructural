@@ -106,7 +106,7 @@ Rules:
     as the first import line. numpy docstrings, type hints, py39 (use
     `from __future__ import annotations`).
 
-- [ ] T005 [P] [Found] [M] Validate the local transform and add `BoundingBox.local_enclosure`.
+- [x] T005 [P] [Found] [M] Validate the local transform and add `BoundingBox.local_enclosure`.
   - Files: `packages/loop_common/src/loop_common/geometry/_bounding_box.py`
   - Needs: T004
   - Wave: 3
@@ -124,8 +124,9 @@ Rules:
     Existing tests in `packages/loop_common/tests/test_bounding_box.py` use
     proper rotations and must still pass.
 
-- [ ] T006 [P] [Found] [M] Repair support resize and validate `rotation_xy`.
-  - Files: `packages/loop_common/src/loop_common/geometry/_structured_grid_3d.py`
+- [x] T006 [P] [Found] [M] Repair support resize and validate `rotation_xy`.
+  - Files: `packages/loop_common/src/loop_common/geometry/_structured_grid_3d.py`,
+    `packages/loop_common/tests/data/structured_support_reference.npz`
   - Needs: T004
   - Wave: 3
   - Done when: `pytest packages/loop_common/tests/test_rigid_transform_contract.py -k "prior_state or unchanged_bounds"`
@@ -143,6 +144,9 @@ Rules:
     Keep `_on_geometry_change()` calls. `rotation_xy` setter: after the
     float/int conversion call `validate_rigid_rotation(rotation_xy, 3)`
     (import from `._rigid`); `None` keeps the current value.
+    Answer (plan.md "Answers", 2026-11-04): regenerate the golden file with
+    `python packages/loop_common/tests/test_structured_support_reference.py --update`;
+    only `after_origin`/`after_maximum` `nsteps` and `maximum` may change.
 
 ## Phase 3: User story 2 - Constrain features at the intended physical points (P1)
 
@@ -175,7 +179,7 @@ the target-local basis.
     `test_support_expansion_contains_restored_points` (FR-009);
     `test_set_interpolation_geometry_encloses_rotated_box`.
 
-- [ ] T008 [US2] [S] Add the public world/local conversion methods.
+- [x] T008 [US2] [S] Add the public world/local conversion methods.
   - Files: `packages/loop_interpolation/src/loop_interpolation/_geological_interpolator.py`
   - Needs: T007
   - Wave: 3
@@ -257,7 +261,7 @@ world location, with the requested buffer.
     error <= 1e-6, relative gradient magnitude <= 1e-4, direction <= 0.01 deg;
     4 anchors x 3 rotations x 2 centre modes x FDI, PLI).
 
-- [ ] T012 [US1] [M] Repair centre, slip, extent row and buffer state in `FaultBuilder`.
+- [x] T012 [US1] [M] Repair centre, slip, extent row and buffer state in `FaultBuilder`.
   - Files: `LoopStructural/modelling/features/builders/_fault_builder.py`
   - Needs: T011, T014
   - Wave: 3
@@ -324,6 +328,10 @@ world location, with the requested buffer.
     old value, new value, defect, expected physical effect. Do not relax a
     tolerance (SC-015). If no change is needed, write "No golden change in
     S1." under that heading.
+    Answer (plan.md "Answers", 2026-11-04): also add one entry for the
+    T006 change to `packages/loop_common/tests/data/structured_support_reference.npz`
+    (27 values of `after_origin`/`after_maximum`; old values did not enclose
+    the requested bounds; FR-014).
 
 ## Phase 5: Finish
 

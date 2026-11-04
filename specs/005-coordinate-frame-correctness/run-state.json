@@ -39,9 +39,23 @@
         "T011",
         "T014"
       ],
-      "review": "changes needed: one major T011 test setup dependency; fix verified, recheck pending",
+      "review": "pass after one fixed major finding; fix recheck gpt-6-luna medium: no findings",
       "check": "scope, Black and Ruff pass; validator 13 pass; parent regression run 373 expected failures, 28 pass, 48 analytic cells deselected, 39.85 s; worker previously ran all 48 analytic cells red",
-      "commit": "dd7078d62b7eedf8cde4e453ac622fda8ccafb73"
+      "commit": "dd7078d62b7eedf8cde4e453ac622fda8ccafb73",
+      "fix_commit": "72d5e1b8dec1e78309cafc9258b1e761bad03783"
+    },
+    {
+      "wave": 3,
+      "base": "72d5e1b8dec1e78309cafc9258b1e761bad03783",
+      "tasks": [
+        "T005",
+        "T006",
+        "T008",
+        "T012"
+      ],
+      "review": "pending",
+      "status": "committed",
+      "check": "scope pass (T006 golden file added to Files by user decision); ruff pass; black pass; loop_common + loop_interpolation tests 912 passed, 47 skipped, 2 xfailed; conversion filter 24 pass; T012 filter 4 pass; test_base.py errors not reproduced"
     }
   ],
   "runs": {
@@ -69,6 +83,10 @@
         "model": "gpt-6-luna",
         "reasoning_effort": "medium",
         "result": "pass: expected missing RigidRotationError import; lint and format pass"
+      },
+      {
+        "model": "sonnet",
+        "result": "fix pass: dimensions=dimensions in round-trip BoundingBox; contract file 42 pass"
       }
     ],
     "T004": [
@@ -122,6 +140,45 @@
         "model": "gpt-6-luna",
         "reasoning_effort": "medium",
         "result": "review fix pass: extent-row test uses inferred centre to isolate T012; parent confirms expected zero-row failure, lint pass"
+      },
+      {
+        "model": "sonnet",
+        "result": "fix pass: slip row expectation [0,0,-1]/intermediate_axis per spec.md R2 table; T012 filter 4 pass"
+      }
+    ],
+    "T005": [
+      {
+        "model": "gpt-6-luna",
+        "reasoning_effort": "medium",
+        "result": "stopped, edits saved: enclosure/prior-state 4 pass; 12 round-trip failures from missing dimensions=2 in T003 test; Black/Ruff pass; common package incomplete with 3 reported test_base.py errors, no traceback retained"
+      }
+    ],
+    "T006": [
+      {
+        "model": "gpt-6-luna",
+        "reasoning_effort": "medium",
+        "result": "stopped, edits saved: prior_state/unchanged_bounds 2 pass, 40 deselected; Black pass; full common package cancelled with Ctrl+C at user request, exit 1, no final result"
+      },
+      {
+        "model": "sonnet",
+        "result": "fix pass: ruff I001; golden npz regenerated, 27 keys changed (after_origin/after_maximum only); common tests 306 pass"
+      }
+    ],
+    "T012": [
+      {
+        "model": "gpt-6-luna",
+        "reasoning_effort": "medium",
+        "result": "stopped, edits saved: focused inferred_centre/slip/extent_direction 4 pass, 49 deselected before formatting; Black/Ruff pass; parent verification pending"
+      },
+      {
+        "model": "sonnet",
+        "result": "fix: restored coord-1 slip gradient scale 1/intermediate_axis (spec R2 table); blocked on wrong T011 expectation"
+      }
+    ],
+    "T008": [
+      {
+        "model": "haiku",
+        "result": "pass: 4 public conversion methods; conversion filter 24 pass"
       }
     ]
   },
@@ -156,7 +213,23 @@
       "severity": "major",
       "problem": "extent test depended on later explicit-centre factory fix",
       "fix": "use inferred centre for isolated extent test",
-      "status": "fixed, recheck pending"
+      "status": "fixed and recheck pass"
     }
+  ],
+  "runtime_resume": {
+    "date": "2026-11-04",
+    "runtime": "claude",
+    "max_workers": 5,
+    "worker_S": "haiku",
+    "worker_M": "sonnet",
+    "review_wave": "sonnet",
+    "review_spec": "opus",
+    "note": "Resumed in Claude Code after the Codex handoff; models follow providers.claude of .agents/model-policy.json."
+  },
+  "answers": [
+    "2026-11-04: golden structured_support_reference.npz added to T006 Files; T015 records it (plan.md Answers)"
+  ],
+  "open_minor_candidates": [
+    "T012: np.asarray(fault_normal_vector, dtype=float) then in-place /= can mutate a caller float array; prefer np.array copy"
   ]
 }
