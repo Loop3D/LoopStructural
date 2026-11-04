@@ -1,351 +1,412 @@
 {
   "spec": "005-coordinate-frame-correctness",
-  "stage": "S1",
-  "worktree": "C:/Users/lachl/dev/LoopStructural-005",
-  "branch": "feat/005-coordinate-frame-correctness",
+  "stage": "S2",
+  "worktree": "C:/Users/lachl/dev/LoopStructural-005-s2",
+  "branch": "feat/005-s2-fold-frames",
   "review_mode": "wave",
-  "start_commit": "3881ef320adc483f71326ef9d09d90596493d39f",
-  "baseline": {
-    "lint": "pass: ruff check LoopStructural packages",
-    "pytest": "755 passed, 5 skipped, 21 warnings in 1205.98 s",
-    "doctor": "pass: source CLI workaround from setup-notes.md"
-  },
+  "start_commit": "9e7b05f7cdab7f2270bb9e5d13f450d926100bc3",
   "runtime": {
-    "max_workers": 3,
-    "worker_S": "gpt-6-luna low",
-    "worker_M": "gpt-6-luna medium",
-    "review_wave": "gpt-6-luna medium",
-    "review_spec": "gpt-6.1-sol medium"
-  },
-  "waves": [
-    {
-      "wave": 1,
-      "base": "3881ef320adc483f71326ef9d09d90596493d39f",
-      "tasks": [
-        "T001",
-        "T002",
-        "T003"
-      ],
-      "review": "pass: gpt-6-luna medium, no findings",
-      "check": "scope pass; verification skeleton pass; fixture 0 tests; transform import fails as required before T004; lint and format pass",
-      "commit": "51c7c1a3553a302dfc0add30a1b97434e9645761"
-    },
-    {
-      "wave": 2,
-      "base": "51c7c1a3553a302dfc0add30a1b97434e9645761",
-      "tasks": [
-        "T004",
-        "T007",
-        "T011",
-        "T014"
-      ],
-      "review": "pass after one fixed major finding; fix recheck gpt-6-luna medium: no findings",
-      "check": "scope, Black and Ruff pass; validator 13 pass; parent regression run 373 expected failures, 28 pass, 48 analytic cells deselected, 39.85 s; worker previously ran all 48 analytic cells red",
-      "commit": "dd7078d62b7eedf8cde4e453ac622fda8ccafb73",
-      "fix_commit": "72d5e1b8dec1e78309cafc9258b1e761bad03783"
-    },
-    {
-      "wave": 3,
-      "base": "72d5e1b8dec1e78309cafc9258b1e761bad03783",
-      "tasks": [
-        "T005",
-        "T006",
-        "T008",
-        "T012"
-      ],
-      "review": "pass: sonnet, 1 minor (T012 asarray in-place change of caller normal)",
-      "status": "committed",
-      "check": "scope pass (T006 golden file added to Files by user decision); ruff pass; black pass; loop_common + loop_interpolation tests 912 passed, 47 skipped, 2 xfailed; conversion filter 24 pass; T012 filter 4 pass; test_base.py errors not reproduced",
-      "commit": "d2909aa5de619d9e83c49b818dfc7d1333700d51"
-    },
-    {
-      "wave": 4,
-      "base": "d2909aa5de619d9e83c49b818dfc7d1333700d51",
-      "tasks": [
-        "T009",
-        "T010"
-      ],
-      "check": "scope pass; ruff pass; tests/unit/modelling (without T013 files) 551 passed, 2 skipped; reference file 312 pass; loop_interpolation tests 606 passed, 47 skipped, 2 xfailed",
-      "review": "pass: sonnet, no findings (2 notes, not findings)",
-      "commit": "35e05b01c858f619cb667af446f507046cc78fb3"
-    },
-    {
-      "wave": 5,
-      "base": "35e05b01c858f619cb667af446f507046cc78fb3",
-      "tasks": [
-        "T013"
-      ],
-      "check": "scope pass; ruff pass; tests/unit/modelling 688 passed, 2 skipped in 300 s; R2+R5 files 137 passed in 209 s",
-      "review": "pass: sonnet, no findings",
-      "commit": "6d533fe01315647780a7e22c7c6bed2e09d9c076"
-    },
-    {
-      "wave": 6,
-      "base": "6d533fe01315647780a7e22c7c6bed2e09d9c076",
-      "tasks": [
-        "T015",
-        "T016"
-      ],
-      "check": "scope pass; test__fault_builder.py 6 pass (unchanged, no golden change); golden npz entry matches orchestrator key comparison; COMPAT row in Migration notices table",
-      "review": "pass: sonnet, 1 minor (golden entry omits 33 round-off keys) - fixed in T017",
-      "commit": "10fd4dea59d47c86da99aad90c66e437092ffe3b"
-    },
-    {
-      "wave": 7,
-      "base": "10fd4dea59d47c86da99aad90c66e437092ffe3b",
-      "tasks": [
-        "T017"
-      ],
-      "check": "root ruff pass; root pytest 1204 passed, 5 skipped in 1082.66 s (orchestrator, HEAD 10fd4dea); packages 912 passed, 47 skipped, 2 xfailed; S1 files 491 passed in 291 s; rollback at ebc7c699 15 passed; all 6 verification headings filled; prefix worktree removed",
-      "commit": "0abc31ecc4d95d1a2b7c205701eb265416c23a2c"
-    }
-  ],
-  "runs": {
-    "T001": [
-      {
-        "model": "gpt-6-luna",
-        "reasoning_effort": "low",
-        "result": "pass: verification skeleton read back"
-      }
-    ],
-    "T002": [
-      {
-        "model": "gpt-6-luna",
-        "reasoning_effort": "medium",
-        "result": "pass: imports, 0 tests collected, lint and format pass"
-      }
-    ],
-    "T003": [
-      {
-        "model": "gpt-6-luna",
-        "reasoning_effort": "medium",
-        "result": "needs changes: missing 2D/rotation cases and exact vector tolerance"
-      },
-      {
-        "model": "gpt-6-luna",
-        "reasoning_effort": "medium",
-        "result": "pass: expected missing RigidRotationError import; lint and format pass"
-      },
-      {
-        "model": "sonnet",
-        "result": "fix pass: dimensions=dimensions in round-trip BoundingBox; contract file 42 pass"
-      }
-    ],
-    "T004": [
-      {
-        "model": "gpt-6-luna",
-        "reasoning_effort": "low",
-        "result": "needs changes: targeted 13 pass; Google docstring and lint suppression must be corrected"
-      },
-      {
-        "model": "gpt-6-luna",
-        "reasoning_effort": "low",
-        "result": "pass: NumPy docstring; sorted imports without suppression; orchestrator verified 13 tests, lint pass"
-      }
-    ],
-    "T007": [
-      {
-        "model": "gpt-6-luna",
-        "reasoning_effort": "medium",
-        "result": "fail: guessed constraint internals, incomplete matrix and weak assertions"
-      },
-      {
-        "model": "gpt-6-luna",
-        "reasoning_effort": "medium",
-        "result": "pass: corrected real APIs, complete Cartesian matrix, fixed world affine controls, wrapper checks, physical restoration, and exclusion counts; lint/format pass"
-      },
-      {
-        "model": "sonnet",
-        "result": "fix pass: exact field without large-coordinate cancellation, atol 1e-10 kept; file 312 pass"
-      }
-    ],
-    "T014": [
-      {
-        "model": "gpt-6-luna",
-        "reasoning_effort": "medium",
-        "result": "needs changes: 42 expected pre-fix failures but PLI and generated-row containment coverage missing"
-      },
-      {
-        "model": "gpt-6-luna",
-        "reasoning_effort": "medium",
-        "result": "pass: both engines, all supports, world-row containment, correct Tp, exact unchanged state and py39; parent independently confirmed intended failures"
-      }
-    ],
-    "T011": [
-      {
-        "model": "gpt-6-luna",
-        "reasoning_effort": "medium",
-        "result": "needs changes: 52 expected failures, 1 pass, all 48 analytic cells ran in 145.29 s; missing nonorthogonal input and finite-probe guards"
-      },
-      {
-        "model": "gpt-6-luna",
-        "reasoning_effort": "medium",
-        "result": "pass: actual nonorthogonal input, single extent row, all-finite probes; 4 expected representative failures; Black/Ruff pass"
-      },
-      {
-        "model": "gpt-6-luna",
-        "reasoning_effort": "medium",
-        "result": "review fix pass: extent-row test uses inferred centre to isolate T012; parent confirms expected zero-row failure, lint pass"
-      },
-      {
-        "model": "sonnet",
-        "result": "fix pass: slip row expectation [0,0,-1]/intermediate_axis per spec.md R2 table; T012 filter 4 pass"
-      },
-      {
-        "model": "sonnet",
-        "result": "fix pass: SC-003 CG settings through solver_kwargs (top-level rtol/atol/maxiter were ignored; solver used atol 2e-9); R2+R5 137 pass"
-      }
-    ],
-    "T005": [
-      {
-        "model": "gpt-6-luna",
-        "reasoning_effort": "medium",
-        "result": "stopped, edits saved: enclosure/prior-state 4 pass; 12 round-trip failures from missing dimensions=2 in T003 test; Black/Ruff pass; common package incomplete with 3 reported test_base.py errors, no traceback retained"
-      }
-    ],
-    "T006": [
-      {
-        "model": "gpt-6-luna",
-        "reasoning_effort": "medium",
-        "result": "stopped, edits saved: prior_state/unchanged_bounds 2 pass, 40 deselected; Black pass; full common package cancelled with Ctrl+C at user request, exit 1, no final result"
-      },
-      {
-        "model": "sonnet",
-        "result": "fix pass: ruff I001; golden npz regenerated, 27 keys changed (after_origin/after_maximum only); common tests 306 pass"
-      }
-    ],
-    "T012": [
-      {
-        "model": "gpt-6-luna",
-        "reasoning_effort": "medium",
-        "result": "stopped, edits saved: focused inferred_centre/slip/extent_direction 4 pass, 49 deselected before formatting; Black/Ruff pass; parent verification pending"
-      },
-      {
-        "model": "sonnet",
-        "result": "fix: restored coord-1 slip gradient scale 1/intermediate_axis (spec R2 table); blocked on wrong T011 expectation"
-      }
-    ],
-    "T008": [
-      {
-        "model": "haiku",
-        "result": "pass: 4 public conversion methods; conversion filter 24 pass"
-      }
-    ],
-    "T009": [
-      {
-        "model": "haiku",
-        "result": "pass: inequality 48 pass; task hunks only, no full-file black reformat"
-      }
-    ],
-    "T010": [
-      {
-        "model": "sonnet",
-        "result": "blocked: 12 affine-residual failures at anchor 6.5e6 from test cancellation; code otherwise complete"
-      }
-    ],
-    "T013": [
-      {
-        "model": "haiku",
-        "result": "code as Context; Done-when failed 48 R2 cells at 1e-4 because the T011 test passed CG settings outside solver_kwargs; pass after T011 fix"
-      }
-    ],
-    "T015": [
-      {
-        "model": "sonnet",
-        "result": "pass: no assertion in test__fault_builder.py encodes an S1 defect; npz golden entry recorded"
-      }
-    ],
-    "T016": [
-      {
-        "model": "haiku",
-        "result": "pass: row added at end of Migration notices table"
-      }
-    ],
-    "T017": [
-      {
-        "model": "sonnet",
-        "result": "pass: pre-fix evidence (contract not runnable, 278/53/84 failures), rollback 15 pass, timing, backend matrix, golden round-off note"
-      }
-    ]
-  },
-  "findings": {
-    "found": 13,
-    "rejected": 0,
-    "dropped": 0,
-    "fixed": 6,
-    "open_minor": [
-      "T011 test_extent_direction_row_at_centre: 15-degree check uses only the r4_frame fixture; production row not compared at O+(0,+-6,0) (SC-013 negative case)",
-      "T011 test_explicit_centre_rows_not_projected: builders[0] check is always true (R2 has an observation at the centre)",
-      "T007 test_equality_region_selects_world_nodes: 168 of 336 count for rotation 0 not asserted",
-      "T007 test_set_interpolation_geometry_encloses_rotated_box: passes rotation in degrees, which also sets support.rotation_xy (double rotation in setup)",
-      "T010/T005: no test for the evaluation_error branch of excluded_rows or for non-finite local_origin rejection (code checked correct by scratch test)",
-      "Later stage note: _on_geometry_change passes fault_trace_anisotropy=1.0 and fault_dip_anisotropy=1.0, so a property change adds anisotropy rows even when the caller set 0",
-      "T011 test_caller_normal_not_mutated: the slip assertion cannot fail, because the factory copies slip first; only the normal assertion checks the fix"
-    ]
-  },
-  "implementation_notes": [
-    "T004 import position follows project Ruff ordering without suppression; validator behavior and exports match the plan.",
-    "Orchestrator diagnosis wave 5: with solver_kwargs the anchor-0 R2 error is 2e-12 to 1e-10 (FDI and PLI); ridge regularisation has no effect. Top-level rtol/atol/maxiter on builder.build are ignored silently; possible later issue, not in S1 scope."
-  ],
-  "pre_fix_evidence": {
-    "T011": [
-      "inferred centre [100,200,0] versus [100,200,300]",
-      "explicit generated row [3.66025404,13.66025404,10] versus world [100,200,300]",
-      "nonorthogonal slip [0.7071,0,-0.7071] instead of [0,0,-1]",
-      "zero finite coord2 direction rows at centre",
-      "all 48 analytic matrix cells fail before fixes"
-    ],
-    "T014": [
-      "b=0 actual support origin [-4,-4,-4] versus requested [0,0,0], spacing [1,1,1], Tp 4.82e-8",
-      "90-degree frames raise resize ValueError before fixes"
-    ],
-    "wave2_parent": "373 expected failures, 28 pass, 48 deselected in 39.85 s; first failure of each reference, centre, slip, extent and buffer group independently confirmed"
-  },
-  "review_fixes": [
-    {
-      "wave": 2,
-      "task": "T011",
-      "severity": "major",
-      "problem": "extent test depended on later explicit-centre factory fix",
-      "fix": "use inferred centre for isolated extent test",
-      "status": "fixed and recheck pass"
-    }
-  ],
-  "runtime_resume": {
-    "date": "2026-11-04",
     "runtime": "claude",
     "max_workers": 5,
     "worker_S": "haiku",
     "worker_M": "sonnet",
     "review_wave": "sonnet",
     "review_spec": "opus",
-    "note": "Resumed in Claude Code after the Codex handoff; models follow providers.claude of .agents/model-policy.json."
+    "review_verifier": "opus"
   },
-  "answers": [
-    "2026-11-04: golden structured_support_reference.npz added to T006 Files; T015 records it (plan.md Answers)"
+  "env": "PYTHONPATH=<worktree>;<worktree>/packages/loop_common/src;<worktree>/packages/loop_interpolation/src; python = main checkout .venv",
+  "baseline": {
+    "lint": "pass: ruff check LoopStructural packages"
+  },
+  "waves": [
+    {
+      "wave": 8,
+      "base": "9e7b05f7cdab7f2270bb9e5d13f450d926100bc3",
+      "tasks": [
+        "T018",
+        "T019",
+        "T021"
+      ],
+      "check": "scope pass; ruff pass; black pass on 3 files; fixtures 0 tests; fold_setup import ok; reference file -k P2 156 passed (worker: whole file 468 passed); full pytest deferred to T031"
+    }
   ],
-  "spec_review": {
-    "model": "opus",
-    "range": "3881ef32..0abc31ec",
-    "verdict": "changes needed",
-    "major": 2,
-    "minor": 7,
-    "fixed": [
-      "major: T012 caller normal changed in place (np.array copy) + test_caller_normal_not_mutated",
-      "major: T013 fault_ellipsoid double conversion of world centre (_fault_segment.py added to T013 Files by user) + test_fault_ellipsoid_centre_is_world",
-      "minor (user asked): verification.md Pre-fix titles FR ranges corrected",
-      "minor (user asked): golden npz keeps only the 27 FR-014 changes; 33 round-off keys restored"
+  "runs": {
+    "T018": [
+      {
+        "model": "haiku",
+        "result": "pass: R1 helpers, AnalyticFold; r4 labels confirmed (coord0 surface, coord2 extent)"
+      }
     ],
-    "fix_check": "scope pass; ruff pass; tests/unit/modelling + loop_common (without planar matrix) 948 passed, 2 skipped",
-    "commit": "6547516e0090b311598fd94d7df73e2fe590881a",
-    "recheck": "pass: opus, 1 minor (slip assertion in test_caller_normal_not_mutated cannot fail; factory already copies slip)"
+    "T019": [
+      {
+        "model": "haiku",
+        "result": "pass: two helpers, import ok, ruff pass"
+      }
+    ],
+    "T021": [
+      {
+        "model": "sonnet",
+        "result": "pass: P2 in 9 engine parametrisations; -k P2 156 pass; P2TetMesh nsteps= is cell count"
+      }
+    ]
   },
-  "final": {
-    "head": "6547516e0090b311598fd94d7df73e2fe590881a",
-    "lint": "ruff check LoopStructural packages: pass",
-    "format": "black --check on the 15 changed .py files: 13 unchanged, 2 would be reformatted (_fault_segment.py, _discrete_interpolator.py; both not black-clean before S1, workers kept task hunks only)",
-    "test_root": "pytest: 1206 passed, 5 skipped, 21 warnings in 867 s (baseline 755 passed, 5 skipped in 1206 s)",
-    "test_packages": "pytest packages/loop_common/tests packages/loop_interpolation/tests: 912 passed, 47 skipped, 2 xfailed in 117 s",
-    "status": "S1 implemented; S2-S6 need planning (OP1)"
+  "findings": {
+    "found": 0,
+    "rejected": 0,
+    "dropped": 0,
+    "fixed": 0,
+    "open_minor": []
+  },
+  "history": {
+    "S1": {
+      "stage": "S1",
+      "worktree": "C:/Users/lachl/dev/LoopStructural-005",
+      "branch": "feat/005-coordinate-frame-correctness",
+      "review_mode": "wave",
+      "start_commit": "3881ef320adc483f71326ef9d09d90596493d39f",
+      "baseline": {
+        "lint": "pass: ruff check LoopStructural packages",
+        "pytest": "755 passed, 5 skipped, 21 warnings in 1205.98 s",
+        "doctor": "pass: source CLI workaround from setup-notes.md"
+      },
+      "runtime": {
+        "max_workers": 3,
+        "worker_S": "gpt-6-luna low",
+        "worker_M": "gpt-6-luna medium",
+        "review_wave": "gpt-6-luna medium",
+        "review_spec": "gpt-6.1-sol medium"
+      },
+      "waves": [
+        {
+          "wave": 1,
+          "base": "3881ef320adc483f71326ef9d09d90596493d39f",
+          "tasks": [
+            "T001",
+            "T002",
+            "T003"
+          ],
+          "review": "pass: gpt-6-luna medium, no findings",
+          "check": "scope pass; verification skeleton pass; fixture 0 tests; transform import fails as required before T004; lint and format pass",
+          "commit": "51c7c1a3553a302dfc0add30a1b97434e9645761"
+        },
+        {
+          "wave": 2,
+          "base": "51c7c1a3553a302dfc0add30a1b97434e9645761",
+          "tasks": [
+            "T004",
+            "T007",
+            "T011",
+            "T014"
+          ],
+          "review": "pass after one fixed major finding; fix recheck gpt-6-luna medium: no findings",
+          "check": "scope, Black and Ruff pass; validator 13 pass; parent regression run 373 expected failures, 28 pass, 48 analytic cells deselected, 39.85 s; worker previously ran all 48 analytic cells red",
+          "commit": "dd7078d62b7eedf8cde4e453ac622fda8ccafb73",
+          "fix_commit": "72d5e1b8dec1e78309cafc9258b1e761bad03783"
+        },
+        {
+          "wave": 3,
+          "base": "72d5e1b8dec1e78309cafc9258b1e761bad03783",
+          "tasks": [
+            "T005",
+            "T006",
+            "T008",
+            "T012"
+          ],
+          "review": "pass: sonnet, 1 minor (T012 asarray in-place change of caller normal)",
+          "status": "committed",
+          "check": "scope pass (T006 golden file added to Files by user decision); ruff pass; black pass; loop_common + loop_interpolation tests 912 passed, 47 skipped, 2 xfailed; conversion filter 24 pass; T012 filter 4 pass; test_base.py errors not reproduced",
+          "commit": "d2909aa5de619d9e83c49b818dfc7d1333700d51"
+        },
+        {
+          "wave": 4,
+          "base": "d2909aa5de619d9e83c49b818dfc7d1333700d51",
+          "tasks": [
+            "T009",
+            "T010"
+          ],
+          "check": "scope pass; ruff pass; tests/unit/modelling (without T013 files) 551 passed, 2 skipped; reference file 312 pass; loop_interpolation tests 606 passed, 47 skipped, 2 xfailed",
+          "review": "pass: sonnet, no findings (2 notes, not findings)",
+          "commit": "35e05b01c858f619cb667af446f507046cc78fb3"
+        },
+        {
+          "wave": 5,
+          "base": "35e05b01c858f619cb667af446f507046cc78fb3",
+          "tasks": [
+            "T013"
+          ],
+          "check": "scope pass; ruff pass; tests/unit/modelling 688 passed, 2 skipped in 300 s; R2+R5 files 137 passed in 209 s",
+          "review": "pass: sonnet, no findings",
+          "commit": "6d533fe01315647780a7e22c7c6bed2e09d9c076"
+        },
+        {
+          "wave": 6,
+          "base": "6d533fe01315647780a7e22c7c6bed2e09d9c076",
+          "tasks": [
+            "T015",
+            "T016"
+          ],
+          "check": "scope pass; test__fault_builder.py 6 pass (unchanged, no golden change); golden npz entry matches orchestrator key comparison; COMPAT row in Migration notices table",
+          "review": "pass: sonnet, 1 minor (golden entry omits 33 round-off keys) - fixed in T017",
+          "commit": "10fd4dea59d47c86da99aad90c66e437092ffe3b"
+        },
+        {
+          "wave": 7,
+          "base": "10fd4dea59d47c86da99aad90c66e437092ffe3b",
+          "tasks": [
+            "T017"
+          ],
+          "check": "root ruff pass; root pytest 1204 passed, 5 skipped in 1082.66 s (orchestrator, HEAD 10fd4dea); packages 912 passed, 47 skipped, 2 xfailed; S1 files 491 passed in 291 s; rollback at ebc7c699 15 passed; all 6 verification headings filled; prefix worktree removed",
+          "commit": "0abc31ecc4d95d1a2b7c205701eb265416c23a2c"
+        }
+      ],
+      "runs": {
+        "T001": [
+          {
+            "model": "gpt-6-luna",
+            "reasoning_effort": "low",
+            "result": "pass: verification skeleton read back"
+          }
+        ],
+        "T002": [
+          {
+            "model": "gpt-6-luna",
+            "reasoning_effort": "medium",
+            "result": "pass: imports, 0 tests collected, lint and format pass"
+          }
+        ],
+        "T003": [
+          {
+            "model": "gpt-6-luna",
+            "reasoning_effort": "medium",
+            "result": "needs changes: missing 2D/rotation cases and exact vector tolerance"
+          },
+          {
+            "model": "gpt-6-luna",
+            "reasoning_effort": "medium",
+            "result": "pass: expected missing RigidRotationError import; lint and format pass"
+          },
+          {
+            "model": "sonnet",
+            "result": "fix pass: dimensions=dimensions in round-trip BoundingBox; contract file 42 pass"
+          }
+        ],
+        "T004": [
+          {
+            "model": "gpt-6-luna",
+            "reasoning_effort": "low",
+            "result": "needs changes: targeted 13 pass; Google docstring and lint suppression must be corrected"
+          },
+          {
+            "model": "gpt-6-luna",
+            "reasoning_effort": "low",
+            "result": "pass: NumPy docstring; sorted imports without suppression; orchestrator verified 13 tests, lint pass"
+          }
+        ],
+        "T007": [
+          {
+            "model": "gpt-6-luna",
+            "reasoning_effort": "medium",
+            "result": "fail: guessed constraint internals, incomplete matrix and weak assertions"
+          },
+          {
+            "model": "gpt-6-luna",
+            "reasoning_effort": "medium",
+            "result": "pass: corrected real APIs, complete Cartesian matrix, fixed world affine controls, wrapper checks, physical restoration, and exclusion counts; lint/format pass"
+          },
+          {
+            "model": "sonnet",
+            "result": "fix pass: exact field without large-coordinate cancellation, atol 1e-10 kept; file 312 pass"
+          }
+        ],
+        "T014": [
+          {
+            "model": "gpt-6-luna",
+            "reasoning_effort": "medium",
+            "result": "needs changes: 42 expected pre-fix failures but PLI and generated-row containment coverage missing"
+          },
+          {
+            "model": "gpt-6-luna",
+            "reasoning_effort": "medium",
+            "result": "pass: both engines, all supports, world-row containment, correct Tp, exact unchanged state and py39; parent independently confirmed intended failures"
+          }
+        ],
+        "T011": [
+          {
+            "model": "gpt-6-luna",
+            "reasoning_effort": "medium",
+            "result": "needs changes: 52 expected failures, 1 pass, all 48 analytic cells ran in 145.29 s; missing nonorthogonal input and finite-probe guards"
+          },
+          {
+            "model": "gpt-6-luna",
+            "reasoning_effort": "medium",
+            "result": "pass: actual nonorthogonal input, single extent row, all-finite probes; 4 expected representative failures; Black/Ruff pass"
+          },
+          {
+            "model": "gpt-6-luna",
+            "reasoning_effort": "medium",
+            "result": "review fix pass: extent-row test uses inferred centre to isolate T012; parent confirms expected zero-row failure, lint pass"
+          },
+          {
+            "model": "sonnet",
+            "result": "fix pass: slip row expectation [0,0,-1]/intermediate_axis per spec.md R2 table; T012 filter 4 pass"
+          },
+          {
+            "model": "sonnet",
+            "result": "fix pass: SC-003 CG settings through solver_kwargs (top-level rtol/atol/maxiter were ignored; solver used atol 2e-9); R2+R5 137 pass"
+          }
+        ],
+        "T005": [
+          {
+            "model": "gpt-6-luna",
+            "reasoning_effort": "medium",
+            "result": "stopped, edits saved: enclosure/prior-state 4 pass; 12 round-trip failures from missing dimensions=2 in T003 test; Black/Ruff pass; common package incomplete with 3 reported test_base.py errors, no traceback retained"
+          }
+        ],
+        "T006": [
+          {
+            "model": "gpt-6-luna",
+            "reasoning_effort": "medium",
+            "result": "stopped, edits saved: prior_state/unchanged_bounds 2 pass, 40 deselected; Black pass; full common package cancelled with Ctrl+C at user request, exit 1, no final result"
+          },
+          {
+            "model": "sonnet",
+            "result": "fix pass: ruff I001; golden npz regenerated, 27 keys changed (after_origin/after_maximum only); common tests 306 pass"
+          }
+        ],
+        "T012": [
+          {
+            "model": "gpt-6-luna",
+            "reasoning_effort": "medium",
+            "result": "stopped, edits saved: focused inferred_centre/slip/extent_direction 4 pass, 49 deselected before formatting; Black/Ruff pass; parent verification pending"
+          },
+          {
+            "model": "sonnet",
+            "result": "fix: restored coord-1 slip gradient scale 1/intermediate_axis (spec R2 table); blocked on wrong T011 expectation"
+          }
+        ],
+        "T008": [
+          {
+            "model": "haiku",
+            "result": "pass: 4 public conversion methods; conversion filter 24 pass"
+          }
+        ],
+        "T009": [
+          {
+            "model": "haiku",
+            "result": "pass: inequality 48 pass; task hunks only, no full-file black reformat"
+          }
+        ],
+        "T010": [
+          {
+            "model": "sonnet",
+            "result": "blocked: 12 affine-residual failures at anchor 6.5e6 from test cancellation; code otherwise complete"
+          }
+        ],
+        "T013": [
+          {
+            "model": "haiku",
+            "result": "code as Context; Done-when failed 48 R2 cells at 1e-4 because the T011 test passed CG settings outside solver_kwargs; pass after T011 fix"
+          }
+        ],
+        "T015": [
+          {
+            "model": "sonnet",
+            "result": "pass: no assertion in test__fault_builder.py encodes an S1 defect; npz golden entry recorded"
+          }
+        ],
+        "T016": [
+          {
+            "model": "haiku",
+            "result": "pass: row added at end of Migration notices table"
+          }
+        ],
+        "T017": [
+          {
+            "model": "sonnet",
+            "result": "pass: pre-fix evidence (contract not runnable, 278/53/84 failures), rollback 15 pass, timing, backend matrix, golden round-off note"
+          }
+        ]
+      },
+      "findings": {
+        "found": 13,
+        "rejected": 0,
+        "dropped": 0,
+        "fixed": 6,
+        "open_minor": [
+          "T011 test_extent_direction_row_at_centre: 15-degree check uses only the r4_frame fixture; production row not compared at O+(0,+-6,0) (SC-013 negative case)",
+          "T011 test_explicit_centre_rows_not_projected: builders[0] check is always true (R2 has an observation at the centre)",
+          "T007 test_equality_region_selects_world_nodes: 168 of 336 count for rotation 0 not asserted",
+          "T007 test_set_interpolation_geometry_encloses_rotated_box: passes rotation in degrees, which also sets support.rotation_xy (double rotation in setup)",
+          "T010/T005: no test for the evaluation_error branch of excluded_rows or for non-finite local_origin rejection (code checked correct by scratch test)",
+          "Later stage note: _on_geometry_change passes fault_trace_anisotropy=1.0 and fault_dip_anisotropy=1.0, so a property change adds anisotropy rows even when the caller set 0",
+          "T011 test_caller_normal_not_mutated: the slip assertion cannot fail, because the factory copies slip first; only the normal assertion checks the fix"
+        ]
+      },
+      "implementation_notes": [
+        "T004 import position follows project Ruff ordering without suppression; validator behavior and exports match the plan.",
+        "Orchestrator diagnosis wave 5: with solver_kwargs the anchor-0 R2 error is 2e-12 to 1e-10 (FDI and PLI); ridge regularisation has no effect. Top-level rtol/atol/maxiter on builder.build are ignored silently; possible later issue, not in S1 scope."
+      ],
+      "pre_fix_evidence": {
+        "T011": [
+          "inferred centre [100,200,0] versus [100,200,300]",
+          "explicit generated row [3.66025404,13.66025404,10] versus world [100,200,300]",
+          "nonorthogonal slip [0.7071,0,-0.7071] instead of [0,0,-1]",
+          "zero finite coord2 direction rows at centre",
+          "all 48 analytic matrix cells fail before fixes"
+        ],
+        "T014": [
+          "b=0 actual support origin [-4,-4,-4] versus requested [0,0,0], spacing [1,1,1], Tp 4.82e-8",
+          "90-degree frames raise resize ValueError before fixes"
+        ],
+        "wave2_parent": "373 expected failures, 28 pass, 48 deselected in 39.85 s; first failure of each reference, centre, slip, extent and buffer group independently confirmed"
+      },
+      "review_fixes": [
+        {
+          "wave": 2,
+          "task": "T011",
+          "severity": "major",
+          "problem": "extent test depended on later explicit-centre factory fix",
+          "fix": "use inferred centre for isolated extent test",
+          "status": "fixed and recheck pass"
+        }
+      ],
+      "runtime_resume": {
+        "date": "2026-11-04",
+        "runtime": "claude",
+        "max_workers": 5,
+        "worker_S": "haiku",
+        "worker_M": "sonnet",
+        "review_wave": "sonnet",
+        "review_spec": "opus",
+        "note": "Resumed in Claude Code after the Codex handoff; models follow providers.claude of .agents/model-policy.json."
+      },
+      "answers": [
+        "2026-11-04: golden structured_support_reference.npz added to T006 Files; T015 records it (plan.md Answers)"
+      ],
+      "spec_review": {
+        "model": "opus",
+        "range": "3881ef32..0abc31ec",
+        "verdict": "changes needed",
+        "major": 2,
+        "minor": 7,
+        "fixed": [
+          "major: T012 caller normal changed in place (np.array copy) + test_caller_normal_not_mutated",
+          "major: T013 fault_ellipsoid double conversion of world centre (_fault_segment.py added to T013 Files by user) + test_fault_ellipsoid_centre_is_world",
+          "minor (user asked): verification.md Pre-fix titles FR ranges corrected",
+          "minor (user asked): golden npz keeps only the 27 FR-014 changes; 33 round-off keys restored"
+        ],
+        "fix_check": "scope pass; ruff pass; tests/unit/modelling + loop_common (without planar matrix) 948 passed, 2 skipped",
+        "commit": "6547516e0090b311598fd94d7df73e2fe590881a",
+        "recheck": "pass: opus, 1 minor (slip assertion in test_caller_normal_not_mutated cannot fail; factory already copies slip)"
+      },
+      "final": {
+        "head": "6547516e0090b311598fd94d7df73e2fe590881a",
+        "lint": "ruff check LoopStructural packages: pass",
+        "format": "black --check on the 15 changed .py files: 13 unchanged, 2 would be reformatted (_fault_segment.py, _discrete_interpolator.py; both not black-clean before S1, workers kept task hunks only)",
+        "test_root": "pytest: 1206 passed, 5 skipped, 21 warnings in 867 s (baseline 755 passed, 5 skipped in 1206 s)",
+        "test_packages": "pytest packages/loop_common/tests packages/loop_interpolation/tests: 912 passed, 47 skipped, 2 xfailed in 117 s",
+        "status": "S1 implemented; S2-S6 need planning (OP1)"
+      }
+    }
   }
 }

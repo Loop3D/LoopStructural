@@ -135,6 +135,51 @@ def r4_frame(
     return values, gradients
 
 
+R1_GRADIENT = np.array([0.2, -0.3, 0.4])
+
+
+def _tile(vector: np.ndarray, points: np.ndarray) -> np.ndarray:
+    """Repeat one world vector for each point."""
+    return np.tile(np.asarray(vector, dtype=float), (len(points), 1))
+
+
+def _unit(vectors: np.ndarray) -> np.ndarray:
+    """Normalise each row of an (N, 3) array to unit length."""
+    return vectors / np.linalg.norm(vectors, axis=1, keepdims=True)
+
+
+def r1_value(points: np.ndarray, anchor: np.ndarray) -> np.ndarray:
+    """Evaluate the R1 analytic scalar field."""
+    local = np.asarray(points) - anchor
+    return 2 + local @ R1_GRADIENT
+
+
+def r1_gradient(points: np.ndarray, anchor: np.ndarray) -> np.ndarray:
+    """Evaluate the R1 analytic scalar field gradient."""
+    del anchor
+    return _tile(R1_GRADIENT, points)
+
+
+def r1_observations(anchor: np.ndarray) -> pd.DataFrame:
+    """Return 27 scalar observations of the R1 field around an anchor."""
+    x_values, y_values, z_values = np.meshgrid(
+        (1.0, 4.0, 7.0), (1.0, 5.0, 9.0), (1.0, 6.0, 11.0), indexing="ij"
+    )
+    local = np.column_stack((x_values.ravel(), y_values.ravel(), z_values.ravel()))
+    points = anchor + local
+    count = points.shape[0]
+    return pd.DataFrame(
+        {
+            "X": points[:, 0],
+            "Y": points[:, 1],
+            "Z": points[:, 2],
+            "val": r1_value(points, anchor),
+            "feature_name": ["r1"] * count,
+            "w": np.ones(count),
+        }
+    )
+
+
 class AnalyticReference:
     """Evaluate an analytic scalar field and gradient within an optional box."""
 
@@ -174,3 +219,43 @@ class AnalyticReference:
     def __call__(self, points: np.ndarray) -> np.ndarray:
         """Evaluate the reference values."""
         return self.evaluate_value(points)
+
+
+class AnalyticFold:
+    """Return analytic fold orientation vectors and record the points asked for."""
+
+    def __init__(
+        self,
+        deformed_fn: Callable[[np.ndarray], np.ndarray],
+        axis_fn: Callable[[np.ndarray], np.ndarray],
+        dgz_fn: Callable[[np.ndarray], np.ndarray],
+    ) -> None:
+        self.deformed_fn = deformed_fn
+        self.axis_fn = axis_fn
+        self.dgz_fn = dgz_fn
+        self.seen_points: list[np.ndarray] = []
+
+    def get_deformed_orientation(
+        self, points: np.ndarray
+    ) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
+        """Return the deformed, axis and dgz vectors at world points."""
+        self.seen_points.append(np.array(points, copy=True))
+        return self.deformed_fn(points), self.axis_fn(points), self.dgz_fn(points)
+
+    @classmethod
+    def constant(cls, deformed: np.ndarray, axis: np.ndarray, dgz: np.ndarray) -> AnalyticFold:
+        """Return a fold that gives three fixed world vectors everywhere."""
+        return cls(
+            lambda points: _tile(deformed, points),
+            lambda points: _tile(axis, points),
+            lambda points: _tile(dgz, points),
+        )
+
+    @classmethod
+    def r4(cls, anchor: np.ndarray) -> AnalyticFold:
+        """Return a fold that uses the R4 cylindrical frame."""
+        return cls(
+            lambda points: _unit(r4_frame(points, anchor)[1][2]),
+            lambda points: _tile((0.0, 0.0, 1.0), points),
+            lambda points: _unit(r4_frame(points, anchor)[1][0]),
+        )

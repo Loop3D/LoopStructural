@@ -385,7 +385,7 @@ the main checkout. Before a test, set `PYTHONPATH` to the worktree root,
 `<worktree>/packages/loop_common/src` and
 `<worktree>/packages/loop_interpolation/src`.
 
-- [ ] T018 [P] [Found] [S] Add the R1 helpers and `AnalyticFold` to the shared fixtures.
+- [x] T018 [P] [Found] [S] Add the R1 helpers and `AnalyticFold` to the shared fixtures.
   - Files: `tests/fixtures/coordinate_frames.py`
   - Needs: T017
   - Wave: 8
@@ -408,7 +408,7 @@ the main checkout. Before a test, set `PYTHONPATH` to the worktree root,
     unit of `r4_frame(points, anchor)[1][2]` (extent gradient), axis =
     `(0, 0, 1)`, dgz = unit of `r4_frame(points, anchor)[1][0]`.
 
-- [ ] T019 [P] [Found] [S] Add `sample_fold_geometry` and `world_norm_constraints`.
+- [x] T019 [P] [Found] [S] Add `sample_fold_geometry` and `world_norm_constraints`.
   - Files: `packages/loop_interpolation/src/loop_interpolation/_fold_setup.py`
   - Needs: T017
   - Wave: 8
@@ -458,7 +458,7 @@ satisfy R3 and R1.
     test that documented rejection for `p2` instead. No tolerance above the
     plan limits (SC-015).
 
-- [ ] T021 [P] [US2] [M] Test: add the P2 engine to the R3 reference tests.
+- [x] T021 [P] [US2] [M] Test: add the P2 engine to the R3 reference tests.
   - Files: `tests/unit/modelling/test_reference_constraint_frames.py`
   - Needs: T017
   - Wave: 8

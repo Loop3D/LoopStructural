@@ -4,7 +4,8 @@ import itertools
 
 import numpy as np
 import pytest
-from loop_common.supports import StructuredGrid, TetMesh
+from loop_common.supports import P2TetMesh, StructuredGrid, TetMesh
+from loop_interpolation import P2Interpolator
 
 from LoopStructural.modelling.features.builders import GeologicalFeatureBuilder
 from tests.fixtures.coordinate_frames import (
@@ -39,10 +40,14 @@ def _builder(engine, model):
     )
     local = model.bounding_box.project(corners)
     lo, hi = local.min(axis=0), local.max(axis=0)
-    support_type = StructuredGrid if engine == "FDI" else TetMesh
-    interp = type(builder.interpolator)(
-        support_type(origin=lo, nsteps_cells=[5, 6, 7], step_vector=(hi - lo) / [5, 6, 7])
-    )
+    step = (hi - lo) / [5, 6, 7]
+    if engine == "P2":
+        interp = P2Interpolator(P2TetMesh(origin=lo, nsteps=[5, 6, 7], step_vector=step))
+    else:
+        support_type = StructuredGrid if engine == "FDI" else TetMesh
+        interp = type(builder.interpolator)(
+            support_type(origin=lo, nsteps_cells=[5, 6, 7], step_vector=step)
+        )
     interp.bounding_box = model.bounding_box
     builder._interpolator = interp
     return builder
@@ -54,7 +59,7 @@ def _field(anchor):
     )
 
 
-@pytest.mark.parametrize("engine", ["FDI", "PLI"])
+@pytest.mark.parametrize("engine", ["FDI", "PLI", "P2"])
 def test_world_local_conversion_methods(frame_case, engine):
     anchor, _, model = frame_case
     interp = _builder(engine, model).interpolator
@@ -67,7 +72,7 @@ def test_world_local_conversion_methods(frame_case, engine):
         np.testing.assert_allclose(to_world(to_local(values)), values, atol=tp(12, 12), rtol=0)
 
 
-@pytest.mark.parametrize("engine", ["FDI", "PLI"])
+@pytest.mark.parametrize("engine", ["FDI", "PLI", "P2"])
 def test_equality_region_selects_world_nodes(frame_case, engine):
     anchor, _, model = frame_case
     builder = _builder(engine, model)
@@ -89,7 +94,7 @@ def test_equality_region_selects_world_nodes(frame_case, engine):
     assert "reference_equality" in entries
 
 
-@pytest.mark.parametrize("engine", ["FDI", "PLI"])
+@pytest.mark.parametrize("engine", ["FDI", "PLI", "P2"])
 @pytest.mark.parametrize("sample_rule", [None, "centroid", "gauss4"])
 def test_orthogonal_rows_affine_residual(frame_case, engine, sample_rule):
     anchor, _, model = frame_case
@@ -118,7 +123,7 @@ def test_orthogonal_rows_affine_residual(frame_case, engine, sample_rule):
         np.testing.assert_allclose(residual, 0.0, rtol=0, atol=1e-10)
 
 
-@pytest.mark.parametrize("engine", ["FDI", "PLI"])
+@pytest.mark.parametrize("engine", ["FDI", "PLI", "P2"])
 @pytest.mark.parametrize("sample_rule", [None, "centroid", "gauss4"])
 def test_reference_gradient_samples_use_world_points_and_local_vectors(
     frame_case, engine, sample_rule
@@ -160,7 +165,7 @@ def test_reference_gradient_samples_use_world_points_and_local_vectors(
     np.testing.assert_allclose(seen["vectors"], expected, rtol=0, atol=1e-10)
 
 
-@pytest.mark.parametrize("engine", ["FDI", "PLI"])
+@pytest.mark.parametrize("engine", ["FDI", "PLI", "P2"])
 @pytest.mark.parametrize("lower", [True, False])
 def test_inequality_feature_bounds_world(frame_case, engine, lower):
     anchor, _, model = frame_case
@@ -173,7 +178,7 @@ def test_inequality_feature_bounds_world(frame_case, engine, lower):
     np.testing.assert_allclose(bounds[:, column], values, rtol=0, atol=tp(200, 200))
 
 
-@pytest.mark.parametrize("engine", ["FDI", "PLI"])
+@pytest.mark.parametrize("engine", ["FDI", "PLI", "P2"])
 def test_restricted_reference_exclusion_counts(frame_case, engine):
     anchor, _, model = frame_case
     builder = _builder(engine, model)
@@ -208,7 +213,7 @@ def test_restricted_reference_exclusion_counts(frame_case, engine):
     )
 
 
-@pytest.mark.parametrize("engine", ["FDI", "PLI"])
+@pytest.mark.parametrize("engine", ["FDI", "PLI", "P2"])
 def test_support_expansion_contains_restored_points(frame_case, engine):
     _, _, model = frame_case
     builder = _builder(engine, model)
@@ -234,7 +239,7 @@ def test_support_expansion_contains_restored_points(frame_case, engine):
     assert np.all(local <= support.maximum + 1e-10)
 
 
-@pytest.mark.parametrize("engine", ["FDI", "PLI"])
+@pytest.mark.parametrize("engine", ["FDI", "PLI", "P2"])
 def test_set_interpolation_geometry_encloses_rotated_box(frame_case, engine):
     anchor, rotation, model = frame_case
     builder = _builder(engine, model)
