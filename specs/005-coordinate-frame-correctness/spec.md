@@ -1,6 +1,6 @@
 # Feature spec: Coordinate and fault-frame correctness
 
-**Feature**: `005-coordinate-frame-correctness` | **Created**: 2026-11-03 | **Status**: Review corrections applied; planning blocked on the required cascade to specs 003 and 004
+**Feature**: `005-coordinate-frame-correctness` | **Created**: 2026-11-03 | **Status**: Stage S1 implemented (pull request #392); stages S2 to S6 need planning
 
 **Input**: Fix the shared world-to-local coordinate defects and the fault-frame interpolation defects found in the two investigations.
 
@@ -402,6 +402,8 @@ An unsupported capability must retain its documented rejection. Missing optional
 - A new RBF, native, browser, or GPU solver; performance work beyond checking that correctness changes do not remove existing supported paths.
 - A rewrite of the intrusion workflow, QGIS plugin, model graph, or all export formats. The audited coordinate consumers and shared geometry are in scope.
 - Changes to other spec documents, branches, worktrees, commits, or release publication during this interview.
+- The trace and dip anisotropy settings of a fault after a property change. A rebuild after a property change uses anisotropy weights of 1.0, also when the caller set 0. FR-012 covers only the fault buffer and forced mesh geometry. Issue #394 records this defect (C-005).
+- Solver settings that `build` ignores. Top-level `rtol`, `atol` and `maxiter` have no effect, and no warning occurs; only `solver_kwargs` applies them. This is not a coordinate-frame defect. Issue #393 records it (C-006). The tests of this spec give the SC-003 solve settings through `solver_kwargs`.
 
 ## Risks and rollback
 
@@ -439,6 +441,14 @@ All four interview decisions are resolved. The requirements, acceptance scenario
 - Made the accepted cascade to specs 003 and 004 a pre-plan prerequisite. This review has not changed those documents.
 - Review verdict remains **Needs changes** only because that external prerequisite is still outstanding. No new user-policy clarification is required.
 
+### Decisions after stage S1, answered on 2026-11-04
+
+The S1 build (pull request #392) found two defects that the spec did not decide, and the maintainer decided the plan point OP2.
+
+- **C-005, anisotropy after a property change**. Question: must FR-012 also keep the trace and dip anisotropy settings through a rebuild? Answer: no. This is out of scope for spec 005. Issue #394 records it.
+- **C-006, ignored solver settings**. Question: must this spec make `build` apply or reject top-level solver settings? Answer: no. It is not a coordinate-frame defect. Issue #393 records it.
+- **C-007, R2 and R5 run time (plan OP2)**. Question: where does the mandatory R2 and R5 matrix run? Answer: in the default `pytest` run, with no marker. In S1, the four new test files take about 5 minutes. The analytic file takes 264 s. The full root suite takes about 14.5 minutes.
+
 ## Next step
 
-Run spec-cascade to apply the accepted changes to specs 003 and 004. Recheck their consistency with 005 and confirm SC-019. Planning may start only after that gate passes. No clarification marks remain.
+Stage S1 is implemented in pull request #392. After it merges, run the spec-planner skill for stage S2 (plan OP1). No clarification marks remain.

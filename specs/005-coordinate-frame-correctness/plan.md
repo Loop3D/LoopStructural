@@ -44,6 +44,10 @@ The constitution (.specify/memory/constitution.md) has priority. -->
   get their old values back. `verification.md` gets the correct FR ranges in
   its "Pre-fix failures" titles.
 
+- 2026-11-04 (OP2, maintainer decision, spec C-007): the R2 and R5 matrix
+  stays in the default `pytest` run with no marker. Measured S1 time: about
+  5 minutes for the four new test files. OP2 is closed.
+
 ## Summary
 
 Observations, fault geometry, masks and public queries stay in world
