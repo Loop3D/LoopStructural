@@ -1,0 +1,68 @@
+{
+  "spec": "005-coordinate-frame-correctness",
+  "stage": "S1",
+  "worktree": "C:/Users/lachl/dev/LoopStructural-005",
+  "branch": "feat/005-coordinate-frame-correctness",
+  "review_mode": "wave",
+  "start_commit": "3881ef320adc483f71326ef9d09d90596493d39f",
+  "baseline": {
+    "lint": "pass: ruff check LoopStructural packages",
+    "pytest": "755 passed, 5 skipped, 21 warnings in 1205.98 s",
+    "doctor": "pass: source CLI workaround from setup-notes.md"
+  },
+  "runtime": {
+    "max_workers": 3,
+    "worker_S": "gpt-6-luna low",
+    "worker_M": "gpt-6-luna medium",
+    "review_wave": "gpt-6-luna medium",
+    "review_spec": "gpt-6.1-sol medium"
+  },
+  "waves": [
+    {
+      "wave": 1,
+      "base": "3881ef320adc483f71326ef9d09d90596493d39f",
+      "tasks": [
+        "T001",
+        "T002",
+        "T003"
+      ],
+      "review": "pending",
+      "check": "scope pass; verification skeleton pass; fixture 0 tests; transform import fails as required before T004; lint and format pass"
+    }
+  ],
+  "runs": {
+    "T001": [
+      {
+        "model": "gpt-6-luna",
+        "reasoning_effort": "low",
+        "result": "pass: verification skeleton read back"
+      }
+    ],
+    "T002": [
+      {
+        "model": "gpt-6-luna",
+        "reasoning_effort": "medium",
+        "result": "pass: imports, 0 tests collected, lint and format pass"
+      }
+    ],
+    "T003": [
+      {
+        "model": "gpt-6-luna",
+        "reasoning_effort": "medium",
+        "result": "needs changes: missing 2D/rotation cases and exact vector tolerance"
+      },
+      {
+        "model": "gpt-6-luna",
+        "reasoning_effort": "medium",
+        "result": "pass: expected missing RigidRotationError import; lint and format pass"
+      }
+    ]
+  },
+  "findings": {
+    "found": 0,
+    "rejected": 0,
+    "dropped": 0,
+    "fixed": 0,
+    "open_minor": []
+  }
+}

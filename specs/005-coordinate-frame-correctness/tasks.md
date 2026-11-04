@@ -22,7 +22,7 @@ Rules:
 
 ## Phase 1: Setup
 
-- [ ] T001 [P] [Setup] [S] Create the S1 verification record skeleton.
+- [x] T001 [P] [Setup] [S] Create the S1 verification record skeleton.
   - Files: `specs/005-coordinate-frame-correctness/verification.md`
   - Needs: none
   - Wave: 1
@@ -35,7 +35,7 @@ Rules:
     records the evidence for FR-029, FR-031 and FR-032 of spec 005."
     Write in ASD-STE100 Simplified Technical English.
 
-- [ ] T002 [P] [Setup] [M] Create the shared analytic fixtures R1 to R5.
+- [x] T002 [P] [Setup] [M] Create the shared analytic fixtures R1 to R5.
   - Files: `tests/fixtures/coordinate_frames.py`
   - Needs: none
   - Wave: 1
@@ -65,7 +65,7 @@ Rules:
 
 ## Phase 2: Foundation (blocks all user stories)
 
-- [ ] T003 [P] [Found] [M] Test: rigid rotation, round trips, enclosure and resize stability.
+- [x] T003 [P] [Found] [M] Test: rigid rotation, round trips, enclosure and resize stability.
   - Files: `packages/loop_common/tests/test_rigid_transform_contract.py`
   - Needs: none
   - Wave: 1
