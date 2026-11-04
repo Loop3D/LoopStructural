@@ -91,7 +91,9 @@
         "pytest_root": "1760 passed, 5 skipped, 13 warnings in 1111.71 s (HEAD 662d2713)",
         "pytest_packages": "912 passed, 47 skipped, 2 xfailed, 7 warnings in 126.56 s (HEAD 662d2713, orchestrator resume 2026-11-04)",
         "pytest_root_resume": "1760 passed, 5 skipped, 13 warnings in 1052.40 s (same result as the first run)"
-      }
+      },
+      "commit": "864a23b0fbfd11f7275fe55d0e4888708c0649bb",
+      "review": "pass: sonnet, 2 minor (recorded in open_minor)"
     }
   ],
   "runs": {
@@ -203,14 +205,16 @@
     ]
   },
   "findings": {
-    "found": 5,
+    "found": 7,
     "rejected": 0,
     "dropped": 0,
     "fixed": 2,
     "open_minor": [
       "T020: no test of the T024 native adapter world contract (rotated supports are rejected in test_native_parity.py); record in verification (T031)",
       "T020 test_directional_regularisation_world_contract: p2 callable/array cells run the same NotImplementedError check twice",
-      "T020: tp(50,50) point tolerance at anchor 6.5e6 has about 4x margin over the round-trip error; watch in T031"
+      "T020: tp(50,50) point tolerance at anchor 6.5e6 has about 4x margin over the round-trip error; watch in T031",
+      "T031 verification.md \"Test-setup correction\" (S2 post-fix results): says \"pre-fix run below\"; the S2 pre-fix section is above. Change \"below\" to \"above\".",
+      "T031 verification.md S2 rollback checks: the 1206-pass root run was \"collected before wave 8 edits\" (run-state baseline); the text does not say so, and the S1 files were not run alone at 9e7b05f7."
     ]
   },
   "history": {
@@ -581,7 +585,7 @@
     ],
     "T022": "cn_fdi 13/13 IndexError (scalar element_size, frame-independent); cn_pli 13/13 pass (coverage, no frame defect)"
   },
-  "status": "T031 done, wave 13 awaiting commit and review; end spec review (opus) not started",
+  "status": "T031 done and reviewed (wave 13 pass); end spec review (opus) not started",
   "notes": [
     "feat/005-coordinate-frame-correctness was rebased (new S1 hashes) and gained 82ff9680 (golden gradient tolerance, test_golden.py only); S2 branch must be rebased onto it before its pull request"
   ]
