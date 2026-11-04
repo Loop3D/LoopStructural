@@ -1,4 +1,4 @@
-# Tasks: Coordinate and fault-frame correctness (stages S1 and S2)
+# Tasks: Coordinate and fault-frame correctness (stages S1, S2 and S3)
 
 **Feature**: `005-coordinate-frame-correctness` | **Plan**: [plan.md](plan.md)
 
@@ -9,16 +9,16 @@ Rules:
   Run the test and see it fail first.
 - [P] = can be done at the same time as the other [P] tasks of the same wave.
 - Written in ASD-STE100 Simplified Technical English.
-- This file covers stages S1 (T001 to T017, done) and S2 (T018 to T032) of
-  plan.md. Stages S3 to S6 wait for OP1 (a later spec-planner run for each
-  stage, then a new spec-tasks run).
+- This file covers stages S1 (T001 to T017, done), S2 (T018 to T032) and S3
+  (T033 to T050) of plan.md. Stages S4 to S6 wait for OP1 (a later
+  spec-planner run for each stage, then a new spec-tasks run).
 -->
 
 ## Orchestrator notes
 
 - Run this file with the spec-orchestrator skill. It has the rules for the
   worktree, the sub agents, the checks and the commits.
-- Waves: 13 (S1: 1 to 7, done; S2: 8 to 13). Tiers: [S] = simple model, [M] = standard model.
+- Waves: 22 (S1: 1 to 7, done; S2: 8 to 13; S3: 14 to 22). Tiers: [S] = simple model, [M] = standard model.
 - Do not start a task with "Blocked by".
 
 ## Phase 1: Setup
@@ -668,6 +668,297 @@ satisfy R3 and R1.
     S2 start commit. Golden review: list any changed existing test, or "No
     golden change in S2."
 
+## Phase 9: Stage S3 foundation
+
+- [ ] T033 [P] [Found] [M] Add the S3 persistence and lifecycle helpers to the shared fixtures.
+  - Files: `tests/fixtures/coordinate_frames.py`
+  - Needs: T031
+  - Wave: 14
+  - Done when: `pytest tests/fixtures/coordinate_frames.py` collects 0 tests with no
+    import error, and `ruff check LoopStructural packages` passes. A short
+    `python -c` script (worktree `PYTHONPATH`) calls `r1_interpolator` for the 5
+    engines at `ANCHORS[0]`, rotation 0, with `exact=True` for the first 3 and
+    `exact=False` for the last 2, and exits 0.
+  - Context: Helper module, no tests. numpy docstrings, type hints, Black line 100.
+    Add `PERSIST_ENGINES = ("fdi", "pli", "p2")`, `LIFECYCLE_ENGINES = PERSIST_ENGINES + ("cn_fdi", "cn_pli")`,
+    `QUERY_OFFSETS = np.array([[2.2, 3.7, 4.3], [6.1, 8.2, 9.1]])`.
+    Add `r1_interpolator(engine, anchor, rotation_deg, exact=True) -> tuple[interpolator, pd.DataFrame]`.
+    Steps: `model = model_with_frame(anchor, anchor + (8, 10, 12), rotation_deg)`; `bb = model.bounding_box`;
+    corners of the world box through `bb.project`; local `lo`, `hi`; `cells = (5, 6, 7)` if `exact`
+    else `(6, 6, 6)`; `step = (hi - lo) / cells`. Supports (copy the S2 test files): `fdi` =
+    `FiniteDifferenceInterpolator(StructuredGrid(origin=lo, nsteps_cells=cells, step_vector=step))`; `pli` =
+    `P1Interpolator(TetMesh(same args))`; `p2` = `P2Interpolator(P2TetMesh(origin=lo, nsteps=cells, step_vector=step))`;
+    `cn_fdi` = `ConstantNormFDIInterpolator(StructuredGrid(...))`; `cn_pli` = `ConstantNormP1Interpolator(TetMesh(...))`
+    (cn engines: `norm_length = np.sqrt(0.29)`). Then `interp.bounding_box = bb`; `obs = r1_observations(anchor)`;
+    `interp.set_value_constraints(obs[["X", "Y", "Z", "val", "w"]].to_numpy())`. If `exact`: set
+    `interp.c = r1_value(interp.local_to_world_points(interp.support.nodes), anchor)` and `interp.up_to_date = True`.
+    Else: `interp.setup()` and `assert interp.solve_system(solver="cg", solver_kwargs={"rtol": 1e-10, "atol": 1e-12, "maxiter": 20000})`.
+    Add `strip_frame_keys(payload: dict) -> dict`: a deep copy without the keys `format_version`,
+    `constraint_space`, `transform` and `bounding_box` (a legacy payload).
+
+- [ ] T034 [P] [Found] [S] Add the S3 module stubs and export the two errors.
+  - Files: `packages/loop_interpolation/src/loop_interpolation/_frame_persistence.py`, `packages/loop_interpolation/src/loop_interpolation/__init__.py`
+  - Needs: T031
+  - Wave: 14
+  - Done when: `python -c "from loop_interpolation import InterpolatorFormatError, StaleFrameError; from loop_interpolation._frame_persistence import FORMAT_VERSION, CONSTRAINT_SPACE, REASONS, frame_payload, payload_kind, resolve_frame, bounding_box_from_support"`
+    runs with the worktree `PYTHONPATH`, and `ruff check LoopStructural packages` passes.
+  - Context: New module. Start with `from __future__ import annotations`, numpy docstrings, type hints.
+    `FORMAT_VERSION: int = 2`; `CONSTRAINT_SPACE: str = "local"`;
+    `REASONS: tuple[str, ...] = ("legacy_no_transform", "unsupported_version", "malformed", "conflict")`.
+    `class InterpolatorFormatError(ValueError)`: `__init__(self, reason: str, message: str) -> None` calls
+    `super().__init__(message)` and sets `self.reason = reason`; raise `ValueError` if `reason not in REASONS`.
+    `class StaleFrameError(ValueError)`: no body except a docstring.
+    Stubs that raise `NotImplementedError("S3 stub")`: `frame_payload(bounding_box, dimensions) -> dict`;
+    `payload_kind(payload: dict, caller_frame: bool) -> str`;
+    `resolve_frame(payload: dict, kind: str, support: object, dimensions: int, *, local_origin=None, local_rotation=None, declare_identity: bool = False)`;
+    `bounding_box_from_support(support: object, dimensions: int, local_origin, local_rotation)`.
+    In `__init__.py`: add `from ._frame_persistence import InterpolatorFormatError, StaleFrameError` after
+    the `._diagnostics` import, and add both names to `__all__` in alphabetical order.
+
+## Phase 10: User story 3 - save, copy and keep one frame (S3, FR-016 to FR-020)
+
+**Goal**: a saved interpolator keeps its transform and the space of its constraints. A copy keeps the
+frame. A legacy file needs an explicit choice. A frame change never gives a stale result.
+**Independent test**: `pytest tests/unit/modelling/test_frame_persistence.py tests/unit/modelling/test_frame_copy_and_lifecycle.py`.
+
+- [ ] T035 [P] [US3] [M] Test: payload frame keys, round trips and two save/load cycles (U3.1, U3.2, U3.8; SC-006).
+  - Files: `tests/unit/modelling/test_frame_persistence.py`
+  - Needs: T033, T034
+  - Wave: 15
+  - Done when: `pytest tests/unit/modelling/test_frame_persistence.py -k "payload_declares or round_trip_world or two_cycles or json_and_yaml"`
+    fails before T043 (record the failing ids and the first error of each) and passes after T043.
+  - Context: New file. Import `GeologicalInterpolator` and `InterpolatorFactory` from `loop_interpolation`
+    and the helpers from `tests.fixtures.coordinate_frames` (T033). Cells: `engine in PERSIST_ENGINES`
+    x `ANCHORS` x `ROTATIONS_DEG` = 36 per test (use `r1_interpolator(engine, anchor, rot, exact=True)`).
+    `test_payload_declares_frame`: `payload = interp.to_dict()`; `payload["format_version"] == 2`;
+    `payload["constraint_space"] == "local"`; `payload["transform"]` has `dimensions == 3`, `local_origin`
+    and `local_rotation` equal to `interp.bounding_box` values; `payload["bounding_box"]` has `origin`,
+    `maximum`, `nsteps` and no `local_*` key; `format_version` is the first of the new keys.
+    `test_round_trip_world_values`: `loaded = GeologicalInterpolator.from_dict(payload)`; at `anchor + QUERY_OFFSETS`
+    values differ by at most `1e-12 * F` (F = max(1, max abs of `r1_value`)) and gradients by at most
+    `1e-12 * max(1, abs(R1_GRADIENT).max())`.
+    `test_local_arrays_unchanged_after_two_cycles`: save, load, save, load; `loaded.data[k]` equals
+    `interp.data[k]` bit for bit for each key; both payloads equal; same version, transform and space.
+    `test_json_and_yaml_carry_frame`: `engine in PERSIST_ENGINES`, `ANCHORS[3]`, 30 degrees; use `to_json`/`from_json`
+    and `to_yaml`/`from_yaml`; the loaded transform equals the source.
+
+- [ ] T036 [US3] [M] Test: legacy, conflicting, malformed and unsupported payloads, and the creation call (U3.6, U3.7; SC-012, SC-017).
+  - Files: `tests/unit/modelling/test_frame_persistence.py`
+  - Needs: T035
+  - Wave: 16
+  - Done when: `pytest tests/unit/modelling/test_frame_persistence.py -k "legacy or conflicting or malformed or unsupported or creation_call or old_reader"`
+    fails before T043 (record the failing ids) and passes after T043. A cell that passes before T043
+    (the creation call) is recorded as "coverage, no defect".
+  - Context: Add to the file of T035. Import `InterpolatorFormatError` from `loop_interpolation`.
+    `legacy = strip_frame_keys(payload)`. Use `copy.deepcopy` to prove that the source dict is unchanged.
+    `test_legacy_payload_requires_choice` (3 engines): `pytest.raises(InterpolatorFormatError)`, `reason == "legacy_no_transform"`,
+    message starts with `legacy interpolator payload has no transform` and names `local_origin` and `declare_identity`.
+    `test_legacy_with_supplied_transform` (3 engines x 4 anchors x 3 rotations): load with `local_origin=bb.local_origin`,
+    `local_rotation=bb.local_rotation`; values and gradients meet SC-006 (`1e-12` limits) against the source.
+    `test_legacy_with_identity_declaration` (3 engines, anchor 0, rotation 0): `declare_identity=True`.
+    `test_conflicting_inputs` (4 cases): `declare_identity` with `local_origin`; v2 payload with another origin; with another rotation;
+    a rotated v2 payload with `declare_identity=True`. `reason == "conflict"`, message starts with `conflicting transform`.
+    `test_malformed_metadata` (8 cases): missing `transform`; `constraint_space` "world"; rotation scaled by 2; NaN origin; origin of length 2;
+    `bounding_box` None with a rotated transform; legacy payload that keeps `transform`; `format_version` equal to "2". `reason == "malformed"`.
+    `test_unsupported_future_version` (3 and 99): `reason == "unsupported_version"`. `test_creation_call_unchanged`:
+    `InterpolatorFactory.from_dict({"type": "FDI", "boundingbox": bb, "nelements": 1000})` builds an empty interpolator; the same call
+    with `declare_identity=True` raises `malformed`. `test_old_reader_would_name_format_version`: pop `type`, `support`, `data`, `c`,
+    `up_to_date`, `valid` from a payload copy; `next(iter(rest)) == "format_version"`.
+
+- [ ] T037 [P] [US3] [M] Test: copies keep the frame, a frame change is rejected without state change, and the rebuild recipe (U3.3, U3.9; SC-016).
+  - Files: `tests/unit/modelling/test_frame_copy_and_lifecycle.py`
+  - Needs: T033, T034
+  - Wave: 15
+  - Done when: `pytest tests/unit/modelling/test_frame_copy_and_lifecycle.py -k "copy_keeps_frame or stale_frame or restored_transform or rebuild_in_new_frame"`
+    fails before T042 to T046 (record the failing ids) and passes after them. The rebuild cells may pass
+    before: record them as "coverage, no defect".
+  - Context: New file. First run `git grep -n 'interpolator.*copy(' -- LoopStructural/modelling/features` and put any hit in your
+    report (OP6). `test_copy_keeps_frame`: `engine in ("fdi", "p2", "p2_fold")` x 12 frames. Build `fdi` and `p2` with
+    `r1_interpolator(engine, anchor, rot)`. Build `p2_fold` as `P2FoldInterpolator(P2TetMesh(...), fold=AnalyticFold.constant(d, a, g))`
+    (unit vectors) with the same box, support and `bounding_box` recipe as `r1_interpolator`. `c = interp.copy()`:
+    `c.bounding_box is interp.bounding_box`; the four conversion methods agree with the source on a point array; the
+    copy has 0 stored rows; same support; for `p2_fold`, `c.fold is interp.fold`.
+    `test_stale_frame_rejected_without_state_change`: engine in `LIFECYCLE_ENGINES`, `ANCHORS[1]`, rotation 0, `exact=False`. Take a snapshot
+    (deep copies of `data`, `c`, `up_to_date`, `valid`, `n_g`, `n_i`, `n_n`, `n_t`; the object `latest_diagnostics_report`). Then
+    `bb.set_local_transform(local_origin=anchor + (3, -2, 1), rotation_matrix=rot_z(30.0))`. Each of `evaluate_value`,
+    `evaluate_gradient`, `set_value_constraints` (27 rows) and `to_dict` raises `StaleFrameError` (message starts with `the local transform changed`)
+    once. The snapshot is unchanged. `test_restored_transform_is_usable` (`fdi`): set the old transform back; `evaluate_value` equals the first result.
+    `test_rebuild_in_new_frame_preserves_world_evaluation` (5 engines): the documented recipe, `r1_interpolator(engine, anchor, 30.0, exact=False)`
+    (a new interpolator in the new frame, `ANCHORS[1]`); values and gradients at `anchor + QUERY_OFFSETS` meet SC-002
+    (`1e-8 * F`; `1e-8 * max(1, abs(R1_GRADIENT).max())`). If a P2 fit misses SC-002, stop and report (not a frame defect).
+
+- [ ] T038 [P] [US3] [M] Test: fault restoration after a transform change (SC-016, cache part).
+  - Files: `tests/unit/modelling/test_frame_copy_and_lifecycle.py`
+  - Needs: T037
+  - Wave: 16
+  - Done when: `pytest tests/unit/modelling/test_frame_copy_and_lifecycle.py -k fault_restoration`
+    fails before T042 (record the first error) and passes after T042.
+  - Context: Add to the file of T037. First read `FaultSegment.apply_to_points` in
+    `LoopStructural/modelling/features/fault/_fault_segment.py` (read only) and write in your report which public
+    interpolator methods it calls. `test_fault_restoration_uses_current_frame`: `engine in ("FDI", "PLI")` (the R2 fault of
+    `tests/unit/modelling/test_fault_frame_analytic.py`; copy its model set-up, anchor `ANCHORS[1]`, rotation 0). Restore
+    the 6859-probe subset `r2_probes(anchor)[:200]` through the fault frame. Change the local transform of `model.bounding_box`
+    as in T037: restoring the points raises `StaleFrameError`. Then build the same fault in a fresh model with the new frame
+    (`model_with_frame(...)`, rotation 30) and with a second fresh model (uncached control); the restored world points of the
+    two agree within `tp(L, W)`. No restoration cache exists, so the test also records that fact in its docstring.
+
+- [ ] T039 [US3] [M] Record the S3 pre-fix evidence in `verification.md`.
+  - Files: `specs/005-coordinate-frame-correctness/verification.md`
+  - Needs: T036, T038
+  - Wave: 17
+  - Done when: `verification.md` has the heading `## S3 pre-fix failures` with a table of the failing test ids and
+    their first error for the 2 new test files, and the 3 behavioural records below, each with a measured value.
+  - Context: Run the 2 new test files on the current tree with the worktree `PYTHONPATH` (check that `loop_interpolation.__file__`
+    comes from the worktree). Record per test function: failed / total, one representative id and value. Mark a function whose cells
+    all fail only on a missing name ("missing name"). Also record 3 behavioural defects from the production path with a short script: (1) a rotated
+    `fdi` round trip (`ANCHORS[3]`, 30 degrees, `exact=True`): `from_dict(to_dict())` gives world values with maximum error E (give E);
+    (2) `interp.copy().bounding_box is None` for `fdi`; (3) after `bb.set_local_transform(...)` (T037 change) `evaluate_value`
+    returns a value with no error and differs from the earlier value by D (give D). Add `## S3 pre-fix failures` after the S2 sections.
+    Write in ASD-STE100 Simplified Technical English.
+
+## Phase 11: Stage S3 implementation
+
+- [ ] T040 [US3] [M] Implement `frame_payload`, `payload_kind` and `bounding_box_from_support`.
+  - Files: `packages/loop_interpolation/src/loop_interpolation/_frame_persistence.py`
+  - Needs: T039
+  - Wave: 18
+  - Done when: a `python -c` script (worktree `PYTHONPATH`) checks that `frame_payload(None, 3)` has the key order
+    `format_version`, `constraint_space`, `transform`, `bounding_box`, with an identity transform and `bounding_box` None;
+    that `payload_kind({}, False)` raises `InterpolatorFormatError` with reason `legacy_no_transform`; and that
+    `ruff check LoopStructural packages` passes.
+  - Context: Read the section "S3 functions and signatures" of `specs/005-coordinate-frame-correctness/plan.md`. Replace the stubs of
+    these 3 functions only. `frame_payload(bounding_box, dimensions)`: `{"format_version": FORMAT_VERSION, "constraint_space": CONSTRAINT_SPACE,
+    "transform": {"dimensions", "local_origin" (list), "local_rotation" (list of lists)}, "bounding_box": dict or None}`; for a box,
+    `bounding_box` = `BoundingBox.to_dict()` without `local_origin` and `local_rotation`; for `None`, identity of `dimensions`.
+    `payload_kind`: the 6 numbered steps of the plan; messages exactly as in the plan. `bounding_box_from_support`: local min and max of
+    `support.nodes`; the `2**dimensions` corners; `world = corners @ rotation + origin`; `BoundingBox(dimensions=dimensions, origin=world.min(0),
+    maximum=world.max(0))` then `set_local_transform(local_origin=origin, rotation_matrix=rotation)`. Import `BoundingBox` from
+    `loop_common.geometry`. Rule: py39 syntax with `from __future__ import annotations`; numpy docstrings.
+
+- [ ] T041 [P] [US3] [M] Implement `resolve_frame`.
+  - Files: `packages/loop_interpolation/src/loop_interpolation/_frame_persistence.py`
+  - Needs: T040
+  - Wave: 19
+  - Done when: a `python -c` script (worktree `PYTHONPATH`) calls `resolve_frame` on a payload from `frame_payload` of a rotated box and
+    gets a box with the same `local_origin` and `local_rotation`; a call with `declare_identity=True` and `local_origin=[1, 0, 0]` raises
+    `InterpolatorFormatError` with reason `conflict`; and `ruff check LoopStructural packages` passes.
+  - Context: Read the section "S3 functions and signatures" of `specs/005-coordinate-frame-correctness/plan.md`. Replace the stub of `resolve_frame` only.
+    Follow its 6 numbered steps and the message list. `caller_frame` = `local_origin is not None or local_rotation is not None or declare_identity`.
+    Use `validate_rigid_rotation` from `loop_common.geometry`. Wrap `RigidRotationError`, `LoopValueError`, `KeyError`, `TypeError` and
+    `ValueError` from parsing as `InterpolatorFormatError("malformed", ...)` with `raise ... from exc`. Use `BoundingBox.from_dict` for the saved box.
+    The function reads `payload` only; it never changes it or a caller object.
+
+- [ ] T042 [P] [US3] [M] Add the frame check, local restore and frame keys to `GeologicalInterpolator`.
+  - Files: `packages/loop_interpolation/src/loop_interpolation/_geological_interpolator.py`
+  - Needs: T040
+  - Wave: 19
+  - Done when: `pytest tests/unit/modelling/test_frame_copy_and_lifecycle.py -k "stale_frame or restored_transform or rebuild_in_new_frame or fault_restoration"`
+    passes, and `pytest packages/loop_interpolation/tests/test_geological_interpolator.py` passes with no change.
+  - Context: Read the section "S3 functions and signatures" of `specs/005-coordinate-frame-correctness/plan.md` (class `GeologicalInterpolator`). Add:
+    `self._frame_at_data = None` in `__init__`; `clean()` sets it to `None`; `frame_signature()`; `_note_frame(rows)`; `_check_frame()`;
+    `_inherit_frame(other)`; `_restore_local_constraints(data)`. Call `self._check_frame()` first in each of the 7 `set_*_constraints`
+    (inside the `try`) and call `self._note_frame(points.shape[0])` after the array is stored; also first in `evaluate_value`, `evaluate_gradient`
+    and `to_dict`. `to_dict` ends with `payload.update(frame_payload(self.bounding_box, self.dimensions))`. Add the keyword arguments
+    `local_origin=None, local_rotation=None, declare_identity=False` to `from_dict`, `from_json`, `from_yaml`; pass them to
+    `InterpolatorFactory.from_dict` only when given (the existing test uses a fake that takes one argument). Import `StaleFrameError` and
+    `frame_payload` from `._frame_persistence`. `StaleFrameError` is not wrapped in `ValidationError`.
+    Rule: numpy docstrings, type hints, py39.
+
+## Phase 12: Stage S3 loader and copies
+
+- [ ] T043 [US3] [M] Rewrite `InterpolatorFactory.from_dict` for saved payloads.
+  - Files: `packages/loop_interpolation/src/loop_interpolation/_interpolator_factory.py`
+  - Needs: T041, T042
+  - Wave: 20
+  - Done when: `pytest tests/unit/modelling/test_frame_persistence.py tests/unit/interpolator/test_interpolator_factory.py packages/loop_interpolation/tests/test_p2_fold_registration.py packages/loop_interpolation/tests/test_geological_interpolator.py`
+    passes, and `ruff check LoopStructural packages` passes.
+  - Context: Read the section "S3 functions and signatures" of `specs/005-coordinate-frame-correctness/plan.md` (function `InterpolatorFactory.from_dict`). New
+    signature: `from_dict(d, *, local_origin=None, local_rotation=None, declare_identity=False)`. A dict is a saved payload if and only if
+    `d.get("support")` is a dict. Other dicts keep the existing code path with no change; frame arguments with such a dict raise
+    `InterpolatorFormatError("malformed", "frame arguments apply only to a saved payload")`. For a saved payload follow the 8 steps of the plan:
+    `payload_kind` first (before any work), pop `format_version`, `constraint_space`, `transform`, `bounding_box` into one dict, build the support and the
+    interpolator as now, set `interpolator.bounding_box = resolve_frame(...)`, call `_restore_local_constraints(data)` (never `set_*_constraints`), then `c`,
+    `up_to_date`, `valid`. Do not change the input dict. Keep the existing `rotation_xy` `TypeError` retry.
+
+- [ ] T044 [P] [US3] [S] Keep the frame in `FiniteDifferenceInterpolator.copy`.
+  - Files: `packages/loop_interpolation/src/loop_interpolation/_finite_difference_interpolator.py`
+  - Needs: T042
+  - Wave: 20
+  - Done when: `pytest tests/unit/modelling/test_frame_copy_and_lifecycle.py -k "copy_keeps_frame and fdi"` passes.
+  - Context: In `FiniteDifferenceInterpolator.copy` (about line 247) replace the body with
+    `return self._inherit_frame(FiniteDifferenceInterpolator(self.support))`. Change the docstring to: "Create an empty copy on the same
+    support, with the same coordinate frame." and "Returns" to "A new empty interpolator that shares the support and the bounding box.".
+    Change nothing else in the file.
+
+- [ ] T045 [P] [US3] [S] Keep the frame in `P2Interpolator.copy`.
+  - Files: `packages/loop_interpolation/src/loop_interpolation/_p2interpolator.py`
+  - Needs: T042
+  - Wave: 20
+  - Done when: `pytest tests/unit/modelling/test_frame_copy_and_lifecycle.py -k "copy_keeps_frame and p2 and not p2_fold"` passes.
+  - Context: In `P2Interpolator.copy` (about line 106) replace the body with `return self._inherit_frame(P2Interpolator(self.support))`.
+    Add this docstring: "Create an empty copy on the same support, with the same coordinate frame." Change nothing else in the file.
+
+- [ ] T046 [P] [US3] [S] Keep the frame in `P2FoldInterpolator.copy`.
+  - Files: `packages/loop_interpolation/src/loop_interpolation/_p2_fold_interpolator.py`
+  - Needs: T042
+  - Wave: 20
+  - Done when: `pytest tests/unit/modelling/test_frame_copy_and_lifecycle.py -k "copy_keeps_frame and p2_fold"` passes.
+  - Context: In `P2FoldInterpolator.copy` (about line 64) replace the body with
+    `return self._inherit_frame(P2FoldInterpolator(self.support, fold=self.fold))`. Add this docstring: "Create an empty copy on the same
+    support, with the same fold and the same coordinate frame." Change nothing else in the file.
+
+## Phase 13: Stage S3 finish
+
+- [ ] T047 [P] [Finish] [S] Add the S3 migration notice to `COMPAT.md`.
+  - Files: `COMPAT.md`
+  - Needs: T043
+  - Wave: 21
+  - Done when: `COMPAT.md` has one new row at the end of the "Migration notices" table, and `grep -c "spec 005, stage S3" COMPAT.md` prints 1.
+  - Context: Copy the 3-column layout of the last row (the S2 row). Column 1: "Loading a legacy interpolator payload (no `format_version`) assumed an
+    identity frame without a message; `copy()` returned an interpolator with no frame; a transform change after constraints existed gave a stale result".
+    Column 2: "A legacy payload needs `local_origin` and `local_rotation`, or `declare_identity=True`, and raises `InterpolatorFormatError` otherwise. New payloads carry
+    `format_version: 2`, `constraint_space`, `transform` and `bounding_box`. `copy()` keeps the frame. A transform change after constraints exist raises `StaleFrameError`
+    at the next set, evaluate or save (spec 005, stage S3). Major-version note: the release that contains S3 must be a major version, or the maintainer records another
+    decision in `ROADMAP.md`". Column 3: the date of the run in the form YYYY-MM-DD. Write in ASD-STE100 Simplified Technical English.
+
+- [ ] T048 [P] [Finish] [S] Record the FR-019 decision in `ROADMAP.md`.
+  - Files: `ROADMAP.md`
+  - Needs: T043
+  - Wave: 21
+  - Done when: `grep -c "Legacy interpolator payloads (spec 005, FR-019)" ROADMAP.md` prints 1.
+  - Context: Add a new `###` subsection as the last one of `## Decisions`, directly before `## Stage sequence`. Heading: `### Legacy interpolator payloads (spec 005, FR-019)`.
+    Body (ASD-STE100): the decision (2026-11-03, C-003); a legacy interpolator payload has no recoverable transform; the loader needs a caller-supplied
+    transform (`local_origin`, `local_rotation`) or `declare_identity=True` and raises `InterpolatorFormatError` otherwise; no warning-only identity fallback
+    exists; new payloads carry `format_version: 2`; this is the only approved break of the public loading behaviour in spec 005 (FR-028); the release that contains S3
+    must be a major version, or the maintainer records another decision here; the policy for a transform change is "reject at use" (`StaleFrameError`, decided 2026-11-05).
+    Keep the style of the neighbouring subsections. Do not change other text.
+
+- [ ] T049 [Finish] [M] Record the S3 rollback check in `verification.md`.
+  - Files: `specs/005-coordinate-frame-correctness/verification.md`
+  - Needs: T043, T044, T045, T046
+  - Wave: 21
+  - Done when: `verification.md` has the heading `## S3 rollback checks` with the results of the 2 checks below, and
+    `git worktree list` shows no throw-away worktree.
+  - Context: Use a throw-away worktree at the S3 start commit (the `start_commit` of stage S3 in `run-state.json`; if the key is missing, use the parent of the first S3 test commit):
+    `git worktree add --detach ../LoopStructural-005-s3-rollback <commit>`. With its own `PYTHONPATH` (check `loop_interpolation.__file__`): (1) save `r1_interpolator`
+    payloads for `fdi`, `pli`, `p2` (anchor 3, rotation 30, `exact=True`) with the old `to_dict`; write them to a scratch folder. On the S3 worktree, load each with the
+    supplied transform and with `declare_identity=True` (anchor 0, rotation 0 only) and record the SC-006 errors. (2) On the old reader, load a payload that the S3 code wrote; record the exact
+    `TypeError` text (it names `format_version`) and that no interpolator object exists (OP5). Then `git worktree remove --force <tmp>` and `git worktree prune`.
+
+- [ ] T050 [Finish] [M] Run the S3 gates and complete `verification.md` and the `ROADMAP.md` status log.
+  - Files: `specs/005-coordinate-frame-correctness/verification.md`, `ROADMAP.md`
+  - Needs: T047, T048, T049
+  - Wave: 22
+  - Done when: `ruff check LoopStructural packages && pytest` and `pytest packages/loop_common/tests packages/loop_interpolation/tests` pass, `verification.md`
+    has the S3 sections named below, and `ROADMAP.md` has one new status-log line for S3.
+  - Context: Run the root `pytest` and the package tests in separate calls (the conftest plugins clash) with the worktree `PYTHONPATH`. Add to `verification.md`: `## S3 post-fix results`
+    (commands, counts, times, the test-time of the 2 new files), `## S3 golden review (C-004)` (list each existing test file that changed, or "No golden change in S3."; record
+    any existing test that loads a payload with no `format_version`), `## S3 backend matrix` (engines `fdi`, `pli`, `p2`, `cn_fdi`, `cn_pli`, `p2_fold` copy; PLI has no `copy`;
+    native and Surfe are S6), `## S3 test run time (OP2)` and a line for OP6 (the grep result of T037). Measure the effect of the frame check: time `evaluate_value` on 1e5 points for
+    `fdi` before and after the check (a loop of 1000 calls on 100 points is enough) and record it; if the 003 worktree has a key-time check, record its result, else write "no 003 measure". If a library
+    path now raises `StaleFrameError` in `pytest`, report it; do not weaken the check. Add to the status log of `ROADMAP.md` a line dated today: "Spec 005 stage S3 implemented: saved interpolator frame,
+    legacy-load rule, frame-keeping copies, stale-frame check." Write in ASD-STE100 Simplified Technical English.
+
 ## Wave table
 
 | Wave | Tasks | Tier [S] | Tier [M] |
@@ -681,14 +972,23 @@ satisfy R3 and R1.
 | 7 | T017 | 0 | 1 |
 | 8 | T018, T019, T021 | 2 | 1 |
 | 9 | T020, T022, T029 | 1 | 2 |
-| 10 | T023, T024, T027, T028, T032 | 4 | 1 |
+| 10 | T032, T023, T024, T027, T028 | 4 | 1 |
 | 11 | T025, T026 | 0 | 2 |
 | 12 | T030 | 1 | 0 |
 | 13 | T031 | 0 | 1 |
+| 14 | T033, T034 | 1 | 1 |
+| 15 | T035, T037 | 0 | 2 |
+| 16 | T036, T038 | 0 | 2 |
+| 17 | T039 | 0 | 1 |
+| 18 | T040 | 0 | 1 |
+| 19 | T041, T042 | 0 | 2 |
+| 20 | T043, T044, T045, T046 | 3 | 1 |
+| 21 | T047, T048, T049 | 2 | 1 |
+| 22 | T050 | 0 | 1 |
 
 ## Critical path
 
-T003 -> T004 -> T005 -> T010 -> T013 -> T015 -> T017 -> T018 -> T020 -> T023 -> T025 -> T030 -> T031
+T003 -> T004 -> T005 -> T010 -> T013 -> T015 -> T017 -> T018 -> T020 -> T023 -> T025 -> T030 -> T031 -> T033 -> T035 -> T036 -> T039 -> T040 -> T041 -> T043 -> T047 -> T050
 
 ## Dependencies
 
@@ -706,4 +1006,14 @@ T003 -> T004 -> T005 -> T010 -> T013 -> T015 -> T017 -> T018 -> T020 -> T023 -> 
   (docstring) after T019. T032 (scalar `element_size` fix, found by T022)
   after T022.
 - Finish: T030 after the code tasks; T031 last.
-- Stages S3 to S6 have no tasks yet (OP1 in plan.md).
+- S3 starts after T031 (S2 is its base). Foundation: T033 (fixtures) and T034
+  (module stubs and exports) in wave 14.
+- S3 tests: T035 (payload and round trips) then T036 (loader failures), both in
+  `test_frame_persistence.py`; T037 (copies, stale frame) then T038 (fault
+  restoration), both in `test_frame_copy_and_lifecycle.py`. T039 records the
+  pre-fix evidence after all four.
+- S3 code: T040 -> T041 (`_frame_persistence.py`); T042 (base class) needs T040;
+  T043 (factory loader) needs T041 and T042; T044, T045, T046 (copies) need T042.
+- Finish: T047 (`COMPAT.md`), T048 (`ROADMAP.md`) and T049 (rollback check) after
+  the code; T050 (gates, `verification.md`, ROADMAP status) last.
+- Stages S4 to S6 have no tasks yet (OP1 in plan.md).
