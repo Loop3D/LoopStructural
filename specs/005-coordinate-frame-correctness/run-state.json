@@ -76,6 +76,17 @@
         "T013"
       ],
       "check": "scope pass; ruff pass; tests/unit/modelling 688 passed, 2 skipped in 300 s; R2+R5 files 137 passed in 209 s",
+      "review": "pass: sonnet, no findings",
+      "commit": "6d533fe01315647780a7e22c7c6bed2e09d9c076"
+    },
+    {
+      "wave": 6,
+      "base": "6d533fe01315647780a7e22c7c6bed2e09d9c076",
+      "tasks": [
+        "T015",
+        "T016"
+      ],
+      "check": "scope pass; test__fault_builder.py 6 pass (unchanged, no golden change); golden npz entry matches orchestrator key comparison; COMPAT row in Migration notices table",
       "review": "pending"
     }
   ],
@@ -226,6 +237,18 @@
       {
         "model": "haiku",
         "result": "code as Context; Done-when failed 48 R2 cells at 1e-4 because the T011 test passed CG settings outside solver_kwargs; pass after T011 fix"
+      }
+    ],
+    "T015": [
+      {
+        "model": "sonnet",
+        "result": "pass: no assertion in test__fault_builder.py encodes an S1 defect; npz golden entry recorded"
+      }
+    ],
+    "T016": [
+      {
+        "model": "haiku",
+        "result": "pass: row added at end of Migration notices table"
       }
     ]
   },

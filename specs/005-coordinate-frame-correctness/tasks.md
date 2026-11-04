@@ -315,7 +315,7 @@ world location, with the requested buffer.
     `test_property_change_keeps_buffer_and_forced_geometry` (set
     `builder.fault_normal_vector = (1,0,0)` after creation; bounds unchanged).
 
-- [ ] T015 [US1] [M] Align `test__fault_builder.py` with the corrected behaviour.
+- [x] T015 [US1] [M] Align `test__fault_builder.py` with the corrected behaviour.
   - Files: `tests/unit/modelling/test__fault_builder.py`,
     `specs/005-coordinate-frame-correctness/verification.md`
   - Needs: T001, T013
@@ -335,7 +335,7 @@ world location, with the requested buffer.
 
 ## Phase 5: Finish
 
-- [ ] T016 [P] [Finish] [S] Add the S1 migration notice to `COMPAT.md`.
+- [x] T016 [P] [Finish] [S] Add the S1 migration notice to `COMPAT.md`.
   - Files: `COMPAT.md`
   - Needs: T013
   - Wave: 6
