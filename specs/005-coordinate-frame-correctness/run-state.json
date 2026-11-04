@@ -40,7 +40,9 @@
         "T035",
         "T037"
       ],
-      "check": "scope pass (VERIFY); ruff and black pass. Pre-fix: test_frame_persistence.py 108 failed 3 passed (identity cells); test_frame_copy_and_lifecycle.py 41 failed 6 passed (copy 36/36, stale 5/5 fail; restored 1 and rebuild 5 pass = coverage, no defect). First errors: KeyError format_version/transform; nan after rotated round trip; copy().bounding_box is None; DID NOT RAISE StaleFrameError"
+      "check": "scope pass (VERIFY); ruff and black pass. Pre-fix: test_frame_persistence.py 108 failed 3 passed (identity cells); test_frame_copy_and_lifecycle.py 41 failed 6 passed (copy 36/36, stale 5/5 fail; restored 1 and rebuild 5 pass = coverage, no defect). First errors: KeyError format_version/transform; nan after rotated round trip; copy().bounding_box is None; DID NOT RAISE StaleFrameError",
+      "commit": "87928866225cc1f56b1634d791fa75ceec2b72da",
+      "review": "pass after rejecting 1 major: sonnet, 1 major rejected (F in spec SC definition is the max abs reference scalar value = observations; S2 test_constant_norm_frames uses the same scale), 2 minor open"
     }
   ],
   "runs": {
@@ -74,11 +76,15 @@
     ]
   },
   "findings": {
-    "found": 0,
-    "rejected": 0,
+    "found": 3,
+    "rejected": 1,
     "dropped": 0,
     "fixed": 0,
-    "open_minor": []
+    "open_minor": [
+      "T037 test_stale_frame_rejected_without_state_change: origin and rotation change together; a signature that ignores one of them still passes. Add origin-only and rotation-only cells (not in the plan; can be done in T042 or later).",
+      "T035 test_round_trip_world_values: compares the loaded values with the analytic field only; add a comparison with the source evaluation (optional).",
+      "T035 and T037 define F differently in the task text (query points in T035, observations in T037). The spec definition is the observations; T035 is stricter."
+    ]
   },
   "answers": [
     "2026-11-05: OP4 reject at use; OP5 accept TypeError naming format_version; major-version note in COMPAT/ROADMAP (plan.md Answers)",
@@ -688,5 +694,5 @@
       }
     }
   },
-  "status": "wave 15 done, review pending"
+  "status": "wave 15 done and reviewed"
 }
