@@ -55,7 +55,18 @@
         "T028",
         "T032"
       ],
-      "check": "scope pass for 5 tasks + T020 test-helper fix (owned by T020); ruff pass; black status unchanged per file; fold frames -k directional/p2_fold/steepness 204 pass; pli fold_regularisation 24 pass (T023 alone fixes the PLI provider path); constant norm 26 pass; fold/regularisation/native package tests 75 pass 1 skip (native not installed); P2 package 102 pass 12 skip; -k constant_norm 2 pass 5 skip"
+      "check": "scope pass for 5 tasks + T020 test-helper fix (owned by T020); ruff pass; black status unchanged per file; fold frames -k directional/p2_fold/steepness 204 pass; pli fold_regularisation 24 pass (T023 alone fixes the PLI provider path); constant norm 26 pass; fold/regularisation/native package tests 75 pass 1 skip (native not installed); P2 package 102 pass 12 skip; -k constant_norm 2 pass 5 skip",
+      "commit": "d28cfb4494b936fb09cc7b7b830f9606c63c0b8e",
+      "review": "pass: sonnet, no findings"
+    },
+    {
+      "wave": 11,
+      "base": "d28cfb4494b936fb09cc7b7b830f9606c63c0b8e",
+      "tasks": [
+        "T025",
+        "T026"
+      ],
+      "check": "scope pass; ruff pass; phase check: fold frames + constant norm + reference frames 866 passed in 24 s; existing fold/regularisation/native package tests 75 pass 1 skip (native not installed), no test changed"
     }
   ],
   "runs": {
@@ -135,6 +146,18 @@
       {
         "model": "haiku",
         "result": "pass: constant norm 26 pass (cn_fdi SC-002 met); -k constant_norm 2 pass"
+      }
+    ],
+    "T025": [
+      {
+        "model": "sonnet",
+        "result": "pass: -k fdi_fold 84 pass; test_fd_fold_interpolator 27 pass"
+      }
+    ],
+    "T026": [
+      {
+        "model": "sonnet",
+        "result": "pass: -k pli_fold 84 pass; test_discrete_fold_interpolator 21 pass; provider already correct after T023 (comment only)"
       }
     ]
   },

@@ -552,7 +552,7 @@ satisfy R3 and R1.
     `problem.add_directional_regularisation(_flat(vectors), float(term.weight))`.
     Do not change the rotated-support rejection (`_native.py:170`).
 
-- [ ] T025 [US2] [M] Sample fold geometry at world nodes in `FDFoldInterpolator`.
+- [x] T025 [US2] [M] Sample fold geometry at world nodes in `FDFoldInterpolator`.
   - Files: `packages/loop_interpolation/src/loop_interpolation/_fd_fold_interpolator.py`
   - Needs: T019, T020, T023
   - Wave: 11
@@ -570,7 +570,7 @@ satisfy R3 and R1.
     `_masked_direction(axis_w)`; the base method converts them (T023).
     Docstring: `mask_fn` receives world node positions.
 
-- [ ] T026 [US2] [M] Sample fold geometry at world barycentres in `DiscreteFoldInterpolator`.
+- [x] T026 [US2] [M] Sample fold geometry at world barycentres in `DiscreteFoldInterpolator`.
   - Files: `packages/loop_interpolation/src/loop_interpolation/_discrete_fold_interpolator.py`
   - Needs: T019, T020, T023
   - Wave: 11

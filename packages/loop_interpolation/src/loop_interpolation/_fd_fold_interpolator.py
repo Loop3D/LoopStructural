@@ -10,7 +10,11 @@ from loop_common.logging import get_logger as getLogger
 
 from ._finite_difference_interpolator import FiniteDifferenceInterpolator
 from ._fold_norm_alignment import resolve_fold_norm_target
-from ._fold_setup import setup_with_fold_constraints
+from ._fold_setup import (
+    sample_fold_geometry,
+    setup_with_fold_constraints,
+    world_norm_constraints,
+)
 from ._interpolatortype import InterpolatorType
 from ._regularisation import DirectionalRegularisation
 
@@ -105,9 +109,10 @@ class FDFoldInterpolator(FiniteDifferenceInterpolator):
         """
         Add fold geometry constraints to the finite difference system.
 
-        Fold direction vectors are evaluated at every grid *node* by calling
-        ``self.fold.get_deformed_orientation(self.support.nodes)``.  The
-        returned vectors are then used to build:
+        Fold direction vectors are evaluated at every grid *node*. The node
+        positions are changed to world coordinates, and the fold is sampled
+        there. The world vectors are changed back to local vectors for the
+        constraints. The returned vectors are then used to build:
 
         * Gradient-orientation constraints (dot product = 0) for the
           deformed foliation plane normal and the fold axis.
@@ -144,7 +149,7 @@ class FDFoldInterpolator(FiniteDifferenceInterpolator):
             constraints (if present). ``warn`` logs only, ``correct`` flips
             the effective ``fold_norm`` sign, and ``none`` skips checks.
         mask_fn : callable or None
-            If provided, called with ``(n_nodes, 3)`` node positions; nodes
+            If provided, called with ``(n_nodes, 3)`` WORLD node positions; nodes
             for which the function returns ``True`` are excluded from all fold
             constraints.
         """
@@ -152,8 +157,13 @@ class FDFoldInterpolator(FiniteDifferenceInterpolator):
             fold_regularisation = [0.1, 0.01, 0.01]
 
         # Evaluate fold geometry at every grid node.
-        node_positions = self.support.nodes  # (n_nodes, 3)
-        deformed_orientation, fold_axis, dgz = self.fold.get_deformed_orientation(node_positions)
+        node_positions = self.support.nodes  # (n_nodes, 3), local
+        world_nodes, deformed_w, axis_w, dgz_w = sample_fold_geometry(
+            self, self.fold, node_positions
+        )
+        deformed_orientation = self.world_to_local_vectors(deformed_w)
+        fold_axis = self.world_to_local_vectors(axis_w)
+        dgz = self.world_to_local_vectors(dgz_w)
         # deformed_orientation : (n_nodes, 3) – vector lying in the axial plane
         # fold_axis            : (n_nodes, 3) – fold hinge direction
         # dgz                  : (n_nodes, 3) – fold normal (across-fold direction)
@@ -161,7 +171,7 @@ class FDFoldInterpolator(FiniteDifferenceInterpolator):
         # Build a boolean weight mask (1 = active, 0 = excluded).
         weight = np.ones(self.support.n_nodes, dtype=float)
         if mask_fn is not None:
-            weight[mask_fn(node_positions)] = 0.0
+            weight[mask_fn(world_nodes)] = 0.0
 
         # Convenience: points array in the format expected by
         # add_gradient_orthogonal_constraints (xyz | vx vy vz | … ).
@@ -192,7 +202,7 @@ class FDFoldInterpolator(FiniteDifferenceInterpolator):
         if fold_normalisation is not None:
             target_norm = resolve_fold_norm_target(
                 fold=self.fold,
-                normal_constraints=self.get_norm_constraints(),
+                normal_constraints=world_norm_constraints(self),
                 fold_norm=fold_norm,
                 dgz_alignment=dgz_alignment,
                 logger=logger,
@@ -223,17 +233,17 @@ class FDFoldInterpolator(FiniteDifferenceInterpolator):
                 (
                     DirectionalRegularisation(
                         weight=fold_regularisation[0],
-                        direction=_masked_direction(dgz),
+                        direction=_masked_direction(dgz_w),
                         name="fold regularisation 1",
                     ),
                     DirectionalRegularisation(
                         weight=fold_regularisation[1],
-                        direction=_masked_direction(deformed_orientation),
+                        direction=_masked_direction(deformed_w),
                         name="fold regularisation 2",
                     ),
                     DirectionalRegularisation(
                         weight=fold_regularisation[2],
-                        direction=_masked_direction(fold_axis),
+                        direction=_masked_direction(axis_w),
                         name="fold regularisation 3",
                     ),
                 )
