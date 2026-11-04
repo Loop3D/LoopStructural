@@ -269,7 +269,7 @@
     ]
   },
   "findings": {
-    "found": 12,
+    "found": 13,
     "rejected": 0,
     "dropped": 0,
     "fixed": 6,
@@ -279,7 +279,8 @@
       "T007 test_equality_region_selects_world_nodes: 168 of 336 count for rotation 0 not asserted",
       "T007 test_set_interpolation_geometry_encloses_rotated_box: passes rotation in degrees, which also sets support.rotation_xy (double rotation in setup)",
       "T010/T005: no test for the evaluation_error branch of excluded_rows or for non-finite local_origin rejection (code checked correct by scratch test)",
-      "Later stage note: _on_geometry_change passes fault_trace_anisotropy=1.0 and fault_dip_anisotropy=1.0, so a property change adds anisotropy rows even when the caller set 0"
+      "Later stage note: _on_geometry_change passes fault_trace_anisotropy=1.0 and fault_dip_anisotropy=1.0, so a property change adds anisotropy rows even when the caller set 0",
+      "T011 test_caller_normal_not_mutated: the slip assertion cannot fail, because the factory copies slip first; only the normal assertion checks the fix"
     ]
   },
   "implementation_notes": [
@@ -335,6 +336,16 @@
       "minor (user asked): verification.md Pre-fix titles FR ranges corrected",
       "minor (user asked): golden npz keeps only the 27 FR-014 changes; 33 round-off keys restored"
     ],
-    "fix_check": "scope pass; ruff pass; tests/unit/modelling + loop_common (without planar matrix) 948 passed, 2 skipped"
+    "fix_check": "scope pass; ruff pass; tests/unit/modelling + loop_common (without planar matrix) 948 passed, 2 skipped",
+    "commit": "6547516e0090b311598fd94d7df73e2fe590881a",
+    "recheck": "pass: opus, 1 minor (slip assertion in test_caller_normal_not_mutated cannot fail; factory already copies slip)"
+  },
+  "final": {
+    "head": "6547516e0090b311598fd94d7df73e2fe590881a",
+    "lint": "ruff check LoopStructural packages: pass",
+    "format": "black --check on the 15 changed .py files: 13 unchanged, 2 would be reformatted (_fault_segment.py, _discrete_interpolator.py; both not black-clean before S1, workers kept task hunks only)",
+    "test_root": "pytest: 1206 passed, 5 skipped, 21 warnings in 867 s (baseline 755 passed, 5 skipped in 1206 s)",
+    "test_packages": "pytest packages/loop_common/tests packages/loop_interpolation/tests: 912 passed, 47 skipped, 2 xfailed in 117 s",
+    "status": "S1 implemented; S2-S6 need planning (OP1)"
   }
 }
