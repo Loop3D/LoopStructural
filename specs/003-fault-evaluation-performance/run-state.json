@@ -68,7 +68,8 @@
       "tasks": [
         "T042"
       ],
-      "base": null
+      "base": "45980adc34cbe13acb6a00ab4889860ed572a942",
+      "review": "none: report only"
     }
   ],
   "runs": {
@@ -102,6 +103,10 @@
       {
         "model": "sonnet",
         "result": "fail: gate G4 fingerprint 8 ms > 5 ms (measurement correct, verified)"
+      },
+      {
+        "model": "sonnet",
+        "result": "pass: G1-G5 pass; G4 2.6-3.5 ms (orchestrator check 2.76 ms median for f4_u3); OP5 f4_u3 0.093, f4_u0 0.024, onlap_domain 0.254"
       }
     ],
     "T044": [
@@ -134,5 +139,6 @@
       "T041 stale docs: _evaluation.py restore comment and module docstring, _evaluation_cache.py 'Invalidation' section, _StateHasher.node docstring still describe the old key (fix in T031 or a follow-up)"
     ]
   },
-  "resumed": "2026-11-04: resumed after the D4b replan (465688ec). tests/fault_evaluation baseline: 550 passed in 89 s."
+  "resumed": "2026-11-04: resumed after the D4b replan (465688ec). tests/fault_evaluation baseline: 550 passed in 89 s.",
+  "paused": "2026-11-04: T030 is blocked by OP3 (SC-008) and OP4 (SC-006). They need a spec decision (spec-interview or spec-reviewer, then spec-cascade). onlap_domain OP5 ratio 0.254 goes to T030 (SC-010)."
 }
