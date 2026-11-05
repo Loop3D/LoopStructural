@@ -1321,7 +1321,7 @@ frame. A legacy file needs an explicit choice. A frame change never gives a stal
 
 ## Phase 21: Stage S5 misfit code
 
-- [ ] T083 [US4] [M] Rewrite the misfit methods on shared non-mutating code and add the new methods.
+- [x] T083 [US4] [M] Rewrite the misfit methods on shared non-mutating code and add the new methods.
   - Files: `LoopStructural/modelling/features/_geological_feature.py`
   - Needs: T073, T082
   - Wave: 39

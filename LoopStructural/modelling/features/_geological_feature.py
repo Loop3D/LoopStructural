@@ -6,7 +6,10 @@ models such as foliations, fault planes, and fold rotation angles.
 
 from __future__ import annotations
 
+import warnings
+
 import numpy as np
+from loop_interpolation._diagnostics import direction_cosines
 
 from LoopStructural.utils.maths import gradient_from_tetrahedron, regular_tetraherdron_for_points
 
@@ -237,55 +240,187 @@ class GeologicalFeature(BaseFeature):
         logger.info(f'Gradient calculated for {self.name}')
         return v
 
-    def evaluate_gradient_misfit(self):
-        """
+    def _stale_reason(self) -> str | None:
+        """Find the first stale object of the model.
+
+        The method only reads flags. It does not build the model.
 
         Returns
         -------
-        misfit : np.array(N,dtype=double)
-            dot product between interpolated gradient and constraints
+        str or None
+            Text that names the first stale object and says to build the model
+            first, or None if no object is stale.
         """
-        if self.builder is not None:
-            self.builder.up_to_date()
-        grad = self.interpolator.get_gradient_constraints()
-        norm = self.interpolator.get_norm_constraints()
+        builder = self.builder
+        if builder is not None:
+            if getattr(builder, "_up_to_date", True) is False:
+                return f"The builder of {self.name} is stale. Build the model first."
+            for fault in getattr(builder, "faults", None) or []:
+                fault_builder = getattr(fault, "builder", fault)
+                fault_name = getattr(fault, "name", "a fault")
+                if getattr(fault_builder, "_up_to_date", True) is False:
+                    return f"The builder of the fault {fault_name} is stale. Build the model first."
+                fault_interpolator = getattr(fault_builder, "interpolator", None)
+                if getattr(fault_interpolator, "up_to_date", True) is False:
+                    return (
+                        f"The interpolator of the fault {fault_name} is stale. "
+                        "Build the model first."
+                    )
+        if getattr(self.interpolator, "up_to_date", True) is False:
+            return f"The interpolator of {self.name} is stale. Build the model first."
+        return None
 
-        dot = []
-        if grad.shape[0] > 0:
-            grad /= np.linalg.norm(grad, axis=1)[:, None]
-            positions = grad[:, :3]
-            if self.interpolator.bounding_box is not None:
-                positions = self.interpolator.bounding_box.reproject(positions)
-            model_grad = self.evaluate_gradient(positions)
-            dot.append(np.einsum("ij,ij->i", model_grad, grad[:, :3:6]).tolist())
-
-        if norm.shape[0] > 0:
-            norm /= np.linalg.norm(norm, axis=1)[:, None]
-            positions = norm[:, :3]
-            if self.interpolator.bounding_box is not None:
-                positions = self.interpolator.bounding_box.reproject(positions)
-            model_norm = self.evaluate_gradient(positions)
-            dot.append(np.einsum("ij,ij->i", model_norm, norm[:, :3:6]))
-
-        return np.array(dot)
-
-    def evaluate_value_misfit(self):
-        """
+    def _constraint_row_counts(self) -> list:
+        """Count the stored rows of the gradient, normal and value constraints.
 
         Returns
         -------
-        misfit : np.array(N,dtype=double)
-            difference between interpolated scalar field and value constraints
+        list of int
+            Row counts of the gradient, normal and value arrays.
         """
-        if self.builder is not None:
-            self.builder.up_to_date()
+        return [
+            int(np.shape(self.interpolator.get_gradient_constraints())[0]),
+            int(np.shape(self.interpolator.get_norm_constraints())[0]),
+            int(np.shape(self.interpolator.get_value_constraints())[0]),
+        ]
 
-        locations = self.interpolator.get_value_constraints()
-        positions = locations[:, :3]
+    def _gradient_cosines_fresh(self) -> list:
+        """Compute the gradient and normal cosines without a stale check.
+
+        The method copies the stored arrays. It does not change them.
+
+        Returns
+        -------
+        list of numpy.ndarray
+            One array of cosines for each non-empty family (gradient first,
+            then normal).
+        """
+        bounding_box = self.interpolator.bounding_box
+        cosines = []
+        for array in (
+            self.interpolator.get_gradient_constraints(),
+            self.interpolator.get_norm_constraints(),
+        ):
+            if np.shape(array)[0] == 0:
+                continue
+            rows = np.array(array, dtype=float, copy=True)
+            positions = rows[:, :3]
+            data = rows[:, 3:6]
+            if bounding_box is not None:
+                positions = bounding_box.reproject(positions)
+                data = self.interpolator.local_to_world_vectors(data)
+            model = self.evaluate_gradient(positions)
+            cosines.append(direction_cosines(model, data))
+        return cosines
+
+    def _value_residuals_fresh(self) -> np.ndarray:
+        """Compute the value residuals without a stale check.
+
+        Returns
+        -------
+        numpy.ndarray
+            Absolute difference in field units, shape (N,).
+        """
+        rows = np.array(self.interpolator.get_value_constraints(), dtype=float, copy=True)
+        positions = rows[:, :3]
         if self.interpolator.bounding_box is not None:
             positions = self.interpolator.bounding_box.reproject(positions)
-        diff = np.abs(locations[:, 3] - self.evaluate_value(positions))
-        diff /= self.max() - self.min()
+        return np.abs(rows[:, 3] - self.evaluate_value(positions))
+
+    def evaluate_gradient_cosines(self) -> np.ndarray:
+        """Compute the cosine between the model gradient and the gradient data.
+
+        The cosine uses world coordinates (see COMPAT.md). The gradient rows come
+        first and the normal rows come second. The method does not change the
+        model or the stored constraints.
+
+        Returns
+        -------
+        numpy.ndarray
+            Cosines, shape (N,). The array is empty if there are no rows. On a
+            stale model the method warns and returns NaN for each row.
+        """
+        reason = self._stale_reason()
+        if reason is not None:
+            warnings.warn(reason, UserWarning, stacklevel=2)
+            n = sum(self._constraint_row_counts()[:2])
+            return np.full(n, np.nan)
+        cosines = self._gradient_cosines_fresh()
+        if len(cosines) == 0:
+            return np.zeros(0)
+        return np.concatenate(cosines)
+
+    def evaluate_value_residuals(self) -> np.ndarray:
+        """Compute the residual between the model field and the value data.
+
+        The method does not change the model or the stored constraints.
+
+        Returns
+        -------
+        numpy.ndarray
+            Absolute difference in field units, shape (N,), in the order of the
+            value rows. On a stale model the method warns and returns NaN for
+            each row.
+        """
+        reason = self._stale_reason()
+        if reason is not None:
+            warnings.warn(reason, UserWarning, stacklevel=2)
+            return np.full(self._constraint_row_counts()[2], np.nan)
+        return self._value_residuals_fresh()
+
+    @staticmethod
+    def _misfit_shape(counts: list) -> tuple:
+        """Give the shape of the old gradient misfit array for the row counts."""
+        if len(counts) == 0:
+            return (0,)
+        if len(counts) == 2 and counts[0] == counts[1]:
+            return (2, counts[0])
+        return (1, sum(counts))
+
+    def evaluate_gradient_misfit(self) -> np.ndarray:
+        """Compute the cosine misfit of the gradient and normal constraints.
+
+        The value is a cosine in world coordinates (see COMPAT.md).
+
+        Returns
+        -------
+        numpy.ndarray
+            Shape (1, N) for one family, (2, N) for two families of equal
+            length, (1, N1 + N2) for two families of different length and (0,)
+            with no rows. On a stale model the method warns and returns NaN in
+            the same shape.
+        """
+        reason = self._stale_reason()
+        if reason is not None:
+            warnings.warn(reason, UserWarning, stacklevel=2)
+            counts = [n for n in self._constraint_row_counts()[:2] if n > 0]
+            return np.full(self._misfit_shape(counts), np.nan)
+        cosines = self._gradient_cosines_fresh()
+        if len(cosines) == 0:
+            return np.zeros(0)
+        if len(cosines) == 2 and len(cosines[0]) == len(cosines[1]):
+            return np.vstack(cosines)
+        return np.concatenate(cosines)[None, :]
+
+    def evaluate_value_misfit(self) -> np.ndarray:
+        """Compute the value misfit.
+
+        Returns
+        -------
+        numpy.ndarray
+            Absolute difference between the model field and the value data,
+            shape (N,). The difference is divided by the range of the field
+            only if the range is finite and larger than zero. On a stale model
+            the method warns and returns NaN for each row.
+        """
+        reason = self._stale_reason()
+        if reason is not None:
+            warnings.warn(reason, UserWarning, stacklevel=2)
+            return np.full(self._constraint_row_counts()[2], np.nan)
+        diff = self._value_residuals_fresh()
+        value_range = self.max() - self.min()
+        if np.isfinite(value_range) and value_range > 0:
+            diff = diff / value_range
         return diff
 
     def copy(self, name=None):
