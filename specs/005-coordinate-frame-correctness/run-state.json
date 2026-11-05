@@ -94,8 +94,8 @@
       "base": "0764d785a5bac7e4253d067582309468a77a08f9",
       "tasks": "T085,T086,T087",
       "check": "scope pass; COMPAT greps ok; ROADMAP grep 1; rollback worktree removed; checks a to f pass",
-      "commit": "pending",
-      "review": "pending"
+      "commit": "3a278aa5d439b60350fc5d350b4eb9a02cb297d5",
+      "review": "pass (no findings)"
     }
   ],
   "runs": {
