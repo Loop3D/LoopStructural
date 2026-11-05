@@ -26,6 +26,16 @@
       "check": "scope pass; ruff pass; payload_declares 36 passed",
       "commit": "7b4596046b230fb5f8cd5f55c40e6e277d85f932",
       "review": "pass: sonnet, no findings"
+    },
+    {
+      "wave": 24,
+      "base": "7b4596046b230fb5f8cd5f55c40e6e277d85f932",
+      "tasks": [
+        "T052"
+      ],
+      "check": "scope pass; ruff pass; 18 failed 1 passed pre-fix (shift by local origin; rotation)",
+      "commit": "448aba2f29d1dfef4d1a9060335a6e94a010768d",
+      "review": "pass: sonnet, no findings"
     }
   ],
   "runs": {
@@ -39,6 +49,12 @@
       {
         "model": "sonnet",
         "result": "pass: 19 cells, 18 fail (shift by local origin), identity cell passes"
+      }
+    ],
+    "T053": [
+      {
+        "model": "sonnet",
+        "result": "pass: 12 cells fail with AttributeError"
       }
     ]
   },

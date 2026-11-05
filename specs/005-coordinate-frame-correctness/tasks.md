@@ -1001,7 +1001,7 @@ frame. A legacy file needs an explicit choice. A frame change never gives a stal
     (read `LoopStructural/datatypes/_point.py` `save` first for the extension it supports; read only). The `x`, `y`, `z` columns equal the input within `tp(L, W)`.
     The test file must not call `model.rescale`. Pre-fix expectation: the three tests fail by a location shifted by the local origin.
 
-- [ ] T053 [US3] [M] Test: intrusion classification evaluates the model at world points (U3.5; FR-022).
+- [x] T053 [US3] [M] Test: intrusion classification evaluates the model at world points (U3.5; FR-022).
   - Files: `tests/unit/modelling/test_world_location_consumers.py`
   - Needs: T052
   - Wave: 25

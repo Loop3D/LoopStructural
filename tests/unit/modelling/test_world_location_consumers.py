@@ -99,3 +99,35 @@ def test_exported_data_keeps_world_locations(anchor_index, tmp_path):
         np.testing.assert_allclose(
             frame[["x", "y", "z"]].to_numpy(float), expected[kind], rtol=0, atol=tol
         )
+
+
+@pytest.mark.parametrize(
+    "anchor_index, rotation",
+    list(itertools.product(range(len(ANCHORS)), ROTATIONS_DEG)),
+)
+def test_intrusion_classification_uses_world_points(anchor_index, rotation):
+    """The intrusion builder evaluates the model at the world points of the data."""
+    from LoopStructural.modelling.intrusions.intrusion_frame_builder import (
+        IntrusionFrameBuilder,
+    )
+    from tests.fixtures.coordinate_frames import model_with_frame
+
+    anchor = ANCHORS[anchor_index]
+    model = model_with_frame(anchor, anchor + np.array([20.0, 20.0, 20.0]), rotation)
+    received = []
+
+    def spy(xyz):
+        received.append(np.array(xyz, copy=True))
+        return np.zeros(len(xyz))
+
+    model.evaluate_model = spy
+    builder = object.__new__(IntrusionFrameBuilder)
+    builder.model = model
+    offsets = np.array(
+        [[1.0, 2.0, 3.0], [4.0, 5.0, 6.0], [7.0, 8.0, 9.0], [2.0, 9.0, 4.0], [8.0, 3.0, 5.0]]
+    )
+    points = anchor + offsets
+    data = pd.DataFrame({"X": points[:, 0], "Y": points[:, 1], "Z": points[:, 2]})
+    builder._network_model_values(data)
+    assert len(received) == 1
+    assert np.array_equal(received[0], data[["X", "Y", "Z"]].to_numpy(float))
