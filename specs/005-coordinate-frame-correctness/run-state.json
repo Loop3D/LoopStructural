@@ -30,8 +30,8 @@
       "base": "436d5f3f9d282c6048c7b27c268acdd975f166fa",
       "tasks": "T072,T073",
       "check": "scope pass; residual report test 9 passed; ruff pass",
-      "commit": "pending",
-      "review": "pending"
+      "commit": "0b4eef55d3e0896875495a3e783081b5a0cc6f84",
+      "review": "pass (no findings; 2 optional edge notes: finite**2 overflow near 1e154, inf*0 warning in direction_cosines)"
     }
   ],
   "runs": {
