@@ -46,8 +46,8 @@
       "base": "b93c067182c78a0429e7934199eef890469e4bbf",
       "tasks": "T078",
       "check": "scope pass; golden tests 9 passed; survey: modelling 1540 passed, interpolation 615 passed, loop_common 406 passed, tests/unit rest 504 passed; 78 of 611 3D golden keys changed (causes C1 C2 C3); 2D golden unchanged; loop_interpolation golden unchanged",
-      "commit": "pending",
-      "review": "pending"
+      "commit": "09d2e7b6bc82fcef0d813f45020015c171b12d23",
+      "review": "pass (no findings; reviewer confirmed 78 keys, causes C1 C2 C3)"
     }
   ],
   "runs": {
