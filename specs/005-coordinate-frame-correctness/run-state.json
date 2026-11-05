@@ -1477,5 +1477,12 @@
     "reviewer": "opus",
     "verdict": "changes needed: 1 blocker (confirmed by opus verifier: _stale_reason treats every fault as stale), 1 major (faulted feature compares frames twice; contradicts plan decision 8, NOT fixed, needs maintainer decision), 3 minor",
     "fix": "blocker fixed by sonnet worker plus 2 regression tests; worker also fixed a loop-variable overwrite in evaluate_gradient of faulted features"
+  },
+  "final": {
+    "head_gated": "8eb22671",
+    "lint": "ruff check LoopStructural packages: pass",
+    "test_packages": "1021 passed, 47 skipped, 2 xfailed in 98.44 s",
+    "test_root": "2218 passed, 4 skipped in 864.77 s",
+    "spec_review_recheck": "pass (opus), no findings"
   }
 }
