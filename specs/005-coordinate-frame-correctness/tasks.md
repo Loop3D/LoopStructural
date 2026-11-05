@@ -1023,7 +1023,7 @@ frame. A legacy file needs an explicit choice. A frame change never gives a stal
     Build the fault with `_fault(anchor, rotation, "PLI")` from `tests/unit/modelling/test_fault_frame_analytic.py` (import it; read the file for the signature).
     Use `matplotlib.use("Agg")`. Do not change the viewer.
 
-- [ ] T055 [US3] [M] Record the S4 pre-fix evidence in `verification.md`.
+- [x] T055 [US3] [M] Record the S4 pre-fix evidence in `verification.md`.
   - Files: `specs/005-coordinate-frame-correctness/verification.md`
   - Needs: T054
   - Wave: 27
@@ -1033,7 +1033,7 @@ frame. A legacy file needs an explicit choice. A frame change never gives a stal
     `anchor + (2, 3, 4)` and the location in `feature.get_data()` (use `world_foliation_model`). Use the layout of the S3 pre-fix section of the same file. FR-031.
     Write in ASD-STE100 Simplified Technical English.
 
-- [ ] T056 [US3] [M] Test: `rescale` and `scale` warn, keep behaviour, and no library caller warns (U3.11; FR-033).
+- [x] T056 [US3] [M] Test: `rescale` and `scale` warn, keep behaviour, and no library caller warns (U3.11; FR-033).
   - Files: `tests/unit/modelling/test_world_location_consumers.py`
   - Needs: T054
   - Wave: 27

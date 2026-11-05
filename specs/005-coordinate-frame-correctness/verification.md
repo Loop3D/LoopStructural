@@ -484,3 +484,27 @@ Before C-018 the root suite gave 1981 passed. The difference of 13 comes from `t
 Review fix. The first review of the C-018 change found that the warning pointed at a library file for `from_json` and `from_yaml`, and one frame too high for a direct `InterpolatorFactory.from_dict` call. It also found that the warning came before a later failure of the same call. The fix moves the warning to `warn_legacy_identity()`, called as the last step of a successful load. The function computes the `stacklevel` as the first frame outside the `loop_interpolation` package. The tests `test_legacy_warning_points_at_caller` (4 entry points) and `test_legacy_warning_not_emitted_when_load_fails` (3 engines) failed before the fix (6 of 7 cells) and pass now. The gates above ran after the fix.
 
 No `StaleFrameError` and no `FutureWarning` from library code appeared in the full run. The only `FutureWarning` for a legacy load comes from the tests that load a legacy payload with no choice.
+
+## S4 pre-fix failures
+
+Method. The S4 consumer test file ran on the unfixed library code. No S4 library change exists at this commit. Another worker adds the deprecation tests (T056) to the same file at the same time, so the run used a filter and not the whole file. The exact command was `python -m pytest -p no:cacheprovider tests/unit/modelling/test_world_location_consumers.py -k "feature_data_locations or example_observation or exported_data or intrusion_classification or fault_ellipse" -q --tb=line`, with the worktree `PYTHONPATH` (`LoopStructural` came from `LoopStructural-005-s4`). The result is 30 failed and 5 passed. The `rescale` and `scale` tests did not run.
+
+| Test function | Failed / total | Representative id and first error |
+|---|---|---|
+| `test_feature_data_locations_are_world` | 11 / 12 | `[0-30.0]`: values differ from the input rows. `[0, 0]` is 1.3660 against 1.0 (limit 4.7e-08). The 11 failing cells share this error type (the locations are converted a second time). `[0-0.0]` passes (anchor 0, no rotation: the extra conversion is the identity; coverage, no defect) |
+| `test_spec_example_observation_is_not_shifted` | 3 / 3 | `[0.0]`: `assert 374.1657 <= 4.7e-08`. The cells `[30.0]` and `[90.0]` fail in the same way (374.32 and 376.07) |
+| `test_exported_data_keeps_world_locations` | 4 / 4 | `[0]`: values differ from the input rows. `[0, 0]` is 3.2321 against 2.0. The cells `[1]`, `[2]` and `[3]` fail in the same way (the CSV files hold converted locations) |
+| `test_intrusion_classification_uses_world_points` | 12 / 12 | `[0-0.0]`: `AttributeError: 'IntrusionFrameBuilder' object has no attribute '_network_model_values'` (missing name). All 12 cells share this error |
+| `test_2d_viewer_fault_ellipse_centre_is_world` | 0 / 4 | Passes now (coverage, no defect), 4 cells |
+
+Totals by group: the first three tests give 18 failed and 1 passed. The intrusion test gives 12 failed. The fault ellipse test gives 4 passed.
+
+Behavioural measure from the production path (a short script, not saved in the repository). It used `world_foliation_model` with `ANCHORS[1]` = (100, 200, 300). It measured the distance between the observation `anchor + (2, 3, 4)` = (102, 203, 304) and the nearest location in the gradient object of `feature.get_data()`.
+
+| Rotation (deg) | Distance | Nearest location |
+|---|---|---|
+| 0 | 374.17 | (202, 403, 604) |
+| 30 | 374.32 | (289.83, 324.80, 604) |
+| 90 | 376.07 | (303, 98, 604) |
+
+At rotation 0, the nearest location is the observation plus the anchor (102 + 100, 203 + 200, 304 + 300). The expected distance is 0 (limit 4.7e-08). The shift is about 374 length units in each cell.

@@ -9,6 +9,7 @@ import pytest
 from tests.fixtures.coordinate_frames import (
     ANCHORS,
     ROTATIONS_DEG,
+    model_with_frame,
     tp,
     world_foliation_model,
 )
@@ -159,3 +160,90 @@ def test_2d_viewer_fault_ellipse_centre_is_world(anchor_index, rotation):
         np.testing.assert_allclose(ax.patches[0].center, fault.fault_centre[:2], rtol=0, atol=tol)
     finally:
         plt.close(fig)
+
+
+_OFFSETS = np.array([[1.0, 2.0, 3.0], [4.0, 5.0, 6.0], [7.0, 8.0, 9.0], [2.0, 9.0, 4.0]])
+
+
+def _deprecated_call_cell(anchor_index, rotation, method_name, target_name, match):
+    """Check that a deprecated model method warns and keeps its result."""
+    anchor = ANCHORS[anchor_index]
+    model = model_with_frame(anchor, anchor + np.array([20.0, 20.0, 20.0]), rotation)
+    tol = tp(LENGTH, max(WIDTH, np.abs(anchor).max()))
+    points = anchor + _OFFSETS
+    expected = getattr(model.bounding_box, target_name)(points.copy())
+    with pytest.warns(DeprecationWarning, match=match) as record:
+        result = getattr(model, method_name)(points.copy())
+    assert len(record) == 1
+    assert record[0].filename == __file__
+    np.testing.assert_allclose(result, expected, rtol=0, atol=tol)
+    # With inplace=True the method changes the array that the caller passes.
+    expected_inplace = points.copy()
+    getattr(model.bounding_box, target_name)(expected_inplace, inplace=True)
+    passed = points.copy()
+    with pytest.warns(DeprecationWarning, match=match):
+        getattr(model, method_name)(passed, inplace=True)
+    np.testing.assert_allclose(passed, expected_inplace, rtol=0, atol=tol)
+
+
+@pytest.mark.parametrize(
+    "anchor_index, rotation",
+    list(itertools.product(range(len(ANCHORS)), ROTATIONS_DEG)),
+)
+def test_rescale_warns_and_keeps_behaviour(anchor_index, rotation):
+    """model.rescale gives a DeprecationWarning and the result of reproject."""
+    _deprecated_call_cell(anchor_index, rotation, "rescale", "reproject", "bounding_box.reproject")
+
+
+@pytest.mark.parametrize(
+    "anchor_index, rotation",
+    list(itertools.product(range(len(ANCHORS)), ROTATIONS_DEG)),
+)
+def test_scale_warns_and_keeps_behaviour(anchor_index, rotation):
+    """model.scale gives a DeprecationWarning and the result of project."""
+    _deprecated_call_cell(anchor_index, rotation, "scale", "project", "bounding_box.project")
+
+
+def test_internal_callers_do_not_warn(tmp_path):
+    """No library caller uses the deprecated rescale or scale methods."""
+    import warnings
+
+    from LoopStructural.modelling.core._model_exporter import ModelExporter
+    from LoopStructural.modelling.intrusions.intrusion_frame_builder import (
+        IntrusionFrameBuilder,
+    )
+
+    anchor = ANCHORS[1]
+    model, feature, _ = world_foliation_model(anchor, 30.0)
+    # The model is not solved. Use a stub for the model evaluation.
+    model.evaluate_model = lambda xyz: np.zeros(len(xyz))
+    with warnings.catch_warnings():
+        warnings.filterwarnings("error", message=".*(rescale|scale) is deprecated.*")
+        feature.get_data()
+        ModelExporter.get_block_model(model)
+        builder = object.__new__(IntrusionFrameBuilder)
+        builder.model = model
+        points = anchor + _OFFSETS
+        data = pd.DataFrame({"X": points[:, 0], "Y": points[:, 1], "Z": points[:, 2]})
+        builder._network_model_values(data)
+        # Call the exporter functions in the way that tests/unit/io/test_exporters.py does.
+        pytest.importorskip("pyevtk")
+        from LoopStructural.export import exporters
+        from LoopStructural.export.file_formats import FileFormat
+        from tests.unit.io import test_exporters as fakes
+
+        class _Surfaces(fakes._FakeModelForSurfaces):
+            def rescale(self, points, *, inplace=False):
+                return model.rescale(points, inplace=inplace)
+
+        class _Volume(fakes._FakeModelForVolume):
+            def rescale(self, points, *, inplace=False):
+                return model.rescale(points, inplace=inplace)
+
+        exporters.write_feat_surfs(_Surfaces(), "strati", file_format=FileFormat.NUMPY)
+        exporters.write_cubeface(
+            _Volume(), str(tmp_path / "cube"), "label", np.array([5, 5, 5]), FileFormat.VTK
+        )
+        exporters.write_vol(
+            _Volume(), str(tmp_path / "vol"), "label", np.array([5, 5, 5]), FileFormat.VTK
+        )
