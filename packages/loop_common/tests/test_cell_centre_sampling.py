@@ -1,5 +1,7 @@
 """Cell centres of a BoundingBox agree with the cells of its structured grids, also for rotated boxes."""
 
+# The task premise for a one-to-one test against the enclosure grid was wrong.
+# The evidence for FR-015 and SC-011 is in test_centres_are_cell_midpoints_in_world.
 import itertools
 
 import numpy as np
@@ -47,16 +49,12 @@ def _world_centres(box):
     return box.reproject(box.cell_centres(order="F"))
 
 
-def test_each_cell_has_exactly_one_centre(box):
-    """Each cell of the box local grid contains exactly one cell centre.
+def test_centres_round_trip_and_index_own_cells(box):
+    """The centres survive a world round trip and index the cells of the box own grid.
 
-    This test is evidence for FR-015 and SC-011.
-
-    The test works in the local frame of the box. The enclosure grid of
-    structured_grid(local_coordinates=True) has axis-aligned cells. These
-    cells differ from the cells of a rotated box. A one-to-one count against
-    that grid does not hold (measured: 8 of 12 cells fail with the first
-    version of this test).
+    This is a consistency check on the cell grid of the box itself. The grid
+    is built from the same linspace as the centres. This test is not evidence
+    for FR-015 or SC-011.
     """
     n_cells = int(np.prod(box.nsteps - 1))
     centres = box.cell_centres(order="F")
@@ -81,16 +79,24 @@ def test_each_cell_has_exactly_one_centre(box):
 
 
 def test_local_coordinates_grid_associates_own_centres(box):
-    """Each cell centre falls in a cell of the local grid.
+    """Containment check: each cell centre falls inside the enclosure grid.
 
-    This test is evidence for FR-015 and SC-011.
+    The grid is structured_grid(local_coordinates=True). The check gives no
+    -1 for any centre. The enclosure grid has axis-aligned cells that differ
+    from the cells of a rotated box, so a one-to-one count against it does
+    not hold.
     """
     grid = box.structured_grid(local_coordinates=True)
     assert np.all(grid.cell_index_at(box.project(_world_centres(box))) != -1)
 
 
 def test_centres_are_cell_midpoints_in_world(box):
-    """Each world centre is the mean of the 8 corner nodes of its cell."""
+    """Each world centre is the mean of the 8 corner nodes of its cell.
+
+    This test is evidence for FR-015 and SC-011. Each cell of the exported
+    grid has exactly one centre, as the mean of its corners. The centres are
+    all different.
+    """
     grid = box.structured_grid()
     nx, ny, nz = (int(n) for n in box.nsteps)
     k, j, i = np.meshgrid(np.arange(nz - 1), np.arange(ny - 1), np.arange(nx - 1), indexing="ij")
@@ -99,6 +105,9 @@ def test_centres_are_cell_midpoints_in_world(box):
     for di, dj, dk in itertools.product((0, 1), repeat=3):
         corners += grid.nodes[(i + di) + nx * ((j + dj) + ny * (k + dk))]
     np.testing.assert_allclose(_world_centres(box), corners / 8.0, atol=_tolerance(box), rtol=0.0)
+    # No two cells share a centre, so each cell has exactly one centre.
+    decimals = 6
+    assert len(np.unique(np.round(corners / 8.0, decimals), axis=0)) == len(i)
 
 
 def test_centres_match_exported_cells(box):

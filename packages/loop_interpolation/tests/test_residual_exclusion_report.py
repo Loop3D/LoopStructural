@@ -103,6 +103,7 @@ def test_report_without_verification_is_unchanged():
         "region_coverage",
         "outside_model_points",
     }
+    assert data["total_rows"] == 10  # row_count of the one family
     assert set(data["families"]["value"].keys()) == {
         "active",
         "row_count",

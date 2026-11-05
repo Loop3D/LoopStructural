@@ -16,8 +16,40 @@
   },
   "env": "PYTHONPATH=C:/Users/lachl/dev/LoopStructural-005-s5;C:/Users/lachl/dev/LoopStructural-005-s5/packages/loop_common/src;C:/Users/lachl/dev/LoopStructural-005-s5/packages/loop_interpolation/src;C:/Users/lachl/dev/LoopStructural-005-s5/packages/loopstructural_visualisation/src;C:/Users/lachl/AppData/Local/Temp/claude/C--Users-lachl-dev-dev-tools/f206cbcd-e5d0-45be-a4c8-5f5c89bb26f1/scratchpad/pyevtk_pkg; python C:/Users/lachl/dev/LoopStructural/.venv/Scripts/python.exe; run pytest from PowerShell; root pytest and package tests in separate calls",
   "base_note": "Built from docs/005-s5-plan (1c029d21), which sits on feat/005-s4-world-locations (S4, PR #401, not merged). Not pushed; no PR.",
-  "waves": [],
-  "runs": {},
+  "waves": [
+    {
+      "wave": 32,
+      "base": "e583f835337c5d23794f41e2fd6597c4064a0832",
+      "tasks": "T069,T070,T071",
+      "check": "scope pass; ruff pass; T069 24 failed/76 passed incl T070 (expected pre-fix); T071 ImportError collection (expected)",
+      "commit": "cc7d5f5ee0795bbec1d5aee6ece628841858fb4b",
+      "review": "pending"
+    }
+  ],
+  "runs": {
+    "T069": [
+      {
+        "model": "sonnet",
+        "result": "pass: 24 failing cells pre-fix"
+      }
+    ],
+    "T070": [
+      {
+        "model": "sonnet",
+        "result": "fail: test premise wrong (enclosure grid), 8 cells failed"
+      },
+      {
+        "model": "sonnet",
+        "result": "pass: premise fixed, 60 cells pass; OP12 not reproduced (centres are correct)"
+      }
+    ],
+    "T071": [
+      {
+        "model": "sonnet",
+        "result": "pass: ImportError as expected"
+      }
+    ]
+  },
   "findings": {
     "found": 0,
     "rejected": 0,
@@ -1222,5 +1254,9 @@
         "fix": "1 major fixed with a new test (mutation proved)"
       }
     }
+  },
+  "s5_notes": {
+    "T070": "The task text premise (one centre per cell of structured_grid(local_coordinates=True)) is wrong for rotated boxes: that grid is the axis-aligned enclosure with a different step. Test rewritten on the box own cell grid. _bounding_box.py not changed. OP12: not reproduced.",
+    "T070_arg": "set_local_transform takes rotation_matrix=, not local_rotation=."
   }
 }
