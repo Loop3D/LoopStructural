@@ -1300,7 +1300,7 @@ frame. A legacy file needs an explicit choice. A frame change never gives a stal
     `test_value_residuals_are_absolute_difference` (12): equals `abs(value - evaluate_value(world_points))` at the 27 value rows; no NaN. `test_value_misfit_is_normalised_by_field_range` (12): equals `evaluate_value_residuals() / (feature.max() - feature.min())` within `1e-12`. `test_value_misfit_with_zero_range_does_not_divide` (2): `monkeypatch` makes `feature.max` and `feature.min` return the same number (cell 1) or NaN (cell 2); `warnings.simplefilter("error")`; the result equals the unnormalised absolute difference.
     `test_misfit_with_no_rows_is_empty` (2): no gradient rows gives shape `(0,)`; no value rows gives shape `(0,)`. `test_old_misfit_shapes_are_kept` (4): one family `(1, N)`; two families of equal length `(2, N)`; two of different length `(1, N1 + N2)` (OP16, default); values equal `evaluate_gradient_cosines()`.
 
-- [ ] T081 [US4] [M] Test: a stale model is not rebuilt, and the report keeps residuals and exclusions apart (U4.4, U4.5; FR-023, FR-024; SC-009).
+- [x] T081 [US4] [M] Test: a stale model is not rebuilt, and the report keeps residuals and exclusions apart (U4.4, U4.5; FR-023, FR-024; SC-009).
   - Files: `tests/unit/modelling/test_diagnostics_frames.py`
   - Needs: T080
   - Wave: 37

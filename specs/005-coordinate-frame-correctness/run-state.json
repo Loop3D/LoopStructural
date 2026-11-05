@@ -56,6 +56,14 @@
       "check": "scope pass; resize+cell-centre 100 passed; T080 127 failed pre-fix as expected; ruff pass",
       "commit": "a69408bb24ad80e377edbc95472ff3a8f6c6a971",
       "review": "pass (3 minor, open)"
+    },
+    {
+      "wave": 37,
+      "base": "223c912bb05aab1ec23ca884fe8b19987ff53b3d",
+      "tasks": "T081",
+      "check": "scope pass; 20 new cells fail pre-fix as expected; ruff pass",
+      "commit": "pending",
+      "review": "pending"
     }
   ],
   "runs": {
@@ -137,6 +145,12 @@
       {
         "model": "sonnet",
         "result": "pass: 127 failing cells pre-fix; tol_solved 9e-4 (measured max 4.414e-4)"
+      }
+    ],
+    "T081": [
+      {
+        "model": "sonnet",
+        "result": "pass: 20 failing cells pre-fix; PLI gradient unattributed 8 (k=2), outside_model 3, dropped_rows 14"
       }
     ]
   },
@@ -1365,5 +1379,8 @@
   },
   "s5_notes4": {
     "T080": "Test new_misfit_methods_leaves_state_unchanged name spelled with leaves so the -k filter matches. Contract: evaluate_gradient_cosines is flat (gradient rows then normal rows); old misfit ravel equals it; new method must call self.evaluate_gradient. TOL_SOLVED=9e-4."
+  },
+  "s5_notes5": {
+    "T081": "PLI measured: 7 gradient rows stored (4 inside, 3 outside), builder dropped_rows=14, outside_model=3, unattributed=8 with rows_per_point gradient 2. FDI dropped_rows=6; needs rows_per_point={gradient:2} (else unattributed 3). Warning text must contain the word interpolator or builder."
   }
 }
