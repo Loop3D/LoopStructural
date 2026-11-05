@@ -909,8 +909,20 @@
     "head_gated": "e49f3b2a",
     "lint": "ruff check LoopStructural packages: pass",
     "format": "black --check on the 10 changed .py files: new module and the 3 test files clean; 4 library files dirty and already dirty at the S3 start (_finite_difference_interpolator, _interpolator_factory, _p2_fold_interpolator, _p2interpolator); only task hunks changed",
-    "test_packages": "912 passed, 47 skipped, 2 xfailed, 7 warnings in 93.31 s",
-    "test_root": "1981 passed, 5 skipped, 13 warnings in 757.86 s (S2 head: 1760; +218 S3 cells +3 regression tests)",
+    "test_packages": "912 passed, 47 skipped, 2 xfailed, 7 warnings in 100.44 s (after C-018)",
+    "test_root": "1987 passed, 5 skipped, 13 warnings in 826.94 s (after C-018)",
     "status": "S3 implemented: 50 of 50 tasks done; not pushed; no pull request"
-  }
+  },
+  "post_review_changes": [
+    {
+      "date": "2026-11-05",
+      "id": "C-018",
+      "what": "Backward-compatible legacy load: a legacy payload with no choice loads with the identity frame and emits one FutureWarning; _STRICT_LEGACY switch with a remove-at-major note; partial transform, conflict, malformed and unsupported still raise. Docs (ROADMAP, COMPAT, verification) updated; P2 figures corrected.",
+      "gates": {
+        "lint": "pass",
+        "packages": "912 passed, 47 skipped, 2 xfailed",
+        "root": "1987 passed, 5 skipped"
+      }
+    }
+  ]
 }

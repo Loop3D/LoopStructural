@@ -5,6 +5,7 @@ import copy
 import numpy as np
 import pytest
 from loop_interpolation import GeologicalInterpolator, InterpolatorFactory, InterpolatorFormatError
+from loop_interpolation import _frame_persistence as frame_persistence
 
 from tests.fixtures.coordinate_frames import (
     ANCHORS,
@@ -148,8 +149,42 @@ def _assert_world_values(loaded, source, anchor):
 
 
 @pytest.mark.parametrize("engine", ENGINE_CELLS)
-def test_legacy_payload_requires_choice(engine):
-    """A legacy payload with no choice raises `legacy_no_transform`."""
+def test_legacy_payload_without_choice_warns_and_loads_identity(engine):
+    """A legacy payload with no choice loads with the identity frame and warns once (C-018)."""
+    interp, _ = _build(engine, 1, 30.0)
+    legacy = strip_frame_keys(interp.to_dict())
+    before = copy.deepcopy(legacy)
+    with pytest.warns(
+        FutureWarning,
+        match="^legacy interpolator payload has no transform; assuming the identity frame",
+    ) as record:
+        loaded = GeologicalInterpolator.from_dict(legacy)
+    future = [item for item in record if issubclass(item.category, FutureWarning)]
+    assert len(future) == 1
+    message = str(future[0].message)
+    assert "local_origin" in message
+    assert "local_rotation" in message
+    assert "declare_identity=True" in message
+    assert "major release" in message
+    assert loaded.bounding_box is None
+    _assert_same(legacy, before)
+    assert record[0].filename == __file__
+
+
+@pytest.mark.parametrize("engine", ENGINE_CELLS)
+def test_legacy_identity_values_match_source_for_identity_frame(engine):
+    """With an identity source frame, the identity fallback gives the source values."""
+    interp, anchor = _build(engine, 0, 0.0)
+    legacy = strip_frame_keys(interp.to_dict())
+    with pytest.warns(FutureWarning):
+        loaded = GeologicalInterpolator.from_dict(legacy)
+    _assert_world_values(loaded, interp, anchor)
+
+
+@pytest.mark.parametrize("engine", ENGINE_CELLS)
+def test_strict_legacy_switch_raises(engine, monkeypatch):
+    """With `_STRICT_LEGACY` on, a legacy payload with no choice raises `legacy_no_transform`."""
+    monkeypatch.setattr(frame_persistence, "_STRICT_LEGACY", True)
     interp, _ = _build(engine, 1, 30.0)
     legacy = strip_frame_keys(interp.to_dict())
     before = copy.deepcopy(legacy)

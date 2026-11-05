@@ -7,6 +7,7 @@ back.
 from __future__ import annotations
 
 import itertools
+import warnings
 from typing import Any
 
 import numpy as np
@@ -36,6 +37,17 @@ REASONS: tuple[str, ...] = (
     "conflict",
 )
 """Valid reasons for an `InterpolatorFormatError`."""
+
+# REMOVE AT THE NEXT MAJOR RELEASE (spec 005, C-018): delete the fallback in
+# `payload_kind` and this constant. A legacy payload with no choice then always
+# raises InterpolatorFormatError("legacy_no_transform", ...).
+_STRICT_LEGACY: bool = False
+
+_LEGACY_IDENTITY_WARNING = (
+    "legacy interpolator payload has no transform; assuming the identity frame. "
+    "Pass local_origin and local_rotation, or declare_identity=True, to choose "
+    "the frame. The next major release raises InterpolatorFormatError here."
+)
 
 
 class InterpolatorFormatError(ValueError):
@@ -108,6 +120,11 @@ def frame_payload(bounding_box: BoundingBox | None, dimensions: int) -> dict:
 def payload_kind(payload: dict, caller_frame: bool) -> str:
     """Return the kind of a stored payload.
 
+    On the 1.x line, a legacy payload (no `format_version`) with no choice of
+    the caller gives a `FutureWarning` and the kind `"legacy"`. The payload
+    then loads with the identity frame. If `_STRICT_LEGACY` is true, the
+    function raises an error in this case.
+
     Parameters
     ----------
     payload : dict
@@ -123,9 +140,15 @@ def payload_kind(payload: dict, caller_frame: bool) -> str:
     Raises
     ------
     InterpolatorFormatError
-        If the payload has no transform and the caller gives no frame
-        (`legacy_no_transform`), if the version is above `FORMAT_VERSION`
-        (`unsupported_version`), or if the payload is not valid (`malformed`).
+        If `_STRICT_LEGACY` is true and the payload has no transform and the
+        caller gives no frame (`legacy_no_transform`), if the version is above
+        `FORMAT_VERSION` (`unsupported_version`), or if the payload is not
+        valid (`malformed`).
+
+    Warns
+    -----
+    FutureWarning
+        If the payload has no transform and the caller gives no frame.
     """
     version = payload.get("format_version")
     if version is None:
@@ -136,11 +159,15 @@ def payload_kind(payload: dict, caller_frame: bool) -> str:
                 "but no format_version",
             )
         if not caller_frame:
-            raise InterpolatorFormatError(
-                "legacy_no_transform",
-                "legacy interpolator payload has no transform: pass local_origin "
-                "and local_rotation, or declare_identity=True",
-            )
+            if _STRICT_LEGACY:
+                raise InterpolatorFormatError(
+                    "legacy_no_transform",
+                    "legacy interpolator payload has no transform: pass local_origin "
+                    "and local_rotation, or declare_identity=True",
+                )
+            # stacklevel 4: payload_kind <- InterpolatorFactory.from_dict
+            # <- GeologicalInterpolator.from_dict <- caller.
+            warnings.warn(_LEGACY_IDENTITY_WARNING, FutureWarning, stacklevel=4)
         return "legacy"
     if not isinstance(version, int) or isinstance(version, bool) or version < 1:
         raise InterpolatorFormatError(
@@ -237,19 +264,22 @@ def resolve_frame(
         Number of spatial dimensions.
     local_origin : array_like, optional
         World-space origin of the local frame, given by the caller. A legacy
-        payload needs both `local_origin` and `local_rotation`, or
-        `declare_identity`.
+        payload with a choice needs both `local_origin` and `local_rotation`,
+        or `declare_identity`. A legacy payload with no choice gets the
+        identity frame.
     local_rotation : array_like, optional
         Rotation matrix of the local frame, given by the caller. A legacy
-        payload needs both `local_origin` and `local_rotation`, or
-        `declare_identity`.
+        payload with a choice needs both `local_origin` and `local_rotation`,
+        or `declare_identity`. A legacy payload with no choice gets the
+        identity frame.
     declare_identity : bool, optional
         True if the caller declares an identity frame.
 
     Returns
     -------
     BoundingBox or None
-        Bounding box to attach. None for an identity frame with no box.
+        Bounding box to attach. None for an identity frame with no box. This
+        includes a legacy payload with no choice of the caller.
 
     Raises
     ------
@@ -273,6 +303,10 @@ def resolve_frame(
         )
     caller_frame = local_origin is not None or local_rotation is not None or declare_identity
 
+    # Step 1b: a legacy payload with no choice gets the identity frame (C-018).
+    if kind == "legacy" and not caller_frame:
+        return None
+
     # Step 2: check the transform of the caller. A legacy payload needs both values.
     if kind == "legacy" and caller_frame and not declare_identity:
         for name, value in (("local_origin", local_origin), ("local_rotation", local_rotation)):
@@ -294,8 +328,6 @@ def resolve_frame(
 
     # Step 3: a legacy payload has no saved frame.
     if kind == "legacy":
-        if not caller_frame:
-            raise _malformed("legacy payload has no transform and the caller gives none")
         if declare_identity:
             return None
         try:

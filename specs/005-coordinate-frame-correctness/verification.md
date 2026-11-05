@@ -308,6 +308,8 @@ repository):
 
 The identity-frame round-trip cells and the rebuild cells pass before S3. They are coverage, not defect evidence.
 
+Since C-018, `test_legacy_payload_requires_choice` is replaced by `test_legacy_payload_without_choice_warns_and_loads_identity`, `test_legacy_identity_values_match_source_for_identity_frame` and `test_strict_legacy_switch_raises`. The pre-fix record above keeps the old name.
+
 ## S3 rollback checks
 
 Method. The rollback target is the S3 start commit `91ffca4a` (the S2 head, with no S3 code). A throw-away worktree was made at this commit with `git worktree add --detach ../LoopStructural-005-s3-rollback 91ffca4a`. The file `tests/fixtures/coordinate_frames.py` was copied from the S3 worktree into it, and nothing else, because the old commit has no `r1_interpolator`. Each run used its own `PYTHONPATH`. Before each run, the script printed `loop_interpolation.__file__` and `LoopStructural.__file__`. For the old code, both paths were in `LoopStructural-005-s3-rollback`. For the S3 code, both paths were in `LoopStructural-005-s3`. The scripts were short and were not saved in the repository. The throw-away worktree was removed at the end.
@@ -326,7 +328,7 @@ Check 1. The old `to_dict` saved a legacy payload (no `format_version`) for `fdi
 | `pli` | `ANCHORS[0]`, rotation 0 | `declare_identity=True` | 0.0 | 0.0 |
 | `p2` | `ANCHORS[0]`, rotation 0 | `declare_identity=True` | 0.0 | 0.0 |
 
-All 9 errors are inside the limits. A legacy payload loaded with no choice (no transform and no `declare_identity`) raised `InterpolatorFormatError` with reason `legacy_no_transform` for `fdi`, `pli` and `p2` (3 of 3). The text is: `legacy interpolator payload has no transform: pass local_origin and local_rotation, or declare_identity=True`.
+All 9 errors are inside the limits. With C-018, a legacy payload loaded with no choice (no transform and no `declare_identity`) loads with the identity frame and emits one `FutureWarning` for `fdi`, `pli` and `p2` (3 of 3). The message starts: "legacy interpolator payload has no transform; assuming the identity frame". The loaded interpolator has no bounding box. For the rotated cell (`ANCHORS[3]`, rotation 30), the world values are NaN. This is the behaviour of releases before S3, and it is the reason for the warning. With `_STRICT_LEGACY` set to true, the call raises `legacy_no_transform` (the behaviour of the next major release).
 
 Check 2. The S3 code wrote `r1_interpolator("fdi", ANCHORS[3], 30.0, exact=True)[0].to_json()` (it has `format_version`). The old reader (`GeologicalInterpolator.from_json(text)` at `91ffca4a`) raised `TypeError` with this exact message: `InterpolatorFactory.create_interpolator() got an unexpected keyword argument 'format_version'`. The call returned no object: the result variable stayed unset (OP5). The error names `format_version`, as expected.
 
@@ -428,8 +430,10 @@ in `_geological_feature_builder.py` (lines 541 and 542). No call of
 `interpolator.copy()` exists in the feature code.
 
 OP7 note. The P2 value-only fit of R1 misses SC-002 in every frame. In the
-unrotated control the value error is 1.8e-8 and the gradient error is 3.9e-7,
-against a gradient limit of 4e-9. The S3 rebuild test uses the exact nodal
+unrotated control the value error is 7.8e-8 against a limit of 7.5e-8, and the
+gradient error is 3.9e-7 against a limit of 1e-8. At 30 degrees the value
+error is 2e-7 to 7.6e-7. FDI and PLI stay below 3.2e-9 (value) and 1.7e-9
+(gradient). Issue #399 records it. The S3 rebuild test uses the exact nodal
 control for `p2` (maintainer decision 2026-11-05).
 
 ## S3 test run time (OP2)
@@ -441,3 +445,40 @@ control for `p2` (maintainer decision 2026-11-05).
 | Both S3 files | about 36 s test time |
 | Full root suite (orchestrator) | 797.81 s (1052.40 s at the S2 head; the two runs had different machine load, so the times do not compare) |
 | Package suites (orchestrator) | 108.69 s |
+
+## S3 change C-018 (backward-compatible legacy load)
+
+Date: 2026-11-05.
+
+Behaviour. The legacy load stays backward compatible on the 1.x line. A legacy
+payload (no `format_version`) with no choice of the caller loads with the
+identity frame, as older releases did. It emits one `FutureWarning`. The warning
+names the choices and says that the next major release raises an error. The
+switch `_STRICT_LEGACY` in `loop_interpolation._frame_persistence` makes the
+call raise `legacy_no_transform`. A partial transform, a conflict, a malformed
+payload and an unsupported version still raise `InterpolatorFormatError`.
+
+Tests (focused runs of the orchestrator):
+
+| Command | Result |
+|---|---|
+| `tests/unit/modelling/test_frame_persistence.py` | 177 passed |
+| `test_frame_copy_and_lifecycle.py -k "not fault_restoration"` | 48 passed |
+| packages `test_geological_interpolator.py` and `test_p2_fold_registration.py` | 43 passed |
+| `ruff` | pass |
+
+The full suites are run again after this change (see the next section).
+
+## S3 final gates after C-018
+
+The orchestrator ran the full gates on the working tree after the C-018 change (HEAD `e519fc0b` plus the change).
+
+| Command | Result |
+|---|---|
+| `ruff check LoopStructural packages` | All checks passed |
+| `pytest packages/loop_common/tests packages/loop_interpolation/tests -p no:cacheprovider -q` | 912 passed, 47 skipped, 2 xfailed, 7 warnings in 100.44 s |
+| Root `pytest -p no:cacheprovider -q`, full | 1987 passed, 5 skipped, 13 warnings in 826.94 s |
+
+Before C-018 the root suite gave 1981 passed. The difference of 6 comes from `test_frame_persistence.py`: the 3 cells of `test_legacy_payload_requires_choice` became 9 cells (the warn test, the identity-values test and the strict-switch test, 3 engines each). The file now has 177 cells.
+
+No `StaleFrameError` and no `FutureWarning` from library code appeared in the full run. The only `FutureWarning` for a legacy load comes from the tests that load a legacy payload with no choice.
