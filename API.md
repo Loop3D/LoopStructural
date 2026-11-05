@@ -119,7 +119,9 @@ the same thing it used to.
   `evaluate_feature_value`, `evaluate_feature_gradient`,
   `evaluate_fault_displacements`
 - Solve: `update`
-- Geometry: `scale`, `rescale`, `regular_grid`, `bounding_box` (property)
+- Geometry: `scale` (deprecated, use `bounding_box.project`), `rescale`
+  (deprecated, use `bounding_box.reproject`), `regular_grid`,
+  `bounding_box` (property)
 - Stratigraphy: `stratigraphic_column` (property), `stratigraphic_ids`
 - Output: `get_fault_surfaces`, `get_stratigraphic_surfaces`,
   `get_block_model`, `save`, `to_file`, `to_dict`

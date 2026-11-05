@@ -1105,7 +1105,7 @@ frame. A legacy file needs an explicit choice. A frame change never gives a stal
 
 ## Phase 17: Stage S4 finish
 
-- [ ] T063 [Finish] [M] Review the existing tests for golden changes and record the S4 post-fix results.
+- [x] T063 [Finish] [M] Review the existing tests for golden changes and record the S4 post-fix results.
   - Files: `specs/005-coordinate-frame-correctness/verification.md`
   - Needs: T057, T058, T059, T060, T061, T062
   - Wave: 29
@@ -1114,7 +1114,7 @@ frame. A legacy file needs an explicit choice. A frame change never gives a stal
     Record commands, counts and times. Under the golden review list each existing test whose expected value must change, with the defect and its effect (C-004), or write
     "No golden change in S4." Do not change an existing test; report one that fails. Record the new cells (count) and that the fault ellipse test is "coverage, no defect". Write in ASD-STE100 Simplified Technical English.
 
-- [ ] T064 [P] [Finish] [M] Record the S4 notices in `COMPAT.md`.
+- [x] T064 [P] [Finish] [M] Record the S4 notices in `COMPAT.md`.
   - Files: `COMPAT.md`
   - Needs: T057, T059
   - Wave: 29
@@ -1126,7 +1126,7 @@ frame. A legacy file needs an explicit choice. A frame change never gives a stal
     Both: shim added `2026-11-05`; first released "TBD (next release containing this warning)"; introduced by the S4 commit; earliest removal "TBD (2 minor releases after the first release that warns)"; removed empty; status "Active"; owner "Core maintainers".
     (3) Raise the count of "Active shims" by 2. Do not change other text.
 
-- [ ] T065 [P] [Finish] [S] Record the S4 deprecation decision in `ROADMAP.md`.
+- [x] T065 [P] [Finish] [S] Record the S4 deprecation decision in `ROADMAP.md`.
   - Files: `ROADMAP.md`
   - Needs: T059
   - Wave: 29
@@ -1137,7 +1137,7 @@ frame. A legacy file needs an explicit choice. A frame change never gives a stal
     removal not before 2 minor releases after the first release that warns, and not before known callers (the QGIS plugin) have moved; the library no longer calls them. Keep the style of the neighbouring subsections.
     Do not change other text.
 
-- [ ] T066 [P] [Finish] [S] Mark the two methods as deprecated in `API.md`.
+- [x] T066 [P] [Finish] [S] Mark the two methods as deprecated in `API.md`.
   - Files: `API.md`
   - Needs: T059
   - Wave: 29

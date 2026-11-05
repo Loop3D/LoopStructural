@@ -168,6 +168,30 @@
         "model": "haiku",
         "result": "pass"
       }
+    ],
+    "T063": [
+      {
+        "model": "sonnet",
+        "result": "pass"
+      }
+    ],
+    "T064": [
+      {
+        "model": "sonnet",
+        "result": "pass; Active written in the Removed-in column like the existing rows"
+      }
+    ],
+    "T065": [
+      {
+        "model": "haiku",
+        "result": "pass"
+      }
+    ],
+    "T066": [
+      {
+        "model": "haiku",
+        "result": "pass"
+      }
     ]
   },
   "findings": {

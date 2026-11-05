@@ -508,3 +508,82 @@ Behavioural measure from the production path (a short script, not saved in the r
 | 90 | 376.07 | (303, 98, 604) |
 
 At rotation 0, the nearest location is the observation plus the anchor (102 + 100, 203 + 200, 304 + 300). The expected distance is 0 (limit 4.7e-08). The shift is about 374 length units in each cell.
+
+## S4 post-fix results
+
+Spec worktree `LoopStructural-005-s4`, HEAD `2e84bfcc` plus the S4 working tree
+changes. The worktree `PYTHONPATH` was set. A check showed that
+`LoopStructural.__file__` comes from `LoopStructural-005-s4`. The memory on the
+machine was low, so each command ran alone and no full suite ran in this task.
+The orchestrator runs the full gates in T068, and T068 adds the gate counts to
+this section.
+
+Pre-fix result of T056. Before the fixes, 25 cells of the deprecation tests
+failed. `test_rescale_warns_and_keeps_behaviour` (12 cells) and
+`test_scale_warns_and_keeps_behaviour` (12 cells) failed with "DID NOT WARN".
+`test_internal_callers_do_not_warn` failed with `AttributeError:
+'IntrusionFrameBuilder' object has no attribute '_network_model_values'`.
+
+| Command | Result |
+|---|---|
+| `pytest -p no:cacheprovider tests/unit/modelling/test_world_location_consumers.py -q` | 59 passed, 1 skipped in 2.55 s. The skip is `test_internal_callers_do_not_warn`: `pyevtk` is not in the venv. |
+| Same file, with `pyevtk` on `PYTHONPATH` (see below) | 60 passed in 2.28 s |
+| `pytest -p no:cacheprovider tests/unit/modelling/intrusions/test_intrusions.py -q` | 9 passed, 2 warnings in 19.81 s (the warnings are an old `setup()` deprecation in the test, not from S4) |
+| `pytest -p no:cacheprovider tests/unit/io/test_exporters.py -q`, with `pyevtk` on `PYTHONPATH` | 12 passed, 1 failed in 0.12 s (pre-existing, see below) |
+| `pytest -p no:cacheprovider tests/unit/test_public_api_contract.py -q` | 2 passed in 0.02 s |
+
+The new test file has 60 cells: `test_feature_data_locations_are_world` 12,
+`test_spec_example_observation_is_not_shifted` 3,
+`test_exported_data_keeps_world_locations` 4,
+`test_intrusion_classification_uses_world_points` 12,
+`test_2d_viewer_fault_ellipse_centre_is_world` 4 (coverage, no defect),
+`test_rescale_warns_and_keeps_behaviour` 12, `test_scale_warns_and_keeps_behaviour` 12,
+`test_internal_callers_do_not_warn` 1. The fault ellipse test passed before and
+after the fixes: coverage, no defect.
+
+`pyevtk` fact. `pyevtk` is not in the venv. For `test_exporters.py` and for
+`test_internal_callers_do_not_warn`, the run added
+`C:/Users/lachl/AppData/Local/Temp/claude/C--Users-lachl-dev-dev-tools/f206cbcd-e5d0-45be-a4c8-5f5c89bb26f1/scratchpad/pyevtk_pkg`
+to `PYTHONPATH`. Without it, the file skips the `pyevtk` tests.
+
+Failure in `test_exporters.py`: `test_write_vol_gocad_is_broken_for_real_bounding_box`.
+Pre-existing, not S4. The test expects `pytest.raises(LoopValueError)` with the
+class from `LoopStructural.utils.exceptions`. The error comes from
+`loop_common.geometry._bounding_box`, which raises its own, different
+`LoopValueError` class (it derives from `ValueError`, not from the
+`LoopStructural` class). The classes differ, so `pytest.raises` does not match.
+The message is "slice(None, None, None) is not a valid bounding box name". The
+S4 changes do not touch this path. The run with the S4 changes stashed was not
+done (stash is not allowed in this task); the reason comes from reading the
+test and the failure text. No existing test was changed.
+
+Deviations.
+- T059 uses `stacklevel=3`, because the `public_api` wrapper adds one frame.
+- The T056 `scale` check for `inplace` records the existing behaviour: `scale`
+  copies its input, and the array of the caller does not change. FR-033 says
+  keep the behaviour.
+
+## S4 golden review (C-004)
+
+Command: `git grep -l "get_data\|\.rescale(\|\.scale(" -- 'tests/*.py' 'packages/*.py'`.
+The test files in the result were run one at a time with the worktree
+`PYTHONPATH`:
+
+| File | Result |
+|---|---|
+| `tests/unit/modelling/test_world_location_consumers.py` | 60 passed (new file) |
+| `tests/unit/interpolator/test_geological_interpolator.py` | 24 passed in 1.08 s |
+| `tests/unit/io/test_geoh5.py` | 1 skipped in 0.05 s |
+| `tests/unit/utils/test_helper.py` | 9 passed in 0.08 s |
+| `tests/unit/modelling/test_geological_feature_builder.py` | 18 passed in 0.14 s |
+| `packages/loop_interpolation/tests/test_geological_interpolator.py` | 40 passed in 6.27 s |
+| `packages/loopstructural_visualisation/tests/test_plotting.py` | 16 passed in 5.07 s |
+| `tests/unit/modelling/intrusions/test_intrusions.py` | 9 passed in 19.81 s |
+| `tests/unit/test_public_api_contract.py` | 2 passed in 0.02 s |
+| `tests/unit/io/test_exporters.py` (with `pyevtk`) | 12 passed, 1 failed (pre-existing, not S4) |
+
+No existing test needs a new expected value because of S4. The only failure,
+`test_write_vol_gocad_is_broken_for_real_bounding_box`, has a cause that S4 does
+not touch (two `LoopValueError` classes).
+
+No golden change in S4.
