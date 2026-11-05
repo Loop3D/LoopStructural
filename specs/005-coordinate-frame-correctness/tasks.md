@@ -1171,7 +1171,7 @@ frame. A legacy file needs an explicit choice. A frame change never gives a stal
 **Goal**: Tests for the remaining resize paths, the cell-centre sampling and the residual and exclusion report are written before the code that they test.
 **Independent test**: `pytest packages/loop_common/tests/test_resize_paths.py packages/loop_common/tests/test_cell_centre_sampling.py` and `pytest packages/loop_interpolation/tests/test_residual_exclusion_report.py`.
 
-- [ ] T069 [US4] [M] Test: the resize paths keep the extent and the counts (U4.2; FR-014; SC-011).
+- [x] T069 [US4] [M] Test: the resize paths keep the extent and the counts (U4.2; FR-014; SC-011).
   - Files: `packages/loop_common/tests/test_resize_paths.py`
   - Needs: T068
   - Wave: 32
@@ -1187,7 +1187,7 @@ frame. A legacy file needs an explicit choice. A frame change never gives a stal
     `test_2d_counts_are_derived`: 2 grids x 3 checks = 6 cells; after `nsteps` assignment (a float list), `nsteps_cells`, `n_cell_x`, `n_cell_y` and `n_elements` agree with the new `nsteps`; `nsteps` is an int array; `maximum == origin + nsteps * step_vector` (legacy value). `test_rectilinear_resize_is_rejected`: 3 setters; `NotImplementedError`; nodes, origin and counts unchanged.
     `StructuredGrid2DGeometry.n_elements` exists (`nsteps_cells[0] * nsteps_cells[1]`). Rule: tests must show a wrong answer (principle V). Write in ASD-STE100 Simplified Technical English.
 
-- [ ] T070 [P] [US4] [M] Test: cell-centre sampling agrees with the grid cells for rotated boxes (U4.3; FR-015; SC-011).
+- [x] T070 [P] [US4] [M] Test: cell-centre sampling agrees with the grid cells for rotated boxes (U4.3; FR-015; SC-011).
   - Files: `packages/loop_common/tests/test_cell_centre_sampling.py`
   - Needs: T068
   - Wave: 32
@@ -1199,7 +1199,7 @@ frame. A legacy file needs an explicit choice. A frame change never gives a stal
     `test_centres_match_exported_cells` (12): world centres equal `grid.cell_centres` within `Tp`. `test_centres_inside_box` (12): each world centre is inside `[origin, maximum]` within `Tp`.
     Only the first two tests are evidence for SC-011. Say so in their docstrings. Do not change `_bounding_box.py`. Write in ASD-STE100 Simplified Technical English.
 
-- [ ] T071 [P] [US4] [M] Test: the pure residual and exclusion functions and the report class (U4.4, U4.5; FR-023, FR-024).
+- [x] T071 [P] [US4] [M] Test: the pure residual and exclusion functions and the report class (U4.4, U4.5; FR-023, FR-024).
   - Files: `packages/loop_interpolation/tests/test_residual_exclusion_report.py`
   - Needs: T068
   - Wave: 32
