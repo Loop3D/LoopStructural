@@ -78,8 +78,8 @@
       "base": "00c3e3741eb663e8660ebd44bc24fe987e37e2e1",
       "tasks": "T083",
       "check": "scope pass; 111 passed, 36 deselected; ruff pass",
-      "commit": "pending",
-      "review": "pending"
+      "commit": "e97859bbb12fdc1d566cf5148e961b0874946c62",
+      "review": "pass (1 minor, open)"
     }
   ],
   "runs": {
@@ -183,7 +183,7 @@
     ]
   },
   "findings": {
-    "found": 13,
+    "found": 14,
     "rejected": 0,
     "dropped": 0,
     "fixed": 3,
@@ -195,7 +195,8 @@
       "T080 exact-field stub ignores its points argument, so it cannot catch a wrong position frame (other tests catch it).",
       "T080 one TOL_SOLVED=9e-4 for both engines (FDI max 1.2e-4 is looser).",
       "T081 test_gradient_outside_points_with_pli_are_measured prints but does not assert unattributed == 8.",
-      "T081 _snapshot compares id(latest_diagnostics_report): hold the object and compare with is."
+      "T081 _snapshot compares id(latest_diagnostics_report): hold the object and compare with is.",
+      "T083 _stale_reason checks one level of faults; BaseBuilder.up_to_date recurses, so a stale fault nested in a fresh fault builder is still rebuilt on evaluation (rare; plan names one level)."
     ]
   },
   "answers": "2026-11-05 (S5 start): five gaps settled in plan.md Answers (bounding box = interpolator.bounding_box; stale recipe = assign up_to_date/_up_to_date False; 2D n_elements exists; report key set is a literal; PLI add_gradient_constraints is pass so PLI gradient family reports unattributed = 2*source_points).",
