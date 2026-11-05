@@ -83,7 +83,9 @@
         "T041",
         "T042"
       ],
-      "check": "scope pass (VERIFY); ruff and black pass. T042: lifecycle -k stale/restored/rebuild/fault_restoration 13 passed (27 s); tests/unit/interpolator 346 passed (worker); package test_geological_interpolator.py 34 passed 6 failed = test_interpolator_json_yaml_round_trip until T043 (expected, documented). T041 done-when script ok. Persistence file 37 passed 132 failed (payload_declares 36 + old_reader 1 now pass; loader tests wait for T043)"
+      "check": "scope pass (VERIFY); ruff and black pass. T042: lifecycle -k stale/restored/rebuild/fault_restoration 13 passed (27 s); tests/unit/interpolator 346 passed (worker); package test_geological_interpolator.py 34 passed 6 failed = test_interpolator_json_yaml_round_trip until T043 (expected, documented). T041 done-when script ok. Persistence file 37 passed 132 failed (payload_declares 36 + old_reader 1 now pass; loader tests wait for T043)",
+      "commit": "5413ec2a83867003835ce00b1ca126d02c699358",
+      "review": "pass: sonnet, 3 minor"
     }
   ],
   "runs": {
@@ -161,7 +163,7 @@
     ]
   },
   "findings": {
-    "found": 10,
+    "found": 13,
     "rejected": 1,
     "dropped": 0,
     "fixed": 3,
@@ -173,7 +175,11 @@
       "T036 test_creation_call_unchanged: also check local_origin/local_rotation arguments raise malformed, and that the input dict is unchanged.",
       "T038: the R2 fixture fault displaces none of its probes (0 of 6859 moved); the test compares restored points (trivially equal) and the fault-frame coordinates. A fixture with real displacement would test restoration itself (S6).",
       "T040 payload_kind: a payload that is not a dict raises AttributeError, not InterpolatorFormatError (the loader gates on a dict first; add a malformed check if a caller can reach it).",
-      "T040 bounding_box_from_support does not check shapes; T041 resolve_frame must (added to the T041 context)."
+      "T040 bounding_box_from_support does not check shapes; T041 resolve_frame must (added to the T041 context).",
+      "T042 frame_signature compares raw bytes: -0.0 and +0.0 origins give different signatures, so an equal box with -0.0 raises StaleFrameError. Fix: add 0.0 to the arrays before tobytes().",
+      "T042 _restore_local_constraints is not atomic: a failure in a later family leaves the earlier family stored and _frame_at_data None. The loader drops the half-built interpolator, so no published state is affected (T043 wraps the error as malformed).",
+      "T042 _restore_local_constraints: ragged arrays give a raw numpy ValueError (wrapped by T043); unknown keys in data are ignored without a message.",
+      "T042 __init__ sets data without _note_frame: a non-empty initial data argument is not tracked (no known caller)."
     ]
   },
   "answers": [
@@ -786,5 +792,5 @@
       }
     }
   },
-  "status": "wave 19 done, review pending (intermediate state: 6 existing round-trip tests fail until T043)"
+  "status": "wave 19 done and reviewed"
 }

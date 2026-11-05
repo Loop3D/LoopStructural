@@ -884,6 +884,7 @@ frame. A legacy file needs an explicit choice. A frame change never gives a stal
     `payload_kind` first (before any work), pop `format_version`, `constraint_space`, `transform`, `bounding_box` into one dict, build the support and the
     interpolator as now, set `interpolator.bounding_box = resolve_frame(...)`, call `_restore_local_constraints(data)` (never `set_*_constraints`), then `c`,
     `up_to_date`, `valid`. Do not change the input dict. Keep the existing `rotation_xy` `TypeError` retry.
+    Wrap an error of `_restore_local_constraints` (`ValueError`, `ValidationError`) as `InterpolatorFormatError("malformed", "malformed interpolator payload: ...")` with `raise ... from exc`; the half-built interpolator is dropped.
 
 - [ ] T044 [P] [US3] [S] Keep the frame in `FiniteDifferenceInterpolator.copy`.
   - Files: `packages/loop_interpolation/src/loop_interpolation/_finite_difference_interpolator.py`
