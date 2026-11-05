@@ -53,7 +53,8 @@
       ],
       "check": "scope pass (VERIFY); ruff and black pass. Pre-fix: legacy/conflicting/malformed/unsupported/creation_call/old_reader 58 failed (TypeError unexpected keyword declare_identity or format_version; DID NOT RAISE); T035 file 166 failed 3 passed (identity cells); fault_restoration 2 failed (DID NOT RAISE StaleFrameError). apply_to_points reaches the interpolators through evaluate_value/evaluate_gradient of the frame features. Later part of the fault test (rebuild vs control) ran clean with the raise check off (FDI 18.6 s, PLI 4.2 s)",
       "commit": "d3813ce2a22be699a3ef768a904b25a9dc19c883",
-      "review": "changes needed: sonnet, 1 major (loader message and unchanged-source checks) + 1 minor confirmed vacuous by the orchestrator (R2 fixture moves 0 of 6859 probes) fixed; 2 minor open; recheck pending"
+      "review": "pass after fixes: sonnet first review 1 major + 1 minor fixed (2a4a6636); recheck found 1 new major (T036 conflict test demanded the word supplied for declare_identity against a saved transform; my plan wording was ambiguous). User decision 2026-11-05: fix it and verify without a third review round.",
+      "fix_commit": "2a4a66368d6afee03f639bc73a06ddb8caeaa493"
     }
   ],
   "runs": {
@@ -107,10 +108,10 @@
     ]
   },
   "findings": {
-    "found": 7,
+    "found": 8,
     "rejected": 1,
     "dropped": 0,
-    "fixed": 2,
+    "fixed": 3,
     "open_minor": [
       "T037 test_stale_frame_rejected_without_state_change: origin and rotation change together; a signature that ignores one of them still passes. Add origin-only and rotation-only cells (not in the plan; can be done in T042 or later).",
       "T035 test_round_trip_world_values: compares the loaded values with the analytic field only; add a comparison with the source evaluation (optional).",
@@ -122,7 +123,8 @@
   },
   "answers": [
     "2026-11-05: OP4 reject at use; OP5 accept TypeError naming format_version; major-version note in COMPAT/ROADMAP (plan.md Answers)",
-    "2026-11-05 (wave 15, OP7): p2 rebuild cell uses the exact nodal control; P2 fit accuracy is open point OP7 (plan.md)"
+    "2026-11-05 (wave 15, OP7): p2 rebuild cell uses the exact nodal control; P2 fit accuracy is open point OP7 (plan.md)",
+    "2026-11-05 (wave 16 recheck, user decision): fix the conflict-test wording branch and verify it by the orchestrator, no third review round. plan.md conflict message rule reworded."
   ],
   "history": {
     "S1": {
@@ -728,5 +730,5 @@
       }
     }
   },
-  "status": "wave 16 fix round committed, recheck pending"
+  "status": "wave 16 done, reviewed (recheck fix verified by the orchestrator)"
 }

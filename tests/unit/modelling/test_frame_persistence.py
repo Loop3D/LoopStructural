@@ -210,8 +210,11 @@ def test_conflicting_inputs(rotation, kwargs):
         GeologicalInterpolator.from_dict(payload, **kwargs)
     _assert_format_error(excinfo, "conflict", "conflicting transform")
     message = str(excinfo.value)
-    if "local_origin" in kwargs and "declare_identity" in kwargs:
+    if "declare_identity" in kwargs:
         assert "declare_identity" in message
+        if "local_origin" not in kwargs:
+            # compared with a saved transform
+            assert "saved" in message
     else:
         assert "saved" in message
         assert "supplied" in message

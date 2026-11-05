@@ -848,7 +848,7 @@ frame. A legacy file needs an explicit choice. A frame change never gives a stal
     Use `validate_rigid_rotation` from `loop_common.geometry`. Wrap `RigidRotationError`, `LoopValueError`, `KeyError`, `TypeError` and
     `ValueError` from parsing as `InterpolatorFormatError("malformed", ...)` with `raise ... from exc`. Use `BoundingBox.from_dict` for the saved box.
     The function reads `payload` only; it never changes it or a caller object.
-    A conflict message after `conflicting transform: ` contains `saved`, `supplied` and the item name (`local_origin` or `local_rotation`); for `declare_identity` with a transform it contains `declare_identity`.
+    A conflict message after `conflicting transform: ` contains `declare_identity` (and `saved` against a saved transform) if `declare_identity` is involved; else it contains `saved`, `supplied` and the item name (`local_origin` or `local_rotation`).
 
 - [ ] T042 [P] [US3] [M] Add the frame check, local restore and frame keys to `GeologicalInterpolator`.
   - Files: `packages/loop_interpolation/src/loop_interpolation/_geological_interpolator.py`
