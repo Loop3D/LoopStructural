@@ -32,6 +32,14 @@
       "check": "scope pass; residual report test 9 passed; ruff pass",
       "commit": "0b4eef55d3e0896875495a3e783081b5a0cc6f84",
       "review": "pass (no findings; 2 optional edge notes: finite**2 overflow near 1e154, inf*0 warning in direction_cosines)"
+    },
+    {
+      "wave": 34,
+      "base": "6c7d80ecf8dabe9871156893783afbb8baacb00e",
+      "tasks": "T074,T075,T076,T077",
+      "check": "scope pass; resize+rectilinear+2d tests 78 passed; ruff pass",
+      "commit": "pending",
+      "review": "pending"
     }
   ],
   "runs": {
@@ -71,6 +79,30 @@
       {
         "model": "sonnet",
         "result": "T071 tests corrected (fix worker); 9 passed"
+      }
+    ],
+    "T074": [
+      {
+        "model": "haiku",
+        "result": "pass"
+      }
+    ],
+    "T075": [
+      {
+        "model": "sonnet",
+        "result": "pass: 29 passed"
+      }
+    ],
+    "T076": [
+      {
+        "model": "sonnet",
+        "result": "pass: 10+8+11 passed"
+      }
+    ],
+    "T077": [
+      {
+        "model": "haiku",
+        "result": "pass"
       }
     ]
   },
@@ -1285,5 +1317,9 @@
   },
   "s5_notes2": {
     "T071_T073": "Four T071 tests asserted () or no record where the T073 rule (outside_model record per family with outside points; builder keys are not families) gives outside_model records or needs family dropped_rows 0. Tests corrected to assert no unattributed record; implementation follows the task text."
+  },
+  "s5_notes3": {
+    "T076": "Builder lines _geological_feature_builder.py 520/544/604 assign support.maximum; 3D supports only (2D supports are not built by the feature builder). 2D maximum is now read-only.",
+    "T075": "Writers checked: none depends on the old product rule; set_interpolation_geometry loop still terminates."
   }
 }

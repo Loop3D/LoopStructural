@@ -1235,14 +1235,14 @@ frame. A legacy file needs an explicit choice. A frame change never gives a stal
     `build_exclusion_records(excluded_rows, families, rows_per_point=None) -> tuple[ExclusionRecord, ...]`, sorted by `(family, reason)`: one record per reason in `excluded_rows` (family = its key; subtract nothing); one `outside_model` record per family with `outside_model_point_count > 0`; one `unattributed` record per family with `dropped_rows` not `None` and `dropped_rows - outside_model_point_count * k > 0`, with `k = rows_per_point.get(family, 1)`; the count is the difference. Count 0 makes no record. An unknown reason gets `UNKNOWN_EXPLANATION`.
     Report class: append after `outside_model_points`: `physical_residuals: dict[str, ResidualSummary] = field(default_factory=dict)`, `assembled_residuals: dict[str, ResidualSummary] = field(default_factory=dict)`, `exclusions: tuple[ExclusionRecord, ...] = ()`. `to_dict` adds `"physical_residuals"`, `"assembled_residuals"` (dicts of the fields of each summary) and `"exclusions"` (list of dicts) only when not empty. `summary()` adds one line per non-empty block after the existing lines. `total_rows` and `active_families` do not change. numpy docstrings and type hints (ruff `D`, `ANN`); py39.
 
-- [ ] T074 [P] [US4] [S] Export four new names from `loop_interpolation`.
+- [x] T074 [P] [US4] [S] Export four new names from `loop_interpolation`.
   - Files: `packages/loop_interpolation/src/loop_interpolation/__init__.py`
   - Needs: T073
   - Wave: 34
   - Done when: `python -c "from loop_interpolation import ResidualSummary, ExclusionRecord, direction_cosines, build_exclusion_records"` prints no error.
   - Context: Read the file: it already imports from `._diagnostics` and has an `__all__`. Add `ResidualSummary`, `ExclusionRecord`, `direction_cosines` and `build_exclusion_records` to the same import and to `__all__`, in the style of the neighbours. Do NOT export `summarise_residuals`, `UNKNOWN_EXPLANATION` or `EXCLUSION_EXPLANATIONS`. Change no other line.
 
-- [ ] T075 [P] [US4] [M] Keep the extent in the 3D `nsteps` and `step_vector` setters and in `set_nelements`.
+- [x] T075 [P] [US4] [M] Keep the extent in the 3D `nsteps` and `step_vector` setters and in `set_nelements`.
   - Files: `packages/loop_common/src/loop_common/geometry/_structured_grid_3d.py`
   - Needs: T069, T072
   - Wave: 34
@@ -1253,7 +1253,7 @@ frame. A legacy file needs an explicit choice. A frame change never gives a stal
     `step_vector` setter: `step_vector = np.array(step_vector, dtype=float)`; `extent = self.nsteps_cells * self._step_vector`; `cells = self._cells_for_length(extent, step_vector=step_vector)`; `self._nsteps = cells + 1`; `self._step_vector = step_vector`; `self._on_geometry_change()`.
     Before the edit run `git grep -n "\.nsteps = \|\.step_vector = \|set_nelements"` and read each writer; report one that depends on the old product rule. Keep the `origin` and `maximum` setters of S1. Principle: change no public name.
 
-- [ ] T076 [P] [US4] [M] Derive the 2D counts from `nsteps` and keep the legacy `maximum`.
+- [x] T076 [P] [US4] [M] Derive the 2D counts from `nsteps` and keep the legacy `maximum`.
   - Files: `packages/loop_common/src/loop_common/geometry/_structured_grid_2d.py`
   - Needs: T069, T072
   - Wave: 34
@@ -1262,7 +1262,7 @@ frame. A legacy file needs an explicit choice. A frame change never gives a stal
     Add: `nsteps` property returning `self._nsteps`; setter `self._nsteps = np.ceil(np.asarray(nsteps)).astype(int)`; read-only properties `nsteps_cells` (`self.nsteps - 1`), `n_cell_x` (`self.nsteps[0] - 1`), `n_cell_y` (`self.nsteps[1] - 1`); read-only `maximum` returning `self.origin + self.nsteps * self.step_vector`.
     Keep a comment on `maximum`: legacy value (FR-028); it counts nodes as cells, so it is one step beyond the last node; `nodes` uses `nsteps_cells`; do not change it. Keep the NumPy integer type of the old attributes. Use numpy docstrings and type hints. Rule: the four existing `maximum` assertions pass with no change (decision Q1).
 
-- [ ] T077 [P] [US4] [S] Make the resize setters of `RectilinearGrid` raise.
+- [x] T077 [P] [US4] [S] Make the resize setters of `RectilinearGrid` raise.
   - Files: `packages/loop_common/src/loop_common/supports/_3d_rectilinear_grid.py`
   - Needs: T069, T072
   - Wave: 34
