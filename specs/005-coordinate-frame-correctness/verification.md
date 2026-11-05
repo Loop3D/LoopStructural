@@ -266,3 +266,44 @@ not run alone in a throw-away worktree at `9e7b05f7`.
 
 The times come from runs under load, so they are an upper bound. The slowest
 single cell is 0.65 s.
+
+## S3 pre-fix failures
+
+Method. HEAD was `caf0a0e7`. The two new S3 test files ran one at a time with
+`python -m pytest -p no:cacheprovider <file> -q --tb=line`, with the worktree
+`PYTHONPATH`. Before the first run, `loop_interpolation.__file__` and
+`LoopStructural.__file__` were both checked: they come from
+`LoopStructural-005-s3`. No S3 library code exists at this commit. Only the stubs
+and the two error classes exist. The persistence file gives 166 failed and
+3 passed. The copy and lifecycle file gives 43 failed and 6 passed.
+
+| Test function | Failed / total | Representative id and first error |
+|---|---|---|
+| `test_payload_declares_frame` (persistence) | 36 / 36 | `[fdi-a0-r0]`: `KeyError: 'format_version'` (missing name) |
+| `test_round_trip_world_values` | 33 / 36 | `[fdi-a0-r30]`: world error 1.9011 against a limit of 4.4e-12. 3 identity-frame cells pass (coverage, no defect) |
+| `test_local_arrays_unchanged_after_two_cycles` | 36 / 36 | `[fdi-a0-r0]`: `KeyError: 'format_version'` (missing name) |
+| `test_json_and_yaml_carry_frame` | 3 / 3 | `[fdi]`: `KeyError: 'transform'` (missing name) |
+| `test_legacy_payload_requires_choice` | 3 / 3 | `[fdi]`: `DID NOT RAISE InterpolatorFormatError` |
+| `test_legacy_with_supplied_transform` | 36 / 36 | `[fdi-a0-r0]`: `TypeError: from_dict() got an unexpected keyword argument 'local_origin'` (missing name) |
+| `test_legacy_with_identity_declaration` | 3 / 3 | `[fdi]`: `TypeError: from_dict() got an unexpected keyword argument 'declare_identity'` (missing name) |
+| `test_conflicting_inputs` | 4 / 4 | `[identity-and-origin]`: `TypeError: from_dict() got an unexpected keyword argument 'declare_identity'` (missing name) |
+| `test_malformed_metadata` | 8 / 8 | `[missing-transform]`: `TypeError: create_interpolator() got an unexpected keyword argument 'format_version'` (missing name) |
+| `test_unsupported_future_version` | 2 / 2 | `[3]`: `TypeError: create_interpolator() got an unexpected keyword argument 'format_version'` (missing name) |
+| `test_creation_call_unchanged` | 1 / 1 | `TypeError: InterpolatorFactory.from_dict() got an unexpected keyword argument 'declare_identity'` (missing name) |
+| `test_old_reader_would_name_format_version` | 1 / 1 | `StopIteration`: the payload has no `format_version` key (missing name) |
+| `test_copy_keeps_frame` (copy and lifecycle) | 36 / 36 | `[fdi-anchor0-rot0]`: `assert None is BoundingBox(...)`, the copy has no bounding box |
+| `test_stale_frame_rejected_without_state_change` | 5 / 5 | `[fdi]`: `DID NOT RAISE StaleFrameError` |
+| `test_restored_transform_is_usable` | 0 / 1 | Passes now (coverage, no defect), 1 cell |
+| `test_rebuild_in_new_frame_preserves_world_evaluation` | 0 / 5 | Pass now (coverage, no defect), 5 cells |
+| `test_fault_restoration_uses_current_frame` | 2 / 2 | `[FDI]`: `DID NOT RAISE StaleFrameError` |
+
+Behavioural records from the production path (a short script, not saved in the
+repository):
+
+| Record | Measured value |
+|---|---|
+| (1) `fdi`, `ANCHORS[3]`, rotation 30, `exact=True`: `from_dict(to_dict())` against the original, at `ANCHORS[3] + QUERY_OFFSETS` | The original gives `[3.05, 4.4]`. The loaded interpolator gives `[nan, nan]`. E = NaN (2 of 2 values are NaN) |
+| (2) `interp.copy().bounding_box is None` for `fdi` at the same cell | `True` |
+| (3) `fdi`, `ANCHORS[1]`, rotation 0, `exact=False`: `evaluate_value` before and after `bb.set_local_transform(local_origin=ANCHORS[1] + (3, -2, 1), rotation_matrix=rot_z(30.0))` | No error is raised. The value before is `[3.05, 4.4]`. The value after is `[nan, nan]`. D = NaN (the value changes from finite to NaN) |
+
+The identity-frame round-trip cells and the rebuild cells pass before S3. They are coverage, not defect evidence.

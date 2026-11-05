@@ -55,6 +55,14 @@
       "commit": "d3813ce2a22be699a3ef768a904b25a9dc19c883",
       "review": "pass after fixes: sonnet first review 1 major + 1 minor fixed (2a4a6636); recheck found 1 new major (T036 conflict test demanded the word supplied for declare_identity against a saved transform; my plan wording was ambiguous). User decision 2026-11-05: fix it and verify without a third review round.",
       "fix_commit": "2a4a66368d6afee03f639bc73a06ddb8caeaa493"
+    },
+    {
+      "wave": 17,
+      "base": "caf0a0e73e568355dbad84c11ec7e7b207e7788f",
+      "tasks": [
+        "T039"
+      ],
+      "check": "scope pass (VERIFY: only verification.md). Pre-fix totals 209 failed 9 passed over 218 cells (persistence 166/3, lifecycle 43/6). Behavioural: rotated fdi round trip gives NaN (2 of 2); copy().bounding_box is None = True; stale evaluation after set_local_transform returns NaN with no error"
     }
   ],
   "runs": {
@@ -104,6 +112,12 @@
       {
         "model": "sonnet",
         "result": "pass: test_fault_restoration_uses_current_frame (FDI, PLI)"
+      }
+    ],
+    "T039": [
+      {
+        "model": "sonnet",
+        "result": "pass: S3 pre-fix section with 17-row table and 3 behavioural records"
       }
     ]
   },
@@ -730,5 +744,5 @@
       }
     }
   },
-  "status": "wave 16 done, reviewed (recheck fix verified by the orchestrator)"
+  "status": "wave 17 done, review pending"
 }

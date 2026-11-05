@@ -802,7 +802,7 @@ frame. A legacy file needs an explicit choice. A frame change never gives a stal
     (`model_with_frame(...)`, rotation 30) and with a second fresh model (uncached control); the restored world points of the
     two agree within `tp(L, W)`. No restoration cache exists, so the test also records that fact in its docstring.
 
-- [ ] T039 [US3] [M] Record the S3 pre-fix evidence in `verification.md`.
+- [x] T039 [US3] [M] Record the S3 pre-fix evidence in `verification.md`.
   - Files: `specs/005-coordinate-frame-correctness/verification.md`
   - Needs: T036, T038
   - Wave: 17
