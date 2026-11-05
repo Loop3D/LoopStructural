@@ -38,8 +38,8 @@
       "base": "6c7d80ecf8dabe9871156893783afbb8baacb00e",
       "tasks": "T074,T075,T076,T077",
       "check": "scope pass; resize+rectilinear+2d tests 78 passed; ruff pass",
-      "commit": "pending",
-      "review": "pending"
+      "commit": "71a7948a4de89574ee28dded5b564e75970b4cf4",
+      "review": "pass (3 minor, open)"
     }
   ],
   "runs": {
@@ -107,11 +107,15 @@
     ]
   },
   "findings": {
-    "found": 4,
+    "found": 7,
     "rejected": 0,
     "dropped": 0,
     "fixed": 3,
-    "open_minor": []
+    "open_minor": [
+      "T075 _structured_grid_3d.py has a UTF-8 BOM added at line 1 (remove the 3 bytes).",
+      "T076 _structured_grid_2d.py has format-only hunks in is_inside, neighbour_global_indexes, cell_corner_indexes (noise).",
+      "T075 set_nelements passes a cell count to the nsteps setter, which takes nodes: nelements=1000 on a unit cube gives 9^3=729 cells (task text and old behaviour; not a regression)."
+    ]
   },
   "answers": "2026-11-05 (S5 start): five gaps settled in plan.md Answers (bounding box = interpolator.bounding_box; stale recipe = assign up_to_date/_up_to_date False; 2D n_elements exists; report key set is a literal; PLI add_gradient_constraints is pass so PLI gradient family reports unattributed = 2*source_points).",
   "history": {
