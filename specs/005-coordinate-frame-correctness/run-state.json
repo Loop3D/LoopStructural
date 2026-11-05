@@ -96,7 +96,9 @@
         "T045",
         "T046"
       ],
-      "check": "scope pass (VERIFY); ruff pass. Root call: test_frame_persistence.py + test_interpolator_factory.py 181 passed; test_frame_copy_and_lifecycle.py 49 passed (27.7 s); package call: test_p2_fold_registration.py + test_geological_interpolator.py 43 passed; worker: tests/unit/interpolator 346 passed. The S3 persistence file passes 169 of 169. Root and package tests run in separate calls (conftest clash). Orchestrator reverted a Black blank line that T046 added outside copy; _p2interpolator.py stays Black-unclean as on master (not touched)."
+      "check": "scope pass (VERIFY); ruff pass. Root call: test_frame_persistence.py + test_interpolator_factory.py 181 passed; test_frame_copy_and_lifecycle.py 49 passed (27.7 s); package call: test_p2_fold_registration.py + test_geological_interpolator.py 43 passed; worker: tests/unit/interpolator 346 passed. The S3 persistence file passes 169 of 169. Root and package tests run in separate calls (conftest clash). Orchestrator reverted a Black blank line that T046 added outside copy; _p2interpolator.py stays Black-unclean as on master (not touched).",
+      "commit": "4e51f4cb85fa6fa07804ff1c23bc34d177cf295d",
+      "review": "pass: sonnet, 3 minor (1 fixed by the orchestrator: stray Black blank line)"
     }
   ],
   "runs": {
@@ -198,10 +200,10 @@
     ]
   },
   "findings": {
-    "found": 13,
+    "found": 16,
     "rejected": 1,
     "dropped": 0,
-    "fixed": 3,
+    "fixed": 4,
     "open_minor": [
       "T037 test_stale_frame_rejected_without_state_change: origin and rotation change together; a signature that ignores one of them still passes. Add origin-only and rotation-only cells (not in the plan; can be done in T042 or later).",
       "T035 test_round_trip_world_values: compares the loaded values with the analytic field only; add a comparison with the source evaluation (optional).",
@@ -214,7 +216,9 @@
       "T042 frame_signature compares raw bytes: -0.0 and +0.0 origins give different signatures, so an equal box with -0.0 raises StaleFrameError. Fix: add 0.0 to the arrays before tobytes().",
       "T042 _restore_local_constraints is not atomic: a failure in a later family leaves the earlier family stored and _frame_at_data None. The loader drops the half-built interpolator, so no published state is affected (T043 wraps the error as malformed).",
       "T042 _restore_local_constraints: ragged arrays give a raw numpy ValueError (wrapped by T043); unknown keys in data are ignored without a message.",
-      "T042 __init__ sets data without _note_frame: a non-empty initial data argument is not tracked (no known caller)."
+      "T042 __init__ sets data without _note_frame: a non-empty initial data argument is not tracked (no known caller).",
+      "T043 from_dict saved path: a missing or unknown `type` raises a plain ValueError, not InterpolatorFormatError(\"malformed\") (nothing is returned, so no partial result).",
+      "T043 from_dict saved path does not validate the shape of `data` (a non-dict can raise TypeError) or `c` against the support, and up_to_date True with no c loads as solved without coefficients (same as the old creation path)."
     ]
   },
   "answers": [
@@ -827,5 +831,5 @@
       }
     }
   },
-  "status": "wave 20 done, review pending"
+  "status": "wave 20 done and reviewed"
 }

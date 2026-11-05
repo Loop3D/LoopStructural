@@ -7,7 +7,6 @@ InterpolatorFactory is the single place that knows how to:
 
 Higher-level fluent APIs should delegate construction to this module.
 """
-
 from __future__ import annotations
 
 import numpy as np
