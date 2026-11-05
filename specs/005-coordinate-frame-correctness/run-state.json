@@ -95,6 +95,16 @@
       "check": "scope pass; greps ok; consumers 60 passed; intrusions 9; api contract 2; exporters 12 + 1 pre-existing fail",
       "commit": "75c2cb3517b600036f847fbd7bf9af6e316ba583",
       "review": "pass: sonnet, no findings"
+    },
+    {
+      "wave": 30,
+      "base": "686322e9927b146c390947e562fe4388ab0549fa",
+      "tasks": [
+        "T067"
+      ],
+      "check": "scope pass; (a)-(d) recorded; no rollback worktree left",
+      "commit": "0871a904d372076bb1e1ff5f62644598c44b8ba6",
+      "review": "pass: sonnet, no findings"
     }
   ],
   "runs": {
