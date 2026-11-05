@@ -907,6 +907,8 @@ Evidence for FR-015 and SC-011. `test_centres_are_cell_midpoints_in_world` is th
 
 OP12: not reproduced. All 60 cell-centre cells passed before the fix and pass now. `_bounding_box.py` was not changed.
 
+The named test `test_each_cell_has_exactly_one_centre` of the task text was replaced, because its premise was wrong (see `## S5 pre-fix failures`, note on the one-to-one test). `test_centres_are_cell_midpoints_in_world` is a guard test, because OP12 is not reproduced: it passed before the fix and passes after the fix.
+
 ## S5 diagnostics pre-fix failures
 
 Method. The test file ran on the unfixed code, in one call: `python -m pytest tests/unit/modelling/test_diagnostics_frames.py -p no:cacheprovider -q -rf --no-header` (PowerShell, the worktree `LoopStructural-005-s5`). No misfit fix commit exists at this point. The result is 147 failed and 0 passed in 142.77 s. No test passes. The file has 147 cells.
@@ -972,3 +974,81 @@ Set-up:
 | (d) `GeologicalFeature.evaluate_gradient_misfit` and `evaluate_value_misfit` | pass | The parameters are equal on both trees (`(self)`). Only the return annotation differs: S5 has `-> 'np.ndarray'`, S4 has none. The result shape for one family (gradient data, normal data dropped, fixture `world_foliation_model`) is `(1, 4)` on both trees. The value misfit has shape `(27,)` on both. No warning on either tree. |
 | (e) `StructuredGrid` with an unchanged grid | pass | `origin`, `maximum`, `nsteps` and `step_vector` are equal on both trees (origin [0, 1, 2], nsteps [7, 8, 9], step_vector [1, 2, 0.5], maximum [6, 15, 6]). |
 | (f) 2D `maximum` assertions | pass | `pytest packages/loop_common/tests/test_2d_discrete_support.py tests/unit/interpolator/test_2d_discrete_support.py -p no:cacheprovider -q` gives 19 passed on S5 and 19 passed on S4. |
+
+## S5 post-fix results
+
+Date: 2026-11-05. The orchestrator ran the gates on commit `6b9e6467`. The `PYTHONPATH` held the worktree `LoopStructural-005-s5`, `packages/loop_common/src`, `packages/loop_interpolation/src`, `packages/loopstructural_visualisation/src` and a scratch folder with `pyevtk`. The root run and the package run were separate calls (PowerShell), because the conftest plugins clash.
+
+| Command | Result | Time |
+|---|---|---|
+| `ruff check LoopStructural packages` | All checks passed | - |
+| `pytest packages/loop_common/tests packages/loop_interpolation/tests` | 1021 passed, 47 skipped, 2 xfailed, 7 warnings | 140.08 s |
+| Root `pytest -W default::DeprecationWarning` | 2216 passed, 4 skipped, 12 warnings | 936.67 s (15 min 36 s) |
+
+No gate failed. The root run has no failure, and so the S4 failure (`test_write_vol_gocad_is_broken_for_real_bounding_box`) is closed.
+
+The pytest summary has no library warning with the text "is deprecated" that comes from S5. The log tail (`gate_s5.log`) holds only the last 12 lines of the root run, and it has no "is deprecated" line.
+
+Cells of the new test files.
+
+`tests/unit/modelling/test_diagnostics_frames.py` has 147 cells:
+
+| Test function | Cells |
+|---|---|
+| `test_misfit_leaves_state_unchanged` | 24 |
+| `test_new_misfit_methods_leaves_state_unchanged` | 24 |
+| `test_gradient_cosine_matches_analytic_direction_exact_field` | 24 |
+| `test_gradient_cosine_matches_analytic_direction_exact_field_solved_model` | 24 |
+| `test_value_residuals_are_absolute_difference` | 12 |
+| `test_value_misfit_is_normalised_by_field_range` | 12 |
+| `test_value_misfit_with_zero_range_does_not_divide` | 2 |
+| `test_misfit_with_no_rows_is_empty` | 1 |
+| `test_old_misfit_shapes_are_kept` | 4 |
+| `test_stale_misfit_is_not_rebuilt` | 4 |
+| `test_stale_misfit_warns_once_and_returns_nan` | 4 |
+| `test_stale_verification_report_does_not_rebuild` | 4 |
+| `test_report_blocks_are_separate` | 2 |
+| `test_unsolved_model_gives_no_residual_blocks` | 2 |
+| `test_exclusions_are_counted_and_explained` | 2 |
+| `test_gradient_outside_points_give_no_false_unattributed_model` | 1 |
+| `test_gradient_outside_points_with_pli_are_measured` | 1 |
+
+The sum is 147. All 147 failed before the fix (`## S5 diagnostics pre-fix failures`) and all pass now.
+
+`packages/loop_interpolation/tests/test_residual_exclusion_report.py` has 9 tests (no parametrised cells): `test_direction_cosines_pure_function`, `test_report_without_verification_is_unchanged`, `test_builder_records_keep_their_own_key`, `test_unknown_reason_keeps_its_count`, `test_unattributed_rows_are_reported`, `test_gradient_outside_points_give_no_false_unattributed`, `test_dropped_rows_none_gives_no_unattributed`, `test_surfe_style_dropped_equals_outside`, `test_residual_summary_is_importable`. All 9 pass.
+
+Measured `TOL_SOLVED` = 9e-4. The measured maximum `|1 - cos|` is 4.414e-4 on 24 cells. The margin is a factor of 2.
+
+Resize and cell-centre files: 100 cells, all pass (`## S5 resize and cell-centre results`). The 3D structured golden file changed in 78 of 611 keys (`## S5 golden review (C-004)`). The 2D golden file did not change. The earlier survey of T078 (modelling 1540 passed, interpolation 615, loop_common 406, tests/unit rest 504) is in the golden section.
+
+## S5 backend matrix
+
+| Item | Level | Evidence |
+|---|---|---|
+| FDI misfit (gradient cosines, value residuals) | mandatory | `test_diagnostics_frames.py` (FDI cells) |
+| PLI misfit (gradient cosines, value residuals) | mandatory | `test_diagnostics_frames.py` (PLI cells) |
+| Residual and exclusion report, FDI and PLI | mandatory | `test_diagnostics_frames.py`, `test_residual_exclusion_report.py` |
+| Resize of the structured grid | mandatory | `test_resize_paths.py` |
+| Resize of the 2D grid | mandatory | `test_resize_paths.py` (`test_2d_counts_are_derived`) |
+| Resize of the rectilinear grid | mandatory | `test_rectilinear_resize_is_rejected` (resize is rejected with `NotImplementedError`) |
+| P2 | not in S5 | S2 and S6 cover it |
+| Native engines | not in S5 | S2 and S6 cover them |
+| Surfe | not in S5 | S2 and S6 cover it |
+| Residual reports for fold and P2 cells | not in S5 | S2 and S6 cover them |
+
+PLI fact. PLI assembles no gradient rows. In the case with 3 outside points, its gradient family reports an `unattributed` record of 8 (`test_gradient_outside_points_with_pli_are_measured`). The FDI case gives no false `unattributed` record (`test_gradient_outside_points_give_no_false_unattributed_model`).
+
+## S5 test run time (OP2)
+
+| Item | Time |
+|---|---|
+| Root suite (orchestrator, commit `6b9e6467`) | 936.67 s (15 min 36 s). The S4 end run took 805.50 s. |
+| Package suites (orchestrator) | 140.08 s. The S4 end run took 150.24 s. |
+
+The root time is 131 s more than the S4 time. The root suite has 150 more passed tests than at the S4 end (2216 and 2066, and the one S4 failure now passes). The new files add 147 cells to the root suite, and the diagnostics cells are slow (142.77 s on the unfixed code). The two runs had different machine load, so the times do not compare exactly.
+
+## S5 open points
+
+- OP12 (cell-centre result): not reproduced. All 60 cell-centre cells passed before and after the fix. The premise of the one-to-one test was corrected. No change to `_bounding_box.py`.
+- OP16 (default shape): the default shape is kept. Two families of different length now give the shape (1, N1 + N2).
+- OP17 (parity files under `packages/loop_interpolation/tests/golden`): not changed. `git diff --stat 1c029d21 HEAD -- packages/loop_interpolation/tests/golden` prints nothing.

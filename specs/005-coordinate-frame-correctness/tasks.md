@@ -1372,7 +1372,7 @@ frame. A legacy file needs an explicit choice. A frame change never gives a stal
     (b) `to_dict()` of a report built with no verification is equal on both trees; (c) `from loop_interpolation import *` on the S4 tree gives a subset of the S5 names; (d) the signatures of `GeologicalFeature.evaluate_gradient_misfit` and `evaluate_value_misfit` are equal, and the result shape for one family is `(1, N)` on both;
     (e) with an unchanged grid, `origin`, `maximum`, `nsteps` and `step_vector` of a structured support are equal on both trees; (f) the four 2D `maximum` assertions pass on both trees. Then `git worktree remove --force <tmp>` and `git worktree prune`. Write in ASD-STE100 Simplified Technical English.
 
-- [ ] T088 [Finish] [M] Run the S5 gates and complete `verification.md` and the `ROADMAP.md` status log.
+- [x] T088 [Finish] [M] Run the S5 gates and complete `verification.md` and the `ROADMAP.md` status log.
   - Files: `specs/005-coordinate-frame-correctness/verification.md`, `ROADMAP.md`
   - Needs: T079, T085, T086, T087
   - Wave: 42

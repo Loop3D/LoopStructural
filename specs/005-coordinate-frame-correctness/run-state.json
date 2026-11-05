@@ -96,6 +96,14 @@
       "check": "scope pass; COMPAT greps ok; ROADMAP grep 1; rollback worktree removed; checks a to f pass",
       "commit": "3a278aa5d439b60350fc5d350b4eb9a02cb297d5",
       "review": "pass (no findings)"
+    },
+    {
+      "wave": 42,
+      "base": "6b9e6467ff452970cb1c7fd3a39cc209cb9e2f36",
+      "tasks": "T088",
+      "check": "gates: ruff pass; packages 1021 passed 47 skipped 2 xfailed; root 2216 passed 4 skipped (936.67s)",
+      "commit": "pending",
+      "review": "covered by the end review"
     }
   ],
   "runs": {
@@ -219,6 +227,12 @@
       {
         "model": "sonnet",
         "result": "pass: rollback commit 1c029d21 (S4 code); report has 4 fields on S4 not 5"
+      }
+    ],
+    "T088": [
+      {
+        "model": "sonnet",
+        "result": "pass (gates run by orchestrator)"
       }
     ]
   },
