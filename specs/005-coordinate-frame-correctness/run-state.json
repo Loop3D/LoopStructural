@@ -75,6 +75,15 @@
       "check": "scope pass (VERIFY); ruff and black pass; Done-when script ok (frame_payload(None,3) order and identity; payload_kind({},False) legacy_no_transform); worker scripts: payload_kind 8 branches, bounding_box_from_support round trip error 3.6e-15; persistence file still 166 failed 3 passed (loader and to_dict not done)",
       "commit": "8c9b63592058748169aae8b6afd1a888cc0da63c",
       "review": "pass: sonnet, 2 minor"
+    },
+    {
+      "wave": 19,
+      "base": "66f446abc0e8040a5a4133010fa95bfc7698bd20",
+      "tasks": [
+        "T041",
+        "T042"
+      ],
+      "check": "scope pass (VERIFY); ruff and black pass. T042: lifecycle -k stale/restored/rebuild/fault_restoration 13 passed (27 s); tests/unit/interpolator 346 passed (worker); package test_geological_interpolator.py 34 passed 6 failed = test_interpolator_json_yaml_round_trip until T043 (expected, documented). T041 done-when script ok. Persistence file 37 passed 132 failed (payload_declares 36 + old_reader 1 now pass; loader tests wait for T043)"
     }
   ],
   "runs": {
@@ -136,6 +145,18 @@
       {
         "model": "sonnet",
         "result": "pass: frame_payload, payload_kind, bounding_box_from_support; docstrings of T034 fixed"
+      }
+    ],
+    "T041": [
+      {
+        "model": "sonnet",
+        "result": "pass: resolve_frame with _malformed/_parse_transform helpers; catches both LoopValueError classes of loop_common"
+      }
+    ],
+    "T042": [
+      {
+        "model": "sonnet",
+        "result": "pass: frame_signature, _note_frame, _check_frame, _inherit_frame, _restore_local_constraints, 7 setter guards, evaluate_* and to_dict guards, from_* keywords"
       }
     ]
   },
@@ -765,5 +786,5 @@
       }
     }
   },
-  "status": "wave 18 done and reviewed"
+  "status": "wave 19 done, review pending (intermediate state: 6 existing round-trip tests fail until T043)"
 }

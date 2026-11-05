@@ -836,7 +836,7 @@ frame. A legacy file needs an explicit choice. A frame change never gives a stal
     `loop_common.geometry`. Rule: py39 syntax with `from __future__ import annotations`; numpy docstrings.
     Also fix two docstrings from T034: the module docstring must not mention stubs; `StaleFrameError` is raised when the local transform changed after constraints were stored.
 
-- [ ] T041 [P] [US3] [M] Implement `resolve_frame`.
+- [x] T041 [P] [US3] [M] Implement `resolve_frame`.
   - Files: `packages/loop_interpolation/src/loop_interpolation/_frame_persistence.py`
   - Needs: T040
   - Wave: 19
@@ -851,7 +851,7 @@ frame. A legacy file needs an explicit choice. A frame change never gives a stal
     Before it calls `bounding_box_from_support`, check that `support.nodes` has shape `(n, dimensions)` and that the origin has shape `(dimensions,)`; else raise `malformed`.
     A conflict message after `conflicting transform: ` contains `declare_identity` (and `saved` against a saved transform) if `declare_identity` is involved; else it contains `saved`, `supplied` and the item name (`local_origin` or `local_rotation`).
 
-- [ ] T042 [P] [US3] [M] Add the frame check, local restore and frame keys to `GeologicalInterpolator`.
+- [x] T042 [P] [US3] [M] Add the frame check, local restore and frame keys to `GeologicalInterpolator`.
   - Files: `packages/loop_interpolation/src/loop_interpolation/_geological_interpolator.py`
   - Needs: T040
   - Wave: 19

@@ -18,6 +18,7 @@ from ._diagnostics import (
     ConstraintFamilyDiagnostics,
     RegionCoverageDiagnostics,
 )
+from ._frame_persistence import StaleFrameError, frame_payload
 from ._interpolatortype import InterpolatorType
 from ._validation import (
     ValidationError,
@@ -92,6 +93,7 @@ class GeologicalInterpolator(BaseRepresentation, metaclass=ABCMeta):
         initialization of the base data structures.
         """
         self._data = {}
+        self._frame_at_data = None
         self.data = data  # None
         self.clean()  # init data structure
 
@@ -404,10 +406,12 @@ class GeologicalInterpolator(BaseRepresentation, metaclass=ABCMeta):
         to float64.
         """
         try:
+            self._check_frame()
             check_unsupported_combinations(self.data, "value")
             points = self._coerce_value_constraint(points).to_array()
             points = self._project_constraint_array(points)
             self.data["value"] = points.copy()
+            self._note_frame(points.shape[0])
             self.n_i = points.shape[0]
             self.up_to_date = False
         except ValidationError as e:
@@ -438,11 +442,13 @@ class GeologicalInterpolator(BaseRepresentation, metaclass=ABCMeta):
         have non-zero magnitude.
         """
         try:
+            self._check_frame()
             check_unsupported_combinations(self.data, "gradient")
             points = self._coerce_gradient_constraint(points).to_array()
             points = self._project_constraint_array(points, has_vector=True)
             self.n_g = points.shape[0]
             self.data["gradient"] = points.copy()
+            self._note_frame(points.shape[0])
             self.up_to_date = False
         except ValidationError as e:
             raise ValidationError(f"Failed to set gradient constraints: {e}") from e
@@ -471,11 +477,13 @@ class GeologicalInterpolator(BaseRepresentation, metaclass=ABCMeta):
         If no weights are provided, w = 1 is assigned to each normal constraint.
         """
         try:
+            self._check_frame()
             check_unsupported_combinations(self.data, "normal")
             points = self._coerce_gradient_constraint(points, is_normal=True).to_array()
             points = self._project_constraint_array(points, has_vector=True)
             self.n_n = points.shape[0]
             self.data["normal"] = points.copy()
+            self._note_frame(points.shape[0])
             self.up_to_date = False
         except ValidationError as e:
             raise ValidationError(f"Failed to set normal constraints: {e}") from e
@@ -504,11 +512,13 @@ class GeologicalInterpolator(BaseRepresentation, metaclass=ABCMeta):
         to each tangent constraint.
         """
         try:
+            self._check_frame()
             check_unsupported_combinations(self.data, "tangent")
             points = self._coerce_gradient_constraint(points).to_array()
             points = self._project_constraint_array(points, has_vector=True)
             self.n_t = points.shape[0]
             self.data["tangent"] = points.copy()
+            self._note_frame(points.shape[0])
             self.up_to_date = False
         except ValidationError as e:
             raise ValidationError(f"Failed to set tangent constraints: {e}") from e
@@ -534,10 +544,12 @@ class GeologicalInterpolator(BaseRepresentation, metaclass=ABCMeta):
         All values must be finite (not NaN or inf).
         """
         try:
+            self._check_frame()
             check_unsupported_combinations(self.data, "interface")
             points = self._coerce_interface_constraint(points).to_array()
             points = self._project_constraint_array(points)
             self.data["interface"] = points.copy()
+            self._note_frame(points.shape[0])
             self.up_to_date = False
         except ValidationError as e:
             raise ValidationError(f"Failed to set interface constraints: {e}") from e
@@ -565,10 +577,12 @@ class GeologicalInterpolator(BaseRepresentation, metaclass=ABCMeta):
         All values must be finite (not NaN or inf).
         """
         try:
+            self._check_frame()
             check_unsupported_combinations(self.data, "inequality")
             points = self._coerce_inequality_constraint(points).to_array()
             points = self._project_constraint_array(points)
             self.data["inequality"] = points.copy()
+            self._note_frame(points.shape[0])
             self.up_to_date = False
         except ValidationError as e:
             raise ValidationError(f"Failed to set inequality value constraints: {e}") from e
@@ -594,10 +608,12 @@ class GeologicalInterpolator(BaseRepresentation, metaclass=ABCMeta):
         of points. All values must be finite (not NaN or inf).
         """
         try:
+            self._check_frame()
             check_unsupported_combinations(self.data, "inequality_pairs")
             points = self._coerce_inequality_pair_constraint(points).to_array()
             points = self._project_constraint_array(points)
             self.data["inequality_pairs"] = points.copy()
+            self._note_frame(points.shape[0])
             self.up_to_date = False
         except ValidationError as e:
             raise ValidationError(f"Failed to set inequality pairs constraints: {e}") from e
@@ -808,6 +824,7 @@ class GeologicalInterpolator(BaseRepresentation, metaclass=ABCMeta):
         frame (a no-op if no ``bounding_box`` is set) before delegating to
         the subclass's ``_evaluate_value_local``.
         """
+        self._check_frame()
         return self._evaluate_value_local(self._project_points(locations))
 
     def evaluate_gradient(self, locations: np.ndarray):
@@ -818,6 +835,7 @@ class GeologicalInterpolator(BaseRepresentation, metaclass=ABCMeta):
         there, then reprojects the resulting vectors back to world (rotation
         only -- both are no-ops if no ``bounding_box`` is set).
         """
+        self._check_frame()
         gradient = self._evaluate_gradient_local(self._project_points(locations))
         return self._reproject_vectors(gradient)
 
@@ -878,6 +896,8 @@ class GeologicalInterpolator(BaseRepresentation, metaclass=ABCMeta):
         pass
 
     def to_dict(self):
+        self._check_frame()
+
         def _to_json_safe(value):
             if isinstance(value, np.ndarray):
                 return value.tolist()
@@ -908,14 +928,45 @@ class GeologicalInterpolator(BaseRepresentation, metaclass=ABCMeta):
                 if support_type is not None:
                     support_dict["type"] = getattr(support_type, "numerator", support_type)
             payload["support"] = support_dict
+        payload.update(frame_payload(self.bounding_box, self.dimensions))
         return payload
 
     def to_json(self, indent: int = 2) -> str:
         return json.dumps(self.to_dict(), indent=indent)
 
     @classmethod
-    def from_json(cls, json_str: str) -> GeologicalInterpolator:
-        return cls.from_dict(json.loads(json_str))
+    def from_json(
+        cls,
+        json_str: str,
+        *,
+        local_origin=None,
+        local_rotation=None,
+        declare_identity: bool = False,
+    ) -> GeologicalInterpolator:
+        """Build an interpolator from a JSON string.
+
+        Parameters
+        ----------
+        json_str : str
+            JSON text made by ``to_json``.
+        local_origin : array-like, optional
+            Local origin to use if the payload has no frame keys.
+        local_rotation : array-like, optional
+            Local rotation to use if the payload has no frame keys.
+        declare_identity : bool, optional
+            If True, state that the payload uses the identity frame.
+
+        Returns
+        -------
+        GeologicalInterpolator
+            The new interpolator.
+        """
+        return cls.from_dict(
+            json.loads(json_str),
+            local_origin=local_origin,
+            local_rotation=local_rotation,
+            declare_identity=declare_identity,
+        )
 
     def to_yaml(self, file_path: str | None = None) -> None | str:
         try:
@@ -928,19 +979,178 @@ class GeologicalInterpolator(BaseRepresentation, metaclass=ABCMeta):
             yaml.safe_dump(self.to_dict(), f, sort_keys=False, allow_unicode=True)
 
     @classmethod
-    def from_yaml(cls, yaml_str: str) -> GeologicalInterpolator:
+    def from_yaml(
+        cls,
+        yaml_str: str,
+        *,
+        local_origin=None,
+        local_rotation=None,
+        declare_identity: bool = False,
+    ) -> GeologicalInterpolator:
+        """Build an interpolator from a YAML string.
+
+        Parameters
+        ----------
+        yaml_str : str
+            YAML text made by ``to_yaml``.
+        local_origin : array-like, optional
+            Local origin to use if the payload has no frame keys.
+        local_rotation : array-like, optional
+            Local rotation to use if the payload has no frame keys.
+        declare_identity : bool, optional
+            If True, state that the payload uses the identity frame.
+
+        Returns
+        -------
+        GeologicalInterpolator
+            The new interpolator.
+        """
         try:
             import yaml
         except ImportError as exc:
             raise ImportError("PyYAML is required for YAML import: pip install pyyaml") from exc
         payload = yaml.safe_load(yaml_str)
-        return cls.from_dict(payload)
+        return cls.from_dict(
+            payload,
+            local_origin=local_origin,
+            local_rotation=local_rotation,
+            declare_identity=declare_identity,
+        )
 
     @classmethod
-    def from_dict(cls, data):
+    def from_dict(
+        cls,
+        data,
+        *,
+        local_origin=None,
+        local_rotation=None,
+        declare_identity: bool = False,
+    ):
+        """Build an interpolator from a dictionary.
+
+        Parameters
+        ----------
+        data : dict
+            Payload made by ``to_dict``.
+        local_origin : array-like, optional
+            Local origin to use if the payload has no frame keys.
+        local_rotation : array-like, optional
+            Local rotation to use if the payload has no frame keys.
+        declare_identity : bool, optional
+            If True, state that the payload uses the identity frame.
+
+        Returns
+        -------
+        GeologicalInterpolator
+            The new interpolator.
+        """
         from ._interpolator_factory import InterpolatorFactory
 
-        return InterpolatorFactory.from_dict(data.copy())
+        # Send the frame keywords only when the caller gave them.
+        frame = {}
+        if local_origin is not None:
+            frame["local_origin"] = local_origin
+        if local_rotation is not None:
+            frame["local_rotation"] = local_rotation
+        if declare_identity:
+            frame["declare_identity"] = True
+        return InterpolatorFactory.from_dict(data.copy(), **frame)
+
+    def frame_signature(self) -> tuple[bytes, bytes]:
+        """Return the bytes that identify the current local frame.
+
+        Returns
+        -------
+        tuple of bytes
+            ``(local_origin.tobytes(), local_rotation.tobytes())`` of the
+            bounding box. If there is no bounding box, the zero origin and
+            the identity rotation (float64) are used.
+        """
+        bbox = self.bounding_box
+        if bbox is None:
+            origin = np.zeros(self.dimensions, dtype=np.float64)
+            rotation = np.eye(self.dimensions, dtype=np.float64)
+        else:
+            origin = np.asarray(bbox.local_origin)
+            rotation = np.asarray(bbox.local_rotation)
+        return origin.tobytes(), rotation.tobytes()
+
+    def _note_frame(self, rows: int) -> None:
+        """Record the frame when the first constraint rows are stored.
+
+        Parameters
+        ----------
+        rows : int
+            Number of rows that were stored.
+        """
+        if rows > 0 and self._frame_at_data is None:
+            self._frame_at_data = self.frame_signature()
+
+    def _check_frame(self) -> None:
+        """Raise an error if the frame changed after constraints were stored.
+
+        Raises
+        ------
+        StaleFrameError
+            If the current frame is not equal to the frame at storage time.
+        """
+        if self._frame_at_data is not None and self.frame_signature() != self._frame_at_data:
+            raise StaleFrameError(
+                "the local transform changed after constraints were stored; "
+                "the stored constraints and coefficients use the previous frame. "
+                "Call clean() and set the constraints again, or build a new interpolator"
+            )
+
+    def _inherit_frame(self, other):
+        """Give ``other`` the bounding box of this interpolator.
+
+        Parameters
+        ----------
+        other : GeologicalInterpolator
+            The interpolator that receives the frame.
+
+        Returns
+        -------
+        GeologicalInterpolator
+            ``other``, with the same bounding box.
+        """
+        other.bounding_box = self.bounding_box
+        return other
+
+    def _restore_local_constraints(self, data: dict) -> None:
+        """Store constraint arrays that are already in the local frame.
+
+        The arrays are validated but not projected (no conversion).
+
+        Parameters
+        ----------
+        data : dict
+            Mapping from constraint name to array-like rows.
+        """
+        coercers = {
+            "value": self._coerce_value_constraint,
+            "gradient": self._coerce_gradient_constraint,
+            "normal": lambda a: self._coerce_gradient_constraint(a, is_normal=True),
+            "tangent": self._coerce_gradient_constraint,
+            "interface": self._coerce_interface_constraint,
+            "inequality": self._coerce_inequality_constraint,
+            "inequality_pairs": self._coerce_inequality_pair_constraint,
+        }
+        counters = {"value": "n_i", "gradient": "n_g", "normal": "n_n", "tangent": "n_t"}
+        total = 0
+        for key, coerce in coercers.items():
+            if key not in data or data[key] is None:
+                continue
+            arr = np.asarray(data[key], dtype=float)
+            if arr.size == 0:
+                continue
+            array = coerce(arr).to_array()
+            self.data[key] = array.copy()
+            if key in counters:
+                setattr(self, counters[key], array.shape[0])
+            total += array.shape[0]
+        self.up_to_date = False
+        self._note_frame(total)
 
     def clean(self):
         """
@@ -960,6 +1170,7 @@ class GeologicalInterpolator(BaseRepresentation, metaclass=ABCMeta):
             "inequality_pairs": np.zeros((0, 4)),
         }
         self.up_to_date = False
+        self._frame_at_data = None
         self.n_g = 0
         self.n_i = 0
         self.n_n = 0
