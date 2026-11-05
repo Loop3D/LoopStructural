@@ -916,7 +916,7 @@ frame. A legacy file needs an explicit choice. A frame change never gives a stal
 
 ## Phase 13: Stage S3 finish
 
-- [ ] T047 [P] [Finish] [S] Add the S3 migration notice to `COMPAT.md`.
+- [x] T047 [P] [Finish] [S] Add the S3 migration notice to `COMPAT.md`.
   - Files: `COMPAT.md`
   - Needs: T043
   - Wave: 21
@@ -928,7 +928,7 @@ frame. A legacy file needs an explicit choice. A frame change never gives a stal
     at the next set, evaluate or save (spec 005, stage S3). Major-version note: the release that contains S3 must be a major version, or the maintainer records another
     decision in `ROADMAP.md`". Column 3: the date of the run in the form YYYY-MM-DD. Write in ASD-STE100 Simplified Technical English.
 
-- [ ] T048 [P] [Finish] [S] Record the FR-019 decision in `ROADMAP.md`.
+- [x] T048 [P] [Finish] [S] Record the FR-019 decision in `ROADMAP.md`.
   - Files: `ROADMAP.md`
   - Needs: T043
   - Wave: 21
@@ -940,7 +940,7 @@ frame. A legacy file needs an explicit choice. A frame change never gives a stal
     must be a major version, or the maintainer records another decision here; the policy for a transform change is "reject at use" (`StaleFrameError`, decided 2026-11-05).
     Keep the style of the neighbouring subsections. Do not change other text.
 
-- [ ] T049 [Finish] [M] Record the S3 rollback check in `verification.md`.
+- [x] T049 [Finish] [M] Record the S3 rollback check in `verification.md`.
   - Files: `specs/005-coordinate-frame-correctness/verification.md`
   - Needs: T043, T044, T045, T046
   - Wave: 21

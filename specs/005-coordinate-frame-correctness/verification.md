@@ -307,3 +307,25 @@ repository):
 | (3) `fdi`, `ANCHORS[1]`, rotation 0, `exact=False`: `evaluate_value` before and after `bb.set_local_transform(local_origin=ANCHORS[1] + (3, -2, 1), rotation_matrix=rot_z(30.0))` | No error is raised. The value before is `[3.05, 4.4]`. The value after is `[nan, nan]`. D = NaN (the value changes from finite to NaN) |
 
 The identity-frame round-trip cells and the rebuild cells pass before S3. They are coverage, not defect evidence.
+
+## S3 rollback checks
+
+Method. The rollback target is the S3 start commit `91ffca4a` (the S2 head, with no S3 code). A throw-away worktree was made at this commit with `git worktree add --detach ../LoopStructural-005-s3-rollback 91ffca4a`. The file `tests/fixtures/coordinate_frames.py` was copied from the S3 worktree into it, and nothing else, because the old commit has no `r1_interpolator`. Each run used its own `PYTHONPATH`. Before each run, the script printed `loop_interpolation.__file__` and `LoopStructural.__file__`. For the old code, both paths were in `LoopStructural-005-s3-rollback`. For the S3 code, both paths were in `LoopStructural-005-s3`. The scripts were short and were not saved in the repository. The throw-away worktree was removed at the end.
+
+Check 1. The old `to_dict` saved a legacy payload (no `format_version`) for `fdi`, `pli` and `p2` with `r1_interpolator(engine, anchor, rotation, exact=True)`. The S3 code loaded each payload with `GeologicalInterpolator.from_json`. It used the `local_origin` and `local_rotation` of the S3 interpolator of the same cell, or `declare_identity=True`. The errors are the maximum absolute difference from the fresh S3 interpolator at `anchor + QUERY_OFFSETS`. The limits (SC-006) are `1e-12 * F` = 4.4e-12 for values (F = 4.4) and `1e-12 * max(1, abs(R1_GRADIENT).max())` = 1.0e-12 for gradients.
+
+| Engine | Cell | Load mode | Value error | Gradient error |
+|---|---|---|---|---|
+| `fdi` | `ANCHORS[3]`, rotation 30 | supplied transform | 0.0 | 0.0 |
+| `pli` | `ANCHORS[3]`, rotation 30 | supplied transform | 0.0 | 0.0 |
+| `p2` | `ANCHORS[3]`, rotation 30 | supplied transform | 0.0 | 0.0 |
+| `fdi` | `ANCHORS[0]`, rotation 0 | supplied transform | 0.0 | 0.0 |
+| `pli` | `ANCHORS[0]`, rotation 0 | supplied transform | 0.0 | 0.0 |
+| `p2` | `ANCHORS[0]`, rotation 0 | supplied transform | 0.0 | 0.0 |
+| `fdi` | `ANCHORS[0]`, rotation 0 | `declare_identity=True` | 0.0 | 0.0 |
+| `pli` | `ANCHORS[0]`, rotation 0 | `declare_identity=True` | 0.0 | 0.0 |
+| `p2` | `ANCHORS[0]`, rotation 0 | `declare_identity=True` | 0.0 | 0.0 |
+
+All 9 errors are inside the limits. A legacy payload loaded with no choice (no transform and no `declare_identity`) raised `InterpolatorFormatError` with reason `legacy_no_transform` for `fdi`, `pli` and `p2` (3 of 3). The text is: `legacy interpolator payload has no transform: pass local_origin and local_rotation, or declare_identity=True`.
+
+Check 2. The S3 code wrote `r1_interpolator("fdi", ANCHORS[3], 30.0, exact=True)[0].to_json()` (it has `format_version`). The old reader (`GeologicalInterpolator.from_json(text)` at `91ffca4a`) raised `TypeError` with this exact message: `InterpolatorFactory.create_interpolator() got an unexpected keyword argument 'format_version'`. The call returned no object: the result variable stayed unset (OP5). The error names `format_version`, as expected.

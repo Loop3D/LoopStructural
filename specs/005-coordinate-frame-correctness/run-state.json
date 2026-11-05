@@ -99,6 +99,16 @@
       "check": "scope pass (VERIFY); ruff pass. Root call: test_frame_persistence.py + test_interpolator_factory.py 181 passed; test_frame_copy_and_lifecycle.py 49 passed (27.7 s); package call: test_p2_fold_registration.py + test_geological_interpolator.py 43 passed; worker: tests/unit/interpolator 346 passed. The S3 persistence file passes 169 of 169. Root and package tests run in separate calls (conftest clash). Orchestrator reverted a Black blank line that T046 added outside copy; _p2interpolator.py stays Black-unclean as on master (not touched).",
       "commit": "4e51f4cb85fa6fa07804ff1c23bc34d177cf295d",
       "review": "pass: sonnet, 3 minor (1 fixed by the orchestrator: stray Black blank line)"
+    },
+    {
+      "wave": 21,
+      "base": "185333acfe9a4d69edffafbec96915002bd02a68",
+      "tasks": [
+        "T047",
+        "T048",
+        "T049"
+      ],
+      "check": "scope pass (VERIFY); COMPAT row at the end of the Migration notices table (grep 1); ROADMAP decision under Decisions (grep 1); rollback checks: 9 of 9 legacy loads exact (errors 0.0), no-choice load raises legacy_no_transform, old reader raises TypeError naming format_version and returns no object; no throw-away worktree left"
     }
   ],
   "runs": {
@@ -196,6 +206,24 @@
       {
         "model": "haiku",
         "result": "pass (orchestrator reverted a stray blank line from black)"
+      }
+    ],
+    "T047": [
+      {
+        "model": "haiku",
+        "result": "pass"
+      }
+    ],
+    "T048": [
+      {
+        "model": "haiku",
+        "result": "pass"
+      }
+    ],
+    "T049": [
+      {
+        "model": "sonnet",
+        "result": "pass: S3 rollback checks section; throw-away worktree removed"
       }
     ]
   },
@@ -831,5 +859,5 @@
       }
     }
   },
-  "status": "wave 20 done and reviewed"
+  "status": "wave 21 done, review pending"
 }

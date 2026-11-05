@@ -92,6 +92,37 @@ same-release removal. `.github/workflows/qgis-compat.yml` checks this out
 against the plugin's own test/import suite on every PR/push to `master`, not
 just at release time.
 
+### Legacy interpolator payloads (spec 005, FR-019)
+Decision date: 2026-11-03 (spec 005, decision C-003, user decision).
+
+A legacy interpolator payload has no recoverable transform. The payload
+does not store the local origin or the local rotation. The loader cannot
+find them from the data.
+
+The caller must give one of these inputs when it loads a legacy payload:
+- `local_origin` and `local_rotation`. The caller states the transform.
+- `declare_identity=True`. The caller states that the transform is the
+  identity.
+
+If the caller gives neither input, the loader raises
+`InterpolatorFormatError`.
+
+No warning-only identity fallback exists. The loader never loads a legacy
+payload with an identity transform and only a warning.
+
+New payloads carry `format_version: 2`.
+
+This is the only approved break of the public loading behaviour in
+spec 005 (FR-028).
+
+The release that contains stage S3 must be a major version. If the
+maintainer does not accept a major version, the maintainer records another
+decision in this section.
+
+The policy for a transform change, after constraints exist, is "reject at
+use" (decided 2026-11-05). The interpolator raises `StaleFrameError` at the
+next `set`, `evaluate` or `save` call. The interpolator changes no state.
+
 ## Stage sequence
 
 - [x] **Stage 0 — Planning infra.** This file, release/versioning/compat
