@@ -303,6 +303,8 @@ class GeologicalFeature(BaseFeature):
     def get_data(self, value_map: dict | None = None) -> list[ValuePoints | VectorPoints]:
         """Return the data associated with this geological feature
 
+        The locations and the vectors are in world coordinates, as the builder stores them.
+
         Parameters
         ----------
         value_map : Optional[dict], optional
@@ -326,7 +328,7 @@ class GeologicalFeature(BaseFeature):
 
             data.append(
                 VectorPoints(
-                    locations=self.model.rescale(gradient_constraints[:, :3]),
+                    locations=gradient_constraints[:, :3],
                     vectors=gradient_constraints[:, 3:6],
                     name=f'{self.name}+_gradient',
                 )
@@ -334,7 +336,7 @@ class GeologicalFeature(BaseFeature):
         if norm_constraints.shape[0] > 0:
             data.append(
                 VectorPoints(
-                    locations=self.model.rescale(norm_constraints[:, :3]),
+                    locations=norm_constraints[:, :3],
                     vectors=norm_constraints[:, 3:6],
                     name=f'{self.name}_norm',
                 )
@@ -344,9 +346,7 @@ class GeologicalFeature(BaseFeature):
                 for name, v in value_map.items():
                     data.append(
                         ValuePoints(
-                            locations=self.model.rescale(
-                                value_constraints[value_constraints == v, :3]
-                            ),
+                            locations=value_constraints[value_constraints == v, :3],
                             values=value_constraints[value_constraints == v, 3],
                             name=f"{name}_value",
                         )
@@ -354,7 +354,7 @@ class GeologicalFeature(BaseFeature):
             else:
                 data.append(
                     ValuePoints(
-                        locations=self.model.rescale(value_constraints[:, :3]),
+                        locations=value_constraints[:, :3],
                         values=value_constraints[:, 3],
                         name=f"{self.name}_value",
                     )

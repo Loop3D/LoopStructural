@@ -177,13 +177,19 @@ def _deprecated_call_cell(anchor_index, rotation, method_name, target_name, matc
     assert len(record) == 1
     assert record[0].filename == __file__
     np.testing.assert_allclose(result, expected, rtol=0, atol=tol)
-    # With inplace=True the method changes the array that the caller passes.
-    expected_inplace = points.copy()
-    getattr(model.bounding_box, target_name)(expected_inplace, inplace=True)
     passed = points.copy()
     with pytest.warns(DeprecationWarning, match=match):
-        getattr(model, method_name)(passed, inplace=True)
-    np.testing.assert_allclose(passed, expected_inplace, rtol=0, atol=tol)
+        result_inplace = getattr(model, method_name)(passed, inplace=True)
+    if method_name == "scale":
+        # scale copies the input, as before the deprecation; inplace does not change the
+        # caller array.
+        np.testing.assert_allclose(result_inplace, expected, rtol=0, atol=tol)
+        np.testing.assert_array_equal(passed, points)
+    else:
+        # With inplace=True the method changes the array that the caller passes.
+        expected_inplace = points.copy()
+        getattr(model.bounding_box, target_name)(expected_inplace, inplace=True)
+        np.testing.assert_allclose(passed, expected_inplace, rtol=0, atol=tol)
 
 
 @pytest.mark.parametrize(

@@ -1047,7 +1047,7 @@ frame. A legacy file needs an explicit choice. A frame change never gives a stal
 
 ## Phase 16: Stage S4 implementation
 
-- [ ] T057 [P] [US3] [M] Remove the extra conversion from `GeologicalFeature.get_data`.
+- [x] T057 [P] [US3] [M] Remove the extra conversion from `GeologicalFeature.get_data`.
   - Files: `LoopStructural/modelling/features/_geological_feature.py`
   - Needs: T052, T055
   - Wave: 28
@@ -1057,7 +1057,7 @@ frame. A legacy file needs an explicit choice. A frame change never gives a stal
     Add to the docstring: "The locations and the vectors are in world coordinates, as the builder stores them." Change no other line. The commented-out block at the end of the method stays.
     Do not touch the misfit methods (S5).
 
-- [ ] T058 [P] [US3] [S] Evaluate the intrusion network at the stored world points.
+- [x] T058 [P] [US3] [S] Evaluate the intrusion network at the stored world points.
   - Files: `LoopStructural/modelling/intrusions/intrusion_frame_builder.py`
   - Needs: T053, T055
   - Wave: 28
@@ -1067,7 +1067,7 @@ frame. A legacy file needs an explicit choice. A frame change never gives a stal
     In `set_intrusion_steps_parameters`: delete the assignment of `intrusion_network_data_xyz` (lines 333 to 335; no other use), and replace the statement at line 352 (the one with
     `self.model.rescale(...)`) by `intrusion_network_data.loc[:, "model_values"] = self._network_model_values(intrusion_network_data)`. Keep `pd` and `np` imports as they are.
 
-- [ ] T059 [P] [US3] [S] Deprecate `GeologicalModel.rescale` and `GeologicalModel.scale`.
+- [x] T059 [P] [US3] [S] Deprecate `GeologicalModel.rescale` and `GeologicalModel.scale`.
   - Files: `LoopStructural/modelling/core/geological_model.py`
   - Needs: T056
   - Wave: 28
@@ -1078,7 +1078,7 @@ frame. A legacy file needs an explicit choice. A frame change never gives a stal
     `return self.bounding_box.project(np.array(points).astype(float), inplace=inplace)`. Add to each docstring a `.. deprecated::` note that names the replacement and says
     "Deprecated by spec 005, stage S4". Change no other line.
 
-- [ ] T060 [P] [US3] [S] Delete the four discarded `model.rescale` calls in the exporters.
+- [x] T060 [P] [US3] [S] Delete the four discarded `model.rescale` calls in the exporters.
   - Files: `LoopStructural/export/exporters.py`
   - Needs: T056
   - Wave: 28
@@ -1086,7 +1086,7 @@ frame. A legacy file needs an explicit choice. A frame change never gives a stal
   - Context: The four statements are `model.rescale(verts)`, `model.rescale(points)`, `model.rescale(xyz)` and `model.rescale(bbox)` (near lines 92, 366, 431 and 480). Each discards its result,
     so each does nothing. Delete only these statements. Keep the argument `real_coords` in every signature (it is ignored; pre-existing). Remove a local name only if the deleted line was its last use and ruff reports it unused.
 
-- [ ] T061 [P] [US3] [S] Use the bounding box in `ModelExporter.get_block_model`.
+- [x] T061 [P] [US3] [S] Use the bounding box in `ModelExporter.get_block_model`.
   - Files: `LoopStructural/modelling/core/_model_exporter.py`
   - Needs: T056
   - Wave: 28
@@ -1094,7 +1094,7 @@ frame. A legacy file needs an explicit choice. A frame change never gives a stal
   - Context: At line 77 replace `model.rescale(model.bounding_box.cell_centres())` by `model.bounding_box.reproject(model.bounding_box.cell_centres())`. The result is the same (local to world).
     Change no other line.
 
-- [ ] T062 [P] [US3] [S] Fix the double conversion in the faulted intrusion example.
+- [x] T062 [P] [US3] [S] Fix the double conversion in the faulted intrusion example.
   - Files: `examples/3_fault/plot_1_faulted_intrusion.py`
   - Needs: T056
   - Wave: 28

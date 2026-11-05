@@ -74,7 +74,7 @@ class ModelExporter:
         grid = model.bounding_box.structured_grid(name=name)
 
         grid.cell_properties['stratigraphy'] = model.evaluate_model(
-            model.rescale(model.bounding_box.cell_centres())
+            model.bounding_box.reproject(model.bounding_box.cell_centres())
         )
         return grid, model.stratigraphic_ids()
 
