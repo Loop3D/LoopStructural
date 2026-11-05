@@ -62,7 +62,9 @@
       "tasks": [
         "T039"
       ],
-      "check": "scope pass (VERIFY: only verification.md). Pre-fix totals 209 failed 9 passed over 218 cells (persistence 166/3, lifecycle 43/6). Behavioural: rotated fdi round trip gives NaN (2 of 2); copy().bounding_box is None = True; stale evaluation after set_local_transform returns NaN with no error"
+      "check": "scope pass (VERIFY: only verification.md). Pre-fix totals 209 failed 9 passed over 218 cells (persistence 166/3, lifecycle 43/6). Behavioural: rotated fdi round trip gives NaN (2 of 2); copy().bounding_box is None = True; stale evaluation after set_local_transform returns NaN with no error",
+      "commit": "b139482282c2c49755115e145db8a8519fefd439",
+      "review": "pass: sonnet, no findings"
     }
   ],
   "runs": {
@@ -744,5 +746,5 @@
       }
     }
   },
-  "status": "wave 17 done, review pending"
+  "status": "wave 17 done and reviewed"
 }
