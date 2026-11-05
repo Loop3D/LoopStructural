@@ -108,7 +108,9 @@
         "T048",
         "T049"
       ],
-      "check": "scope pass (VERIFY); COMPAT row at the end of the Migration notices table (grep 1); ROADMAP decision under Decisions (grep 1); rollback checks: 9 of 9 legacy loads exact (errors 0.0), no-choice load raises legacy_no_transform, old reader raises TypeError naming format_version and returns no object; no throw-away worktree left"
+      "check": "scope pass (VERIFY); COMPAT row at the end of the Migration notices table (grep 1); ROADMAP decision under Decisions (grep 1); rollback checks: 9 of 9 legacy loads exact (errors 0.0), no-choice load raises legacy_no_transform, old reader raises TypeError naming format_version and returns no object; no throw-away worktree left",
+      "commit": "4cd0fd4fb5f935ceb517379776d3b1b8cdf00cda",
+      "review": "pass: sonnet, no findings"
     }
   ],
   "runs": {
@@ -859,5 +861,5 @@
       }
     }
   },
-  "status": "wave 21 done, review pending"
+  "status": "wave 21 done and reviewed; final gates running"
 }
