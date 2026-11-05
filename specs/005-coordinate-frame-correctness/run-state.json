@@ -124,6 +124,10 @@
       {
         "model": "sonnet",
         "result": "pass: 12 cells fail with AttributeError"
+      },
+      {
+        "model": "sonnet",
+        "result": "review fix pass: test_intrusion_steps_parameters_evaluate_model_at_world_points covers the production call site; mutation check fails as expected"
       }
     ],
     "T054": [
@@ -230,15 +234,18 @@
     ]
   },
   "findings": {
-    "found": 3,
+    "found": 7,
     "rejected": 0,
     "dropped": 0,
-    "fixed": 0,
+    "fixed": 1,
     "open_minor": [
       "T054 test_2d_viewer_fault_ellipse_centre_is_world: compares the patch centre to fault.fault_centre[:2] only; add a check that fault_centre[:2] is close to anchor[:2] (optional).",
       "T056 test_internal_callers_do_not_warn: importorskip(pyevtk) sits after the first checks; move it to the start or split the exporter part.",
       "T056 failing ids before the fixes (25: 24 DID NOT WARN, 1 AttributeError _network_model_values) are not in verification.md; record them in T063.",
-      "T067/T064: the plan names Loop3DView.add_data, which does not exist (Loop2DView.add_data does). COMPAT.md S4 notice repeats the name; correct in a later pass."
+      "T067/T064: the plan names Loop3DView.add_data, which does not exist (Loop2DView.add_data does). COMPAT.md S4 notice repeats the name; correct in a later pass.",
+      "T054 fault ellipse test: add check against anchor[:2] (end review, minor).",
+      "T056 test_internal_callers_do_not_warn: importorskip(pyevtk) mid-test hides the checks that ran; move the exporter part to its own test (end review, minor).",
+      "T068 verification.md S4 deprecated-call grep: line numbers of verification.md hits are stale (wave 31, minor)."
     ]
   },
   "answers": [
@@ -1180,5 +1187,11 @@
     "test_packages": "912 passed, 47 skipped, 2 xfailed in 150.24 s",
     "test_root": "1 failed, 2066 passed, 4 skipped in 805.50 s; the failure test_write_vol_gocad_is_broken_for_real_bounding_box is pre-existing (confirmed with the S4 changes stashed; two LoopValueError classes); it was skipped before because pyevtk is missing from the venv (pyevtk from a scratch dir on PYTHONPATH)",
     "format": "black --check: 3 library files dirty before S4 (exporters.py, intrusion_frame_builder.py, geological_model.py); only task hunks changed"
+  },
+  "spec_review": {
+    "range": "9b3507a9..e0b52cc5",
+    "reviewer": "opus",
+    "verdict": "changes needed: 1 major (call site of _network_model_values not covered), 2 minor",
+    "fix": "1 major fixed with a new test (mutation proved)"
   }
 }

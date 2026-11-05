@@ -253,3 +253,57 @@ def test_internal_callers_do_not_warn(tmp_path):
         exporters.write_vol(
             _Volume(), str(tmp_path / "vol"), "label", np.array([5, 5, 5]), FileFormat.VTK
         )
+
+
+@pytest.mark.parametrize("anchor_index", (1, 3))
+def test_intrusion_steps_parameters_evaluate_model_at_world_points(anchor_index):
+    """The step parameters call evaluate_model with the world points, without conversion."""
+    from types import SimpleNamespace
+
+    from LoopStructural.modelling.intrusions.intrusion_frame_builder import (
+        IntrusionFrameBuilder,
+    )
+
+    anchor = ANCHORS[anchor_index]
+    model = model_with_frame(anchor, anchor + np.array([20.0, 20.0, 20.0]), 30)
+    received = []
+
+    def spy(xyz):
+        received.append(np.array(xyz, copy=True))
+        return np.zeros(len(xyz))
+
+    # Stand-in model. It keeps the real bounding box, so a conversion would change the points.
+    stand_in = SimpleNamespace(
+        evaluate_model=spy,
+        bounding_box=model.bounding_box,
+        stratigraphic_column={
+            "s_from": {"u_from": {"id": 5, "min": 0.0, "max": 10.0}},
+            "s_to": {"u_to": {"id": 6, "min": 10.0, "max": 20.0}},
+        },
+    )
+    # Stand-ins for the series and the step structure. No point matches a unit id,
+    # so the method uses only the min and max of the unit.
+    series_from = SimpleNamespace(name="s_from", evaluate_value=lambda xyz: np.zeros(len(xyz)))
+    series_to = SimpleNamespace(name="s_to", evaluate_value=lambda xyz: np.zeros(len(xyz)))
+    structure = SimpleNamespace(evaluate_value=lambda xyz: np.zeros(len(xyz)))
+    builder = object.__new__(IntrusionFrameBuilder)
+    builder.model = stand_in
+    offsets = np.array(
+        [[1.0, 2.0, 3.0], [4.0, 5.0, 6.0], [7.0, 8.0, 9.0], [2.0, 9.0, 4.0], [8.0, 3.0, 5.0]]
+    )
+    points = anchor + offsets
+    builder.intrusion_network_data = pd.DataFrame(
+        {"X": points[:, 0], "Y": points[:, 1], "Z": points[:, 2]}
+    )
+    builder.intrusion_steps = {
+        0: {
+            "structure": [structure],
+            "unit_from": "u_from",
+            "series_from": series_from,
+            "unit_to": "u_to",
+            "series_to": series_to,
+        }
+    }
+    builder.set_intrusion_steps_parameters()
+    assert len(received) == 1
+    assert np.array_equal(received[0], points)
