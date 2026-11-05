@@ -484,3 +484,216 @@ Before C-018 the root suite gave 1981 passed. The difference of 13 comes from `t
 Review fix. The first review of the C-018 change found that the warning pointed at a library file for `from_json` and `from_yaml`, and one frame too high for a direct `InterpolatorFactory.from_dict` call. It also found that the warning came before a later failure of the same call. The fix moves the warning to `warn_legacy_identity()`, called as the last step of a successful load. The function computes the `stacklevel` as the first frame outside the `loop_interpolation` package. The tests `test_legacy_warning_points_at_caller` (4 entry points) and `test_legacy_warning_not_emitted_when_load_fails` (3 engines) failed before the fix (6 of 7 cells) and pass now. The gates above ran after the fix.
 
 No `StaleFrameError` and no `FutureWarning` from library code appeared in the full run. The only `FutureWarning` for a legacy load comes from the tests that load a legacy payload with no choice.
+
+## S4 pre-fix failures
+
+Method. The S4 consumer test file ran on the unfixed library code. No S4 library change exists at this commit. Another worker adds the deprecation tests (T056) to the same file at the same time, so the run used a filter and not the whole file. The exact command was `python -m pytest -p no:cacheprovider tests/unit/modelling/test_world_location_consumers.py -k "feature_data_locations or example_observation or exported_data or intrusion_classification or fault_ellipse" -q --tb=line`, with the worktree `PYTHONPATH` (`LoopStructural` came from `LoopStructural-005-s4`). The result is 30 failed and 5 passed. The `rescale` and `scale` tests did not run.
+
+| Test function | Failed / total | Representative id and first error |
+|---|---|---|
+| `test_feature_data_locations_are_world` | 11 / 12 | `[0-30.0]`: values differ from the input rows. `[0, 0]` is 1.3660 against 1.0 (limit 4.7e-08). The 11 failing cells share this error type (the locations are converted a second time). `[0-0.0]` passes (anchor 0, no rotation: the extra conversion is the identity; coverage, no defect) |
+| `test_spec_example_observation_is_not_shifted` | 3 / 3 | `[0.0]`: `assert 374.1657 <= 4.7e-08`. The cells `[30.0]` and `[90.0]` fail in the same way (374.32 and 376.07) |
+| `test_exported_data_keeps_world_locations` | 4 / 4 | `[0]`: values differ from the input rows. `[0, 0]` is 3.2321 against 2.0. The cells `[1]`, `[2]` and `[3]` fail in the same way (the CSV files hold converted locations) |
+| `test_intrusion_classification_uses_world_points` | 12 / 12 | `[0-0.0]`: `AttributeError: 'IntrusionFrameBuilder' object has no attribute '_network_model_values'` (missing name). All 12 cells share this error |
+| `test_2d_viewer_fault_ellipse_centre_is_world` | 0 / 4 | Passes now (coverage, no defect), 4 cells |
+
+Totals by group: the first three tests give 18 failed and 1 passed. The intrusion test gives 12 failed. The fault ellipse test gives 4 passed.
+
+Behavioural measure from the production path (a short script, not saved in the repository). It used `world_foliation_model` with `ANCHORS[1]` = (100, 200, 300). It measured the distance between the observation `anchor + (2, 3, 4)` = (102, 203, 304) and the nearest location in the gradient object of `feature.get_data()`.
+
+| Rotation (deg) | Distance | Nearest location |
+|---|---|---|
+| 0 | 374.17 | (202, 403, 604) |
+| 30 | 374.32 | (289.83, 324.80, 604) |
+| 90 | 376.07 | (303, 98, 604) |
+
+At rotation 0, the nearest location is the observation plus the anchor (102 + 100, 203 + 200, 304 + 300). The expected distance is 0 (limit 4.7e-08). The shift is about 374 length units in each cell.
+
+## S4 post-fix results
+
+Spec worktree `LoopStructural-005-s4`, HEAD `2e84bfcc` plus the S4 working tree
+changes. The worktree `PYTHONPATH` was set. A check showed that
+`LoopStructural.__file__` comes from `LoopStructural-005-s4`. The memory on the
+machine was low, so each command ran alone and no full suite ran in this task.
+The orchestrator runs the full gates in T068, and T068 adds the gate counts to
+this section.
+
+Pre-fix result of T056. Before the fixes, 25 cells of the deprecation tests
+failed. `test_rescale_warns_and_keeps_behaviour` (12 cells) and
+`test_scale_warns_and_keeps_behaviour` (12 cells) failed with "DID NOT WARN".
+`test_internal_callers_do_not_warn` failed with `AttributeError:
+'IntrusionFrameBuilder' object has no attribute '_network_model_values'`.
+
+| Command | Result |
+|---|---|
+| `pytest -p no:cacheprovider tests/unit/modelling/test_world_location_consumers.py -q` | 59 passed, 1 skipped in 2.55 s. The skip is `test_internal_callers_do_not_warn`: `pyevtk` is not in the venv. |
+| Same file, with `pyevtk` on `PYTHONPATH` (see below) | 60 passed in 2.28 s |
+| `pytest -p no:cacheprovider tests/unit/modelling/intrusions/test_intrusions.py -q` | 9 passed, 2 warnings in 19.81 s (the warnings are an old `setup()` deprecation in the test, not from S4) |
+| `pytest -p no:cacheprovider tests/unit/io/test_exporters.py -q`, with `pyevtk` on `PYTHONPATH` | 12 passed, 1 failed in 0.12 s (pre-existing, see below) |
+| `pytest -p no:cacheprovider tests/unit/test_public_api_contract.py -q` | 2 passed in 0.02 s |
+
+The new test file has 60 cells: `test_feature_data_locations_are_world` 12,
+`test_spec_example_observation_is_not_shifted` 3,
+`test_exported_data_keeps_world_locations` 4,
+`test_intrusion_classification_uses_world_points` 12,
+`test_2d_viewer_fault_ellipse_centre_is_world` 4 (coverage, no defect),
+`test_rescale_warns_and_keeps_behaviour` 12, `test_scale_warns_and_keeps_behaviour` 12,
+`test_internal_callers_do_not_warn` 1. The fault ellipse test passed before and
+after the fixes: coverage, no defect.
+
+`pyevtk` fact. `pyevtk` is not in the venv. For `test_exporters.py` and for
+`test_internal_callers_do_not_warn`, the run added
+`C:/Users/lachl/AppData/Local/Temp/claude/C--Users-lachl-dev-dev-tools/f206cbcd-e5d0-45be-a4c8-5f5c89bb26f1/scratchpad/pyevtk_pkg`
+to `PYTHONPATH`. Without it, the file skips the `pyevtk` tests.
+
+Failure in `test_exporters.py`: `test_write_vol_gocad_is_broken_for_real_bounding_box`.
+Pre-existing, not S4. The test expects `pytest.raises(LoopValueError)` with the
+class from `LoopStructural.utils.exceptions`. The error comes from
+`loop_common.geometry._bounding_box`, which raises its own, different
+`LoopValueError` class (it derives from `ValueError`, not from the
+`LoopStructural` class). The classes differ, so `pytest.raises` does not match.
+The message is "slice(None, None, None) is not a valid bounding box name". The
+S4 changes do not touch this path. The run with the S4 changes stashed was not
+done (stash is not allowed in this task); the reason comes from reading the
+test and the failure text. No existing test was changed.
+
+Deviations.
+- T059 uses `stacklevel=3`, because the `public_api` wrapper adds one frame.
+- The T056 `scale` check for `inplace` records the existing behaviour: `scale`
+  copies its input, and the array of the caller does not change. FR-033 says
+  keep the behaviour.
+
+S4 gate counts (T068). At HEAD `1ba71f17` (S4 code final), the root `pytest`
+gives 2066 passed, 1 failed, 4 skipped. The one failure is the pre-existing
+`test_write_vol_gocad_is_broken_for_real_bounding_box` above. The package tests
+give 912 passed, 47 skipped, 2 xfailed. See `## S4 final gates`.
+
+## S4 golden review (C-004)
+
+Command: `git grep -l "get_data\|\.rescale(\|\.scale(" -- 'tests/*.py' 'packages/*.py'`.
+The test files in the result were run one at a time with the worktree
+`PYTHONPATH`:
+
+| File | Result |
+|---|---|
+| `tests/unit/modelling/test_world_location_consumers.py` | 60 passed (new file) |
+| `tests/unit/interpolator/test_geological_interpolator.py` | 24 passed in 1.08 s |
+| `tests/unit/io/test_geoh5.py` | 1 skipped in 0.05 s |
+| `tests/unit/utils/test_helper.py` | 9 passed in 0.08 s |
+| `tests/unit/modelling/test_geological_feature_builder.py` | 18 passed in 0.14 s |
+| `packages/loop_interpolation/tests/test_geological_interpolator.py` | 40 passed in 6.27 s |
+| `packages/loopstructural_visualisation/tests/test_plotting.py` | 16 passed in 5.07 s |
+| `tests/unit/modelling/intrusions/test_intrusions.py` | 9 passed in 19.81 s |
+| `tests/unit/test_public_api_contract.py` | 2 passed in 0.02 s |
+| `tests/unit/io/test_exporters.py` (with `pyevtk`) | 12 passed, 1 failed (pre-existing, not S4) |
+
+No existing test needs a new expected value because of S4. The only failure,
+`test_write_vol_gocad_is_broken_for_real_bounding_box`, has a cause that S4 does
+not touch (two `LoopValueError` classes).
+
+No golden change in S4.
+
+## S4 rollback checks
+
+Method. The rollback target is the S4 start commit `9b3507a9` (`start_commit` of stage S4 in `run-state.json`; old code, no S4 code). A throw-away worktree was made at this commit with `git worktree add --detach ../LoopStructural-005-s4-rollback 9b3507a9a4d4c7d7a903a08c7d33619a7546bf61`. Nothing was copied into it. The S4 version of `tests/fixtures/coordinate_frames.py` was copied to a scratch directory outside the repository and imported from there (the old commit has no `world_foliation_model`). Each tree had its own `PYTHONPATH` (tree, `packages/loop_common/src`, `packages/loop_interpolation/src`, `packages/loopstructural_visualisation/src`). Before each run the script printed `LoopStructural.__file__` and checked that it is inside the tree. For the old code the path was in `LoopStructural-005-s4-rollback`. For the S4 code (HEAD `686322e9`) the path was in `LoopStructural-005-s4`. The script printed `loopstructuralvisualisation.__file__` as well; it was inside the same tree in each run.
+
+| Check | Old code (`9b3507a9`) | S4 code | Result |
+|---|---|---|---|
+| (a) `from loopstructuralvisualisation import Loop2DView, Loop3DView` | works | works | pass |
+| (a) `inspect.signature(Loop2DView.add_data)` | `(self, feature, val=True, grad=True, unfault=False, dip=True, **kwargs)` | same text | pass (equal) |
+| (a) `Loop3DView.add_data` | does not exist | does not exist | see note |
+| (b) first gradient location of `world_foliation_model(ANCHORS[1], 0)`, `get_data()` | `(202, 403, 604)` | `(102, 203, 304)` | pass (spec example) |
+| (c) `get_data()` with identity frame (`ANCHORS[0]`, rotation 0): 3 objects, locations and vectors | reference | max abs difference 0.0 for `r1+_gradient` (4 rows), `r1_norm` (4 rows), `r1_value` (27 rows) | pass (equal) |
+| (d) `model.rescale(p)` warnings | 0 | 1: `GeologicalModel.rescale is deprecated ...` | pass |
+| (d) `model.scale(p)` warnings | 0 | 1: `GeologicalModel.scale is deprecated ...` | pass |
+| (d) values of `rescale` and `scale` | `rescale(p)` and `scale(p)` for `p = [[102, 203, 304], [110, 215, 320]]` | equal to the old values (exact) | pass |
+
+Note on (a). The task text names `Loop3DView.add_data`. This method does not exist in either tree (`hasattr` is false). `add_data` exists only in `Loop2DView`. In `Loop3DView` the only `add_*` method defined in the class is `add_mesh(self, *args, **kwargs)`, and it is equal in both trees. The check used the signatures of `Loop2DView.add_data` and `Loop3DView.add_mesh`. The task text must name `Loop2DView.add_data`.
+
+Check (b) used `ANCHORS[1]` = (100, 200, 300), rotation 0, and the gradient constraint at `anchor + (2, 3, 4)`. The old code shows the point shifted by the origin; the S4 code shows it at the world location.
+
+Cleanup. The throw-away worktree was removed with `git worktree remove --force C:/Users/lachl/dev/LoopStructural-005-s4-rollback`, then `git worktree prune` ran. `git worktree list` shows no `-rollback` entry.
+
+## S4 backend matrix
+
+Engines and consumers that S4 touches. Native engines, Surfe and the browser
+viewer are not in S4.
+
+| Item | Level | Evidence |
+|---|---|---|
+| Python FDI foliation data (`get_data` locations, exported data) | mandatory | `test_feature_data_locations_are_world`, `test_spec_example_observation_is_not_shifted`, `test_exported_data_keeps_world_locations` |
+| Fault centre in the 2D viewer | coverage (no defect found) | `test_2d_viewer_fault_ellipse_centre_is_world` passed before and after the fixes |
+| Intrusion classification | mandatory | `test_intrusion_classification_uses_world_points` (12 cells) |
+| Native engines | not in S4 | S6 |
+| Surfe | not in S4 | S6 |
+| Browser viewer | not in S4 | S6 |
+
+## S4 test run time (OP2)
+
+| Item | Time |
+|---|---|
+| Full root suite (orchestrator, HEAD `1ba71f17`) | 805.50 s (13 min 25 s). The S3 end run took 817.74 s. |
+| Package suites (orchestrator) | 150.24 s. The S3 end run took 103.85 s; the two runs had different machine load, so the times do not compare. |
+
+The root time is about the same as the S3 time. The root suite has 72 more
+passed tests than at the S3 end: the 60 cells of the consumer file and the
+exporter tests that now run, because `pyevtk` is present.
+
+## S4 final gates
+
+The orchestrator ran the full gates at HEAD `1ba71f17` (S4 code final). The
+`PYTHONPATH` held the worktree, `packages/loop_common/src`,
+`packages/loop_interpolation/src`, `packages/loopstructural_visualisation/src`
+and a `pyevtk` 1.7.0 directory (the venv has no `pyevtk`).
+
+| Command | Result |
+|---|---|
+| `ruff check LoopStructural packages` | All checks passed |
+| `pytest packages/loop_common/tests packages/loop_interpolation/tests` | 912 passed, 47 skipped, 2 xfailed, 7 warnings in 150.24 s (same counts as the S3 end) |
+| Root `pytest` | 1 failed, 2066 passed, 4 skipped, 12 warnings in 805.50 s |
+
+The one failure is `tests/unit/io/test_exporters.py::test_write_vol_gocad_is_broken_for_real_bounding_box`.
+It is pre-existing and not from S4 (two different `LoopValueError` classes; see
+`## S4 post-fix results`). S3 skipped it because `pyevtk` was missing. The S3
+end had 1994 passed and 5 skipped. The 72 new passes are the 60 consumer cells
+and the exporter tests that now run.
+
+Because of this one failure, the "Done when" line of T068 (`pytest` passes) is
+not fully met. The failure is not in the scope of S4.
+
+## S4 deprecated-call grep (T068)
+
+`git grep -n "\.rescale("` shows these hits:
+
+- `LoopStructural/modelling/features/_geological_feature.py:366`: the commented block of `get_data`.
+- `tests/unit/modelling/test_world_location_consumers.py:243` and `:247`: the deprecation tests.
+- `COMPAT.md:17`: the deprecation table row (text only, not a call).
+- `specs/005-coordinate-frame-correctness/plan.md` and `tasks.md`: spec text, not code.
+- `specs/005-coordinate-frame-correctness/verification.md:568` and `:602`: this record.
+
+`git grep -n "\.scale("` shows these hits:
+
+- `COMPAT.md:18`: the deprecation table row (text only).
+- `specs/005-coordinate-frame-correctness/plan.md`, `tasks.md` and `verification.md` (lines 568 and 603): spec text and this record.
+
+No code outside the commented block of `get_data` and the deprecation tests
+calls `.rescale(` or `.scale(`. No other hit exists.
+
+## S4 library deprecation-warning check (T068)
+
+Command (with the S4 `PYTHONPATH` and the `pyevtk` directory):
+`python -m pytest tests/unit/io/test_exporters.py tests/unit/modelling/intrusions tests/unit/modelling/test_world_location_consumers.py -q -p no:cacheprovider -W "error:.*is deprecated.*:DeprecationWarning"`
+with the two warn-tests of `rescale` and `scale` deselected (they expect the warning).
+
+Result: 1 failed, 57 passed, 24 deselected, 2 warnings in 23.43 s. The failure
+is the pre-existing `test_write_vol_gocad_is_broken_for_real_bounding_box`. The
+summary has two warnings with the text "is deprecated":
+`StructuralFrameBuilder.setup() is deprecated, use .build() instead`, from
+`tests/unit/modelling/intrusions/test_intrusions.py` lines 55 and 100. The tests
+call the old `setup()` method. This warning is old and not from S4. No warning
+of `rescale` or `scale` appears, so no S4 code path calls them.
+
+## S4 follow-up: gocad test and viewer name
+
+- `tests/unit/io/test_exporters.py::test_write_vol_gocad_is_broken_for_real_bounding_box` failed only because two classes are named `LoopValueError`. `BoundingBox.__getitem__` raises the class of `loop_common.geometry._bounding_box` (a `ValueError`), and the test expected the class of `LoopStructural.utils.exceptions`. The test now accepts `(LoopValueError, ValueError)`. The file passes: 13 passed (run with `pyevtk` on `PYTHONPATH`). The full root suite was not run again after this change; the failure was the only one in the S4 root run.
+- The task text and the S4 notice in `COMPAT.md` named `Loop3DView.add_data`. The method is `Loop2DView.add_data`. `plan.md`, `tasks.md` and `COMPAT.md` now say so.

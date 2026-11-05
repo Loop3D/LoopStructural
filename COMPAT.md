@@ -14,6 +14,8 @@ any module-path move/rename on the 1.x line gets a re-export shim with a
 | `LoopStructural.interpolators._interpolator_builder` | `loop_interpolation._interpolator_builder` | 2026-07-29 | 2026-07-29 | extracted-package integration | 2 minor releases after first shim release | Active | Core maintainers |
 | `LoopStructural.interpolators._interpolator_factory` | `loop_interpolation._interpolator_factory` | 2026-07-29 | 2026-07-29 | extracted-package integration | 2 minor releases after first shim release | Active | Core maintainers |
 | Loading a legacy interpolator payload with no choice of the caller (the loader assumes an identity frame, now with a `FutureWarning`) | Pass `local_origin` and `local_rotation`, or `declare_identity=True`, to `from_dict`, `from_json` or `from_yaml`; at the next major release a call with no choice raises `InterpolatorFormatError` | 2026-11-05 | TBD (next release containing this warning) | spec 005 stage S3 (pull request #397) | The next major release | Active | Core maintainers |
+| `GeologicalModel.rescale(points, inplace=False)` | `GeologicalModel.bounding_box.reproject(points, inplace=False)` | 2026-11-05 | TBD (next release containing this warning) | spec 005 stage S4 | TBD (2 minor releases after the first release that warns) | Active | Core maintainers |
+| `GeologicalModel.scale(points, inplace=False)` | `GeologicalModel.bounding_box.project(points, inplace=False)` | 2026-11-05 | TBD (next release containing this warning) | spec 005 stage S4 | TBD (2 minor releases after the first release that warns) | Active | Core maintainers |
 
 ## Deprecation lifecycle
 
@@ -51,11 +53,12 @@ unchanged, but the new path is preferred going forward.
 | `create_and_add_fault(fault_center=...)` projected the centre into local coordinates; `fault_buffer`/`force_mesh_geometry` were replaced by a default 0.2 buffer; an inferred centre had z = 0; any 3x3 matrix was accepted as a rotation | `fault_center` is a world point; the requested buffer and forced geometry are kept; an inferred centre keeps its elevation; `set_local_transform` and `rotation_xy` raise `RigidRotationError` for a non-rigid matrix. Extra observations added to work around these defects are no longer necessary (spec 005) | 2026-11-04 |
 | Fold `mask_fn`, custom fold providers (`get_deformed_orientation`), `directional_regularisation` direction callables and arrays, and the P2 `steepness_wtfunc` received or returned local (computational-frame) points and directions | They receive world points and give world directions; the interpolator converts to its local frame once. With an identity frame nothing changes (spec 005, stage S2) | 2026-11-04 |
 | `copy()` returned an interpolator with no frame; a transform change after constraints existed gave a stale result | New payloads carry `format_version: 2`, `constraint_space`, `transform` and `bounding_box`. `copy()` keeps the frame. A transform change after constraints exist raises `StaleFrameError` at the next set, evaluate or save (spec 005, stage S3). Loading a legacy payload with no choice is deprecated: see the deprecation table | 2026-11-05 |
+| `GeologicalFeature.get_data()` (used by `Loop2DView.add_data` and `ModelExporter.save`) returned locations moved by the local origin and rotated a second time; the intrusion classification evaluated the model at such points | Both use the stored world locations. With an identity frame nothing changes (spec 005, stage S4) | 2026-11-05 |
 
 The following stable methods remain part of the documented public API surface after the package extraction work and are covered by the snapshot-based contract test: add_onlap_unconformity, add_unconformity, create_and_add_domain_fault, create_and_add_fault, create_and_add_fold_frame, create_and_add_folded_fold_frame, create_and_add_folded_foliation, create_and_add_foliation, evaluate_model, evaluate_model_gradient, from_file, get_fault_surfaces, get_feature_by_name, get_stratigraphic_surfaces, rescale, save, scale.
 
 ## Compatibility debt summary
 
-- Active shims: 8
+- Active shims: 10
 - Oldest active shim added: 2026-07-24
 - Next cleanup milestone: remove the interpolator-path shims after 2 minor releases from 2026-07-29

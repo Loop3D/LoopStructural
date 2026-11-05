@@ -1,4 +1,4 @@
-# Tasks: Coordinate and fault-frame correctness (stages S1, S2 and S3)
+# Tasks: Coordinate and fault-frame correctness (stages S1 to S4)
 
 **Feature**: `005-coordinate-frame-correctness` | **Plan**: [plan.md](plan.md)
 
@@ -9,16 +9,16 @@ Rules:
   Run the test and see it fail first.
 - [P] = can be done at the same time as the other [P] tasks of the same wave.
 - Written in ASD-STE100 Simplified Technical English.
-- This file covers stages S1 (T001 to T017, done), S2 (T018 to T032) and S3
-  (T033 to T050) of plan.md. Stages S4 to S6 wait for OP1 (a later
-  spec-planner run for each stage, then a new spec-tasks run).
+- This file covers stages S1 (T001 to T017, done), S2 (T018 to T032), S3
+  (T033 to T050, done) and S4 (T051 to T068) of plan.md. Stages S5 and S6 wait
+  for OP1 (a later spec-planner run for each stage, then a new spec-tasks run).
 -->
 
 ## Orchestrator notes
 
 - Run this file with the spec-orchestrator skill. It has the rules for the
   worktree, the sub agents, the checks and the commits.
-- Waves: 22 (S1: 1 to 7, done; S2: 8 to 13; S3: 14 to 22). Tiers: [S] = simple model, [M] = standard model.
+- Waves: 31 (S1: 1 to 7, done; S2: 8 to 13; S3: 14 to 22, done; S4: 23 to 31). Tiers: [S] = simple model, [M] = standard model.
 - Do not start a task with "Blocked by".
 
 ## Phase 1: Setup
@@ -966,6 +966,206 @@ frame. A legacy file needs an explicit choice. A frame change never gives a stal
     path now raises `StaleFrameError` in `pytest`, report it; do not weaken the check. Add to the status log of `ROADMAP.md` a line dated today: "Spec 005 stage S3 implemented: saved interpolator frame,
     legacy-load rule, frame-keeping copies, stale-frame check." Write in ASD-STE100 Simplified Technical English.
 
+## Phase 14: Stage S4 foundation
+
+- [x] T051 [Found] [M] Add the S4 helper `world_foliation_model` to the shared fixtures.
+  - Files: `tests/fixtures/coordinate_frames.py`
+  - Needs: T050
+  - Wave: 23
+  - Done when: `python -c "from tests.fixtures.coordinate_frames import world_foliation_model"` prints no error, and `pytest tests/unit/modelling/test_frame_persistence.py -k payload_declares` still passes.
+  - Context: Add `world_foliation_model(anchor, rotation_deg) -> tuple[GeologicalModel, GeologicalFeature, pd.DataFrame]`. Build the model with the existing
+    `model_with_frame(anchor, anchor + (8, 10, 12), rotation_deg)`. The data frame is in WORLD coordinates with the columns
+    `X, Y, Z, feature_name, val, nx, ny, nz, gx, gy, gz, w`: 27 value rows from `r1_observations(anchor)`; 4 gradient rows and 4 normal rows at
+    `anchor + (2, 3, 4)`, `(5, 6, 7)`, `(3, 8, 5)` and `(6, 4, 9)` with the unit direction `R1_GRADIENT / norm(R1_GRADIENT)`.
+    `feature_name` is `"r1"` for every row. Set `model.data` to the frame and make the feature with `model.create_and_add_foliation("r1", ...)`. Do NOT solve
+    (no call that runs the interpolation). Copy the call pattern of `create_and_add_foliation` from `tests/integration/test_interpolator.py` and
+    `tests/unit/interpolator/test_outside_box.py` (read both). Return the model, the feature and the data frame. Do not change existing helpers.
+    Rule: input data is world data; the interpolator converts it once.
+
+## Phase 15: User story 3 - display, export and classification use world locations (S4, FR-022)
+
+**Goal**: `get_data`, the data export and the intrusion classification use the stored world locations, with no second conversion. `rescale` and `scale` warn.
+**Independent test**: `pytest tests/unit/modelling/test_world_location_consumers.py`.
+
+- [x] T052 [US3] [M] Test: display and export locations are world (U3.4; FR-022).
+  - Files: `tests/unit/modelling/test_world_location_consumers.py`
+  - Needs: T051
+  - Wave: 24
+  - Done when: `pytest tests/unit/modelling/test_world_location_consumers.py -k "feature_data_locations or example_observation or exported_data"` fails before T057 (record the failing ids and the first error of each) and passes after T057.
+  - Context: New file. Use `world_foliation_model` (T051), `ANCHORS`, `ROTATIONS_DEG` and `tp(L, W)` from `tests.fixtures.coordinate_frames` (read the file for the exact names).
+    `test_feature_data_locations_are_world`: 4 anchors x 3 rotations = 12 cells. `feature.get_data()` gives a `ValuePoints` (value) and `VectorPoints` (gradient and norm).
+    Each `locations` equals the input rows within `tp(L, W)`; each `vectors` equals the input vectors within `1e-12`.
+    `test_spec_example_observation_is_not_shifted`: `ANCHORS[1]` x 3 rotations = 3 cells. The observation at `anchor + (2, 3, 4)` is at that point, and not at the point shifted by the local origin
+    (for origin `(100,200,300)` and identity rotation: `(102,203,304)` not `(202,403,604)`).
+    `test_exported_data_keeps_world_locations`: 4 anchors, rotation 30 = 4 cells. Save each object of `get_data()` with its `save` method to a CSV file in `tmp_path`
+    (read `LoopStructural/datatypes/_point.py` `save` first for the extension it supports; read only). The `x`, `y`, `z` columns equal the input within `tp(L, W)`.
+    The test file must not call `model.rescale`. Pre-fix expectation: the three tests fail by a location shifted by the local origin.
+
+- [x] T053 [US3] [M] Test: intrusion classification evaluates the model at world points (U3.5; FR-022).
+  - Files: `tests/unit/modelling/test_world_location_consumers.py`
+  - Needs: T052
+  - Wave: 25
+  - Done when: `pytest tests/unit/modelling/test_world_location_consumers.py -k intrusion_classification` fails before T058 with `AttributeError` (the method does not exist yet), then passes after T058.
+  - Context: Append to the file of T052. `test_intrusion_classification_uses_world_points`: 4 anchors x 3 rotations = 12 cells. Make a real rotated `GeologicalModel` (use `model_with_frame`).
+    Make the builder with `object.__new__(IntrusionFrameBuilder)` (import from `LoopStructural.modelling.intrusions.intrusion_frame_builder`) and set `builder.model = model`.
+    Replace `model.evaluate_model` with a spy that stores its argument and returns `np.zeros(len(xyz))`. Call `builder._network_model_values(data)` on a data frame with the world
+    columns `X, Y, Z` (at least 5 rows, taken from the anchor). The spy gets exactly the world X, Y, Z: `np.array_equal(spy_arg, data[["X","Y","Z"]].to_numpy(float))`.
+    The signature of the method under test is `_network_model_values(self, data: pd.DataFrame) -> np.ndarray`.
+
+- [x] T054 [US3] [M] Test: the 2D viewer draws the fault ellipse at the world centre (U3.5, coverage; no defect).
+  - Files: `tests/unit/modelling/test_world_location_consumers.py`
+  - Needs: T053
+  - Wave: 26
+  - Done when: `pytest tests/unit/modelling/test_world_location_consumers.py -k fault_ellipse` passes before and after the fixes (record it as "coverage, no defect").
+  - Context: Append to the file of T053. `test_2d_viewer_fault_ellipse_centre_is_world`: 2 anchors x 2 rotations (0 and 30) = 4 cells. Call `Loop2DView.add_fault_ellipse`
+    (`packages/loopstructural_visualisation/src/loopstructuralvisualisation/_2d_viewer.py`, lines 211 to 224; read it) as an unbound function with a stand-in `self` that has
+    `ax` (a Matplotlib axis from the `Agg` backend) and `model`. The patch centre equals `fault.fault_centre[:2]` within `tp(L, W)`.
+    Build the fault with `_fault(anchor, rotation, "PLI")` from `tests/unit/modelling/test_fault_frame_analytic.py` (import it; read the file for the signature).
+    Use `matplotlib.use("Agg")`. Do not change the viewer.
+
+- [x] T055 [US3] [M] Record the S4 pre-fix evidence in `verification.md`.
+  - Files: `specs/005-coordinate-frame-correctness/verification.md`
+  - Needs: T054
+  - Wave: 27
+  - Done when: `verification.md` has the heading `## S4 pre-fix failures` with the failing test ids, the first error of each, and the measured shift; no fix commit exists yet.
+  - Context: Run `pytest tests/unit/modelling/test_world_location_consumers.py` on the unfixed code (the root suite only; one call). Record: the tests that fail and their first error; the fault ellipse test
+    as "coverage, no defect". Add a behavioural measure with the production path: for `ANCHORS[1]` and each of the 3 rotations, the distance between the observation
+    `anchor + (2, 3, 4)` and the location in `feature.get_data()` (use `world_foliation_model`). Use the layout of the S3 pre-fix section of the same file. FR-031.
+    Write in ASD-STE100 Simplified Technical English.
+
+- [x] T056 [US3] [M] Test: `rescale` and `scale` warn, keep behaviour, and no library caller warns (U3.11; FR-033).
+  - Files: `tests/unit/modelling/test_world_location_consumers.py`
+  - Needs: T054
+  - Wave: 27
+  - Done when: `pytest tests/unit/modelling/test_world_location_consumers.py -k "rescale_warns or scale_warns or internal_callers"` fails before T057 to T062 (record the failing ids) and passes after T062.
+  - Context: Append to the file of T054. `test_rescale_warns_and_keeps_behaviour`: 4 anchors x 3 rotations = 12 cells. `with pytest.warns(DeprecationWarning, match="bounding_box.reproject")`:
+    `model.rescale(points)` raises one warning; the warning is attributed to the test file (`record[0].filename == __file__`); the result equals `model.bounding_box.reproject(points)` within `tp(L, W)`;
+    `inplace=True` changes the passed array like `reproject(points, inplace=True)` does. `test_scale_warns_and_keeps_behaviour`: same 12 cells with `match="bounding_box.project"` and `model.scale`
+    against `model.bounding_box.project`. `test_internal_callers_do_not_warn`: 1 cell. Use `warnings.filterwarnings("error", message=".*(rescale|scale) is deprecated.*")`; run `feature.get_data()`,
+    `ModelExporter.get_block_model(model)` and `IntrusionFrameBuilder._network_model_values(data)` with no warning. Also call the exporter functions that
+    `tests/unit/io/test_exporters.py` already calls (read it for the call pattern) with no warning. `rescale(self, points, *, inplace=False)` and `scale(self, points, *, inplace=False)` keep their signatures.
+
+## Phase 16: Stage S4 implementation
+
+- [x] T057 [P] [US3] [M] Remove the extra conversion from `GeologicalFeature.get_data`.
+  - Files: `LoopStructural/modelling/features/_geological_feature.py`
+  - Needs: T052, T055
+  - Wave: 28
+  - Done when: `pytest tests/unit/modelling/test_world_location_consumers.py -k "feature_data_locations or example_observation or exported_data"` passes.
+  - Context: In `get_data(self, value_map: dict | None = None)` (lines 303 to 372) remove the four `self.model.rescale(...)` calls. The four location arguments become
+    `gradient_constraints[:, :3]`, `norm_constraints[:, :3]`, `value_constraints[value_constraints == v, :3]` (keep this mask as it is; pre-existing defect OP10) and `value_constraints[:, :3]`.
+    Add to the docstring: "The locations and the vectors are in world coordinates, as the builder stores them." Change no other line. The commented-out block at the end of the method stays.
+    Do not touch the misfit methods (S5).
+
+- [x] T058 [P] [US3] [S] Evaluate the intrusion network at the stored world points.
+  - Files: `LoopStructural/modelling/intrusions/intrusion_frame_builder.py`
+  - Needs: T053, T055
+  - Wave: 28
+  - Done when: `pytest tests/unit/modelling/test_world_location_consumers.py -k intrusion_classification` passes.
+  - Context: Add the private method to `IntrusionFrameBuilder`, with a numpy docstring ("The id of the unit at each point. The model is evaluated at the world points; no conversion is applied."):
+    `def _network_model_values(self, data: pd.DataFrame) -> np.ndarray:` with the body `xyz = data.loc[:, ["X", "Y", "Z"]].to_numpy(dtype=float)` then `return self.model.evaluate_model(xyz)`.
+    In `set_intrusion_steps_parameters`: delete the assignment of `intrusion_network_data_xyz` (lines 333 to 335; no other use), and replace the statement at line 352 (the one with
+    `self.model.rescale(...)`) by `intrusion_network_data.loc[:, "model_values"] = self._network_model_values(intrusion_network_data)`. Keep `pd` and `np` imports as they are.
+
+- [x] T059 [P] [US3] [S] Deprecate `GeologicalModel.rescale` and `GeologicalModel.scale`.
+  - Files: `LoopStructural/modelling/core/geological_model.py`
+  - Needs: T056
+  - Wave: 28
+  - Done when: `pytest tests/unit/modelling/test_world_location_consumers.py -k "rescale_warns or scale_warns"` passes, and `pytest tests/unit/test_public_api_contract.py` passes.
+  - Context: Keep both signatures and the decorator `@public_api(tier="stable")`. `warnings` is already imported (line 649). New body of `rescale(self, points: np.ndarray, *, inplace: bool = False) -> np.ndarray`:
+    `warnings.warn("GeologicalModel.rescale is deprecated and will be removed in a future release; use model.bounding_box.reproject(points) instead", DeprecationWarning, stacklevel=2)` then
+    `return self.bounding_box.reproject(points, inplace=inplace)`. New body of `scale(...)`: the same warning with `scale` and `model.bounding_box.project(points)`, then
+    `return self.bounding_box.project(np.array(points).astype(float), inplace=inplace)`. Add to each docstring a `.. deprecated::` note that names the replacement and says
+    "Deprecated by spec 005, stage S4". Change no other line.
+
+- [x] T060 [P] [US3] [S] Delete the four discarded `model.rescale` calls in the exporters.
+  - Files: `LoopStructural/export/exporters.py`
+  - Needs: T056
+  - Wave: 28
+  - Done when: `grep -c "model.rescale" LoopStructural/export/exporters.py` prints 0, and `pytest tests/unit/io/test_exporters.py` passes.
+  - Context: The four statements are `model.rescale(verts)`, `model.rescale(points)`, `model.rescale(xyz)` and `model.rescale(bbox)` (near lines 92, 366, 431 and 480). Each discards its result,
+    so each does nothing. Delete only these statements. Keep the argument `real_coords` in every signature (it is ignored; pre-existing). Remove a local name only if the deleted line was its last use and ruff reports it unused.
+
+- [x] T061 [P] [US3] [S] Use the bounding box in `ModelExporter.get_block_model`.
+  - Files: `LoopStructural/modelling/core/_model_exporter.py`
+  - Needs: T056
+  - Wave: 28
+  - Done when: `grep -c "model.rescale" LoopStructural/modelling/core/_model_exporter.py` prints 0, and `pytest tests/unit/io/test_exporters.py` passes.
+  - Context: At line 77 replace `model.rescale(model.bounding_box.cell_centres())` by `model.bounding_box.reproject(model.bounding_box.cell_centres())`. The result is the same (local to world).
+    Change no other line.
+
+- [x] T062 [P] [US3] [S] Fix the double conversion in the faulted intrusion example.
+  - Files: `examples/3_fault/plot_1_faulted_intrusion.py`
+  - Needs: T056
+  - Wave: 28
+  - Done when: `grep -c "rescale" examples/3_fault/plot_1_faulted_intrusion.py` prints 0, and `python -m py_compile examples/3_fault/plot_1_faulted_intrusion.py` passes.
+  - Context: Two `viewer.add_points` calls (near lines 71 and 100) wrap the world data of the model in `model.rescale(..., inplace=False)`. Pass
+    `model.data[model.data["feature_name"] == "strati"][["X", "Y", "Z"]].values` directly (world points) and delete the `model.rescale(` wrapper with its `inplace=False`. Keep the other arguments of each call.
+    Do not run the example (it needs the viewer).
+
+## Phase 17: Stage S4 finish
+
+- [x] T063 [Finish] [M] Review the existing tests for golden changes and record the S4 post-fix results.
+  - Files: `specs/005-coordinate-frame-correctness/verification.md`
+  - Needs: T057, T058, T059, T060, T061, T062
+  - Wave: 29
+  - Done when: `verification.md` has the headings `## S4 post-fix results` and `## S4 golden review (C-004)`, and `pytest tests/unit/modelling/test_world_location_consumers.py` passes (all cells).
+  - Context: Run, in separate calls: the new test file; `tests/unit/modelling/intrusions/test_intrusions.py`; `tests/unit/io/test_exporters.py`; `tests/unit/test_public_api_contract.py`.
+    Record commands, counts and times. Under the golden review list each existing test whose expected value must change, with the defect and its effect (C-004), or write
+    "No golden change in S4." Do not change an existing test; report one that fails. Record the new cells (count) and that the fault ellipse test is "coverage, no defect". Write in ASD-STE100 Simplified Technical English.
+
+- [x] T064 [P] [Finish] [M] Record the S4 notices in `COMPAT.md`.
+  - Files: `COMPAT.md`
+  - Needs: T057, T059
+  - Wave: 29
+  - Done when: `grep -c "GeologicalModel.rescale(points, inplace=False)" COMPAT.md` prints at least 1 and `grep -c "GeologicalModel.scale(points, inplace=False)" COMPAT.md` prints at least 1.
+  - Context: Read `COMPAT.md` first, the S1 to S3 notices and the deprecation table, and copy their layout. (1) Add a migration notice: `GeologicalFeature.get_data()` (used by `Loop2DView.add_data` and
+    `ModelExporter.save`) returned locations moved by the local origin and rotated a second time, and the intrusion classification evaluated the model at such points. Both now use the stored world locations.
+    With an identity frame nothing changes. (2) Add two rows to the deprecation table. `rescale`: old path `GeologicalModel.rescale(points, inplace=False)`; new path
+    `GeologicalModel.bounding_box.reproject(points, inplace=False)`. `scale`: old path `GeologicalModel.scale(points, inplace=False)`; new path `GeologicalModel.bounding_box.project(points, inplace=False)`.
+    Both: shim added `2026-11-05`; first released "TBD (next release containing this warning)"; introduced by the S4 commit; earliest removal "TBD (2 minor releases after the first release that warns)"; removed empty; status "Active"; owner "Core maintainers".
+    (3) Raise the count of "Active shims" by 2. Do not change other text.
+
+- [x] T065 [P] [Finish] [S] Record the S4 deprecation decision in `ROADMAP.md`.
+  - Files: `ROADMAP.md`
+  - Needs: T059
+  - Wave: 29
+  - Done when: `grep -c "Deprecation of GeologicalModel.rescale and scale (spec 005, S4)" ROADMAP.md` prints 1.
+  - Context: Add a new `###` subsection as the last one of `## Decisions`, directly before `## Stage sequence`. Heading: `### Deprecation of GeologicalModel.rescale and scale (spec 005, S4)`.
+    Body (ASD-STE100): the decision (2026-11-05, C-013 and C-016); `rescale` (local to world) and `scale` (world to local) keep their behaviour and signature and emit a `DeprecationWarning`
+    that names `bounding_box.reproject` and `bounding_box.project`; this replaces the status-log entry "2c-3" that said both stay as signature-stable pass-throughs; the tier stays "stable" until removal;
+    removal not before 2 minor releases after the first release that warns, and not before known callers (the QGIS plugin) have moved; the library no longer calls them. Keep the style of the neighbouring subsections.
+    Do not change other text.
+
+- [x] T066 [P] [Finish] [S] Mark the two methods as deprecated in `API.md`.
+  - Files: `API.md`
+  - Needs: T059
+  - Wave: 29
+  - Done when: `grep -c "deprecated, use .bounding_box.reproject" API.md` prints 1.
+  - Context: Line 122 lists the geometry methods of `GeologicalModel`. Change that entry to read: "Geometry: `scale` (deprecated, use `bounding_box.project`), `rescale` (deprecated, use `bounding_box.reproject`),
+    `regular_grid`, `bounding_box` (property)". Keep the line format of its neighbours. Do not change other text.
+
+- [x] T067 [Finish] [M] Record the S4 rollback check in `verification.md`.
+  - Files: `specs/005-coordinate-frame-correctness/verification.md`
+  - Needs: T063
+  - Wave: 30
+  - Done when: `verification.md` has the heading `## S4 rollback checks` with the results of the 4 checks below, and `git worktree list` shows no throw-away worktree.
+  - Context: Use a throw-away worktree at the S4 start commit (the `start_commit` of stage S4 in `run-state.json`; if the key is missing, use the parent of the first S4 code commit):
+    `git worktree add --detach ../LoopStructural-005-s4-rollback <commit>`, with its own `PYTHONPATH` (check `LoopStructural.__file__`). Checks: (a) `from loopstructuralvisualisation import Loop2DView, Loop3DView` works and
+    `inspect.signature(Loop2DView.add_data)` is equal before and after; (b) on the old code `get_data()` shows the spec example at `(202,403,604)`, on the S4 code at `(102,203,304)`; (c) with an identity frame the two codes
+    give the same `get_data()` output; (d) on the old code `model.rescale(p)` and `model.scale(p)` give no warning, on the S4 code each gives one, and the values are equal.
+    Then `git worktree remove --force <tmp>` and `git worktree prune`.
+
+- [x] T068 [Finish] [M] Run the S4 gates and complete `verification.md` and the `ROADMAP.md` status log.
+  - Files: `specs/005-coordinate-frame-correctness/verification.md`, `ROADMAP.md`
+  - Needs: T064, T065, T066, T067
+  - Wave: 31
+  - Done when: `ruff check LoopStructural packages && pytest` and `pytest packages/loop_common/tests packages/loop_interpolation/tests` pass, `verification.md` has the S4 sections named below, and `ROADMAP.md` has one new status-log line for S4.
+  - Context: Run the root `pytest` and the package tests in separate calls (the conftest plugins clash) with the worktree `PYTHONPATH`. Add to `verification.md`: `## S4 backend matrix` (Python FDI foliation data: mandatory; fault centre in the 2D viewer: coverage;
+    intrusion classification: mandatory; native, Surfe, browser: not in S4), `## S4 test run time (OP2)`, and the result of `git grep -n "\.rescale("` (it must show only the commented block of `get_data` and the tests of the deprecation; report any other hit).
+    Add the S4 gate counts to the post-fix section. Add to the status log of `ROADMAP.md` a line dated today: "Spec 005 stage S4 implemented: display, export and intrusion classification use stored world locations; rescale and scale deprecated."
+    Report any library warning with the text "is deprecated" in the pytest summary. Write in ASD-STE100 Simplified Technical English.
+
 ## Wave table
 
 | Wave | Tasks | Tier [S] | Tier [M] |
@@ -992,10 +1192,19 @@ frame. A legacy file needs an explicit choice. A frame change never gives a stal
 | 20 | T043, T044, T045, T046 | 3 | 1 |
 | 21 | T047, T048, T049 | 2 | 1 |
 | 22 | T050 | 0 | 1 |
+| 23 | T051 | 0 | 1 |
+| 24 | T052 | 0 | 1 |
+| 25 | T053 | 0 | 1 |
+| 26 | T054 | 0 | 1 |
+| 27 | T055, T056 | 0 | 2 |
+| 28 | T057, T058, T059, T060, T061, T062 | 5 | 1 |
+| 29 | T063, T064, T065, T066 | 2 | 2 |
+| 30 | T067 | 0 | 1 |
+| 31 | T068 | 0 | 1 |
 
 ## Critical path
 
-T003 -> T004 -> T005 -> T010 -> T013 -> T015 -> T017 -> T018 -> T020 -> T023 -> T025 -> T030 -> T031 -> T033 -> T035 -> T036 -> T039 -> T040 -> T041 -> T043 -> T047 -> T050
+T003 -> T004 -> T005 -> T010 -> T013 -> T015 -> T017 -> T018 -> T020 -> T023 -> T025 -> T030 -> T031 -> T033 -> T035 -> T036 -> T039 -> T040 -> T041 -> T043 -> T047 -> T050 -> T051 -> T052 -> T053 -> T054 -> T055 -> T057 -> T063 -> T067 -> T068
 
 ## Dependencies
 
@@ -1023,4 +1232,11 @@ T003 -> T004 -> T005 -> T010 -> T013 -> T015 -> T017 -> T018 -> T020 -> T023 -> 
   T043 (factory loader) needs T041 and T042; T044, T045, T046 (copies) need T042.
 - Finish: T047 (`COMPAT.md`), T048 (`ROADMAP.md`) and T049 (rollback check) after
   the code; T050 (gates, `verification.md`, ROADMAP status) last.
-- Stages S4 to S6 have no tasks yet (OP1 in plan.md).
+- S4 starts after T050. Foundation: T051 (fixture helper). Tests, one file in a chain:
+  T052 (display and export), T053 (intrusion), T054 (2D viewer); T055 (pre-fix
+  evidence) and T056 (deprecation tests) after T054.
+- S4 code, wave 28, separate files: T057 (`get_data`), T058 (intrusion helper), T059
+  (`rescale` and `scale` warn), T060 and T061 (exporters), T062 (example).
+- Finish: T063 (golden review) after the code; T064 to T066 (`COMPAT.md`,
+  `ROADMAP.md`, `API.md`); T067 (rollback check); T068 (gates) last.
+- Stages S5 and S6 have no tasks yet (OP1 in plan.md).

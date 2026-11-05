@@ -1107,6 +1107,10 @@ class GeologicalModel:
         Convert from model scale to real world scale - in the future this
         should also do transformations?
 
+        .. deprecated::
+            Use ``model.bounding_box.reproject`` instead.
+            Deprecated by spec 005, stage S4.
+
         Parameters
         ----------
         points : np.array((N,3),dtype=double)
@@ -1118,7 +1122,12 @@ class GeologicalModel:
         points : np.array((N,3),dtype=double)
 
         """
-
+        # stacklevel 3 skips the public_api wrapper frame
+        warnings.warn(
+            "GeologicalModel.rescale is deprecated and will be removed in a future release; use model.bounding_box.reproject(points) instead",
+            DeprecationWarning,
+            stacklevel=3,
+        )
         return self.bounding_box.reproject(points, inplace=inplace)
 
     # TODO move scale to bounding box/transformer
@@ -1126,6 +1135,10 @@ class GeologicalModel:
     def scale(self, points: np.ndarray, *, inplace: bool = False) -> np.ndarray:
         """Take points in UTM coordinates and reproject
         into scaled model space
+
+        .. deprecated::
+            Use ``model.bounding_box.project`` instead.
+            Deprecated by spec 005, stage S4.
 
         Parameters
         ----------
@@ -1138,6 +1151,12 @@ class GeologicalModel:
         points : np.a::rray((N,3),dtype=double)
 
         """
+        # stacklevel 3 skips the public_api wrapper frame
+        warnings.warn(
+            "GeologicalModel.scale is deprecated and will be removed in a future release; use model.bounding_box.project(points) instead",
+            DeprecationWarning,
+            stacklevel=3,
+        )
         return self.bounding_box.project(np.array(points).astype(float), inplace=inplace)
 
     @public_api(tier="stable")

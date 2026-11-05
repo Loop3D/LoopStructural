@@ -126,6 +126,20 @@ The policy for a transform change, after constraints exist, is "reject at
 use" (decided 2026-11-05). The interpolator raises `StaleFrameError` at the
 next `set`, `evaluate` or `save` call. The interpolator changes no state.
 
+### Deprecation of GeologicalModel.rescale and scale (spec 005, S4)
+Decision date: 2026-11-05 (spec 005, decisions C-013 and C-016).
+
+`rescale` (local to world) and `scale` (world to local) keep their behaviour
+and their signature. Each one emits a `DeprecationWarning`. The warning names
+`bounding_box.reproject` and `bounding_box.project`.
+
+This replaces the status-log entry "2c-3". That entry said that both methods
+stay as signature-stable pass-throughs. The tier stays "stable" until removal.
+
+Removal is not before 2 minor releases after the first release that warns.
+Removal is also not before the known callers (the QGIS plugin) have moved.
+The library no longer calls either method.
+
 ## Stage sequence
 
 - [x] **Stage 0 — Planning infra.** This file, release/versioning/compat
@@ -866,3 +880,4 @@ next `set`, `evaluate` or `save` call. The interpolator changes no state.
   release-please/PyPI/ruff wiring. `tests/unit`: 695 passed/4 skipped, zero
   regressions.
 - **2026-11-05:** Spec 005 stage S3 implemented: saved interpolator frame, legacy-load rule, frame-keeping copies, stale-frame check. Gate result: root pytest 1978 passed, 5 skipped.
+- **2026-11-05:** Spec 005 stage S4 implemented: display, export and intrusion classification use stored world locations; rescale and scale deprecated.
