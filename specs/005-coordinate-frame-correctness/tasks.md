@@ -1333,7 +1333,7 @@ frame. A legacy file needs an explicit choice. A frame change never gives a stal
     `evaluate_gradient_misfit()` (old name, new body): same code; one row per non-empty family: `(1, N)` for one family, `(2, N)` for two of equal length, `(1, N1 + N2)` for two of different length, `(0,)` with no rows; stale gives that shape filled with NaN. `evaluate_value_misfit()`: stale gives NaN `(N,)`; else the residuals divided by `self.max() - self.min()` only when the range is finite and > 0, else unnormalised.
     Remove every `self.builder.up_to_date()` call and the in-place `grad /= norm` from these methods. Never write to a stored array, weight, coefficient or flag. numpy docstrings (state that the gradient value is a cosine in world coordinates; see COMPAT.md) and type hints. Read the whole old methods first (about lines 240 to 300).
 
-- [ ] T084 [US4] [M] Add `GeologicalFeature.verification_report` with physical and assembled residuals and exclusions.
+- [x] T084 [US4] [M] Add `GeologicalFeature.verification_report` with physical and assembled residuals and exclusions.
   - Files: `LoopStructural/modelling/features/_geological_feature.py`
   - Needs: T083
   - Wave: 40

@@ -80,6 +80,14 @@
       "check": "scope pass; 111 passed, 36 deselected; ruff pass",
       "commit": "e97859bbb12fdc1d566cf5148e961b0874946c62",
       "review": "pass (1 minor, open)"
+    },
+    {
+      "wave": 40,
+      "base": "b8230d904fedce4ec53307afeeb788b039bbe43e",
+      "tasks": "T084",
+      "check": "scope pass; diagnostics+scalar_field 154 passed; ruff pass",
+      "commit": "pending",
+      "review": "pending"
     }
   ],
   "runs": {
@@ -179,6 +187,12 @@
       {
         "model": "sonnet",
         "result": "pass: 111 passed"
+      }
+    ],
+    "T084": [
+      {
+        "model": "sonnet",
+        "result": "pass: 147 + 7 passed"
       }
     ]
   },

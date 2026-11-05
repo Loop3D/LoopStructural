@@ -6,10 +6,18 @@ models such as foliations, fault planes, and fold rotation angles.
 
 from __future__ import annotations
 
+import dataclasses
 import warnings
 
 import numpy as np
-from loop_interpolation._diagnostics import direction_cosines
+from loop_interpolation import DiscreteInterpolator
+from loop_interpolation._diagnostics import (
+    ConstraintDiagnosticsReport,
+    ResidualSummary,
+    build_exclusion_records,
+    direction_cosines,
+    summarise_residuals,
+)
 
 from LoopStructural.utils.maths import gradient_from_tetrahedron, regular_tetraherdron_for_points
 
@@ -326,6 +334,66 @@ class GeologicalFeature(BaseFeature):
         if self.interpolator.bounding_box is not None:
             positions = self.interpolator.bounding_box.reproject(positions)
         return np.abs(rows[:, 3] - self.evaluate_value(positions))
+
+    def _physical_residual_summaries(self) -> dict[str, ResidualSummary]:
+        """Summarise the physical residuals of the value, gradient and normal data.
+
+        The method does not check if the model is stale. The caller must check.
+
+        Returns
+        -------
+        dict of str to ResidualSummary
+            One summary for each non-empty family. The value summary uses field
+            units. The gradient and normal summaries use degrees.
+        """
+        summaries: dict[str, ResidualSummary] = {}
+        counts = self._constraint_row_counts()
+        if counts[2] > 0:
+            summaries["value"] = summarise_residuals(
+                "value", "physical", "field", self._value_residuals_fresh()
+            )
+        # The cosine list has one array for each non-empty family, in this order.
+        names = [name for name, count in zip(("gradient", "normal"), counts[:2]) if count > 0]
+        for name, cosine in zip(names, self._gradient_cosines_fresh()):
+            angles = np.degrees(np.arccos(np.clip(cosine, -1, 1)))
+            summaries[name] = summarise_residuals(name, "physical", "degree", angles)
+        return summaries
+
+    def verification_report(self) -> ConstraintDiagnosticsReport:
+        """Build a report of the constraints, residuals and exclusions.
+
+        The method returns a new object. It does not store the report, build the
+        model or change the state of the model.
+
+        Returns
+        -------
+        ConstraintDiagnosticsReport
+            The report. The residual blocks are empty if the model is not
+            solved. On a stale model the method warns, leaves the residual
+            blocks empty and still gives the exclusions.
+        """
+        base = self.interpolator._build_constraint_diagnostics_report()
+        physical: dict[str, ResidualSummary] = {}
+        assembled: dict[str, ResidualSummary] = {}
+        reason = self._stale_reason()
+        if reason is not None:
+            warnings.warn(reason, UserWarning, stacklevel=2)
+        elif getattr(self.interpolator, "c", None) is not None:
+            physical = self._physical_residual_summaries()
+            if hasattr(self.interpolator, "calculate_residual_for_constraints"):
+                residuals = self.interpolator.calculate_residual_for_constraints()
+                for name, residual in residuals.items():
+                    assembled[name] = summarise_residuals(name, "assembled", "assembled", residual)
+        excluded = getattr(self.builder, "excluded_rows", {}) if self.builder is not None else {}
+        rows_per_point = (
+            {"gradient": 2} if isinstance(self.interpolator, DiscreteInterpolator) else None
+        )
+        return dataclasses.replace(
+            base,
+            physical_residuals=physical,
+            assembled_residuals=assembled,
+            exclusions=build_exclusion_records(excluded, base.families, rows_per_point),
+        )
 
     def evaluate_gradient_cosines(self) -> np.ndarray:
         """Compute the cosine between the model gradient and the gradient data.
