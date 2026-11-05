@@ -906,3 +906,50 @@ All drifts are inside the bound. The pre-fix drift was G1 [1, 0, 3], G2 [0.5, 0.
 Evidence for FR-015 and SC-011. `test_centres_are_cell_midpoints_in_world` is the evidence. Each cell of the exported grid (`structured_grid()`) has one centre, as the mean of its 8 corner nodes, and the centres are all different. `test_local_coordinates_grid_associates_own_centres` is a containment check: each cell centre falls inside the `structured_grid(local_coordinates=True)` grid (no -1 from `cell_index_at`). That grid is the axis-aligned enclosure, so a one-to-one count against it does not hold, and the test does not claim it. `test_centres_round_trip_and_index_own_cells` is a consistency check on the cell grid of the box itself, built from the same linspace as the centres. It is not evidence for FR-015 or SC-011. `test_centres_match_exported_cells` and `test_centres_inside_box` are coverage.
 
 OP12: not reproduced. All 60 cell-centre cells passed before the fix and pass now. `_bounding_box.py` was not changed.
+
+## S5 diagnostics pre-fix failures
+
+Method. The test file ran on the unfixed code, in one call: `python -m pytest tests/unit/modelling/test_diagnostics_frames.py -p no:cacheprovider -q -rf --no-header` (PowerShell, the worktree `LoopStructural-005-s5`). No misfit fix commit exists at this point. The result is 147 failed and 0 passed in 142.77 s. No test passes. The file has 147 cells.
+
+Test file (`test_diagnostics_frames.py`): 147 failed, 0 passed.
+
+| Test function | Failed / total | First error |
+|---|---|---|
+| `test_misfit_leaves_state_unchanged` | 24 / 24 | `AssertionError: data['gradient'] changed`. The old methods leave a different array in `data["gradient"]` after the call, in all 24 cells (3 rotations x 4 anchors x 2 engines) |
+| `test_new_misfit_methods_leaves_state_unchanged` | 24 / 24 | `AttributeError`: `GeologicalFeature` has no attribute `evaluate_gradient_cosines` |
+| `test_gradient_cosine_matches_analytic_direction_exact_field` | 24 / 24 | `assert np.all(np.abs(1.0 - old) <= 1e-10)` is False. The old method gives shape (2, 4) from one column and local vectors. See the values below |
+| `test_gradient_cosine_matches_analytic_direction_exact_field_solved_model` | 24 / 24 | `AttributeError`: no attribute `evaluate_gradient_cosines` |
+| `test_value_residuals_are_absolute_difference` | 12 / 12 | `AttributeError`: no attribute `evaluate_value_residuals` |
+| `test_value_misfit_is_normalised_by_field_range` | 12 / 12 | `AttributeError`: no attribute `evaluate_value_residuals` |
+| `test_value_misfit_with_zero_range_does_not_divide` | 2 / 2 | `[equal]`: `RuntimeWarning: divide by zero encountered in divide`. `[nan]`: `assert not np.any(np.isnan(result))` fails, the result has NaN |
+| `test_misfit_with_no_rows_is_empty` | 1 / 1 | `AttributeError`: no attribute `evaluate_gradient_cosines` |
+| `test_old_misfit_shapes_are_kept` | 4 / 4 | `[gradient-only]`, `[normal-only]`, `[equal-families]`: `AttributeError`, no attribute `evaluate_gradient_cosines`. `[different-families]`: `ValueError`, inhomogeneous shape (the old method gives two lists of different length) |
+| `test_stale_misfit_is_not_rebuilt` | 4 / 4 | `[FDI-interpolator]`, `[PLI-interpolator]`: `AssertionError: the call rebuilt the interpolator` (`assert True == False`). `[FDI-builder]`, `[PLI-builder]`: `AssertionError: the call rebuilt the builder` |
+| `test_stale_misfit_warns_once_and_returns_nan` | 4 / 4 | `AssertionError: []` (`assert 0 == 1`). The old methods give no `UserWarning` |
+| `test_stale_verification_report_does_not_rebuild` | 4 / 4 | `AttributeError`: no attribute `verification_report` |
+| `test_report_blocks_are_separate` | 2 / 2 | `AttributeError`: no attribute `verification_report` |
+| `test_unsolved_model_gives_no_residual_blocks` | 2 / 2 | `AttributeError`: no attribute `verification_report` |
+| `test_exclusions_are_counted_and_explained` | 2 / 2 | `AttributeError`: no attribute `verification_report` |
+| `test_gradient_outside_points_give_no_false_unattributed_model` | 1 / 1 | `AttributeError`: no attribute `verification_report` |
+| `test_gradient_outside_points_with_pli_are_measured` | 1 / 1 | `AttributeError`: no attribute `verification_report` |
+
+Group counts: 24 + 24 + 24 + 24 + 12 + 12 + 2 + 1 + 4 + 4 + 4 + 4 + 2 + 2 + 2 + 1 + 1 = 147.
+
+Items of the task text.
+
+| Item | Result |
+|---|---|
+| State test with the old methods | Reproduced. `test_misfit_leaves_state_unchanged` fails in 24 of 24 cells. `data["gradient"]` is a different array after `evaluate_gradient_misfit` (the method divides the stored rows in place) |
+| Exact-field cosine test | Reproduced. The field is exact (the gradient is `R1_UNIT` in the world frame), so each cosine must be 1. The old method gives shape (2, 4) and not (8,). Both rows are equal, because the slice `grad[:, :3:6]` is the one column 0 and not the 3 vector columns. The vectors are local, not world. Values of the first row, anchor 0, FDI: rotation 0: [0.2001, 0.2632, 0.1671, 0.2877] (largest `|1 - cos|` 0.833). Rotation 30: [0.0232, 0.0700, -0.0781, 0.1532] (1.078). Rotation 90: [-0.3002, -0.3158, -0.4457, -0.1918] (1.446). The bound is 1e-10 |
+| Stale-state test | Reproduced. The call rebuilds the model: `up_to_date` goes from `False` to `True`, in 4 of 4 cells (`[FDI-interpolator]`, `[PLI-interpolator]`: the interpolator flag. `[FDI-builder]`, `[PLI-builder]`: the builder flag) |
+| Tests of the new names | Reproduced. 88 cells fail only because the name does not exist: `evaluate_gradient_cosines` 52 cells (24 + 24 + 1 + 3), `verification_report` 12 cells (4 + 2 + 2 + 2 + 1 + 1), `evaluate_value_residuals` 24 cells (12 + 12) |
+| `test_value_residuals_are_absolute_difference` | Not reproduced as a value defect. It fails with `AttributeError` (the test uses `evaluate_value_residuals`, which does not exist now). This is not a reproduction of a value defect. The old value path is covered by `test_value_misfit_*` |
+
+Measured value (a short script in the scratchpad, not saved in the repository). It uses `world_foliation_model` of `tests.fixtures.coordinate_frames`, as `_build` does, with `ANCHORS[1]`, rotation 30 and the FDI engine.
+
+| Measure | Value |
+|---|---|
+| Largest absolute change of `interpolator.data["gradient"]` after one call of `evaluate_gradient_misfit` | 8.2254 (the array has 4 rows x 7 columns) |
+| Largest change in each column (x, y, z, vx, vy, vz, weight) | 2.9211, 7.5854, 8.2254, 0.5485, 0.2712, 0.6789, 0.9139 |
+
+The change is large in the position columns and in the vector columns, and the weight column also changes. The old method divides the stored rows in place, so the stored data of the interpolator are not the input data after the call.

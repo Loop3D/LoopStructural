@@ -1311,7 +1311,7 @@ frame. A legacy file needs an explicit choice. A frame change never gives a stal
     `test_unsolved_model_gives_no_residual_blocks` (2): `interpolator.c = None`; both blocks `{}`; exclusions present; no exception. `test_exclusions_are_counted_and_explained` (2): the restricted-support reference case of `test_reference_constraint_frames.py`: builder records under `restricted_equality` and `restricted_orthogonal` with the analytic count; the explanation is not empty and not `UNKNOWN_EXPLANATION`.
     `test_gradient_outside_points_give_no_false_unattributed_model` (2): gradient data with 3 points outside the box: an `outside_model` record of 3 and no `unattributed` record for `gradient`.
 
-- [ ] T082 [US4] [M] Record the S5 pre-fix evidence for the diagnostics tests in `verification.md`.
+- [x] T082 [US4] [M] Record the S5 pre-fix evidence for the diagnostics tests in `verification.md`.
   - Files: `specs/005-coordinate-frame-correctness/verification.md`
   - Needs: T081
   - Wave: 38

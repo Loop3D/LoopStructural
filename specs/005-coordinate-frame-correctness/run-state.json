@@ -64,6 +64,14 @@
       "check": "scope pass; 20 new cells fail pre-fix as expected; ruff pass",
       "commit": "88a7096f2d1c8f26e2abd86778cb08313d611ad4",
       "review": "pass (3 minor, open; T084 context updated: guard both blocks on c is not None)"
+    },
+    {
+      "wave": 38,
+      "base": "e584bb20eb897241054ea2dda689211fdd48f1b8",
+      "tasks": "T082",
+      "check": "scope pass; 147 of 147 cells fail pre-fix; old method changes data[gradient] by up to 8.2254",
+      "commit": "pending",
+      "review": "pending"
     }
   ],
   "runs": {
@@ -151,6 +159,12 @@
       {
         "model": "sonnet",
         "result": "pass: 20 failing cells pre-fix; PLI gradient unattributed 8 (k=2), outside_model 3, dropped_rows 14"
+      }
+    ],
+    "T082": [
+      {
+        "model": "sonnet",
+        "result": "pass"
       }
     ]
   },
