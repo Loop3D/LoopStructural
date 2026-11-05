@@ -462,7 +462,7 @@ Tests (focused runs of the orchestrator):
 
 | Command | Result |
 |---|---|
-| `tests/unit/modelling/test_frame_persistence.py` | 177 passed |
+| `tests/unit/modelling/test_frame_persistence.py` | 184 passed (after the review fix below) |
 | `test_frame_copy_and_lifecycle.py -k "not fault_restoration"` | 48 passed |
 | packages `test_geological_interpolator.py` and `test_p2_fold_registration.py` | 43 passed |
 | `ruff` | pass |
@@ -471,14 +471,16 @@ The full suites are run again after this change (see the next section).
 
 ## S3 final gates after C-018
 
-The orchestrator ran the full gates on the working tree after the C-018 change (HEAD `e519fc0b` plus the change).
+The orchestrator ran the full gates on the working tree after the C-018 change (HEAD `dddaff50` plus the review fix).
 
 | Command | Result |
 |---|---|
 | `ruff check LoopStructural packages` | All checks passed |
-| `pytest packages/loop_common/tests packages/loop_interpolation/tests -p no:cacheprovider -q` | 912 passed, 47 skipped, 2 xfailed, 7 warnings in 100.44 s |
-| Root `pytest -p no:cacheprovider -q`, full | 1987 passed, 5 skipped, 13 warnings in 826.94 s |
+| `pytest packages/loop_common/tests packages/loop_interpolation/tests -p no:cacheprovider -q` | 912 passed, 47 skipped, 2 xfailed, 7 warnings in 103.85 s |
+| Root `pytest -p no:cacheprovider -q`, full | 1994 passed, 5 skipped, 13 warnings in 817.74 s |
 
-Before C-018 the root suite gave 1981 passed. The difference of 6 comes from `test_frame_persistence.py`: the 3 cells of `test_legacy_payload_requires_choice` became 9 cells (the warn test, the identity-values test and the strict-switch test, 3 engines each). The file now has 177 cells.
+Before C-018 the root suite gave 1981 passed. The difference of 13 comes from `test_frame_persistence.py`: the 3 cells of `test_legacy_payload_requires_choice` became 9 cells (the warn test, the identity-values test and the strict-switch test, 3 engines each), and 7 cells came with the review fix below. The file now has 184 cells.
+
+Review fix. The first review of the C-018 change found that the warning pointed at a library file for `from_json` and `from_yaml`, and one frame too high for a direct `InterpolatorFactory.from_dict` call. It also found that the warning came before a later failure of the same call. The fix moves the warning to `warn_legacy_identity()`, called as the last step of a successful load. The function computes the `stacklevel` as the first frame outside the `loop_interpolation` package. The tests `test_legacy_warning_points_at_caller` (4 entry points) and `test_legacy_warning_not_emitted_when_load_fails` (3 engines) failed before the fix (6 of 7 cells) and pass now. The gates above ran after the fix.
 
 No `StaleFrameError` and no `FutureWarning` from library code appeared in the full run. The only `FutureWarning` for a legacy load comes from the tests that load a legacy payload with no choice.
