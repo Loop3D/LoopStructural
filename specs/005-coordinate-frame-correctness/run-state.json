@@ -40,6 +40,14 @@
       "check": "scope pass; resize+rectilinear+2d tests 78 passed; ruff pass",
       "commit": "71a7948a4de89574ee28dded5b564e75970b4cf4",
       "review": "pass (3 minor, open)"
+    },
+    {
+      "wave": 35,
+      "base": "b93c067182c78a0429e7934199eef890469e4bbf",
+      "tasks": "T078",
+      "check": "scope pass; golden tests 9 passed; survey: modelling 1540 passed, interpolation 615 passed, loop_common 406 passed, tests/unit rest 504 passed; 78 of 611 3D golden keys changed (causes C1 C2 C3); 2D golden unchanged; loop_interpolation golden unchanged",
+      "commit": "pending",
+      "review": "pending"
     }
   ],
   "runs": {
@@ -102,6 +110,12 @@
     "T077": [
       {
         "model": "haiku",
+        "result": "pass"
+      }
+    ],
+    "T078": [
+      {
+        "model": "sonnet",
         "result": "pass"
       }
     ]

@@ -734,3 +734,133 @@ The 2D `maximum` check fails only because the counts are stale after the set. Th
 Cell-centre file (`test_cell_centre_sampling.py`): 60 passed, 0 failed. Result: coverage, no defect. OP12 is not reproduced.
 
 Note on the one-to-one test. The first version of the test used `structured_grid(local_coordinates=True)` and failed in 8 of 12 cells (rotation 30 and 90). That grid is the axis-aligned enclosure of the projected corners, and it has a different step. The premise in the task text was wrong. The test now uses the midpoints of the exported world grid and the own cell grid of the box. `_bounding_box.py` was not changed. Also, `set_local_transform` takes the argument `rotation_matrix=`.
+
+## S5 golden review (C-004)
+
+Order (C-004): (1) run the 3D golden test and list the failing keys; (2) check each key against the rule; (3) write the keys here; (4) run `--update`; (5) run the test again. SC-015: no tolerance was changed (`rtol=1e-9`, `atol=1e-12` stay).
+
+Step 1. `test_structured_support_reference.py` failed in 3 cells (StructuredGrid, TetMesh, P2TetMesh). A key-by-key diff (script in the scratchpad, not in the repository) found 78 changed keys of 611. The key sets are equal. Each of the 3 classes has the same 26 changed keys: 3 grids (`unit`, `aniso`, `small`) x (`step_vector`, `to_dict.step_vector`, and `after_set_nelements`, `after_nsteps`, `after_step_vector`, `after_origin`, `after_maximum` `.step_vector`) plus `after_maximum.maximum` and `after_maximum.nsteps` where they differ (`unit` has no `nsteps` change, `aniso` and `small` do). The 2D golden (`test_structured_grid_2d_reference.py`) passes with no change (4 passed): the 2D `maximum` is the same, so no 2D key changed and `--update` was not run for it.
+
+Step 2. Rule: each setter keeps the extent or encloses it by less than one cell. Extent = `(nsteps - 1) x step_vector`. Checked on the `StructuredGrid` keys (the 3 classes give the same numbers):
+
+| Grid | Stage | Old extent | New extent | Result |
+|---|---|---|---|---|
+| unit | `set_nelements(200)` | 3.571 | 4.000 (start 4) | kept |
+| unit | `nsteps` + 1 | 4.286 | 4.000 | kept |
+| unit | `step_vector` x 2 | 4.286 | 4.000 | kept |
+| unit | origin - 1 | max 4.714 | max 4.333 (1 cell = 1.333; enclosed by 0.333) | enclosed by less than one cell |
+| unit | `maximum` + 3 (request 7.333) | 9.000 | 8.333 (over by 1.0, 1 cell = 1.333) | enclosed by less than one cell |
+| aniso | `set_nelements(200)` | [12.1, 5.18, 6.29] | [13, 5, 6.5] (start [13, 5, 6.5]) | kept |
+| aniso | `nsteps` + 1, `step_vector` x 2 | [12.8, 6.09, 7.14] | [13, 5, 6.5] | kept |
+| aniso | origin - 1 | max [13.2, 6.91, 7.86] | max [13.5, 5.6, 7.0] (cells [1.5, 1.6, 1.5]) | enclosed by less than one cell |
+| aniso | `maximum` + 3 (request [16.5, 8.6, 10]) | [17.4, 10.55, 11.29] | [16.5, 8.8, 10] | enclosed by less than one cell |
+| small | `set_nelements(200)`, `nsteps` + 1, `step_vector` x 2 | 2.143, 2.571, 2.571 | 2.000 | kept |
+| small | origin - 1 | max 3.286 | max 2.333 (1 cell = 0.667) | enclosed by less than one cell |
+| small | `maximum` + 3 (request 5.333) | 6.714 | 5.667 (over by 0.333, 1 cell = 0.667) | enclosed by less than one cell |
+
+All new values obey the rule. The old values did not keep the extent (they drifted), and that is the S5 defect.
+
+Causes.
+
+- C1. `unit/step_vector` and `to_dict.step_vector` (and the same keys for `aniso`, `small`). Old value: the step after a later setter (for example 0.7143, not the constructor value 1.0). New value: 1.0, which is the constructor step. The old `nsteps` setter did `self._step_vector /= change_factor`, an in-place change. The golden test stores the array that the property returns, so a later setter changed the stored "start" value. The new setters give a new array. The new value is the correct start value.
+- C2. `after_set_nelements`, `after_nsteps`, `after_step_vector`, `after_origin`, `after_maximum` `.step_vector`: the setters keep the extent, so the new step is the extent divided by the new cell count.
+- C3. `after_maximum.maximum` and `after_maximum.nsteps`: the grid before this stage has a different step and `nsteps` (C2), so the encloses-the-request result differs. The result is enclosed by less than one cell.
+
+Step 3. The 78 changed keys (old value, new value, cause).
+
+| Key | Old value | New value | Cause |
+|---|---|---|---|
+| `P2TetMesh/aniso/after_maximum.maximum` | [17.4, 10.5455, 11.2857] | [16.5, 8.8, 10] | C3 (maximum request is enclosed by less than one cell) |
+| `P2TetMesh/aniso/after_maximum.nsteps` | [7, 9, 7] | [6, 9, 7] | C3 (maximum request is enclosed by less than one cell) |
+| `P2TetMesh/aniso/after_maximum.step_vector` | [1.4, 1.81818, 1.71429] | [1.5, 1.6, 1.5] | C2 (resize keeps the extent: new step = extent / cells) |
+| `P2TetMesh/aniso/after_nsteps.step_vector` | [0.7, 0.909091, 0.857143] | [0.75, 0.8, 0.75] | C2 (resize keeps the extent: new step = extent / cells) |
+| `P2TetMesh/aniso/after_origin.step_vector` | [1.4, 1.81818, 1.71429] | [1.5, 1.6, 1.5] | C2 (resize keeps the extent: new step = extent / cells) |
+| `P2TetMesh/aniso/after_set_nelements.step_vector` | [0.7, 0.909091, 0.857143] | [1, 0.888889, 0.9] | C2 (resize keeps the extent: new step = extent / cells) |
+| `P2TetMesh/aniso/after_step_vector.step_vector` | [1.4, 1.81818, 1.71429] | [1.5, 1.6, 1.5] | C2 (resize keeps the extent: new step = extent / cells) |
+| `P2TetMesh/aniso/step_vector` | [0.7, 0.909091, 0.857143] | [0.5, 2, 1.5] | C1 (old array was changed in place by a later setter) |
+| `P2TetMesh/aniso/to_dict.step_vector` | [0.7, 0.909091, 0.857143] | [0.5, 2, 1.5] | C1 (old array was changed in place by a later setter) |
+| `P2TetMesh/small/after_maximum.maximum` | [6.71429, 6.71429, 6.71429] | [5.66667, 5.66667, 5.66667] | C3 (maximum request is enclosed by less than one cell) |
+| `P2TetMesh/small/after_maximum.nsteps` | [10, 10, 10] | [11, 11, 11] | C3 (maximum request is enclosed by less than one cell) |
+| `P2TetMesh/small/after_maximum.step_vector` | [0.857143, 0.857143, 0.857143] | [0.666667, 0.666667, 0.666667] | C2 (resize keeps the extent: new step = extent / cells) |
+| `P2TetMesh/small/after_nsteps.step_vector` | [0.428571, 0.428571, 0.428571] | [0.333333, 0.333333, 0.333333] | C2 (resize keeps the extent: new step = extent / cells) |
+| `P2TetMesh/small/after_origin.step_vector` | [0.857143, 0.857143, 0.857143] | [0.666667, 0.666667, 0.666667] | C2 (resize keeps the extent: new step = extent / cells) |
+| `P2TetMesh/small/after_set_nelements.step_vector` | [0.428571, 0.428571, 0.428571] | [0.4, 0.4, 0.4] | C2 (resize keeps the extent: new step = extent / cells) |
+| `P2TetMesh/small/after_step_vector.step_vector` | [0.857143, 0.857143, 0.857143] | [0.666667, 0.666667, 0.666667] | C2 (resize keeps the extent: new step = extent / cells) |
+| `P2TetMesh/small/step_vector` | [0.428571, 0.428571, 0.428571] | [1, 1, 1] | C1 (old array was changed in place by a later setter) |
+| `P2TetMesh/small/to_dict.step_vector` | [0.428571, 0.428571, 0.428571] | [1, 1, 1] | C1 (old array was changed in place by a later setter) |
+| `P2TetMesh/unit/after_maximum.maximum` | [9, 9, 9] | [8.33333, 8.33333, 8.33333] | C3 (maximum request is enclosed by less than one cell) |
+| `P2TetMesh/unit/after_maximum.step_vector` | [1.42857, 1.42857, 1.42857] | [1.33333, 1.33333, 1.33333] | C2 (resize keeps the extent: new step = extent / cells) |
+| `P2TetMesh/unit/after_nsteps.step_vector` | [0.714286, 0.714286, 0.714286] | [0.666667, 0.666667, 0.666667] | C2 (resize keeps the extent: new step = extent / cells) |
+| `P2TetMesh/unit/after_origin.step_vector` | [1.42857, 1.42857, 1.42857] | [1.33333, 1.33333, 1.33333] | C2 (resize keeps the extent: new step = extent / cells) |
+| `P2TetMesh/unit/after_set_nelements.step_vector` | [0.714286, 0.714286, 0.714286] | [0.8, 0.8, 0.8] | C2 (resize keeps the extent: new step = extent / cells) |
+| `P2TetMesh/unit/after_step_vector.step_vector` | [1.42857, 1.42857, 1.42857] | [1.33333, 1.33333, 1.33333] | C2 (resize keeps the extent: new step = extent / cells) |
+| `P2TetMesh/unit/step_vector` | [0.714286, 0.714286, 0.714286] | [1, 1, 1] | C1 (old array was changed in place by a later setter) |
+| `P2TetMesh/unit/to_dict.step_vector` | [0.714286, 0.714286, 0.714286] | [1, 1, 1] | C1 (old array was changed in place by a later setter) |
+| `StructuredGrid/aniso/after_maximum.maximum` | [17.4, 10.5455, 11.2857] | [16.5, 8.8, 10] | C3 (maximum request is enclosed by less than one cell) |
+| `StructuredGrid/aniso/after_maximum.nsteps` | [7, 9, 7] | [6, 9, 7] | C3 (maximum request is enclosed by less than one cell) |
+| `StructuredGrid/aniso/after_maximum.step_vector` | [1.4, 1.81818, 1.71429] | [1.5, 1.6, 1.5] | C2 (resize keeps the extent: new step = extent / cells) |
+| `StructuredGrid/aniso/after_nsteps.step_vector` | [0.7, 0.909091, 0.857143] | [0.75, 0.8, 0.75] | C2 (resize keeps the extent: new step = extent / cells) |
+| `StructuredGrid/aniso/after_origin.step_vector` | [1.4, 1.81818, 1.71429] | [1.5, 1.6, 1.5] | C2 (resize keeps the extent: new step = extent / cells) |
+| `StructuredGrid/aniso/after_set_nelements.step_vector` | [0.7, 0.909091, 0.857143] | [1, 0.888889, 0.9] | C2 (resize keeps the extent: new step = extent / cells) |
+| `StructuredGrid/aniso/after_step_vector.step_vector` | [1.4, 1.81818, 1.71429] | [1.5, 1.6, 1.5] | C2 (resize keeps the extent: new step = extent / cells) |
+| `StructuredGrid/aniso/step_vector` | [0.7, 0.909091, 0.857143] | [0.5, 2, 1.5] | C1 (old array was changed in place by a later setter) |
+| `StructuredGrid/aniso/to_dict.step_vector` | [0.7, 0.909091, 0.857143] | [0.5, 2, 1.5] | C1 (old array was changed in place by a later setter) |
+| `StructuredGrid/small/after_maximum.maximum` | [6.71429, 6.71429, 6.71429] | [5.66667, 5.66667, 5.66667] | C3 (maximum request is enclosed by less than one cell) |
+| `StructuredGrid/small/after_maximum.nsteps` | [10, 10, 10] | [11, 11, 11] | C3 (maximum request is enclosed by less than one cell) |
+| `StructuredGrid/small/after_maximum.step_vector` | [0.857143, 0.857143, 0.857143] | [0.666667, 0.666667, 0.666667] | C2 (resize keeps the extent: new step = extent / cells) |
+| `StructuredGrid/small/after_nsteps.step_vector` | [0.428571, 0.428571, 0.428571] | [0.333333, 0.333333, 0.333333] | C2 (resize keeps the extent: new step = extent / cells) |
+| `StructuredGrid/small/after_origin.step_vector` | [0.857143, 0.857143, 0.857143] | [0.666667, 0.666667, 0.666667] | C2 (resize keeps the extent: new step = extent / cells) |
+| `StructuredGrid/small/after_set_nelements.step_vector` | [0.428571, 0.428571, 0.428571] | [0.4, 0.4, 0.4] | C2 (resize keeps the extent: new step = extent / cells) |
+| `StructuredGrid/small/after_step_vector.step_vector` | [0.857143, 0.857143, 0.857143] | [0.666667, 0.666667, 0.666667] | C2 (resize keeps the extent: new step = extent / cells) |
+| `StructuredGrid/small/step_vector` | [0.428571, 0.428571, 0.428571] | [1, 1, 1] | C1 (old array was changed in place by a later setter) |
+| `StructuredGrid/small/to_dict.step_vector` | [0.428571, 0.428571, 0.428571] | [1, 1, 1] | C1 (old array was changed in place by a later setter) |
+| `StructuredGrid/unit/after_maximum.maximum` | [9, 9, 9] | [8.33333, 8.33333, 8.33333] | C3 (maximum request is enclosed by less than one cell) |
+| `StructuredGrid/unit/after_maximum.step_vector` | [1.42857, 1.42857, 1.42857] | [1.33333, 1.33333, 1.33333] | C2 (resize keeps the extent: new step = extent / cells) |
+| `StructuredGrid/unit/after_nsteps.step_vector` | [0.714286, 0.714286, 0.714286] | [0.666667, 0.666667, 0.666667] | C2 (resize keeps the extent: new step = extent / cells) |
+| `StructuredGrid/unit/after_origin.step_vector` | [1.42857, 1.42857, 1.42857] | [1.33333, 1.33333, 1.33333] | C2 (resize keeps the extent: new step = extent / cells) |
+| `StructuredGrid/unit/after_set_nelements.step_vector` | [0.714286, 0.714286, 0.714286] | [0.8, 0.8, 0.8] | C2 (resize keeps the extent: new step = extent / cells) |
+| `StructuredGrid/unit/after_step_vector.step_vector` | [1.42857, 1.42857, 1.42857] | [1.33333, 1.33333, 1.33333] | C2 (resize keeps the extent: new step = extent / cells) |
+| `StructuredGrid/unit/step_vector` | [0.714286, 0.714286, 0.714286] | [1, 1, 1] | C1 (old array was changed in place by a later setter) |
+| `StructuredGrid/unit/to_dict.step_vector` | [0.714286, 0.714286, 0.714286] | [1, 1, 1] | C1 (old array was changed in place by a later setter) |
+| `TetMesh/aniso/after_maximum.maximum` | [17.4, 10.5455, 11.2857] | [16.5, 8.8, 10] | C3 (maximum request is enclosed by less than one cell) |
+| `TetMesh/aniso/after_maximum.nsteps` | [7, 9, 7] | [6, 9, 7] | C3 (maximum request is enclosed by less than one cell) |
+| `TetMesh/aniso/after_maximum.step_vector` | [1.4, 1.81818, 1.71429] | [1.5, 1.6, 1.5] | C2 (resize keeps the extent: new step = extent / cells) |
+| `TetMesh/aniso/after_nsteps.step_vector` | [0.7, 0.909091, 0.857143] | [0.75, 0.8, 0.75] | C2 (resize keeps the extent: new step = extent / cells) |
+| `TetMesh/aniso/after_origin.step_vector` | [1.4, 1.81818, 1.71429] | [1.5, 1.6, 1.5] | C2 (resize keeps the extent: new step = extent / cells) |
+| `TetMesh/aniso/after_set_nelements.step_vector` | [0.7, 0.909091, 0.857143] | [1, 0.888889, 0.9] | C2 (resize keeps the extent: new step = extent / cells) |
+| `TetMesh/aniso/after_step_vector.step_vector` | [1.4, 1.81818, 1.71429] | [1.5, 1.6, 1.5] | C2 (resize keeps the extent: new step = extent / cells) |
+| `TetMesh/aniso/step_vector` | [0.7, 0.909091, 0.857143] | [0.5, 2, 1.5] | C1 (old array was changed in place by a later setter) |
+| `TetMesh/aniso/to_dict.step_vector` | [0.7, 0.909091, 0.857143] | [0.5, 2, 1.5] | C1 (old array was changed in place by a later setter) |
+| `TetMesh/small/after_maximum.maximum` | [6.71429, 6.71429, 6.71429] | [5.66667, 5.66667, 5.66667] | C3 (maximum request is enclosed by less than one cell) |
+| `TetMesh/small/after_maximum.nsteps` | [10, 10, 10] | [11, 11, 11] | C3 (maximum request is enclosed by less than one cell) |
+| `TetMesh/small/after_maximum.step_vector` | [0.857143, 0.857143, 0.857143] | [0.666667, 0.666667, 0.666667] | C2 (resize keeps the extent: new step = extent / cells) |
+| `TetMesh/small/after_nsteps.step_vector` | [0.428571, 0.428571, 0.428571] | [0.333333, 0.333333, 0.333333] | C2 (resize keeps the extent: new step = extent / cells) |
+| `TetMesh/small/after_origin.step_vector` | [0.857143, 0.857143, 0.857143] | [0.666667, 0.666667, 0.666667] | C2 (resize keeps the extent: new step = extent / cells) |
+| `TetMesh/small/after_set_nelements.step_vector` | [0.428571, 0.428571, 0.428571] | [0.4, 0.4, 0.4] | C2 (resize keeps the extent: new step = extent / cells) |
+| `TetMesh/small/after_step_vector.step_vector` | [0.857143, 0.857143, 0.857143] | [0.666667, 0.666667, 0.666667] | C2 (resize keeps the extent: new step = extent / cells) |
+| `TetMesh/small/step_vector` | [0.428571, 0.428571, 0.428571] | [1, 1, 1] | C1 (old array was changed in place by a later setter) |
+| `TetMesh/small/to_dict.step_vector` | [0.428571, 0.428571, 0.428571] | [1, 1, 1] | C1 (old array was changed in place by a later setter) |
+| `TetMesh/unit/after_maximum.maximum` | [9, 9, 9] | [8.33333, 8.33333, 8.33333] | C3 (maximum request is enclosed by less than one cell) |
+| `TetMesh/unit/after_maximum.step_vector` | [1.42857, 1.42857, 1.42857] | [1.33333, 1.33333, 1.33333] | C2 (resize keeps the extent: new step = extent / cells) |
+| `TetMesh/unit/after_nsteps.step_vector` | [0.714286, 0.714286, 0.714286] | [0.666667, 0.666667, 0.666667] | C2 (resize keeps the extent: new step = extent / cells) |
+| `TetMesh/unit/after_origin.step_vector` | [1.42857, 1.42857, 1.42857] | [1.33333, 1.33333, 1.33333] | C2 (resize keeps the extent: new step = extent / cells) |
+| `TetMesh/unit/after_set_nelements.step_vector` | [0.714286, 0.714286, 0.714286] | [0.8, 0.8, 0.8] | C2 (resize keeps the extent: new step = extent / cells) |
+| `TetMesh/unit/after_step_vector.step_vector` | [1.42857, 1.42857, 1.42857] | [1.33333, 1.33333, 1.33333] | C2 (resize keeps the extent: new step = extent / cells) |
+| `TetMesh/unit/step_vector` | [0.714286, 0.714286, 0.714286] | [1, 1, 1] | C1 (old array was changed in place by a later setter) |
+| `TetMesh/unit/to_dict.step_vector` | [0.714286, 0.714286, 0.714286] | [1, 1, 1] | C1 (old array was changed in place by a later setter) |
+
+
+Step 4. Golden update and re-run. `python packages/loop_common/tests/test_structured_support_reference.py --update` wrote 611 arrays. Then `pytest packages/loop_common/tests/test_structured_support_reference.py packages/loop_common/tests/test_structured_grid_2d_reference.py` passed (9 passed). The file `structured_grid_2d_reference.npz` did not change.
+
+### Numeric survey (S5 resize change)
+
+Environment: the worktree, `loop_common`, `loop_interpolation` and the visualisation sources, and `pyevtk`, on `PYTHONPATH`. Run after the golden update, one pytest process at a time.
+
+| Command | Result | Time |
+|---|---|---|
+| `pytest tests/unit/modelling` | 1540 passed, 2 skipped | 457.78 s |
+| `pytest packages/loop_interpolation/tests` | 615 passed, 47 skipped, 2 xfailed | 70.95 s |
+| `pytest packages/loop_common/tests` | 406 passed | 69.60 s |
+| `pytest tests/unit --ignore=tests/unit/modelling` | 504 passed, 2 skipped | 677.84 s |
+
+No test failed and no test number changed, so no test file needs a change. The only changed numbers are the 78 golden keys above (file `packages/loop_common/tests/data/structured_support_reference.npz`). Nothing under `packages/loop_interpolation/tests/golden` changed (the 615 tests there pass without a regeneration). No failure is left, and so no root failure from the S4 gate was seen in these four runs.

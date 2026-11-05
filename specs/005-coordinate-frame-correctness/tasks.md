@@ -1272,7 +1272,7 @@ frame. A legacy file needs an explicit choice. A frame change never gives a stal
 
 ## Phase 20: Stage S5 golden review and feature tests
 
-- [ ] T078 [US4] [M] Survey the numeric tests, review the golden changes and regenerate the 3D golden data (C-004).
+- [x] T078 [US4] [M] Survey the numeric tests, review the golden changes and regenerate the 3D golden data (C-004).
   - Files: `specs/005-coordinate-frame-correctness/verification.md`, `packages/loop_common/tests/data/structured_support_reference.npz`, `packages/loop_common/tests/data/structured_grid_2d_reference.npz`
   - Needs: T075, T076, T077
   - Wave: 35
