@@ -19,6 +19,8 @@ from . import (
     interpolator_string_map,
     support_interpolator_map,
 )
+from ._frame_persistence import InterpolatorFormatError, payload_kind, resolve_frame
+from ._validation import ValidationError
 
 
 class InterpolatorFactory:
@@ -71,8 +73,56 @@ class InterpolatorFactory:
         return interpolator
 
     @staticmethod
-    def from_dict(d):
+    def from_dict(d, *, local_origin=None, local_rotation=None, declare_identity=False):
+        """Build an interpolator from a dict.
+
+        The function accepts two kinds of dict. A dict is a saved payload if
+        and only if ``d.get("support")`` is a dict. Any other dict is a
+        creation call and keeps the old code path with no change.
+
+        For a saved payload the function checks the kind of the payload first,
+        then builds the support and the interpolator, resolves the frame of the
+        payload, and restores the stored constraints without a conversion.
+
+        Parameters
+        ----------
+        d : dict
+            Creation call or saved payload. The function does not change it.
+        local_origin : array-like, optional
+            Origin of the local frame, given by the caller of a saved payload.
+        local_rotation : array-like, optional
+            Rotation of the local frame, given by the caller of a saved payload.
+        declare_identity : bool, default False
+            If True, the caller declares an identity frame for a saved payload.
+
+        Returns
+        -------
+        GeologicalInterpolator
+            The new interpolator. If a step raises, no interpolator is returned.
+
+        Raises
+        ------
+        ValueError
+            If the creation call has no interpolator type.
+        InterpolatorFormatError
+            If a frame argument is given with a creation call, if the saved
+            payload is malformed, or if its frame cannot be resolved.
+        """
+        caller_frame = (
+            local_origin is not None or local_rotation is not None or bool(declare_identity)
+        )
+        saved = isinstance(d.get("support"), dict)
+        if not saved and caller_frame:
+            raise InterpolatorFormatError(
+                "malformed", "frame arguments apply only to a saved payload"
+            )
+        kind = payload_kind(d, caller_frame) if saved else None
         d = d.copy()
+        frame_keys = {}
+        if saved:
+            for key in ("format_version", "constraint_space", "transform", "bounding_box"):
+                if key in d:
+                    frame_keys[key] = d.pop(key)
         interpolator_type = d.pop("type", None)
         if interpolator_type is None:
             raise ValueError("No interpolator type specified")
@@ -102,7 +152,24 @@ class InterpolatorFactory:
             **d,
         )
 
-        if data is not None:
+        if saved:
+            interpolator.bounding_box = resolve_frame(
+                frame_keys,
+                kind,
+                support,
+                interpolator.dimensions,
+                local_origin=local_origin,
+                local_rotation=local_rotation,
+                declare_identity=declare_identity,
+            )
+            if data is not None:
+                try:
+                    interpolator._restore_local_constraints(data)
+                except (ValueError, ValidationError) as exc:
+                    raise InterpolatorFormatError(
+                        "malformed", f"malformed interpolator payload: {exc}"
+                    ) from exc
+        elif data is not None:
             if data.get("value") is not None:
                 arr = np.asarray(data["value"], dtype=float)
                 if arr.size > 0:
@@ -134,6 +201,8 @@ class InterpolatorFactory:
 
         if c is not None and hasattr(interpolator, "c"):
             interpolator.c = np.asarray(c, dtype=float)
+            if saved and interpolator._frame_at_data is None:
+                interpolator._note_frame(1)
 
         interpolator.up_to_date = up_to_date
         interpolator.valid = valid

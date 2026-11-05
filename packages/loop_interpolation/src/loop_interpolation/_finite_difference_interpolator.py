@@ -246,13 +246,14 @@ class FiniteDifferenceInterpolator(DiscreteInterpolator):
 
     def copy(self):
         """
-        Create a new identical interpolator
+        Create an empty copy on the same support, with the same coordinate frame.
 
         Returns
         -------
-        returns a new empy interpolator from the same support
+        FiniteDifferenceInterpolator
+            A new empty interpolator that shares the support and the bounding box.
         """
-        return FiniteDifferenceInterpolator(self.support)
+        return self._inherit_frame(FiniteDifferenceInterpolator(self.support))
 
     def add_value_constraints(self, w=1.0):
         """

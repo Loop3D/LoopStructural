@@ -266,3 +266,178 @@ not run alone in a throw-away worktree at `9e7b05f7`.
 
 The times come from runs under load, so they are an upper bound. The slowest
 single cell is 0.65 s.
+
+## S3 pre-fix failures
+
+Method. HEAD was `caf0a0e7`. The two new S3 test files ran one at a time with
+`python -m pytest -p no:cacheprovider <file> -q --tb=line`, with the worktree
+`PYTHONPATH`. Before the first run, `loop_interpolation.__file__` and
+`LoopStructural.__file__` were both checked: they come from
+`LoopStructural-005-s3`. No S3 library code exists at this commit. Only the stubs
+and the two error classes exist. The persistence file gives 166 failed and
+3 passed. The copy and lifecycle file gives 43 failed and 6 passed.
+
+| Test function | Failed / total | Representative id and first error |
+|---|---|---|
+| `test_payload_declares_frame` (persistence) | 36 / 36 | `[fdi-a0-r0]`: `KeyError: 'format_version'` (missing name) |
+| `test_round_trip_world_values` | 33 / 36 | `[fdi-a0-r30]`: world error 1.9011 against a limit of 4.4e-12. 3 identity-frame cells pass (coverage, no defect) |
+| `test_local_arrays_unchanged_after_two_cycles` | 36 / 36 | `[fdi-a0-r0]`: `KeyError: 'format_version'` (missing name) |
+| `test_json_and_yaml_carry_frame` | 3 / 3 | `[fdi]`: `KeyError: 'transform'` (missing name) |
+| `test_legacy_payload_requires_choice` | 3 / 3 | `[fdi]`: `DID NOT RAISE InterpolatorFormatError` |
+| `test_legacy_with_supplied_transform` | 36 / 36 | `[fdi-a0-r0]`: `TypeError: from_dict() got an unexpected keyword argument 'local_origin'` (missing name) |
+| `test_legacy_with_identity_declaration` | 3 / 3 | `[fdi]`: `TypeError: from_dict() got an unexpected keyword argument 'declare_identity'` (missing name) |
+| `test_conflicting_inputs` | 4 / 4 | `[identity-and-origin]`: `TypeError: from_dict() got an unexpected keyword argument 'declare_identity'` (missing name) |
+| `test_malformed_metadata` | 8 / 8 | `[missing-transform]`: `TypeError: create_interpolator() got an unexpected keyword argument 'format_version'` (missing name) |
+| `test_unsupported_future_version` | 2 / 2 | `[3]`: `TypeError: create_interpolator() got an unexpected keyword argument 'format_version'` (missing name) |
+| `test_creation_call_unchanged` | 1 / 1 | `TypeError: InterpolatorFactory.from_dict() got an unexpected keyword argument 'declare_identity'` (missing name) |
+| `test_old_reader_would_name_format_version` | 1 / 1 | `StopIteration`: the payload has no `format_version` key (missing name) |
+| `test_copy_keeps_frame` (copy and lifecycle) | 36 / 36 | `[fdi-anchor0-rot0]`: `assert None is BoundingBox(...)`, the copy has no bounding box |
+| `test_stale_frame_rejected_without_state_change` | 5 / 5 | `[fdi]`: `DID NOT RAISE StaleFrameError` |
+| `test_restored_transform_is_usable` | 0 / 1 | Passes now (coverage, no defect), 1 cell |
+| `test_rebuild_in_new_frame_preserves_world_evaluation` | 0 / 5 | Pass now (coverage, no defect), 5 cells |
+| `test_fault_restoration_uses_current_frame` | 2 / 2 | `[FDI]`: `DID NOT RAISE StaleFrameError` |
+
+Behavioural records from the production path (a short script, not saved in the
+repository):
+
+| Record | Measured value |
+|---|---|
+| (1) `fdi`, `ANCHORS[3]`, rotation 30, `exact=True`: `from_dict(to_dict())` against the original, at `ANCHORS[3] + QUERY_OFFSETS` | The original gives `[3.05, 4.4]`. The loaded interpolator gives `[nan, nan]`. E = NaN (2 of 2 values are NaN) |
+| (2) `interp.copy().bounding_box is None` for `fdi` at the same cell | `True` |
+| (3) `fdi`, `ANCHORS[1]`, rotation 0, `exact=False`: `evaluate_value` before and after `bb.set_local_transform(local_origin=ANCHORS[1] + (3, -2, 1), rotation_matrix=rot_z(30.0))` | No error is raised. The value before is `[3.05, 4.4]`. The value after is `[nan, nan]`. D = NaN (the value changes from finite to NaN) |
+
+The identity-frame round-trip cells and the rebuild cells pass before S3. They are coverage, not defect evidence.
+
+## S3 rollback checks
+
+Method. The rollback target is the S3 start commit `91ffca4a` (the S2 head, with no S3 code). A throw-away worktree was made at this commit with `git worktree add --detach ../LoopStructural-005-s3-rollback 91ffca4a`. The file `tests/fixtures/coordinate_frames.py` was copied from the S3 worktree into it, and nothing else, because the old commit has no `r1_interpolator`. Each run used its own `PYTHONPATH`. Before each run, the script printed `loop_interpolation.__file__` and `LoopStructural.__file__`. For the old code, both paths were in `LoopStructural-005-s3-rollback`. For the S3 code, both paths were in `LoopStructural-005-s3`. The scripts were short and were not saved in the repository. The throw-away worktree was removed at the end.
+
+Check 1. The old `to_dict` saved a legacy payload (no `format_version`) for `fdi`, `pli` and `p2` with `r1_interpolator(engine, anchor, rotation, exact=True)`. The S3 code loaded each payload with `GeologicalInterpolator.from_json`. It used the `local_origin` and `local_rotation` of the S3 interpolator of the same cell, or `declare_identity=True`. The errors are the maximum absolute difference from the fresh S3 interpolator at `anchor + QUERY_OFFSETS`. The limits (SC-006) are `1e-12 * F` = 4.4e-12 for values (F = 4.4) and `1e-12 * max(1, abs(R1_GRADIENT).max())` = 1.0e-12 for gradients.
+
+| Engine | Cell | Load mode | Value error | Gradient error |
+|---|---|---|---|---|
+| `fdi` | `ANCHORS[3]`, rotation 30 | supplied transform | 0.0 | 0.0 |
+| `pli` | `ANCHORS[3]`, rotation 30 | supplied transform | 0.0 | 0.0 |
+| `p2` | `ANCHORS[3]`, rotation 30 | supplied transform | 0.0 | 0.0 |
+| `fdi` | `ANCHORS[0]`, rotation 0 | supplied transform | 0.0 | 0.0 |
+| `pli` | `ANCHORS[0]`, rotation 0 | supplied transform | 0.0 | 0.0 |
+| `p2` | `ANCHORS[0]`, rotation 0 | supplied transform | 0.0 | 0.0 |
+| `fdi` | `ANCHORS[0]`, rotation 0 | `declare_identity=True` | 0.0 | 0.0 |
+| `pli` | `ANCHORS[0]`, rotation 0 | `declare_identity=True` | 0.0 | 0.0 |
+| `p2` | `ANCHORS[0]`, rotation 0 | `declare_identity=True` | 0.0 | 0.0 |
+
+All 9 errors are inside the limits. A legacy payload loaded with no choice (no transform and no `declare_identity`) raised `InterpolatorFormatError` with reason `legacy_no_transform` for `fdi`, `pli` and `p2` (3 of 3). The text is: `legacy interpolator payload has no transform: pass local_origin and local_rotation, or declare_identity=True`.
+
+Check 2. The S3 code wrote `r1_interpolator("fdi", ANCHORS[3], 30.0, exact=True)[0].to_json()` (it has `format_version`). The old reader (`GeologicalInterpolator.from_json(text)` at `91ffca4a`) raised `TypeError` with this exact message: `InterpolatorFactory.create_interpolator() got an unexpected keyword argument 'format_version'`. The call returned no object: the result variable stayed unset (OP5). The error names `format_version`, as expected.
+
+## S3 post-fix results
+
+Spec worktree `feat/005-s3-frame-persistence`, HEAD `67b1e48a`, worktree
+`PYTHONPATH`. A check showed that `loop_interpolation.__file__` comes from
+`C:\Users\lachl\dev\LoopStructural-005-s3`. The memory on the machine was low.
+The orchestrator ran the full gates. The implementer did not run them again.
+
+| Command | Result |
+|---|---|
+| `ruff check LoopStructural packages` (run by the orchestrator) | All checks passed |
+| `pytest packages/loop_common/tests packages/loop_interpolation/tests -p no:cacheprovider -q` (run by the orchestrator) | 912 passed, 47 skipped, 2 xfailed, 7 warnings in 108.69 s. The S3 tests are in the root suite. The result equals the S2 result (912/47/2). |
+| Root `pytest -p no:cacheprovider -q`, full (run by the orchestrator) | 1978 passed, 5 skipped, 13 warnings in 797.81 s. Before S3 (S2 head `662d2713`): 1760 passed, 5 skipped, 13 warnings in 1052.40 s. The 218 new passes equal the 218 new S3 cells (169 in `test_frame_persistence.py`, 49 in `test_frame_copy_and_lifecycle.py`). |
+| `test_frame_persistence.py` (run by the implementer) | 169 passed in 5.20 s |
+| `test_frame_copy_and_lifecycle.py` (run by the implementer) | 49 passed in 31.27 s |
+
+No `StaleFrameError` appeared in the full root run. No library path raised it.
+The check is not weakened.
+
+Requirements and the tests that check them:
+
+| Requirement | Tests |
+|---|---|
+| FR-016 (frame and format version in the payload) | `test_payload_declares_frame`, `test_json_and_yaml_carry_frame`, `test_old_reader_would_name_format_version` |
+| FR-017 (no second world conversion on load) | `test_round_trip_world_values`, `test_local_arrays_unchanged_after_two_cycles` |
+| FR-018 (copy keeps the frame) | `test_copy_keeps_frame` |
+| FR-019 (legacy file needs a choice; malformed, unsupported and conflicting input fail) | `test_legacy_payload_requires_choice`, `test_legacy_with_supplied_transform`, `test_legacy_with_identity_declaration`, `test_conflicting_inputs`, `test_malformed_metadata`, `test_unsupported_future_version` |
+| FR-020 (transform change: reject or rebuild) | `test_stale_frame_rejected_without_state_change`, `test_restored_transform_is_usable`, `test_rebuild_in_new_frame_preserves_world_evaluation`, `test_fault_restoration_uses_current_frame` |
+| FR-021 (rotation check) | Checked in S1 (`test_rigid_transform_contract.py`). The S3 files test the saved and supplied rotations in `test_conflicting_inputs` and `test_malformed_metadata`. |
+| FR-028 (public API kept) | `test_creation_call_unchanged`; the existing tests pass with no change (see the S3 golden review) |
+| SC-006 (save and load accuracy; arrays unchanged after 2 cycles) | `test_round_trip_world_values`, `test_local_arrays_unchanged_after_two_cycles` |
+| SC-012 (1 failure, 0 state change; legacy needs a choice) | `test_legacy_payload_requires_choice`, `test_conflicting_inputs`, `test_malformed_metadata`, `test_stale_frame_rejected_without_state_change` |
+| SC-016 (origin and rotation change: reject or rebuild) | `test_stale_frame_rejected_without_state_change`, `test_rebuild_in_new_frame_preserves_world_evaluation` |
+| SC-017 (old-format input keeps its load path; new format fails in the old reader with a clear error) | `test_legacy_with_supplied_transform`, `test_legacy_with_identity_declaration`, `test_unsupported_future_version`, `test_old_reader_would_name_format_version` |
+
+Cost of the frame check. A script outside the repository built
+`r1_interpolator("fdi", ANCHORS[3], 30.0, exact=True)` and 100 points
+(`ANCHORS[3] + uniform(1, 7)`, seed 0). It timed 1000 calls, 5 repeats, and kept
+the minimum. The "check removed" runs set
+`GeologicalInterpolator._check_frame = lambda self: None` in the same process.
+
+| Call | With the check | Check removed | Difference |
+|---|---|---|---|
+| `evaluate_value` | 166.3 us per call | 160.3 us per call | 6.0 us per call (about 4 %) |
+| `evaluate_gradient` | 346.5 us per call | 343.4 us per call | 3.1 us per call (about 1 %) |
+
+These numbers are for 100 points. The measure runs in one process and has some
+noise. The check does not loop over the points. Its cost is therefore a fixed
+cost for each call.
+
+003 key-time check. The 003 plan has a key-time gate (T042, the time of
+`fault_set_fingerprint`). It measures the key of the fault evaluation cache. It
+is a different measure from the frame check of 005. The implementer did not run
+it, because of the memory limit. There is no 003 measure of the frame check.
+
+## S3 golden review (C-004)
+
+Command: `git diff --stat 91ffca4a269252c32cefe077261edd27f10a4b14..HEAD -- tests packages/*/tests`.
+Result: 3 files, 598 insertions, 0 deletions.
+
+| File | Change |
+|---|---|
+| `tests/fixtures/coordinate_frames.py` | 79 lines added (helpers for the S3 tests) |
+| `tests/unit/modelling/test_frame_copy_and_lifecycle.py` | new file (188 lines) |
+| `tests/unit/modelling/test_frame_persistence.py` | new file (331 lines) |
+
+No golden change in S3. No existing test file changed.
+
+Command: `git grep -n "from_dict\|from_json\|from_yaml" -- tests packages/*/tests`.
+Existing tests that load a saved interpolator payload:
+- `packages/loop_interpolation/tests/test_geological_interpolator.py`: `test_interpolator_json_yaml_round_trip` loads text from `to_json()` and `to_yaml()` (new format). `test_geological_interpolator_from_dict_delegates_to_factory` patches `InterpolatorFactory.from_dict` and loads nothing.
+- `packages/loop_interpolation/tests/test_p2_fold_registration.py`: `test_to_dict_from_dict_round_trip` loads a payload from `to_dict()` (new format).
+- `tests/unit/interpolator/test_interpolator_factory.py`: `test_from_dict_builds_interpolator` and `test_from_dict_missing_type_raises` call `InterpolatorFactory.from_dict` with a hand-written creation dict (`type`, `boundingbox`, `nelements`). This is the factory creation call, not a saved interpolator payload. The creation call is unchanged (`test_creation_call_unchanged`).
+
+The other matches load other objects (`LoopEntity`, `PointSet`, `FaultTopology`, the stratigraphic column types, the model recipe). They are not interpolator payloads.
+
+No existing test loads a payload without `format_version`.
+
+## S3 backend matrix
+
+Engines: `fdi`, `pli`, `p2`, `cn_fdi`, `cn_pli`, `p2_fold`. Native engines and
+Surfe are in S6. PLI has no `copy()`. Fold families do not save the fold object.
+The `cn_*` engines have lifecycle cells only.
+
+| Engine | persistence | copy | stale-frame lifecycle |
+|---|---|---|---|
+| `fdi` | tested | tested | tested |
+| `pli` | tested | not applicable (no `copy()`) | tested |
+| `p2` | tested | tested | tested |
+| `cn_fdi` | not applicable (lifecycle cells only) | not applicable | tested |
+| `cn_pli` | not applicable (lifecycle cells only) | not applicable | tested |
+| `p2_fold` | not applicable (the fold object is not saved) | tested (the copy shares the fold object) | not applicable (copy cells only) |
+
+OP6 (T037). `git grep -n 'interpolator.*copy(' -- LoopStructural/modelling/features`
+finds only two numpy `.copy()` calls, on `support.origin` and `support.maximum`
+in `_geological_feature_builder.py` (lines 541 and 542). No call of
+`interpolator.copy()` exists in the feature code.
+
+OP7 note. The P2 value-only fit of R1 misses SC-002 in every frame. In the
+unrotated control the value error is 1.8e-8 and the gradient error is 3.9e-7,
+against a gradient limit of 4e-9. The S3 rebuild test uses the exact nodal
+control for `p2` (maintainer decision 2026-11-05).
+
+## S3 test run time (OP2)
+
+| Item | Time |
+|---|---|
+| `test_frame_persistence.py` (169 cells) | 5.20 s |
+| `test_frame_copy_and_lifecycle.py` (49 cells) | 31.27 s (the fault restoration test takes about 25 s) |
+| Both S3 files | about 36 s test time |
+| Full root suite (orchestrator) | 797.81 s (1052.40 s at the S2 head; the two runs had different machine load, so the times do not compare) |
+| Package suites (orchestrator) | 108.69 s |
