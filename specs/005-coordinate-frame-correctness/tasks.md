@@ -848,6 +848,7 @@ frame. A legacy file needs an explicit choice. A frame change never gives a stal
     Use `validate_rigid_rotation` from `loop_common.geometry`. Wrap `RigidRotationError`, `LoopValueError`, `KeyError`, `TypeError` and
     `ValueError` from parsing as `InterpolatorFormatError("malformed", ...)` with `raise ... from exc`. Use `BoundingBox.from_dict` for the saved box.
     The function reads `payload` only; it never changes it or a caller object.
+    Before it calls `bounding_box_from_support`, check that `support.nodes` has shape `(n, dimensions)` and that the origin has shape `(dimensions,)`; else raise `malformed`.
     A conflict message after `conflicting transform: ` contains `declare_identity` (and `saved` against a saved transform) if `declare_identity` is involved; else it contains `saved`, `supplied` and the item name (`local_origin` or `local_rotation`).
 
 - [ ] T042 [P] [US3] [M] Add the frame check, local restore and frame keys to `GeologicalInterpolator`.
@@ -855,7 +856,9 @@ frame. A legacy file needs an explicit choice. A frame change never gives a stal
   - Needs: T040
   - Wave: 19
   - Done when: `pytest tests/unit/modelling/test_frame_copy_and_lifecycle.py -k "stale_frame or restored_transform or rebuild_in_new_frame or fault_restoration"`
-    passes, and `pytest packages/loop_interpolation/tests/test_geological_interpolator.py` passes with no change.
+    passes, and `pytest packages/loop_interpolation/tests/test_geological_interpolator.py` passes with no change, except
+    `test_interpolator_json_yaml_round_trip`. That test loads a payload that `to_dict` now writes with frame keys, and the old loader
+    rejects them until T043. Record it as "fails until T043" in your report.
   - Context: Read the section "S3 functions and signatures" of `specs/005-coordinate-frame-correctness/plan.md` (class `GeologicalInterpolator`). Add:
     `self._frame_at_data = None` in `__init__`; `clean()` sets it to `None`; `frame_signature()`; `_note_frame(rows)`; `_check_frame()`;
     `_inherit_frame(other)`; `_restore_local_constraints(data)`. Call `self._check_frame()` first in each of the 7 `set_*_constraints`
