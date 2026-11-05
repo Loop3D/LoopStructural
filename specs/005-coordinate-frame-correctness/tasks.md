@@ -952,7 +952,7 @@ frame. A legacy file needs an explicit choice. A frame change never gives a stal
     supplied transform and with `declare_identity=True` (anchor 0, rotation 0 only) and record the SC-006 errors. (2) On the old reader, load a payload that the S3 code wrote; record the exact
     `TypeError` text (it names `format_version`) and that no interpolator object exists (OP5). Then `git worktree remove --force <tmp>` and `git worktree prune`.
 
-- [ ] T050 [Finish] [M] Run the S3 gates and complete `verification.md` and the `ROADMAP.md` status log.
+- [x] T050 [Finish] [M] Run the S3 gates and complete `verification.md` and the `ROADMAP.md` status log.
   - Files: `specs/005-coordinate-frame-correctness/verification.md`, `ROADMAP.md`
   - Needs: T047, T048, T049
   - Wave: 22

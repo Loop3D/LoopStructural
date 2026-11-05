@@ -111,6 +111,19 @@
       "check": "scope pass (VERIFY); COMPAT row at the end of the Migration notices table (grep 1); ROADMAP decision under Decisions (grep 1); rollback checks: 9 of 9 legacy loads exact (errors 0.0), no-choice load raises legacy_no_transform, old reader raises TypeError naming format_version and returns no object; no throw-away worktree left",
       "commit": "4cd0fd4fb5f935ceb517379776d3b1b8cdf00cda",
       "review": "pass: sonnet, no findings"
+    },
+    {
+      "wave": 22,
+      "base": "67b1e48ab4fe344ef6b7f2f11b1b78af7658542f",
+      "tasks": [
+        "T050"
+      ],
+      "check": "Gates run by the orchestrator at 67b1e48a (code unchanged since wave 20): ruff pass; packages 912 passed 47 skipped 2 xfailed in 108.69 s; root 1978 passed 5 skipped 13 warnings in 797.81 s (= 1760 + 218 new S3 cells). Focused: test_frame_persistence.py 169 passed 5.2 s; test_frame_copy_and_lifecycle.py 49 passed 31.3 s. Frame check cost 6.0 us (4 percent) per evaluate_value call and 3.1 us (1 percent) per evaluate_gradient call on 100 points. Orchestrator fixed 3 facts in the T050 text (branch name, p2_fold lifecycle cell, time comparison).",
+      "gates": {
+        "lint": "pass",
+        "packages": "912 passed, 47 skipped, 2 xfailed",
+        "root": "1978 passed, 5 skipped"
+      }
     }
   ],
   "runs": {
@@ -226,6 +239,12 @@
       {
         "model": "sonnet",
         "result": "pass: S3 rollback checks section; throw-away worktree removed"
+      }
+    ],
+    "T050": [
+      {
+        "model": "sonnet",
+        "result": "pass: 4 S3 sections in verification.md and the ROADMAP status line; orchestrator ran the heavy gates (memory) and corrected 3 facts"
       }
     ]
   },
@@ -861,5 +880,5 @@
       }
     }
   },
-  "status": "wave 21 done and reviewed; final gates running"
+  "status": "wave 22 done, review pending; end spec review pending"
 }

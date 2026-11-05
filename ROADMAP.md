@@ -862,3 +862,4 @@ next `set`, `evaluate` or `save` call. The interpolator changes no state.
   `loopstructuralvisualisation`, none warranted in `map2loop`), and the
   release-please/PyPI/ruff wiring. `tests/unit`: 695 passed/4 skipped, zero
   regressions.
+- **2026-11-05:** Spec 005 stage S3 implemented: saved interpolator frame, legacy-load rule, frame-keeping copies, stale-frame check. Gate result: root pytest 1978 passed, 5 skipped.
