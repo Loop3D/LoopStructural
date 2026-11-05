@@ -1281,7 +1281,7 @@ frame. A legacy file needs an explicit choice. A frame change never gives a stal
     Run the 2D golden test. It must not change (the 2D `maximum` stays). Run `--update` for it only if a key differs, and record the key. Numeric survey, in separate calls: `pytest tests/unit/modelling`; `pytest packages/loop_interpolation/tests`; `pytest packages/loop_common/tests` (PowerShell; worktree on `PYTHONPATH`; `packages/loopstructural_visualisation/src` also on `PYTHONPATH`; `pyevtk` is only in a scratch folder: add it to `PYTHONPATH` or report the skip).
     For each test that fails or changes a number, record the test, the old value, the new value and the cause. Do not edit a test file. `packages/loop_interpolation/tests/golden` is the parity oracle (OP17): record each change there and do NOT regenerate it. If the cause is the intended extent change, name the file for the maintainer; if the cause is not clear, report it. Write in ASD-STE100 Simplified Technical English.
 
-- [ ] T079 [P] [US4] [M] Record the S5 post-fix evidence for the resize and cell-centre tests.
+- [x] T079 [P] [US4] [M] Record the S5 post-fix evidence for the resize and cell-centre tests.
   - Files: `specs/005-coordinate-frame-correctness/verification.md`
   - Needs: T078
   - Wave: 36
@@ -1289,7 +1289,7 @@ frame. A legacy file needs an explicit choice. A frame change never gives a stal
   - Context: Run the two files in one call. Record the commands, the counts (resize: 12 + 3 + 3 + 3 + 1 + 1 + 3 + 1 + 6 + 3 = 36 cells; cell centres: 5 tests x 12 = 60 cells), the times, and the measured extent drift of the A, B, A test for each grid (the bound is `A + B`). Compare with `## S5 pre-fix failures`: for each id that failed, write that it now passes.
     Write that `test_each_cell_has_exactly_one_centre` and `test_local_coordinates_grid_associates_own_centres` are the evidence for FR-015 and SC-011, and the other three are coverage. Record OP12: "not reproduced" if all 60 cells passed before the fix, and no change to `_bounding_box.py`. Record the `ruff check LoopStructural packages` result for the three `loop_common` source files. Write in ASD-STE100 Simplified Technical English.
 
-- [ ] T080 [US4] [M] Test: misfit methods keep state, compare in world coordinates, and keep their shapes (U4.4; FR-023; SC-009).
+- [x] T080 [US4] [M] Test: misfit methods keep state, compare in world coordinates, and keep their shapes (U4.4; FR-023; SC-009).
   - Files: `tests/unit/modelling/test_diagnostics_frames.py`
   - Needs: T073, T078
   - Wave: 36

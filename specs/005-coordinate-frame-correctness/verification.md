@@ -864,3 +864,45 @@ Environment: the worktree, `loop_common`, `loop_interpolation` and the visualisa
 | `pytest tests/unit --ignore=tests/unit/modelling` | 504 passed, 2 skipped | 677.84 s |
 
 No test failed and no test number changed, so no test file needs a change. The only changed numbers are the 78 golden keys above (file `packages/loop_common/tests/data/structured_support_reference.npz`). Nothing under `packages/loop_interpolation/tests/golden` changed (the 615 tests there pass without a regeneration). No failure is left, and so no root failure from the S4 gate was seen in these four runs.
+
+
+## S5 resize and cell-centre results
+
+Commands (PowerShell, the worktree `LoopStructural-005-s5` on `PYTHONPATH`):
+
+- `python -m pytest packages/loop_common/tests/test_resize_paths.py packages/loop_common/tests/test_cell_centre_sampling.py -p no:cacheprovider -q --durations=0` -> 100 passed in 0.19 s. The slowest item took 0.01 s (setup).
+- `python -m pytest packages/loop_common/tests/test_resize_paths.py -p no:cacheprovider -q -s -k a_b_a` -> 3 passed (shows the measured drift).
+- `python -m pytest packages/loop_common/tests/test_cell_centre_sampling.py -p no:cacheprovider -q` -> 60 passed in 0.12 s.
+- `python -m ruff check LoopStructural packages` -> All checks passed. This includes the three `loop_common` source files.
+
+Counts, as pytest reports them. Resize file: 40 cells (12 + 3 + 3 + 3 + 1 + 1 + 3 + 1 + 10 + 3). The task text said 36. The count differs because `test_2d_counts_are_derived` has 10 cells (2 grids x 5 checks), not 6. Cell-centre file: 60 cells (5 tests x 12). Total 100, which equals the 24 failed + 76 passed of `## S5 pre-fix failures`.
+
+Comparison with `## S5 pre-fix failures`, test by test. All 24 failed cells now pass.
+
+| Test function | Before | Now |
+|---|---|---|
+| `test_nsteps_setter_keeps_extent` | 3 / 3 failed | 3 / 3 pass |
+| `test_step_vector_setter_encloses_extent` | 2 / 3 failed (`[G1]`, `[G3]`) | 3 / 3 pass, `[G1]` and `[G3]` now pass |
+| `test_nsteps_below_two_is_rejected_without_change` | 1 / 1 failed | 1 / 1 pass |
+| `test_nsteps_not_whole_is_rejected_without_change` | 1 / 1 failed | 1 / 1 pass |
+| `test_set_nelements_keeps_extent` | 3 / 3 failed | 3 / 3 pass |
+| `test_set_nelements_small_request_is_clamped` | 1 / 1 failed | 1 / 1 pass |
+| `test_2d_counts_are_derived` | 10 / 10 failed | 10 / 10 pass |
+| `test_rectilinear_resize_is_rejected` | 3 / 3 failed | 3 / 3 pass |
+| `test_reapplying_same_value_10_times_changes_nothing_3d` | 12 / 12 passed | 12 / 12 pass (coverage) |
+| `test_step_vector_a_b_a_extent_drift` | 3 / 3 passed | 3 / 3 pass (coverage) |
+| Cell-centre file, 5 tests | 60 / 60 passed | 60 / 60 pass |
+
+Measured extent drift of the A-B-A test (`step_vector` set to A, then B = 1.5 A, then A). The bound is A + B.
+
+| Grid | Measured drift | Bound (A + B) |
+|---|---|---|
+| G1 | [1, 2, 0] | [2.5, 5, 7.5] |
+| G2 | [0.5, 0.5, 0.5] | [1.25, 1.25, 1.25] |
+| G3 | [10, 100, 7.5] | [25, 250, 18.75] |
+
+All drifts are inside the bound. The pre-fix drift was G1 [1, 0, 3], G2 [0.5, 0.5, 0.5], G3 [0, 0, 7.5], also inside the bound. The pre-fix and post-fix values differ because the setters now keep the extent and enclose it by less than one cell.
+
+Evidence for FR-015 and SC-011. `test_centres_are_cell_midpoints_in_world` is the evidence. Each cell of the exported grid (`structured_grid()`) has one centre, as the mean of its 8 corner nodes, and the centres are all different. `test_local_coordinates_grid_associates_own_centres` is a containment check: each cell centre falls inside the `structured_grid(local_coordinates=True)` grid (no -1 from `cell_index_at`). That grid is the axis-aligned enclosure, so a one-to-one count against it does not hold, and the test does not claim it. `test_centres_round_trip_and_index_own_cells` is a consistency check on the cell grid of the box itself, built from the same linspace as the centres. It is not evidence for FR-015 or SC-011. `test_centres_match_exported_cells` and `test_centres_inside_box` are coverage.
+
+OP12: not reproduced. All 60 cell-centre cells passed before the fix and pass now. `_bounding_box.py` was not changed.

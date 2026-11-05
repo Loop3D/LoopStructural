@@ -48,6 +48,14 @@
       "check": "scope pass; golden tests 9 passed; survey: modelling 1540 passed, interpolation 615 passed, loop_common 406 passed, tests/unit rest 504 passed; 78 of 611 3D golden keys changed (causes C1 C2 C3); 2D golden unchanged; loop_interpolation golden unchanged",
       "commit": "09d2e7b6bc82fcef0d813f45020015c171b12d23",
       "review": "pass (no findings; reviewer confirmed 78 keys, causes C1 C2 C3)"
+    },
+    {
+      "wave": 36,
+      "base": "8dff4ec4ce03031efb2e79e5a3b0322d1e8a7e92",
+      "tasks": "T079,T080",
+      "check": "scope pass; resize+cell-centre 100 passed; T080 127 failed pre-fix as expected; ruff pass",
+      "commit": "pending",
+      "review": "pending"
     }
   ],
   "runs": {
@@ -117,6 +125,18 @@
       {
         "model": "sonnet",
         "result": "pass"
+      }
+    ],
+    "T079": [
+      {
+        "model": "sonnet",
+        "result": "pass"
+      }
+    ],
+    "T080": [
+      {
+        "model": "sonnet",
+        "result": "pass: 127 failing cells pre-fix; tol_solved 9e-4 (measured max 4.414e-4)"
       }
     ]
   },
@@ -1339,5 +1359,8 @@
   "s5_notes3": {
     "T076": "Builder lines _geological_feature_builder.py 520/544/604 assign support.maximum; 3D supports only (2D supports are not built by the feature builder). 2D maximum is now read-only.",
     "T075": "Writers checked: none depends on the old product rule; set_interpolation_geometry loop still terminates."
+  },
+  "s5_notes4": {
+    "T080": "Test new_misfit_methods_leaves_state_unchanged name spelled with leaves so the -k filter matches. Contract: evaluate_gradient_cosines is flat (gradient rows then normal rows); old misfit ravel equals it; new method must call self.evaluate_gradient. TOL_SOLVED=9e-4."
   }
 }
