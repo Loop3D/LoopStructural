@@ -1345,7 +1345,7 @@ frame. A legacy file needs an explicit choice. A frame change never gives a stal
 
 ## Phase 22: Stage S5 finish
 
-- [ ] T085 [P] [Finish] [M] Record the S5 notices in `COMPAT.md`.
+- [x] T085 [P] [Finish] [M] Record the S5 notices in `COMPAT.md`.
   - Files: `COMPAT.md`
   - Needs: T084
   - Wave: 41
@@ -1355,7 +1355,7 @@ frame. A legacy file needs an explicit choice. A frame change never gives a stal
     (4) Assigning `nsteps` or `step_vector` on a 3D structured grid, and `set_nelements`, keep the extent (a new step, not a product rule); `nsteps` must be whole and at least 2. `set_nelements` keeps `maximum`. Grid steps and solved values can change slightly. (5) A `RectilinearGrid` raises `NotImplementedError` on assignment of `origin`, `nsteps` or `step_vector`. (6) The 2D grid derives `nsteps_cells`, `n_cell_x`, `n_cell_y` from `nsteps`; `maximum` keeps its legacy value. (7) `ConstraintDiagnosticsReport` has three new optional fields (`physical_residuals`, `assembled_residuals`, `exclusions`); with an identity frame and no resize the value misfit is the same as before.
     Do not change other text. Write in ASD-STE100 Simplified Technical English.
 
-- [ ] T086 [P] [Finish] [S] Record the S5 misfit decision in `ROADMAP.md`.
+- [x] T086 [P] [Finish] [S] Record the S5 misfit decision in `ROADMAP.md`.
   - Files: `ROADMAP.md`
   - Needs: T084
   - Wave: 41
@@ -1363,7 +1363,7 @@ frame. A legacy file needs an explicit choice. A frame change never gives a stal
   - Context: Add a new `###` subsection as the last one of `## Decisions`, directly before `## Stage sequence`. Heading: `### Misfit diagnostics of GeologicalFeature (spec 005, S5)`. Body (ASD-STE100): decision date 2026-11-05 (spec 005, S5, Q2); the misfit methods `evaluate_gradient_misfit` and `evaluate_value_misfit` keep their names and public shape; the gradient value is now a cosine in world coordinates; a stale model gives a `UserWarning` and NaN (no rebuild);
     the new names `evaluate_gradient_cosines` and `evaluate_value_residuals` give the 1-D result; the notice is in `COMPAT.md`. Keep the style of the neighbouring subsections. Do not change other text.
 
-- [ ] T087 [Finish] [M] Record the S5 rollback check in `verification.md`.
+- [x] T087 [Finish] [M] Record the S5 rollback check in `verification.md`.
   - Files: `specs/005-coordinate-frame-correctness/verification.md`
   - Needs: T074, T084
   - Wave: 41

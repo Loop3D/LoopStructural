@@ -88,6 +88,14 @@
       "check": "scope pass; diagnostics+scalar_field 154 passed; ruff pass",
       "commit": "0ef1d4396743856b803d6e0802b8dfa83504db83",
       "review": "pass (no findings)"
+    },
+    {
+      "wave": 41,
+      "base": "0764d785a5bac7e4253d067582309468a77a08f9",
+      "tasks": "T085,T086,T087",
+      "check": "scope pass; COMPAT greps ok; ROADMAP grep 1; rollback worktree removed; checks a to f pass",
+      "commit": "pending",
+      "review": "pending"
     }
   ],
   "runs": {
@@ -193,6 +201,24 @@
       {
         "model": "sonnet",
         "result": "pass: 147 + 7 passed"
+      }
+    ],
+    "T085": [
+      {
+        "model": "sonnet",
+        "result": "pass"
+      }
+    ],
+    "T086": [
+      {
+        "model": "haiku",
+        "result": "pass"
+      }
+    ],
+    "T087": [
+      {
+        "model": "sonnet",
+        "result": "pass: rollback commit 1c029d21 (S4 code); report has 4 fields on S4 not 5"
       }
     ]
   },

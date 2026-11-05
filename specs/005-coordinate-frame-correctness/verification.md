@@ -953,3 +953,22 @@ Measured value (a short script in the scratchpad, not saved in the repository). 
 | Largest change in each column (x, y, z, vx, vy, vz, weight) | 2.9211, 7.5854, 8.2254, 0.5485, 0.2712, 0.6789, 0.9139 |
 
 The change is large in the position columns and in the vector columns, and the weight column also changes. The old method divides the stored rows in place, so the stored data of the interpolator are not the input data after the call.
+
+## S5 rollback checks
+
+Date: 2026-11-05. The check compares the S5 tree with the S4 end code.
+
+Set-up:
+
+- The throw-away worktree was at commit 1c029d21 (the docs commit that is the S5 start commit). `git diff --stat 1c029d21 c644c8d7 -- LoopStructural packages` prints nothing. No code differs between 1c029d21 and the S4 end commit c644c8d7, so 1c029d21 holds the S4 end code.
+- Each tree had its own `PYTHONPATH`. In each tree, `LoopStructural.__file__` and `loop_interpolation.__file__` pointed into that tree.
+- The throw-away worktree was removed with `git worktree remove --force` and `git worktree prune`. `git worktree list` shows no throw-away worktree.
+
+| Check | Result | Note |
+|---|---|---|
+| (a) `dataclasses.fields` of the diagnostics classes | pass | `ConstraintFamilyDiagnostics` and `RegionCoverageDiagnostics` are equal. `ConstraintDiagnosticsReport` has only 4 fields on S4 (`interpolator_type`, `families`, `region_coverage`, `outside_model_points`). These 4 are equal on S5. S5 adds `physical_residuals` (the fifth field), `assembled_residuals` and `exclusions`, all with defaults. The task text says "first five", but S4 has only four. |
+| (b) `to_dict()` of a report with no verification | pass | One `ConstraintFamilyDiagnostics` and one `RegionCoverageDiagnostics`. The two dicts are equal. |
+| (c) `from loop_interpolation import *` | pass | The S4 names are a subset of the S5 names. S5 adds `ExclusionRecord`, `ResidualSummary`, `build_exclusion_records` and `direction_cosines`. No S4 name is missing. |
+| (d) `GeologicalFeature.evaluate_gradient_misfit` and `evaluate_value_misfit` | pass | The parameters are equal on both trees (`(self)`). Only the return annotation differs: S5 has `-> 'np.ndarray'`, S4 has none. The result shape for one family (gradient data, normal data dropped, fixture `world_foliation_model`) is `(1, 4)` on both trees. The value misfit has shape `(27,)` on both. No warning on either tree. |
+| (e) `StructuredGrid` with an unchanged grid | pass | `origin`, `maximum`, `nsteps` and `step_vector` are equal on both trees (origin [0, 1, 2], nsteps [7, 8, 9], step_vector [1, 2, 0.5], maximum [6, 15, 6]). |
+| (f) 2D `maximum` assertions | pass | `pytest packages/loop_common/tests/test_2d_discrete_support.py tests/unit/interpolator/test_2d_discrete_support.py -p no:cacheprovider -q` gives 19 passed on S5 and 19 passed on S4. |
