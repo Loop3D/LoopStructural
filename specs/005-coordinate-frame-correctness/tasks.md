@@ -1156,7 +1156,7 @@ frame. A legacy file needs an explicit choice. A frame change never gives a stal
     give the same `get_data()` output; (d) on the old code `model.rescale(p)` and `model.scale(p)` give no warning, on the S4 code each gives one, and the values are equal.
     Then `git worktree remove --force <tmp>` and `git worktree prune`.
 
-- [ ] T068 [Finish] [M] Run the S4 gates and complete `verification.md` and the `ROADMAP.md` status log.
+- [x] T068 [Finish] [M] Run the S4 gates and complete `verification.md` and the `ROADMAP.md` status log.
   - Files: `specs/005-coordinate-frame-correctness/verification.md`, `ROADMAP.md`
   - Needs: T064, T065, T066, T067
   - Wave: 31

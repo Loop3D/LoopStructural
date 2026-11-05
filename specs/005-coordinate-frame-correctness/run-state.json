@@ -221,6 +221,12 @@
         "model": "sonnet",
         "result": "pass; Loop3DView.add_data does not exist: checked Loop2DView.add_data (signature equal) and Loop3DView.add_mesh"
       }
+    ],
+    "T068": [
+      {
+        "model": "sonnet",
+        "result": "pass; gates run by the orchestrator (detached script); Done-when root pytest has 1 pre-existing failure (gocad, not S4)"
+      }
     ]
   },
   "findings": {
@@ -1167,5 +1173,12 @@
         }
       ]
     }
+  },
+  "final": {
+    "head_gated": "1ba71f17",
+    "lint": "ruff check LoopStructural packages: pass",
+    "test_packages": "912 passed, 47 skipped, 2 xfailed in 150.24 s",
+    "test_root": "1 failed, 2066 passed, 4 skipped in 805.50 s; the failure test_write_vol_gocad_is_broken_for_real_bounding_box is pre-existing (confirmed with the S4 changes stashed; two LoopValueError classes); it was skipped before because pyevtk is missing from the venv (pyevtk from a scratch dir on PYTHONPATH)",
+    "format": "black --check: 3 library files dirty before S4 (exporters.py, intrusion_frame_builder.py, geological_model.py); only task hunks changed"
   }
 }

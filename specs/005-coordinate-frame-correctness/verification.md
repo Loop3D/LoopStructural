@@ -563,6 +563,11 @@ Deviations.
   copies its input, and the array of the caller does not change. FR-033 says
   keep the behaviour.
 
+S4 gate counts (T068). At HEAD `1ba71f17` (S4 code final), the root `pytest`
+gives 2066 passed, 1 failed, 4 skipped. The one failure is the pre-existing
+`test_write_vol_gocad_is_broken_for_real_bounding_box` above. The package tests
+give 912 passed, 47 skipped, 2 xfailed. See `## S4 final gates`.
+
 ## S4 golden review (C-004)
 
 Command: `git grep -l "get_data\|\.rescale(\|\.scale(" -- 'tests/*.py' 'packages/*.py'`.
@@ -608,3 +613,82 @@ Note on (a). The task text names `Loop3DView.add_data`. This method does not exi
 Check (b) used `ANCHORS[1]` = (100, 200, 300), rotation 0, and the gradient constraint at `anchor + (2, 3, 4)`. The old code shows the point shifted by the origin; the S4 code shows it at the world location.
 
 Cleanup. The throw-away worktree was removed with `git worktree remove --force C:/Users/lachl/dev/LoopStructural-005-s4-rollback`, then `git worktree prune` ran. `git worktree list` shows no `-rollback` entry.
+
+## S4 backend matrix
+
+Engines and consumers that S4 touches. Native engines, Surfe and the browser
+viewer are not in S4.
+
+| Item | Level | Evidence |
+|---|---|---|
+| Python FDI foliation data (`get_data` locations, exported data) | mandatory | `test_feature_data_locations_are_world`, `test_spec_example_observation_is_not_shifted`, `test_exported_data_keeps_world_locations` |
+| Fault centre in the 2D viewer | coverage (no defect found) | `test_2d_viewer_fault_ellipse_centre_is_world` passed before and after the fixes |
+| Intrusion classification | mandatory | `test_intrusion_classification_uses_world_points` (12 cells) |
+| Native engines | not in S4 | S6 |
+| Surfe | not in S4 | S6 |
+| Browser viewer | not in S4 | S6 |
+
+## S4 test run time (OP2)
+
+| Item | Time |
+|---|---|
+| Full root suite (orchestrator, HEAD `1ba71f17`) | 805.50 s (13 min 25 s). The S3 end run took 817.74 s. |
+| Package suites (orchestrator) | 150.24 s. The S3 end run took 103.85 s; the two runs had different machine load, so the times do not compare. |
+
+The root time is about the same as the S3 time. The root suite has 72 more
+passed tests than at the S3 end: the 60 cells of the consumer file and the
+exporter tests that now run, because `pyevtk` is present.
+
+## S4 final gates
+
+The orchestrator ran the full gates at HEAD `1ba71f17` (S4 code final). The
+`PYTHONPATH` held the worktree, `packages/loop_common/src`,
+`packages/loop_interpolation/src`, `packages/loopstructural_visualisation/src`
+and a `pyevtk` 1.7.0 directory (the venv has no `pyevtk`).
+
+| Command | Result |
+|---|---|
+| `ruff check LoopStructural packages` | All checks passed |
+| `pytest packages/loop_common/tests packages/loop_interpolation/tests` | 912 passed, 47 skipped, 2 xfailed, 7 warnings in 150.24 s (same counts as the S3 end) |
+| Root `pytest` | 1 failed, 2066 passed, 4 skipped, 12 warnings in 805.50 s |
+
+The one failure is `tests/unit/io/test_exporters.py::test_write_vol_gocad_is_broken_for_real_bounding_box`.
+It is pre-existing and not from S4 (two different `LoopValueError` classes; see
+`## S4 post-fix results`). S3 skipped it because `pyevtk` was missing. The S3
+end had 1994 passed and 5 skipped. The 72 new passes are the 60 consumer cells
+and the exporter tests that now run.
+
+Because of this one failure, the "Done when" line of T068 (`pytest` passes) is
+not fully met. The failure is not in the scope of S4.
+
+## S4 deprecated-call grep (T068)
+
+`git grep -n "\.rescale("` shows these hits:
+
+- `LoopStructural/modelling/features/_geological_feature.py:366`: the commented block of `get_data`.
+- `tests/unit/modelling/test_world_location_consumers.py:243` and `:247`: the deprecation tests.
+- `COMPAT.md:17`: the deprecation table row (text only, not a call).
+- `specs/005-coordinate-frame-correctness/plan.md` and `tasks.md`: spec text, not code.
+- `specs/005-coordinate-frame-correctness/verification.md:568` and `:602`: this record.
+
+`git grep -n "\.scale("` shows these hits:
+
+- `COMPAT.md:18`: the deprecation table row (text only).
+- `specs/005-coordinate-frame-correctness/plan.md`, `tasks.md` and `verification.md` (lines 568 and 603): spec text and this record.
+
+No code outside the commented block of `get_data` and the deprecation tests
+calls `.rescale(` or `.scale(`. No other hit exists.
+
+## S4 library deprecation-warning check (T068)
+
+Command (with the S4 `PYTHONPATH` and the `pyevtk` directory):
+`python -m pytest tests/unit/io/test_exporters.py tests/unit/modelling/intrusions tests/unit/modelling/test_world_location_consumers.py -q -p no:cacheprovider -W "error:.*is deprecated.*:DeprecationWarning"`
+with the two warn-tests of `rescale` and `scale` deselected (they expect the warning).
+
+Result: 1 failed, 57 passed, 24 deselected, 2 warnings in 23.43 s. The failure
+is the pre-existing `test_write_vol_gocad_is_broken_for_real_bounding_box`. The
+summary has two warnings with the text "is deprecated":
+`StructuralFrameBuilder.setup() is deprecated, use .build() instead`, from
+`tests/unit/modelling/intrusions/test_intrusions.py` lines 55 and 100. The tests
+call the old `setup()` method. This warning is old and not from S4. No warning
+of `rescale` or `scale` appears, so no S4 code path calls them.
