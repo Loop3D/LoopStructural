@@ -70,8 +70,8 @@
       "base": "e584bb20eb897241054ea2dda689211fdd48f1b8",
       "tasks": "T082",
       "check": "scope pass; 147 of 147 cells fail pre-fix; old method changes data[gradient] by up to 8.2254",
-      "commit": "pending",
-      "review": "pending"
+      "commit": "6906c8ece48136d3dc16fede52876f01aa435195",
+      "review": "pass (no findings)"
     }
   ],
   "runs": {
