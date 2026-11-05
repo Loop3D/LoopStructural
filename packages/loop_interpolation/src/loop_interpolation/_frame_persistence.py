@@ -7,6 +7,8 @@ back.
 from __future__ import annotations
 
 import itertools
+import os
+import sys
 import warnings
 from typing import Any
 
@@ -39,8 +41,9 @@ REASONS: tuple[str, ...] = (
 """Valid reasons for an `InterpolatorFormatError`."""
 
 # REMOVE AT THE NEXT MAJOR RELEASE (spec 005, C-018): delete the fallback in
-# `payload_kind` and this constant. A legacy payload with no choice then always
-# raises InterpolatorFormatError("legacy_no_transform", ...).
+# `payload_kind` and this constant. Also delete `warn_legacy_identity` and
+# `_external_stacklevel`. A legacy payload with no choice then always raises
+# InterpolatorFormatError("legacy_no_transform", ...).
 _STRICT_LEGACY: bool = False
 
 _LEGACY_IDENTITY_WARNING = (
@@ -117,13 +120,51 @@ def frame_payload(bounding_box: BoundingBox | None, dimensions: int) -> dict:
     }
 
 
+def _external_stacklevel() -> int:
+    """Count the frames of this package above `warn_legacy_identity`, plus 1.
+
+    The count starts at the caller of `warn_legacy_identity` and stops at the
+    first frame outside this package.
+
+    Returns
+    -------
+    int
+        Number of package frames above `warn_legacy_identity`, plus 1. The
+        value is the `stacklevel` of the first outside frame, counted from
+        the caller of `warn_legacy_identity`.
+    """
+    package_dir = os.path.dirname(os.path.abspath(__file__))
+    # Frame 0 is this function. Frame 1 is `warn_legacy_identity`.
+    frame = sys._getframe(2)
+    level = 1
+    while frame is not None and os.path.dirname(frame.f_code.co_filename) == package_dir:
+        level += 1
+        frame = frame.f_back
+    return level
+
+
+def warn_legacy_identity() -> None:
+    """Warn that a legacy payload loaded with the identity frame.
+
+    The warning is attributed to the first frame outside the
+    `loop_interpolation` package, which is the code of the user.
+
+    Warns
+    -----
+    FutureWarning
+        Always.
+    """
+    warnings.warn(_LEGACY_IDENTITY_WARNING, FutureWarning, stacklevel=_external_stacklevel() + 1)
+
+
 def payload_kind(payload: dict, caller_frame: bool) -> str:
     """Return the kind of a stored payload.
 
     On the 1.x line, a legacy payload (no `format_version`) with no choice of
-    the caller gives a `FutureWarning` and the kind `"legacy"`. The payload
-    then loads with the identity frame. If `_STRICT_LEGACY` is true, the
-    function raises an error in this case.
+    the caller gives the kind `"legacy"`. The payload then loads with the
+    identity frame. The function does not warn. The caller uses
+    `warn_legacy_identity` after the load succeeds. If `_STRICT_LEGACY` is
+    true, the function raises an error in this case.
 
     Parameters
     ----------
@@ -144,11 +185,6 @@ def payload_kind(payload: dict, caller_frame: bool) -> str:
         caller gives no frame (`legacy_no_transform`), if the version is above
         `FORMAT_VERSION` (`unsupported_version`), or if the payload is not
         valid (`malformed`).
-
-    Warns
-    -----
-    FutureWarning
-        If the payload has no transform and the caller gives no frame.
     """
     version = payload.get("format_version")
     if version is None:
@@ -158,16 +194,12 @@ def payload_kind(payload: dict, caller_frame: bool) -> str:
                 "malformed interpolator payload: legacy payload has frame keys "
                 "but no format_version",
             )
-        if not caller_frame:
-            if _STRICT_LEGACY:
-                raise InterpolatorFormatError(
-                    "legacy_no_transform",
-                    "legacy interpolator payload has no transform: pass local_origin "
-                    "and local_rotation, or declare_identity=True",
-                )
-            # stacklevel 4: payload_kind <- InterpolatorFactory.from_dict
-            # <- GeologicalInterpolator.from_dict <- caller.
-            warnings.warn(_LEGACY_IDENTITY_WARNING, FutureWarning, stacklevel=4)
+        if not caller_frame and _STRICT_LEGACY:
+            raise InterpolatorFormatError(
+                "legacy_no_transform",
+                "legacy interpolator payload has no transform: pass local_origin "
+                "and local_rotation, or declare_identity=True",
+            )
         return "legacy"
     if not isinstance(version, int) or isinstance(version, bool) or version < 1:
         raise InterpolatorFormatError(

@@ -19,7 +19,12 @@ from . import (
     interpolator_string_map,
     support_interpolator_map,
 )
-from ._frame_persistence import InterpolatorFormatError, payload_kind, resolve_frame
+from ._frame_persistence import (
+    InterpolatorFormatError,
+    payload_kind,
+    resolve_frame,
+    warn_legacy_identity,
+)
 from ._validation import ValidationError
 
 
@@ -117,6 +122,7 @@ class InterpolatorFactory:
                 "malformed", "frame arguments apply only to a saved payload"
             )
         kind = payload_kind(d, caller_frame) if saved else None
+        legacy_no_choice = saved and kind == "legacy" and not caller_frame
         d = d.copy()
         frame_keys = {}
         if saved:
@@ -206,6 +212,8 @@ class InterpolatorFactory:
 
         interpolator.up_to_date = up_to_date
         interpolator.valid = valid
+        if legacy_no_choice:
+            warn_legacy_identity()
         return interpolator
 
     @staticmethod
