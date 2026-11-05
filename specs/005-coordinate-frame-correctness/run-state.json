@@ -82,6 +82,19 @@
       "check": "scope pass except approved T056 test fix; ruff pass; 62 passed (consumers + public api); test_exporters 12 passed 1 pre-existing fail (gocad)",
       "commit": "7d5959e7f806ef8ff571406b0045be3c17301000",
       "review": "pass: sonnet, no findings"
+    },
+    {
+      "wave": 29,
+      "base": "2e84bfcc443c6f60c9d2d55412f508ea0f0d227b",
+      "tasks": [
+        "T063",
+        "T064",
+        "T065",
+        "T066"
+      ],
+      "check": "scope pass; greps ok; consumers 60 passed; intrusions 9; api contract 2; exporters 12 + 1 pre-existing fail",
+      "commit": "75c2cb3517b600036f847fbd7bf9af6e316ba583",
+      "review": "pass: sonnet, no findings"
     }
   ],
   "runs": {
