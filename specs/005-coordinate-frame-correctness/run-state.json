@@ -890,7 +890,7 @@
       }
     }
   },
-  "status": "all 50 tasks done; end review pass after one fix round; final gates re-run pending",
+  "status": "S3 implemented and gated; end review pass after one fix round",
   "spec_review": {
     "stage": "S3",
     "model": "opus",
@@ -904,5 +904,13 @@
     ],
     "recheck": "pass: opus, 2 minor (fix commit c9ca3260)",
     "fix_commit": "c9ca3260a29b01ec4906497b8e2f2955016f2867"
+  },
+  "final": {
+    "head_gated": "e49f3b2a",
+    "lint": "ruff check LoopStructural packages: pass",
+    "format": "black --check on the 10 changed .py files: new module and the 3 test files clean; 4 library files dirty and already dirty at the S3 start (_finite_difference_interpolator, _interpolator_factory, _p2_fold_interpolator, _p2interpolator); only task hunks changed",
+    "test_packages": "912 passed, 47 skipped, 2 xfailed, 7 warnings in 93.31 s",
+    "test_root": "1981 passed, 5 skipped, 13 warnings in 757.86 s (S2 head: 1760; +218 S3 cells +3 regression tests)",
+    "status": "S3 implemented: 50 of 50 tasks done; not pushed; no pull request"
   }
 }
