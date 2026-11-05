@@ -23,7 +23,7 @@
       "tasks": "T069,T070,T071",
       "check": "scope pass; ruff pass; T069 24 failed/76 passed incl T070 (expected pre-fix); T071 ImportError collection (expected)",
       "commit": "cc7d5f5ee0795bbec1d5aee6ece628841858fb4b",
-      "review": "pending"
+      "review": "fix round then recheck: pass (1 major fixed: T070 test premise/labels; 2 minor fixed); fix commit 04420f44"
     }
   ],
   "runs": {
@@ -51,10 +51,10 @@
     ]
   },
   "findings": {
-    "found": 0,
+    "found": 4,
     "rejected": 0,
     "dropped": 0,
-    "fixed": 0,
+    "fixed": 3,
     "open_minor": []
   },
   "answers": "2026-11-05 (S5 start): five gaps settled in plan.md Answers (bounding box = interpolator.bounding_box; stale recipe = assign up_to_date/_up_to_date False; 2D n_elements exists; report key set is a literal; PLI add_gradient_constraints is pass so PLI gradient family reports unattributed = 2*source_points).",
