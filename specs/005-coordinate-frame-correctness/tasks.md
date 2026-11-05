@@ -987,7 +987,7 @@ frame. A legacy file needs an explicit choice. A frame change never gives a stal
 **Goal**: `get_data`, the data export and the intrusion classification use the stored world locations, with no second conversion. `rescale` and `scale` warn.
 **Independent test**: `pytest tests/unit/modelling/test_world_location_consumers.py`.
 
-- [ ] T052 [US3] [M] Test: display and export locations are world (U3.4; FR-022).
+- [x] T052 [US3] [M] Test: display and export locations are world (U3.4; FR-022).
   - Files: `tests/unit/modelling/test_world_location_consumers.py`
   - Needs: T051
   - Wave: 24

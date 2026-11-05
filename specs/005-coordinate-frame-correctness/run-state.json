@@ -16,12 +16,29 @@
   },
   "env": "PYTHONPATH=C:/Users/lachl/dev/LoopStructural-005-s4;C:/Users/lachl/dev/LoopStructural-005-s4/packages/loop_common/src;C:/Users/lachl/dev/LoopStructural-005-s4/packages/loop_interpolation/src; python = main checkout .venv (C:/Users/lachl/dev/LoopStructural/.venv/Scripts/python.exe); run the root pytest and the package tests in separate calls, one heavy run at a time (low memory); detached script + foreground poll for long runs; logs with Out-File -Encoding utf8",
   "base_note": "Built from docs/005-s4-plan (9b3507a9) on origin/master (S1 to S3 and PR #400 merged). Not pushed; no PR.",
-  "waves": [],
+  "waves": [
+    {
+      "wave": 23,
+      "base": "9b3507a9a4d4c7d7a903a08c7d33619a7546bf61",
+      "tasks": [
+        "T051"
+      ],
+      "check": "scope pass; ruff pass; payload_declares 36 passed",
+      "commit": "7b4596046b230fb5f8cd5f55c40e6e277d85f932",
+      "review": "pass: sonnet, no findings"
+    }
+  ],
   "runs": {
     "T051": [
       {
         "model": "sonnet",
         "result": "pass: world_foliation_model added"
+      }
+    ],
+    "T052": [
+      {
+        "model": "sonnet",
+        "result": "pass: 19 cells, 18 fail (shift by local origin), identity cell passes"
       }
     ]
   },
