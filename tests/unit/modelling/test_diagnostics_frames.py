@@ -474,3 +474,62 @@ def test_gradient_outside_points_with_pli_are_measured():
     )
     print(f"PLI gradient: unattributed={unattributed} outside_model={outside}")
     assert outside == 3
+
+
+def _faulted_built_model():
+    """Build a model with one fault and one foliation, then update it."""
+    from LoopStructural import GeologicalModel
+
+    model = GeologicalModel([0, 0, 0], [1, 1, 1])
+    rows = [
+        [0.5, 0.5, 0.5, 1, 0, 0, 0, "fault", 0],
+        [0.5, 0.5, 0.5, 0, 0, 1, 1, "fault", 0],
+        [0.5, 0.5, 0.5, 0, 1, 0, 2, "fault", 0],
+    ]
+    for x in (0.2, 0.8):
+        for y in (0.2, 0.8):
+            rows.append([x, y, 0.3, np.nan, np.nan, np.nan, np.nan, "strati", 0.0])
+            rows.append([x, y, 0.7, np.nan, np.nan, np.nan, np.nan, "strati", 1.0])
+    rows.append([0.3, 0.3, 0.5, 0, 0, 1, np.nan, "strati", np.nan])
+    model.data = pd.DataFrame(
+        rows, columns=["X", "Y", "Z", "nx", "ny", "nz", "coord", "feature_name", "val"]
+    )
+    fault = model.create_and_add_fault("fault", 0.1, nelements=1e3)
+    strati = model.create_and_add_foliation("strati", nelements=1e3)
+    model.update()
+    return model, fault, strati
+
+
+def test_built_faulted_feature_is_not_stale():
+    """A built feature with a fault gives finite misfits and no warning."""
+    _, _, strati = _faulted_built_model()
+    assert len(strati.builder.faults) == 1
+    with warnings.catch_warnings(record=True) as caught:
+        warnings.simplefilter("always")
+        cosines = strati.evaluate_gradient_cosines()
+        residuals = strati.evaluate_value_residuals()
+        gradient_misfit = strati.evaluate_gradient_misfit()
+        value_misfit = strati.evaluate_value_misfit()
+        report = strati.verification_report()
+    messages = [str(w.message) for w in caught if issubclass(w.category, UserWarning)]
+    assert messages == [], messages
+    assert np.all(np.isfinite(cosines)) and np.all(np.isfinite(residuals))
+    assert np.all(np.isfinite(gradient_misfit)) and np.all(np.isfinite(value_misfit))
+    assert report.physical_residuals and report.assembled_residuals
+
+
+def test_stale_fault_component_is_not_rebuilt():
+    """A stale component of a fault gives one warning, NaN, and no rebuild."""
+    model, fault, strati = _faulted_built_model()
+    component = fault.builder.builders[0]
+    component.set_not_up_to_date(model)
+    flags = (component._up_to_date, component._interpolator.up_to_date)
+    assert flags[0] is False
+    with warnings.catch_warnings(record=True) as caught:
+        warnings.simplefilter("always")
+        residuals = strati.evaluate_value_residuals()
+    messages = [str(w.message) for w in caught if issubclass(w.category, UserWarning)]
+    assert len(messages) == 1, messages
+    assert "builder" in messages[0] or "interpolator" in messages[0]
+    assert np.all(np.isnan(residuals))
+    assert (component._up_to_date, component._interpolator.up_to_date) == flags

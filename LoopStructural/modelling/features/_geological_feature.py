@@ -216,12 +216,12 @@ class GeologicalFeature(BaseFeature):
             while not resolved:
                 resolved = True
                 for f in self.faults:
-                    v = (
+                    side = (
                         f[0]
                         .evaluate_value(tetrahedron.reshape(-1, 3), fillnan='nearest')
                         .reshape(tetrahedron.shape[0], 4)
                     )
-                    flag = np.logical_or(np.all(v > 0, axis=1), np.all(v < 0, axis=1))
+                    flag = np.logical_or(np.all(side > 0, axis=1), np.all(side < 0, axis=1))
                     if np.any(~flag):
                         logger.warning(
                             f"Points are too close to fault {f[0].name}. Refining the tetrahedron"
@@ -248,6 +248,50 @@ class GeologicalFeature(BaseFeature):
         logger.info(f'Gradient calculated for {self.name}')
         return v
 
+    @staticmethod
+    def _first_stale(builder, label: str) -> str | None:
+        """Find the first stale builder or interpolator below a builder.
+
+        The method only reads flags. It follows the rule of
+        ``BaseBuilder.up_to_date``. A structural frame builder or a fault
+        builder has no flag of its own, so the method reads its component
+        builders. It also reads the faults of each builder.
+
+        Parameters
+        ----------
+        builder : object or None
+            Builder to check.
+        label : str
+            Name of the builder in the text of the result.
+
+        Returns
+        -------
+        str or None
+            Text that names the first stale object, or None if none is stale.
+        """
+        if builder is None:
+            return None
+        for fault in getattr(builder, "faults", None) or []:
+            fault_builder = getattr(fault, "builder", fault)
+            fault_name = getattr(fault, "name", "a fault")
+            reason = GeologicalFeature._first_stale(fault_builder, f"the fault {fault_name}")
+            if reason is not None:
+                return reason
+        components = getattr(builder, "builders", None)
+        if components is not None:
+            for index, component in enumerate(components):
+                name = getattr(component, "name", index)
+                reason = GeologicalFeature._first_stale(component, f"{label} ({name})")
+                if reason is not None:
+                    return reason
+            return None
+        if getattr(builder, "_up_to_date", True) is False:
+            return f"The builder of {label} is stale. Build the model first."
+        interpolator = getattr(builder, "_interpolator", None)
+        if getattr(interpolator, "up_to_date", True) is False:
+            return f"The interpolator of {label} is stale. Build the model first."
+        return None
+
     def _stale_reason(self) -> str | None:
         """Find the first stale object of the model.
 
@@ -259,21 +303,15 @@ class GeologicalFeature(BaseFeature):
             Text that names the first stale object and says to build the model
             first, or None if no object is stale.
         """
-        builder = self.builder
-        if builder is not None:
-            if getattr(builder, "_up_to_date", True) is False:
-                return f"The builder of {self.name} is stale. Build the model first."
-            for fault in getattr(builder, "faults", None) or []:
-                fault_builder = getattr(fault, "builder", fault)
-                fault_name = getattr(fault, "name", "a fault")
-                if getattr(fault_builder, "_up_to_date", True) is False:
-                    return f"The builder of the fault {fault_name} is stale. Build the model first."
-                fault_interpolator = getattr(fault_builder, "interpolator", None)
-                if getattr(fault_interpolator, "up_to_date", True) is False:
-                    return (
-                        f"The interpolator of the fault {fault_name} is stale. "
-                        "Build the model first."
-                    )
+        reason = self._first_stale(self.builder, self.name)
+        if reason is not None:
+            return reason
+        for fault in getattr(self, "faults", None) or []:
+            reason = self._first_stale(
+                getattr(fault, "builder", None), f"the fault {getattr(fault, 'name', 'a fault')}"
+            )
+            if reason is not None:
+                return reason
         if getattr(self.interpolator, "up_to_date", True) is False:
             return f"The interpolator of {self.name} is stale. Build the model first."
         return None
