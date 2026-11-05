@@ -24,6 +24,14 @@
       "check": "scope pass; ruff pass; T069 24 failed/76 passed incl T070 (expected pre-fix); T071 ImportError collection (expected)",
       "commit": "cc7d5f5ee0795bbec1d5aee6ece628841858fb4b",
       "review": "fix round then recheck: pass (1 major fixed: T070 test premise/labels; 2 minor fixed); fix commit 04420f44"
+    },
+    {
+      "wave": 33,
+      "base": "436d5f3f9d282c6048c7b27c268acdd975f166fa",
+      "tasks": "T072,T073",
+      "check": "scope pass; residual report test 9 passed; ruff pass",
+      "commit": "pending",
+      "review": "pending"
     }
   ],
   "runs": {
@@ -47,6 +55,22 @@
       {
         "model": "sonnet",
         "result": "pass: ImportError as expected"
+      }
+    ],
+    "T072": [
+      {
+        "model": "sonnet",
+        "result": "pass"
+      }
+    ],
+    "T073": [
+      {
+        "model": "sonnet",
+        "result": "blocked: 4 T071 tests contradicted the task text"
+      },
+      {
+        "model": "sonnet",
+        "result": "T071 tests corrected (fix worker); 9 passed"
       }
     ]
   },
@@ -1258,5 +1282,8 @@
   "s5_notes": {
     "T070": "The task text premise (one centre per cell of structured_grid(local_coordinates=True)) is wrong for rotated boxes: that grid is the axis-aligned enclosure with a different step. Test rewritten on the box own cell grid. _bounding_box.py not changed. OP12: not reproduced.",
     "T070_arg": "set_local_transform takes rotation_matrix=, not local_rotation=."
+  },
+  "s5_notes2": {
+    "T071_T073": "Four T071 tests asserted () or no record where the T073 rule (outside_model record per family with outside points; builder keys are not families) gives outside_model records or needs family dropped_rows 0. Tests corrected to assert no unattributed record; implementation follows the task text."
   }
 }

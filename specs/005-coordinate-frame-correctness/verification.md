@@ -697,3 +697,40 @@ of `rescale` or `scale` appears, so no S4 code path calls them.
 
 - `tests/unit/io/test_exporters.py::test_write_vol_gocad_is_broken_for_real_bounding_box` failed only because two classes are named `LoopValueError`. `BoundingBox.__getitem__` raises the class of `loop_common.geometry._bounding_box` (a `ValueError`), and the test expected the class of `LoopStructural.utils.exceptions`. The test now accepts `(LoopValueError, ValueError)`. The file passes: 13 passed (run with `pyevtk` on `PYTHONPATH`). The full root suite was not run again after this change; the failure was the only one in the S4 root run.
 - The task text and the S4 notice in `COMPAT.md` named `Loop3DView.add_data`. The method is `Loop2DView.add_data`. `plan.md`, `tasks.md` and `COMPAT.md` now say so.
+
+## S5 pre-fix failures
+
+Method. Both `loop_common` test files ran on the unfixed code, in one call: `python -m pytest packages/loop_common/tests/test_resize_paths.py packages/loop_common/tests/test_cell_centre_sampling.py -p no:cacheprovider -q -rf` (PowerShell, the worktree `LoopStructural-005-s5` on `PYTHONPATH`). No S5 library change exists at this commit. The result is 24 failed and 76 passed. All 24 failures are in the resize file. All 60 cells of the cell-centre file pass.
+
+Resize file (`test_resize_paths.py`): 24 failed, 76 passed.
+
+| Test function | Failed / total | Representative id and first error |
+|---|---|---|
+| `test_nsteps_setter_keeps_extent` | 3 / 3 | `[G1]`: the `maximum` is [10.5, 11, 10.5] and not [10, 10, 9] after `nsteps` is set to [22, 12, 8]. `[G2]` gives 102.25, -17.75, 7.25 (start 102, -18, 7). `[G3]` gives -9795, 2250, 26.25 (start -9800, 2200, 22.5) |
+| `test_step_vector_setter_encloses_extent` | 2 / 3 | `[G1]`: the `maximum` is [10.5, 9, 9] and is below the start [10, 10, 9], so the extent is lost. `[G3]` fails in the same way (the `maximum` is below the start). `[G2]` passes |
+| `test_nsteps_below_two_is_rejected_without_change` | 1 / 1 | `DID NOT RAISE ValueError`. The setter accepts nsteps [1, 6, 4] |
+| `test_nsteps_not_whole_is_rejected_without_change` | 1 / 1 | `DID NOT RAISE ValueError`. The setter accepts [5.5, 5, 5] and [nan, 5, 5] |
+| `test_set_nelements_keeps_extent` | 3 / 3 | `[G1]`: the `maximum` is not the start `maximum`. `set_nelements(200)` gives [9.43, 10.29, 10] and not [10, 10, 9]. `[G2]` gives 102.08, -17.92, 7.08. `[G3]` gives -9811, 2270, 10 |
+| `test_set_nelements_small_request_is_clamped` | 1 / 1 | `assert np.all(nsteps >= 2)` fails: `nsteps` is [2, 2, 1], and the `maximum` is [5.5, 6, 0] |
+| `test_2d_counts_are_derived` | 10 / 10 | All 5 checks fail for `[H1]` and for `[H2]`: `cells`, `n_cell`, `n_elements`, `dtype`, `maximum`. See the measured values below |
+| `test_rectilinear_resize_is_rejected` | 3 / 3 | `[nsteps]`: `DID NOT RAISE NotImplementedError`. `[step_vector]` and `[origin]` fail in the same way |
+| `test_reapplying_same_value_10_times_changes_nothing_3d` | 0 / 12 | Passes now (coverage, no defect) |
+| `test_step_vector_a_b_a_extent_drift` | 0 / 3 | Passes now (coverage, no defect). See the measured drift below |
+
+Measured values (a short script, not saved in the repository).
+
+| Measure | Value |
+|---|---|
+| `nsteps` setter, nodes 11 to 21, step 1, origin 0 | `maximum` is 10.476 (10.48) in each axis, and the expected value is 10 |
+| `step_vector` setter, step x 1.5 on G1 | `maximum` is [10.5, 9, 9], the start is [10, 10, 9]. The `nsteps` become [8, 4, 3] |
+| `step_vector` setter, step x 1.5 on G3 | `maximum` is [-9805, 2150, 26.25], the start is [-9800, 2200, 22.5]. The `nsteps` become [14, 2, 6] |
+| `step_vector` setter, step x 1.5 on G2 | `maximum` is [102.25, -17.75, 7.25], the start is [102, -18, 7]. The extent is enclosed, so the test passes |
+| A-B-A `step_vector` drift (A, then 1.5 A, then A) | G1 [1, 0, 3]. G2 [0.5, 0.5, 0.5]. G3 [0, 0, 7.5]. All are inside the limit (A + B), so the test passes |
+| 2D `nsteps` set to [nx + 3.0, ny + 2.0], H1 (5, 5) | `nsteps_cells` stays [4, 4]. `n_cell_x` and `n_cell_y` stay 4. `n_elements` stays 16. The dtype is float64. The `maximum` stays [5, 5] and the expected value is [8, 7] |
+| Same set on H2 (8, 4) | `nsteps_cells` stays [7, 3]. `n_elements` stays 21. The dtype is float64. The `maximum` stays [14, 3] and the expected value is [15.5, 7] |
+
+The 2D `maximum` check fails only because the counts are stale after the set. The legacy formula (origin + nsteps x step) is the expected value in the test, so the fix does not change the formula.
+
+Cell-centre file (`test_cell_centre_sampling.py`): 60 passed, 0 failed. Result: coverage, no defect. OP12 is not reproduced.
+
+Note on the one-to-one test. The first version of the test used `structured_grid(local_coordinates=True)` and failed in 8 of 12 cells (rotation 30 and 90). That grid is the axis-aligned enclosure of the projected corners, and it has a different step. The premise in the task text was wrong. The test now uses the midpoints of the exported world grid and the own cell grid of the box. `_bounding_box.py` was not changed. Also, `set_local_transform` takes the argument `rotation_matrix=`.

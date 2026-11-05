@@ -1212,7 +1212,7 @@ frame. A legacy file needs an explicit choice. A frame change never gives a stal
     `test_unattributed_rows_are_reported` (1): `value` family, `dropped_rows` 5, outside points 2: `unattributed` count 3. `test_gradient_outside_points_give_no_false_unattributed` (1): `gradient` family, 10 source points, 2 outside, `dropped_rows` 4, `rows_per_point={"gradient": 2}`: no record; with `dropped_rows` 6: `unattributed` 2.
     `test_dropped_rows_none_gives_no_unattributed` (1): `interface` family, `dropped_rows=None`, no outside points: no record. `test_surfe_style_dropped_equals_outside` (1): `rows_per_point=None`, `dropped_rows` equal to the outside count: no record. Write in ASD-STE100 Simplified Technical English.
 
-- [ ] T072 [US4] [M] Record the S5 pre-fix evidence for the resize and cell-centre tests in `verification.md`.
+- [x] T072 [US4] [M] Record the S5 pre-fix evidence for the resize and cell-centre tests in `verification.md`.
   - Files: `specs/005-coordinate-frame-correctness/verification.md`
   - Needs: T069, T070
   - Wave: 33
@@ -1223,7 +1223,7 @@ frame. A legacy file needs an explicit choice. A frame change never gives a stal
 
 ## Phase 19: Stage S5 diagnostics types and resize code
 
-- [ ] T073 [P] [US4] [M] Add the residual and exclusion types and functions to `_diagnostics.py`.
+- [x] T073 [P] [US4] [M] Add the residual and exclusion types and functions to `_diagnostics.py`.
   - Files: `packages/loop_interpolation/src/loop_interpolation/_diagnostics.py`
   - Needs: T071
   - Wave: 33

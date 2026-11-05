@@ -141,7 +141,9 @@ def test_report_without_verification_is_unchanged():
 
 
 def test_builder_records_keep_their_own_key():
-    families = {"restricted_orthogonal": _family("restricted_orthogonal", dropped_rows=3)}
+    # The builder key is not a family that counts it in dropped_rows.
+    # So dropped_rows is 0 and the rule gives no unattributed record.
+    families = {"restricted_orthogonal": _family("restricted_orthogonal", dropped_rows=0)}
     before = dataclasses.replace(families["restricted_orthogonal"])
     records = build_exclusion_records(
         {"restricted_orthogonal": {"invalid_reference_direction": 3}}, families
@@ -157,7 +159,8 @@ def test_builder_records_keep_their_own_key():
 
 
 def test_unknown_reason_keeps_its_count():
-    families = {"value": _family("value", dropped_rows=2)}
+    # dropped_rows is 0, so the rule gives no unattributed record.
+    families = {"value": _family("value", dropped_rows=0)}
     records = build_exclusion_records({"value": {"x": 2}}, families)
     assert len(records) == 1
     assert records[0].reason == "x"
@@ -190,7 +193,13 @@ def test_gradient_outside_points_give_no_false_unattributed():
         }
 
     records = build_exclusion_records({}, make(4), rows_per_point={"gradient": 2})
-    assert records == ()
+    # 4 dropped rows = 2 outside points * 2 rows. No unattributed record.
+    # One outside_model record gives the count in points.
+    assert _unattributed(records) == []
+    assert len(records) == 1
+    assert records[0].family == "gradient"
+    assert records[0].reason == "outside_model"
+    assert records[0].count == 2
     records = build_exclusion_records({}, make(6), rows_per_point={"gradient": 2})
     unattributed = _unattributed(records)
     assert len(unattributed) == 1
@@ -208,7 +217,14 @@ def test_surfe_style_dropped_equals_outside():
             "value", dropped_rows=2, source_point_count=10, outside_model_point_count=2
         )
     }
-    assert build_exclusion_records({}, families, rows_per_point=None) == ()
+    records = build_exclusion_records({}, families, rows_per_point=None)
+    # Dropped rows equal outside points. No unattributed record.
+    # One outside_model record gives the count.
+    assert _unattributed(records) == []
+    assert len(records) == 1
+    assert records[0].family == "value"
+    assert records[0].reason == "outside_model"
+    assert records[0].count == 2
 
 
 def test_residual_summary_is_importable():
