@@ -250,6 +250,36 @@ The constitution (.specify/memory/constitution.md) has priority. -->
 - 2026-11-05 (Q5, value misfit, maintainer): the public value misfit keeps its
   normalisation by the field range. The physical residual uses an unnormalised
   private helper, so its unit "field" is true.
+- 2026-11-05 (S5 build start, orchestrator, five gaps of the task texts, settled
+  by reading the code): (1) `GeologicalFeature` and its base class have no
+  `bounding_box` attribute. The misfit code uses `self.interpolator.bounding_box`
+  (an attribute of `GeologicalInterpolator`, `None` when no frame is set), as the
+  old code does. `self.model.bounding_box` is not used: the model can be `None`.
+  (2) A stale model for T081: for a stale interpolator, assign
+  `interpolator.up_to_date = False` after the solve (a plain attribute). For a
+  stale builder, assign `builder._up_to_date = False` after the solve. Do not use
+  `builder.set_not_up_to_date`: the `GeologicalFeatureBuilder` override also sets
+  the interpolator stale. The test asserts the flag value before the call.
+  (3) `n_elements` exists on `StructuredGrid2DGeometry` (`nsteps_cells[0] *
+  nsteps_cells[1]`, `_structured_grid_2d.py:45`) and on the 3D geometry (line
+  166). (4) No existing test checks the keys of `ConstraintDiagnosticsReport.to_dict`.
+  T071 writes the pre-S5 key set as a literal from the code: report keys
+  `interpolator_type`, `total_rows`, `families`, `region_coverage`,
+  `outside_model_points`; family keys `active`, `row_count`, `dropped_rows`,
+  `effective_weight_mean`, `effective_weight_min`, `effective_weight_max`,
+  `source_point_count`, `outside_model_point_count`; region keys
+  `total_support_nodes`, `active_region_nodes`, `inactive_region_nodes`,
+  `active_fraction`; report field order `interpolator_type`, `families`,
+  `region_coverage`, `outside_model_points`. (5) The gradient family adds 2
+  rows for each inside point for FDI (strike and dip rows, `name="gradient"`).
+  PLI is different: `P1Interpolator.add_gradient_constraints` is `pass`
+  (`_p1interpolator.py:70`), so PLI assembles no `gradient` rows, and the builder
+  reports `dropped_rows = 2 * source_points` for the `gradient` family of PLI.
+  So `verification_report` gives an `unattributed` record for PLI gradient data.
+  That record is true (PLI ignores gradient data) and it is not a defect of S5.
+  T081 checks the no-false-unattributed case with FDI only, and for PLI it records
+  the measured `unattributed` count (expected `2 * source_points`) and the
+  `outside_model` count. The worker reports both numbers.
 
 ## Summary
 
