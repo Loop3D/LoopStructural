@@ -104,7 +104,15 @@ class P2Interpolator(DiscreteInterpolator):
         return self.finalize_setup_diagnostics_report()
 
     def copy(self):
-        return P2Interpolator(self.support)
+        """
+        Create an empty copy on the same support, with the same coordinate frame.
+
+        Returns
+        -------
+        P2Interpolator
+            A new empty interpolator that shares the support and the bounding box.
+        """
+        return self._inherit_frame(P2Interpolator(self.support))
 
     def add_gradient_constraints(self, w: float = 1.0):
         points = self.get_gradient_constraints()

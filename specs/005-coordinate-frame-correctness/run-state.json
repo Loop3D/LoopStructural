@@ -86,6 +86,17 @@
       "check": "scope pass (VERIFY); ruff and black pass. T042: lifecycle -k stale/restored/rebuild/fault_restoration 13 passed (27 s); tests/unit/interpolator 346 passed (worker); package test_geological_interpolator.py 34 passed 6 failed = test_interpolator_json_yaml_round_trip until T043 (expected, documented). T041 done-when script ok. Persistence file 37 passed 132 failed (payload_declares 36 + old_reader 1 now pass; loader tests wait for T043)",
       "commit": "5413ec2a83867003835ce00b1ca126d02c699358",
       "review": "pass: sonnet, 3 minor"
+    },
+    {
+      "wave": 20,
+      "base": "347ed03d2f458840d03f406c10ec621926bf2279",
+      "tasks": [
+        "T043",
+        "T044",
+        "T045",
+        "T046"
+      ],
+      "check": "scope pass (VERIFY); ruff pass. Root call: test_frame_persistence.py + test_interpolator_factory.py 181 passed; test_frame_copy_and_lifecycle.py 49 passed (27.7 s); package call: test_p2_fold_registration.py + test_geological_interpolator.py 43 passed; worker: tests/unit/interpolator 346 passed. The S3 persistence file passes 169 of 169. Root and package tests run in separate calls (conftest clash). Orchestrator reverted a Black blank line that T046 added outside copy; _p2interpolator.py stays Black-unclean as on master (not touched)."
     }
   ],
   "runs": {
@@ -159,6 +170,30 @@
       {
         "model": "sonnet",
         "result": "pass: frame_signature, _note_frame, _check_frame, _inherit_frame, _restore_local_constraints, 7 setter guards, evaluate_* and to_dict guards, from_* keywords"
+      }
+    ],
+    "T043": [
+      {
+        "model": "sonnet",
+        "result": "pass: from_dict saved-payload path, frame args, malformed wrapping"
+      }
+    ],
+    "T044": [
+      {
+        "model": "haiku",
+        "result": "pass"
+      }
+    ],
+    "T045": [
+      {
+        "model": "haiku",
+        "result": "pass"
+      }
+    ],
+    "T046": [
+      {
+        "model": "haiku",
+        "result": "pass (orchestrator reverted a stray blank line from black)"
       }
     ]
   },
@@ -792,5 +827,5 @@
       }
     }
   },
-  "status": "wave 19 done and reviewed"
+  "status": "wave 20 done, review pending"
 }

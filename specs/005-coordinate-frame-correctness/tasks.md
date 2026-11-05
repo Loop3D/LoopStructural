@@ -871,12 +871,13 @@ frame. A legacy file needs an explicit choice. A frame change never gives a stal
 
 ## Phase 12: Stage S3 loader and copies
 
-- [ ] T043 [US3] [M] Rewrite `InterpolatorFactory.from_dict` for saved payloads.
+- [x] T043 [US3] [M] Rewrite `InterpolatorFactory.from_dict` for saved payloads.
   - Files: `packages/loop_interpolation/src/loop_interpolation/_interpolator_factory.py`
   - Needs: T041, T042
   - Wave: 20
-  - Done when: `pytest tests/unit/modelling/test_frame_persistence.py tests/unit/interpolator/test_interpolator_factory.py packages/loop_interpolation/tests/test_p2_fold_registration.py packages/loop_interpolation/tests/test_geological_interpolator.py`
-    passes, and `ruff check LoopStructural packages` passes.
+  - Done when: `pytest tests/unit/modelling/test_frame_persistence.py tests/unit/interpolator/test_interpolator_factory.py`
+    and, in a separate call (the conftest plugins clash), `pytest packages/loop_interpolation/tests/test_p2_fold_registration.py packages/loop_interpolation/tests/test_geological_interpolator.py`
+    pass, and `ruff check LoopStructural packages` passes.
   - Context: Read the section "S3 functions and signatures" of `specs/005-coordinate-frame-correctness/plan.md` (function `InterpolatorFactory.from_dict`). New
     signature: `from_dict(d, *, local_origin=None, local_rotation=None, declare_identity=False)`. A dict is a saved payload if and only if
     `d.get("support")` is a dict. Other dicts keep the existing code path with no change; frame arguments with such a dict raise
@@ -886,7 +887,7 @@ frame. A legacy file needs an explicit choice. A frame change never gives a stal
     `up_to_date`, `valid`. Do not change the input dict. Keep the existing `rotation_xy` `TypeError` retry.
     Wrap an error of `_restore_local_constraints` (`ValueError`, `ValidationError`) as `InterpolatorFormatError("malformed", "malformed interpolator payload: ...")` with `raise ... from exc`; the half-built interpolator is dropped.
 
-- [ ] T044 [P] [US3] [S] Keep the frame in `FiniteDifferenceInterpolator.copy`.
+- [x] T044 [P] [US3] [S] Keep the frame in `FiniteDifferenceInterpolator.copy`.
   - Files: `packages/loop_interpolation/src/loop_interpolation/_finite_difference_interpolator.py`
   - Needs: T042
   - Wave: 20
@@ -896,7 +897,7 @@ frame. A legacy file needs an explicit choice. A frame change never gives a stal
     support, with the same coordinate frame." and "Returns" to "A new empty interpolator that shares the support and the bounding box.".
     Change nothing else in the file.
 
-- [ ] T045 [P] [US3] [S] Keep the frame in `P2Interpolator.copy`.
+- [x] T045 [P] [US3] [S] Keep the frame in `P2Interpolator.copy`.
   - Files: `packages/loop_interpolation/src/loop_interpolation/_p2interpolator.py`
   - Needs: T042
   - Wave: 20
@@ -904,7 +905,7 @@ frame. A legacy file needs an explicit choice. A frame change never gives a stal
   - Context: In `P2Interpolator.copy` (about line 106) replace the body with `return self._inherit_frame(P2Interpolator(self.support))`.
     Add this docstring: "Create an empty copy on the same support, with the same coordinate frame." Change nothing else in the file.
 
-- [ ] T046 [P] [US3] [S] Keep the frame in `P2FoldInterpolator.copy`.
+- [x] T046 [P] [US3] [S] Keep the frame in `P2FoldInterpolator.copy`.
   - Files: `packages/loop_interpolation/src/loop_interpolation/_p2_fold_interpolator.py`
   - Needs: T042
   - Wave: 20

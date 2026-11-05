@@ -62,7 +62,15 @@ class P2FoldInterpolator(P2Interpolator):
         )
 
     def copy(self):
-        return P2FoldInterpolator(self.support, fold=self.fold)
+        """
+        Create an empty copy on the same support, with the same fold and the same coordinate frame.
+
+        Returns
+        -------
+        P2FoldInterpolator
+            A new empty interpolator that shares the support, the fold and the bounding box.
+        """
+        return self._inherit_frame(P2FoldInterpolator(self.support, fold=self.fold))
 
     def setup_interpolator(self, **kwargs):
         report = setup_with_fold_constraints(
