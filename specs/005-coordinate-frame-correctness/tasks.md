@@ -818,7 +818,7 @@ frame. A legacy file needs an explicit choice. A frame change never gives a stal
 
 ## Phase 11: Stage S3 implementation
 
-- [ ] T040 [US3] [M] Implement `frame_payload`, `payload_kind` and `bounding_box_from_support`.
+- [x] T040 [US3] [M] Implement `frame_payload`, `payload_kind` and `bounding_box_from_support`.
   - Files: `packages/loop_interpolation/src/loop_interpolation/_frame_persistence.py`
   - Needs: T039
   - Wave: 18

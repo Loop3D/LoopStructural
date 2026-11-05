@@ -65,6 +65,14 @@
       "check": "scope pass (VERIFY: only verification.md). Pre-fix totals 209 failed 9 passed over 218 cells (persistence 166/3, lifecycle 43/6). Behavioural: rotated fdi round trip gives NaN (2 of 2); copy().bounding_box is None = True; stale evaluation after set_local_transform returns NaN with no error",
       "commit": "b139482282c2c49755115e145db8a8519fefd439",
       "review": "pass: sonnet, no findings"
+    },
+    {
+      "wave": 18,
+      "base": "11911b5b0cf0abad7365d7a2a5ad0565d9e1c38a",
+      "tasks": [
+        "T040"
+      ],
+      "check": "scope pass (VERIFY); ruff and black pass; Done-when script ok (frame_payload(None,3) order and identity; payload_kind({},False) legacy_no_transform); worker scripts: payload_kind 8 branches, bounding_box_from_support round trip error 3.6e-15; persistence file still 166 failed 3 passed (loader and to_dict not done)"
     }
   ],
   "runs": {
@@ -120,6 +128,12 @@
       {
         "model": "sonnet",
         "result": "pass: S3 pre-fix section with 17-row table and 3 behavioural records"
+      }
+    ],
+    "T040": [
+      {
+        "model": "sonnet",
+        "result": "pass: frame_payload, payload_kind, bounding_box_from_support; docstrings of T034 fixed"
       }
     ]
   },
@@ -746,5 +760,5 @@
       }
     }
   },
-  "status": "wave 17 done and reviewed"
+  "status": "wave 18 done, review pending"
 }
