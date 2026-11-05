@@ -54,8 +54,8 @@
       "base": "8dff4ec4ce03031efb2e79e5a3b0322d1e8a7e92",
       "tasks": "T079,T080",
       "check": "scope pass; resize+cell-centre 100 passed; T080 127 failed pre-fix as expected; ruff pass",
-      "commit": "pending",
-      "review": "pending"
+      "commit": "a69408bb24ad80e377edbc95472ff3a8f6c6a971",
+      "review": "pass (3 minor, open)"
     }
   ],
   "runs": {
@@ -141,14 +141,17 @@
     ]
   },
   "findings": {
-    "found": 7,
+    "found": 10,
     "rejected": 0,
     "dropped": 0,
     "fixed": 3,
     "open_minor": [
       "T075 _structured_grid_3d.py has a UTF-8 BOM added at line 1 (remove the 3 bytes).",
       "T076 _structured_grid_2d.py has format-only hunks in is_inside, neighbour_global_indexes, cell_corner_indexes (noise).",
-      "T075 set_nelements passes a cell count to the nsteps setter, which takes nodes: nelements=1000 on a unit cube gives 9^3=729 cells (task text and old behaviour; not a regression)."
+      "T075 set_nelements passes a cell count to the nsteps setter, which takes nodes: nelements=1000 on a unit cube gives 9^3=729 cells (task text and old behaviour; not a regression).",
+      "T079 section of verification.md does not say that test_each_cell_has_exactly_one_centre was replaced, and calls the midpoint test evidence although it is a guard (OP12 not reproduced). T088 adds one sentence.",
+      "T080 exact-field stub ignores its points argument, so it cannot catch a wrong position frame (other tests catch it).",
+      "T080 one TOL_SOLVED=9e-4 for both engines (FDI max 1.2e-4 is looser)."
     ]
   },
   "answers": "2026-11-05 (S5 start): five gaps settled in plan.md Answers (bounding box = interpolator.bounding_box; stale recipe = assign up_to_date/_up_to_date False; 2D n_elements exists; report key set is a literal; PLI add_gradient_constraints is pass so PLI gradient family reports unattributed = 2*source_points).",
