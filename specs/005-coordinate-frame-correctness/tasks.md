@@ -1145,7 +1145,7 @@ frame. A legacy file needs an explicit choice. A frame change never gives a stal
   - Context: Line 122 lists the geometry methods of `GeologicalModel`. Change that entry to read: "Geometry: `scale` (deprecated, use `bounding_box.project`), `rescale` (deprecated, use `bounding_box.reproject`),
     `regular_grid`, `bounding_box` (property)". Keep the line format of its neighbours. Do not change other text.
 
-- [ ] T067 [Finish] [M] Record the S4 rollback check in `verification.md`.
+- [x] T067 [Finish] [M] Record the S4 rollback check in `verification.md`.
   - Files: `specs/005-coordinate-frame-correctness/verification.md`
   - Needs: T063
   - Wave: 30

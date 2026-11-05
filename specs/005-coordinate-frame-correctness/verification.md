@@ -587,3 +587,24 @@ No existing test needs a new expected value because of S4. The only failure,
 not touch (two `LoopValueError` classes).
 
 No golden change in S4.
+
+## S4 rollback checks
+
+Method. The rollback target is the S4 start commit `9b3507a9` (`start_commit` of stage S4 in `run-state.json`; old code, no S4 code). A throw-away worktree was made at this commit with `git worktree add --detach ../LoopStructural-005-s4-rollback 9b3507a9a4d4c7d7a903a08c7d33619a7546bf61`. Nothing was copied into it. The S4 version of `tests/fixtures/coordinate_frames.py` was copied to a scratch directory outside the repository and imported from there (the old commit has no `world_foliation_model`). Each tree had its own `PYTHONPATH` (tree, `packages/loop_common/src`, `packages/loop_interpolation/src`, `packages/loopstructural_visualisation/src`). Before each run the script printed `LoopStructural.__file__` and checked that it is inside the tree. For the old code the path was in `LoopStructural-005-s4-rollback`. For the S4 code (HEAD `686322e9`) the path was in `LoopStructural-005-s4`. The script printed `loopstructuralvisualisation.__file__` as well; it was inside the same tree in each run.
+
+| Check | Old code (`9b3507a9`) | S4 code | Result |
+|---|---|---|---|
+| (a) `from loopstructuralvisualisation import Loop2DView, Loop3DView` | works | works | pass |
+| (a) `inspect.signature(Loop2DView.add_data)` | `(self, feature, val=True, grad=True, unfault=False, dip=True, **kwargs)` | same text | pass (equal) |
+| (a) `Loop3DView.add_data` | does not exist | does not exist | see note |
+| (b) first gradient location of `world_foliation_model(ANCHORS[1], 0)`, `get_data()` | `(202, 403, 604)` | `(102, 203, 304)` | pass (spec example) |
+| (c) `get_data()` with identity frame (`ANCHORS[0]`, rotation 0): 3 objects, locations and vectors | reference | max abs difference 0.0 for `r1+_gradient` (4 rows), `r1_norm` (4 rows), `r1_value` (27 rows) | pass (equal) |
+| (d) `model.rescale(p)` warnings | 0 | 1: `GeologicalModel.rescale is deprecated ...` | pass |
+| (d) `model.scale(p)` warnings | 0 | 1: `GeologicalModel.scale is deprecated ...` | pass |
+| (d) values of `rescale` and `scale` | `rescale(p)` and `scale(p)` for `p = [[102, 203, 304], [110, 215, 320]]` | equal to the old values (exact) | pass |
+
+Note on (a). The task text names `Loop3DView.add_data`. This method does not exist in either tree (`hasattr` is false). `add_data` exists only in `Loop2DView`. In `Loop3DView` the only `add_*` method defined in the class is `add_mesh(self, *args, **kwargs)`, and it is equal in both trees. The check used the signatures of `Loop2DView.add_data` and `Loop3DView.add_mesh`. The task text must name `Loop2DView.add_data`.
+
+Check (b) used `ANCHORS[1]` = (100, 200, 300), rotation 0, and the gradient constraint at `anchor + (2, 3, 4)`. The old code shows the point shifted by the origin; the S4 code shows it at the world location.
+
+Cleanup. The throw-away worktree was removed with `git worktree remove --force C:/Users/lachl/dev/LoopStructural-005-s4-rollback`, then `git worktree prune` ran. `git worktree list` shows no `-rollback` entry.

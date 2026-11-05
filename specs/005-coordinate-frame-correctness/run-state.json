@@ -205,6 +205,12 @@
         "model": "haiku",
         "result": "pass"
       }
+    ],
+    "T067": [
+      {
+        "model": "sonnet",
+        "result": "pass; Loop3DView.add_data does not exist: checked Loop2DView.add_data (signature equal) and Loop3DView.add_mesh"
+      }
     ]
   },
   "findings": {
@@ -215,7 +221,8 @@
     "open_minor": [
       "T054 test_2d_viewer_fault_ellipse_centre_is_world: compares the patch centre to fault.fault_centre[:2] only; add a check that fault_centre[:2] is close to anchor[:2] (optional).",
       "T056 test_internal_callers_do_not_warn: importorskip(pyevtk) sits after the first checks; move it to the start or split the exporter part.",
-      "T056 failing ids before the fixes (25: 24 DID NOT WARN, 1 AttributeError _network_model_values) are not in verification.md; record them in T063."
+      "T056 failing ids before the fixes (25: 24 DID NOT WARN, 1 AttributeError _network_model_values) are not in verification.md; record them in T063.",
+      "T067/T064: the plan names Loop3DView.add_data, which does not exist (Loop2DView.add_data does). COMPAT.md S4 notice repeats the name; correct in a later pass."
     ]
   },
   "answers": [
