@@ -29,7 +29,11 @@ from loop_common.logging import get_logger as getLogger
 
 from ._fold_event import FoldEvent
 from ._fold_norm_alignment import resolve_fold_norm_target
-from ._fold_setup import setup_with_fold_constraints
+from ._fold_setup import (
+    sample_fold_geometry,
+    setup_with_fold_constraints,
+    world_norm_constraints,
+)
 from ._interpolatortype import InterpolatorType
 from ._p2interpolator import P2Interpolator
 from ._quadrature import tet_quadrature_points
@@ -95,18 +99,22 @@ class P2FoldInterpolator(P2Interpolator):
         sample_rule : {"gauss4", "centroid"}
             quadrature rule used to place sample points in every tetrahedron
         mask_fn : callable, optional
-            called with the sample points; points where it returns True get zero weight
+            called with the world sample points; points where it returns True get zero weight
         """
         if sample_rule not in _SAMPLE_RULES:
             raise ValueError(f"Unknown sample_rule '{sample_rule}', use one of {_SAMPLE_RULES}")
         support = self.support
         points, tet_idx, q = tet_quadrature_points(support.nodes, support.elements, sample_rule)
         dN, _out_elements, inside = support.evaluate_shape_derivatives(points, elements=tet_idx)
-        deformed_orientation, fold_axis, dgz = self.fold.get_deformed_orientation(points)
+        # the fold provider works in world coordinates, dN and inside stay local
+        world_points, deformed_w, axis_w, dgz_w = sample_fold_geometry(self, self.fold, points)
+        deformed_orientation = self.world_to_local_vectors(deformed_w)
+        fold_axis = self.world_to_local_vectors(axis_w)
+        dgz = self.world_to_local_vectors(dgz_w)
         # energy per tet must not depend on the rule: weight the residual by w*sqrt(q)
         sq = np.sqrt(q)
         if mask_fn is not None:
-            sq = sq * (~np.asarray(mask_fn(points), dtype=bool))
+            sq = sq * (~np.asarray(mask_fn(world_points), dtype=bool))
         # keep finite rows only, so A, B, idc and w stay aligned
         valid = np.asarray(inside, dtype=bool) & np.all(np.isfinite(dN), axis=(1, 2))
         idc_all = support.elements[tet_idx]
@@ -131,7 +139,7 @@ class P2FoldInterpolator(P2Interpolator):
             logger.info(f"Adding fold normalisation constraint to w = {fold_normalisation}")
             target_norm = resolve_fold_norm_target(
                 fold=self.fold,
-                normal_constraints=self.get_norm_constraints(),
+                normal_constraints=world_norm_constraints(self),
                 fold_norm=fold_norm,
                 dgz_alignment=dgz_alignment,
                 logger=logger,

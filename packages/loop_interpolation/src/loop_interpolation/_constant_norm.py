@@ -81,7 +81,13 @@ class ConstantNormInterpolator:
             np.hstack([self.support.barycentre[element_indices], v_t])
         )
         A1 = np.einsum("ij,ijk->ik", v_t, t_g)
-        volume = self.support.element_size[element_indices]
+        # A structured grid gives one size for all elements.
+        element_size = np.asarray(self.support.element_size, dtype=float)
+        volume = (
+            element_size[element_indices]
+            if element_size.ndim > 0
+            else np.full(element_indices.shape[0], float(element_size))
+        )
         A1 = A1 / volume[:, np.newaxis]  # normalise by element size
 
         b = np.zeros(A1.shape[0]) + self.norm_length

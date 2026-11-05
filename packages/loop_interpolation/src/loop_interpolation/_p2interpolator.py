@@ -207,8 +207,8 @@ class P2Interpolator(DiscreteInterpolator):
         maskall : bool, default False
             whether to apply on all elements or just internal elements (default)
         wtfunc :  callable, optional
-            a function that returns the weight to be applied at xyz. Called on the barycentre
-            of the tetrahedron
+            a function that receives the world barycentres of the weighted elements and
+            returns one weight for each
         """
         elements = np.arange(0, len(self.support.elements))
         mask = np.ones(self.support.neighbours.shape[0], dtype=bool)
@@ -221,7 +221,9 @@ class P2Interpolator(DiscreteInterpolator):
         wt *= w  # * self.support.element_size[mask]
         if callable(wtfunc):
             logger.info("Using function to weight gradient steepness")
-            wt = wtfunc(self.support.barycentre) * self.support.element_size[mask]
+            wt = wtfunc(
+                self.local_to_world_points(self.support.barycentre[elements[mask]])
+            ) * self.support.element_size[elements[mask]]
         idc = self.support.elements[elements[mask]]
         for i in range(d2.shape[1]):
             self.add_constraints_to_least_squares(
