@@ -13,6 +13,7 @@ __all__ = [
     "DirectionalRegularisation",
     "DiscreteFoldInterpolator",
     "DiscreteInterpolator",
+    "ExclusionRecord",
     "FDFoldInterpolator",
     "FiniteDifferenceInterpolator",
     "FoldEvent",
@@ -31,12 +32,15 @@ __all__ = [
     "PiecewiseLinearInterpolator",
     "RegionCoverageDiagnostics",
     "RegularisationConfig",
+    "ResidualSummary",
     "StaleFrameError",
     "StructuredGrid",
     "StructuredGrid2D",
     "SurfeRBFInterpolator",
     "TetMesh",
     "UnStructuredTetMesh",
+    "build_exclusion_records",
+    "direction_cosines",
     "get_fold_rotation_profile",
 ]
 from loop_common.logging import get_logger as getLogger
@@ -60,7 +64,11 @@ from ._constant_norm import ConstantNormFDIInterpolator, ConstantNormP1Interpola
 from ._diagnostics import (
     ConstraintDiagnosticsReport,
     ConstraintFamilyDiagnostics,
+    ExclusionRecord,
     RegionCoverageDiagnostics,
+    ResidualSummary,
+    build_exclusion_records,
+    direction_cosines,
 )
 from ._discrete_fold_interpolator import (
     DiscreteFoldInterpolator,

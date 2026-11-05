@@ -697,3 +697,358 @@ of `rescale` or `scale` appears, so no S4 code path calls them.
 
 - `tests/unit/io/test_exporters.py::test_write_vol_gocad_is_broken_for_real_bounding_box` failed only because two classes are named `LoopValueError`. `BoundingBox.__getitem__` raises the class of `loop_common.geometry._bounding_box` (a `ValueError`), and the test expected the class of `LoopStructural.utils.exceptions`. The test now accepts `(LoopValueError, ValueError)`. The file passes: 13 passed (run with `pyevtk` on `PYTHONPATH`). The full root suite was not run again after this change; the failure was the only one in the S4 root run.
 - The task text and the S4 notice in `COMPAT.md` named `Loop3DView.add_data`. The method is `Loop2DView.add_data`. `plan.md`, `tasks.md` and `COMPAT.md` now say so.
+
+## S5 pre-fix failures
+
+Method. Both `loop_common` test files ran on the unfixed code, in one call: `python -m pytest packages/loop_common/tests/test_resize_paths.py packages/loop_common/tests/test_cell_centre_sampling.py -p no:cacheprovider -q -rf` (PowerShell, the worktree `LoopStructural-005-s5` on `PYTHONPATH`). No S5 library change exists at this commit. The result is 24 failed and 76 passed. All 24 failures are in the resize file. All 60 cells of the cell-centre file pass.
+
+Resize file (`test_resize_paths.py`): 24 failed, 76 passed.
+
+| Test function | Failed / total | Representative id and first error |
+|---|---|---|
+| `test_nsteps_setter_keeps_extent` | 3 / 3 | `[G1]`: the `maximum` is [10.5, 11, 10.5] and not [10, 10, 9] after `nsteps` is set to [22, 12, 8]. `[G2]` gives 102.25, -17.75, 7.25 (start 102, -18, 7). `[G3]` gives -9795, 2250, 26.25 (start -9800, 2200, 22.5) |
+| `test_step_vector_setter_encloses_extent` | 2 / 3 | `[G1]`: the `maximum` is [10.5, 9, 9] and is below the start [10, 10, 9], so the extent is lost. `[G3]` fails in the same way (the `maximum` is below the start). `[G2]` passes |
+| `test_nsteps_below_two_is_rejected_without_change` | 1 / 1 | `DID NOT RAISE ValueError`. The setter accepts nsteps [1, 6, 4] |
+| `test_nsteps_not_whole_is_rejected_without_change` | 1 / 1 | `DID NOT RAISE ValueError`. The setter accepts [5.5, 5, 5] and [nan, 5, 5] |
+| `test_set_nelements_keeps_extent` | 3 / 3 | `[G1]`: the `maximum` is not the start `maximum`. `set_nelements(200)` gives [9.43, 10.29, 10] and not [10, 10, 9]. `[G2]` gives 102.08, -17.92, 7.08. `[G3]` gives -9811, 2270, 10 |
+| `test_set_nelements_small_request_is_clamped` | 1 / 1 | `assert np.all(nsteps >= 2)` fails: `nsteps` is [2, 2, 1], and the `maximum` is [5.5, 6, 0] |
+| `test_2d_counts_are_derived` | 10 / 10 | All 5 checks fail for `[H1]` and for `[H2]`: `cells`, `n_cell`, `n_elements`, `dtype`, `maximum`. See the measured values below |
+| `test_rectilinear_resize_is_rejected` | 3 / 3 | `[nsteps]`: `DID NOT RAISE NotImplementedError`. `[step_vector]` and `[origin]` fail in the same way |
+| `test_reapplying_same_value_10_times_changes_nothing_3d` | 0 / 12 | Passes now (coverage, no defect) |
+| `test_step_vector_a_b_a_extent_drift` | 0 / 3 | Passes now (coverage, no defect). See the measured drift below |
+
+Measured values (a short script, not saved in the repository).
+
+| Measure | Value |
+|---|---|
+| `nsteps` setter, nodes 11 to 21, step 1, origin 0 | `maximum` is 10.476 (10.48) in each axis, and the expected value is 10 |
+| `step_vector` setter, step x 1.5 on G1 | `maximum` is [10.5, 9, 9], the start is [10, 10, 9]. The `nsteps` become [8, 4, 3] |
+| `step_vector` setter, step x 1.5 on G3 | `maximum` is [-9805, 2150, 26.25], the start is [-9800, 2200, 22.5]. The `nsteps` become [14, 2, 6] |
+| `step_vector` setter, step x 1.5 on G2 | `maximum` is [102.25, -17.75, 7.25], the start is [102, -18, 7]. The extent is enclosed, so the test passes |
+| A-B-A `step_vector` drift (A, then 1.5 A, then A) | G1 [1, 0, 3]. G2 [0.5, 0.5, 0.5]. G3 [0, 0, 7.5]. All are inside the limit (A + B), so the test passes |
+| 2D `nsteps` set to [nx + 3.0, ny + 2.0], H1 (5, 5) | `nsteps_cells` stays [4, 4]. `n_cell_x` and `n_cell_y` stay 4. `n_elements` stays 16. The dtype is float64. The `maximum` stays [5, 5] and the expected value is [8, 7] |
+| Same set on H2 (8, 4) | `nsteps_cells` stays [7, 3]. `n_elements` stays 21. The dtype is float64. The `maximum` stays [14, 3] and the expected value is [15.5, 7] |
+
+The 2D `maximum` check fails only because the counts are stale after the set. The legacy formula (origin + nsteps x step) is the expected value in the test, so the fix does not change the formula.
+
+Cell-centre file (`test_cell_centre_sampling.py`): 60 passed, 0 failed. Result: coverage, no defect. OP12 is not reproduced.
+
+Note on the one-to-one test. The first version of the test used `structured_grid(local_coordinates=True)` and failed in 8 of 12 cells (rotation 30 and 90). That grid is the axis-aligned enclosure of the projected corners, and it has a different step. The premise in the task text was wrong. The test now uses the midpoints of the exported world grid and the own cell grid of the box. `_bounding_box.py` was not changed. Also, `set_local_transform` takes the argument `rotation_matrix=`.
+
+## S5 golden review (C-004)
+
+Order (C-004): (1) run the 3D golden test and list the failing keys; (2) check each key against the rule; (3) write the keys here; (4) run `--update`; (5) run the test again. SC-015: no tolerance was changed (`rtol=1e-9`, `atol=1e-12` stay).
+
+Step 1. `test_structured_support_reference.py` failed in 3 cells (StructuredGrid, TetMesh, P2TetMesh). A key-by-key diff (script in the scratchpad, not in the repository) found 78 changed keys of 611. The key sets are equal. Each of the 3 classes has the same 26 changed keys: 3 grids (`unit`, `aniso`, `small`) x (`step_vector`, `to_dict.step_vector`, and `after_set_nelements`, `after_nsteps`, `after_step_vector`, `after_origin`, `after_maximum` `.step_vector`) plus `after_maximum.maximum` and `after_maximum.nsteps` where they differ (`unit` has no `nsteps` change, `aniso` and `small` do). The 2D golden (`test_structured_grid_2d_reference.py`) passes with no change (4 passed): the 2D `maximum` is the same, so no 2D key changed and `--update` was not run for it.
+
+Step 2. Rule: each setter keeps the extent or encloses it by less than one cell. Extent = `(nsteps - 1) x step_vector`. Checked on the `StructuredGrid` keys (the 3 classes give the same numbers):
+
+| Grid | Stage | Old extent | New extent | Result |
+|---|---|---|---|---|
+| unit | `set_nelements(200)` | 3.571 | 4.000 (start 4) | kept |
+| unit | `nsteps` + 1 | 4.286 | 4.000 | kept |
+| unit | `step_vector` x 2 | 4.286 | 4.000 | kept |
+| unit | origin - 1 | max 4.714 | max 4.333 (1 cell = 1.333; enclosed by 0.333) | enclosed by less than one cell |
+| unit | `maximum` + 3 (request 7.333) | 9.000 | 8.333 (over by 1.0, 1 cell = 1.333) | enclosed by less than one cell |
+| aniso | `set_nelements(200)` | [12.1, 5.18, 6.29] | [13, 5, 6.5] (start [13, 5, 6.5]) | kept |
+| aniso | `nsteps` + 1, `step_vector` x 2 | [12.8, 6.09, 7.14] | [13, 5, 6.5] | kept |
+| aniso | origin - 1 | max [13.2, 6.91, 7.86] | max [13.5, 5.6, 7.0] (cells [1.5, 1.6, 1.5]) | enclosed by less than one cell |
+| aniso | `maximum` + 3 (request [16.5, 8.6, 10]) | [17.4, 10.55, 11.29] | [16.5, 8.8, 10] | enclosed by less than one cell |
+| small | `set_nelements(200)`, `nsteps` + 1, `step_vector` x 2 | 2.143, 2.571, 2.571 | 2.000 | kept |
+| small | origin - 1 | max 3.286 | max 2.333 (1 cell = 0.667) | enclosed by less than one cell |
+| small | `maximum` + 3 (request 5.333) | 6.714 | 5.667 (over by 0.333, 1 cell = 0.667) | enclosed by less than one cell |
+
+All new values obey the rule. The old values did not keep the extent (they drifted), and that is the S5 defect.
+
+Causes.
+
+- C1. `unit/step_vector` and `to_dict.step_vector` (and the same keys for `aniso`, `small`). Old value: the step after a later setter (for example 0.7143, not the constructor value 1.0). New value: 1.0, which is the constructor step. The old `nsteps` setter did `self._step_vector /= change_factor`, an in-place change. The golden test stores the array that the property returns, so a later setter changed the stored "start" value. The new setters give a new array. The new value is the correct start value.
+- C2. `after_set_nelements`, `after_nsteps`, `after_step_vector`, `after_origin`, `after_maximum` `.step_vector`: the setters keep the extent, so the new step is the extent divided by the new cell count.
+- C3. `after_maximum.maximum` and `after_maximum.nsteps`: the grid before this stage has a different step and `nsteps` (C2), so the encloses-the-request result differs. The result is enclosed by less than one cell.
+
+Step 3. The 78 changed keys (old value, new value, cause).
+
+| Key | Old value | New value | Cause |
+|---|---|---|---|
+| `P2TetMesh/aniso/after_maximum.maximum` | [17.4, 10.5455, 11.2857] | [16.5, 8.8, 10] | C3 (maximum request is enclosed by less than one cell) |
+| `P2TetMesh/aniso/after_maximum.nsteps` | [7, 9, 7] | [6, 9, 7] | C3 (maximum request is enclosed by less than one cell) |
+| `P2TetMesh/aniso/after_maximum.step_vector` | [1.4, 1.81818, 1.71429] | [1.5, 1.6, 1.5] | C2 (resize keeps the extent: new step = extent / cells) |
+| `P2TetMesh/aniso/after_nsteps.step_vector` | [0.7, 0.909091, 0.857143] | [0.75, 0.8, 0.75] | C2 (resize keeps the extent: new step = extent / cells) |
+| `P2TetMesh/aniso/after_origin.step_vector` | [1.4, 1.81818, 1.71429] | [1.5, 1.6, 1.5] | C2 (resize keeps the extent: new step = extent / cells) |
+| `P2TetMesh/aniso/after_set_nelements.step_vector` | [0.7, 0.909091, 0.857143] | [1, 0.888889, 0.9] | C2 (resize keeps the extent: new step = extent / cells) |
+| `P2TetMesh/aniso/after_step_vector.step_vector` | [1.4, 1.81818, 1.71429] | [1.5, 1.6, 1.5] | C2 (resize keeps the extent: new step = extent / cells) |
+| `P2TetMesh/aniso/step_vector` | [0.7, 0.909091, 0.857143] | [0.5, 2, 1.5] | C1 (old array was changed in place by a later setter) |
+| `P2TetMesh/aniso/to_dict.step_vector` | [0.7, 0.909091, 0.857143] | [0.5, 2, 1.5] | C1 (old array was changed in place by a later setter) |
+| `P2TetMesh/small/after_maximum.maximum` | [6.71429, 6.71429, 6.71429] | [5.66667, 5.66667, 5.66667] | C3 (maximum request is enclosed by less than one cell) |
+| `P2TetMesh/small/after_maximum.nsteps` | [10, 10, 10] | [11, 11, 11] | C3 (maximum request is enclosed by less than one cell) |
+| `P2TetMesh/small/after_maximum.step_vector` | [0.857143, 0.857143, 0.857143] | [0.666667, 0.666667, 0.666667] | C2 (resize keeps the extent: new step = extent / cells) |
+| `P2TetMesh/small/after_nsteps.step_vector` | [0.428571, 0.428571, 0.428571] | [0.333333, 0.333333, 0.333333] | C2 (resize keeps the extent: new step = extent / cells) |
+| `P2TetMesh/small/after_origin.step_vector` | [0.857143, 0.857143, 0.857143] | [0.666667, 0.666667, 0.666667] | C2 (resize keeps the extent: new step = extent / cells) |
+| `P2TetMesh/small/after_set_nelements.step_vector` | [0.428571, 0.428571, 0.428571] | [0.4, 0.4, 0.4] | C2 (resize keeps the extent: new step = extent / cells) |
+| `P2TetMesh/small/after_step_vector.step_vector` | [0.857143, 0.857143, 0.857143] | [0.666667, 0.666667, 0.666667] | C2 (resize keeps the extent: new step = extent / cells) |
+| `P2TetMesh/small/step_vector` | [0.428571, 0.428571, 0.428571] | [1, 1, 1] | C1 (old array was changed in place by a later setter) |
+| `P2TetMesh/small/to_dict.step_vector` | [0.428571, 0.428571, 0.428571] | [1, 1, 1] | C1 (old array was changed in place by a later setter) |
+| `P2TetMesh/unit/after_maximum.maximum` | [9, 9, 9] | [8.33333, 8.33333, 8.33333] | C3 (maximum request is enclosed by less than one cell) |
+| `P2TetMesh/unit/after_maximum.step_vector` | [1.42857, 1.42857, 1.42857] | [1.33333, 1.33333, 1.33333] | C2 (resize keeps the extent: new step = extent / cells) |
+| `P2TetMesh/unit/after_nsteps.step_vector` | [0.714286, 0.714286, 0.714286] | [0.666667, 0.666667, 0.666667] | C2 (resize keeps the extent: new step = extent / cells) |
+| `P2TetMesh/unit/after_origin.step_vector` | [1.42857, 1.42857, 1.42857] | [1.33333, 1.33333, 1.33333] | C2 (resize keeps the extent: new step = extent / cells) |
+| `P2TetMesh/unit/after_set_nelements.step_vector` | [0.714286, 0.714286, 0.714286] | [0.8, 0.8, 0.8] | C2 (resize keeps the extent: new step = extent / cells) |
+| `P2TetMesh/unit/after_step_vector.step_vector` | [1.42857, 1.42857, 1.42857] | [1.33333, 1.33333, 1.33333] | C2 (resize keeps the extent: new step = extent / cells) |
+| `P2TetMesh/unit/step_vector` | [0.714286, 0.714286, 0.714286] | [1, 1, 1] | C1 (old array was changed in place by a later setter) |
+| `P2TetMesh/unit/to_dict.step_vector` | [0.714286, 0.714286, 0.714286] | [1, 1, 1] | C1 (old array was changed in place by a later setter) |
+| `StructuredGrid/aniso/after_maximum.maximum` | [17.4, 10.5455, 11.2857] | [16.5, 8.8, 10] | C3 (maximum request is enclosed by less than one cell) |
+| `StructuredGrid/aniso/after_maximum.nsteps` | [7, 9, 7] | [6, 9, 7] | C3 (maximum request is enclosed by less than one cell) |
+| `StructuredGrid/aniso/after_maximum.step_vector` | [1.4, 1.81818, 1.71429] | [1.5, 1.6, 1.5] | C2 (resize keeps the extent: new step = extent / cells) |
+| `StructuredGrid/aniso/after_nsteps.step_vector` | [0.7, 0.909091, 0.857143] | [0.75, 0.8, 0.75] | C2 (resize keeps the extent: new step = extent / cells) |
+| `StructuredGrid/aniso/after_origin.step_vector` | [1.4, 1.81818, 1.71429] | [1.5, 1.6, 1.5] | C2 (resize keeps the extent: new step = extent / cells) |
+| `StructuredGrid/aniso/after_set_nelements.step_vector` | [0.7, 0.909091, 0.857143] | [1, 0.888889, 0.9] | C2 (resize keeps the extent: new step = extent / cells) |
+| `StructuredGrid/aniso/after_step_vector.step_vector` | [1.4, 1.81818, 1.71429] | [1.5, 1.6, 1.5] | C2 (resize keeps the extent: new step = extent / cells) |
+| `StructuredGrid/aniso/step_vector` | [0.7, 0.909091, 0.857143] | [0.5, 2, 1.5] | C1 (old array was changed in place by a later setter) |
+| `StructuredGrid/aniso/to_dict.step_vector` | [0.7, 0.909091, 0.857143] | [0.5, 2, 1.5] | C1 (old array was changed in place by a later setter) |
+| `StructuredGrid/small/after_maximum.maximum` | [6.71429, 6.71429, 6.71429] | [5.66667, 5.66667, 5.66667] | C3 (maximum request is enclosed by less than one cell) |
+| `StructuredGrid/small/after_maximum.nsteps` | [10, 10, 10] | [11, 11, 11] | C3 (maximum request is enclosed by less than one cell) |
+| `StructuredGrid/small/after_maximum.step_vector` | [0.857143, 0.857143, 0.857143] | [0.666667, 0.666667, 0.666667] | C2 (resize keeps the extent: new step = extent / cells) |
+| `StructuredGrid/small/after_nsteps.step_vector` | [0.428571, 0.428571, 0.428571] | [0.333333, 0.333333, 0.333333] | C2 (resize keeps the extent: new step = extent / cells) |
+| `StructuredGrid/small/after_origin.step_vector` | [0.857143, 0.857143, 0.857143] | [0.666667, 0.666667, 0.666667] | C2 (resize keeps the extent: new step = extent / cells) |
+| `StructuredGrid/small/after_set_nelements.step_vector` | [0.428571, 0.428571, 0.428571] | [0.4, 0.4, 0.4] | C2 (resize keeps the extent: new step = extent / cells) |
+| `StructuredGrid/small/after_step_vector.step_vector` | [0.857143, 0.857143, 0.857143] | [0.666667, 0.666667, 0.666667] | C2 (resize keeps the extent: new step = extent / cells) |
+| `StructuredGrid/small/step_vector` | [0.428571, 0.428571, 0.428571] | [1, 1, 1] | C1 (old array was changed in place by a later setter) |
+| `StructuredGrid/small/to_dict.step_vector` | [0.428571, 0.428571, 0.428571] | [1, 1, 1] | C1 (old array was changed in place by a later setter) |
+| `StructuredGrid/unit/after_maximum.maximum` | [9, 9, 9] | [8.33333, 8.33333, 8.33333] | C3 (maximum request is enclosed by less than one cell) |
+| `StructuredGrid/unit/after_maximum.step_vector` | [1.42857, 1.42857, 1.42857] | [1.33333, 1.33333, 1.33333] | C2 (resize keeps the extent: new step = extent / cells) |
+| `StructuredGrid/unit/after_nsteps.step_vector` | [0.714286, 0.714286, 0.714286] | [0.666667, 0.666667, 0.666667] | C2 (resize keeps the extent: new step = extent / cells) |
+| `StructuredGrid/unit/after_origin.step_vector` | [1.42857, 1.42857, 1.42857] | [1.33333, 1.33333, 1.33333] | C2 (resize keeps the extent: new step = extent / cells) |
+| `StructuredGrid/unit/after_set_nelements.step_vector` | [0.714286, 0.714286, 0.714286] | [0.8, 0.8, 0.8] | C2 (resize keeps the extent: new step = extent / cells) |
+| `StructuredGrid/unit/after_step_vector.step_vector` | [1.42857, 1.42857, 1.42857] | [1.33333, 1.33333, 1.33333] | C2 (resize keeps the extent: new step = extent / cells) |
+| `StructuredGrid/unit/step_vector` | [0.714286, 0.714286, 0.714286] | [1, 1, 1] | C1 (old array was changed in place by a later setter) |
+| `StructuredGrid/unit/to_dict.step_vector` | [0.714286, 0.714286, 0.714286] | [1, 1, 1] | C1 (old array was changed in place by a later setter) |
+| `TetMesh/aniso/after_maximum.maximum` | [17.4, 10.5455, 11.2857] | [16.5, 8.8, 10] | C3 (maximum request is enclosed by less than one cell) |
+| `TetMesh/aniso/after_maximum.nsteps` | [7, 9, 7] | [6, 9, 7] | C3 (maximum request is enclosed by less than one cell) |
+| `TetMesh/aniso/after_maximum.step_vector` | [1.4, 1.81818, 1.71429] | [1.5, 1.6, 1.5] | C2 (resize keeps the extent: new step = extent / cells) |
+| `TetMesh/aniso/after_nsteps.step_vector` | [0.7, 0.909091, 0.857143] | [0.75, 0.8, 0.75] | C2 (resize keeps the extent: new step = extent / cells) |
+| `TetMesh/aniso/after_origin.step_vector` | [1.4, 1.81818, 1.71429] | [1.5, 1.6, 1.5] | C2 (resize keeps the extent: new step = extent / cells) |
+| `TetMesh/aniso/after_set_nelements.step_vector` | [0.7, 0.909091, 0.857143] | [1, 0.888889, 0.9] | C2 (resize keeps the extent: new step = extent / cells) |
+| `TetMesh/aniso/after_step_vector.step_vector` | [1.4, 1.81818, 1.71429] | [1.5, 1.6, 1.5] | C2 (resize keeps the extent: new step = extent / cells) |
+| `TetMesh/aniso/step_vector` | [0.7, 0.909091, 0.857143] | [0.5, 2, 1.5] | C1 (old array was changed in place by a later setter) |
+| `TetMesh/aniso/to_dict.step_vector` | [0.7, 0.909091, 0.857143] | [0.5, 2, 1.5] | C1 (old array was changed in place by a later setter) |
+| `TetMesh/small/after_maximum.maximum` | [6.71429, 6.71429, 6.71429] | [5.66667, 5.66667, 5.66667] | C3 (maximum request is enclosed by less than one cell) |
+| `TetMesh/small/after_maximum.nsteps` | [10, 10, 10] | [11, 11, 11] | C3 (maximum request is enclosed by less than one cell) |
+| `TetMesh/small/after_maximum.step_vector` | [0.857143, 0.857143, 0.857143] | [0.666667, 0.666667, 0.666667] | C2 (resize keeps the extent: new step = extent / cells) |
+| `TetMesh/small/after_nsteps.step_vector` | [0.428571, 0.428571, 0.428571] | [0.333333, 0.333333, 0.333333] | C2 (resize keeps the extent: new step = extent / cells) |
+| `TetMesh/small/after_origin.step_vector` | [0.857143, 0.857143, 0.857143] | [0.666667, 0.666667, 0.666667] | C2 (resize keeps the extent: new step = extent / cells) |
+| `TetMesh/small/after_set_nelements.step_vector` | [0.428571, 0.428571, 0.428571] | [0.4, 0.4, 0.4] | C2 (resize keeps the extent: new step = extent / cells) |
+| `TetMesh/small/after_step_vector.step_vector` | [0.857143, 0.857143, 0.857143] | [0.666667, 0.666667, 0.666667] | C2 (resize keeps the extent: new step = extent / cells) |
+| `TetMesh/small/step_vector` | [0.428571, 0.428571, 0.428571] | [1, 1, 1] | C1 (old array was changed in place by a later setter) |
+| `TetMesh/small/to_dict.step_vector` | [0.428571, 0.428571, 0.428571] | [1, 1, 1] | C1 (old array was changed in place by a later setter) |
+| `TetMesh/unit/after_maximum.maximum` | [9, 9, 9] | [8.33333, 8.33333, 8.33333] | C3 (maximum request is enclosed by less than one cell) |
+| `TetMesh/unit/after_maximum.step_vector` | [1.42857, 1.42857, 1.42857] | [1.33333, 1.33333, 1.33333] | C2 (resize keeps the extent: new step = extent / cells) |
+| `TetMesh/unit/after_nsteps.step_vector` | [0.714286, 0.714286, 0.714286] | [0.666667, 0.666667, 0.666667] | C2 (resize keeps the extent: new step = extent / cells) |
+| `TetMesh/unit/after_origin.step_vector` | [1.42857, 1.42857, 1.42857] | [1.33333, 1.33333, 1.33333] | C2 (resize keeps the extent: new step = extent / cells) |
+| `TetMesh/unit/after_set_nelements.step_vector` | [0.714286, 0.714286, 0.714286] | [0.8, 0.8, 0.8] | C2 (resize keeps the extent: new step = extent / cells) |
+| `TetMesh/unit/after_step_vector.step_vector` | [1.42857, 1.42857, 1.42857] | [1.33333, 1.33333, 1.33333] | C2 (resize keeps the extent: new step = extent / cells) |
+| `TetMesh/unit/step_vector` | [0.714286, 0.714286, 0.714286] | [1, 1, 1] | C1 (old array was changed in place by a later setter) |
+| `TetMesh/unit/to_dict.step_vector` | [0.714286, 0.714286, 0.714286] | [1, 1, 1] | C1 (old array was changed in place by a later setter) |
+
+
+Step 4. Golden update and re-run. `python packages/loop_common/tests/test_structured_support_reference.py --update` wrote 611 arrays. Then `pytest packages/loop_common/tests/test_structured_support_reference.py packages/loop_common/tests/test_structured_grid_2d_reference.py` passed (9 passed). The file `structured_grid_2d_reference.npz` did not change.
+
+### Numeric survey (S5 resize change)
+
+Environment: the worktree, `loop_common`, `loop_interpolation` and the visualisation sources, and `pyevtk`, on `PYTHONPATH`. Run after the golden update, one pytest process at a time.
+
+| Command | Result | Time |
+|---|---|---|
+| `pytest tests/unit/modelling` | 1540 passed, 2 skipped | 457.78 s |
+| `pytest packages/loop_interpolation/tests` | 615 passed, 47 skipped, 2 xfailed | 70.95 s |
+| `pytest packages/loop_common/tests` | 406 passed | 69.60 s |
+| `pytest tests/unit --ignore=tests/unit/modelling` | 504 passed, 2 skipped | 677.84 s |
+
+No test failed and no test number changed, so no test file needs a change. The only changed numbers are the 78 golden keys above (file `packages/loop_common/tests/data/structured_support_reference.npz`). Nothing under `packages/loop_interpolation/tests/golden` changed (the 615 tests there pass without a regeneration). No failure is left, and so no root failure from the S4 gate was seen in these four runs.
+
+
+## S5 resize and cell-centre results
+
+Commands (PowerShell, the worktree `LoopStructural-005-s5` on `PYTHONPATH`):
+
+- `python -m pytest packages/loop_common/tests/test_resize_paths.py packages/loop_common/tests/test_cell_centre_sampling.py -p no:cacheprovider -q --durations=0` -> 100 passed in 0.19 s. The slowest item took 0.01 s (setup).
+- `python -m pytest packages/loop_common/tests/test_resize_paths.py -p no:cacheprovider -q -s -k a_b_a` -> 3 passed (shows the measured drift).
+- `python -m pytest packages/loop_common/tests/test_cell_centre_sampling.py -p no:cacheprovider -q` -> 60 passed in 0.12 s.
+- `python -m ruff check LoopStructural packages` -> All checks passed. This includes the three `loop_common` source files.
+
+Counts, as pytest reports them. Resize file: 40 cells (12 + 3 + 3 + 3 + 1 + 1 + 3 + 1 + 10 + 3). The task text said 36. The count differs because `test_2d_counts_are_derived` has 10 cells (2 grids x 5 checks), not 6. Cell-centre file: 60 cells (5 tests x 12). Total 100, which equals the 24 failed + 76 passed of `## S5 pre-fix failures`.
+
+Comparison with `## S5 pre-fix failures`, test by test. All 24 failed cells now pass.
+
+| Test function | Before | Now |
+|---|---|---|
+| `test_nsteps_setter_keeps_extent` | 3 / 3 failed | 3 / 3 pass |
+| `test_step_vector_setter_encloses_extent` | 2 / 3 failed (`[G1]`, `[G3]`) | 3 / 3 pass, `[G1]` and `[G3]` now pass |
+| `test_nsteps_below_two_is_rejected_without_change` | 1 / 1 failed | 1 / 1 pass |
+| `test_nsteps_not_whole_is_rejected_without_change` | 1 / 1 failed | 1 / 1 pass |
+| `test_set_nelements_keeps_extent` | 3 / 3 failed | 3 / 3 pass |
+| `test_set_nelements_small_request_is_clamped` | 1 / 1 failed | 1 / 1 pass |
+| `test_2d_counts_are_derived` | 10 / 10 failed | 10 / 10 pass |
+| `test_rectilinear_resize_is_rejected` | 3 / 3 failed | 3 / 3 pass |
+| `test_reapplying_same_value_10_times_changes_nothing_3d` | 12 / 12 passed | 12 / 12 pass (coverage) |
+| `test_step_vector_a_b_a_extent_drift` | 3 / 3 passed | 3 / 3 pass (coverage) |
+| Cell-centre file, 5 tests | 60 / 60 passed | 60 / 60 pass |
+
+Measured extent drift of the A-B-A test (`step_vector` set to A, then B = 1.5 A, then A). The bound is A + B.
+
+| Grid | Measured drift | Bound (A + B) |
+|---|---|---|
+| G1 | [1, 2, 0] | [2.5, 5, 7.5] |
+| G2 | [0.5, 0.5, 0.5] | [1.25, 1.25, 1.25] |
+| G3 | [10, 100, 7.5] | [25, 250, 18.75] |
+
+All drifts are inside the bound. The pre-fix drift was G1 [1, 0, 3], G2 [0.5, 0.5, 0.5], G3 [0, 0, 7.5], also inside the bound. The pre-fix and post-fix values differ because the setters now keep the extent and enclose it by less than one cell.
+
+Evidence for FR-015 and SC-011. `test_centres_are_cell_midpoints_in_world` is the evidence. Each cell of the exported grid (`structured_grid()`) has one centre, as the mean of its 8 corner nodes, and the centres are all different. `test_local_coordinates_grid_associates_own_centres` is a containment check: each cell centre falls inside the `structured_grid(local_coordinates=True)` grid (no -1 from `cell_index_at`). That grid is the axis-aligned enclosure, so a one-to-one count against it does not hold, and the test does not claim it. `test_centres_round_trip_and_index_own_cells` is a consistency check on the cell grid of the box itself, built from the same linspace as the centres. It is not evidence for FR-015 or SC-011. `test_centres_match_exported_cells` and `test_centres_inside_box` are coverage.
+
+OP12: not reproduced. All 60 cell-centre cells passed before the fix and pass now. `_bounding_box.py` was not changed.
+
+The named test `test_each_cell_has_exactly_one_centre` of the task text was replaced, because its premise was wrong (see `## S5 pre-fix failures`, note on the one-to-one test). `test_centres_are_cell_midpoints_in_world` is a guard test, because OP12 is not reproduced: it passed before the fix and passes after the fix.
+
+## S5 diagnostics pre-fix failures
+
+Method. The test file ran on the unfixed code, in one call: `python -m pytest tests/unit/modelling/test_diagnostics_frames.py -p no:cacheprovider -q -rf --no-header` (PowerShell, the worktree `LoopStructural-005-s5`). No misfit fix commit exists at this point. The result is 147 failed and 0 passed in 142.77 s. No test passes. The file has 147 cells.
+
+Test file (`test_diagnostics_frames.py`): 147 failed, 0 passed.
+
+| Test function | Failed / total | First error |
+|---|---|---|
+| `test_misfit_leaves_state_unchanged` | 24 / 24 | `AssertionError: data['gradient'] changed`. The old methods leave a different array in `data["gradient"]` after the call, in all 24 cells (3 rotations x 4 anchors x 2 engines) |
+| `test_new_misfit_methods_leaves_state_unchanged` | 24 / 24 | `AttributeError`: `GeologicalFeature` has no attribute `evaluate_gradient_cosines` |
+| `test_gradient_cosine_matches_analytic_direction_exact_field` | 24 / 24 | `assert np.all(np.abs(1.0 - old) <= 1e-10)` is False. The old method gives shape (2, 4) from one column and local vectors. See the values below |
+| `test_gradient_cosine_matches_analytic_direction_exact_field_solved_model` | 24 / 24 | `AttributeError`: no attribute `evaluate_gradient_cosines` |
+| `test_value_residuals_are_absolute_difference` | 12 / 12 | `AttributeError`: no attribute `evaluate_value_residuals` |
+| `test_value_misfit_is_normalised_by_field_range` | 12 / 12 | `AttributeError`: no attribute `evaluate_value_residuals` |
+| `test_value_misfit_with_zero_range_does_not_divide` | 2 / 2 | `[equal]`: `RuntimeWarning: divide by zero encountered in divide`. `[nan]`: `assert not np.any(np.isnan(result))` fails, the result has NaN |
+| `test_misfit_with_no_rows_is_empty` | 1 / 1 | `AttributeError`: no attribute `evaluate_gradient_cosines` |
+| `test_old_misfit_shapes_are_kept` | 4 / 4 | `[gradient-only]`, `[normal-only]`, `[equal-families]`: `AttributeError`, no attribute `evaluate_gradient_cosines`. `[different-families]`: `ValueError`, inhomogeneous shape (the old method gives two lists of different length) |
+| `test_stale_misfit_is_not_rebuilt` | 4 / 4 | `[FDI-interpolator]`, `[PLI-interpolator]`: `AssertionError: the call rebuilt the interpolator` (`assert True == False`). `[FDI-builder]`, `[PLI-builder]`: `AssertionError: the call rebuilt the builder` |
+| `test_stale_misfit_warns_once_and_returns_nan` | 4 / 4 | `AssertionError: []` (`assert 0 == 1`). The old methods give no `UserWarning` |
+| `test_stale_verification_report_does_not_rebuild` | 4 / 4 | `AttributeError`: no attribute `verification_report` |
+| `test_report_blocks_are_separate` | 2 / 2 | `AttributeError`: no attribute `verification_report` |
+| `test_unsolved_model_gives_no_residual_blocks` | 2 / 2 | `AttributeError`: no attribute `verification_report` |
+| `test_exclusions_are_counted_and_explained` | 2 / 2 | `AttributeError`: no attribute `verification_report` |
+| `test_gradient_outside_points_give_no_false_unattributed_model` | 1 / 1 | `AttributeError`: no attribute `verification_report` |
+| `test_gradient_outside_points_with_pli_are_measured` | 1 / 1 | `AttributeError`: no attribute `verification_report` |
+
+Group counts: 24 + 24 + 24 + 24 + 12 + 12 + 2 + 1 + 4 + 4 + 4 + 4 + 2 + 2 + 2 + 1 + 1 = 147.
+
+Items of the task text.
+
+| Item | Result |
+|---|---|
+| State test with the old methods | Reproduced. `test_misfit_leaves_state_unchanged` fails in 24 of 24 cells. `data["gradient"]` is a different array after `evaluate_gradient_misfit` (the method divides the stored rows in place) |
+| Exact-field cosine test | Reproduced. The field is exact (the gradient is `R1_UNIT` in the world frame), so each cosine must be 1. The old method gives shape (2, 4) and not (8,). Both rows are equal, because the slice `grad[:, :3:6]` is the one column 0 and not the 3 vector columns. The vectors are local, not world. Values of the first row, anchor 0, FDI: rotation 0: [0.2001, 0.2632, 0.1671, 0.2877] (largest `|1 - cos|` 0.833). Rotation 30: [0.0232, 0.0700, -0.0781, 0.1532] (1.078). Rotation 90: [-0.3002, -0.3158, -0.4457, -0.1918] (1.446). The bound is 1e-10 |
+| Stale-state test | Reproduced. The call rebuilds the model: `up_to_date` goes from `False` to `True`, in 4 of 4 cells (`[FDI-interpolator]`, `[PLI-interpolator]`: the interpolator flag. `[FDI-builder]`, `[PLI-builder]`: the builder flag) |
+| Tests of the new names | Reproduced. 88 cells fail only because the name does not exist: `evaluate_gradient_cosines` 52 cells (24 + 24 + 1 + 3), `verification_report` 12 cells (4 + 2 + 2 + 2 + 1 + 1), `evaluate_value_residuals` 24 cells (12 + 12) |
+| `test_value_residuals_are_absolute_difference` | Not reproduced as a value defect. It fails with `AttributeError` (the test uses `evaluate_value_residuals`, which does not exist now). This is not a reproduction of a value defect. The old value path is covered by `test_value_misfit_*` |
+
+Measured value (a short script in the scratchpad, not saved in the repository). It uses `world_foliation_model` of `tests.fixtures.coordinate_frames`, as `_build` does, with `ANCHORS[1]`, rotation 30 and the FDI engine.
+
+| Measure | Value |
+|---|---|
+| Largest absolute change of `interpolator.data["gradient"]` after one call of `evaluate_gradient_misfit` | 8.2254 (the array has 4 rows x 7 columns) |
+| Largest change in each column (x, y, z, vx, vy, vz, weight) | 2.9211, 7.5854, 8.2254, 0.5485, 0.2712, 0.6789, 0.9139 |
+
+The change is large in the position columns and in the vector columns, and the weight column also changes. The old method divides the stored rows in place, so the stored data of the interpolator are not the input data after the call.
+
+## S5 rollback checks
+
+Date: 2026-11-05. The check compares the S5 tree with the S4 end code.
+
+Set-up:
+
+- The throw-away worktree was at commit 1c029d21 (the docs commit that is the S5 start commit). `git diff --stat 1c029d21 c644c8d7 -- LoopStructural packages` prints nothing. No code differs between 1c029d21 and the S4 end commit c644c8d7, so 1c029d21 holds the S4 end code.
+- Each tree had its own `PYTHONPATH`. In each tree, `LoopStructural.__file__` and `loop_interpolation.__file__` pointed into that tree.
+- The throw-away worktree was removed with `git worktree remove --force` and `git worktree prune`. `git worktree list` shows no throw-away worktree.
+
+| Check | Result | Note |
+|---|---|---|
+| (a) `dataclasses.fields` of the diagnostics classes | pass | `ConstraintFamilyDiagnostics` and `RegionCoverageDiagnostics` are equal. `ConstraintDiagnosticsReport` has only 4 fields on S4 (`interpolator_type`, `families`, `region_coverage`, `outside_model_points`). These 4 are equal on S5. S5 adds `physical_residuals` (the fifth field), `assembled_residuals` and `exclusions`, all with defaults. The task text says "first five", but S4 has only four. |
+| (b) `to_dict()` of a report with no verification | pass | One `ConstraintFamilyDiagnostics` and one `RegionCoverageDiagnostics`. The two dicts are equal. |
+| (c) `from loop_interpolation import *` | pass | The S4 names are a subset of the S5 names. S5 adds `ExclusionRecord`, `ResidualSummary`, `build_exclusion_records` and `direction_cosines`. No S4 name is missing. |
+| (d) `GeologicalFeature.evaluate_gradient_misfit` and `evaluate_value_misfit` | pass | The parameters are equal on both trees (`(self)`). Only the return annotation differs: S5 has `-> 'np.ndarray'`, S4 has none. The result shape for one family (gradient data, normal data dropped, fixture `world_foliation_model`) is `(1, 4)` on both trees. The value misfit has shape `(27,)` on both. No warning on either tree. |
+| (e) `StructuredGrid` with an unchanged grid | pass | `origin`, `maximum`, `nsteps` and `step_vector` are equal on both trees (origin [0, 1, 2], nsteps [7, 8, 9], step_vector [1, 2, 0.5], maximum [6, 15, 6]). |
+| (f) 2D `maximum` assertions | pass | `pytest packages/loop_common/tests/test_2d_discrete_support.py tests/unit/interpolator/test_2d_discrete_support.py -p no:cacheprovider -q` gives 19 passed on S5 and 19 passed on S4. |
+
+## S5 post-fix results
+
+Date: 2026-11-05. The orchestrator ran the gates on commit `6b9e6467`. The `PYTHONPATH` held the worktree `LoopStructural-005-s5`, `packages/loop_common/src`, `packages/loop_interpolation/src`, `packages/loopstructural_visualisation/src` and a scratch folder with `pyevtk`. The root run and the package run were separate calls (PowerShell), because the conftest plugins clash.
+
+| Command | Result | Time |
+|---|---|---|
+| `ruff check LoopStructural packages` | All checks passed | - |
+| `pytest packages/loop_common/tests packages/loop_interpolation/tests` | 1021 passed, 47 skipped, 2 xfailed, 7 warnings | 140.08 s |
+| Root `pytest -W default::DeprecationWarning` | 2216 passed, 4 skipped, 12 warnings | 936.67 s (15 min 36 s) |
+
+No gate failed. The root run has no failure, and so the S4 failure (`test_write_vol_gocad_is_broken_for_real_bounding_box`) is closed.
+
+The pytest summary has no library warning with the text "is deprecated" that comes from S5. The log tail (`gate_s5.log`) holds only the last 12 lines of the root run, and it has no "is deprecated" line.
+
+Cells of the new test files.
+
+`tests/unit/modelling/test_diagnostics_frames.py` has 147 cells:
+
+| Test function | Cells |
+|---|---|
+| `test_misfit_leaves_state_unchanged` | 24 |
+| `test_new_misfit_methods_leaves_state_unchanged` | 24 |
+| `test_gradient_cosine_matches_analytic_direction_exact_field` | 24 |
+| `test_gradient_cosine_matches_analytic_direction_exact_field_solved_model` | 24 |
+| `test_value_residuals_are_absolute_difference` | 12 |
+| `test_value_misfit_is_normalised_by_field_range` | 12 |
+| `test_value_misfit_with_zero_range_does_not_divide` | 2 |
+| `test_misfit_with_no_rows_is_empty` | 1 |
+| `test_old_misfit_shapes_are_kept` | 4 |
+| `test_stale_misfit_is_not_rebuilt` | 4 |
+| `test_stale_misfit_warns_once_and_returns_nan` | 4 |
+| `test_stale_verification_report_does_not_rebuild` | 4 |
+| `test_report_blocks_are_separate` | 2 |
+| `test_unsolved_model_gives_no_residual_blocks` | 2 |
+| `test_exclusions_are_counted_and_explained` | 2 |
+| `test_gradient_outside_points_give_no_false_unattributed_model` | 1 |
+| `test_gradient_outside_points_with_pli_are_measured` | 1 |
+
+The sum is 147. All 147 failed before the fix (`## S5 diagnostics pre-fix failures`) and all pass now.
+
+`packages/loop_interpolation/tests/test_residual_exclusion_report.py` has 9 tests (no parametrised cells): `test_direction_cosines_pure_function`, `test_report_without_verification_is_unchanged`, `test_builder_records_keep_their_own_key`, `test_unknown_reason_keeps_its_count`, `test_unattributed_rows_are_reported`, `test_gradient_outside_points_give_no_false_unattributed`, `test_dropped_rows_none_gives_no_unattributed`, `test_surfe_style_dropped_equals_outside`, `test_residual_summary_is_importable`. All 9 pass.
+
+Measured `TOL_SOLVED` = 9e-4. The measured maximum `|1 - cos|` is 4.414e-4 on 24 cells. The margin is a factor of 2.
+
+Resize and cell-centre files: 100 cells, all pass (`## S5 resize and cell-centre results`). The 3D structured golden file changed in 78 of 611 keys (`## S5 golden review (C-004)`). The 2D golden file did not change. The earlier survey of T078 (modelling 1540 passed, interpolation 615, loop_common 406, tests/unit rest 504) is in the golden section.
+
+## S5 backend matrix
+
+| Item | Level | Evidence |
+|---|---|---|
+| FDI misfit (gradient cosines, value residuals) | mandatory | `test_diagnostics_frames.py` (FDI cells) |
+| PLI misfit (gradient cosines, value residuals) | mandatory | `test_diagnostics_frames.py` (PLI cells) |
+| Residual and exclusion report, FDI and PLI | mandatory | `test_diagnostics_frames.py`, `test_residual_exclusion_report.py` |
+| Resize of the structured grid | mandatory | `test_resize_paths.py` |
+| Resize of the 2D grid | mandatory | `test_resize_paths.py` (`test_2d_counts_are_derived`) |
+| Resize of the rectilinear grid | mandatory | `test_rectilinear_resize_is_rejected` (resize is rejected with `NotImplementedError`) |
+| P2 | not in S5 | S2 and S6 cover it |
+| Native engines | not in S5 | S2 and S6 cover them |
+| Surfe | not in S5 | S2 and S6 cover it |
+| Residual reports for fold and P2 cells | not in S5 | S2 and S6 cover them |
+
+PLI fact. PLI assembles no gradient rows. In the case with 3 outside points, its gradient family reports an `unattributed` record of 8 (`test_gradient_outside_points_with_pli_are_measured`). The FDI case gives no false `unattributed` record (`test_gradient_outside_points_give_no_false_unattributed_model`).
+
+## S5 test run time (OP2)
+
+| Item | Time |
+|---|---|
+| Root suite (orchestrator, commit `6b9e6467`) | 936.67 s (15 min 36 s). The S4 end run took 805.50 s. |
+| Package suites (orchestrator) | 140.08 s. The S4 end run took 150.24 s. |
+
+The root time is 131 s more than the S4 time. The root suite has 150 more passed tests than at the S4 end (2216 and 2066, and the one S4 failure now passes). The new files add 147 cells to the root suite, and the diagnostics cells are slow (142.77 s on the unfixed code). The two runs had different machine load, so the times do not compare exactly.
+
+## S5 open points
+
+- OP12 (cell-centre result): not reproduced. All 60 cell-centre cells passed before and after the fix. The premise of the one-to-one test was corrected. No change to `_bounding_box.py`.
+- OP16 (default shape): the default shape is kept. Two families of different length now give the shape (1, N1 + N2).
+- OP17 (parity files under `packages/loop_interpolation/tests/golden`): not changed. `git diff --stat 1c029d21 HEAD -- packages/loop_interpolation/tests/golden` prints nothing.

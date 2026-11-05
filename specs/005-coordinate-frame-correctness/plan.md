@@ -7,18 +7,20 @@ The constitution (.specify/memory/constitution.md) has priority. -->
 
 ## Open points
 
-- **OP1**: This plan gives the exact design only for stages S1 to S4 (S1:
+- **OP1**: This plan gives the exact design only for stages S1 to S5 (S1:
   shared transform, reference-constraint boundary and fault frame; S2: fold, P2,
   directional-regularisation and constant-norm cells; S3: saved frames, copies
   and transform changes; S4: display, data export, fault-centre geometry and
-  intrusion classification). The spec-planner limit is 10 code files, and the
+  intrusion classification; S5: resize paths, cell centres, non-mutating
+  diagnostics, residual and exclusion report). The spec-planner limit is 10 code files, and the
   maintainer selected a staged plan on 2026-11-04. S2 has its exact design
   since 2026-11-04 ("Stage S2 design"). S3 has its exact design since
   2026-11-05 ("Stage S3 design"), and S4 since 2026-11-05 ("Stage S4 design").
-  Stages S5 and S6 have a stage map, a file list from a grep survey and a
-  requirement allocation, but no exact signatures. Owner: the spec-planner
-  skill, one run for each stage. Blocks: the tasks of S5 and S6. The spec-tasks
-  skill makes the S4 tasks next (S1 is merged; S2 is in pull request #396; S3
+  S5 has its exact design since 2026-11-05 ("Stage S5 design"). Stage S6 has
+  a stage map, a file list from a grep survey and a requirement allocation, but
+  no exact signatures. Owner: the spec-planner
+  skill, one run for each stage. Blocks: the tasks of S6. The spec-tasks
+  skill makes the S5 tasks next (S1 is merged; S2 is in pull request #396; S3
   is built in pull request #397).
 - **OP2**: Run time of the mandatory R2 and R5 matrices. R2 needs 4 anchors x
   3 rotations x 2 centre modes x 2 engines = 48 solves (FDI with 20000
@@ -97,6 +99,40 @@ The constitution (.specify/memory/constitution.md) has priority. -->
   defect. Owner: the maintainer. Decision needed: file an issue, as for the
   C-005 and C-006 defects. Default until an answer: S4 keeps the expression and
   tests only the branch without `value_map`. Blocks: nothing.
+- **OP12**: The spec (FR-015) says that cell-centre sampling can place a centre
+  beyond its cell. By reading, `BoundingBox.cell_centres` is correct for a
+  rotated box. The spacing equals `node_step_vector`, and the four callers
+  convert with `reproject`. The planner did not run the code. Owner: the S5
+  cell-centre test task. Decision needed: if all 60 cells of the new tests pass,
+  record "not reproduced" and keep the tests as guards. Default until an answer:
+  no code change in `_bounding_box.py`. If a cell fails, use the closed form of
+  "S5 decisions" item 7. Blocks: nothing.
+- **OP13** (closed 2026-11-05, maintainer answer Q3, see "Answers"): The misfit
+  methods must not change state and must not rebuild a stale model. Rule: on a
+  stale builder, fault builder or interpolator, the methods write one
+  `UserWarning` and return NaN ("S5 decisions" item 11).
+- **OP14** (closed 2026-11-05, maintainer answer Q1, see "Answers"): The 2D
+  `maximum` keeps its legacy value `origin + nsteps * step`. It counts nodes as
+  cells. S5 keeps it for FR-028. The four existing assertions pass with no change.
+  S5 only derives `nsteps_cells`, `n_cell_x` and `n_cell_y` from `nsteps`.
+- **OP15** (closed 2026-11-05, maintainer answer Q2, see "Answers"): The old misfit
+  methods keep their names and public shape. New names give the 1-D result. The
+  gradient value changes meaning. `COMPAT.md` and `ROADMAP.md` record it.
+- **OP16**: The old `evaluate_gradient_misfit` for two families (gradient and
+  normal) of different length. Before S5 it raised `ValueError` on current NumPy.
+  Equal lengths gave shape `(2, N)`. Owner: the maintainer. Decision needed: keep
+  `(2, N)` for equal lengths and return one row `(1, N1 + N2)` for different
+  lengths, or always return one row. Default until an answer: the first choice,
+  because it keeps the shape that worked. `COMPAT.md` records it. Blocks:
+  nothing.
+- **OP17**: The setter fix and the extent from `set_nelements` can change numeric
+  tests, including `packages/loop_interpolation/tests/golden` (the parity oracle
+  for the Rust path, with its own `--update-golden` option). Owner: the S5 survey
+  task. Decision needed: whether to regenerate such a file. Default until an
+  answer: record each change in "S5 golden review (C-004)"; regenerate a file only
+  when the cause is the intended extent change, and name the file; leave the
+  gates red and report if the cause is not clear. Blocks: the merge of S5 when a
+  parity file changes.
 
 ## Answers
 
@@ -185,6 +221,66 @@ The constitution (.specify/memory/constitution.md) has priority. -->
   fail before T032 and pass after it. T030 and T031 also need T032. The
   PLI control meets SC-002 (value error 1.8e-12, gradient error 1.3e-10).
 
+- 2026-11-05 (S5 plan): OP1 is closed for S5. After an independent review of
+  the S5 design, the maintainer answered five questions on 2026-11-05. The S5
+  design was revised to match.
+- 2026-11-05 (Q1, 2D `maximum`, maintainer): do not change the value of the 2D
+  `maximum`. Derive `nsteps_cells`, `n_cell_x` and `n_cell_y` from `nsteps`, and
+  keep `maximum = origin + nsteps * step` (legacy; it counts nodes as cells). This
+  is kept for FR-028. The four existing assertions in
+  `packages/loop_common/tests/test_2d_discrete_support.py` (lines 14 and 22) and
+  `tests/unit/interpolator/test_2d_discrete_support.py` (lines 16 and 24) stay
+  unchanged and must pass. OP14 is closed.
+- 2026-11-05 (Q2, misfit result, maintainer): keep the old public names and the
+  old public shape of `evaluate_value_misfit` and `evaluate_gradient_misfit`. The
+  new non-mutating, world-correct 1-D result has new names
+  (`evaluate_gradient_cosines`, `evaluate_value_residuals`). The old methods call
+  the same corrected code. The gradient value changes meaning (a cosine). This is
+  a behaviour change, recorded in `COMPAT.md` (migration notice) and in a
+  `ROADMAP.md` decision entry. OP15 is closed.
+- 2026-11-05 (Q3, stale model, maintainer): the misfit methods change no state
+  and do not rebuild a stale model. S5 chose one rule: warn once with
+  `UserWarning` and return NaN. OP13 is closed.
+- 2026-11-05 (Q4, `set_nelements`, maintainer): accept the exact extent after
+  `set_nelements`. S5 adds a numeric-test survey, a new section "S5 golden review
+  (C-004)", and a regeneration of the golden data files after review (C-004,
+  SC-015). The earlier sentence that the 3D golden test passes with no change is
+  withdrawn. `set_nelements` clamps `nsteps` to at least 2; the setter rejects
+  non-whole values; the 2D `nsteps` assignment coerces to an int array.
+- 2026-11-05 (Q5, value misfit, maintainer): the public value misfit keeps its
+  normalisation by the field range. The physical residual uses an unnormalised
+  private helper, so its unit "field" is true.
+- 2026-11-05 (S5 build start, orchestrator, five gaps of the task texts, settled
+  by reading the code): (1) `GeologicalFeature` and its base class have no
+  `bounding_box` attribute. The misfit code uses `self.interpolator.bounding_box`
+  (an attribute of `GeologicalInterpolator`, `None` when no frame is set), as the
+  old code does. `self.model.bounding_box` is not used: the model can be `None`.
+  (2) A stale model for T081: for a stale interpolator, assign
+  `interpolator.up_to_date = False` after the solve (a plain attribute). For a
+  stale builder, assign `builder._up_to_date = False` after the solve. Do not use
+  `builder.set_not_up_to_date`: the `GeologicalFeatureBuilder` override also sets
+  the interpolator stale. The test asserts the flag value before the call.
+  (3) `n_elements` exists on `StructuredGrid2DGeometry` (`nsteps_cells[0] *
+  nsteps_cells[1]`, `_structured_grid_2d.py:45`) and on the 3D geometry (line
+  166). (4) No existing test checks the keys of `ConstraintDiagnosticsReport.to_dict`.
+  T071 writes the pre-S5 key set as a literal from the code: report keys
+  `interpolator_type`, `total_rows`, `families`, `region_coverage`,
+  `outside_model_points`; family keys `active`, `row_count`, `dropped_rows`,
+  `effective_weight_mean`, `effective_weight_min`, `effective_weight_max`,
+  `source_point_count`, `outside_model_point_count`; region keys
+  `total_support_nodes`, `active_region_nodes`, `inactive_region_nodes`,
+  `active_fraction`; report field order `interpolator_type`, `families`,
+  `region_coverage`, `outside_model_points`. (5) The gradient family adds 2
+  rows for each inside point for FDI (strike and dip rows, `name="gradient"`).
+  PLI is different: `P1Interpolator.add_gradient_constraints` is `pass`
+  (`_p1interpolator.py:70`), so PLI assembles no `gradient` rows, and the builder
+  reports `dropped_rows = 2 * source_points` for the `gradient` family of PLI.
+  So `verification_report` gives an `unattributed` record for PLI gradient data.
+  That record is true (PLI ignores gradient data) and it is not a defect of S5.
+  T081 checks the no-false-unattributed case with FDI only, and for PLI it records
+  the measured `unattributed` count (expected `2 * source_points`) and the
+  `outside_model` count. The worker reports both numbers.
+
 ## Summary
 
 Observations, fault geometry, masks and public queries stay in world
@@ -207,8 +303,9 @@ S1 repairs the shared boundary and the fault frame:
 S2 repairs the fold paths. S3 makes saved interpolators, copies and transform
 changes keep the frame ("Stage S3 design"). S4 removes two extra conversions: the
 display and export of observation data, and the intrusion classification. It also
-deprecates `GeologicalModel.rescale` ("Stage S4 design"). S5 and S6 repair grid and diagnostics, and the auxiliary
-utilities and validation matrix (see "Stages and rollback").
+deprecates `GeologicalModel.rescale` ("Stage S4 design"). S5 repairs the resize paths and the misfit diagnostics and adds the residual and
+exclusion report ("Stage S5 design"). S6 covers the auxiliary utilities and the
+validation matrix (see "Stages and rollback").
 
 ## Technical context
 
@@ -274,7 +371,7 @@ utilities and validation matrix (see "Stages and rollback").
 
 ## Design
 
-S1 to S4 have the exact design below. S5 and S6 have scope only (OP1).
+S1 to S5 have the exact design below. S6 has scope only (OP1).
 
 ### Types and data
 
@@ -1686,6 +1783,862 @@ two codes give the same `get_data()` output; (d) on the S3 code `model.rescale(p
 and `model.scale(p)` give no warning, on the S4 code each gives one, and the values
 are equal.
 
+### Stage S5 design
+
+S5 has four aims. First, S5 makes the remaining resize paths keep the node counts
+and cell counts consistent (FR-014). Second, S5 checks that cell-centre sampling
+agrees with the grid cells (FR-015). Third, S5 makes the feature misfit
+diagnostics leave their inputs unchanged and compare quantities in one basis
+(FR-023). Fourth, S5 adds a residual and exclusion report that keeps physical
+residuals and assembled residuals apart (FR-024).
+
+Base: branch `feat/005-s4-world-locations` (S4, pull request #401, not merged). If
+S4 changes before it merges, run this planner again on the merged result.
+
+The plan was revised on 2026-11-05 after an independent review and five
+maintainer answers (see "Answers"). The text below is the revised design.
+
+#### S5 facts from the code (read on 2026-11-05)
+
+- Resize, 3D. S1 repaired the `origin` and `maximum` setters of
+  `StructuredGrid3DGeometry` with `_cells_for_length`. Two setters of the same
+  class were not repaired (`_structured_grid_3d.py`, `nsteps` setter at line 71,
+  `step_vector` setter at line 131). The `nsteps` setter counts nodes. It does
+  `step_vector /= nsteps_new / nsteps_old`. This keeps the product
+  `nsteps * step` constant. It does not keep the extent `(nsteps - 1) * step`.
+  Example: the node count 11 to 21 with step 1 gives step `0.524` and a new
+  extent `10.48` instead of `10`.
+- The `step_vector` setter sets the node count to `ceil(nsteps / factor)`. It
+  treats the node count as a cell count. So the extent also drifts. It can lose
+  a cell.
+- `set_nelements` (`_structured_grid_3d.py:50-57`) ends with `self.nsteps =
+  nsteps`. It computes `nsteps = ceil((maximum - origin) / step)` with a cubic
+  step from the requested element count. So it uses the `nsteps` setter, and the
+  setter fix changes what `set_nelements` leaves behind. Callers:
+  `GeologicalFeatureBuilder.build` calls `interpolator.set_nelements` (line 575
+  of `_geological_feature_builder.py`) and the support method is reached through
+  `DiscreteInterpolator.set_nelements` (line 104). `set_interpolation_geometry`
+  runs `support.step_vector = support.step_vector * 0.9` in a loop while
+  `interpolator.dof < 100` (line 525 of the same file). So both setters run in
+  ordinary model builds, and numeric tests that depend on a built support can
+  change.
+- The golden test `packages/loop_common/tests/test_structured_support_reference.py`
+  runs `set_nelements(200)`, then `nsteps + 1`, then `step_vector * 2`, then
+  `origin - 1`, then `maximum + 3`, in sequence on one grid (lines 171 to 180).
+  Each case records the state that the previous setters left. So the cases
+  `after_set_nelements`, `after_nsteps`, `after_step_vector`, `after_origin` and
+  `after_maximum` all change when the two setters change. The earlier text of
+  this plan said that `after_origin` and `after_maximum` stay: that was wrong.
+- `StructuredGrid2DGeometry` (`_structured_grid_2d.py`) has plain attributes
+  `nsteps`, `maximum`, `nsteps_cells`, `n_cell_x` and `n_cell_y`, set once in
+  `__init__` (lines 23 to 30). `maximum = origin + nsteps * step_vector` counts
+  nodes as cells. `nodes` uses `origin + nsteps_cells * step_vector`. The two
+  disagree by one step. The three count attributes and `maximum` go stale if
+  `nsteps` is assigned later. The 3D class computes `maximum` as
+  `origin + nsteps_cells * step_vector`. The 2D class `set_nelements` raises
+  `NotImplementedError` (`supports/_2d_structured_grid.py:50`). Four existing
+  assertions read the 2D `maximum`: `packages/loop_common/tests/test_2d_discrete_support.py`
+  lines 14 and 22, and `tests/unit/interpolator/test_2d_discrete_support.py`
+  lines 16 and 24. They expect `origin + nsteps * step` (the legacy value).
+- `RectilinearGrid` (`supports/_3d_rectilinear_grid.py`) holds node arrays
+  `_xnodes`, `_ynodes`, `_znodes`. It inherits the `origin`, `nsteps` and
+  `step_vector` setters of the 3D geometry. A call changes the stored counts and
+  the stored origin, but not the node arrays. So the geometry and the nodes
+  disagree. `maximum` is read from the node arrays and has no setter. The
+  constructors of the geometry classes write the private attributes (`_origin`,
+  `_nsteps`, `_step_vector`), not the setters.
+- Cell centres. `BoundingBox.cell_centres` (`_bounding_box.py:647`) builds
+  `nsteps - 1` centres with `linspace(origin + h, maximum - h, nsteps - 1)` and
+  `h = node_step_vector / 2`. Now `maximum - origin = (nsteps - 1) * step`. So
+  the spacing is exactly `node_step_vector`. Every centre is the middle of a cell
+  of `regular_grid(local=False)`. The method returns local points. All four
+  callers (`_base_geological_feature.py:391`, `420`, `442` and
+  `_model_exporter.py:77`) call `reproject` on the result. The existing tests
+  (`test_bounding_box_structured_grid.py`, `test_scalar_field_grid.py`) use
+  unrotated boxes only. By reading, the default path has no defect for a rotated
+  box (OP12). `structured_grid(local_coordinates=True)` builds a different grid.
+  Its cells are the enclosure of the projected corners. That grid works in the
+  local frame, so `grid.cell_index_at` takes local points. Its `cell_centres` are
+  the centres of those cells. They are not `box.cell_centres()`. The supports'
+  `cell_centres(global_index)` (3D, 2D, rectilinear) use their own local frame and
+  do not apply `rotation_xy`, as their docstrings state.
+- Misfit methods (`_geological_feature.py`: `evaluate_gradient_misfit` at line 240
+  and `evaluate_value_misfit` at line 272 on this branch). `get_gradient_constraints()`
+  and `get_norm_constraints()` return the stored arrays by reference
+  (`_geological_interpolator.py`: the definitions are at lines 633 and 652, and
+  the returns are at lines 640 and 660). So `grad /= norm` (line 255) changes
+  `interpolator.data["gradient"]` in place. The norm is taken over all columns
+  (position, vector and weight). So the position and the weight columns change
+  too. `grad[:, :3:6]` (line 260) is the slice with start 0, stop 3 and step 6.
+  That is column `0` only. The vector columns are `3:6`. The stored vectors are
+  in the local basis. The interpolator converts them once when it stores them.
+  `evaluate_gradient` returns world vectors. So a rotated frame compares two
+  bases.
+- Evaluation path. `GeologicalFeature.evaluate_value` (line 117) and
+  `evaluate_gradient` call `self.builder.up_to_date()` (lines 141 and 191).
+  `BaseBuilder.up_to_date` (`_base_builder.py:81`) first calls itself on every
+  fault builder. Then, if the builder or the interpolator is stale, it calls
+  `update()`, which builds again and solves. So a misfit method that calls
+  `self.evaluate_value` on a stale model rebuilds it. This also holds for
+  `self.max()` and `self.min()` (`_base_geological_feature.py:280` and `294`),
+  because they call `evaluate_value`. The earlier text of this plan marked this
+  path as not read. It is now read. No separate cache-validity flag exists in
+  `GeologicalFeature`, the builder or the interpolator (grep for `cache` on
+  2026-11-05). The state is `interpolator.up_to_date`, `builder._up_to_date`
+  (a protected attribute; no public property exists), `interpolator.c` and
+  `interpolator.latest_diagnostics_report`.
+- Result shape. With one family, `np.array([list])` gives the shape `(1, N)`.
+  With two families of equal length it gives `(2, N)`. With two families of
+  different length, `np.array([list, ndarray])` raises `ValueError` on current
+  NumPy. The value misfit divides by `self.max() - self.min()` (line 288): zero
+  range gives a division by zero. It does not change its inputs. No code in
+  `LoopStructural` or `packages` calls the two methods (`git grep -n -w` on
+  2026-11-05). `ROADMAP.md` line 832 names them in a history note only.
+- Diagnostics report. `_diagnostics.py` holds three frozen dataclasses and
+  `ConstraintDiagnosticsReport` with `to_dict` and `summary`. It has
+  `from __future__ import annotations`. The two builders
+  (`GeologicalInterpolator._build_constraint_diagnostics_report`, line 731, and the
+  `DiscreteInterpolator` override, line 221) only read state.
+  `get_constraint_diagnostics_report(refresh=False)` stores the result in
+  `latest_diagnostics_report`.
+- `DiscreteInterpolator.calculate_residual_for_constraints()` (line 497) gives
+  `A x - b` for each assembled constraint, as a dict by constraint name. The names
+  are the constraint names: FDI uses `value` and `gradient`, PLI uses `value` and
+  `norm`. It does not test `self.c`. The constructor sets `self.c` to zeros
+  (lines 64 to 68), so `c` is not `None` after construction. Line 1355 can
+  assign another value.
+- Dropped rows. The `DiscreteInterpolator` builder sets `dropped_rows` as
+  `source_points - rows` for `value`, `normal`, `tangent` and `inequality_value`
+  (line 265), and as `2 * source_points - rows` for `gradient` (line 267). Other
+  families (interface, inequality pairs, regularisation) get `None`. So
+  `dropped_rows` is in matrix rows. `outside_model_point_count` is in points. The
+  base builder (used by `SurfeRBFInterpolator`, which does not override it) sets
+  `dropped_rows = outside` and `row_count = point count`, so for Surfe both are in
+  points.
+- Builder exclusions. `GeologicalFeatureBuilder.excluded_rows`
+  (`dict[str, dict[str, int]]`, S1, line 88) uses constraint names as keys:
+  `<feature name>_orthogonal` (line 343) and `<feature name>_equality` (lines 387
+  and 393). The reasons are `invalid_reference_value`,
+  `invalid_reference_direction` and `evaluation_error`. The S1 restricted-support
+  case uses the feature name `restricted`, so the keys are `restricted_equality`
+  and `restricted_orthogonal`. These keys are not family names. No report reads
+  them.
+- Python version. `pyproject.toml` and `packages/loop_common/pyproject.toml` set
+  `requires-python >=3.9`. `_structured_grid_3d.py` has no `from __future__
+  import annotations`. The syntax `np.ndarray | None` fails there on Python 3.9.
+- Documents. `git grep` finds no mention of `ConstraintDiagnosticsReport`,
+  `summarise_residuals`, `UNKNOWN_EXPLANATION` or the misfit methods in
+  `docs/source` or `API.md` (checked 2026-11-05).
+
+#### S5 decisions
+
+1. **Resize contract.** For every structured grid, each assignment of `origin`,
+   `maximum`, `nsteps` or `step_vector` keeps the extent that the caller asked
+   for, or encloses it by less than one cell. `nsteps` counts nodes in the
+   geometry classes. A repeated assignment of the same value changes nothing.
+   Assignments of different values can add up. The sequence A, B, A can enlarge
+   the extent by less than one cell of B plus less than one cell of A. A test
+   measures this (`test_step_vector_a_b_a_extent_drift`).
+2. **3D `nsteps` setter.** Keep origin and extent. The new step is
+   `extent / (nsteps_new - 1)`. The extent is `nsteps_cells * step_vector`, taken
+   before the change. A value below 2 on any axis raises `ValueError`. A value
+   that is not a whole number raises `ValueError`. The setter does not round,
+   because rounding hides a caller error. A float array of whole numbers is
+   accepted and stored as `int`. A scalar is broadcast, as before.
+3. **`set_nelements` (Q4, answered 2026-11-05).** S5 accepts the exact extent
+   after `set_nelements`: `maximum` is the same before and after the call. The old
+   code changed it. `set_nelements` does `nsteps = np.maximum(np.ceil(...).astype(int), 2)`.
+   The clamp keeps behaviour for valid callers (a value of 2 or more is unchanged)
+   and avoids a new `ValueError` when the requested element count is very small.
+   The old code gave one node (zero cells) for such a request, which no caller
+   can use. The setter accepts only `nsteps >= 2`, because one node has no
+   extent to keep.
+4. **3D `step_vector` setter.** Keep origin and the requested extent. The cell
+   count is `_cells_for_length(extent, step_vector=new_step)` and the node count
+   is that plus one. The stored step is a copy of the value that the caller gave.
+   The grid can end up to one cell larger than the extent, never smaller. The loop
+   in `set_interpolation_geometry` ends as before, because the cell count grows
+   when the step gets smaller.
+5. **2D grid (Q1, answered 2026-11-05).** `nsteps` becomes a property. Its setter
+   coerces the value with `np.ceil(np.asarray(v)).astype(int)`, as `__init__` does
+   today. `nsteps_cells`, `n_cell_x` and `n_cell_y` become read-only properties
+   derived from `nsteps`. `maximum` becomes a read-only property with the legacy
+   value `origin + nsteps * step_vector`. This value counts nodes as cells. S5 does
+   not change it, because FR-028 asks to keep it. The four existing assertions
+   of `maximum` must pass with no change. After an `nsteps` assignment, the three
+   counts and `maximum` follow the new `nsteps` (before, they stayed stale).
+6. **Rectilinear grid.** The `origin`, `nsteps` and `step_vector` setters raise
+   `NotImplementedError` after construction. Resize needs new node arrays, and
+   the grid cannot guess them. `maximum` already has no setter.
+7. **Cell centres (FR-015).** No change to `BoundingBox.cell_centres` unless a new
+   test fails (OP12). S5 adds tests for rotated boxes and for the cell
+   association of the returned grid. If a test fails, the fix is the closed form
+   `origin + (arange(nsteps - 1) + 0.5) * node_step_vector` for each axis, in
+   place of `linspace`. The task records the failure first.
+8. **Misfit methods (Q2, answered 2026-11-05).** The old public methods keep their
+   names and their public result shape. Two new methods return the corrected
+   result as a 1-D array: `evaluate_gradient_cosines` and `evaluate_value_residuals`
+   (both names are free; `git grep -n -w` on 2026-11-05 gives no match). The old
+   methods and the new methods call the same private code (one code path for each
+   quantity). That code works on copies, converts the stored local vectors with
+   `interpolator.local_to_world_vectors`, converts the stored local positions with
+   `bounding_box.reproject`, selects the columns `[:, :3]` (position) and
+   `[:, 3:6]` (vector), and evaluates through the feature. The in-place change, the
+   `grad[:, :3:6]` column error and the local-versus-world comparison are removed
+   from the old methods.
+9. **Old result shape.** `evaluate_gradient_misfit` returns one row for each
+   non-empty family, as before: shape `(1, N)` for one family, and `(2, N)` for two
+   families of equal length. For two families of different length it returns one
+   row `(1, N1 + N2)`; before, this case raised `ValueError` (OP16). With no rows it
+   returns `np.array([])` of shape `(0,)`, as before. `evaluate_value_misfit`
+   returns shape `(N,)`, as before.
+10. **Gradient value changes meaning.** The old value was the dot product of an
+    unnormalised model gradient and a column slice. The new value is the cosine
+    between the world data direction and the model gradient. This is a change of
+    behaviour of a public method. S5 records it in `COMPAT.md` as a migration
+    notice, and in `ROADMAP.md` as a decision entry (the constitution row for the
+    public API asks for it). The new name `evaluate_gradient_cosines` gives the
+    same numbers in one 1-D array.
+11. **Stale model (Q3, answered 2026-11-05).** The misfit methods and
+    `verification_report` must not change state and must not rebuild. First they
+    ask `_stale_reason()`. It returns a text if `builder._up_to_date` is `False`, if
+    any fault builder of the builder is stale, or if `interpolator.up_to_date` is
+    `False`. It returns `None` otherwise (and when `builder` is `None`, only the
+    interpolator counts). If the text is not `None`, the method does not evaluate.
+    It writes one `warnings.warn(text, UserWarning, stacklevel=2)`. The text names
+    the stale object and says that the model must be built first. The new methods
+    then return `np.full(n, np.nan)`. The old methods return their usual shape
+    filled with NaN. Reasons: (a) the call changes no state (SC-009); (b) no
+    exception stops a loop over features; (c) NaN is the marker for an unusable row
+    in this design; (d) a number from old coefficients looks valid and is not;
+    (e) a `UserWarning` shows by default, a log line does not. When the model is up
+    to date, the methods evaluate with `self.evaluate_value` and
+    `self.evaluate_gradient`. Their call to `builder.up_to_date()` then does
+    nothing, because `_stale_reason()` has checked the same state (faults
+    included). The number `n` is the row count of the stored array. Reading a shape
+    changes nothing.
+12. **Gradient misfit is a cosine.** The pure function `direction_cosines` returns
+    the cosine between the data direction and the model gradient for each row. A
+    row with a zero, not finite or missing vector gives `NaN`.
+13. **Value misfit (Q5, answered 2026-11-05).** The public `evaluate_value_misfit`
+    keeps its old meaning: `|value - field|` divided by the field range
+    `self.max() - self.min()`. It divides only when the range is finite and greater
+    than zero. Otherwise it returns the unnormalised absolute difference. The
+    physical residual uses a private helper `_value_residuals_fresh()` that gives the
+    unnormalised `|value - field|` in field units. `evaluate_value_residuals`,
+    `evaluate_value_misfit` and the physical report entry `value` all call it. So
+    the unit `"field"` is true.
+14. **Report.** `ConstraintDiagnosticsReport` gets three new fields with defaults,
+    appended after the existing ones. `to_dict` and `summary` show them only when
+    they are not empty. So a report that was built before S5 gives the same
+    output. A new method `GeologicalFeature.verification_report()` fills them. It
+    builds a new report. It does not store it in `latest_diagnostics_report`. Its
+    private call is `_build_constraint_diagnostics_report`.
+15. **Separate residuals.** `physical_residuals` holds quantities in data units
+    (value: field units; direction: degrees). `assembled_residuals` holds the
+    `A x - b` rows of each constraint, in the assembler's normalisation. The two
+    dicts keep the plain names as keys. Assembled keys are constraint names (FDI:
+    `value`, `gradient`; PLI: `value`, `norm`). Physical keys are `value`, `gradient`
+    and `normal`. The two sets can share a key. S5 does not prefix the keys,
+    because the assembled keys must stay equal to the names that
+    `calculate_residual_for_constraints` uses. Each entry has a `kind` field
+    (`"physical"` or `"assembled"`). The two dicts are separate objects and never
+    merge in `to_dict`. The tests check the `kind` field and the object identity,
+    not a claim that the keys differ.
+16. **Unsolved model.** `verification_report` fills the two residual blocks only if
+    `_stale_reason()` is `None` and `interpolator.c` is not `None` and the
+    interpolator has `calculate_residual_for_constraints`. If not, both blocks stay
+    empty (`{}`), one warning is written (stale case), and the exclusions are still
+    reported, because they read state only. `calculate_residual_for_constraints`
+    itself does not change in S5.
+17. **Exclusions.** Each exclusion is an `ExclusionRecord` with a family, a reason,
+    a count and a plain explanation. Sources, in this order:
+    (a) The builder's `excluded_rows`. A builder record keeps its own constraint key
+    as `family` (for example `restricted_orthogonal`). It is not a data family. S5
+    does not subtract it from any family count.
+    (b) The outside-model count of each family, reason `outside_model`, in points.
+    (c) For each family whose `dropped_rows` is not `None`: the rows that
+    `outside_model` does not explain, reason `unattributed`, in rows. The unit of
+    `dropped_rows` is the matrix row, so the outside count is first multiplied by
+    `rows_per_point` (2 for `gradient` when the interpolator is a
+    `DiscreteInterpolator`, 1 otherwise). The record exists when the difference is
+    positive. A family with `dropped_rows` equal to `None` (interface,
+    regularisation, other) gets no `unattributed` record, because it has no basis.
+    For Surfe, `dropped_rows = outside` and so the difference is zero.
+    A reason with no registered explanation keeps its count and gets
+    `UNKNOWN_EXPLANATION`. No row is dropped from the count.
+18. **Out of S5.** Residual reports for fold cells and P2 cells (the cells that the
+    spec table links to FR-024 with SC-003, SC-007 and SC-008) are not in S5. S2
+    covers the fold and P2 data paths. S6 covers the backend matrix. The summary
+    code does not depend on the engine, so S5 adds no cell for them.
+19. **Python 3.9.** `_structured_grid_3d.py` uses `Optional[np.ndarray]` from
+    `typing`. It gets no `from __future__ import annotations` (the file stays
+    unchanged in style). `_diagnostics.py` already has the future import and uses
+    `float | None` in annotations.
+20. **Exports.** `loop_interpolation.__init__` exports `ResidualSummary`,
+    `ExclusionRecord`, `direction_cosines` and `build_exclusion_records`.
+    `summarise_residuals`, `UNKNOWN_EXPLANATION` and `EXCLUSION_EXPLANATIONS` are
+    not exported. The feature code and the tests import them from
+    `loop_interpolation._diagnostics`.
+
+#### S5 contracts
+
+| Boundary | Input | Output | Owner |
+|---|---|---|---|
+| `StructuredGrid3DGeometry.nsteps` and `.step_vector` setters, `set_nelements` | node count, step, or element count | origin and extent kept (extent enclosed by less than one cell for the step setter) | `_structured_grid_3d.py` |
+| `StructuredGrid2DGeometry.nsteps`, `maximum` and cell counts | `origin`, `nsteps`, `step_vector` | `nsteps` is an int array; counts derived, never stale; `maximum` legacy value `origin + nsteps * step_vector` | `_structured_grid_2d.py` |
+| `RectilinearGrid` resize setters | any value | `NotImplementedError`, no state change | `_3d_rectilinear_grid.py` |
+| `BoundingBox.cell_centres` | the box | local centres, one for each cell of `regular_grid(local=False)` (unchanged) | `_bounding_box.py` |
+| `GeologicalFeature.evaluate_gradient_misfit` and `evaluate_value_misfit` | stored local constraint arrays | old public shape and names; world-correct; stored arrays, weights, coefficients and both up-to-date flags unchanged; stale model gives a warning and NaN | `_geological_feature.py` |
+| `GeologicalFeature.evaluate_gradient_cosines` and `evaluate_value_residuals` | the same | 1-D arrays; same rules | `_geological_feature.py` |
+| `direction_cosines` | two `(N, d)` arrays in one basis | `(N,)` cosines | `_diagnostics.py` |
+| `GeologicalFeature.verification_report` | the feature | a new `ConstraintDiagnosticsReport` with residuals and exclusions; no state change | `_geological_feature.py` |
+
+#### S5 functions and signatures
+
+`StructuredGrid3DGeometry` (`_structured_grid_3d.py`; add `from typing import
+Optional` at the top):
+
+```python
+def _cells_for_length(
+    self, length: np.ndarray, step_vector: Optional[np.ndarray] = None
+) -> np.ndarray:
+    """Number of cells per axis that cover ``length``.
+
+    ``step_vector`` defaults to the current step. The rule of S1 is unchanged:
+    ``ceil(length / step - 1e-9)``; 0 cells become 2; a negative count raises
+    ``ValueError("Cannot resize the grid.")``.
+    """
+```
+
+`set_nelements`: the line `nsteps = np.ceil(...).astype(int)` becomes
+
+```python
+nsteps = np.maximum(
+    np.ceil((self.maximum - self.origin) / step_vector).astype(int), 2
+)
+```
+
+`nsteps` setter:
+
+```python
+@nsteps.setter
+def nsteps(self, nsteps):
+    nsteps = np.broadcast_to(np.asarray(nsteps), self._nsteps.shape)
+    if not np.all(np.isfinite(nsteps)) or np.any(nsteps != np.round(nsteps)):
+        raise ValueError("Cannot resize the grid. nsteps must be whole numbers.")
+    nsteps = nsteps.astype(int)
+    if np.any(nsteps < 2):
+        raise ValueError("Cannot resize the grid. nsteps must be at least 2.")
+    extent = self.nsteps_cells * self._step_vector
+    self._step_vector = extent / (nsteps - 1)
+    self._nsteps = np.array(nsteps)
+    self._on_geometry_change()
+```
+
+`step_vector` setter:
+
+```python
+@step_vector.setter
+def step_vector(self, step_vector):
+    step_vector = np.array(step_vector, dtype=float)
+    extent = self.nsteps_cells * self._step_vector
+    cells = self._cells_for_length(extent, step_vector=step_vector)
+    self._nsteps = cells + 1
+    self._step_vector = step_vector
+    self._on_geometry_change()
+```
+
+`StructuredGrid2DGeometry` (`_structured_grid_2d.py`): in `__init__`, replace the
+assignments of `self.nsteps`, `self.maximum`, `self.nsteps_cells`, `self.n_cell_x`
+and `self.n_cell_y` (lines 23, 26, 28 to 30) with `self.nsteps = nsteps` (the setter
+coerces) and keep the other lines. Add:
+
+```python
+@property
+def nsteps(self) -> np.ndarray:
+    return self._nsteps
+
+@nsteps.setter
+def nsteps(self, nsteps):
+    self._nsteps = np.ceil(np.asarray(nsteps)).astype(int)
+
+@property
+def nsteps_cells(self) -> np.ndarray:
+    return self.nsteps - 1
+
+@property
+def n_cell_x(self):
+    return self.nsteps[0] - 1
+
+@property
+def n_cell_y(self):
+    return self.nsteps[1] - 1
+
+@property
+def maximum(self) -> np.ndarray:
+    # Legacy value (FR-028): it counts nodes as cells, so it is one step
+    # beyond the last node. ``nodes`` uses ``nsteps_cells``. Do not change it.
+    return self.origin + self.nsteps * self.step_vector
+```
+
+The properties `n_cell_x` and `n_cell_y` return the same NumPy integer type as
+the old attributes. The task greps for readers and writers of the five names
+before the edit (`git grep -n "n_cell_x\|n_cell_y\|nsteps_cells\|\.maximum ="`). A
+writer outside `__init__` must move to the derived form. The `__init__` order
+matters: `nsteps` is set before `origin` is read.
+
+`RectilinearGrid` (`_3d_rectilinear_grid.py`): override the three setters.
+
+```python
+_RESIZE_MESSAGE = (
+    "A rectilinear grid has fixed node arrays and cannot be resized. "
+    "Build a new RectilinearGrid."
+)
+
+@property
+def origin(self): return self._origin
+@origin.setter
+def origin(self, origin): raise NotImplementedError(_RESIZE_MESSAGE)
+# the same pattern for nsteps and step_vector
+```
+
+`_diagnostics.py` (new code; existing classes and fields keep their order):
+
+```python
+@dataclass(frozen=True)
+class ResidualSummary:
+    name: str                 # constraint or data family
+    kind: str                 # "physical" or "assembled"
+    unit: str                 # "field", "degree" or "assembled"
+    count: int                # rows with a finite residual
+    nan_count: int            # rows with no finite residual (not in the statistics)
+    rms: float | None         # None when count == 0
+    max_abs: float | None
+    mean_abs: float | None
+
+@dataclass(frozen=True)
+class ExclusionRecord:
+    family: str               # a data family, or the constraint key of a builder record
+    reason: str
+    count: int                # points for outside_model, rows for unattributed
+    explanation: str
+
+EXCLUSION_EXPLANATIONS: dict[str, str] = {
+    "invalid_reference_value": "The reference value is NaN or not finite at the sampled point.",
+    "invalid_reference_direction": "The reference direction has zero length or is not finite.",
+    "evaluation_error": "The reference feature raised an error when it was evaluated.",
+    "outside_model": "The point lies outside the model bounding box. The count is in points.",
+    "unattributed": "The assembly has fewer rows than expected and no reason was recorded. The count is in matrix rows.",
+}
+UNKNOWN_EXPLANATION = "No explanation is registered for this reason."
+
+def summarise_residuals(name: str, kind: str, unit: str, residuals: np.ndarray) -> ResidualSummary: ...
+def direction_cosines(model_vectors: np.ndarray, data_vectors: np.ndarray) -> np.ndarray: ...
+def build_exclusion_records(
+    excluded_rows: dict[str, dict[str, int]],
+    families: dict[str, ConstraintFamilyDiagnostics],
+    rows_per_point: dict[str, int] | None = None,
+) -> tuple[ExclusionRecord, ...]: ...
+```
+
+`summarise_residuals` flattens the array, counts non-finite values in `nan_count`
+and computes `rms`, `max_abs`, `mean_abs` from the finite values. It does not
+change its input. `direction_cosines` raises `ValueError` if the two shapes
+differ. For each row it divides the dot product by the product of the two norms.
+A row whose norm is zero or not finite gives `NaN`. Both inputs stay unchanged.
+
+`build_exclusion_records` returns the records sorted by `(family, reason)`. The
+rules are:
+
+- One record for each reason in `excluded_rows`. The family is the key of
+  `excluded_rows`. The count is not subtracted from any family.
+- One `outside_model` record for each family with `outside_model_point_count > 0`.
+- One `unattributed` record for each family with `dropped_rows` not `None` and
+  `dropped_rows - outside_model_point_count * k > 0`. Here `k` is
+  `rows_per_point.get(family, 1)` (`rows_per_point` `None` means an empty dict).
+  The count of the record is the difference.
+- A count of zero makes no record.
+
+The report class gets three fields after `outside_model_points`:
+
+```python
+physical_residuals: dict[str, ResidualSummary] = field(default_factory=dict)
+assembled_residuals: dict[str, ResidualSummary] = field(default_factory=dict)
+exclusions: tuple[ExclusionRecord, ...] = ()
+```
+
+`to_dict` adds the keys `"physical_residuals"`, `"assembled_residuals"` (a dict of
+the fields of each summary) and `"exclusions"` (a list of dicts) only when the
+field is not empty. `summary()` adds one line for each non-empty block, after the
+existing lines. The properties `total_rows` and `active_families` do not change.
+
+`GeologicalFeature` (`_geological_feature.py`; the module has the future
+import):
+
+```python
+def evaluate_gradient_misfit(self) -> np.ndarray:
+    """Cosine between each stored direction and the model gradient (1 = equal).
+
+    One row for each non-empty family (gradient, then normal): shape (1, N) for
+    one family, (2, N) for two of equal length, (1, N1 + N2) for two of
+    different length. Shape (0,) with no rows. The model gradient and the data
+    direction are compared in world coordinates. The method changes no stored
+    array, weight, coefficient or flag. A stale model gives a UserWarning and
+    NaN. The meaning of the value changed in S5 (see COMPAT.md).
+    """
+
+def evaluate_value_misfit(self) -> np.ndarray:
+    """|value - field| at each stored value row, relative to the field range.
+
+    The result is divided by the field range only when the range is finite and
+    greater than zero. Otherwise it is the absolute difference in field units.
+    """
+
+def evaluate_gradient_cosines(self) -> np.ndarray:
+    """1-D cosines: gradient rows first, then normal rows. Shape (N,)."""
+
+def evaluate_value_residuals(self) -> np.ndarray:
+    """1-D |value - field| in field units, not normalised. Shape (N,)."""
+
+def verification_report(self) -> ConstraintDiagnosticsReport:
+    """Report with physical residuals, assembled residuals and exclusions."""
+
+def _stale_reason(self) -> Optional[str]: ...
+def _gradient_cosines_fresh(self) -> list: ...   # one array for each non-empty family
+def _value_residuals_fresh(self) -> np.ndarray: ...
+def _physical_residual_summaries(self) -> dict[str, ResidualSummary]: ...
+```
+
+`_stale_reason` checks `self.builder._up_to_date`, then the same attribute of
+every builder in `self.builder.faults`, then `self.interpolator.up_to_date`. It
+returns a text for the first stale object, or `None`.
+
+Method body of `_gradient_cosines_fresh`, in order: (1) for each of the arrays
+`get_gradient_constraints()` and `get_norm_constraints()` that has rows, `rows =
+np.array(array, dtype=float, copy=True)`; (2) `positions = rows[:, :3]`, and
+`reproject` them if `bounding_box` is not `None`; (3) `data = rows[:, 3:6]`, and
+apply `self.interpolator.local_to_world_vectors(data)` when `bounding_box` is
+not `None`; (4) `model = self.evaluate_gradient(positions)`; (5) append
+`direction_cosines(model, data)`. The method returns the list (one array for each
+non-empty family). `evaluate_gradient_cosines` calls `_stale_reason`; on a stale
+model it warns and returns `np.full(n, np.nan)`; otherwise it returns
+`np.concatenate` of the list (`np.zeros(0)` if the list is empty). The old
+`evaluate_gradient_misfit` calls the same code and then builds the shape of
+decision 9. The call `self.builder.up_to_date()` is removed from all of them.
+
+`_value_residuals_fresh`: copy `get_value_constraints()`, reproject the positions,
+return `np.abs(rows[:, 3] - self.evaluate_value(positions))`.
+`evaluate_value_misfit` returns the stale NaN array, or divides that result by
+`self.max() - self.min()` when the range is finite and positive.
+
+`verification_report` body: `base = self.interpolator._build_constraint_diagnostics_report()`
+(a new object; it does not set `latest_diagnostics_report`). If
+`_stale_reason()` is not `None`, write the warning and skip the two residual
+blocks. If `interpolator.c` is `None`, or the interpolator has no
+`calculate_residual_for_constraints`, skip the assembled block. Otherwise
+`assembled` = for each `(name, residual)` in
+`calculate_residual_for_constraints().items()`, `summarise_residuals(name,
+"assembled", "assembled", residual)`. Then `physical =
+self._physical_residual_summaries()`; `excluded = getattr(self.builder,
+"excluded_rows", {})`; `rows_per_point = {"gradient": 2}` if the interpolator is
+a `DiscreteInterpolator`, else `None`. Return `dataclasses.replace(base,
+physical_residuals=physical, assembled_residuals=assembled,
+exclusions=build_exclusion_records(excluded, base.families, rows_per_point))`.
+The physical summaries are `value` (from `_value_residuals_fresh`, unit
+`"field"`), and `gradient` and `normal` (`degrees(arccos(clip(cosine, -1, 1)))`
+of the list from `_gradient_cosines_fresh`, unit `"degree"`). So there is one
+code path for each quantity.
+
+The names `ResidualSummary`, `ExclusionRecord`, `EXCLUSION_EXPLANATIONS`,
+`UNKNOWN_EXPLANATION`, `summarise_residuals`, `direction_cosines`,
+`build_exclusion_records`, `verification_report`, `evaluate_gradient_cosines`,
+`evaluate_value_residuals`, `_stale_reason`, `_gradient_cosines_fresh`,
+`_value_residuals_fresh` and `_physical_residual_summaries` are free (`git grep
+-n -w` on 2026-11-05; `_build_constraint_diagnostics_report` exists and is used).
+
+#### S5 tests
+
+`packages/loop_common/tests/test_resize_paths.py` (new). Grids: `G1` origin
+`(0,0,0)`, `nsteps (11,6,4)`, step `(1,2,3)`; `G2` origin `(100,-20,5)`,
+`nsteps (5,5,5)`, step `(0.5,0.5,0.5)`; `G3` origin `(-1e4,2e3,-30)`, `nsteps
+(21,3,8)`, step `(10,100,7.5)`. The 2D grids are `H1` origin `(0,0)`, `nsteps
+(5,5)`, step `(1,1)`, and `H2` origin `(10,-5)`, `nsteps (8,4)`, step `(0.5,2)`.
+
+| Test function | Cells | Checks |
+|---|---|---|
+| `test_reapplying_same_value_10_times_changes_nothing_3d` | 3 grids x 4 setters (origin, maximum, nsteps, step_vector) = 12 | 10 repeats of each assignment leave `origin`, `maximum`, `step_vector` and `nsteps` equal to the start: counts exactly, lengths within `1e-12 * max(1, L)` (SC-011) |
+| `test_nsteps_setter_keeps_extent` | 3 | `nsteps` doubled then halved: `maximum` equal to the start within `1e-12 * L`; node count equals the request |
+| `test_step_vector_setter_encloses_extent` | 3 | step x 1.5: new `maximum` is at least the old one and less than one new step above it |
+| `test_step_vector_a_b_a_extent_drift` | 3 | step A, then B = 1.5 A, then A again: the final `maximum` minus the start is at least 0 and less than `A + B` on each axis; record the measured value |
+| `test_nsteps_below_two_is_rejected_without_change` | 1 | `ValueError`; state unchanged |
+| `test_nsteps_not_whole_is_rejected_without_change` | 1 | `nsteps = (5.5, 5, 5)` and `NaN` raise `ValueError`; state unchanged; `(5.0, 5.0, 5.0)` is accepted and stored as `int` |
+| `test_set_nelements_keeps_extent` | 3 | after `set_nelements(200)` `maximum` equals the start within `1e-12 * L`; the returned value equals `n_elements`; `nsteps` equals `max(ceil(extent / h), 2)` with `h = (volume / 200) ** (1 / 3)` computed in the test |
+| `test_set_nelements_small_request_is_clamped` | 1 | `G1.set_nelements(1)` raises nothing; every `nsteps` is at least 2; the extent is kept |
+| `test_2d_counts_are_derived` | 2 grids x 3 checks = 6 | after `nsteps` assignment, `nsteps_cells`, `n_cell_x`, `n_cell_y` and `n_elements` agree with the new `nsteps`; `nsteps` is an int array when the input is a float list; `maximum == origin + nsteps * step_vector` (legacy value, one step beyond `nodes.max(axis=0)`) |
+| `test_rectilinear_resize_is_rejected` | 3 setters | `NotImplementedError`; nodes, origin and counts unchanged |
+
+`packages/loop_common/tests/test_cell_centre_sampling.py` (new). Boxes: `unit`
+and `offset_anisotropic` from `test_bounding_box_structured_grid.py`. Frames:
+rotations 0, 30 and 90 degrees about z; local origin `(0,0,0)` and `(7,-3,11)`.
+
+| Test function | Cells | Checks |
+|---|---|---|
+| `test_each_cell_has_exactly_one_centre` | 12 | `grid.cell_index_at(box.project(world_centres))` is `arange(n_cells)` with `grid = box.structured_grid(local_coordinates=True)`: no `-1`, no repeat, `np.bincount` all `1`. This is the main evidence for FR-015 and SC-011 |
+| `test_local_coordinates_grid_associates_own_centres` | 12 | every `box.project(world_centres)` falls in a cell of `box.structured_grid(local_coordinates=True)`: `cell_index_at(...) != -1` for all points. The world centres are `reproject(box.cell_centres(order="F"))` |
+| `test_centres_are_cell_midpoints_in_world` | 12 | `reproject(box.cell_centres(order="F"))` equals the mean of the 8 corner nodes of each cell of `box.structured_grid()`, within `Tp`. Not separate evidence for SC-011 (it restates the construction of `cell_centres`) |
+| `test_centres_match_exported_cells` | 12 | world centres equal `grid.cell_centres` within `Tp`. Not separate evidence for SC-011 |
+| `test_centres_inside_box` | 12 | each world centre is inside `[origin, maximum]` within `Tp`. Not separate evidence for SC-011 |
+
+The rotation is set with `box.set_local_transform(local_origin=..., local_rotation=...)`.
+The task reads the S1 test `test_rigid_transform_contract.py` for the call and for
+`Tp`. Rotation 0 with origin 0 is the control. Expected result by reading: all
+pass on the current tree ("coverage, no defect", OP12). Only the first two tests
+count as evidence for SC-011.
+
+`packages/loop_interpolation/tests/test_residual_exclusion_report.py` (new). It
+tests the pure functions and the report class, with no model.
+
+| Test function | Cells | Checks |
+|---|---|---|
+| `test_direction_cosines_pure_function` | 6 | equal, opposite and orthogonal vectors; a zero row and a NaN row give `NaN`; shape mismatch raises `ValueError`; both inputs unchanged; scale invariance |
+| `test_report_without_verification_is_unchanged` | 1 | `to_dict().keys()` equals the pre-S5 key set and the constructor still takes the old fields in order (rollback check) |
+| `test_builder_records_keep_their_own_key` | 1 | `excluded_rows = {"restricted_orthogonal": {"invalid_reference_direction": 3}}` gives a record with `family == "restricted_orthogonal"` and count 3; no data-family count changes; no `unattributed` record appears |
+| `test_unknown_reason_keeps_its_count` | 1 | a reason `"x"` in `excluded_rows` gives a record with `UNKNOWN_EXPLANATION` and the same count |
+| `test_unattributed_rows_are_reported` | 1 | a `value` family with `dropped_rows` 5 and 2 outside points gives `unattributed` 3 |
+| `test_gradient_outside_points_give_no_false_unattributed` | 1 | a `gradient` family with 10 source points, 2 outside points and `dropped_rows` 4 (`2 * 10 - 16` rows) and `rows_per_point={"gradient": 2}` gives no `unattributed` record; with `dropped_rows` 6 it gives 2 |
+| `test_dropped_rows_none_gives_no_unattributed` | 1 | an `interface` family with `dropped_rows=None` and no outside points gives no record |
+| `test_surfe_style_dropped_equals_outside` | 1 | `rows_per_point=None`, `dropped_rows` equal to the outside count: no `unattributed` record |
+
+`tests/unit/modelling/test_diagnostics_frames.py` (new). It uses
+`world_foliation_model` (S4) and solves with the pattern of
+`test_reference_constraint_frames.py`.
+
+| Test function | Cells | Checks |
+|---|---|---|
+| `test_misfit_leaves_state_unchanged` | 4 anchors x 3 rotations x 2 engines (FDI, PLI) = 24 | after a solve, snapshot (deep copies) of every `interpolator.data[...]` array, `c`, `interpolator.up_to_date`, `builder._up_to_date`, the weights of `constraints`, and `id(latest_diagnostics_report)`; call the two old misfit methods; every snapshot is equal (`np.array_equal`) (SC-009). It uses no new name |
+| `test_new_misfit_methods_leave_state_unchanged` | 24 | the same snapshot; call `evaluate_gradient_cosines`, `evaluate_value_residuals` and `verification_report()` |
+| `test_gradient_cosine_matches_analytic_direction_exact_field` | 24 | `monkeypatch` replaces `feature.evaluate_gradient` with a stub that returns the analytic world direction of the R1 foliation at the given points. R1 gradient and normal rows: `abs(1 - cos) <= 1e-10` for both the old method (one row) and `evaluate_gradient_cosines`. This tests the basis and column logic, not the solver (SC-009) |
+| `test_gradient_cosine_matches_analytic_direction_solved_model` | 24 | the real solved model: `abs(1 - cos) <= tol_solved`. The value `tol_solved` is measured on the solved models. The task records the maximum and sets the bound with a margin of 2. It is not `1e-10` |
+| `test_value_residuals_are_absolute_difference` | 4 anchors x 3 rotations = 12 | `evaluate_value_residuals()` equals `abs(value - evaluate_value(world_points))` at the 27 value rows; no NaN; unit field |
+| `test_value_misfit_is_normalised_by_field_range` | 12 | `evaluate_value_misfit()` equals `evaluate_value_residuals() / (feature.max() - feature.min())` within `1e-12` |
+| `test_value_misfit_with_zero_range_does_not_divide` | 2 | the model has value rows with one value (a near-constant field). The solver gives noise near `1e-12`, so the test forces the range with `monkeypatch`: `feature.max` and `feature.min` return the same number (cell 1) or `NaN` (cell 2). No `RuntimeWarning` (`warnings.simplefilter("error")`); the result equals the unnormalised absolute difference |
+| `test_misfit_with_no_rows_is_empty` | 2 | no gradient rows: `shape == (0,)`; no value rows: `shape == (0,)` |
+| `test_old_misfit_shapes_are_kept` | 4 | one family: `(1, N)`; two families of equal length: `(2, N)`; two of different length: `(1, N1 + N2)` (OP16); the values equal `evaluate_gradient_cosines()` |
+| `test_stale_misfit_is_not_rebuilt` | 2 engines x 2 kinds (interpolator stale, builder stale) = 4 | uses the old methods only. Snapshot `interpolator.up_to_date`, `builder._up_to_date`, `c` and the data arrays. After a call, every snapshot is equal. On the current tree the call rebuilds the model, so `interpolator.up_to_date` changes from `False` to `True`: the test fails there (FR-031) |
+| `test_stale_misfit_warns_once_and_returns_nan` | 4 | old and new methods each write exactly one `UserWarning` that names the stale object; the new methods return `np.full(n, np.nan)`; the old methods return the old shape filled with NaN |
+| `test_stale_verification_report_does_not_rebuild` | 4 | `verification_report()` on a stale model: the state snapshot is equal; the two residual blocks are empty; the exclusions are present; one warning |
+| `test_report_blocks_are_separate` | 2 engines = 2 | the two dicts are different objects; every physical entry has `kind == "physical"` and every assembled entry has `kind == "assembled"`; the physical `value` entry has unit `"field"` and its `rms` equals the RMS of `evaluate_value_residuals()` within `1e-12`; the assembled entries equal `summarise_residuals` of `calculate_residual_for_constraints()`; `to_dict` has two separate blocks |
+| `test_unsolved_model_gives_no_residual_blocks` | 2 | a model with `interpolator.c = None`: the two blocks are empty and the exclusions are present; no exception |
+| `test_exclusions_are_counted_and_explained` | 2 engines = 2 | the restricted-support reference case of S1 (`test_reference_constraint_frames.py`): the builder records appear under their constraint keys (`restricted_equality`, `restricted_orthogonal`) with the analytic count; the explanation is not empty and not `UNKNOWN_EXPLANATION` |
+| `test_gradient_outside_points_give_no_false_unattributed_model` | 2 engines = 2 | a feature with gradient data and 3 points outside the model box: the report has an `outside_model` record of 3 and no `unattributed` record for `gradient` |
+
+Pre-fix evidence (FR-031). The state test with the old methods, the exact-field
+cosine test and the stale-state test fail on the current tree. In the first, a
+different array is stored in `data["gradient"]` after the call. In the second,
+the cosine uses one column and local vectors. In the third, the call rebuilds the
+model. The value-residual test records "not reproduced" if it passes on the
+current tree (the value path does not change the stored positions). The resize
+tests for `nsteps`, `step_vector`, `set_nelements` and the 2D counts fail on the
+current tree (record the observed extent drift and the stale counts). The 2D
+`maximum` is unchanged, so no 2D `maximum` test fails. The cell-centre tests are
+coverage (OP12). The tests of the new names fail because the names do not exist.
+The pre-fix part uses no new name.
+
+Existing tests that must pass with no change:
+`packages/loop_common/tests/test_2d_discrete_support.py` and
+`tests/unit/interpolator/test_2d_discrete_support.py` (the four `maximum`
+assertions; S5 does not edit these two files), `test_rectilinear_grid.py`,
+`test_bounding_box_structured_grid.py`, `tests/unit/modelling/test_scalar_field_grid.py`,
+the constraint diagnostics tests (`git grep -ln "get_constraint_diagnostics_report"
+tests packages`), and the S1 to S4 test files.
+
+Tests that change by design (Q4). The 3D golden test
+`packages/loop_common/tests/test_structured_support_reference.py` and its data
+file `packages/loop_common/tests/data/structured_support_reference.npz` change,
+because the setters now keep the extent. The earlier sentence that this golden
+test must pass with no change is withdrawn. The 2D golden test
+`test_structured_grid_2d_reference.py` and `data/structured_grid_2d_reference.npz`
+should not change (S5 keeps the 2D `maximum`). The task runs it, and if a key
+differs, it records the key. The golden update follows this order: (1) run the
+test and list each failing key; (2) review each key against the extent rule of
+decision 1; (3) record each key, with the old and the new value, in the section
+"S5 golden review (C-004)" of `verification.md` (SC-015: 0 tolerance changes); (4)
+only then run `python packages/loop_common/tests/test_structured_support_reference.py
+--update` (and the 2D script with `--update` only if a key differs); (5) run the
+test again.
+
+Numeric-test survey (Q4). The tests that build a model run `set_nelements` and
+the `step_vector` loop. The task runs `pytest tests/unit/modelling` and `pytest
+packages/loop_interpolation/tests` on the fixed code, and `packages/loop_common/tests`.
+For each test that fails or changes a number, it records the test, the old
+value, the new value and the cause in "S5 golden review (C-004)". The directory
+`packages/loop_interpolation/tests/golden` has its own option `--update-golden`
+and is the parity oracle for the Rust path. If a file there changes, the task
+records it and does not regenerate it before the review (OP17).
+
+#### S5 backend and capability cells
+
+| Cell | Result in S5 |
+|---|---|
+| FDI and PLI misfit, residual and exclusion report | Mandatory (the cells above). |
+| P2 | Not in S5. The summary code does not depend on the engine. |
+| Residual reports for fold and P2 cells (FR-024 with SC-003, SC-007, SC-008) | Not in S5. S2 covers the fold and P2 data paths, and S6 covers the matrix. |
+| Native and Surfe | Not in S5. The misfit methods read the Python interpolator state only. Backend matrix: S6. |
+| Resize of structured, 2D and rectilinear grids | Mandatory (resize tests above). Unstructured meshes cannot resize (OP4, S3). |
+
+#### S5 risks
+
+- The old misfit methods keep their public shape. The gradient value changes
+  meaning (decision 10). A caller outside the repository (the QGIS plugin, user
+  scripts) can depend on the old number. `COMPAT.md` and `ROADMAP.md` record it.
+  No caller in this repository uses the methods.
+- `evaluate_gradient_misfit` used to call `builder.up_to_date()`, so it rebuilt a
+  stale model. Now it warns and returns NaN. A caller that relied on the rebuild
+  gets NaN and one warning, and must build the model first (OP13, closed).
+- The extent change from `set_nelements` is a new risk. The old `nsteps` setter
+  kept `nsteps * step`. The new one keeps the extent. A model build runs
+  `set_nelements` and the `step_vector` loop, so grid steps, node coordinates and
+  solved values can change slightly in tests and in user models. The golden review
+  and the numeric-test survey record each change. The risk grows if an
+  interpolation golden file changes (OP17).
+- Repeated `step_vector` assignments can add up to more than one cell of
+  enlargement (decision 1). A test measures the bound.
+- The 2D `maximum` keeps the legacy value, so it still counts nodes as cells. A
+  reader that needs the true last node must use `nodes`. The value now follows
+  later `nsteps` assignments (it was stale before).
+- `RectilinearGrid` now raises on resize. A caller that assigned `origin` or
+  `step_vector` got a wrong grid before. Now it gets a clear error.
+- `evaluate_gradient` and `evaluate_value` of a feature call `builder.up_to_date()`.
+  The misfit methods call them only after `_stale_reason()` returned `None`. The
+  stale tests check this for FDI and PLI.
+- The first S5 planner run read 14 code files, by targeted line ranges. The limit
+  of the spec-planner skill is 10 code files. The fix run read more. The design
+  uses only those reads. The risk is that an unread part of those files has other
+  readers. Each task greps for readers and writers before it edits. S5 changes 10
+  code files at most (see "S5 files"). No task group changes more than 10.
+- `build_exclusion_records` uses `rows_per_point` of 2 for the gradient family of
+  a `DiscreteInterpolator`. If an interpolator adds a different number of rows for
+  a gradient point, the `unattributed` count is wrong for that engine. The
+  gradient end-to-end test covers FDI and PLI only.
+
+#### S5 constitution check
+
+| Project rule | Result | How S5 agrees |
+|---|---|---|
+| Work stays within the existing packages | Pass | Three `loop_common` files, two `loop_interpolation` files (`_diagnostics.py` and `__init__.py`) and one `LoopStructural` file change. No new module. |
+| Gates `pytest` and `ruff check LoopStructural packages` | Pass | The S5 row of "Stages and rollback" names both. |
+| numpy docstrings, type hints, py39 | Pass | New functions and dataclasses have numpy docstrings and hints. `_diagnostics.py` has `from __future__ import annotations`. `_structured_grid_3d.py` uses `Optional`. |
+| The public `GeologicalModel` API stays compatible; a break needs a ROADMAP.md decision and a major-version note | Pass | No `GeologicalModel` signature changes. The report only gets new defaulted fields. The misfit methods keep their names and public shape. The gradient value changes meaning: this is recorded in `COMPAT.md` (migration notice) and in a `ROADMAP.md` decision entry (Q2). The 2D `maximum` does not change. |
+| Stages can be tested and reversed independently | Pass | S5 reverts to the S4 merge. |
+| `ROADMAP.md` owns decisions; update it when one changes | Pass | S5 adds one decision entry for the misfit methods: "Misfit diagnostics of GeologicalFeature (spec 005, S5)". No other decision changes. |
+| Feature documents stay under `specs/NNN-name/` | Pass | Only `plan.md`, `tasks.md` and `verification.md` change there. |
+
+#### S5 files
+
+At most 10 code files (.py) change in S5: 6 source files and 4 new test files. No
+task group changes more than 10 code files. Data files and documents are not
+counted.
+
+| File | Change |
+|---|---|
+| `packages/loop_common/src/loop_common/geometry/_structured_grid_3d.py` | `_cells_for_length` gets `step_vector`; new `nsteps` and `step_vector` setters; `set_nelements` clamp; `from typing import Optional` |
+| `packages/loop_common/src/loop_common/geometry/_structured_grid_2d.py` | `nsteps` property with int coercion; `nsteps_cells`, `n_cell_x`, `n_cell_y` and `maximum` become properties (`maximum` keeps the legacy value, with a comment) |
+| `packages/loop_common/src/loop_common/supports/_3d_rectilinear_grid.py` | `origin`, `nsteps`, `step_vector` setters raise `NotImplementedError` |
+| `packages/loop_interpolation/src/loop_interpolation/_diagnostics.py` | `ResidualSummary`, `ExclusionRecord`, explanation table, three functions, three report fields, `to_dict` and `summary` |
+| `packages/loop_interpolation/src/loop_interpolation/__init__.py` | Export four new names (`ResidualSummary`, `ExclusionRecord`, `direction_cosines`, `build_exclusion_records`). `summarise_residuals` and `UNKNOWN_EXPLANATION` are imported from `loop_interpolation._diagnostics` |
+| `LoopStructural/modelling/features/_geological_feature.py` | Rewrite both misfit methods on shared private code; add `evaluate_gradient_cosines`, `evaluate_value_residuals`, `verification_report`, `_stale_reason` and the private helpers |
+| `packages/loop_common/tests/test_resize_paths.py` | New |
+| `packages/loop_common/tests/test_cell_centre_sampling.py` | New |
+| `packages/loop_interpolation/tests/test_residual_exclusion_report.py` | New |
+| `tests/unit/modelling/test_diagnostics_frames.py` | New |
+| `packages/loop_common/tests/test_structured_support_reference.py` | Not edited. It must pass after the regeneration of its data file |
+| `packages/loop_common/tests/data/structured_support_reference.npz` | Regenerated with `--update` after review (C-004, SC-015) |
+| `packages/loop_common/tests/data/structured_grid_2d_reference.npz` | Regenerated only if the 2D reference test changes (not expected) |
+| `packages/loop_common/tests/test_2d_discrete_support.py` and `tests/unit/interpolator/test_2d_discrete_support.py` | Not edited. They must pass with no change (Q1) |
+| `COMPAT.md` | S5 notice: misfit gradient value (migration notice), stale model gives NaN and a warning, extent kept by the setters and `set_nelements`, rectilinear resize error, new report fields |
+| `ROADMAP.md` | Decision "Misfit diagnostics of GeologicalFeature (spec 005, S5)" under "Decisions" |
+| `specs/005-coordinate-frame-correctness/verification.md` | S5 pre-fix, post-fix, golden review (C-004), numeric-test survey, backend matrix, rollback and run-time sections |
+
+Not changed (the survey in "Later stages" listed them): `_bounding_box.py`
+(`cell_centres`; conditional, OP12), `_structured_grid.py`,
+`supports/_3d_structured_grid.py`, `_base_geological_feature.py`,
+`_model_exporter.py`, `_discrete_interpolator.py` and `API.md`. `docs/source` and
+`API.md` do not mention the changed names (`git grep`, 2026-11-05), so they need
+no edit.
+
+The `COMPAT.md` notice says: `GeologicalFeature.evaluate_gradient_misfit()`
+changed the stored constraint arrays in place, compared a local vector with a
+world vector, and read one column. It now keeps its name and its public shape. It
+changes nothing. It returns the cosine between the world data direction and the
+model gradient for each row. The old value was a dot product with an unnormalised
+model gradient. The new value differs. Use `evaluate_gradient_cosines()` for a
+1-D array. The method no longer rebuilds a stale model: it writes a `UserWarning`
+and returns NaN. `evaluate_value_misfit()` keeps its normalisation by the field
+range. It no longer divides by zero. Assigning `nsteps` or `step_vector` on a 3D
+grid, and `set_nelements`, keep the extent. A rectilinear grid refuses to resize.
+`ConstraintDiagnosticsReport` has three new optional fields. With an identity
+frame and no resize, the value misfit is the same as before.
+
+The `ROADMAP.md` entry gives the decision date `2026-11-05` (spec 005, S5, Q2).
+It says that the misfit methods keep their names and public shape, that the
+gradient value is now a cosine in world coordinates, that a stale model gives a
+warning and NaN, and that the new names `evaluate_gradient_cosines` and
+`evaluate_value_residuals` give the 1-D result. It lists the compatibility notice
+in `COMPAT.md`.
+
+#### S5 task order (for the spec-tasks skill)
+
+No two tasks in one wave write `verification.md`. Two tasks never write the same
+file in one wave. Each task group has at most 10 code files.
+
+1. The two `loop_common` test files (resize, cell centres), in two tasks that can
+   run in parallel. They run on the current tree.
+2. The pre-fix evidence for step 1 in `verification.md` (one task, own wave).
+3. The 3D setter fix with the `set_nelements` clamp, the 2D properties and the
+   rectilinear guard (three tasks, separate files, parallel). The 2D task greps
+   the readers and writers of the five 2D names first (`git grep -n
+   "n_cell_x\|n_cell_y\|nsteps_cells\|\.maximum ="`).
+4. The numeric-test survey and golden review (one task, after step 3). It runs
+   `tests/unit/modelling`, `packages/loop_interpolation/tests` and
+   `packages/loop_common/tests`, records each change in "S5 golden review
+   (C-004)", and regenerates the golden `.npz` file after review. All later tasks
+   that build models depend on this step. It is the only `verification.md` writer
+   of its wave.
+5. The post-fix evidence for the resize and cell-centre tests (one task, own wave,
+   after step 4).
+6. `_diagnostics.py` (dataclasses, functions, report fields), with the pure-function
+   tests in `test_residual_exclusion_report.py`. Then the `__init__` export. This
+   step does not depend on steps 3 to 5 and can run in parallel with them, but its
+   evidence goes to `verification.md` in a later wave.
+7. The feature tests in `test_diagnostics_frames.py` (state, cosine, value, empty,
+   shapes, stale, residual, exclusion), written before the misfit change. This task
+   owns that file alone. The pre-fix evidence goes to `verification.md` in its own
+   wave. It depends on step 4, because the solved-model tolerance and the values
+   depend on the built support.
+8. The misfit rewrite and `verification_report` (one file; one task). It depends on
+   steps 6 and 7.
+9. `COMPAT.md`, `ROADMAP.md`, the rollback check, and last the gates (the
+   orchestrator runs the full suites when memory is tight). `verification.md` is
+   written in the last wave only by this step.
+
+S5 rollback check. Revert to the S4 merge. Then run these checks.
+
+- (a) The field names and order of `ConstraintFamilyDiagnostics`,
+  `RegionCoverageDiagnostics` and the first five fields of
+  `ConstraintDiagnosticsReport` are equal before and after (`dataclasses.fields`).
+- (b) For a report built with no verification, `to_dict()` is equal before and
+  after.
+- (c) `from loop_interpolation import *` on the S4 code gives a subset of the S5
+  names.
+- (d) The signatures of `GeologicalFeature.evaluate_gradient_misfit` and
+  `evaluate_value_misfit` are equal. The result shape for one family is equal.
+- (e) With an unchanged grid, the 3D `origin`, `maximum`, `nsteps` and
+  `step_vector` of a structured support are equal on both trees.
+- (f) The four 2D `maximum` assertions pass on both trees.
+
+The result of each check goes to `verification.md`.
+
 ### Stages and rollback
 
 | Stage | Files and behaviour | Acceptance check | Rollback target and compatibility check |
@@ -1694,7 +2647,7 @@ are equal.
 | S2 | Fold geometry, directional regularisation, quadrature, masks, sign alignment for FDI-fold, PLI discrete fold, P2 and P2-fold; constant-norm variants (FR-008; R3 for P2; R4) ("Stage S2 design") | New S2 tests (SC-002 for constant norm; SC-007, SC-008 and SC-013 for every mandatory fold and P2 cell); the existing fold package tests pass with no change; `pytest`; `ruff check LoopStructural packages`; package tests | Revert to the S1 merge. Check: the S1 tests still pass. No saved format changed. |
 | S3 | Persistence format version, transform and coordinate-space metadata ("Stage S3 design"); no second projection at load; copies keep the frame; legacy load requires a transform or identity declaration; transform change policy and restored-point cache invalidation (FR-016 to FR-020); ROADMAP.md decision for FR-019; `COMPAT.md` migration note | SC-006, SC-012, SC-016, SC-017 | Revert to the S2 merge. Check: old-format R1 files load through their documented path; a new-format file fails with 1 actionable error and 0 state changes on the old reader (SC-017). |
 | S4 | Display, export of observation geometry, fault-centre geometry and intrusion classification use stored world locations (FR-022; "Stage S4 design") | World-location comparison within `Tp` (U3.4, U3.5) | Revert to the S3 merge. Check: viewer import paths unchanged. |
-| S5 | Cell-centre sampling, remaining resize paths, non-mutating diagnostics, residual and exclusion report (FR-014 remainder, FR-015, FR-023, FR-024) | SC-009, SC-011 | Revert to the S4 merge. Check: diagnostics report fields unchanged for callers. |
+| S5 | Remaining resize paths (3D `nsteps` and `step_vector`, `set_nelements`, 2D derived counts, rectilinear guard), golden review, cell-centre tests, non-mutating misfit diagnostics, residual and exclusion report (FR-014 remainder, FR-015, FR-023, FR-024; "Stage S5 design") | SC-009, SC-011; the new S5 tests; `pytest`; `ruff check LoopStructural packages`; package tests | Revert to the S4 merge. Check: diagnostics report fields unchanged for callers (`dataclasses.fields`, `to_dict` keys, exported names; "S5 rollback check"). |
 | S6 | Auxiliary point transformations and duplicate entry points (FR-025); displacement validation R2 (FR-026, FR-027); backend matrix incl. native and Surfe (FR-030); golden review (FR-029); 005 completion line in ROADMAP.md | SC-004, SC-010, SC-014, SC-015, SC-018 | Revert to the S5 merge. Check: `LoopStructural.utils` and `loop_common.math` import paths unchanged. |
 
 ## Test strategy
@@ -1858,14 +2811,12 @@ grep survey on 2026-11-04 and are not final.
   `_3d_viewer.py`, `intrusion_builder.py`, `_fault_segment.py` and
   `exporters.py`; the code shows that S4 does not change them. S4 changes
   `_geological_feature.py` and `intrusion_frame_builder.py`.
-- **S5**: `packages/loop_common/src/loop_common/geometry/_bounding_box.py`
-  (`cell_centres`), `_structured_grid.py`, `_structured_grid_2d.py`,
-  `packages/loop_common/src/loop_common/supports/_3d_structured_grid.py`,
-  `_3d_rectilinear_grid.py`,
-  `packages/loop_interpolation/src/loop_interpolation/_diagnostics.py`, and
-  `LoopStructural/modelling/features/_geological_feature.py` (found in the S4
-  survey: the misfit methods change the stored arrays in place with
-  `grad /= norm`, and `grad[:, :3:6]` selects the position columns).
+- **S5**: planned. See "Stage S5 design" and "S5 files". The survey listed
+  `_bounding_box.py`, `_structured_grid.py`, `supports/_3d_structured_grid.py`
+  and `_3d_rectilinear_grid.py`; the code shows that S5 changes only the
+  rectilinear grid among them (plus `_structured_grid_3d.py` and
+  `_structured_grid_2d.py`, which the survey did not list). `_diagnostics.py` and
+  `_geological_feature.py` are confirmed.
 - **S6**: `packages/loop_common/src/loop_common/math/_transformation.py`,
   `LoopStructural/utils/_transformation.py`,
   `packages/loop_interpolation/src/loop_interpolation/_native.py`,
@@ -1889,8 +2840,8 @@ grep survey on 2026-11-04 and are not final.
 | FR-011 | Slip orthogonalisation; extent-direction row | SC-003, SC-013 | None |
 | FR-012 | Stored `_fault_buffer`, `_force_mesh_geometry`; factory override removed | SC-005; U1.5 test | None |
 | FR-013 | `local_enclosure`; `set_interpolation_geometry` | SC-005; enclosure unit test | None |
-| FR-014 | `_cells_for_length`; setters | Resize-10-times test | Other supports S5, OP1 |
-| FR-015 | S5 | S5 | OP1 |
+| FR-014 | `_cells_for_length`; S1 setters; S5: 3D `nsteps` and `step_vector` setters, `set_nelements` clamp, 2D derived counts (legacy `maximum` kept), rectilinear guard | `test_resize_paths.py` (resize 10 times; extent kept; A, B, A drift; `set_nelements`); golden review (C-004) | Extent after `set_nelements` changes by design (Q4); OP17 |
+| FR-015 | S5: tests for rotated boxes and cell association; `cell_centres` unchanged unless a test fails | `test_cell_centre_sampling.py` (two tests are evidence; three are coverage) | OP12 (defect not seen by reading) |
 | FR-016 | `frame_payload`; `to_dict` frame keys; format version 2 ("S3 saved format") | `test_frame_persistence.py::test_payload_declares_frame` | None |
 | FR-017 | `_restore_local_constraints` stores local arrays with no conversion | `test_local_arrays_unchanged_after_two_cycles` | None |
 | FR-018 | `_inherit_frame` in the three `copy()` methods | `test_frame_copy_and_lifecycle.py::test_copy_keeps_frame` | PLI has no `copy` (documented, not added); OP6 |
@@ -1898,8 +2849,8 @@ grep survey on 2026-11-04 and are not final.
 | FR-020 | `frame_signature`, `_check_frame`, `StaleFrameError` (reject at use) | `test_stale_frame_rejected_without_state_change`, `test_fault_restoration_uses_current_frame` | Policy choice OP4; no restoration cache exists |
 | FR-021 | `validate_rigid_rotation` in `set_local_transform` and `rotation_xy`; saved metadata checked in `resolve_frame` | `test_rigid_transform_contract.py`; `test_malformed_metadata` | None |
 | FR-022 | Remove the extra `rescale` in `GeologicalFeature.get_data` and in the intrusion classification (`_network_model_values`); the fault centre is a world point since S1 and its consumers are unchanged | `test_world_location_consumers.py` (display, export, classification, 2D ellipse); S1 `test_fault_ellipsoid_centre_is_world` | OP8 to OP10 |
-| FR-023 | S5 | S5 | OP1 |
-| FR-024 | `excluded_rows` (S1 part) | Restricted-support exclusion count | Report integration S5, OP1 |
+| FR-023 | S5: both misfit methods keep their names and shape, work on copies, compare in world coordinates, never rebuild (warn and NaN when stale); new `evaluate_gradient_cosines` and `evaluate_value_residuals`; `direction_cosines` | `test_diagnostics_frames.py`; `test_residual_exclusion_report.py` | OP16; the gradient value changes meaning (`COMPAT.md`, `ROADMAP.md`) |
+| FR-024 | `excluded_rows` (S1); S5: `ResidualSummary`, `ExclusionRecord`, `build_exclusion_records`, report fields, `verification_report` | `test_exclusions_are_counted_and_explained`, `test_physical_and_assembled_residuals_are_separate` | Interpolator-side drops with no recorded reason are reported as `unattributed` (in rows). Residual reports for fold and P2 cells (SC-003, SC-007, SC-008) are out of S5: S2 and S6 |
 | FR-025 | S6 | S6 | OP1 |
 | FR-026 | S1: values, gradients, residuals (SC-003, SC-008); displacement S6 | `test_fault_frame_analytic.py` | Displacement OP1 |
 | FR-027 | S6 | S6 | OP1 |
@@ -1916,9 +2867,9 @@ grep survey on 2026-11-04 and are not final.
 | SC-006 | Format version 2; local arrays restored with no conversion | `test_round_trip_world_values`, `test_local_arrays_unchanged_after_two_cycles` | None |
 | SC-007 | Reference sampling; S2 fold sampling and P2 | `test_reference_constraint_frames.py`; `test_fold_constraint_frames.py` | None |
 | SC-008 | Reference sampling; S2 fold rows and P2 | `test_reference_constraint_frames.py` (FDI, PLI, P2); `test_fold_constraint_frames.py` | None |
-| SC-009 | S5 | S5 | OP1 |
+| SC-009 | S5: misfit methods; `direction_cosines` | `test_misfit_leaves_state_unchanged`, `test_stale_misfit_is_not_rebuilt`, `test_gradient_cosine_matches_analytic_direction_exact_field`, `test_gradient_cosine_matches_analytic_direction_solved_model` (FDI and PLI; P2 not in S5) | None |
 | SC-010 | S6 | S6 | OP1 |
-| SC-011 | `_cells_for_length` (resize part) | Resize test | Cell centres S5, OP1 |
+| SC-011 | `_cells_for_length` and the S5 setters (resize part); S5 cell-centre tests | `test_resize_paths.py`, `test_cell_centre_sampling.py` (first two tests) | OP12, OP17 |
 | SC-012 | Rotation part in S1; metadata and legacy part in S3 | `test_rigid_transform_contract.py`; `test_legacy_*`, `test_malformed_metadata` | None |
 | SC-013 | Extent-direction row; S2 fold R4 directions | `test_fault_frame_analytic.py`; `test_fold_constraint_frames.py` | None |
 | SC-014 | Merge gates in every stage | `pytest`, ruff, package tests | None |
@@ -1972,6 +2923,23 @@ grep survey on 2026-11-04 and are not final.
   display data through `get_data` and get world locations.
 - **Exclusion record**: `GeologicalFeatureBuilder.excluded_rows:
   dict[str, dict[str, int]]`. S5 connects it to the diagnostics report.
+- **S5 diagnostics (owner: `loop_interpolation`)**: `ResidualSummary`,
+  `ExclusionRecord`, `direction_cosines(model_vectors, data_vectors)` and
+  `build_exclusion_records(excluded_rows, families)` are exported.
+  `ConstraintDiagnosticsReport` has the optional fields `physical_residuals`,
+  `assembled_residuals` and `exclusions`; `to_dict` shows them only when they
+  are not empty. `GeologicalFeature.verification_report()` fills them, makes
+  the private call `_build_constraint_diagnostics_report`, and does not store the
+  report. `summarise_residuals` and `UNKNOWN_EXPLANATION` are imported from
+  `loop_interpolation._diagnostics` and are not exported. The feature misfit
+  methods `evaluate_gradient_misfit` and `evaluate_value_misfit` keep their names
+  and public shape, work on copies and never rebuild. A stale model gives one
+  `UserWarning` and NaN. The gradient value is now a cosine in world coordinates.
+  The new methods `evaluate_gradient_cosines` and `evaluate_value_residuals` give
+  1-D arrays. Spec 004 can report its directional rows through
+  `ResidualSummary(kind="assembled")`. Structured 3D grids keep origin and extent
+  on every setter and on `set_nelements`. The 2D `maximum` keeps its legacy value.
+  A rectilinear grid refuses to resize.
 - **Fault geometry**: an explicit `fault_center` is a world point; the
   generated centre extent row is `coord=2` with `strike_unit / major_axis`.
   Spec 003 golden fault models can change only under C-006/C-004 with a

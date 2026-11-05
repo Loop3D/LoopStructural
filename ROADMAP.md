@@ -140,6 +140,18 @@ Removal is not before 2 minor releases after the first release that warns.
 Removal is also not before the known callers (the QGIS plugin) have moved.
 The library no longer calls either method.
 
+### Misfit diagnostics of GeologicalFeature (spec 005, S5)
+Decision date: 2026-11-05 (spec 005, S5, Q2).
+
+The misfit methods `evaluate_gradient_misfit` and `evaluate_value_misfit`
+keep their names and their public shape. The gradient value is now a cosine
+in world coordinates.
+
+A stale model gives a `UserWarning` and NaN. The model is not rebuilt.
+
+The new methods `evaluate_gradient_cosines` and `evaluate_value_residuals`
+give the 1-D result. The notice is in `COMPAT.md`.
+
 ## Stage sequence
 
 - [x] **Stage 0 — Planning infra.** This file, release/versioning/compat
@@ -881,3 +893,4 @@ The library no longer calls either method.
   regressions.
 - **2026-11-05:** Spec 005 stage S3 implemented: saved interpolator frame, legacy-load rule, frame-keeping copies, stale-frame check. Gate result: root pytest 1978 passed, 5 skipped.
 - **2026-11-05:** Spec 005 stage S4 implemented: display, export and intrusion classification use stored world locations; rescale and scale deprecated.
+- **2026-11-05:** Spec 005 stage S5 implemented: resize paths keep the extent, cell-centre guard tests, non-mutating world-correct misfit diagnostics, residual and exclusion report.

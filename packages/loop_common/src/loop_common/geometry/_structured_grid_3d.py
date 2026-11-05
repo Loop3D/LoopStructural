@@ -1,4 +1,6 @@
-"""Pure 3D regular grid geometry: origin/nsteps/step_vector indexing."""
+﻿"""Pure 3D regular grid geometry: origin/nsteps/step_vector indexing."""
+
+from typing import Optional
 
 import numpy as np
 
@@ -52,7 +54,8 @@ class StructuredGrid3DGeometry:
         ele_vol = box_vol / nelements
         step_vector = np.zeros(3)
         step_vector[:] = ele_vol ** (1.0 / 3.0)
-        nsteps = np.ceil((self.maximum - self.origin) / step_vector).astype(int)
+        # Keep the extent. Use at least 2 nodes on each axis.
+        nsteps = np.maximum(np.ceil((self.maximum - self.origin) / step_vector).astype(int), 2)
         self.nsteps = nsteps
         return self.n_elements
 
@@ -70,9 +73,16 @@ class StructuredGrid3DGeometry:
 
     @nsteps.setter
     def nsteps(self, nsteps):
-        change_factor = nsteps / self.nsteps
-        self._step_vector /= change_factor
-        self._nsteps = nsteps
+        nsteps = np.broadcast_to(np.asarray(nsteps), self._nsteps.shape)
+        if not np.all(np.isfinite(nsteps)) or np.any(nsteps != np.round(nsteps)):
+            raise ValueError("Cannot resize the grid. nsteps must be whole numbers.")
+        nsteps = nsteps.astype(int)
+        if np.any(nsteps < 2):
+            raise ValueError("Cannot resize the grid. nsteps must be at least 2.")
+        # Keep the extent: the new step is the extent divided by the new cell count.
+        extent = self.nsteps_cells * self._step_vector
+        self._step_vector = extent / (nsteps - 1)
+        self._nsteps = np.array(nsteps)
         self._on_geometry_change()
 
     @property
@@ -97,13 +107,17 @@ class StructuredGrid3DGeometry:
             )
         self._rotation_xy = validate_rigid_rotation(rotation_xy, 3)
 
-    def _cells_for_length(self, length: np.ndarray) -> np.ndarray:
+    def _cells_for_length(
+        self, length: np.ndarray, step_vector: Optional[np.ndarray] = None  # noqa: FA100
+    ) -> np.ndarray:
         """Return cell counts that cover the requested axis lengths.
 
         Parameters
         ----------
         length : np.ndarray
             Requested support length along each grid axis.
+        step_vector : Optional[np.ndarray]
+            Step to use along each axis. The default is the current step.
 
         Returns
         -------
@@ -115,7 +129,9 @@ class StructuredGrid3DGeometry:
         ValueError
             If any requested cell count is negative.
         """
-        cells = np.ceil(length / self.step_vector - 1e-9).astype(np.int64)
+        if step_vector is None:
+            step_vector = self.step_vector
+        cells = np.ceil(length / step_vector - 1e-9).astype(np.int64)
         cells[cells == 0] = 2
         if np.any(cells < 0):
             logger.error(
@@ -130,9 +146,11 @@ class StructuredGrid3DGeometry:
 
     @step_vector.setter
     def step_vector(self, step_vector):
-        change_factor = step_vector / self._step_vector
-        newsteps = self._nsteps / change_factor
-        self._nsteps = np.ceil(newsteps).astype(int)
+        step_vector = np.array(step_vector, dtype=float)
+        # Keep the extent: the new cell count covers the old extent with the new step.
+        extent = self.nsteps_cells * self._step_vector
+        cells = self._cells_for_length(extent, step_vector=step_vector)
+        self._nsteps = cells + 1
         self._step_vector = step_vector
         self._on_geometry_change()
 
