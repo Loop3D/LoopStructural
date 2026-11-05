@@ -86,8 +86,8 @@
       "base": "b8230d904fedce4ec53307afeeb788b039bbe43e",
       "tasks": "T084",
       "check": "scope pass; diagnostics+scalar_field 154 passed; ruff pass",
-      "commit": "pending",
-      "review": "pending"
+      "commit": "0ef1d4396743856b803d6e0802b8dfa83504db83",
+      "review": "pass (no findings)"
     }
   ],
   "runs": {
