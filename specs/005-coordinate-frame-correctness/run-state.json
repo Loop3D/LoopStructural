@@ -67,6 +67,21 @@
       "check": "scope pass; ruff pass; T056 25 failed (24 DID NOT WARN, 1 AttributeError); T052-T054 30 failed 5 passed",
       "commit": "769562fe2ab0cb9caf32c3fc5c6653e5718d88cb",
       "review": "pass: sonnet, 2 minor open"
+    },
+    {
+      "wave": 28,
+      "base": "d8ed7d3eba533567046ca057963c7d98bf65b399",
+      "tasks": [
+        "T057",
+        "T058",
+        "T059",
+        "T060",
+        "T061",
+        "T062"
+      ],
+      "check": "scope pass except approved T056 test fix; ruff pass; 62 passed (consumers + public api); test_exporters 12 passed 1 pre-existing fail (gocad)",
+      "commit": "7d5959e7f806ef8ff571406b0045be3c17301000",
+      "review": "pass: sonnet, no findings"
     }
   ],
   "runs": {
