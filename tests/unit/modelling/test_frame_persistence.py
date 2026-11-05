@@ -1,10 +1,14 @@
 """Frame keys, world-value round trips and repeated save/load cycles (U3.1, U3.2, U3.8; SC-006)."""
 
 import copy
+import json
+import warnings
 
 import numpy as np
 import pytest
+import yaml
 from loop_interpolation import GeologicalInterpolator, InterpolatorFactory, InterpolatorFormatError
+from loop_interpolation import _frame_persistence as frame_persistence
 
 from tests.fixtures.coordinate_frames import (
     ANCHORS,
@@ -148,8 +152,75 @@ def _assert_world_values(loaded, source, anchor):
 
 
 @pytest.mark.parametrize("engine", ENGINE_CELLS)
-def test_legacy_payload_requires_choice(engine):
-    """A legacy payload with no choice raises `legacy_no_transform`."""
+def test_legacy_payload_without_choice_warns_and_loads_identity(engine):
+    """A legacy payload with no choice loads with the identity frame and warns once (C-018)."""
+    interp, _ = _build(engine, 1, 30.0)
+    legacy = strip_frame_keys(interp.to_dict())
+    before = copy.deepcopy(legacy)
+    with pytest.warns(
+        FutureWarning,
+        match="^legacy interpolator payload has no transform; assuming the identity frame",
+    ) as record:
+        loaded = GeologicalInterpolator.from_dict(legacy)
+    future = [item for item in record if issubclass(item.category, FutureWarning)]
+    assert len(future) == 1
+    message = str(future[0].message)
+    assert "local_origin" in message
+    assert "local_rotation" in message
+    assert "declare_identity=True" in message
+    assert "major release" in message
+    assert loaded.bounding_box is None
+    _assert_same(legacy, before)
+    assert record[0].filename == __file__
+
+
+@pytest.mark.parametrize("entry", ["dict", "json", "yaml", "factory"])
+def test_legacy_warning_points_at_caller(entry):
+    """Each entry point attributes the one legacy warning to the calling file (C-018)."""
+    interp, _ = _build("fdi", 1, 30.0)
+    legacy = strip_frame_keys(interp.to_dict())
+    text = json.dumps(legacy, default=lambda o: o.tolist())
+    with warnings.catch_warnings(record=True) as rec:
+        warnings.simplefilter("always")
+        if entry == "dict":
+            GeologicalInterpolator.from_dict(legacy)
+        elif entry == "json":
+            GeologicalInterpolator.from_json(text)
+        elif entry == "yaml":
+            GeologicalInterpolator.from_yaml(yaml.safe_dump(json.loads(text)))
+        else:
+            InterpolatorFactory.from_dict(legacy)
+    assert [r.filename for r in rec if issubclass(r.category, FutureWarning)] == [__file__]
+
+
+@pytest.mark.parametrize("engine", PERSIST_ENGINES)
+def test_legacy_warning_not_emitted_when_load_fails(engine):
+    """A legacy load that fails gives its error and no warning (C-018)."""
+    interp, _ = _build(engine, 1, 30.0)
+    legacy = strip_frame_keys(interp.to_dict())
+    legacy["data"]["value"] = [[1.0, 2.0, 3.0, 4.0, 1.0], [1.0]]
+    with warnings.catch_warnings(record=True) as rec:
+        warnings.simplefilter("always")
+        with pytest.raises(InterpolatorFormatError) as info:
+            GeologicalInterpolator.from_dict(legacy)
+    assert info.value.reason == "malformed"
+    assert not [r for r in rec if issubclass(r.category, FutureWarning)]
+
+
+@pytest.mark.parametrize("engine", ENGINE_CELLS)
+def test_legacy_identity_values_match_source_for_identity_frame(engine):
+    """With an identity source frame, the identity fallback gives the source values."""
+    interp, anchor = _build(engine, 0, 0.0)
+    legacy = strip_frame_keys(interp.to_dict())
+    with pytest.warns(FutureWarning):
+        loaded = GeologicalInterpolator.from_dict(legacy)
+    _assert_world_values(loaded, interp, anchor)
+
+
+@pytest.mark.parametrize("engine", ENGINE_CELLS)
+def test_strict_legacy_switch_raises(engine, monkeypatch):
+    """With `_STRICT_LEGACY` on, a legacy payload with no choice raises `legacy_no_transform`."""
+    monkeypatch.setattr(frame_persistence, "_STRICT_LEGACY", True)
     interp, _ = _build(engine, 1, 30.0)
     legacy = strip_frame_keys(interp.to_dict())
     before = copy.deepcopy(legacy)

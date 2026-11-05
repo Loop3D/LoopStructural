@@ -251,10 +251,10 @@
     ]
   },
   "findings": {
-    "found": 25,
+    "found": 28,
     "rejected": 1,
     "dropped": 0,
-    "fixed": 6,
+    "fixed": 7,
     "open_minor": [
       "T037 test_stale_frame_rejected_without_state_change: origin and rotation change together; a signature that ignores one of them still passes. Add origin-only and rotation-only cells (not in the plan; can be done in T042 or later).",
       "T035 test_round_trip_world_values: compares the loaded values with the analytic field only; add a comparison with the source evaluation (optional).",
@@ -277,7 +277,8 @@
       "T041 for a v2 payload with a rotated saved transform and only local_origin given, the missing rotation is compared as the identity, so the result is conflict. Unchanged v2 behaviour; documented in plan.md step 2.",
       "Outside S3 (found by the end review in a scratch probe): model.evaluate_feature_gradient(\"strati\", pts) raised ValueError shape mismatch (20,3) vs (20,4) at LoopStructural/modelling/features/_geological_feature.py:229 in a small rotated model. Not in the S3 range; check separately.",
       "plan.md \"Messages\" list shows only the base legacy_no_transform text; add the suffix ({name} is missing) for a partial legacy frame.",
-      "A pre-S3 pickled object that already holds constraints gets _frame_at_data None from the class default, so a later transform change is not detected until clean() or a new constraint set (same as before S3; optional: record the frame on the first _check_frame call; document in COMPAT.md)."
+      "A pre-S3 pickled object that already holds constraints gets _frame_at_data None from the class default, so a later transform change is not detected until clean() or a new constraint set (same as before S3; optional: record the frame on the first _check_frame call; document in COMPAT.md).",
+      "C-018 review, minor: _external_stacklevel compares directory strings; a path spelling difference (symlink or drive case) could misattribute the warning. Tests pass on this machine."
     ]
   },
   "answers": [
@@ -909,8 +910,21 @@
     "head_gated": "e49f3b2a",
     "lint": "ruff check LoopStructural packages: pass",
     "format": "black --check on the 10 changed .py files: new module and the 3 test files clean; 4 library files dirty and already dirty at the S3 start (_finite_difference_interpolator, _interpolator_factory, _p2_fold_interpolator, _p2interpolator); only task hunks changed",
-    "test_packages": "912 passed, 47 skipped, 2 xfailed, 7 warnings in 93.31 s",
-    "test_root": "1981 passed, 5 skipped, 13 warnings in 757.86 s (S2 head: 1760; +218 S3 cells +3 regression tests)",
+    "test_packages": "912 passed, 47 skipped, 2 xfailed, 7 warnings in 103.85 s (after C-018 and its review fix)",
+    "test_root": "1994 passed, 5 skipped, 13 warnings in 817.74 s (after C-018 and its review fix)",
     "status": "S3 implemented: 50 of 50 tasks done; not pushed; no pull request"
-  }
+  },
+  "post_review_changes": [
+    {
+      "date": "2026-11-05",
+      "id": "C-018",
+      "what": "Backward-compatible legacy load: a legacy payload with no choice loads with the identity frame and emits one FutureWarning; _STRICT_LEGACY switch with a remove-at-major note; partial transform, conflict, malformed and unsupported still raise. Docs (ROADMAP, COMPAT, verification) updated; P2 figures corrected.",
+      "gates": {
+        "lint": "pass",
+        "packages": "912 passed, 47 skipped, 2 xfailed",
+        "root": "1994 passed, 5 skipped"
+      },
+      "review": "first review: 1 major (warning location and timing) + 2 minor; fixed with warn_legacy_identity() and 7 new test cells (commit 169ae619); fix checked by the orchestrator, no second reviewer round"
+    }
+  ]
 }
