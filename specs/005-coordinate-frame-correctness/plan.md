@@ -102,6 +102,12 @@ The constitution (.specify/memory/constitution.md) has priority. -->
   nodal control (`exact=True`). The spec allows it ("Exact evaluation control").
   No tolerance changes. The P2 fit accuracy is open point OP7. `fdi`, `pli`,
   `cn_fdi` and `cn_pli` keep the fit (`exact=False`).
+- 2026-11-05 (S3 end review, maintainer decision): a legacy payload needs both
+  `local_origin` and `local_rotation`, or `declare_identity=True`. A partial
+  input raises `InterpolatorFormatError` (`legacy_no_transform`) and names the
+  missing argument. The earlier default (zero origin, identity rotation) is
+  removed from the legacy branch. A v2 payload still accepts a partial frame
+  that equals the saved transform.
 - 2026-11-05 (S3 plan, OP5, maintainer decision): the `TypeError` that names
   `format_version`, raised by a reader from before S3, is the accepted
   rollback behaviour for SC-017. S3 ships no reader patch. OP5 is closed.
@@ -911,11 +917,17 @@ frame with no box. `caller_frame` is `local_origin is not None or
 local_rotation is not None or declare_identity`.
 
 1. `declare_identity` with `local_origin` or `local_rotation`: `conflict`.
-2. Caller frame: `origin = zeros(dimensions)` if `declare_identity` or
-   `local_origin is None`, else `local_origin`; `rotation = eye(dimensions)`
-   if `declare_identity` or `local_rotation is None`, else `local_rotation`.
-   Check with `validate_rigid_rotation` and finite, correctly shaped origin.
-   An error is `malformed`.
+2. Caller frame. For kind `"legacy"` without `declare_identity`, both
+   `local_origin` and `local_rotation` are required (answered 2026-11-05, spec
+   review of S3: FR-019 forbids a silent identity for a missing part). If one is
+   `None`, raise `legacy_no_transform` with the standard message followed by
+   ` ({name} is missing)`, where `name` is the missing argument. For kind `"v2"`
+   a partial caller frame is compared with the saved transform:
+   `origin = zeros(dimensions)` if `declare_identity` or `local_origin is None`,
+   else `local_origin`; `rotation = eye(dimensions)` if `declare_identity` or
+   `local_rotation is None`, else `local_rotation`; the defaults are only a
+   comparison value for step 5. Check with `validate_rigid_rotation` and finite,
+   correctly shaped origin. An error is `malformed`.
 3. Kind `"legacy"`: if `declare_identity`, return `None`. Else return
    `bounding_box_from_support(support, dimensions, origin, rotation)`.
 4. Kind `"v2"`: read `constraint_space` (must equal `"local"`), `transform`

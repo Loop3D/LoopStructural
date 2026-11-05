@@ -186,3 +186,19 @@ def test_fault_restoration_uses_current_frame(engine):
             atol=1e-9 * max(1.0, np.abs(control_coord).max()),
         )
         assert np.ptp(control_coord) > 1e-3
+
+
+def test_pre_s3_object_state_still_evaluates():
+    """An object saved before the frame check existed has no `_frame_at_data`."""
+    anchor = ANCHORS[1]
+    interp, _ = r1_interpolator("fdi", anchor, 30.0, exact=True)
+    points = anchor + QUERY_OFFSETS
+    expected = interp.evaluate_value(points)
+    expected_gradient = interp.evaluate_gradient(points)
+    del interp.__dict__["_frame_at_data"]  # state of a pickle from before S3
+    np.testing.assert_array_equal(interp.evaluate_value(points), expected)
+    np.testing.assert_array_equal(interp.evaluate_gradient(points), expected_gradient)
+    # A new constraint set works too and records the frame.
+    rows = r1_observations(anchor)[["X", "Y", "Z", "val", "w"]].to_numpy()
+    interp.set_value_constraints(rows)
+    assert interp._frame_at_data == interp.frame_signature()

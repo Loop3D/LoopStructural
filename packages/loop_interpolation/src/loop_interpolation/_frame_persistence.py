@@ -236,9 +236,13 @@ def resolve_frame(
     dimensions : int
         Number of spatial dimensions.
     local_origin : array_like, optional
-        World-space origin of the local frame, given by the caller.
+        World-space origin of the local frame, given by the caller. A legacy
+        payload needs both `local_origin` and `local_rotation`, or
+        `declare_identity`.
     local_rotation : array_like, optional
-        Rotation matrix of the local frame, given by the caller.
+        Rotation matrix of the local frame, given by the caller. A legacy
+        payload needs both `local_origin` and `local_rotation`, or
+        `declare_identity`.
     declare_identity : bool, optional
         True if the caller declares an identity frame.
 
@@ -251,7 +255,9 @@ def resolve_frame(
     ------
     InterpolatorFormatError
         With reason `conflict` if the inputs disagree with each other or with
-        the saved transform. With reason `malformed` if a value is not valid.
+        the saved transform. With reason `legacy_no_transform` if a legacy
+        payload gets only one of `local_origin` and `local_rotation`. With
+        reason `malformed` if a value is not valid.
     """
     # Step 1: declare_identity cannot go with a transform value.
     if declare_identity and (local_origin is not None or local_rotation is not None):
@@ -267,7 +273,15 @@ def resolve_frame(
         )
     caller_frame = local_origin is not None or local_rotation is not None or declare_identity
 
-    # Step 2: check the transform of the caller.
+    # Step 2: check the transform of the caller. A legacy payload needs both values.
+    if kind == "legacy" and caller_frame and not declare_identity:
+        for name, value in (("local_origin", local_origin), ("local_rotation", local_rotation)):
+            if value is None:
+                raise InterpolatorFormatError(
+                    "legacy_no_transform",
+                    "legacy interpolator payload has no transform: pass local_origin and "
+                    f"local_rotation, or declare_identity=True ({name} is missing)",
+                )
     origin = rotation = None
     if caller_frame:
         origin_value = (

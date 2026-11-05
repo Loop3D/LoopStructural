@@ -72,6 +72,9 @@ class GeologicalInterpolator(BaseRepresentation, metaclass=ABCMeta):
         The support structure used by the interpolator
     """
 
+    # Default for objects that were saved before the frame check existed.
+    _frame_at_data: tuple[bytes, bytes] | None = None
+
     @abstractmethod
     def __init__(self, data=None, up_to_date=False):
         """Initialize the geological interpolator.

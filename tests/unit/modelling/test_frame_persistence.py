@@ -177,6 +177,23 @@ def test_legacy_with_supplied_transform(engine, anchor_index, rotation):
     _assert_same(legacy, before)
 
 
+@pytest.mark.parametrize("given", ["local_origin", "local_rotation"])
+def test_legacy_partial_transform_is_refused(given):
+    """A legacy payload needs both the origin and the rotation, or an identity declaration."""
+    interp, _ = _build("fdi", 1, 30.0)
+    legacy = strip_frame_keys(interp.to_dict())
+    before = copy.deepcopy(legacy)
+    box = interp.bounding_box
+    with pytest.raises(InterpolatorFormatError) as excinfo:
+        GeologicalInterpolator.from_dict(legacy, **{given: getattr(box, given)})
+    _assert_format_error(
+        excinfo, "legacy_no_transform", "legacy interpolator payload has no transform"
+    )
+    missing = "local_rotation" if given == "local_origin" else "local_origin"
+    assert f"{missing} is missing" in str(excinfo.value)
+    _assert_same(legacy, before)
+
+
 @pytest.mark.parametrize("engine", ENGINE_CELLS)
 def test_legacy_with_identity_declaration(engine):
     """A legacy payload loads with `declare_identity=True` for an identity frame."""

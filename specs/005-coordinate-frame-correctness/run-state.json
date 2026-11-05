@@ -123,7 +123,9 @@
         "lint": "pass",
         "packages": "912 passed, 47 skipped, 2 xfailed",
         "root": "1978 passed, 5 skipped"
-      }
+      },
+      "commit": "db3e8a580934fe6077418ef1ce2602a023df9718",
+      "review": "pass: sonnet, 2 minor"
     }
   ],
   "runs": {
@@ -249,10 +251,10 @@
     ]
   },
   "findings": {
-    "found": 16,
+    "found": 23,
     "rejected": 1,
     "dropped": 0,
-    "fixed": 4,
+    "fixed": 6,
     "open_minor": [
       "T037 test_stale_frame_rejected_without_state_change: origin and rotation change together; a signature that ignores one of them still passes. Add origin-only and rotation-only cells (not in the plan; can be done in T042 or later).",
       "T035 test_round_trip_world_values: compares the loaded values with the analytic field only; add a comparison with the source evaluation (optional).",
@@ -267,7 +269,13 @@
       "T042 _restore_local_constraints: ragged arrays give a raw numpy ValueError (wrapped by T043); unknown keys in data are ignored without a message.",
       "T042 __init__ sets data without _note_frame: a non-empty initial data argument is not tracked (no known caller).",
       "T043 from_dict saved path: a missing or unknown `type` raises a plain ValueError, not InterpolatorFormatError(\"malformed\") (nothing is returned, so no partial result).",
-      "T043 from_dict saved path does not validate the shape of `data` (a non-dict can raise TypeError) or `c` against the support, and up_to_date True with no c loads as solved without coefficients (same as the old creation path)."
+      "T043 from_dict saved path does not validate the shape of `data` (a non-dict can raise TypeError) or `c` against the support, and up_to_date True with no c loads as solved without coefficients (same as the old creation path).",
+      "T041 equal-frame check uses atol=1e-12 with no relative part: at UTM coordinates (1 ULP about 9e-10) a caller origin that differs by 1 ULP gives conflict. Plan value kept; consider a scale-aware tolerance.",
+      "T037 test_rebuild_in_new_frame_preserves_world_evaluation does not change a frame; it is an SC-002 check at the fixture frame. verification.md maps SC-016 to it.",
+      "T041 BoundingBox.from_dict does not pass dimensions, so a 2D box in a v2 payload is malformed. Not reachable now (2D supports have no to_dict).",
+      "T050 ROADMAP.md S3 status line is one long line; wrap at about 80 columns.",
+      "T041 for a v2 payload with a rotated saved transform and only local_origin given, the missing rotation is compared as the identity, so the result is conflict. Unchanged v2 behaviour; documented in plan.md step 2.",
+      "Outside S3 (found by the end review in a scratch probe): model.evaluate_feature_gradient(\"strati\", pts) raised ValueError shape mismatch (20,3) vs (20,4) at LoopStructural/modelling/features/_geological_feature.py:229 in a small rotated model. Not in the S3 range; check separately."
     ]
   },
   "answers": [
@@ -880,5 +888,18 @@
       }
     }
   },
-  "status": "wave 22 done, review pending; end spec review pending"
+  "status": "end review fix round committed, recheck pending",
+  "spec_review": {
+    "stage": "S3",
+    "model": "opus",
+    "range": "91ffca4a..db3e8a58",
+    "verdict": "changes needed",
+    "major": 2,
+    "minor": 3,
+    "fixed": [
+      "major: pre-S3 pickled interpolators had no _frame_at_data: class-level default added (T042 file) + test_pre_s3_object_state_still_evaluates",
+      "major: a legacy payload with only local_origin or only local_rotation loaded silently with identity defaults: now legacy_no_transform naming the missing argument (user decision 2026-11-05); plan.md step 2 changed; 2 negative tests"
+    ],
+    "recheck": "pending (fix commit only)"
+  }
 }
