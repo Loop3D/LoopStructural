@@ -1012,7 +1012,7 @@ frame. A legacy file needs an explicit choice. A frame change never gives a stal
     columns `X, Y, Z` (at least 5 rows, taken from the anchor). The spy gets exactly the world X, Y, Z: `np.array_equal(spy_arg, data[["X","Y","Z"]].to_numpy(float))`.
     The signature of the method under test is `_network_model_values(self, data: pd.DataFrame) -> np.ndarray`.
 
-- [ ] T054 [US3] [M] Test: the 2D viewer draws the fault ellipse at the world centre (U3.5, coverage; no defect).
+- [x] T054 [US3] [M] Test: the 2D viewer draws the fault ellipse at the world centre (U3.5, coverage; no defect).
   - Files: `tests/unit/modelling/test_world_location_consumers.py`
   - Needs: T053
   - Wave: 26

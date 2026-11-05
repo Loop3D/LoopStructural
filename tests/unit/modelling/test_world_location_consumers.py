@@ -12,6 +12,7 @@ from tests.fixtures.coordinate_frames import (
     tp,
     world_foliation_model,
 )
+from tests.unit.modelling.test_fault_frame_analytic import _fault
 
 LENGTH = 12.0
 WIDTH = 6500000.0 + 12.0
@@ -131,3 +132,30 @@ def test_intrusion_classification_uses_world_points(anchor_index, rotation):
     builder._network_model_values(data)
     assert len(received) == 1
     assert np.array_equal(received[0], data[["X", "Y", "Z"]].to_numpy(float))
+
+
+@pytest.mark.parametrize(
+    "anchor_index, rotation",
+    list(itertools.product((0, 3), (0, 30))),
+)
+def test_2d_viewer_fault_ellipse_centre_is_world(anchor_index, rotation):
+    """The 2D viewer draws the fault ellipse at the world centre of the fault."""
+    anchor = ANCHORS[anchor_index]
+    # Skip the test if the viewer package is not installed.
+    viewer = pytest.importorskip("loopstructuralvisualisation._2d_viewer")
+    matplotlib = pytest.importorskip("matplotlib")
+    matplotlib.use("Agg")
+    import matplotlib.pyplot as plt
+
+    fault = _fault(anchor, rotation, "PLI")
+    fig, ax = plt.subplots()
+    try:
+        view = type("View", (), {})()
+        view.ax = ax
+        view.model = None
+        viewer.Loop2DView.add_fault_ellipse(view, faults=[fault])
+        assert len(ax.patches) == 1
+        tol = tp(LENGTH, max(WIDTH, np.abs(anchor).max()))
+        np.testing.assert_allclose(ax.patches[0].center, fault.fault_centre[:2], rtol=0, atol=tol)
+    finally:
+        plt.close(fig)

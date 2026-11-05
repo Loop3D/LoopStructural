@@ -14,7 +14,7 @@
     "review_spec": "opus",
     "review_verifier": "opus"
   },
-  "env": "PYTHONPATH=C:/Users/lachl/dev/LoopStructural-005-s4;C:/Users/lachl/dev/LoopStructural-005-s4/packages/loop_common/src;C:/Users/lachl/dev/LoopStructural-005-s4/packages/loop_interpolation/src; python = main checkout .venv (C:/Users/lachl/dev/LoopStructural/.venv/Scripts/python.exe); run the root pytest and the package tests in separate calls, one heavy run at a time (low memory); detached script + foreground poll for long runs; logs with Out-File -Encoding utf8",
+  "env": "PYTHONPATH=C:/Users/lachl/dev/LoopStructural-005-s4;C:/Users/lachl/dev/LoopStructural-005-s4/packages/loop_common/src;C:/Users/lachl/dev/LoopStructural-005-s4/packages/loop_interpolation/src; python = main checkout .venv (C:/Users/lachl/dev/LoopStructural/.venv/Scripts/python.exe); run the root pytest and the package tests in separate calls, one heavy run at a time (low memory); detached script + foreground poll for long runs; logs with Out-File -Encoding utf8; for the viewer test (T054) add <worktree>/packages/loopstructural_visualisation/src to PYTHONPATH (else it skips); use PowerShell for pytest (Bash resolves loop_interpolation from the main checkout)",
   "base_note": "Built from docs/005-s4-plan (9b3507a9) on origin/master (S1 to S3 and PR #400 merged). Not pushed; no PR.",
   "waves": [
     {
@@ -36,6 +36,16 @@
       "check": "scope pass; ruff pass; 18 failed 1 passed pre-fix (shift by local origin; rotation)",
       "commit": "448aba2f29d1dfef4d1a9060335a6e94a010768d",
       "review": "pass: sonnet, no findings"
+    },
+    {
+      "wave": 25,
+      "base": "448aba2f29d1dfef4d1a9060335a6e94a010768d",
+      "tasks": [
+        "T053"
+      ],
+      "check": "scope pass; ruff pass; 12 failed AttributeError pre-fix",
+      "commit": "1b4abbb0020cce326ef56c7452de704af79513ad",
+      "review": "pass: sonnet, no findings"
     }
   ],
   "runs": {
@@ -55,6 +65,16 @@
       {
         "model": "sonnet",
         "result": "pass: 12 cells fail with AttributeError"
+      }
+    ],
+    "T054": [
+      {
+        "model": "sonnet",
+        "result": "pass: 4 cells coverage"
+      },
+      {
+        "model": "sonnet",
+        "result": "fix pass: viewer import moved into the test with importorskip"
       }
     ]
   },
