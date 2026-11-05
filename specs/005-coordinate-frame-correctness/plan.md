@@ -7,17 +7,19 @@ The constitution (.specify/memory/constitution.md) has priority. -->
 
 ## Open points
 
-- **OP1**: This plan gives the exact design only for stages S1, S2 and S3 (S1:
+- **OP1**: This plan gives the exact design only for stages S1 to S4 (S1:
   shared transform, reference-constraint boundary and fault frame; S2: fold, P2,
   directional-regularisation and constant-norm cells; S3: saved frames, copies
-  and transform changes). The spec-planner limit is 10 code files, and the
+  and transform changes; S4: display, data export, fault-centre geometry and
+  intrusion classification). The spec-planner limit is 10 code files, and the
   maintainer selected a staged plan on 2026-11-04. S2 has its exact design
   since 2026-11-04 ("Stage S2 design"). S3 has its exact design since
-  2026-11-05 ("Stage S3 design"). Stages S4 to S6 have a stage map, a file
-  list from a grep survey and a requirement allocation, but no exact
-  signatures. Owner: the spec-planner skill, one run for each stage. Blocks:
-  the tasks of S4 to S6. The spec-tasks skill makes the S3 tasks next (S1 is
-  merged; S2 is in pull request #396).
+  2026-11-05 ("Stage S3 design"), and S4 since 2026-11-05 ("Stage S4 design").
+  Stages S5 and S6 have a stage map, a file list from a grep survey and a
+  requirement allocation, but no exact signatures. Owner: the spec-planner
+  skill, one run for each stage. Blocks: the tasks of S5 and S6. The spec-tasks
+  skill makes the S4 tasks next (S1 is merged; S2 is in pull request #396; S3
+  is built in pull request #397).
 - **OP2**: Run time of the mandatory R2 and R5 matrices. R2 needs 4 anchors x
   3 rotations x 2 centre modes x 2 engines = 48 solves (FDI with 20000
   requested cells). R5 needs 3 buffers x 3 rotations x 2 centre modes x 2
@@ -53,20 +55,48 @@ The constitution (.specify/memory/constitution.md) has priority. -->
   Decision needed: accept this error, which names the key, as the documented
   rollback behaviour. Default until an answer: accept it. Blocks: the S3
   rollback check wording only.
-- **OP7**: The P2 value-only fit of R1 (6 x 6 x 6 cells, ridge and gradient
-  regularisation, `cg` with the SC-003 settings) misses the SC-002 limits in every
-  frame, also the unrotated control at `ANCHORS[0]`: value error `1.8e-8` (limit
-  `1e-8*F`, F = 7.5) and gradient error `3.9e-7` (limit `4e-9`). The cause is solver
-  and regularisation accuracy, not a frame defect. FDI and PLI meet SC-002. Owner:
-  the maintainer or the solver owner. Decision needed: improve the P2 fit set-up
-  (production solver code, a separate task), or record P2 fitting as outside
-  SC-002. Default until an answer: the S3 P2 cells use the exact nodal control.
-  Blocks: nothing in S3.
+- **OP7** (closed 2026-11-05, spec C-017, see "Answers"): The P2 value-only fit of R1
+  (6 x 6 x 6 cells, ridge and gradient regularisation, `cg` with the SC-003
+  settings) misses the SC-002 limits in every frame, also the unrotated control at
+  `ANCHORS[0]`. The value error is `7.8e-8` there (limit `1e-8*F`, F = 7.5, so `7.5e-8`) and `2e-7`
+  to `7.6e-7` at 30 degrees. The gradient error is `3.9e-7`
+  against the limit `1e-8` (the rule is `1e-8*max(1, |gradient|)`). The figure
+  `4e-9`, which earlier text gave for the gradient limit, was wrong. Also the
+  value error is `7.8e-8` against the limit `7.5e-8` in the unrotated control, so
+  it fails by 4 percent (an earlier figure of `1.8e-8` was a ratio to the scale of
+  the query values). At 30 degrees it is `2e-7` to `7.6e-7`. FDI and PLI stay
+  below `3.2e-9` (value) and `1.7e-9` (gradient). The cause is
+  solver and regularisation accuracy, not a frame defect. FDI and PLI meet SC-002.
+  Decision: SC-002 for P2 applies to the exact nodal field; the fit accuracy goes
+  to a separate issue.
 - **OP6**: The feature `copy()` methods under `LoopStructural/modelling/features`
   were not read. If one of them calls `interpolator.copy()`, the frame now
   stays on the result. Owner: the S3 copy test task (it runs `git grep -n
   'interpolator.*copy('` first). Default until an answer: no change in S3.
   Blocks: nothing.
+
+- **OP8** (closed for the calls on 2026-11-05, see "Answers"): The four calls
+  `model.rescale(...)` in `exporters.py` (lines 92, 366, 431 and 480) discard their
+  result, so they change nothing. S4 removes them, because the deprecated method
+  would warn on every export. The argument `real_coords=False` of the exporters is
+  ignored; it cannot give model coordinates. Owner: the maintainer. Decision
+  needed: document or deprecate `real_coords`. Default until an answer: leave it.
+  Blocks: nothing.
+- **OP11** (closed 2026-11-05, spec C-016, see "Answers"): `GeologicalModel.scale` is
+  the inverse of `rescale` (world to local) and has the same "TODO move to the
+  bounding box" note. Decision: S4 deprecates `scale` together with `rescale`.
+- **OP9**: `LoopStructural/utils/regions.py` was not read (10-file limit). The
+  abutting regions receive the world fault centre as `point`. The S1 contract
+  says that region callbacks take world points. Owner: the S4 test task for the
+  fault centre (it reads `regions.py` first). Default until an answer: the
+  regions treat `point` and `vector` as world values. If they convert, the task
+  reports it. Blocks: nothing.
+- **OP10**: In `GeologicalFeature.get_data`, the `value_map` branch selects rows
+  with `value_constraints[value_constraints == v, :3]`. This compares the whole
+  array, not the value column. It is a pre-existing defect, not a coordinate
+  defect. Owner: the maintainer. Decision needed: file an issue, as for the
+  C-005 and C-006 defects. Default until an answer: S4 keeps the expression and
+  tests only the branch without `value_map`. Blocks: nothing.
 
 ## Answers
 
@@ -102,6 +132,33 @@ The constitution (.specify/memory/constitution.md) has priority. -->
   nodal control (`exact=True`). The spec allows it ("Exact evaluation control").
   No tolerance changes. The P2 fit accuracy is open point OP7. `fdi`, `pli`,
   `cn_fdi` and `cn_pli` keep the fit (`exact=False`).
+- 2026-11-05 (C-018, maintainer decision, later the same day): the maintainer will
+  release a major version but not yet. The legacy-load change of FR-019 stays
+  backward compatible on the 1.x line. A legacy payload with no choice loads with
+  the identity frame and emits one `FutureWarning`. The code carries a note to
+  remove the fallback at the next major release. This replaces the S3 answer
+  "no warning-only identity fallback" for 1.x and makes the C-015 entry below
+  moot for the loader (no break ships in 1.x). See "S3 amendment".
+- 2026-11-05 (spec gap interview, C-015, maintainer decision): the legacy-load
+  break (FR-019) ships in a minor release, with a note. It does not ship as a major
+  release. `ROADMAP.md` records an explicit exception to the rule that 1.x stays
+  backward compatible, and `COMPAT.md` and the release notes state the break. This
+  replaces the earlier text "must be a major version" (S3 answer below). The
+  constitution asks for a "major-version note"; the note is the statement of this
+  decision. If the maintainer reads the constitution as a demand for a major
+  release, the maintainer amends it by pull request. The text of `ROADMAP.md` and
+  `COMPAT.md` that stage S3 added (pull request #397) says "must be a major
+  version" and needs the same change.
+- 2026-11-05 (spec gap interview, C-016, maintainer decision, OP11): S4 deprecates
+  `GeologicalModel.scale` together with `rescale`. Its warning names
+  `model.bounding_box.project(points)`. Nothing in the library calls `scale`.
+- 2026-11-05 (spec gap interview, C-017, maintainer decision, OP7): SC-002 for P2
+  applies to the exact nodal field of R1. The P2 fit accuracy is a solver property.
+  Issue #399 records it. The backend table of the spec says so.
+- 2026-11-05 (S4 plan, maintainer request): deprecate `GeologicalModel.rescale`.
+  The method keeps working and emits a `DeprecationWarning` that says it will be
+  removed. The four discarded calls in `exporters.py` go (OP8, calls). `scale`
+  follows in the same release (C-016).
 - 2026-11-05 (S3 end review, maintainer decision): a legacy payload needs both
   `local_origin` and `local_rotation`, or `declare_identity=True`. A partial
   input raises `InterpolatorFormatError` (`legacy_no_transform`) and names the
@@ -114,7 +171,8 @@ The constitution (.specify/memory/constitution.md) has priority. -->
 - 2026-11-05 (S3 plan, maintainer decision): the legacy-load break (FR-019)
   gets a ROADMAP.md decision and a `COMPAT.md` row with a major-version note.
   No warning-only identity fallback exists. The release that contains S3 must
-  be a major version, or the maintainer records another decision.
+  be a major version, or the maintainer records another decision. (Replaced on
+  2026-11-05 by C-015: a minor release with a note.)
 
 - 2026-11-04 (S2 wave 9, user decision): T022 found an existing defect.
   `ConstantNormFDIInterpolator` always fails with `IndexError` in
@@ -147,9 +205,10 @@ S1 repairs the shared boundary and the fault frame:
    extent-direction row at the centre.
 
 S2 repairs the fold paths. S3 makes saved interpolators, copies and transform
-changes keep the frame ("Stage S3 design"). S4 to S6 repair display
-consumers, grid and diagnostics, and the auxiliary utilities and validation
-matrix (see "Stages and rollback").
+changes keep the frame ("Stage S3 design"). S4 removes two extra conversions: the
+display and export of observation data, and the intrusion classification. It also
+deprecates `GeologicalModel.rescale` ("Stage S4 design"). S5 and S6 repair grid and diagnostics, and the auxiliary
+utilities and validation matrix (see "Stages and rollback").
 
 ## Technical context
 
@@ -215,7 +274,7 @@ matrix (see "Stages and rollback").
 
 ## Design
 
-S1, S2 and S3 have the exact design below. S4 to S6 have scope only (OP1).
+S1 to S4 have the exact design below. S5 and S6 have scope only (OP1).
 
 ### Types and data
 
@@ -818,8 +877,10 @@ it merges, run this planner again on the merged result.
 3. **Saved payload or creation call.** A dict is a saved payload if and only
    if `support` is a dict. Other dicts keep the creation behaviour.
 4. **Legacy payload.** It has no recoverable transform (old `to_dict` never
-   wrote one). The caller must pass `local_origin` and `local_rotation`, or
-   `declare_identity=True`. The loader never guesses.
+   wrote one). The caller should pass `local_origin` and `local_rotation`, or
+   `declare_identity=True`. On the 1.x line, a call with no choice loads with the
+   identity frame and one `FutureWarning`; from the next major release it raises
+   (amendment C-018, see "S3 amendment").
 5. **Copy.** A copy shares the `BoundingBox` object of its source, as the
    factory does for the interpolators of one model. A loaded interpolator
    gets its own `BoundingBox`.
@@ -1134,7 +1195,7 @@ under "S3 golden review" (C-004) before any change.
   the result. Else it records that no measure exists.
 - The legacy rule is a breaking change for callers that loaded old files with
   no choice (FR-019 exception, FR-028). It needs the ROADMAP.md decision and
-  the major-version note below.
+  the note on the version below (a minor release, C-015).
 
 #### S3 constitution check
 
@@ -1163,7 +1224,7 @@ under "S3 golden review" (C-004) before any change.
 | `tests/unit/modelling/test_frame_persistence.py` | New |
 | `tests/unit/modelling/test_frame_copy_and_lifecycle.py` | New |
 | `tests/fixtures/api_surface_snapshot.json` | Add the new public names, only if the file lists `loop_interpolation` names (additive) |
-| `COMPAT.md` | S3 migration notice with the major-version note |
+| `COMPAT.md` | S3 migration notice with the note that the break ships in a minor release (C-015) |
 | `ROADMAP.md` | FR-019 decision under "Decisions"; status-log line when S3 completes |
 | `specs/005-coordinate-frame-correctness/verification.md` | S3 pre-fix, post-fix, golden review, backend matrix, rollback and run-time sections |
 
@@ -1175,9 +1236,68 @@ The `COMPAT.md` row says: loading a legacy interpolator payload (no
 `local_origin` and `local_rotation`, or `declare_identity=True`, and raises
 `InterpolatorFormatError` otherwise. New payloads carry `format_version: 2`.
 `copy()` keeps the frame. A transform change after constraints exist raises
-`StaleFrameError` at the next use. Major-version note: the release that
-contains S3 must be a major version, or the maintainer records another
-decision in `ROADMAP.md`.
+`StaleFrameError` at the next use. Version note: by maintainer decision
+(C-015) the release that contains S3 is a minor release; `ROADMAP.md`
+records the exception to the 1.x rule.
+
+#### S3 amendment: backward-compatible legacy load (C-018, 2026-11-05)
+
+This amendment replaces the statements of "S3 decisions" item 4, of
+`payload_kind` step 2, of `resolve_frame` step 3 and of the legacy tests that say
+"a legacy payload with no choice raises". Everything else in S3 stays.
+
+- Behaviour on the 1.x line. A legacy payload (no `format_version`) with no
+  caller frame (`caller_frame` false) loads. `payload_kind` returns `"legacy"`
+  and does not warn; `resolve_frame` returns `None` for this case (the identity
+  frame, no bounding box). `InterpolatorFactory.from_dict` calls
+  `warn_legacy_identity()` once, as its last step, after the load succeeded, so a
+  failed load emits no warning. This is what older releases did. The
+  warning text starts with `legacy interpolator payload has no transform; assuming
+  the identity frame` and names `local_origin` and `local_rotation`,
+  `declare_identity=True`, and the next major release (which raises an error).
+- Unchanged: a partial transform, a conflict, a malformed or an unsupported payload
+  still raise `InterpolatorFormatError`. These are new keyword arguments and new
+  checks, so no old call depends on them.
+- One switch and one note. `_frame_persistence.py` gets a module constant
+  `_STRICT_LEGACY: bool = False` with the comment `REMOVE AT THE NEXT MAJOR RELEASE
+  (spec 005, C-018): delete the fallback, the constant, `warn_legacy_identity` and
+  `_external_stacklevel`; a legacy payload with no choice then always raises
+  InterpolatorFormatError("legacy_no_transform", ...)`. When the constant is
+  true, `payload_kind` raises as it did before this amendment.
+- Warning category: `FutureWarning`, because the user must see it; a wrong
+  placement is silent. `warn_legacy_identity()` (in `_frame_persistence.py`) computes
+  the `stacklevel` so that the warning points at the first frame outside the
+  `loop_interpolation` package. This holds for `from_dict`, `from_json`,
+  `from_yaml` and a direct `InterpolatorFactory.from_dict` call. A fixed
+  `stacklevel` was wrong for three of the four (found in the review of the change).
+- Tests. `test_legacy_payload_requires_choice` becomes
+  `test_legacy_payload_without_choice_warns_and_loads_identity` (3 engines): it
+  expects one `FutureWarning` with the message start above, a loaded interpolator
+  with `bounding_box is None`, and an unchanged source dict. New tests
+  `test_legacy_warning_points_at_caller` (4 entry points) and
+  `test_legacy_warning_not_emitted_when_load_fails` (3 engines) check the
+  attribution to the caller and that a failed load does not warn. For `ANCHORS[0]` with
+  rotation 0 it also checks the values against the source (SC-006). New test
+  `test_strict_legacy_switch_raises` (3 engines): with `_STRICT_LEGACY` set to
+  true through `monkeypatch`, the same call raises `InterpolatorFormatError` with
+  reason `legacy_no_transform` (the behaviour of the major release). The tests of
+  the partial transform, the supplied transform and the identity declaration do not
+  change.
+- Documents (stage S3 branch, pull request #397): the `ROADMAP.md` decision
+  "Legacy interpolator payloads (spec 005, FR-019)" says: on 1.x the loader warns
+  and assumes identity; at the next major release it raises. The `COMPAT.md` S3
+  row moves from the migration notices to a deprecation: old path "load of a legacy
+  payload with no choice", behaviour kept with a warning, earliest removal at the
+  next major release. The version note ("minor release", C-015) is removed from
+  both. `verification.md` records the new behaviour and corrects the P2 numbers
+  (value `7.8e-8`, gradient limit `1e-8`). The text of the pull request changes the
+  same way.
+- Files: `packages/loop_interpolation/src/loop_interpolation/_frame_persistence.py`,
+  `tests/unit/modelling/test_frame_persistence.py`, `ROADMAP.md`, `COMPAT.md`,
+  `specs/005-coordinate-frame-correctness/verification.md`.
+- The rollback check of S3 stays: a legacy file loads on the S3 code with the old
+  path and with a supplied transform; a file written by S3 fails on the old reader
+  (OP5).
 
 #### S3 task order (for the spec-tasks skill)
 
@@ -1197,6 +1317,375 @@ with `declare_identity=True` (or the supplied transform) and compare with
 SC-006. On the S2 reader, load a file that S3 wrote; expect the `TypeError`
 that names `format_version` and no object. Record both in `verification.md`.
 
+### Stage S4 design
+
+S4 makes the display, the data export, the fault-centre geometry and the
+intrusion classification use the stored world locations (FR-022; U3.4 and
+U3.5; "world-location comparison within `Tp`"). S4 removes two extra
+conversions. It also deprecates `GeologicalModel.rescale`: the method keeps its
+behaviour and warns that it will be removed (maintainer request, 2026-11-05). It
+adds no new public name. Base: branch
+`feat/005-s3-frame-persistence` (S3, pull request #397, stacked on #396). If S3
+changes before it merges, run this planner again on the merged result.
+
+#### S4 facts from the code (read on 2026-11-05)
+
+- The data of a feature builder is world data. `GeologicalFeatureBuilder.get_value_constraints`,
+  `get_gradient_constraints`, `get_tangent_constraints` and `get_norm_constraints`
+  (`_geological_feature_builder.py:395` to `466`) read `self.data`, the DataFrame
+  that the caller gave. The interpolator converts the rows once, when
+  `set_*_constraints` stores them. The old projection of the model data is a
+  comment (`geological_model.py:593`).
+- `GeologicalFeature.get_data` (`_geological_feature.py:303` to `372`) takes
+  those world rows and calls `self.model.rescale(...)` on the location columns in
+  four places: gradient, norm, value with `value_map`, value without `value_map`.
+  `GeologicalModel.rescale` is `bounding_box.reproject` (local to world,
+  `geological_model.py:1103` to `1122`). So it adds the local origin, and it
+  applies the rotation, a second time. With a local origin of `(100,200,300)` and an
+  identity rotation, the point `(102,203,304)` is shown at `(202,403,604)`. This is
+  the display reproduction of the spec. The vectors are taken from the world rows
+  and are not converted, so they are already right.
+- `get_data` has two callers: `Loop3DView.add_data` (`_3d_viewer.py:549`) and
+  `ModelExporter.save` (`_model_exporter.py:119` and `126`; it writes each object
+  with `save`). `StructuralFrame.get_data` (`_structural_frame.py:160`) delegates to
+  its three features. No other `get_data` converts a location: a grep for
+  `rescale` finds no other call in the feature classes, and
+  `IntrusionFeature.get_data` is `pass`.
+- Pre-existing, outside S4: in the `value_map` branch the mask is
+  `value_constraints[value_constraints == v, :3]`. It compares the whole array,
+  not the value column (OP10).
+- Intrusion classification. `IntrusionFrameBuilder.set_intrusion_steps_parameters`
+  (`intrusion_frame_builder.py:332` to `354`) takes the X, Y and Z columns of the
+  intrusion network data and passes `self.model.rescale(xyz, inplace=False)` to
+  `self.model.evaluate_model`. The network data is a copy of the user's rows
+  (`set_intrusion_frame_c0_data`, line 158), so it is world data.
+  `GeologicalModel.evaluate_model(xyz, *, scale=True)` takes world points; `scale`
+  is kept only for the signature (`geological_model.py:1212`). So the unit that
+  classifies each network point is read at a wrong location. The variable
+  `intrusion_network_data_xyz` is used only there.
+- Fault centre. `FaultSegment.fault_centre` returns `builder.fault_centre`, a
+  world point since S1. `fault_ellipsoid` uses it directly (S1 fixed it).
+  `Loop2DView.add_fault_ellipse` (`_2d_viewer.py:211` to `224`) draws the ellipse at
+  `center[0], center[1]` with no conversion, which is right. The abutting regions
+  receive the world centre as `point` (`_fault_segment.py:463` and `469`);
+  `utils/regions.py` was not read (OP9).
+- Exporters. The four calls `model.rescale(verts)`, `model.rescale(points)`,
+  `model.rescale(xyz)` and `model.rescale(bbox)` in `exporters.py` (lines 92, 366,
+  431 and 480) discard the result, because `inplace` is `False` by default. They
+  change nothing. The exporters build world inputs (`regular_grid(local=False)` and
+  the world bounding box) and `evaluate_model` projects them internally, so the
+  written coordinates are world coordinates. The argument `real_coords=False` cannot
+  produce model coordinates; it is ignored (pre-existing, outside S4; OP8).
+  `ModelExporter.get_block_model` is right: `cell_centres()` is local, `rescale`
+  makes it world, and `evaluate_model` projects it again.
+- Other `reproject` calls are right. `LoopStructural/interpolators/_api.py:151`,
+  `169` and `187` convert stored local interpolator data to world.
+  `_geological_feature.py:258`, `266` and `286` do the same for the misfit methods.
+  Those methods change the stored arrays in place (`grad /= norm`) and
+  `grad[:, :3:6]` selects the position columns; this belongs to S5 (FR-023).
+- Callers of `rescale` (grep on 2026-11-05, the whole repository): `exporters.py`
+  (4 discarded calls), `_model_exporter.py:77` (`get_block_model`),
+  `_geological_feature.py` (4 live calls and 1 comment in `get_data`),
+  `intrusion_frame_builder.py:353`, and two calls in
+  `examples/3_fault/plot_1_faulted_intrusion.py` (lines 71 and 100). No other
+  package calls it. `GeologicalModel.scale` has no caller.
+- The example has the same double conversion as `get_data`. It calls
+  `model.rescale(model.data[...][["X", "Y", "Z"]].values, inplace=False)` on world
+  data of the model, and draws the points with `viewer.add_points`. The prefault
+  points appear shifted by the local origin. This is a third display case of FR-022.
+- `rescale` and `scale` are stable public API: `@public_api(tier="stable")`
+  (`geological_model.py:1104`, `1125`), listed in `API.md:122` and in
+  `tests/fixtures/api_surface_snapshot.json:30`. `ROADMAP.md:810` records that they
+  "stay as public, signature-stable pass-throughs" to the bounding box. The
+  contract test compares only the signature and the tier, so a warning in the body
+  does not change the snapshot. `public_api` wraps the function and passes every
+  call through.
+- The repository has a deprecation pattern. `set_stratigraphic_column`
+  (`geological_model.py:649`) calls `warnings.warn(message, DeprecationWarning,
+  stacklevel=2)`. The versioning policy of `ROADMAP.md` ("Versioning policy") and the
+  "Deprecation lifecycle" of `COMPAT.md` require, for a deprecation on the 1.x line:
+  a runtime `DeprecationWarning`, an entry in the `COMPAT.md` table, and a removal
+  not before 2 minor releases after the first release that warns. pytest has no
+  `filterwarnings` option in `pyproject.toml`, so a warning does not fail a test.
+- `tests/unit/io/test_exporters.py` has two stand-in models with a `rescale`
+  method (lines 53 and 67). They may be unused after the dead exporter calls go;
+  the S4 task checks that the file passes unchanged.
+- Survey correction. `_3d_viewer.py`, `intrusion_builder.py` and `_fault_segment.py`
+  need no change in S4. `exporters.py` and `_model_exporter.py` change only to stop
+  calling the deprecated method (see the decisions).
+
+#### S4 decisions
+
+1. **Contract.** Every `get_data` returns world locations and world vectors. A
+   feature builder holds world data, so `get_data` copies it and converts nothing.
+2. **Fix 1.** In `GeologicalFeature.get_data`, remove the four calls of
+   `self.model.rescale`. Keep every other expression as it is, also the
+   `value_map` mask (OP10).
+3. **Fix 2.** In the intrusion frame builder, the classification evaluates the model
+   at the stored world points. A new private method holds the expression, so a test
+   can reach it.
+4. **Deprecate `GeologicalModel.rescale`.** The method keeps its behaviour and its
+   signature (local to world, `bounding_box.reproject`). It emits one
+   `DeprecationWarning` for each call, with `stacklevel=2`, that names the
+   replacement `model.bounding_box.reproject(points)`. The tier stays `"stable"`
+   until the method is removed. `GeologicalModel.scale` (world to local) is
+   deprecated in the same release, with the replacement
+   `model.bounding_box.project(points)` (C-016). Removal: not
+   before 2 minor releases after the first release that warns, and not before the
+   known callers (the QGIS plugin) have moved. The `ROADMAP.md` decision of the
+   2026-07-30 status-log entry "2c-3" (line 810: "`scale()`/`rescale()` stay as public,"
+   "signature-stable pass-throughs") changes for both methods: S4 records the new decision.
+5. **Callers move first.** Our own code must not call the deprecated method, or a
+   user would see our warning. The four live calls of `get_data` and the call of the
+   intrusion classification go with fixes 1 and 2. The four discarded calls in
+   `exporters.py` are removed (they do nothing). `ModelExporter.get_block_model`
+   uses `model.bounding_box.reproject(...)`. The two example calls are removed,
+   because they apply a second conversion to world data.
+6. **No change** to the viewers (`_3d_viewer.py`, `_2d_viewer.py`),
+   `_fault_segment.py` and `intrusion_builder.py`. The argument
+   `real_coords` of the exporters stays as it is (OP8).
+
+#### S4 contracts
+
+| Boundary | Input | Output | Owner |
+|---|---|---|---|
+| `GeologicalFeature.get_data` | world rows of the builder | `ValuePoints.locations`, `VectorPoints.locations`: world points; `VectorPoints.vectors`: world directions | `_geological_feature.py` |
+| Viewer and exporter of data | objects from `get_data` | drawn or written at their `locations` | `Loop3DView.add_data`, `ModelExporter.save` (unchanged) |
+| Intrusion classification | world X, Y, Z of the network data | stratigraphic ids from `model.evaluate_model` at those points | `IntrusionFrameBuilder._network_model_values` |
+| Fault-centre geometry | `FaultSegment.fault_centre` (world) | ellipsoid or ellipse at that point | `fault_ellipsoid`, `Loop2DView.add_fault_ellipse` (unchanged) |
+| `GeologicalModel.rescale` (deprecated) | local points | world points, as before; one `DeprecationWarning` | `geological_model.py`; replacement `bounding_box.reproject` |
+| `GeologicalModel.scale` (deprecated) | world points | local points, as before; one `DeprecationWarning` | `geological_model.py`; replacement `bounding_box.project` |
+
+#### S4 functions and signatures
+
+`GeologicalFeature.get_data(self, value_map: dict | None = None)`
+(`_geological_feature.py`): the four location arguments become
+`gradient_constraints[:, :3]`, `norm_constraints[:, :3]`,
+`value_constraints[value_constraints == v, :3]` and `value_constraints[:, :3]`.
+The docstring says: "The locations and the vectors are in world coordinates, as
+the builder stores them." No other line changes. The commented-out block at the
+end of the method stays as it is.
+
+New private method of `IntrusionFrameBuilder` (`intrusion_frame_builder.py`):
+
+```python
+def _network_model_values(self, data: pd.DataFrame) -> np.ndarray:
+    """Return the stratigraphic id of each network point.
+
+    Parameters
+    ----------
+    data : pandas.DataFrame
+        Network data with the world columns ``X``, ``Y`` and ``Z``.
+
+    Returns
+    -------
+    numpy.ndarray
+        The id of the unit at each point. The model is evaluated at the world
+        points; no conversion is applied.
+    """
+    xyz = data.loc[:, ["X", "Y", "Z"]].to_numpy(dtype=float)
+    return self.model.evaluate_model(xyz)
+```
+
+In `set_intrusion_steps_parameters`: delete the assignment of
+`intrusion_network_data_xyz` (lines 333 to 335, three lines; the variable has no
+other use), and replace the statement at line 352 with
+
+```python
+intrusion_network_data.loc[:, "model_values"] = self._network_model_values(
+    intrusion_network_data
+)
+```
+
+The name `_network_model_values` was free on 2026-11-05 (`git grep -w`: zero
+matches).
+
+`GeologicalModel.rescale` (`geological_model.py`): the signature
+`rescale(self, points: np.ndarray, *, inplace: bool = False) -> np.ndarray` and the
+decorator `@public_api(tier="stable")` do not change. The body becomes:
+
+```python
+warnings.warn(
+    "GeologicalModel.rescale is deprecated and will be removed in a future "
+    "release; use model.bounding_box.reproject(points) instead",
+    DeprecationWarning,
+    stacklevel=2,
+)
+return self.bounding_box.reproject(points, inplace=inplace)
+```
+
+The module already imports `warnings` (line 649). The docstring gets a
+`.. deprecated::` note that names `bounding_box.reproject` and says "Deprecated by
+spec 005, stage S4". `GeologicalModel.scale` (`geological_model.py`) gets the same change. The signature
+`scale(self, points: np.ndarray, *, inplace: bool = False) -> np.ndarray` and the
+decorator do not change. The body becomes:
+
+```python
+warnings.warn(
+    "GeologicalModel.scale is deprecated and will be removed in a future "
+    "release; use model.bounding_box.project(points) instead",
+    DeprecationWarning,
+    stacklevel=2,
+)
+return self.bounding_box.project(np.array(points).astype(float), inplace=inplace)
+```
+
+The other callers change as follows:
+
+- `exporters.py`: delete the four statements `model.rescale(verts)`,
+  `model.rescale(points)`, `model.rescale(xyz)` and `model.rescale(bbox)`. If
+  `real_coords` has then no use in a function, keep the argument (OP8).
+- `_model_exporter.py`, `get_block_model`: replace
+  `model.rescale(model.bounding_box.cell_centres())` by
+  `model.bounding_box.reproject(model.bounding_box.cell_centres())`.
+- `examples/3_fault/plot_1_faulted_intrusion.py`: in the two `viewer.add_points`
+  calls, pass `model.data[model.data["feature_name"] == "strati"][["X", "Y", "Z"]].values`
+  directly (world points) and delete the `model.rescale(...)` wrapper and its
+  `inplace=False`.
+
+#### S4 tests
+
+`tests/fixtures/coordinate_frames.py` gets one helper:
+`world_foliation_model(anchor, rotation_deg) -> tuple[GeologicalModel, GeologicalFeature, pd.DataFrame]`.
+It makes `model_with_frame(anchor, anchor + (8, 10, 12), rotation_deg)`, a data
+frame in world coordinates with the columns `X, Y, Z, feature_name, val, nx, ny, nz, gx, gy, gz, w`
+(27 value rows from `r1_observations(anchor)`, 4 gradient rows and 4 normal rows at
+`anchor + (2, 3, 4)`, `(5, 6, 7)`, `(3, 8, 5)` and `(6, 4, 9)` with the unit
+direction `R1_GRADIENT / norm`), and the feature
+`model.create_and_add_foliation("r1", ...)` built without a solve. It returns the
+model, the feature and the data frame. The test task reads
+`tests/integration/test_interpolator.py` and `tests/unit/interpolator/test_outside_box.py`
+for the call pattern of `create_and_add_foliation` and copies it.
+
+`tests/unit/modelling/test_world_location_consumers.py` (new):
+
+| Test function | Cells | Checks |
+|---|---|---|
+| `test_feature_data_locations_are_world` | 4 anchors x 3 rotations = 12 | `feature.get_data()` gives a `ValuePoints` (value), and `VectorPoints` (gradient and norm). Each `locations` equals the input rows within `tp(L, W)`; each `vectors` equals the input vectors within `1e-12` (U3.4) |
+| `test_spec_example_observation_is_not_shifted` | `ANCHORS[1]` x 3 rotations = 3 | the observation `(102,203,304)` is at `(102,203,304)` and not at `(202,403,604)` |
+| `test_exported_data_keeps_world_locations` | 4 anchors, rotation 30 = 4 | each object of `get_data()` is saved with `save` to a CSV file (the task reads `_point.py` `save` first for the supported extension), and the `x`, `y`, `z` columns equal the input within `tp(L, W)` (U3.4, export) |
+| `test_intrusion_classification_uses_world_points` | 4 anchors x 3 rotations = 12 | `IntrusionFrameBuilder._network_model_values(data)` is called on `object.__new__(IntrusionFrameBuilder)` with `.model` set to a real rotated `GeologicalModel` whose `evaluate_model` is replaced by a spy; the spy receives exactly the world X, Y, Z (`np.array_equal`) (U3.5) |
+| `test_2d_viewer_fault_ellipse_centre_is_world` | 2 anchors x 2 rotations (0 and 30) = 4 | `Loop2DView.add_fault_ellipse` is called with a stand-in `self` that has `ax` (a Matplotlib `Agg` axis) and `model`; the patch centre equals `fault.fault_centre[:2]` within `tp(L, W)` (U3.5, coverage, no defect). The fault comes from `_fault(anchor, rotation, "PLI")` of `test_fault_frame_analytic.py` |
+| `test_rescale_warns_and_keeps_behaviour` | 4 anchors x 3 rotations = 12 | `model.rescale(points)` raises one `DeprecationWarning` (`pytest.warns`, the message contains `bounding_box.reproject`), the warning is attributed to the test file (`stacklevel`), the result equals `model.bounding_box.reproject(points)` within `tp(L, W)`, and `inplace=True` changes the passed array like `reproject` does (SC-014, FR-028) |
+| `test_scale_warns_and_keeps_behaviour` | 4 anchors x 3 rotations = 12 | `model.scale(points)` raises one `DeprecationWarning` (the message contains `bounding_box.project`), attributed to the test file, with a result equal to `model.bounding_box.project(points)` within `tp(L, W)` |
+| `test_internal_callers_do_not_warn` | 1 | with the filter `warnings.filterwarnings("error", message=".*(rescale|scale) is deprecated.*")`: `feature.get_data()`, `ModelExporter.get_block_model(model)` and `IntrusionFrameBuilder._network_model_values(data)` run with no warning; the exporter functions that `tests/unit/io/test_exporters.py` already calls run with no warning (the task reads that file for the call pattern) |
+
+Pre-fix evidence (FR-031). The first four tests fail on the current tree because
+of the extra conversion: the first, second and third by a location shifted by the
+local origin (`(202,403,604)` for the example), and the fourth because the spy
+receives the shifted points (the method does not exist yet, so the first failure is
+`AttributeError`). Record also a behavioural measure with the production path: the
+shift of the example point for `ANCHORS[1]` and each rotation. The fifth test
+passes before the fix; record it as "coverage, no defect".
+
+The existing tests that must pass with no change:
+`tests/unit/modelling/intrusions/test_intrusions.py`,
+`tests/unit/io/test_exporters.py`, `tests/unit/test_public_api_contract.py` (the
+signature and the tier of `rescale` do not change), and the S1 to S3 test files. The intrusion tests build a
+model. If a translated frame changes an expected value, record the change under
+"S4 golden review" (C-004) with the defect and its effect, before any change.
+With an identity frame (origin 0, rotation 0) nothing changes.
+
+#### S4 backend and capability cells
+
+| Cell | Result in S4 |
+|---|---|
+| Python FDI foliation data (display and export of observations) | Mandatory. The tests above use `FDI`. |
+| Fault centre in the 2D viewer | Coverage test above (PLI fault). |
+| Intrusion classification | Mandatory. Spy test; the intrusion model tests stay unchanged. |
+| Native, Surfe, browser | Not in S4. The viewer and exporters do not call them. |
+
+#### S4 risks
+
+- Intrusion models in a translated frame classified their network data at wrong
+  points. The corrected classification can change the result of such a model
+  (a golden result). The intrusion tests decide: record each change under C-004.
+- Users who corrected the display by shifting their data now see a shifted
+  display. This is the corrected behaviour (`COMPAT.md` notice).
+- `GeologicalModel.rescale` keeps its meaning (local to world) and now warns. The
+  S4 grep (`git grep -n "\.rescale("`) in the finish task must show only the
+  commented block of `get_data` and the tests of the deprecation.
+- A downstream caller (the QGIS plugin, user scripts) gets a `DeprecationWarning`.
+  Python hides it outside `__main__` and test runs. The message names the
+  replacement. The removal waits for the lifecycle of `COMPAT.md`.
+
+#### S4 constitution check
+
+| Project rule | Result | How S4 agrees |
+|---|---|---|
+| Work stays within the existing packages | Pass | Two source files change, in `LoopStructural`. No new module. |
+| Gates `pytest` and `ruff check LoopStructural packages` | Pass | The S4 row of "Stages and rollback" names both. |
+| numpy docstrings, type hints, py39 | Pass | The new method has a numpy docstring and type hints. |
+| The public `GeologicalModel` API stays compatible; a break needs a ROADMAP.md decision and a major-version note | Pass | No signature, tier or behaviour breaks. `rescale` is deprecated on the 1.x line with a runtime warning, as the versioning policy and the lifecycle of `COMPAT.md` require; `scale` and `evaluate_model` do not change. `get_data` keeps its signature; its locations become correct (known meaning). Removal is a later, separate change. |
+| Stages can be tested and reversed independently | Pass | S4 reverts to the S3 merge. |
+| `ROADMAP.md` owns decisions; update it when one changes | Pass | The decision of line 810 ("`scale()`/`rescale()` stay as public pass-throughs") changes for `rescale`. S4 adds the decision "Deprecation of GeologicalModel.rescale and scale (spec 005, S4)" under "Decisions". The "005 complete" line stays in S6. |
+| Feature documents stay under `specs/NNN-name/` | Pass | Only `plan.md`, `tasks.md` and `verification.md` change there. |
+
+#### S4 files
+
+| File | Change |
+|---|---|
+| `LoopStructural/modelling/core/geological_model.py` | `rescale` and `scale`: warn with `DeprecationWarning`; docstrings |
+| `LoopStructural/modelling/features/_geological_feature.py` | `get_data`: remove four `self.model.rescale` calls; docstring |
+| `LoopStructural/modelling/intrusions/intrusion_frame_builder.py` | New `_network_model_values`; use it in `set_intrusion_steps_parameters`; delete `intrusion_network_data_xyz` |
+| `LoopStructural/export/exporters.py` | Delete the four discarded `model.rescale` calls |
+| `LoopStructural/modelling/core/_model_exporter.py` | `get_block_model`: use `bounding_box.reproject` |
+| `examples/3_fault/plot_1_faulted_intrusion.py` | Pass the world points to `viewer.add_points`; remove two `model.rescale` wrappers |
+| `tests/fixtures/coordinate_frames.py` | New helper `world_foliation_model` |
+| `tests/unit/modelling/test_world_location_consumers.py` | New |
+| `COMPAT.md` | S4 migration notice; one row in the deprecation table for each of `GeologicalModel.rescale` and `GeologicalModel.scale` |
+| `ROADMAP.md` | Decision "Deprecation of GeologicalModel.rescale and scale (spec 005, S4)" under "Decisions" |
+| `API.md` | Line 122: mark `rescale` as deprecated, with the replacement |
+| `specs/005-coordinate-frame-correctness/verification.md` | S4 pre-fix, post-fix, golden review, backend matrix, rollback and run-time sections |
+
+Not changed (the survey in "Later stages" listed them): `_3d_viewer.py`,
+`intrusion_builder.py` and `_fault_segment.py`.
+
+The deprecation rows of `COMPAT.md` (one for `rescale`, one for `scale`) follow
+the columns of that table. The `rescale` row: old path
+`GeologicalModel.rescale(points, inplace=False)`; new path
+`GeologicalModel.bounding_box.reproject(points, inplace=False)`; shim added
+`2026-11-05` (the date of the run); first released in "TBD (next release containing
+this warning)"; introduced by the S4 commit; earliest removal "TBD (2 minor
+releases after the first release that warns)"; removed in empty; status
+"Active"; owner "Core maintainers". The `scale` row has the old path
+`GeologicalModel.scale(points, inplace=False)` and the new path
+`GeologicalModel.bounding_box.project(points, inplace=False)`; the other columns
+are the same. The `API.md` line reads: "Geometry: `scale` (deprecated, use
+`bounding_box.project`), `rescale` (deprecated, use `bounding_box.reproject`),
+`regular_grid`, `bounding_box` (property)".
+
+The `COMPAT.md` row says: `GeologicalFeature.get_data()` (used by
+`Loop3DView.add_data` and `ModelExporter.save`) returned locations moved by the
+local origin and rotated a second time, and the intrusion classification evaluated
+the model at such points. Both now use the stored world locations. With an
+identity frame nothing changes.
+
+#### S4 task order (for the spec-tasks skill)
+
+1. The fixture helper (no dependency on code changes).
+2. The test file, in three parts in one file, one task after the other: display
+   and export tests; the intrusion test; the 2D viewer test.
+3. The pre-fix evidence in `verification.md` (after all tests, before any fix).
+4. The tests of the deprecation (written before it; they must fail first), in the
+   same test file, one task after the others.
+5. The fixes and the deprecation in parallel (they are in separate files):
+   `get_data`; the intrusion helper and its call site; the `rescale` warning; the
+   exporter files; the example. The tests of step 4 pass only when all callers
+   have moved, so the finish task of the group runs them together.
+6. The golden review of the intrusion tests, `COMPAT.md`, `ROADMAP.md`, `API.md`,
+   the rollback check, and last the gates (the orchestrator runs the full suites
+   when memory is tight).
+
+S4 rollback check. Revert to the S3 merge. Then: (a) the import
+`from loopstructuralvisualisation import Loop2DView, Loop3DView` works and
+`inspect.signature(Loop3DView.add_data)` is equal before and after; (b) on the S3
+code, `get_data()` shows the spec example at `(202,403,604)`, on the S4 code at
+`(102,203,304)` (recorded in `verification.md`); (c) with an identity frame the
+two codes give the same `get_data()` output; (d) on the S3 code `model.rescale(p)`
+and `model.scale(p)` give no warning, on the S4 code each gives one, and the values
+are equal.
+
 ### Stages and rollback
 
 | Stage | Files and behaviour | Acceptance check | Rollback target and compatibility check |
@@ -1204,7 +1693,7 @@ that names `format_version` and no object. Record both in `verification.md`.
 | S1 | Shared transform boundary, reference relationships for FDI and PLI, fault frame, buffer and forced geometry, rotation check, resize stability (this design) | New S1 tests pass for FDI and PLI; `pytest`; `ruff check LoopStructural packages`; `pytest packages/loop_common/tests packages/loop_interpolation/tests` | Revert the S1 commits to master `ebc7c699`. Check: the existing `tests/unit/modelling/test__fault_builder.py` and `packages/loop_common/tests/test_bounding_box.py` pass on the reverted tree. No saved format changed. |
 | S2 | Fold geometry, directional regularisation, quadrature, masks, sign alignment for FDI-fold, PLI discrete fold, P2 and P2-fold; constant-norm variants (FR-008; R3 for P2; R4) ("Stage S2 design") | New S2 tests (SC-002 for constant norm; SC-007, SC-008 and SC-013 for every mandatory fold and P2 cell); the existing fold package tests pass with no change; `pytest`; `ruff check LoopStructural packages`; package tests | Revert to the S1 merge. Check: the S1 tests still pass. No saved format changed. |
 | S3 | Persistence format version, transform and coordinate-space metadata ("Stage S3 design"); no second projection at load; copies keep the frame; legacy load requires a transform or identity declaration; transform change policy and restored-point cache invalidation (FR-016 to FR-020); ROADMAP.md decision for FR-019; `COMPAT.md` migration note | SC-006, SC-012, SC-016, SC-017 | Revert to the S2 merge. Check: old-format R1 files load through their documented path; a new-format file fails with 1 actionable error and 0 state changes on the old reader (SC-017). |
-| S4 | Display, export of observation geometry, fault-centre geometry and intrusion classification use stored world locations (FR-022) | World-location comparison within `Tp` (U3.4, U3.5) | Revert to the S3 merge. Check: viewer import paths unchanged. |
+| S4 | Display, export of observation geometry, fault-centre geometry and intrusion classification use stored world locations (FR-022; "Stage S4 design") | World-location comparison within `Tp` (U3.4, U3.5) | Revert to the S3 merge. Check: viewer import paths unchanged. |
 | S5 | Cell-centre sampling, remaining resize paths, non-mutating diagnostics, residual and exclusion report (FR-014 remainder, FR-015, FR-023, FR-024) | SC-009, SC-011 | Revert to the S4 merge. Check: diagnostics report fields unchanged for callers. |
 | S6 | Auxiliary point transformations and duplicate entry points (FR-025); displacement validation R2 (FR-026, FR-027); backend matrix incl. native and Surfe (FR-030); golden review (FR-029); 005 completion line in ROADMAP.md | SC-004, SC-010, SC-014, SC-015, SC-018 | Revert to the S5 merge. Check: `LoopStructural.utils` and `loop_common.math` import paths unchanged. |
 
@@ -1271,8 +1760,10 @@ current tree is recorded as "not reproduced"; its test stays as a guard.
   constant-norm variants ("Stage S2 design"). S6 covers native and Surfe
   (OP1).
 - **Cross-language fixtures**: Not applicable in S1.
-- **Grid and display checks**: S1 checks support enclosure and resize. Cell
-  centres and display are S4 and S5.
+- **Grid and display checks**: S1 checks support enclosure and resize. S4 checks
+  the display and export of data, the intrusion classification and the fault
+  centre in the 2D viewer (`test_world_location_consumers.py`). Cell centres are
+  S5.
 - **Performance check**: none required. Record the S1 test time (OP2).
 - **Merge gates**: `pytest` and `ruff check LoopStructural packages`. Also run
   `pytest packages/loop_common/tests packages/loop_interpolation/tests`,
@@ -1363,16 +1854,18 @@ grep survey on 2026-11-04 and are not final.
 - **S3**: planned. See "Stage S3 design" and "S3 files". The survey listed
   `_support_factory.py` and `_fault_segment.py`; the code shows that S3 does
   not change them (no restoration cache exists).
-- **S4**: `packages/loopstructural_visualisation/src/loopstructuralvisualisation/_3d_viewer.py`,
-  `LoopStructural/modelling/intrusions/intrusion_builder.py`,
-  `LoopStructural/modelling/intrusions/intrusion_frame_builder.py`,
-  `LoopStructural/modelling/features/fault/_fault_segment.py`,
-  `LoopStructural/export/exporters.py`.
+- **S4**: planned. See "Stage S4 design" and "S4 files". The survey listed
+  `_3d_viewer.py`, `intrusion_builder.py`, `_fault_segment.py` and
+  `exporters.py`; the code shows that S4 does not change them. S4 changes
+  `_geological_feature.py` and `intrusion_frame_builder.py`.
 - **S5**: `packages/loop_common/src/loop_common/geometry/_bounding_box.py`
   (`cell_centres`), `_structured_grid.py`, `_structured_grid_2d.py`,
   `packages/loop_common/src/loop_common/supports/_3d_structured_grid.py`,
   `_3d_rectilinear_grid.py`,
-  `packages/loop_interpolation/src/loop_interpolation/_diagnostics.py`.
+  `packages/loop_interpolation/src/loop_interpolation/_diagnostics.py`, and
+  `LoopStructural/modelling/features/_geological_feature.py` (found in the S4
+  survey: the misfit methods change the stored arrays in place with
+  `grad /= norm`, and `grad[:, :3:6]` selects the position columns).
 - **S6**: `packages/loop_common/src/loop_common/math/_transformation.py`,
   `LoopStructural/utils/_transformation.py`,
   `packages/loop_interpolation/src/loop_interpolation/_native.py`,
@@ -1404,13 +1897,13 @@ grep survey on 2026-11-04 and are not final.
 | FR-019 | `payload_kind`, `resolve_frame`, `InterpolatorFormatError`; ROADMAP.md decision; `COMPAT.md` row | `test_legacy_*`, `test_conflicting_inputs`, `test_malformed_metadata`, `test_unsupported_future_version` | None |
 | FR-020 | `frame_signature`, `_check_frame`, `StaleFrameError` (reject at use) | `test_stale_frame_rejected_without_state_change`, `test_fault_restoration_uses_current_frame` | Policy choice OP4; no restoration cache exists |
 | FR-021 | `validate_rigid_rotation` in `set_local_transform` and `rotation_xy`; saved metadata checked in `resolve_frame` | `test_rigid_transform_contract.py`; `test_malformed_metadata` | None |
-| FR-022 | S4 | S4 | OP1 |
+| FR-022 | Remove the extra `rescale` in `GeologicalFeature.get_data` and in the intrusion classification (`_network_model_values`); the fault centre is a world point since S1 and its consumers are unchanged | `test_world_location_consumers.py` (display, export, classification, 2D ellipse); S1 `test_fault_ellipsoid_centre_is_world` | OP8 to OP10 |
 | FR-023 | S5 | S5 | OP1 |
 | FR-024 | `excluded_rows` (S1 part) | Restricted-support exclusion count | Report integration S5, OP1 |
 | FR-025 | S6 | S6 | OP1 |
 | FR-026 | S1: values, gradients, residuals (SC-003, SC-008); displacement S6 | `test_fault_frame_analytic.py` | Displacement OP1 |
 | FR-027 | S6 | S6 | OP1 |
-| FR-028 | No signature change except new keyword arguments; `COMPAT.md` note; FR-019 exception recorded in ROADMAP.md | API contract tests; existing round-trip tests unchanged | None |
+| FR-028 | No signature change except new keyword arguments; `COMPAT.md` note; FR-019 exception recorded in ROADMAP.md; S4: `rescale` deprecated with its behaviour kept (`COMPAT.md`, `ROADMAP.md`, `API.md`) | API contract tests; existing round-trip tests unchanged; `test_rescale_warns_and_keeps_behaviour` | None |
 | FR-029 | `verification.md` golden review section | Review record per changed result | None |
 | FR-030 | S1 FDI and PLI cells; S2 P2, fold and constant-norm cells | S1 and S2 tests | Native and Surfe cells S6, OP1 |
 | FR-031 | Pre-fix rule in "Test strategy" | `verification.md` | None |
@@ -1467,6 +1960,16 @@ grep survey on 2026-11-04 and are not final.
   bytes]` is the key for any cache that depends on the frame; spec 003 keys
   its caches on it and clears them when it changes. `copy()` keeps the
   `bounding_box` object of its source.
+- **S4 world data contract (owner: `LoopStructural`)**: every
+  `get_data` of a feature returns `ValuePoints` and `VectorPoints` with world
+  locations and world vectors; `Loop3DView.add_data` and `ModelExporter.save`
+  use them as they are. `GeologicalModel.rescale` (local to world) and `scale` (world to local) are
+  deprecated stable API. They warn (`DeprecationWarning`; use
+  `bounding_box.reproject` and `bounding_box.project`). A caller must not pass
+  `rescale` world points.
+  `IntrusionFrameBuilder._network_model_values(data)` evaluates the model
+  at the world X, Y and Z of the network data. Spec 004 and the QGIS plugin read
+  display data through `get_data` and get world locations.
 - **Exclusion record**: `GeologicalFeatureBuilder.excluded_rows:
   dict[str, dict[str, int]]`. S5 connects it to the diagnostics report.
 - **Fault geometry**: an explicit `fault_center` is a world point; the
