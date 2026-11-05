@@ -1345,7 +1345,7 @@ changes before it merges, run this planner again on the merged result.
   identity rotation, the point `(102,203,304)` is shown at `(202,403,604)`. This is
   the display reproduction of the spec. The vectors are taken from the world rows
   and are not converted, so they are already right.
-- `get_data` has two callers: `Loop3DView.add_data` (`_3d_viewer.py:549`) and
+- `get_data` has two callers: `Loop2DView.add_data` (`_2d_viewer.py`) and
   `ModelExporter.save` (`_model_exporter.py:119` and `126`; it writes each object
   with `save`). `StructuralFrame.get_data` (`_structural_frame.py:160`) delegates to
   its three features. No other `get_data` converts a location: a grep for
@@ -1450,7 +1450,7 @@ changes before it merges, run this planner again on the merged result.
 | Boundary | Input | Output | Owner |
 |---|---|---|---|
 | `GeologicalFeature.get_data` | world rows of the builder | `ValuePoints.locations`, `VectorPoints.locations`: world points; `VectorPoints.vectors`: world directions | `_geological_feature.py` |
-| Viewer and exporter of data | objects from `get_data` | drawn or written at their `locations` | `Loop3DView.add_data`, `ModelExporter.save` (unchanged) |
+| Viewer and exporter of data | objects from `get_data` | drawn or written at their `locations` | `Loop2DView.add_data`, `ModelExporter.save` (unchanged) |
 | Intrusion classification | world X, Y, Z of the network data | stratigraphic ids from `model.evaluate_model` at those points | `IntrusionFrameBuilder._network_model_values` |
 | Fault-centre geometry | `FaultSegment.fault_centre` (world) | ellipsoid or ellipse at that point | `fault_ellipsoid`, `Loop2DView.add_fault_ellipse` (unchanged) |
 | `GeologicalModel.rescale` (deprecated) | local points | world points, as before; one `DeprecationWarning` | `geological_model.py`; replacement `bounding_box.reproject` |
@@ -1656,7 +1656,7 @@ are the same. The `API.md` line reads: "Geometry: `scale` (deprecated, use
 `regular_grid`, `bounding_box` (property)".
 
 The `COMPAT.md` row says: `GeologicalFeature.get_data()` (used by
-`Loop3DView.add_data` and `ModelExporter.save`) returned locations moved by the
+`Loop2DView.add_data` and `ModelExporter.save`) returned locations moved by the
 local origin and rotated a second time, and the intrusion classification evaluated
 the model at such points. Both now use the stored world locations. With an
 identity frame nothing changes.
@@ -1679,7 +1679,7 @@ identity frame nothing changes.
 
 S4 rollback check. Revert to the S3 merge. Then: (a) the import
 `from loopstructuralvisualisation import Loop2DView, Loop3DView` works and
-`inspect.signature(Loop3DView.add_data)` is equal before and after; (b) on the S3
+`inspect.signature(Loop2DView.add_data)` is equal before and after; (b) on the S3
 code, `get_data()` shows the spec example at `(202,403,604)`, on the S4 code at
 `(102,203,304)` (recorded in `verification.md`); (c) with an identity frame the
 two codes give the same `get_data()` output; (d) on the S3 code `model.rescale(p)`
@@ -1962,7 +1962,7 @@ grep survey on 2026-11-04 and are not final.
   `bounding_box` object of its source.
 - **S4 world data contract (owner: `LoopStructural`)**: every
   `get_data` of a feature returns `ValuePoints` and `VectorPoints` with world
-  locations and world vectors; `Loop3DView.add_data` and `ModelExporter.save`
+  locations and world vectors; `Loop2DView.add_data` and `ModelExporter.save`
   use them as they are. `GeologicalModel.rescale` (local to world) and `scale` (world to local) are
   deprecated stable API. They warn (`DeprecationWarning`; use
   `bounding_box.reproject` and `bounding_box.project`). A caller must not pass

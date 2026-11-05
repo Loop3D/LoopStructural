@@ -1119,7 +1119,7 @@ frame. A legacy file needs an explicit choice. A frame change never gives a stal
   - Needs: T057, T059
   - Wave: 29
   - Done when: `grep -c "GeologicalModel.rescale(points, inplace=False)" COMPAT.md` prints at least 1 and `grep -c "GeologicalModel.scale(points, inplace=False)" COMPAT.md` prints at least 1.
-  - Context: Read `COMPAT.md` first, the S1 to S3 notices and the deprecation table, and copy their layout. (1) Add a migration notice: `GeologicalFeature.get_data()` (used by `Loop3DView.add_data` and
+  - Context: Read `COMPAT.md` first, the S1 to S3 notices and the deprecation table, and copy their layout. (1) Add a migration notice: `GeologicalFeature.get_data()` (used by `Loop2DView.add_data` and
     `ModelExporter.save`) returned locations moved by the local origin and rotated a second time, and the intrusion classification evaluated the model at such points. Both now use the stored world locations.
     With an identity frame nothing changes. (2) Add two rows to the deprecation table. `rescale`: old path `GeologicalModel.rescale(points, inplace=False)`; new path
     `GeologicalModel.bounding_box.reproject(points, inplace=False)`. `scale`: old path `GeologicalModel.scale(points, inplace=False)`; new path `GeologicalModel.bounding_box.project(points, inplace=False)`.
@@ -1152,7 +1152,7 @@ frame. A legacy file needs an explicit choice. A frame change never gives a stal
   - Done when: `verification.md` has the heading `## S4 rollback checks` with the results of the 4 checks below, and `git worktree list` shows no throw-away worktree.
   - Context: Use a throw-away worktree at the S4 start commit (the `start_commit` of stage S4 in `run-state.json`; if the key is missing, use the parent of the first S4 code commit):
     `git worktree add --detach ../LoopStructural-005-s4-rollback <commit>`, with its own `PYTHONPATH` (check `LoopStructural.__file__`). Checks: (a) `from loopstructuralvisualisation import Loop2DView, Loop3DView` works and
-    `inspect.signature(Loop3DView.add_data)` is equal before and after; (b) on the old code `get_data()` shows the spec example at `(202,403,604)`, on the S4 code at `(102,203,304)`; (c) with an identity frame the two codes
+    `inspect.signature(Loop2DView.add_data)` is equal before and after; (b) on the old code `get_data()` shows the spec example at `(202,403,604)`, on the S4 code at `(102,203,304)`; (c) with an identity frame the two codes
     give the same `get_data()` output; (d) on the old code `model.rescale(p)` and `model.scale(p)` give no warning, on the S4 code each gives one, and the values are equal.
     Then `git worktree remove --force <tmp>` and `git worktree prune`.
 

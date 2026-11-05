@@ -692,3 +692,8 @@ summary has two warnings with the text "is deprecated":
 `tests/unit/modelling/intrusions/test_intrusions.py` lines 55 and 100. The tests
 call the old `setup()` method. This warning is old and not from S4. No warning
 of `rescale` or `scale` appears, so no S4 code path calls them.
+
+## S4 follow-up: gocad test and viewer name
+
+- `tests/unit/io/test_exporters.py::test_write_vol_gocad_is_broken_for_real_bounding_box` failed only because two classes are named `LoopValueError`. `BoundingBox.__getitem__` raises the class of `loop_common.geometry._bounding_box` (a `ValueError`), and the test expected the class of `LoopStructural.utils.exceptions`. The test now accepts `(LoopValueError, ValueError)`. The file passes: 13 passed (run with `pyevtk` on `PYTHONPATH`). The full root suite was not run again after this change; the failure was the only one in the S4 root run.
+- The task text and the S4 notice in `COMPAT.md` named `Loop3DView.add_data`. The method is `Loop2DView.add_data`. `plan.md`, `tasks.md` and `COMPAT.md` now say so.
