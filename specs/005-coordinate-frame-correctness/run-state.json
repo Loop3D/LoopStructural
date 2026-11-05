@@ -1,10 +1,10 @@
 {
   "spec": "005-coordinate-frame-correctness",
-  "stage": "S3",
-  "worktree": "C:/Users/lachl/dev/LoopStructural-005-s3",
-  "branch": "feat/005-s3-frame-persistence",
+  "stage": "S4",
+  "worktree": "C:/Users/lachl/dev/LoopStructural-005-s4",
+  "branch": "feat/005-s4-world-locations",
   "review_mode": "wave",
-  "start_commit": "91ffca4a269252c32cefe077261edd27f10a4b14",
+  "start_commit": "9b3507a9a4d4c7d7a903a08c7d33619a7546bf61",
   "runtime": {
     "runtime": "claude",
     "max_workers": 5,
@@ -14,279 +14,25 @@
     "review_spec": "opus",
     "review_verifier": "opus"
   },
-  "env": "PYTHONPATH=<worktree>;<worktree>/packages/loop_common/src;<worktree>/packages/loop_interpolation/src; python = main checkout .venv (C:/Users/lachl/dev/LoopStructural/.venv/Scripts/python.exe); run the root pytest and the package tests in separate calls, one heavy run at a time (low memory)",
-  "baseline": {
-    "lint": "pass: ruff check LoopStructural packages (S3 worktree, start commit)",
-    "pytest": "1760 passed, 5 skipped, 13 warnings in 1052.40 s at 662d2713 (S2 code; commits after it change only specs/README/docs). Not run again at S3 start because of low memory.",
-    "packages": "912 passed, 47 skipped, 2 xfailed in 126.56 s at 662d2713"
-  },
-  "base_note": "Built from docs/005-s3-plan (S2 code from feat/005-s2-fold-frames, PR #396 not merged). Rebase onto master after #396 merges.",
-  "waves": [
-    {
-      "wave": 14,
-      "base": "b32707fd62957ccb5d4c606c2bbe5bff22a6b7a9",
-      "tasks": [
-        "T033",
-        "T034"
-      ],
-      "check": "scope pass (VERIFY); ruff pass; black pass; fixture collects 0 tests; 5 engines build (exact: errors <= 2e-10 at anchor 3 rot 30; cn fit errors 4e-9 and 1.3e-11 at anchor 0); imports from the S3 worktree",
-      "commit": "c7a6802dd750bcfb0417828fe9b37a1269605f70",
-      "review": "pass: sonnet, no findings"
-    },
-    {
-      "wave": 15,
-      "base": "5cd6013450bf1aecc419f29cf0443fa879b71e20",
-      "tasks": [
-        "T035",
-        "T037"
-      ],
-      "check": "scope pass (VERIFY); ruff and black pass. Pre-fix: test_frame_persistence.py 108 failed 3 passed (identity cells); test_frame_copy_and_lifecycle.py 41 failed 6 passed (copy 36/36, stale 5/5 fail; restored 1 and rebuild 5 pass = coverage, no defect). First errors: KeyError format_version/transform; nan after rotated round trip; copy().bounding_box is None; DID NOT RAISE StaleFrameError",
-      "commit": "87928866225cc1f56b1634d791fa75ceec2b72da",
-      "review": "pass after rejecting 1 major: sonnet, 1 major rejected (F in spec SC definition is the max abs reference scalar value = observations; S2 test_constant_norm_frames uses the same scale), 2 minor open"
-    },
-    {
-      "wave": 16,
-      "base": "acef571f5ed93c72ccf7b00b4161865e348213e7",
-      "tasks": [
-        "T036",
-        "T038"
-      ],
-      "check": "scope pass (VERIFY); ruff and black pass. Pre-fix: legacy/conflicting/malformed/unsupported/creation_call/old_reader 58 failed (TypeError unexpected keyword declare_identity or format_version; DID NOT RAISE); T035 file 166 failed 3 passed (identity cells); fault_restoration 2 failed (DID NOT RAISE StaleFrameError). apply_to_points reaches the interpolators through evaluate_value/evaluate_gradient of the frame features. Later part of the fault test (rebuild vs control) ran clean with the raise check off (FDI 18.6 s, PLI 4.2 s)",
-      "commit": "d3813ce2a22be699a3ef768a904b25a9dc19c883",
-      "review": "pass after fixes: sonnet first review 1 major + 1 minor fixed (2a4a6636); recheck found 1 new major (T036 conflict test demanded the word supplied for declare_identity against a saved transform; my plan wording was ambiguous). User decision 2026-11-05: fix it and verify without a third review round.",
-      "fix_commit": "2a4a66368d6afee03f639bc73a06ddb8caeaa493"
-    },
-    {
-      "wave": 17,
-      "base": "caf0a0e73e568355dbad84c11ec7e7b207e7788f",
-      "tasks": [
-        "T039"
-      ],
-      "check": "scope pass (VERIFY: only verification.md). Pre-fix totals 209 failed 9 passed over 218 cells (persistence 166/3, lifecycle 43/6). Behavioural: rotated fdi round trip gives NaN (2 of 2); copy().bounding_box is None = True; stale evaluation after set_local_transform returns NaN with no error",
-      "commit": "b139482282c2c49755115e145db8a8519fefd439",
-      "review": "pass: sonnet, no findings"
-    },
-    {
-      "wave": 18,
-      "base": "11911b5b0cf0abad7365d7a2a5ad0565d9e1c38a",
-      "tasks": [
-        "T040"
-      ],
-      "check": "scope pass (VERIFY); ruff and black pass; Done-when script ok (frame_payload(None,3) order and identity; payload_kind({},False) legacy_no_transform); worker scripts: payload_kind 8 branches, bounding_box_from_support round trip error 3.6e-15; persistence file still 166 failed 3 passed (loader and to_dict not done)",
-      "commit": "8c9b63592058748169aae8b6afd1a888cc0da63c",
-      "review": "pass: sonnet, 2 minor"
-    },
-    {
-      "wave": 19,
-      "base": "66f446abc0e8040a5a4133010fa95bfc7698bd20",
-      "tasks": [
-        "T041",
-        "T042"
-      ],
-      "check": "scope pass (VERIFY); ruff and black pass. T042: lifecycle -k stale/restored/rebuild/fault_restoration 13 passed (27 s); tests/unit/interpolator 346 passed (worker); package test_geological_interpolator.py 34 passed 6 failed = test_interpolator_json_yaml_round_trip until T043 (expected, documented). T041 done-when script ok. Persistence file 37 passed 132 failed (payload_declares 36 + old_reader 1 now pass; loader tests wait for T043)",
-      "commit": "5413ec2a83867003835ce00b1ca126d02c699358",
-      "review": "pass: sonnet, 3 minor"
-    },
-    {
-      "wave": 20,
-      "base": "347ed03d2f458840d03f406c10ec621926bf2279",
-      "tasks": [
-        "T043",
-        "T044",
-        "T045",
-        "T046"
-      ],
-      "check": "scope pass (VERIFY); ruff pass. Root call: test_frame_persistence.py + test_interpolator_factory.py 181 passed; test_frame_copy_and_lifecycle.py 49 passed (27.7 s); package call: test_p2_fold_registration.py + test_geological_interpolator.py 43 passed; worker: tests/unit/interpolator 346 passed. The S3 persistence file passes 169 of 169. Root and package tests run in separate calls (conftest clash). Orchestrator reverted a Black blank line that T046 added outside copy; _p2interpolator.py stays Black-unclean as on master (not touched).",
-      "commit": "4e51f4cb85fa6fa07804ff1c23bc34d177cf295d",
-      "review": "pass: sonnet, 3 minor (1 fixed by the orchestrator: stray Black blank line)"
-    },
-    {
-      "wave": 21,
-      "base": "185333acfe9a4d69edffafbec96915002bd02a68",
-      "tasks": [
-        "T047",
-        "T048",
-        "T049"
-      ],
-      "check": "scope pass (VERIFY); COMPAT row at the end of the Migration notices table (grep 1); ROADMAP decision under Decisions (grep 1); rollback checks: 9 of 9 legacy loads exact (errors 0.0), no-choice load raises legacy_no_transform, old reader raises TypeError naming format_version and returns no object; no throw-away worktree left",
-      "commit": "4cd0fd4fb5f935ceb517379776d3b1b8cdf00cda",
-      "review": "pass: sonnet, no findings"
-    },
-    {
-      "wave": 22,
-      "base": "67b1e48ab4fe344ef6b7f2f11b1b78af7658542f",
-      "tasks": [
-        "T050"
-      ],
-      "check": "Gates run by the orchestrator at 67b1e48a (code unchanged since wave 20): ruff pass; packages 912 passed 47 skipped 2 xfailed in 108.69 s; root 1978 passed 5 skipped 13 warnings in 797.81 s (= 1760 + 218 new S3 cells). Focused: test_frame_persistence.py 169 passed 5.2 s; test_frame_copy_and_lifecycle.py 49 passed 31.3 s. Frame check cost 6.0 us (4 percent) per evaluate_value call and 3.1 us (1 percent) per evaluate_gradient call on 100 points. Orchestrator fixed 3 facts in the T050 text (branch name, p2_fold lifecycle cell, time comparison).",
-      "gates": {
-        "lint": "pass",
-        "packages": "912 passed, 47 skipped, 2 xfailed",
-        "root": "1978 passed, 5 skipped"
-      },
-      "commit": "db3e8a580934fe6077418ef1ce2602a023df9718",
-      "review": "pass: sonnet, 2 minor"
-    }
-  ],
+  "env": "PYTHONPATH=C:/Users/lachl/dev/LoopStructural-005-s4;C:/Users/lachl/dev/LoopStructural-005-s4/packages/loop_common/src;C:/Users/lachl/dev/LoopStructural-005-s4/packages/loop_interpolation/src; python = main checkout .venv (C:/Users/lachl/dev/LoopStructural/.venv/Scripts/python.exe); run the root pytest and the package tests in separate calls, one heavy run at a time (low memory); detached script + foreground poll for long runs; logs with Out-File -Encoding utf8",
+  "base_note": "Built from docs/005-s4-plan (9b3507a9) on origin/master (S1 to S3 and PR #400 merged). Not pushed; no PR.",
+  "waves": [],
   "runs": {
-    "T033": [
+    "T051": [
       {
         "model": "sonnet",
-        "result": "pass: r1_interpolator, strip_frame_keys, engine tuples, QUERY_OFFSETS"
-      }
-    ],
-    "T034": [
-      {
-        "model": "haiku",
-        "result": "pass: stubs and exports; import placed in sorted order (ruff I001), not directly after ._diagnostics"
-      }
-    ],
-    "T035": [
-      {
-        "model": "sonnet",
-        "result": "pass: 4 test functions, 111 cells, fail for the right reason"
-      },
-      {
-        "model": "sonnet",
-        "result": "fix pass (same fix): test_round_trip_world_values compares loaded with source"
-      }
-    ],
-    "T037": [
-      {
-        "model": "sonnet",
-        "result": "blocked: P2 fit misses SC-002 in every frame (value 1.8e-8, gradient 3.9e-7 at the unrotated control); decision OP7"
-      },
-      {
-        "model": "sonnet",
-        "result": "fix pass: p2 rebuild cell uses exact=True; 5 rebuild cells pass"
-      }
-    ],
-    "T036": [
-      {
-        "model": "sonnet",
-        "result": "pass with 2 test bugs found by the orchestrator"
-      },
-      {
-        "model": "sonnet",
-        "result": "fix pass: loaded compared with the source (not the analytic field, which differs by 2e-10 at anchor 3 rot 30); old-reader test uses the real to_dict"
-      }
-    ],
-    "T038": [
-      {
-        "model": "sonnet",
-        "result": "pass: test_fault_restoration_uses_current_frame (FDI, PLI)"
-      }
-    ],
-    "T039": [
-      {
-        "model": "sonnet",
-        "result": "pass: S3 pre-fix section with 17-row table and 3 behavioural records"
-      }
-    ],
-    "T040": [
-      {
-        "model": "sonnet",
-        "result": "pass: frame_payload, payload_kind, bounding_box_from_support; docstrings of T034 fixed"
-      }
-    ],
-    "T041": [
-      {
-        "model": "sonnet",
-        "result": "pass: resolve_frame with _malformed/_parse_transform helpers; catches both LoopValueError classes of loop_common"
-      }
-    ],
-    "T042": [
-      {
-        "model": "sonnet",
-        "result": "pass: frame_signature, _note_frame, _check_frame, _inherit_frame, _restore_local_constraints, 7 setter guards, evaluate_* and to_dict guards, from_* keywords"
-      }
-    ],
-    "T043": [
-      {
-        "model": "sonnet",
-        "result": "pass: from_dict saved-payload path, frame args, malformed wrapping"
-      }
-    ],
-    "T044": [
-      {
-        "model": "haiku",
-        "result": "pass"
-      }
-    ],
-    "T045": [
-      {
-        "model": "haiku",
-        "result": "pass"
-      }
-    ],
-    "T046": [
-      {
-        "model": "haiku",
-        "result": "pass (orchestrator reverted a stray blank line from black)"
-      }
-    ],
-    "T047": [
-      {
-        "model": "haiku",
-        "result": "pass"
-      }
-    ],
-    "T048": [
-      {
-        "model": "haiku",
-        "result": "pass"
-      }
-    ],
-    "T049": [
-      {
-        "model": "sonnet",
-        "result": "pass: S3 rollback checks section; throw-away worktree removed"
-      }
-    ],
-    "T050": [
-      {
-        "model": "sonnet",
-        "result": "pass: 4 S3 sections in verification.md and the ROADMAP status line; orchestrator ran the heavy gates (memory) and corrected 3 facts"
+        "result": "pass: world_foliation_model added"
       }
     ]
   },
   "findings": {
-    "found": 28,
-    "rejected": 1,
+    "found": 0,
+    "rejected": 0,
     "dropped": 0,
-    "fixed": 7,
-    "open_minor": [
-      "T037 test_stale_frame_rejected_without_state_change: origin and rotation change together; a signature that ignores one of them still passes. Add origin-only and rotation-only cells (not in the plan; can be done in T042 or later).",
-      "T035 test_round_trip_world_values: compares the loaded values with the analytic field only; add a comparison with the source evaluation (optional).",
-      "T035 and T037 define F differently in the task text (query points in T035, observations in T037). The spec definition is the observations; T035 is stricter.",
-      "T036: no positive cases: v2 payload with a caller transform equal to the saved one must load; legacy payload with only local_origin or only local_rotation (other defaults to identity).",
-      "T036 test_creation_call_unchanged: also check local_origin/local_rotation arguments raise malformed, and that the input dict is unchanged.",
-      "T038: the R2 fixture fault displaces none of its probes (0 of 6859 moved); the test compares restored points (trivially equal) and the fault-frame coordinates. A fixture with real displacement would test restoration itself (S6).",
-      "T040 payload_kind: a payload that is not a dict raises AttributeError, not InterpolatorFormatError (the loader gates on a dict first; add a malformed check if a caller can reach it).",
-      "T040 bounding_box_from_support does not check shapes; T041 resolve_frame must (added to the T041 context).",
-      "T042 frame_signature compares raw bytes: -0.0 and +0.0 origins give different signatures, so an equal box with -0.0 raises StaleFrameError. Fix: add 0.0 to the arrays before tobytes().",
-      "T042 _restore_local_constraints is not atomic: a failure in a later family leaves the earlier family stored and _frame_at_data None. The loader drops the half-built interpolator, so no published state is affected (T043 wraps the error as malformed).",
-      "T042 _restore_local_constraints: ragged arrays give a raw numpy ValueError (wrapped by T043); unknown keys in data are ignored without a message.",
-      "T042 __init__ sets data without _note_frame: a non-empty initial data argument is not tracked (no known caller).",
-      "T043 from_dict saved path: a missing or unknown `type` raises a plain ValueError, not InterpolatorFormatError(\"malformed\") (nothing is returned, so no partial result).",
-      "T043 from_dict saved path does not validate the shape of `data` (a non-dict can raise TypeError) or `c` against the support, and up_to_date True with no c loads as solved without coefficients (same as the old creation path).",
-      "T041 equal-frame check uses atol=1e-12 with no relative part: at UTM coordinates (1 ULP about 9e-10) a caller origin that differs by 1 ULP gives conflict. Plan value kept; consider a scale-aware tolerance.",
-      "T037 test_rebuild_in_new_frame_preserves_world_evaluation does not change a frame; it is an SC-002 check at the fixture frame. verification.md maps SC-016 to it.",
-      "T041 BoundingBox.from_dict does not pass dimensions, so a 2D box in a v2 payload is malformed. Not reachable now (2D supports have no to_dict).",
-      "T050 ROADMAP.md S3 status line is one long line; wrap at about 80 columns.",
-      "T041 for a v2 payload with a rotated saved transform and only local_origin given, the missing rotation is compared as the identity, so the result is conflict. Unchanged v2 behaviour; documented in plan.md step 2.",
-      "Outside S3 (found by the end review in a scratch probe): model.evaluate_feature_gradient(\"strati\", pts) raised ValueError shape mismatch (20,3) vs (20,4) at LoopStructural/modelling/features/_geological_feature.py:229 in a small rotated model. Not in the S3 range; check separately.",
-      "plan.md \"Messages\" list shows only the base legacy_no_transform text; add the suffix ({name} is missing) for a partial legacy frame.",
-      "A pre-S3 pickled object that already holds constraints gets _frame_at_data None from the class default, so a later transform change is not detected until clean() or a new constraint set (same as before S3; optional: record the frame on the first _check_frame call; document in COMPAT.md).",
-      "C-018 review, minor: _external_stacklevel compares directory strings; a path spelling difference (symlink or drive case) could misattribute the warning. Tests pass on this machine."
-    ]
+    "fixed": 0,
+    "open_minor": []
   },
-  "answers": [
-    "2026-11-05: OP4 reject at use; OP5 accept TypeError naming format_version; major-version note in COMPAT/ROADMAP (plan.md Answers)",
-    "2026-11-05 (wave 15, OP7): p2 rebuild cell uses the exact nodal control; P2 fit accuracy is open point OP7 (plan.md)",
-    "2026-11-05 (wave 16 recheck, user decision): fix the conflict-test wording branch and verify it by the orchestrator, no third review round. plan.md conflict message rule reworded.",
-    "2026-11-05 (wave 19 planning, orchestrator): T042 Done-when excepts test_interpolator_json_yaml_round_trip (loader is T043); the intermediate commit after wave 19 leaves 1 to 3 existing round-trip tests failing until wave 20."
-  ],
+  "answers": [],
   "history": {
     "S1": {
       "stage": "S1",
@@ -889,42 +635,332 @@
         "head": "1a67ba7f",
         "status": "S2 implemented; PR #396 open; end spec review pass (opus); gates at 662d2713: ruff pass, packages 912 passed 47 skipped 2 xfailed, root 1760 passed 5 skipped"
       }
-    }
-  },
-  "status": "S3 implemented and gated; end review pass after one fix round",
-  "spec_review": {
-    "stage": "S3",
-    "model": "opus",
-    "range": "91ffca4a..db3e8a58",
-    "verdict": "changes needed",
-    "major": 2,
-    "minor": 3,
-    "fixed": [
-      "major: pre-S3 pickled interpolators had no _frame_at_data: class-level default added (T042 file) + test_pre_s3_object_state_still_evaluates",
-      "major: a legacy payload with only local_origin or only local_rotation loaded silently with identity defaults: now legacy_no_transform naming the missing argument (user decision 2026-11-05); plan.md step 2 changed; 2 negative tests"
-    ],
-    "recheck": "pass: opus, 2 minor (fix commit c9ca3260)",
-    "fix_commit": "c9ca3260a29b01ec4906497b8e2f2955016f2867"
-  },
-  "final": {
-    "head_gated": "e49f3b2a",
-    "lint": "ruff check LoopStructural packages: pass",
-    "format": "black --check on the 10 changed .py files: new module and the 3 test files clean; 4 library files dirty and already dirty at the S3 start (_finite_difference_interpolator, _interpolator_factory, _p2_fold_interpolator, _p2interpolator); only task hunks changed",
-    "test_packages": "912 passed, 47 skipped, 2 xfailed, 7 warnings in 103.85 s (after C-018 and its review fix)",
-    "test_root": "1994 passed, 5 skipped, 13 warnings in 817.74 s (after C-018 and its review fix)",
-    "status": "S3 implemented: 50 of 50 tasks done; not pushed; no pull request"
-  },
-  "post_review_changes": [
-    {
-      "date": "2026-11-05",
-      "id": "C-018",
-      "what": "Backward-compatible legacy load: a legacy payload with no choice loads with the identity frame and emits one FutureWarning; _STRICT_LEGACY switch with a remove-at-major note; partial transform, conflict, malformed and unsupported still raise. Docs (ROADMAP, COMPAT, verification) updated; P2 figures corrected.",
-      "gates": {
-        "lint": "pass",
-        "packages": "912 passed, 47 skipped, 2 xfailed",
-        "root": "1994 passed, 5 skipped"
+    },
+    "S3": {
+      "spec": "005-coordinate-frame-correctness",
+      "stage": "S3",
+      "worktree": "C:/Users/lachl/dev/LoopStructural-005-s3",
+      "branch": "feat/005-s3-frame-persistence",
+      "review_mode": "wave",
+      "start_commit": "91ffca4a269252c32cefe077261edd27f10a4b14",
+      "runtime": {
+        "runtime": "claude",
+        "max_workers": 5,
+        "worker_S": "haiku",
+        "worker_M": "sonnet",
+        "review_wave": "sonnet",
+        "review_spec": "opus",
+        "review_verifier": "opus"
       },
-      "review": "first review: 1 major (warning location and timing) + 2 minor; fixed with warn_legacy_identity() and 7 new test cells (commit 169ae619); fix checked by the orchestrator, no second reviewer round"
+      "env": "PYTHONPATH=<worktree>;<worktree>/packages/loop_common/src;<worktree>/packages/loop_interpolation/src; python = main checkout .venv (C:/Users/lachl/dev/LoopStructural/.venv/Scripts/python.exe); run the root pytest and the package tests in separate calls, one heavy run at a time (low memory)",
+      "baseline": {
+        "lint": "pass: ruff check LoopStructural packages (S3 worktree, start commit)",
+        "pytest": "1760 passed, 5 skipped, 13 warnings in 1052.40 s at 662d2713 (S2 code; commits after it change only specs/README/docs). Not run again at S3 start because of low memory.",
+        "packages": "912 passed, 47 skipped, 2 xfailed in 126.56 s at 662d2713"
+      },
+      "base_note": "Built from docs/005-s3-plan (S2 code from feat/005-s2-fold-frames, PR #396 not merged). Rebase onto master after #396 merges.",
+      "waves": [
+        {
+          "wave": 14,
+          "base": "b32707fd62957ccb5d4c606c2bbe5bff22a6b7a9",
+          "tasks": [
+            "T033",
+            "T034"
+          ],
+          "check": "scope pass (VERIFY); ruff pass; black pass; fixture collects 0 tests; 5 engines build (exact: errors <= 2e-10 at anchor 3 rot 30; cn fit errors 4e-9 and 1.3e-11 at anchor 0); imports from the S3 worktree",
+          "commit": "c7a6802dd750bcfb0417828fe9b37a1269605f70",
+          "review": "pass: sonnet, no findings"
+        },
+        {
+          "wave": 15,
+          "base": "5cd6013450bf1aecc419f29cf0443fa879b71e20",
+          "tasks": [
+            "T035",
+            "T037"
+          ],
+          "check": "scope pass (VERIFY); ruff and black pass. Pre-fix: test_frame_persistence.py 108 failed 3 passed (identity cells); test_frame_copy_and_lifecycle.py 41 failed 6 passed (copy 36/36, stale 5/5 fail; restored 1 and rebuild 5 pass = coverage, no defect). First errors: KeyError format_version/transform; nan after rotated round trip; copy().bounding_box is None; DID NOT RAISE StaleFrameError",
+          "commit": "87928866225cc1f56b1634d791fa75ceec2b72da",
+          "review": "pass after rejecting 1 major: sonnet, 1 major rejected (F in spec SC definition is the max abs reference scalar value = observations; S2 test_constant_norm_frames uses the same scale), 2 minor open"
+        },
+        {
+          "wave": 16,
+          "base": "acef571f5ed93c72ccf7b00b4161865e348213e7",
+          "tasks": [
+            "T036",
+            "T038"
+          ],
+          "check": "scope pass (VERIFY); ruff and black pass. Pre-fix: legacy/conflicting/malformed/unsupported/creation_call/old_reader 58 failed (TypeError unexpected keyword declare_identity or format_version; DID NOT RAISE); T035 file 166 failed 3 passed (identity cells); fault_restoration 2 failed (DID NOT RAISE StaleFrameError). apply_to_points reaches the interpolators through evaluate_value/evaluate_gradient of the frame features. Later part of the fault test (rebuild vs control) ran clean with the raise check off (FDI 18.6 s, PLI 4.2 s)",
+          "commit": "d3813ce2a22be699a3ef768a904b25a9dc19c883",
+          "review": "pass after fixes: sonnet first review 1 major + 1 minor fixed (2a4a6636); recheck found 1 new major (T036 conflict test demanded the word supplied for declare_identity against a saved transform; my plan wording was ambiguous). User decision 2026-11-05: fix it and verify without a third review round.",
+          "fix_commit": "2a4a66368d6afee03f639bc73a06ddb8caeaa493"
+        },
+        {
+          "wave": 17,
+          "base": "caf0a0e73e568355dbad84c11ec7e7b207e7788f",
+          "tasks": [
+            "T039"
+          ],
+          "check": "scope pass (VERIFY: only verification.md). Pre-fix totals 209 failed 9 passed over 218 cells (persistence 166/3, lifecycle 43/6). Behavioural: rotated fdi round trip gives NaN (2 of 2); copy().bounding_box is None = True; stale evaluation after set_local_transform returns NaN with no error",
+          "commit": "b139482282c2c49755115e145db8a8519fefd439",
+          "review": "pass: sonnet, no findings"
+        },
+        {
+          "wave": 18,
+          "base": "11911b5b0cf0abad7365d7a2a5ad0565d9e1c38a",
+          "tasks": [
+            "T040"
+          ],
+          "check": "scope pass (VERIFY); ruff and black pass; Done-when script ok (frame_payload(None,3) order and identity; payload_kind({},False) legacy_no_transform); worker scripts: payload_kind 8 branches, bounding_box_from_support round trip error 3.6e-15; persistence file still 166 failed 3 passed (loader and to_dict not done)",
+          "commit": "8c9b63592058748169aae8b6afd1a888cc0da63c",
+          "review": "pass: sonnet, 2 minor"
+        },
+        {
+          "wave": 19,
+          "base": "66f446abc0e8040a5a4133010fa95bfc7698bd20",
+          "tasks": [
+            "T041",
+            "T042"
+          ],
+          "check": "scope pass (VERIFY); ruff and black pass. T042: lifecycle -k stale/restored/rebuild/fault_restoration 13 passed (27 s); tests/unit/interpolator 346 passed (worker); package test_geological_interpolator.py 34 passed 6 failed = test_interpolator_json_yaml_round_trip until T043 (expected, documented). T041 done-when script ok. Persistence file 37 passed 132 failed (payload_declares 36 + old_reader 1 now pass; loader tests wait for T043)",
+          "commit": "5413ec2a83867003835ce00b1ca126d02c699358",
+          "review": "pass: sonnet, 3 minor"
+        },
+        {
+          "wave": 20,
+          "base": "347ed03d2f458840d03f406c10ec621926bf2279",
+          "tasks": [
+            "T043",
+            "T044",
+            "T045",
+            "T046"
+          ],
+          "check": "scope pass (VERIFY); ruff pass. Root call: test_frame_persistence.py + test_interpolator_factory.py 181 passed; test_frame_copy_and_lifecycle.py 49 passed (27.7 s); package call: test_p2_fold_registration.py + test_geological_interpolator.py 43 passed; worker: tests/unit/interpolator 346 passed. The S3 persistence file passes 169 of 169. Root and package tests run in separate calls (conftest clash). Orchestrator reverted a Black blank line that T046 added outside copy; _p2interpolator.py stays Black-unclean as on master (not touched).",
+          "commit": "4e51f4cb85fa6fa07804ff1c23bc34d177cf295d",
+          "review": "pass: sonnet, 3 minor (1 fixed by the orchestrator: stray Black blank line)"
+        },
+        {
+          "wave": 21,
+          "base": "185333acfe9a4d69edffafbec96915002bd02a68",
+          "tasks": [
+            "T047",
+            "T048",
+            "T049"
+          ],
+          "check": "scope pass (VERIFY); COMPAT row at the end of the Migration notices table (grep 1); ROADMAP decision under Decisions (grep 1); rollback checks: 9 of 9 legacy loads exact (errors 0.0), no-choice load raises legacy_no_transform, old reader raises TypeError naming format_version and returns no object; no throw-away worktree left",
+          "commit": "4cd0fd4fb5f935ceb517379776d3b1b8cdf00cda",
+          "review": "pass: sonnet, no findings"
+        },
+        {
+          "wave": 22,
+          "base": "67b1e48ab4fe344ef6b7f2f11b1b78af7658542f",
+          "tasks": [
+            "T050"
+          ],
+          "check": "Gates run by the orchestrator at 67b1e48a (code unchanged since wave 20): ruff pass; packages 912 passed 47 skipped 2 xfailed in 108.69 s; root 1978 passed 5 skipped 13 warnings in 797.81 s (= 1760 + 218 new S3 cells). Focused: test_frame_persistence.py 169 passed 5.2 s; test_frame_copy_and_lifecycle.py 49 passed 31.3 s. Frame check cost 6.0 us (4 percent) per evaluate_value call and 3.1 us (1 percent) per evaluate_gradient call on 100 points. Orchestrator fixed 3 facts in the T050 text (branch name, p2_fold lifecycle cell, time comparison).",
+          "gates": {
+            "lint": "pass",
+            "packages": "912 passed, 47 skipped, 2 xfailed",
+            "root": "1978 passed, 5 skipped"
+          },
+          "commit": "db3e8a580934fe6077418ef1ce2602a023df9718",
+          "review": "pass: sonnet, 2 minor"
+        }
+      ],
+      "runs": {
+        "T033": [
+          {
+            "model": "sonnet",
+            "result": "pass: r1_interpolator, strip_frame_keys, engine tuples, QUERY_OFFSETS"
+          }
+        ],
+        "T034": [
+          {
+            "model": "haiku",
+            "result": "pass: stubs and exports; import placed in sorted order (ruff I001), not directly after ._diagnostics"
+          }
+        ],
+        "T035": [
+          {
+            "model": "sonnet",
+            "result": "pass: 4 test functions, 111 cells, fail for the right reason"
+          },
+          {
+            "model": "sonnet",
+            "result": "fix pass (same fix): test_round_trip_world_values compares loaded with source"
+          }
+        ],
+        "T037": [
+          {
+            "model": "sonnet",
+            "result": "blocked: P2 fit misses SC-002 in every frame (value 1.8e-8, gradient 3.9e-7 at the unrotated control); decision OP7"
+          },
+          {
+            "model": "sonnet",
+            "result": "fix pass: p2 rebuild cell uses exact=True; 5 rebuild cells pass"
+          }
+        ],
+        "T036": [
+          {
+            "model": "sonnet",
+            "result": "pass with 2 test bugs found by the orchestrator"
+          },
+          {
+            "model": "sonnet",
+            "result": "fix pass: loaded compared with the source (not the analytic field, which differs by 2e-10 at anchor 3 rot 30); old-reader test uses the real to_dict"
+          }
+        ],
+        "T038": [
+          {
+            "model": "sonnet",
+            "result": "pass: test_fault_restoration_uses_current_frame (FDI, PLI)"
+          }
+        ],
+        "T039": [
+          {
+            "model": "sonnet",
+            "result": "pass: S3 pre-fix section with 17-row table and 3 behavioural records"
+          }
+        ],
+        "T040": [
+          {
+            "model": "sonnet",
+            "result": "pass: frame_payload, payload_kind, bounding_box_from_support; docstrings of T034 fixed"
+          }
+        ],
+        "T041": [
+          {
+            "model": "sonnet",
+            "result": "pass: resolve_frame with _malformed/_parse_transform helpers; catches both LoopValueError classes of loop_common"
+          }
+        ],
+        "T042": [
+          {
+            "model": "sonnet",
+            "result": "pass: frame_signature, _note_frame, _check_frame, _inherit_frame, _restore_local_constraints, 7 setter guards, evaluate_* and to_dict guards, from_* keywords"
+          }
+        ],
+        "T043": [
+          {
+            "model": "sonnet",
+            "result": "pass: from_dict saved-payload path, frame args, malformed wrapping"
+          }
+        ],
+        "T044": [
+          {
+            "model": "haiku",
+            "result": "pass"
+          }
+        ],
+        "T045": [
+          {
+            "model": "haiku",
+            "result": "pass"
+          }
+        ],
+        "T046": [
+          {
+            "model": "haiku",
+            "result": "pass (orchestrator reverted a stray blank line from black)"
+          }
+        ],
+        "T047": [
+          {
+            "model": "haiku",
+            "result": "pass"
+          }
+        ],
+        "T048": [
+          {
+            "model": "haiku",
+            "result": "pass"
+          }
+        ],
+        "T049": [
+          {
+            "model": "sonnet",
+            "result": "pass: S3 rollback checks section; throw-away worktree removed"
+          }
+        ],
+        "T050": [
+          {
+            "model": "sonnet",
+            "result": "pass: 4 S3 sections in verification.md and the ROADMAP status line; orchestrator ran the heavy gates (memory) and corrected 3 facts"
+          }
+        ]
+      },
+      "findings": {
+        "found": 28,
+        "rejected": 1,
+        "dropped": 0,
+        "fixed": 7,
+        "open_minor": [
+          "T037 test_stale_frame_rejected_without_state_change: origin and rotation change together; a signature that ignores one of them still passes. Add origin-only and rotation-only cells (not in the plan; can be done in T042 or later).",
+          "T035 test_round_trip_world_values: compares the loaded values with the analytic field only; add a comparison with the source evaluation (optional).",
+          "T035 and T037 define F differently in the task text (query points in T035, observations in T037). The spec definition is the observations; T035 is stricter.",
+          "T036: no positive cases: v2 payload with a caller transform equal to the saved one must load; legacy payload with only local_origin or only local_rotation (other defaults to identity).",
+          "T036 test_creation_call_unchanged: also check local_origin/local_rotation arguments raise malformed, and that the input dict is unchanged.",
+          "T038: the R2 fixture fault displaces none of its probes (0 of 6859 moved); the test compares restored points (trivially equal) and the fault-frame coordinates. A fixture with real displacement would test restoration itself (S6).",
+          "T040 payload_kind: a payload that is not a dict raises AttributeError, not InterpolatorFormatError (the loader gates on a dict first; add a malformed check if a caller can reach it).",
+          "T040 bounding_box_from_support does not check shapes; T041 resolve_frame must (added to the T041 context).",
+          "T042 frame_signature compares raw bytes: -0.0 and +0.0 origins give different signatures, so an equal box with -0.0 raises StaleFrameError. Fix: add 0.0 to the arrays before tobytes().",
+          "T042 _restore_local_constraints is not atomic: a failure in a later family leaves the earlier family stored and _frame_at_data None. The loader drops the half-built interpolator, so no published state is affected (T043 wraps the error as malformed).",
+          "T042 _restore_local_constraints: ragged arrays give a raw numpy ValueError (wrapped by T043); unknown keys in data are ignored without a message.",
+          "T042 __init__ sets data without _note_frame: a non-empty initial data argument is not tracked (no known caller).",
+          "T043 from_dict saved path: a missing or unknown `type` raises a plain ValueError, not InterpolatorFormatError(\"malformed\") (nothing is returned, so no partial result).",
+          "T043 from_dict saved path does not validate the shape of `data` (a non-dict can raise TypeError) or `c` against the support, and up_to_date True with no c loads as solved without coefficients (same as the old creation path).",
+          "T041 equal-frame check uses atol=1e-12 with no relative part: at UTM coordinates (1 ULP about 9e-10) a caller origin that differs by 1 ULP gives conflict. Plan value kept; consider a scale-aware tolerance.",
+          "T037 test_rebuild_in_new_frame_preserves_world_evaluation does not change a frame; it is an SC-002 check at the fixture frame. verification.md maps SC-016 to it.",
+          "T041 BoundingBox.from_dict does not pass dimensions, so a 2D box in a v2 payload is malformed. Not reachable now (2D supports have no to_dict).",
+          "T050 ROADMAP.md S3 status line is one long line; wrap at about 80 columns.",
+          "T041 for a v2 payload with a rotated saved transform and only local_origin given, the missing rotation is compared as the identity, so the result is conflict. Unchanged v2 behaviour; documented in plan.md step 2.",
+          "Outside S3 (found by the end review in a scratch probe): model.evaluate_feature_gradient(\"strati\", pts) raised ValueError shape mismatch (20,3) vs (20,4) at LoopStructural/modelling/features/_geological_feature.py:229 in a small rotated model. Not in the S3 range; check separately.",
+          "plan.md \"Messages\" list shows only the base legacy_no_transform text; add the suffix ({name} is missing) for a partial legacy frame.",
+          "A pre-S3 pickled object that already holds constraints gets _frame_at_data None from the class default, so a later transform change is not detected until clean() or a new constraint set (same as before S3; optional: record the frame on the first _check_frame call; document in COMPAT.md).",
+          "C-018 review, minor: _external_stacklevel compares directory strings; a path spelling difference (symlink or drive case) could misattribute the warning. Tests pass on this machine."
+        ]
+      },
+      "answers": [
+        "2026-11-05: OP4 reject at use; OP5 accept TypeError naming format_version; major-version note in COMPAT/ROADMAP (plan.md Answers)",
+        "2026-11-05 (wave 15, OP7): p2 rebuild cell uses the exact nodal control; P2 fit accuracy is open point OP7 (plan.md)",
+        "2026-11-05 (wave 16 recheck, user decision): fix the conflict-test wording branch and verify it by the orchestrator, no third review round. plan.md conflict message rule reworded.",
+        "2026-11-05 (wave 19 planning, orchestrator): T042 Done-when excepts test_interpolator_json_yaml_round_trip (loader is T043); the intermediate commit after wave 19 leaves 1 to 3 existing round-trip tests failing until wave 20."
+      ],
+      "status": "S3 implemented and gated; end review pass after one fix round",
+      "spec_review": {
+        "stage": "S3",
+        "model": "opus",
+        "range": "91ffca4a..db3e8a58",
+        "verdict": "changes needed",
+        "major": 2,
+        "minor": 3,
+        "fixed": [
+          "major: pre-S3 pickled interpolators had no _frame_at_data: class-level default added (T042 file) + test_pre_s3_object_state_still_evaluates",
+          "major: a legacy payload with only local_origin or only local_rotation loaded silently with identity defaults: now legacy_no_transform naming the missing argument (user decision 2026-11-05); plan.md step 2 changed; 2 negative tests"
+        ],
+        "recheck": "pass: opus, 2 minor (fix commit c9ca3260)",
+        "fix_commit": "c9ca3260a29b01ec4906497b8e2f2955016f2867"
+      },
+      "final": {
+        "head_gated": "e49f3b2a",
+        "lint": "ruff check LoopStructural packages: pass",
+        "format": "black --check on the 10 changed .py files: new module and the 3 test files clean; 4 library files dirty and already dirty at the S3 start (_finite_difference_interpolator, _interpolator_factory, _p2_fold_interpolator, _p2interpolator); only task hunks changed",
+        "test_packages": "912 passed, 47 skipped, 2 xfailed, 7 warnings in 103.85 s (after C-018 and its review fix)",
+        "test_root": "1994 passed, 5 skipped, 13 warnings in 817.74 s (after C-018 and its review fix)",
+        "status": "S3 implemented: 50 of 50 tasks done; not pushed; no pull request"
+      },
+      "post_review_changes": [
+        {
+          "date": "2026-11-05",
+          "id": "C-018",
+          "what": "Backward-compatible legacy load: a legacy payload with no choice loads with the identity frame and emits one FutureWarning; _STRICT_LEGACY switch with a remove-at-major note; partial transform, conflict, malformed and unsupported still raise. Docs (ROADMAP, COMPAT, verification) updated; P2 figures corrected.",
+          "gates": {
+            "lint": "pass",
+            "packages": "912 passed, 47 skipped, 2 xfailed",
+            "root": "1994 passed, 5 skipped"
+          },
+          "review": "first review: 1 major (warning location and timing) + 2 minor; fixed with warn_legacy_identity() and 7 new test cells (commit 169ae619); fix checked by the orchestrator, no second reviewer round"
+        }
+      ]
     }
-  ]
+  }
 }

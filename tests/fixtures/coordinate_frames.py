@@ -251,6 +251,37 @@ def r1_interpolator(
     return interp, observations
 
 
+def world_foliation_model(
+    anchor: np.ndarray, rotation_deg: float
+) -> tuple[GeologicalModel, object, pd.DataFrame]:
+    """Return a model, an unsolved foliation and its world data in a rotated frame.
+
+    The data frame holds 27 value rows, 4 gradient rows and 4 normal rows.
+    All locations are world coordinates. The function does not run the interpolation.
+    """
+    model = model_with_frame(anchor, anchor + (8, 10, 12), rotation_deg)
+    columns = ["X", "Y", "Z", "feature_name", "val", "nx", "ny", "nz", "gx", "gy", "gz", "w"]
+    values = r1_observations(anchor)
+    offsets = np.array([(2, 3, 4), (5, 6, 7), (3, 8, 5), (6, 4, 9)], dtype=float)
+    points = anchor + offsets
+    unit = R1_GRADIENT / np.linalg.norm(R1_GRADIENT)
+
+    def _direction_rows(prefix: str) -> pd.DataFrame:
+        rows = pd.DataFrame(points, columns=["X", "Y", "Z"])
+        rows["feature_name"] = "r1"
+        rows["w"] = 1.0
+        for axis, component in zip("xyz", unit):
+            rows[f"{prefix}{axis}"] = component
+        return rows
+
+    data = pd.concat(
+        [values, _direction_rows("g"), _direction_rows("n")], ignore_index=True
+    ).reindex(columns=columns)
+    model.data = data
+    feature = model.create_and_add_foliation("r1", interpolatortype="FDI", nelements=1000)
+    return model, feature, data
+
+
 def strip_frame_keys(payload: dict) -> dict:
     """Return a deep copy of a payload without the frame keys (a legacy payload)."""
     legacy = copy.deepcopy(payload)

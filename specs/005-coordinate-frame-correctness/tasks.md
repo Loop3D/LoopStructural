@@ -968,7 +968,7 @@ frame. A legacy file needs an explicit choice. A frame change never gives a stal
 
 ## Phase 14: Stage S4 foundation
 
-- [ ] T051 [Found] [M] Add the S4 helper `world_foliation_model` to the shared fixtures.
+- [x] T051 [Found] [M] Add the S4 helper `world_foliation_model` to the shared fixtures.
   - Files: `tests/fixtures/coordinate_frames.py`
   - Needs: T050
   - Wave: 23
