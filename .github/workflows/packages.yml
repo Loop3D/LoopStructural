@@ -125,6 +125,12 @@ jobs:
       matrix:
         os: ${{ fromJSON(vars.BUILD_OS) }}
         python-version: ["3.10", "3.11", "3.12"]
+    # The real-codec test (tests/test_codec_real.py) needs the private geoviewer repository.
+    # The secret GEOVIEWER_READ_TOKEN gives read access to it. If the secret does not exist
+    # (for example in a pull request from a fork), the steps for geoviewer do not run and the
+    # real-codec test skips. All other tests run in both cases.
+    env:
+      GEOVIEWER_REPO_TOKEN: ${{ secrets.GEOVIEWER_READ_TOKEN }}
     steps:
       - uses: actions/checkout@v4
 
@@ -143,7 +149,29 @@ jobs:
         run: |
           uv pip install --python .venv-loop-link -e "packages/loop_link[tests]" -e packages/loop_common
 
+      - name: Check out geoviewer (for the real-codec test)
+        if: env.GEOVIEWER_REPO_TOKEN != ''
+        uses: actions/checkout@v4
+        with:
+          repository: lachlangrose/geoviewer
+          token: ${{ secrets.GEOVIEWER_READ_TOKEN }}
+          path: geoviewer-src
+          ref: b938de0ff522a6cba7b79cf2bb4b3739bb88efc0
+
+      - name: Set up Rust (geoviewer needs Rust 1.95)
+        if: env.GEOVIEWER_REPO_TOKEN != ''
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Cache the codec validator build
+        if: env.GEOVIEWER_REPO_TOKEN != ''
+        uses: actions/cache@v4
+        with:
+          path: packages/loop_link/.codec-validator-build/target
+          key: codec-validator-${{ runner.os }}-b938de0ff522a6cba7b79cf2bb4b3739bb88efc0
+
       - name: pytest
+        env:
+          LOOP_LINK_GEOVIEWER_REPO: ${{ env.GEOVIEWER_REPO_TOKEN != '' && format('{0}/geoviewer-src', github.workspace) || '' }}
         run: |
           uv run --no-project --python .venv-loop-link python -m pytest packages/loop_link/tests
 

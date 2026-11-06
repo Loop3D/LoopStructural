@@ -422,6 +422,17 @@ def test_clear_frame():
     assert decode_frame(encode.clear_frame()).header["type"] == "scene.clear"
 
 
+def test_name_is_id_when_none():
+    header = _encode(Points(np.zeros((1, 3))), id="p1", name=None).header
+    assert header["name"] == "p1"
+    assert decode_frame(encode.group_frame("g1", None, None, 1)).header["name"] == "g1"
+
+
+def test_name_is_given_name():
+    assert _encode(Points(np.zeros((1, 3))), id="p1", name="Pts").header["name"] == "Pts"
+    assert decode_frame(encode.group_frame("g1", "Grp", None, 1)).header["name"] == "Grp"
+
+
 def test_group_frame():
     frame = decode_frame(encode.group_frame("g1", "Group", "root", 3))
     header = frame.header

@@ -1,0 +1,17 @@
+# Template of the codec validator package. The test fixture fills in the path
+# and writes the result as Cargo.toml in the build folder.
+[package]
+name = "codec-validator"
+version = "0.0.0"
+edition = "2021"
+publish = false
+
+[[bin]]
+name = "codec-validator"
+path = "src/main.rs"
+
+[dependencies]
+geoviewer-protocol = { path = "@GEOVIEWER_PROTOCOL_PATH@" }
+
+# An empty table makes this package its own workspace.
+[workspace]

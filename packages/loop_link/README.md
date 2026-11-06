@@ -28,3 +28,11 @@ viewer.connect()
 viewer.send(Points(xyz), id="random-points", name="random points")
 viewer.close()
 ```
+
+## Test against the real codec
+
+Some tests give the frames of `loop_link` to the real geoviewer codec.
+The geoviewer repository is private, so these tests are optional.
+Set `LOOP_LINK_GEOVIEWER_REPO` to a geoviewer checkout and install Rust (`cargo`).
+The tests build a small validator program the first time that they run.
+Without the variable, or without `cargo`, these tests skip.

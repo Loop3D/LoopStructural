@@ -125,7 +125,7 @@ def _upsert_header(
         "type": "scene.upsert",
         "id": id,
         "object_type": object_type,
-        "name": name,
+        "name": id if name is None else name,
         "parent": parent,
         "revision": revision,
         "edit": [],
@@ -152,7 +152,7 @@ def group_frame(
     id : str
         The identifier of the group.
     name : str or None
-        The display name.
+        The display name. If it is None, the name is the identifier.
     parent : str or None
         The identifier of the parent group.
     revision : int
@@ -425,7 +425,7 @@ def encode_object(
     id : str
         The identifier of the object.
     name : str or None
-        The display name.
+        The display name. If it is None, the name is the identifier.
     parent : str or None
         The identifier of the parent group.
     revision : int
