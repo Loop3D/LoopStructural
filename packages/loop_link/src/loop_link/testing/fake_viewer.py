@@ -16,6 +16,7 @@ import socket
 import struct
 import threading
 import time
+from collections.abc import Sequence
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
@@ -87,9 +88,31 @@ def _error(code: str, message: str, object_id: object = None) -> Frame:
     return Frame(header=header, buffers={})
 
 
-def _encode(frame: Frame) -> bytes:
-    """Return the bytes of a frame."""
-    return protocol.encode_frame(frame.header, list(frame.buffers.items()))
+def _encode(frame: Frame, version: dict[str, int] | None = None) -> bytes:
+    """Return the bytes of a frame, with ``version`` in the header if it is given."""
+    return protocol.encode_frame(frame.header, list(frame.buffers.items()), version=version)
+
+
+def _request_error(
+    request: object, code: str, message: str, field_name: str | None = None
+) -> Frame:
+    """Return a ``request.error`` frame for a tool request."""
+    error: dict[str, Any] = {"code": code, "message": message}
+    if field_name is not None:
+        error["field"] = field_name
+    return Frame(header={"type": "request.error", "request": request, "error": error}, buffers={})
+
+
+# The kinds of selection that each object type has. Drillhole and Group have none.
+_SELECTION_KINDS: dict[str, tuple[str, ...]] = {
+    "Points": ("nodes",),
+    "Curve": ("nodes", "cells"),
+    "Surface": ("nodes", "cells"),
+    "BlockModel": ("nodes", "cells"),
+    "TetraMesh": ("nodes", "cells"),
+    "Drillhole": (),
+    "Group": (),
+}
 
 
 def _send(conn: socket.socket, payload: bytes) -> None:
@@ -308,6 +331,13 @@ class FakeViewer:
         Object id to error text. The viewer refuses these objects.
     read_delay : float
         The seconds to wait after each frame.
+    protocol_minor : int
+        The minor protocol version of the tool endpoint. Below 18, the tool endpoint
+        answers each message with an ``unknown_message`` error.
+    part_bytes : int
+        The size in bytes of one part of an ``object.fetch`` reply.
+    fetch_delay : float
+        The seconds to wait between the parts of an ``object.fetch`` reply.
 
     Attributes
     ----------
@@ -317,6 +347,8 @@ class FakeViewer:
         The objects in the scene.
     received : list of Frame
         All frames that the viewer received on all connections.
+    tool_requests : list of Frame
+        All frames that the viewer received on the tool endpoint.
     """
 
     def __init__(
@@ -328,6 +360,9 @@ class FakeViewer:
         heartbeat_timeout: float = 15.0,
         reply_errors: dict[str, str] | None = None,
         read_delay: float = 0.0,
+        protocol_minor: int = 18,
+        part_bytes: int = 64 * 1024 * 1024,
+        fetch_delay: float = 0.0,
     ) -> None:
         self.token = token
         self.crs = crs
@@ -336,6 +371,11 @@ class FakeViewer:
         self.heartbeat_timeout = heartbeat_timeout
         self.reply_errors = dict(reply_errors or {})
         self.read_delay = read_delay
+        self.protocol_minor = protocol_minor
+        self.part_bytes = part_bytes
+        self.fetch_delay = fetch_delay
+        self._selection: dict[str, Any] | None = None
+        self.tool_requests: list[Frame] = []
         self.objects: dict[str, StoredObject] = {}
         self.received: list[Frame] = []
         self._lock = threading.Lock()
@@ -389,6 +429,106 @@ class FakeViewer:
             }
             for object_id, stored in items
         ]
+
+    @property
+    def selection(self) -> dict[str, Any] | None:
+        """The selection, or ``None``.
+
+        The dict has the keys ``object``, ``revision``, ``cells`` and ``nodes``. The
+        value of ``cells`` or ``nodes`` is a ``uint32`` array without repeats, or
+        ``None`` if the selection has no index of that kind.
+        """
+        with self._state_lock:
+            return None if self._selection is None else dict(self._selection)
+
+    def set_user_selection(
+        self,
+        object_id: str,
+        *,
+        cells: Sequence[int] | None = None,
+        nodes: Sequence[int] | None = None,
+    ) -> None:
+        """Select cells or nodes, as if the user did it in the window.
+
+        Parameters
+        ----------
+        object_id : str
+            The id of the object.
+        cells, nodes : sequence of int, optional
+            The indices to select.
+
+        Raises
+        ------
+        ValueError
+            If the object is not known, the object lacks a kind, or an index is out of range.
+        """
+        kinds = {
+            kind: np.asarray(values, dtype=np.int64)
+            for kind, values in (("cells", cells), ("nodes", nodes))
+            if values is not None
+        }
+        with self._state_lock:
+            problem = self._selection_problem(object_id, None, kinds)
+            if problem is not None:
+                raise ValueError(problem[1])
+            self._store_selection(object_id, kinds)
+
+    def _store_selection(self, object_id: str, kinds: dict[str, np.ndarray]) -> None:
+        """Replace the selection. The caller holds the state lock."""
+        unique = {
+            kind: np.unique(values).astype(np.uint32)
+            for kind, values in kinds.items()
+            if values.size
+        }
+        if not unique:
+            self._selection = None
+            return
+        self._selection = {
+            "object": object_id,
+            "revision": self.objects[object_id].header.get("revision", 1),
+            "cells": unique.get("cells"),
+            "nodes": unique.get("nodes"),
+        }
+
+    @staticmethod
+    def _element_count(stored: StoredObject, kind: str) -> int:
+        """Return the number of nodes or cells of an object."""
+        header = stored.header
+        if header.get("object_type") == "BlockModel":
+            params = header.get("params")
+            shape = params.get("cells") if isinstance(params, dict) else None
+            shape = [int(n) for n in shape] if isinstance(shape, list) else [0, 0, 0]
+            if kind == "cells":
+                return math.prod(shape)
+            return math.prod(n + 1 for n in shape)
+        geometry = header.get("geometry") or {}
+        roles = ("vertices",) if kind == "nodes" else _CELL_ROLES
+        for role in roles:
+            if role in geometry and geometry[role] in stored.buffers:
+                return int(stored.buffers[geometry[role]].shape[0])
+        return 0
+
+    def _selection_problem(
+        self, object_id: object, revision: object, kinds: dict[str, np.ndarray]
+    ) -> tuple[str, str] | None:
+        """Return (field, message) for the first problem of a selection, or ``None``.
+
+        The caller holds the state lock.
+        """
+        stored = self.objects.get(object_id) if isinstance(object_id, str) else None
+        if stored is None:
+            return "object", f"The object {object_id!r} is not in the scene."
+        current = stored.header.get("revision", 1)
+        if revision is not None and revision != current:
+            return "revision", f"The revision {revision!r} is not the revision {current}."
+        allowed = _SELECTION_KINDS.get(stored.header.get("object_type"), ())
+        for kind, values in kinds.items():
+            if kind not in allowed:
+                return "kind", f"The object {object_id!r} has no {kind}."
+            count = self._element_count(stored, kind)
+            if values.size and (int(values.min()) < 0 or int(values.max()) >= count):
+                return "indices", f"The {kind} need indices from 0 to {count - 1}."
+        return None
 
     def write_instance_file(self, settings: Path) -> Path:
         """Write ``instances/<pid>.json`` in a settings folder and return its path.
@@ -535,6 +675,88 @@ class FakeViewer:
             return f"The object is {size} bytes. The limit is {MAX_OBJECT_BYTES} bytes."
         return None
 
+    def tool_frame(self, data: bytes) -> list[Frame]:
+        """Apply one tool-client frame and return the reply frames.
+
+        Parameters
+        ----------
+        data : bytes
+            The frame from the client.
+
+        Returns
+        -------
+        list of Frame
+            The frames that the viewer sends back.
+        """
+        try:
+            frame = protocol.decode_frame(data)
+        except ProtocolError as error:
+            return [_error("invalid_frame", str(error))]
+        with self._state_lock:
+            self.tool_requests.append(frame)
+        kind = frame.header.get("type")
+        request = frame.header.get("request")
+        if self.protocol_minor >= 18 and kind in ("selection.set", "selection.get"):
+            if self.kind == "headless":
+                return [_request_error(request, "needs_window", "The viewer has no window.")]
+            if kind == "selection.get":
+                return [self._selection_get(request)]
+            return [self._selection_set(frame)]
+        return [_error("unknown_message", f"The message type {kind!r} is not known.")]
+
+    def _selection_get(self, request: object) -> Frame:
+        """Return the ``selection.result`` frame for ``selection.get``."""
+        header: dict[str, Any] = {"type": "selection.result", "request": request, "entries": []}
+        buffers: dict[str, np.ndarray] = {}
+        with self._state_lock:
+            current = self._selection
+            if current is not None:
+                header["object"] = current["object"]
+                header["revision"] = current["revision"]
+                for kind in ("cells", "nodes"):
+                    values = current[kind]
+                    if values is not None:
+                        header["entries"].append(
+                            {"kind": kind, "count": int(values.size), "indices": kind}
+                        )
+                        buffers[kind] = np.asarray(values, dtype=np.uint32)
+        return Frame(header=header, buffers=buffers)
+
+    def _selection_set(self, frame: Frame) -> Frame:
+        """Check and keep a selection. Return the reply to ``selection.set``."""
+        header = frame.header
+        request = header.get("request")
+        object_id = header.get("object")
+        entries = header.get("entries")
+        if not isinstance(entries, list):
+            return _request_error(request, "invalid_input", "The entries are missing.", "entries")
+        kinds: dict[str, np.ndarray] = {}
+        for item in entries:
+            name = item.get("indices") if isinstance(item, dict) else None
+            array = frame.buffers.get(name) if isinstance(name, str) else None
+            if array is None or array.dtype != np.dtype("uint32") or array.ndim != 1:
+                return _request_error(
+                    request, "invalid_input", "An entry needs a u32 buffer of indices.", "indices"
+                )
+            kinds[item.get("kind")] = array.astype(np.int64)
+        with self._state_lock:
+            problem = self._selection_problem(object_id, header.get("revision"), kinds)
+            if problem is not None:
+                return _request_error(request, "invalid_input", problem[1], problem[0])
+            self._store_selection(object_id, kinds)
+            revision = self.objects[object_id].header.get("revision", 1)
+        result: dict[str, Any] = {
+            "type": "selection.result",
+            "request": request,
+            "object": object_id,
+            "revision": revision,
+            "entries": [
+                {"kind": kind, "count": int(np.unique(values).size)}
+                for kind, values in kinds.items()
+            ],
+        }
+        return Frame(header=result, buffers={})
+
     # -- server -------------------------------------------------------------
 
     def _serve(self) -> None:
@@ -637,10 +859,10 @@ class FakeViewer:
             if data is None:
                 return
             if tool:
-                replies = [_error("unknown_message", "The tool endpoint has no messages.")]
+                for reply in self.tool_frame(data):
+                    _send(conn, _encode(reply, protocol.TOOL_PROTOCOL_VERSION))
             else:
-                replies = self.accept_frame(data)
-            for reply in replies:
-                _send(conn, _encode(reply))
+                for reply in self.accept_frame(data):
+                    _send(conn, _encode(reply))
             if self.read_delay:
                 time.sleep(self.read_delay)

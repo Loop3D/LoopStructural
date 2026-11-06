@@ -374,9 +374,15 @@
       {
         "wave": 4,
         "base": "378331ef",
-        "commit": null,
-        "review": "round 1: changes needed (3 major, 3 minor); fix commit pending round 2",
+        "commit": "577e38b7 + fix 63ae62ad",
+        "review": "pass (round 2)",
         "note": "T043: 19 new tests fail as planned until T044/T045; one fix round for protocol dtype names (orchestrator finding)"
+      },
+      {
+        "wave": 5,
+        "base": "63ae62ad",
+        "commit": null,
+        "review": "pending"
       }
     ],
     "runs": {
@@ -435,6 +441,12 @@
         }
       ],
       "T059": [
+        {
+          "model": "sonnet",
+          "result": "pass"
+        }
+      ],
+      "T044": [
         {
           "model": "sonnet",
           "result": "pass"
