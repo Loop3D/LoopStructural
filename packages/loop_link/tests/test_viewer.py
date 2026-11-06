@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 import contextlib
-import math
+import socket
 import subprocess
 import threading
 import time
@@ -15,6 +15,7 @@ import numpy as np
 import pytest
 from loop_link.viewer import InventoryEntry, Viewer
 
+from loop_link import discovery
 from loop_link.errors import (
     BusyError,
     MissingFeatureError,
@@ -115,6 +116,12 @@ def test_no_viewer_gives_error_and_starts_no_process(
         raise AssertionError("A process must not start.")
 
     monkeypatch.setattr(subprocess, "Popen", refuse)
+    # Use a free port as the default port, so a real viewer on this machine does not matter.
+    probe = socket.socket()
+    probe.bind(("127.0.0.1", 0))
+    free_port = probe.getsockname()[1]
+    probe.close()
+    monkeypatch.setattr(discovery, "DEFAULT_PORT", free_port)
     viewer = Viewer(settings_dir=tmp_path / "empty", token="secret")
     try:
         with pytest.raises(NoViewerError):
@@ -337,18 +344,37 @@ def test_unsupported_version_gives_missing_feature(
     viewer = viewer_factory()
     with pytest.raises(MissingFeatureError):
         viewer.connect()
-        viewer.send(small_points(), id="pts")
-        viewer.flush()
 
 
 def test_inventory_lists_objects(fake_viewer: Any, viewer_factory: FACTORY) -> None:
-    """Inventory returns an entry for each object in the scene."""
-    viewer = viewer_factory()
-    viewer.send(small_points(), id="pts")
-    viewer.flush()
+    """A new viewer gets the inventory that the viewer sent at hello time."""
+    first = viewer_factory()
+    first.send(small_points(), id="pts")
+    first.flush()
     assert wait_for(lambda: "pts" in fake_viewer.viewer.objects)
-    entries = viewer.inventory()
+    first.release_data()
+    assert first.revisions["pts"] == 1  # Revisions are kept after release_data.
+
+    second = viewer_factory()
+    deadline = time.monotonic() + 5.0
+    while True:
+        try:
+            second.connect()
+            break
+        except BusyError:
+            assert time.monotonic() < deadline
+            time.sleep(0.01)
+    entries = second.inventory()
     assert all(isinstance(entry, InventoryEntry) for entry in entries)
     entry = next(entry for entry in entries if entry.id == "pts")
     assert entry.object_type == "Points"
-    assert math.isclose(entry.revision, 1)
+    assert entry.revision == 1
+
+
+def test_name_defaults_to_id(fake_viewer: Any, viewer_factory: FACTORY) -> None:
+    """Without a name, the stored header has the id as name."""
+    viewer = viewer_factory()
+    viewer.send(small_points(), id="x")
+    viewer.flush()
+    assert wait_for(lambda: "x" in fake_viewer.viewer.objects)
+    assert fake_viewer.viewer.objects["x"].header["name"] == "x"

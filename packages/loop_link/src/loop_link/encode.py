@@ -163,6 +163,50 @@ def group_frame(
     return protocol.encode_frame(_upsert_header(id, "Group", name, parent, revision))
 
 
+def _utf8_size(value_map: list[dict[str, Any]], name: str) -> int:
+    """Return the declared bytes of a value map. Raise if a name is not valid UTF-8."""
+    total = 0
+    try:
+        for item in value_map:
+            total += 8 + len(item["name"].encode("utf-8"))
+    except UnicodeEncodeError as error:
+        raise InvalidInputError(
+            f"A category name of the property '{name}' cannot be encoded as UTF-8. "
+            "Remove the characters that are not valid."
+        ) from error
+    return total
+
+
+def _declared_bytes(name: str, value: object) -> int:
+    """Return the bytes that a property needs, from its shape and target type.
+
+    The function does not copy the values. For text it returns an upper bound.
+    """
+    if isinstance(value, Categorical):
+        codes = np.asarray(value.codes)
+        total = int(codes.size) * 4
+        for label in value.names:
+            try:
+                total += 8 + len(str(label).encode("utf-8"))
+            except UnicodeEncodeError as error:
+                raise InvalidInputError(
+                    f"A category name of the property '{name}' cannot be encoded as UTF-8. "
+                    "Remove the characters that are not valid."
+                ) from error
+        return total
+    arr = np.asarray(value)
+    kind = arr.dtype.kind
+    if kind == "f":
+        return int(arr.size) * (4 if arr.dtype == np.dtype("float32") else 8)
+    if kind == "b":
+        return int(arr.size)
+    if kind in "iu":
+        return int(arr.size) * 4
+    if kind == "U":
+        return int(arr.size) * int(arr.dtype.itemsize) + (int(arr.size) + 1) * 4
+    return 0
+
+
 def _data_array(name: str, value: object, association: str) -> tuple[dict[str, Any], Buffers]:
     """Return the data description and the buffers of one property.
 
@@ -195,7 +239,7 @@ def _data_array(name: str, value: object, association: str) -> tuple[dict[str, A
         "association": association,
     }
     if isinstance(value, Categorical):
-        codes = np.asarray(value.codes).astype(np.uint32)
+        codes = np.asarray(value.codes).astype(np.uint32, copy=False)
         colours = value.colours
         value_map = []
         for index, label in enumerate(value.names):
@@ -204,6 +248,7 @@ def _data_array(name: str, value: object, association: str) -> tuple[dict[str, A
             else:
                 colour = [int(c) for c in colours[index]]
             value_map.append({"id": index, "name": str(label), "colour": colour})
+        _utf8_size(value_map, name)
         desc["data_type"] = "referenced"
         desc["value_map"] = value_map
         return desc, [(buffer_name, codes)]
@@ -211,12 +256,12 @@ def _data_array(name: str, value: object, association: str) -> tuple[dict[str, A
     kind = arr.dtype.kind
     if kind == "f":
         if arr.dtype != np.dtype("float32"):
-            arr = arr.astype(np.float64)
+            arr = arr.astype(np.float64, copy=False)
         desc["data_type"] = "float"
         return desc, [(buffer_name, arr)]
     if kind == "b":
         desc["data_type"] = "boolean"
-        return desc, [(buffer_name, arr.astype(np.uint8))]
+        return desc, [(buffer_name, arr.astype(np.uint8, copy=False))]
     if kind in "iu":
         if arr.size and (arr.min() < _I32_MIN or arr.max() > _I32_MAX):
             raise InvalidInputError(
@@ -224,9 +269,15 @@ def _data_array(name: str, value: object, association: str) -> tuple[dict[str, A
                 "Use values from -2147483648 to 2147483647."
             )
         desc["data_type"] = "integer"
-        return desc, [(buffer_name, arr.astype(np.int32))]
+        return desc, [(buffer_name, arr.astype(np.int32, copy=False))]
     if kind == "U":
-        parts = [str(item).encode("utf-8") for item in arr.tolist()]
+        try:
+            parts = [str(item).encode("utf-8") for item in arr.tolist()]
+        except UnicodeEncodeError as error:
+            raise InvalidInputError(
+                f"The property '{name}' has text that cannot be encoded as UTF-8. "
+                "Remove the characters that are not valid."
+            ) from error
         offsets = np.zeros(len(parts) + 1, dtype=np.uint32)
         if parts:
             offsets[1:] = np.cumsum([len(p) for p in parts], dtype=np.uint64)
@@ -254,12 +305,15 @@ class _Builder:
         self.groups: list[dict[str, Any]] = []
         self.declared = 0
 
-    def check_declared(self, extra: int = 0) -> None:
-        """Raise if the declared size is over the object limit."""
-        size = self.declared + extra
+    def reserve(self, size: int) -> None:
+        """Add a declared size. Raise if a limit is passed. Call before any copy."""
+        self.declared += size
         limit = protocol.MAX_OBJECT_BYTES
-        if size > limit:
-            raise ObjectTooLargeError(self.id, size, limit)
+        if self.declared > limit:
+            raise ObjectTooLargeError(self.id, self.declared, limit)
+        frame_limit = protocol.MAX_FRAME_BYTES
+        if self.declared > frame_limit - protocol.MAX_HEADER_BYTES:
+            raise ObjectTooLargeError(self.id, self.declared, frame_limit)
 
     def add_buffer(self, name: str, array: np.ndarray) -> None:
         """Add a buffer. Raise if the name is already used."""
@@ -269,7 +323,6 @@ class _Builder:
             )
         self.names.add(name)
         self.buffers.append((name, array))
-        self.declared += int(array.size) * int(array.dtype.itemsize)
 
     def add_geometry(self, role: str, array: np.ndarray) -> None:
         """Add a geometry buffer for a role."""
@@ -280,28 +333,31 @@ class _Builder:
     def add_vertices(self, verts: np.ndarray) -> None:
         """Shift the vertices in f64 and add them as f32 or f64."""
         # Use the declared size first. Do not copy the array before this check.
-        self.check_declared(int(verts.size) * 8)
-        shifted = np.asarray(verts, dtype=np.float64) - self.origin
-        if not np.all(np.isfinite(shifted)):
+        self.reserve(int(verts.size) * 8)
+        # The shift makes one new f64 array. The array of the caller does not change.
+        shifted = np.subtract(verts, self.origin, dtype=np.float64)
+        low = float(shifted.min()) if shifted.size else 0.0
+        high = float(shifted.max()) if shifted.size else 0.0
+        if not (np.isfinite(low) and np.isfinite(high)):
             raise InvalidInputError("The vertices must be finite numbers. Check the input.")
-        if shifted.size and float(np.max(np.abs(shifted))) > protocol.F32_LIMIT:
+        if max(abs(low), abs(high)) > protocol.F32_LIMIT:
             self.add_geometry("vertices", shifted)
         else:
             self.add_geometry("vertices", shifted.astype(np.float32))
 
     def add_index(self, role: str, array: object) -> None:
         """Add an index buffer as u32."""
-        self.add_geometry(role, np.asarray(array).astype(np.uint32))
+        view = np.asarray(array)
+        self.reserve(int(view.size) * 4)
+        self.add_geometry(role, view.astype(np.uint32, copy=False))
 
     def add_property(self, name: str, value: object, association: str) -> None:
         """Add a property with its buffers."""
+        self.reserve(_declared_bytes(name, value))
         desc, buffers = _data_array(name, value, association)
         for buffer_name, array in buffers:
             self.add_buffer(buffer_name, array)
-        for item in desc.get("value_map", ()):
-            self.declared += 8 + len(item["name"].encode("utf-8"))
         self.data.append(desc)
-        self.check_declared()
 
     def add_properties(self, props: Mapping[str, object], association: str) -> None:
         """Add a mapping of properties."""
@@ -367,12 +423,19 @@ def encode_object(
     ObjectTooLargeError
         If the object or the frame is over the size limit.
     """
-    origin_arr = np.asarray(origin, dtype=np.float64)
+    try:
+        origin_arr = np.asarray(origin, dtype=np.float64)
+    except (TypeError, ValueError) as error:
+        raise InvalidInputError("The origin must be three numbers. Check the input.") from error
+    if origin_arr.shape != (3,) or not np.all(np.isfinite(origin_arr)):
+        raise InvalidInputError("The origin must be three finite numbers. Check the input.")
     builder = _Builder(id, origin_arr)
     params: dict[str, Any] = {}
     if isinstance(obj, Drillhole):
         object_type = "Drillhole"
-        builder.check_declared(int(np.asarray(obj.survey).size) * 8)
+        builder.reserve(
+            (3 + int(np.asarray(obj.survey).size) + int(np.asarray(obj.intervals).size)) * 8
+        )
         collar = _finite_f64(obj.collar, "collar") - origin_arr
         builder.add_geometry("collar", collar)
         builder.add_geometry("survey", _finite_f64(obj.survey, "survey"))
@@ -415,7 +478,6 @@ def encode_object(
         cell_properties = getattr(obj, "cell_properties", None)
         if cell_properties:
             builder.add_properties(cell_properties, "cell")
-    builder.check_declared()
 
     header = _upsert_header(id, object_type, name, parent, revision)
     header["geometry"] = builder.geometry

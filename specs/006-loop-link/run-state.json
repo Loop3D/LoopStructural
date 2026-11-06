@@ -46,8 +46,8 @@
     {
       "wave": 7,
       "base": "c200f6745253dc7bfe196eca1bd88ba14273093c",
-      "commit": null,
-      "review": "pending"
+      "commit": "0590c43f + fix commit",
+      "review": "pass (one fix round; fixes verified by orchestrator)"
     }
   ],
   "runs": {
@@ -173,15 +173,17 @@
     ]
   },
   "findings": {
-    "found": 27,
+    "found": 35,
     "rejected": 0,
     "dropped": 0,
-    "fixed": 21,
+    "fixed": 27,
     "open_minor": [
       "W1 T004: loop-link CI job fails between wave 1 and wave 2 (fixed by T003/T006); do not merge wave 1 alone",
       "W2 T006: errors with formatted message are not picklable",
       "W2 T006: ViewerRefusedError text shows only the count",
-      "W6 T013: no test of value_map byte sum over the 2 GiB limit"
+      "W6 T013: no test of value_map byte sum over the 2 GiB limit",
+      "W7 T014: size pre-check counts vertices at 8 bytes/value even for f32, so a very large f32 object (> about 125 MiB real) is refused early",
+      "W7 T020: viewer.inventory test retries BusyError (timing)"
     ]
   },
   "merged_origin_master": "7497982b (ruff baseline fixed upstream by #395)"
