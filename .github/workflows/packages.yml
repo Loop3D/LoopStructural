@@ -48,7 +48,6 @@ jobs:
           - { name: loop_common, dir: loop_common }
           - { name: loop_interpolation, dir: loop_interpolation }
           - { name: loopstructuralvisualisation, dir: loopstructural_visualisation }
-          - { name: loop-link, dir: loop_link }
         os: ${{ fromJSON(vars.BUILD_OS)}}
         python-version: ${{ fromJSON(vars.PYTHON_VERSIONS)}}
     steps:
@@ -63,12 +62,10 @@ jobs:
         run: uv python install ${{ matrix.python-version }}
 
       - name: Install package with test extras
-        if: ${{ !(matrix.package.name == 'loop-link' && startsWith(matrix.python-version, '3.9')) }}
         run: |
           uv sync --package ${{ matrix.package.name }} --extra tests --python ${{ matrix.python-version }}
 
       - name: pytest
-        if: ${{ !(matrix.package.name == 'loop-link' && startsWith(matrix.python-version, '3.9')) }}
         run: |
           uv run --package ${{ matrix.package.name }} pytest packages/${{ matrix.package.dir }}/tests
 
@@ -115,6 +112,40 @@ jobs:
       - name: pytest
         run: |
           uv run --package map2loop pytest packages/map2loop/tests
+
+  loop-link-test:
+    # Separate job (not part of the packages-test matrix above): packages/loop_link
+    # is listed in the uv workspace `exclude` list, so `uv sync --package loop-link`
+    # cannot resolve it as a workspace member. Install it into its own venv with
+    # uv pip instead. The package needs Python 3.10 or later.
+    name: loop-link (python ${{ matrix.python-version }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: ${{ fromJSON(vars.BUILD_OS) }}
+        python-version: ["3.10", "3.11", "3.12"]
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up uv
+        uses: astral-sh/setup-uv@v3
+        with:
+          version: "latest"
+
+      - name: Set up Python ${{ matrix.python-version }}
+        run: uv python install ${{ matrix.python-version }}
+
+      - name: Create virtual environment
+        run: uv venv --python ${{ matrix.python-version }} .venv-loop-link
+
+      - name: Install package with test extras
+        run: |
+          uv pip install --python .venv-loop-link -e "packages/loop_link[tests]" -e packages/loop_common
+
+      - name: pytest
+        run: |
+          uv run --no-project --python .venv-loop-link python -m pytest packages/loop_link/tests
 
   loopstructural-test:
     name: LoopStructural (python ${{ matrix.python-version }})
