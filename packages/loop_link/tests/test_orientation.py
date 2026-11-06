@@ -9,14 +9,14 @@ import math
 
 import numpy as np
 import pytest
+
+from loop_link.errors import InvalidInputError
 from loop_link.orientation import (
     directions_to_lineation,
     lineation_to_directions,
     normals_to_orientation,
     orientation_to_normals,
 )
-
-from loop_link.errors import InvalidInputError
 
 AZIMUTHS = [0, 45, 90, 135, 180, 270, 359]
 DIPS = [10, 45, 80]

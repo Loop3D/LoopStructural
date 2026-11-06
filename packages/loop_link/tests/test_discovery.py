@@ -9,9 +9,9 @@ import sys
 from pathlib import Path
 
 import pytest
-from loop_link.discovery import DEFAULT_PORT, ViewerAddress, find_viewer, settings_dir
 
 from loop_link import discovery
+from loop_link.discovery import DEFAULT_PORT, ViewerAddress, find_viewer, settings_dir
 from loop_link.errors import NoViewerError, TokenError
 
 
@@ -276,3 +276,17 @@ def test_settings_dir_other_platform(tmp_path, monkeypatch):
     # Path.home() reads USERPROFILE on Windows.
     monkeypatch.setenv("USERPROFILE", str(tmp_path))
     assert settings_dir() == tmp_path / ".geoviewer"
+
+
+def test_non_finite_focused_counts_as_zero(tmp_path, listeners):
+    write_link(tmp_path)
+    nan_port = listeners()
+    good_port = listeners()
+    write_instance(tmp_path, 111, good_port, kind="window", focused=5)
+    text = json.dumps(
+        {"version": 1, "pid": 222, "port": nan_port, "kind": "window", "started": 1000}
+    )
+    text = text[:-1] + ', "focused": NaN}'
+    (tmp_path / "instances" / "222.json").write_text(text, encoding="utf-8")
+    address = find_viewer(settings=tmp_path)
+    assert address.port == good_port

@@ -7,6 +7,8 @@ from pathlib import Path
 
 import numpy as np
 import pytest
+
+from loop_link import protocol
 from loop_link.protocol import (
     MAX_FRAME_BYTES,
     MAX_HEADER_BYTES,
@@ -17,8 +19,6 @@ from loop_link.protocol import (
     decode_header,
     encode_frame,
 )
-
-from loop_link import protocol
 
 DTYPES = {
     "f32": np.float32,
@@ -161,6 +161,45 @@ def test_header_length_over_data_is_error():
         decode_frame(data)
     with pytest.raises(ProtocolError):
         decode_header(data)
+
+
+def _raw_frame(buffers, payload=b""):
+    # Build a frame with a hand-written buffer list.
+    body = json.dumps({"type": "test", "buffers": buffers}).encode("utf-8")
+    return struct.pack("<I", len(body)) + body + payload
+
+
+@pytest.mark.parametrize(
+    "entry",
+    [
+        {"name": "a", "dtype": "u8", "shape": [4294967296, 4294967296]},
+        {"name": "a", "dtype": "u8", "shape": [3037000500, 3037000500]},
+        {"name": ["x"], "dtype": "u8", "shape": [1]},
+        {"name": "a", "dtype": "u8", "shape": [1.0]},
+        {"name": "a", "dtype": "u8", "shape": [True]},
+        {"name": "a", "dtype": "u8", "shape": [-1]},
+        {"name": "a", "dtype": "nope", "shape": [1]},
+    ],
+)
+def test_bad_buffer_description_is_protocol_error(entry):
+    # A bad header must raise ProtocolError and no other error.
+    with pytest.raises(ProtocolError):
+        decode_frame(_raw_frame([entry], b"\x00"))
+
+
+def test_duplicate_buffer_name_is_error():
+    # Two buffers with the same name are not allowed.
+    entry = {"name": "a", "dtype": "u8", "shape": [1]}
+    with pytest.raises(ProtocolError):
+        decode_frame(_raw_frame([entry, entry], b"\x00\x00"))
+
+
+def test_frame_over_max_is_error_on_decode(monkeypatch):
+    # A frame over MAX_FRAME_BYTES is not allowed.
+    data = encode_frame({"type": "test"})
+    monkeypatch.setattr(protocol, "MAX_FRAME_BYTES", len(data) - 1)
+    with pytest.raises(ProtocolError):
+        decode_frame(data)
 
 
 _FIXTURE_DIR = os.environ.get("LOOP_LINK_GEOVIEWER_FIXTURES")

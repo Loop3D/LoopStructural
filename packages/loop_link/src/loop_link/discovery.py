@@ -7,6 +7,7 @@ start a program.
 from __future__ import annotations
 
 import json
+import math
 import os
 import socket
 import sys
@@ -109,12 +110,11 @@ def _find_port(settings: Path, host: str, timeout: float) -> int:
         port = data.get("port")
         kind = data.get("kind")
         focused = data.get("focused", 0)
-        if (
-            not isinstance(port, int)
-            or isinstance(port, bool)
-            or not isinstance(kind, str)
-            or not isinstance(focused, (int, float))
-        ):
+        if isinstance(focused, bool) or not isinstance(focused, (int, float)):
+            focused = 0
+        if not math.isfinite(focused):
+            focused = 0
+        if not isinstance(port, int) or isinstance(port, bool) or not isinstance(kind, str):
             continue
         if _is_alive(host, port, timeout):
             live.append(((kind != "window", -focused), port))

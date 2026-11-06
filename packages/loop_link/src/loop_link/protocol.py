@@ -11,6 +11,7 @@ standard library.
 from __future__ import annotations
 
 import json
+import math
 import struct
 from collections.abc import Sequence
 from dataclasses import dataclass
@@ -181,25 +182,41 @@ def decode_frame(data: bytes) -> Frame:
     ProtocolError
         If the frame is not valid, or its length does not match the header.
     """
+    if len(data) > MAX_FRAME_BYTES:
+        raise ProtocolError(
+            f"The frame is {len(data)} bytes. The limit is {MAX_FRAME_BYTES} bytes."
+        )
     header, offset = _read_header(data)
     descriptions = header.get("buffers", [])
     if not isinstance(descriptions, list):
         raise ProtocolError("The header field 'buffers' is not a list.")
     buffers: dict[str, np.ndarray] = {}
     for entry in descriptions:
-        try:
-            name = entry["name"]
-            dtype = _NAME_DTYPES[entry["dtype"]]
-            shape = tuple(int(n) for n in entry["shape"])
-        except (KeyError, TypeError, ValueError) as error:
-            raise ProtocolError(f"A buffer description is not valid: {entry!r}.") from error
-        if any(n < 0 for n in shape):
-            raise ProtocolError(f"Buffer {name!r} has a negative size in its shape.")
-        count = int(np.prod(shape, dtype=np.int64)) if shape else 1
+        if not isinstance(entry, dict):
+            raise ProtocolError(f"A buffer description is not valid: {entry!r}.")
+        name = entry.get("name")
+        dtype_name = entry.get("dtype")
+        raw_shape = entry.get("shape")
+        if not isinstance(name, str):
+            raise ProtocolError(f"A buffer name is not a string: {name!r}.")
+        if name in buffers:
+            raise ProtocolError(f"The buffer name {name!r} is used more than once.")
+        if not isinstance(dtype_name, str) or dtype_name not in _NAME_DTYPES:
+            raise ProtocolError(f"Buffer {name!r} has an unknown dtype: {dtype_name!r}.")
+        if not isinstance(raw_shape, list) or any(type(n) is not int or n < 0 for n in raw_shape):
+            raise ProtocolError(f"Buffer {name!r} has a shape that is not valid: {raw_shape!r}.")
+        dtype = _NAME_DTYPES[dtype_name]
+        shape = tuple(raw_shape)
+        count = math.prod(shape)
         size = count * dtype.itemsize
         if offset + size > len(data):
             raise ProtocolError(f"The frame stops inside buffer {name!r}.")
-        buffers[name] = np.frombuffer(data, dtype=dtype, count=count, offset=offset).reshape(shape)
+        try:
+            buffers[name] = np.frombuffer(data, dtype=dtype, count=count, offset=offset).reshape(
+                shape
+            )
+        except ValueError as error:
+            raise ProtocolError(f"Buffer {name!r} cannot be read: {error}") from error
         offset += size
     if offset != len(data):
         raise ProtocolError(f"The frame is {len(data)} bytes. The header describes {offset} bytes.")
