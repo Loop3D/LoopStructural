@@ -23,14 +23,14 @@ length 100; keep string quotes as written (Black `skip-string-normalization`).
 
 ## Phase 1: Setup
 
-- [ ] T001 [Setup] [M] Create the package skeleton `packages/loop_link`.
+- [x] T001 [Setup] [M] Create the package skeleton `packages/loop_link`.
   - Files: `packages/loop_link/pyproject.toml`, `packages/loop_link/README.md`, `packages/loop_link/LICENSE`, `packages/loop_link/ruff.toml`, `packages/loop_link/src/loop_link/__init__.py`
   - Needs: none
   - Wave: 1
   - Done when: `python -c "import tomllib,pathlib;tomllib.loads(pathlib.Path('packages/loop_link/pyproject.toml').read_text())"` passes and `ruff check packages/loop_link` passes.
   - Context: Model on `packages/loop_common/pyproject.toml` (setuptools, `where = ["src"]`). `[project]` name `loop-link`, version `0.1.0`, `requires-python = ">=3.10"`, `dependencies = ["numpy"]`. Extras: `pyvista = ["pyvista"]`, `loopstructural = ["loop-common"]`, `pandas = ["pandas"]`, `tests = ["pytest", "pyvista", "loop-common", "pandas"]`. Setuptools `include = ["loop_link", "loop_link.*"]`. Register the pytest marker `slow` under `[tool.pytest.ini_options]`. `ruff.toml` has exactly `extend = "../../pyproject.toml"` and `target-version = "py310"`. `LICENSE` is a copy of `packages/loop_common/LICENSE`. `README.md`: install, the token (`GEOVIEWER_TOKEN` or the saved token of the viewer), a 10-line example with `Viewer`, `Points`. `__init__.py` holds a docstring and `__version__ = "0.1.0"` only (T023 adds the exports).
 
-- [ ] T002 [P] [Setup] [S] Register `loop_link` for release-please.
+- [x] T002 [P] [Setup] [S] Register `loop_link` for release-please.
   - Files: `.release-please-config.json`, `.release-please-manifest.json`
   - Needs: none
   - Wave: 1
@@ -44,14 +44,14 @@ length 100; keep string quotes as written (Black `skip-string-normalization`).
   - Done when: `uv lock --check` passes and `ruff check LoopStructural packages` passes.
   - Context: In root `pyproject.toml` add `loop-link = { workspace = true }` to `[tool.uv.sources]`. Add `"packages/loop_link/tests/*" = ["D", "ANN"]` to `[tool.ruff.lint.per-file-ignores]` next to the other `packages/*/tests/*` lines. Do NOT add an entry for `packages/loop_link/src`. Run `uv lock`. OP5 fallback: if uv refuses the workspace, or the lock drops Python 3.9 for the other members, remove the source line, add `"packages/loop_link"` to `[tool.uv.workspace] exclude`, run `uv lock` again, and write one line in the commit message that says the fallback was used. Do not change another dependency in `uv.lock`.
 
-- [ ] T004 [P] [Setup] [S] Add `loop-link` to the package CI matrix.
+- [x] T004 [P] [Setup] [S] Add `loop-link` to the package CI matrix.
   - Files: `.github/workflows/packages.yml`
   - Needs: none
   - Wave: 1
   - Done when: `python -c "import yaml;yaml.safe_load(open('.github/workflows/packages.yml'))"` passes and `git grep -n "loop-link" .github/workflows/packages.yml` shows 3 lines.
   - Context: In `jobs.packages-test.strategy.matrix.package` add the line `- { name: loop-link, dir: loop_link }`. Add this line to the two steps that install and test (`Install package with test extras` and `pytest`): `if: ${{ !(matrix.package.name == 'loop-link' && startsWith(matrix.python-version, '3.9')) }}`. The package needs Python 3.10 or later. Do not change another step.
 
-- [ ] T005 [P] [Setup] [M] Add `loop_link` to `ROADMAP.md`.
+- [x] T005 [P] [Setup] [M] Add `loop_link` to `ROADMAP.md`.
   - Files: `ROADMAP.md`
   - Needs: none
   - Wave: 1

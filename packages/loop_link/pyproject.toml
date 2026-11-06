@@ -1,0 +1,38 @@
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "loop-link"
+description = "Send geoscience data to the LoopConnect viewer"
+version = "0.1.0"
+requires-python = ">=3.10"
+authors = [{ name = "Lachlan Grose", email = "lachlan.grose@monash.edu" }]
+readme = "README.md"
+license = { text = "MIT" }
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Science/Research",
+    "Topic :: Scientific/Engineering :: Information Analysis",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: Microsoft :: Windows",
+    "Operating System :: POSIX",
+    "Operating System :: MacOS",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+]
+dependencies = ["numpy"]
+
+[project.optional-dependencies]
+pyvista = ["pyvista"]
+loopstructural = ["loop-common"]
+pandas = ["pandas"]
+tests = ["pytest", "pyvista", "loop-common", "pandas"]
+
+[tool.setuptools.packages.find]
+where = ["src"]
+include = ["loop_link", "loop_link.*"]
+
+[tool.pytest.ini_options]
+markers = ["slow: tests that take a long time to run"]

@@ -48,6 +48,7 @@ jobs:
           - { name: loop_common, dir: loop_common }
           - { name: loop_interpolation, dir: loop_interpolation }
           - { name: loopstructuralvisualisation, dir: loopstructural_visualisation }
+          - { name: loop-link, dir: loop_link }
         os: ${{ fromJSON(vars.BUILD_OS)}}
         python-version: ${{ fromJSON(vars.PYTHON_VERSIONS)}}
     steps:
@@ -62,10 +63,12 @@ jobs:
         run: uv python install ${{ matrix.python-version }}
 
       - name: Install package with test extras
+        if: ${{ !(matrix.package.name == 'loop-link' && startsWith(matrix.python-version, '3.9')) }}
         run: |
           uv sync --package ${{ matrix.package.name }} --extra tests --python ${{ matrix.python-version }}
 
       - name: pytest
+        if: ${{ !(matrix.package.name == 'loop-link' && startsWith(matrix.python-version, '3.9')) }}
         run: |
           uv run --package ${{ matrix.package.name }} pytest packages/${{ matrix.package.dir }}/tests
 

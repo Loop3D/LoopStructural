@@ -549,6 +549,11 @@ just at release time.
   Phase A-C status notes. Phase D remains the open item for the dedicated
   discussion.
 
+- [ ] **Stage 7 — `loop_link`: Python link to geoviewer.** New package
+  `packages/loop_link` (spec `specs/006-loop-link`). It gives Python a way to
+  send data to geoviewer: send, adapters and the plugin push API. Select,
+  fetch, filter and colour wait for geoviewer spec 066.
+
 ## Status log
 
 - **2026-07-24:** Stage 0 done in worktree `~/dev/LoopStructural-roadmap`
@@ -831,3 +836,6 @@ just at release time.
   `loopstructuralvisualisation`, none warranted in `map2loop`), and the
   release-please/PyPI/ruff wiring. `tests/unit`: 695 passed/4 skipped, zero
   regressions.
+
+- **2026-11-06:** Stage 7 started. The spec and the plan for
+  `packages/loop_link` exist (`specs/006-loop-link`). The package is new.
