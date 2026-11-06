@@ -78,7 +78,8 @@ def push_objects(
         Pairs of object id and object.
     replace_prefix : str, optional
         When given, the function removes each old object in the viewer inventory
-        whose id starts with this prefix and that this call did not send.
+        whose id starts with this prefix and that this call did not send or skip.
+        The function does not remove old objects when the push is cancelled.
     progress : callable, optional
         Called with a text before each object is sent. It runs on the calling thread.
     cancel : threading.Event, optional
@@ -99,7 +100,7 @@ def push_objects(
     result = PushResult()
     if not viewer.connected:
         viewer.connect()
-    sent_ids: set[str] = set()
+    kept_ids: set[str] = set()
     for object_id, obj in objects:
         if cancel is not None and cancel.is_set():
             result.cancelled = True
@@ -110,12 +111,13 @@ def push_objects(
             viewer.send(obj, id=object_id)
         except (InvalidInputError, ObjectTooLargeError) as error:
             result.skipped.append((object_id, str(error)))
+            kept_ids.add(object_id)
             continue
-        sent_ids.add(object_id)
+        kept_ids.add(object_id)
         result.sent += 1
-    if replace_prefix:
+    if replace_prefix and not result.cancelled:
         for entry in viewer.inventory():
-            if entry.id.startswith(replace_prefix) and entry.id not in sent_ids:
+            if entry.id.startswith(replace_prefix) and entry.id not in kept_ids:
                 viewer.remove(entry.id)
                 result.removed += 1
     result.refused = viewer.flush(raise_on_refusal=False)

@@ -97,7 +97,7 @@ class Viewer:
         self._seq = 0
 
         self._revisions: dict[str, int] = {}
-        self._inventory: list[InventoryEntry] = []
+        self._inventory: dict[str, InventoryEntry] = {}
         self._inventory_revisions: dict[str, int] = {}
         self._refusals: list[Refusal] = []
         self._scene_origin = self._proposed_origin
@@ -188,7 +188,7 @@ class Viewer:
             raise
         self._scene_origin = origin if origin is not None else self._proposed_origin
         self._scene_crs = crs
-        self._inventory = entries
+        self._inventory = {entry.id: entry for entry in entries}
         self._inventory_revisions = {entry.id: entry.revision for entry in entries}
         self._refusals = []
         self._client = client
@@ -278,6 +278,8 @@ class Viewer:
         )
         self._send_frame(data)
         self._revisions[id] = revision
+        object_type = str(protocol.decode_header(data).get("object_type", ""))
+        self._inventory[id] = InventoryEntry(id, object_type, revision)
         return revision
 
     def send_group(self, id: str, name: str | None = None, parent: str | None = None) -> int:
@@ -301,6 +303,7 @@ class Viewer:
         revision = self._next_revision(id)
         self._send_frame(encode.group_frame(id, id if name is None else name, parent, revision))
         self._revisions[id] = revision
+        self._inventory[id] = InventoryEntry(id, "Group", revision)
         return revision
 
     def remove(self, id: str) -> None:
@@ -313,21 +316,27 @@ class Viewer:
         """
         self._ensure_connected()
         self._send_frame(encode.remove_frame(id))
+        self._inventory.pop(id, None)
 
     def clear(self) -> None:
         """Remove all objects from the scene."""
         self._ensure_connected()
         self._send_frame(encode.clear_frame())
+        self._inventory.clear()
 
     def inventory(self) -> list[InventoryEntry]:
-        """Return the inventory that the viewer sent at hello time.
+        """Return the known scene.
+
+        The list starts with the inventory from the hello frame. ``send`` and
+        ``send_group`` add or update an entry, ``remove`` drops one, and ``clear``
+        drops all. A new connection replaces the list with the hello list.
 
         Returns
         -------
         list of InventoryEntry
-            The entries. The list is not updated after the hello.
+            The entries.
         """
-        return list(self._inventory)
+        return list(self._inventory.values())
 
     def flush(self, settle: float = 0.5, *, raise_on_refusal: bool = True) -> list[Refusal]:
         """Wait for late replies and return the refusals.

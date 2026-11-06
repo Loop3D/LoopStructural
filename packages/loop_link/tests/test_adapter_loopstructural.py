@@ -73,6 +73,48 @@ def test_structured_grid_gives_block_model() -> None:
     np.testing.assert_array_equal(result.cells, (3, 4, 5))
 
 
+def test_surface_without_cell_properties_gives_empty_mapping() -> None:
+    """A Surface with cell_properties=None gives an empty cell_properties mapping."""
+    source = geometry.Surface(
+        vertices=VERTICES,
+        triangles=TRIANGLES,
+        properties={"a": np.arange(4.0)},
+        cell_properties=None,
+    )
+    result = from_loopstructural(source)
+    assert isinstance(result, LinkSurface)
+    assert len(result.cell_properties) == 0
+
+
+def test_structured_grid_keeps_cell_properties() -> None:
+    """A cell property keeps its values and its x-fastest order."""
+    nsteps = [4, 5, 6]
+    count = 3 * 4 * 5
+    values = np.arange(count, dtype=float) * 0.5
+    grid = geometry.StructuredGrid(
+        origin=[1, 2, 3], step_vector=[1, 2, 3], nsteps=nsteps, cell_properties={"c": values}
+    )
+    result = from_loopstructural(grid)
+    assert isinstance(result, BlockModel)
+    assert list(result.cell_properties) == ["c"]
+    np.testing.assert_array_equal(result.cell_properties["c"], values)
+
+
+def test_structured_grid_without_properties_gives_empty_mappings() -> None:
+    """A grid with properties=None and cell_properties=None gives empty mappings."""
+    grid = geometry.StructuredGrid(
+        origin=[1, 2, 3],
+        step_vector=[1, 2, 3],
+        nsteps=[4, 5, 6],
+        properties=None,
+        cell_properties=None,
+    )
+    result = from_loopstructural(grid)
+    assert isinstance(result, BlockModel)
+    assert len(result.properties) == 0
+    assert len(result.cell_properties) == 0
+
+
 def test_grid_node_property_is_sent_in_x_fastest_order(
     fake_viewer: Any, viewer_factory: Callable[..., Any]
 ) -> None:

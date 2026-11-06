@@ -83,7 +83,7 @@ def test_lines() -> None:
 def test_surface_from_triangles() -> None:
     """A triangulated sphere gives Surface, and cell data gives cell_properties."""
     mesh = pv.Sphere().triangulate()
-    mesh.clear_data()
+    assert "Normals" in mesh.point_data  # pyvista adds this array itself
     cell_values = np.arange(mesh.n_cells, dtype=np.float64)
     mesh.cell_data["area"] = cell_values
     result = from_pyvista(mesh)
@@ -92,16 +92,56 @@ def test_surface_from_triangles() -> None:
     assert np.asarray(result.triangles).shape == (mesh.n_cells, 3)
     np.testing.assert_allclose(result.vertices, np.asarray(mesh.points))
     np.testing.assert_allclose(result.cell_properties["area"], cell_values)
+    assert "Normals" not in result.properties
+    assert "Normals" not in result.cell_properties
 
 
 def test_surface_from_quads_is_triangulated() -> None:
     """A quad plane is triangulated: 2 triangles for each quad."""
     mesh = pv.Plane(i_resolution=2, j_resolution=2)
-    mesh.clear_data()
     assert not mesh.is_all_triangles
     result = from_pyvista(mesh)
     assert isinstance(result, Surface)
     assert np.asarray(result.triangles).shape == (2 * mesh.n_cells, 3)
+    assert "Normals" not in result.properties
+
+
+def test_texture_coordinates_are_skipped() -> None:
+    """The array Texture Coordinates is skipped without an error."""
+    mesh = pv.PolyData(POINTS.copy())
+    mesh.point_data["Texture Coordinates"] = np.zeros((4, 2))
+    mesh.point_data["grade"] = np.array([1.0, 2.0, 3.0, 4.0])
+    result = from_pyvista(mesh)
+    assert isinstance(result, Points)
+    assert "Texture Coordinates" not in result.properties
+    assert "grade" in result.properties
+
+
+def test_vectors_from_lineation() -> None:
+    """Direction vectors with vectors_kind lineation give trend and plunge."""
+    trend = np.array([90.0, 180.0, 45.0])
+    plunge = np.array([30.0, 0.0, 60.0])
+    t, p = np.radians(trend), np.radians(plunge)
+    # Direction of a line: east-north-up components from trend and plunge (plunge is downward).
+    directions = np.column_stack([np.cos(p) * np.sin(t), np.cos(p) * np.cos(t), -np.sin(p)])
+    mesh = pv.PolyData(POINTS[:3].copy())
+    mesh.point_data["d"] = directions
+    result = from_pyvista(mesh, vectors="d", vectors_kind="lineation")
+    assert isinstance(result, Vectors)
+    assert result.lineation is not None
+    np.testing.assert_allclose(result.lineation[0], trend, atol=1e-6)
+    np.testing.assert_allclose(result.lineation[1], plunge, atol=1e-6)
+    assert "d" not in result.properties
+
+
+def test_rectilinear_grid_even_gives_block_model() -> None:
+    """A RectilinearGrid with even spacing on each axis gives BlockModel."""
+    grid = pv.RectilinearGrid([0, 1, 2, 3], [0, 2, 4], [0, 3, 6])
+    result = from_pyvista(grid)
+    assert isinstance(result, BlockModel)
+    np.testing.assert_allclose(result.origin, [0.0, 0.0, 0.0])
+    np.testing.assert_allclose(result.cell_sizes, [1.0, 2.0, 3.0])
+    np.testing.assert_array_equal(result.cells, [3, 2, 2])
 
 
 def test_image_data_gives_block_model() -> None:
@@ -128,7 +168,7 @@ def test_rectilinear_grid_uneven_is_refused() -> None:
 
 
 def test_structured_grid_is_refused() -> None:
-    """A StructuredGrid gives InvalidInputError."""
+    """A StructuredGrid, even from a regular grid, gives InvalidInputError (OP9)."""
     xs, ys, zs = np.meshgrid(np.arange(3.0), np.arange(3.0), np.arange(3.0), indexing="ij")
     grid = pv.StructuredGrid(xs, ys, zs)
     with pytest.raises(InvalidInputError):
@@ -172,8 +212,9 @@ def test_two_dimensional_property_is_refused() -> None:
     """A point array of shape (n, 2) gives InvalidInputError."""
     mesh = pv.PolyData(POINTS.copy())
     mesh.point_data["pair"] = np.ones((4, 2))
-    with pytest.raises(InvalidInputError):
+    with pytest.raises(InvalidInputError) as info:
         from_pyvista(mesh)
+    assert "pair" in str(info.value)
 
 
 def test_send_grid_function_in_node_order(fake_viewer: Any, viewer_factory: Any) -> None:

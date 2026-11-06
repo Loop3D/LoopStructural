@@ -137,3 +137,48 @@ def test_result_sends_to_viewer(collar, survey, logs, fake_viewer, viewer_factor
     viewer = viewer_factory()
     viewer.send(hole, id="DH1")
     assert fake_viewer.viewer.objects["DH1"].header["object_type"] == "Drillhole"
+
+
+def test_logs_hole_not_in_collar(collar, survey, logs):
+    extra = pd.concat(
+        [
+            logs,
+            pd.DataFrame(
+                {
+                    "hole_id": ["DH7"],
+                    "from": [0.0],
+                    "to": [1.0],
+                    "grade": [1.0],
+                    "lith": ["x"],
+                }
+            ),
+        ],
+        ignore_index=True,
+    )
+    with pytest.raises(InvalidInputError, match="DH7"):
+        drillholes_from_pandas(collar, survey, extra)
+
+
+def test_hole_without_log_rows(collar, survey, logs):
+    only_dh1 = logs[logs["hole_id"] == "DH1"]
+    hole = drillholes_from_pandas(collar, survey, only_dh1)["DH2"]
+    assert hole.intervals.shape == (0, 2)
+    assert hole.interval_properties["grade"].shape == (0,)
+    assert hole.interval_properties["lith"].shape == (0,)
+
+
+def test_hole_without_survey_rows(collar, survey, logs):
+    only_dh1 = survey[survey["hole_id"] == "DH1"]
+    hole = drillholes_from_pandas(collar, only_dh1, logs)["DH2"]
+    assert hole.survey.shape == (0, 3)
+
+
+def test_bool_and_int_columns_keep_dtype(collar, survey, logs):
+    typed = logs.copy()
+    typed["flag"] = [True, False, True]
+    typed["count"] = [1, 2, 3]
+    props = drillholes_from_pandas(collar, survey, typed)["DH1"].interval_properties
+    assert props["flag"].dtype == np.bool_
+    assert list(props["flag"]) == [True, False]
+    assert np.issubdtype(props["count"].dtype, np.integer)
+    assert list(props["count"]) == [1, 2]

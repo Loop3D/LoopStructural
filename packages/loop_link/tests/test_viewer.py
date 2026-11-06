@@ -402,3 +402,46 @@ def test_send_after_close_raises(fake_viewer: Any, viewer_factory: FACTORY) -> N
     viewer.close()
     with pytest.raises(ViewerClosedError):
         viewer.send(small_points(), id="a")
+
+
+def test_inventory_follows_sends_removes_and_clear(
+    fake_viewer: Any, viewer_factory: FACTORY
+) -> None:
+    """The inventory shows the known scene: send, send again, remove and clear."""
+    viewer = viewer_factory()
+    viewer.send(small_points(), id="a")
+    viewer.send(small_points(), id="b")
+    entries = {entry.id: entry for entry in viewer.inventory()}
+    assert set(entries) == {"a", "b"}
+    assert entries["a"].revision == 1 and entries["b"].revision == 1
+    assert entries["a"].object_type == "Points"
+    viewer.send(small_points(), id="a")
+    assert {e.id: e.revision for e in viewer.inventory()} == {"a": 2, "b": 1}
+    viewer.send_group("g")
+    assert {e.id: e.object_type for e in viewer.inventory()}["g"] == "Group"
+    viewer.remove("a")
+    assert {e.id for e in viewer.inventory()} == {"b", "g"}
+    assert viewer.revisions["a"] == 2
+    viewer.clear()
+    assert viewer.inventory() == []
+
+
+def test_inventory_of_new_connection_is_hello_list(
+    fake_viewer: Any, viewer_factory: FACTORY
+) -> None:
+    """A new viewer sees the hello list after the first one released the scene."""
+    first = viewer_factory()
+    first.send(small_points(), id="a")
+    first.flush()
+    assert wait_for(lambda: "a" in fake_viewer.viewer.objects)
+    first.release_data()
+    second = viewer_factory()
+    deadline = time.monotonic() + 5.0
+    while True:
+        try:
+            second.connect()
+            break
+        except BusyError:
+            assert time.monotonic() < deadline
+            time.sleep(0.01)
+    assert [(e.id, e.revision) for e in second.inventory()] == [("a", 1)]

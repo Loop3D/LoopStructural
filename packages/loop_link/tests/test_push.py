@@ -10,10 +10,11 @@ from pathlib import Path
 from typing import Any
 
 import numpy as np
-from loop_link.push import PushResult, push_objects
+import pytest
 
-from loop_link.errors import Refusal
+from loop_link.errors import Refusal, ViewerClosedError
 from loop_link.objects import Points
+from loop_link.push import PushResult, push_objects
 from loop_link.testing import FakeViewer
 from loop_link.viewer import Viewer
 
@@ -198,3 +199,79 @@ def test_push_result_defaults() -> None:
     assert result.refused == []
     assert result.skipped == []
     assert result.cancelled is False
+
+
+def test_cancel_keeps_old_objects_with_replace_prefix(
+    fake_viewer: Any, viewer_factory: Callable[..., Any]
+) -> None:
+    viewer = viewer_factory()
+    viewer.send(_points(0.0), id="model/old")
+    viewer.flush()
+    assert _wait_for(lambda: "model/old" in fake_viewer.viewer.objects)
+    cancel = threading.Event()
+
+    def objects() -> Iterator[tuple[str, Points]]:
+        yield "model/one", _points(1.0)
+        cancel.set()
+        yield "model/two", _points(2.0)
+
+    result = push_objects(viewer, objects(), replace_prefix="model/", cancel=cancel)
+    assert result.cancelled is True
+    assert result.removed == 0
+    assert _wait_for(lambda: "model/one" in fake_viewer.viewer.objects)
+    assert "model/old" in fake_viewer.viewer.objects
+
+
+def test_second_push_removes_objects_of_first_push_once(
+    fake_viewer: Any, viewer_factory: Callable[..., Any]
+) -> None:
+    viewer = viewer_factory()
+    first = push_objects(viewer, [("model/a", _points(0.0)), ("model/b", _points(1.0))])
+    assert first.sent == 2
+    second = push_objects(viewer, [("model/c", _points(2.0))], replace_prefix="model/")
+    assert second.removed == 2
+    assert _wait_for(lambda: set(fake_viewer.viewer.objects) == {"model/c"})
+    third = push_objects(viewer, [("model/c", _points(3.0))], replace_prefix="model/")
+    assert third.removed == 0
+    assert third.sent == 1
+
+
+def test_skipped_object_keeps_its_old_copy(
+    fake_viewer: Any, viewer_factory: Callable[..., Any]
+) -> None:
+    viewer = viewer_factory()
+    viewer.send(_points(0.0), id="model/bad")
+    viewer.flush()
+    assert _wait_for(lambda: "model/bad" in fake_viewer.viewer.objects)
+    result = push_objects(viewer, [("model/bad", 42)], replace_prefix="model/")
+    assert result.sent == 0
+    assert [item[0] for item in result.skipped] == ["model/bad"]
+    assert result.removed == 0
+    assert "model/bad" in fake_viewer.viewer.objects
+
+
+def test_viewer_closed_error_propagates(
+    fake_viewer: Any, viewer_factory: Callable[..., Any]
+) -> None:
+    viewer = viewer_factory()
+
+    def objects() -> Iterator[tuple[str, Points]]:
+        yield "closing/0", _points(0.0)
+        fake_viewer.viewer.close()
+        deadline = time.monotonic() + 5.0
+        index = 1
+        while time.monotonic() < deadline:
+            yield f"closing/{index}", _points(float(index))
+            index += 1
+            time.sleep(0.05)
+
+    with pytest.raises(ViewerClosedError):
+        push_objects(viewer, objects())
+
+
+def test_generator_expression_input(fake_viewer: Any, viewer_factory: Callable[..., Any]) -> None:
+    viewer = viewer_factory()
+    pairs = ((f"gen/{index}", _points(float(index))) for index in range(3))
+    result = push_objects(viewer, pairs)
+    assert result.sent == 3
+    assert _wait_for(lambda: len(fake_viewer.viewer.objects) == 3)
