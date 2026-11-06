@@ -8,7 +8,7 @@
     {
       "wave": 1,
       "base": "4ed44583f45bd5073ed61bd04d164b6d538b915c",
-      "commit": null,
+      "commit": "5a8b9f4b0108473ed887d73dae990698d19f600c",
       "review": "pending"
     }
   ],
@@ -45,5 +45,5 @@
     "fixed": 0,
     "open_minor": []
   },
-  "note": "Baseline: 'ruff check LoopStructural packages' fails on master (475 errors, ruff 0.16.0 pinned); scoped 'ruff check packages/loop_link' passes."
+  "merged_origin_master": "7497982b (ruff baseline fixed upstream by #395)"
 }
