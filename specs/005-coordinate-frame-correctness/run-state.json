@@ -28,6 +28,12 @@
       "base": "513b2026",
       "commit": "b3d673f0",
       "review": "pass"
+    },
+    {
+      "wave": 45,
+      "base": "8ed97ba2",
+      "commit": "e2b3b9fd",
+      "review": "pass"
     }
   ],
   "runs": {
@@ -103,7 +109,7 @@
     ]
   },
   "findings": {
-    "found": 10,
+    "found": 11,
     "rejected": 0,
     "dropped": 0,
     "fixed": 0,
@@ -117,7 +123,8 @@
       "W44 T095: FDI gradient 0 vs PLI NaN outside support is a known open item; no test of a path leaving the support",
       "W44 T096: p2_model drops gradient rows (P2 defect); add follow-up when P2 fixed",
       "W44 T097: test sets interp.up_to_date by hand after _native.solve",
-      "W44 T095: misplaced-reference test shifts along world x (text said x')"
+      "W44 T095: misplaced-reference test shifts along world x (text said x')",
+      "W45 T099: add reason for 149 vs 147 cells of test_diagnostics_frames.py in verification.md"
     ]
   },
   "answers": "",
