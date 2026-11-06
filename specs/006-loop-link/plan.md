@@ -1,0 +1,783 @@
+# Implementation plan: loop_link, a Python link to geoviewer
+
+**Feature**: `006-loop-link` | **Date**: 2026-11-06 | **Spec**: [spec.md](spec.md)
+
+<!-- A plan says HOW. Written in ASD-STE100 Simplified Technical English.
+Scope of this plan: stories 1 and 5 (stages S1 to S3), as the index of
+specs/README.md says. Stories 6 and 7 (S4) and stories 2 to 4 (S5) get their own
+planner runs (OP6, OP7). -->
+
+## Open points
+
+Each point has a default. A point that has no owner is for the maintainer.
+
+- **OP1**: The `[NEEDS CLARIFICATION]` mark of story 7, scenario 7 (FR-021).
+  The protocol 1.14 data array can carry `colour_map` (`name`, `range`, `clip`,
+  `scale`). So the map, the range and the scale can go in the send message. The
+  property that colours the object (active array) and the plain colour of the
+  object have no field in `scene.upsert`. The `style` field has no schema. Default
+  for S4: send the map, range and scale in `colour_map`, and send the active
+  array and the plain colour as follow-up commands (`colour.set_active`,
+  `object.set_colour`) on the tool connection, inside the same call. The S4
+  task reads how the viewer applies `style` first. It blocks S4 only. S1 to S3
+  do not use it.
+- **OP2**: The default `crs` of `hello`. `Hello.crs` is a required string in the
+  viewer. The viewer may refuse an empty text. Default: `Viewer(crs="")`, and the
+  library keeps the CRS that the viewer answers in `Viewer.scene_crs`. Task T-S1
+  for `viewer.py` reads `crates/geoviewer/src` hello handling in the geoviewer
+  repository first. If the viewer refuses `""`, the library raises
+  `InvalidInputError` that says "give crs=..." for an empty scene.
+- **OP3**: FR-010 says that pyvista input works for all seven types. A pyvista
+  mesh cannot hold a collar, a survey and intervals. Default: `from_pyvista`
+  raises `InvalidInputError` for a Drillhole, and the message names `Drillhole`
+  and the pandas adapter. The coverage table shows this gap until the spec owner
+  answers. Blocks S2 only for this one combination.
+- **OP4**: FR-017 sets Python 3.10 for this package. The QGIS plugin runs on the
+  Python of QGIS, which can be 3.9 on some systems. Owner: plugin repository.
+  Default: keep 3.10. This blocks no task here.
+- **OP5**: The root `pyproject.toml` has `requires-python = '>=3.9'` and the uv
+  workspace takes all `packages/*`. A member with `>=3.10` can make `uv lock`
+  refuse the workspace, or can raise the floor of the lock. Default: add the
+  member, and run `uv lock`. If uv refuses, or if the lock drops 3.9 for the other
+  members, add `packages/loop_link` to `[tool.uv.workspace] exclude` (as
+  `packages/loop_interpolation_core` is) and make the CI job install it with
+  `pip install -e packages/loop_link[tests]`.
+- **OP6**: Stories 6 and 7 (filter and colour, FR-018 to FR-021, SC-007) need the
+  tool connection. Default: plan them in a later planner run as stage S4. The
+  names of the commands are in "Handover".
+- **OP7**: Stories 2, 3 and 4 (select, read selection, fetch) wait for geoviewer
+  spec 066. Default: plan them in a later planner run as stage S5, after 066
+  lands. The plan of 066 uses protocol 1.15 and may change names (its OP4).
+- **OP8**: SC-004 needs the folder `fixtures/protocol/python` of the geoviewer
+  repository. CI of this repository cannot see it. Default: the tests read the
+  folder from the environment variable `LOOP_LINK_GEOVIEWER_FIXTURES`. When it
+  is not set, they skip, with the reason in the skip text. A copy of the frames
+  is not stored here (one source). The maintainer runs the tests with the
+  variable before a release.
+- **OP9**: The structured grid of the spec is the viewer `BlockModel` (a regular
+  axis-aligned grid). Default: a non-regular pyvista `StructuredGrid` or a
+  `RectilinearGrid` with uneven spacing gives `InvalidInputError`. The viewer has
+  no type for them.
+
+## Answers
+
+(empty)
+
+## Summary
+
+`packages/loop_link` is a new Python package. It has its own codec for protocol
+1.14 (numpy and the standard library only), a stdlib WebSocket client (ported from
+the plugin), discovery of the viewer and the token, the seven object types as
+dataclasses, one `Viewer` class that holds the one data connection (with a
+keepalive thread), optional adapters (pyvista, LoopStructural, pandas), a plugin
+push API with no Qt, and a fake viewer in `loop_link.testing`. The package
+registers in `ROADMAP.md`, the release-please files, the CI matrix and the Ruff
+config.
+
+The work has three stages in this plan: S1 (send, story 1), S2 (adapters,
+FR-010), S3 (plugin API, story 5). The stages S4 and S5 are for later runs.
+
+## Technical context
+
+- **Packages changed**: new `packages/loop_link`. Root files: `pyproject.toml`,
+  `uv.lock`, `ROADMAP.md`, `.release-please-config.json`,
+  `.release-please-manifest.json`, `.github/workflows/packages.yml`. No change
+  in `LoopStructural/`, `loop_common`, or `packages/loop_interpolation_core`.
+- **Languages and versions**: Python `>=3.10` for the package (FR-017). Root
+  Ruff and Black target py39. So the package has its own `ruff.toml` with
+  `target-version = "py310"` (see "Project structure"). Every module starts with
+  `from __future__ import annotations` (Ruff rule `FA`). The code uses no
+  `match` statement and no parenthesised `with`, because `black .` from the root
+  parses with target py39.
+- **New dependencies**: required: `numpy`. Extras: `pyvista` (`pyvista`),
+  `loopstructural` (`loop-common`), `pandas` (`pandas`), `tests` (`pytest`).
+  There is no WebSocket package. The plugin client uses the standard library
+  because QGIS does not ship a WebSocket package for each platform. The spec says
+  "a WebSocket client", and a stdlib client meets this with no dependency
+  (principle VII of the geoviewer constitution has the same intent).
+- **Public API and import changes**: new import path `loop_link`. No existing
+  import changes. The public names are in "Functions and public API".
+- **Saved-data format changes**: none. The package writes no file. It reads
+  `link.json` and `instances/<pid>.json` of the viewer.
+- **Coordinate contract**: the library sends the coordinates that the caller
+  gives, as world coordinates (spec 005: public data is in world coordinates). It
+  subtracts the origin of the scene (from the `hello` answer of the viewer) in
+  `f64`, then writes `f32`, or `f64` when a value is more than 4000 from the
+  origin. No local frame or geological frame crosses the boundary. The LoopStructural
+  adapter reads the public attributes `origin`, `step_vector`, `nsteps`,
+  `vertices` (world coordinates) and applies no other transform.
+- **Performance target**: SC-001 (1,000,000 cells, one float property, under 5 s
+  to the inventory) and SC-007 (S4). Measure SC-001 with the fake viewer and
+  with the real viewer by hand (manual check M1).
+- **Platforms and backends**: Windows, Linux, macOS; Python 3.10 to 3.12. The CI
+  matrix variable `PYTHON_VERSIONS` can have 3.9. The package job skips 3.9. The
+  optional extras may be missing. A missing extra gives `MissingExtraError` when
+  the adapter runs, and never at `import loop_link`.
+
+## Constitution check
+
+| Project rule | Result | How the plan agrees |
+|---|---|---|
+| Work stays within the existing library and package responsibilities | Pass | The new package is a client of the geoviewer protocol only. It does not change `LoopStructural/` or another package. The extra `loopstructural` reads the public classes of `loop_common.geometry`. |
+| Development commands come from .dev-tools/project.json and the constitution | Pass | The commands are `pytest`, `ruff check LoopStructural packages` and `black .`. The package tests run with `uv run --package loop-link pytest packages/loop_link/tests` (the form of `packages.yml`). |
+| Both pytest and ruff check LoopStructural packages must pass before merge | Pass | Each stage lists both commands. The new package is under `packages`, so Ruff checks it. |
+| Python changes use numpy-style docstrings and type hints; Ruff targets py39 | Pass, with one deliberate difference | New files get no `D`/`ANN` exemption in `src`. Tests get the same exemption as the other package tests. The package target is py310 by `packages/loop_link/ruff.toml` (FR-017 asks the plan to set it). The repository default stays py39. |
+| Black uses line length 100 and preserves string quoting | Pass | The package uses the root Black config. The code avoids syntax that py39 cannot parse. |
+| ROADMAP.md owns architecture stages and decisions; update it when either changes | Pass | S1 adds the package to `ROADMAP.md` (FR-016, SC-006). |
+| Stages can be tested and reversed independently | Pass | See "Stages and rollback". The new package only adds files. Rollback of each stage is a revert of that stage. |
+| The public GeologicalModel API stays compatible; a break needs a ROADMAP.md decision and a major-version note | Not applicable | No change in `GeologicalModel` or `LoopStructural/`. |
+| The QGIS plugin stays in its separate repository | Pass | The plugin change and the removal of the old client stay in the plugin repository (spec, "Out of scope"). S3 only gives the API. |
+| Feature documents stay under specs/NNN-name/ | Pass | This file is `specs/006-loop-link/plan.md`. |
+| Releases use release-please with per-package paths | Pass | S1 adds `packages/loop_link` to the config and manifest, and adds it to `exclude-paths` of the root entry. |
+| A constitution amendment requires a pull request and maintainer acceptance | Not applicable | The plan does not change the constitution. |
+
+## Design
+
+### Types and data
+
+All modules are in `packages/loop_link/src/loop_link/`. Names are checked free
+(`git grep -n -w` on 2026-11-06 found no use of `loop_link`, `LinkError`,
+`ViewerConnection` or `FakeViewer` outside `specs/`).
+
+**Errors** (`errors.py`). Each type has its own class and a text that says what
+to do (FR-008).
+
+```python
+class LoopLinkError(Exception): ...
+class NoViewerError(LoopLinkError): ...         # no instance file, no listener
+class TokenError(LoopLinkError): ...            # no token, or the viewer refused it
+class BusyError(LoopLinkError): ...             # another program holds the data connection
+class MissingFeatureError(LoopLinkError):       # viewer too old
+    feature: str
+class InvalidInputError(LoopLinkError): ...
+class ObjectTooLargeError(LoopLinkError):
+    object_id: str; size: int; limit: int
+class ViewerClosedError(LoopLinkError): ...     # the viewer closed in the middle of a call
+class ViewerRefusedError(LoopLinkError):
+    refusals: list[Refusal]
+class MissingExtraError(LoopLinkError):         # an optional extra is not installed
+    extra: str
+@dataclass(frozen=True)
+class Refusal: object_id: str; code: str; message: str   # code as in protocol "error"
+```
+
+**Codec** (`protocol.py`, no Qt, no pyvista):
+
+```python
+PROTOCOL_VERSION = {"major": 1, "minor": 14}
+MAX_FRAME_BYTES = 256 * 1024 * 1024
+MAX_HEADER_BYTES = 1024 * 1024
+MAX_OBJECT_BYTES = 2 * 1024 ** 3
+F32_LIMIT = 4000.0
+@dataclass(frozen=True)
+class Frame:
+    header: dict[str, Any]
+    buffers: dict[str, np.ndarray]     # by name, shape as in the header, little-endian
+def encode_frame(header: dict, buffers: Sequence[tuple[str, np.ndarray]] = ()) -> bytes
+def decode_frame(data: bytes) -> Frame
+def decode_header(data: bytes) -> dict
+class ProtocolError(LoopLinkError): ...
+```
+
+`encode_frame` adds `version` and `buffers`, writes `json.dumps(...,
+separators=(",", ":"), allow_nan=False)`, and refuses a header over
+`MAX_HEADER_BYTES` or a frame over `MAX_FRAME_BYTES` (`ObjectTooLargeError` is
+raised by the caller, which knows the id). The dtype names are `f32`, `f64`,
+`u32`, `i32`, `u8`. `decode_frame` checks that `4 + header_len + sum(buffer
+sizes) == len(data)`, and gives `ProtocolError` otherwise.
+
+**Objects** (`objects.py`). All are frozen dataclasses. The arrays are numpy
+arrays after `__post_init__` (`np.asarray`, no copy when possible). A shape error
+gives `InvalidInputError` with the field name. `properties` has one value per
+vertex (or per node for a `BlockModel`). `cell_properties` has one value per cell.
+A value is a 1-D numpy array, or `Categorical`.
+
+```python
+ArrayLike = Union[np.ndarray, Sequence[float]]
+@dataclass(frozen=True)
+class Categorical:                       # protocol data type "referenced"
+    codes: np.ndarray                    # (n,) integers >= 0, below 2**32
+    names: Sequence[str]                 # name of value i is names[i]
+    colours: Optional[Sequence[Sequence[int]]] = None   # RGBA per name; default DEFAULT_CATEGORY_COLOURS cycle
+DEFAULT_CATEGORY_COLOURS: tuple[tuple[int, int, int, int], ...]   # 10 colours of the tab10 set
+
+@dataclass(frozen=True)
+class Points:
+    vertices: ArrayLike                  # (n, 3) world coordinates
+    properties: Mapping[str, Property] = field(default_factory=dict)
+@dataclass(frozen=True)
+class Vectors:                           # a Points object with a property group
+    vertices: ArrayLike                  # (n, 3)
+    orientation: Optional[tuple[ArrayLike, ArrayLike]] = None   # (dip_direction, dip) degrees, each (n,)
+    lineation: Optional[tuple[ArrayLike, ArrayLike]] = None     # (trend, plunge) degrees, each (n,)
+    properties: Mapping[str, Property] = field(default_factory=dict)
+    @classmethod
+    def from_directions(cls, vertices, directions, *, kind: str, properties=None) -> "Vectors"
+        # kind: "normal" (plane normal -> orientation) or "lineation" (line direction)
+@dataclass(frozen=True)
+class Lines:
+    vertices: ArrayLike                  # (n, 3)
+    segments: ArrayLike                  # (m, 2) vertex indices
+    properties: ...; cell_properties: ...   # cell = segment
+@dataclass(frozen=True)
+class Surface:
+    vertices: ArrayLike; triangles: ArrayLike     # (n, 3), (m, 3)
+    properties: ...; cell_properties: ...
+@dataclass(frozen=True)
+class BlockModel:                        # the "structured grid"
+    origin: ArrayLike                    # (3,) world coordinates of the lowest corner
+    cell_sizes: ArrayLike                # (3,) > 0
+    cells: ArrayLike                     # (3,) integers >= 1: nx, ny, nz
+    properties: ...                      # nodes, (nx+1)(ny+1)(nz+1), x fastest
+    cell_properties: ...                 # cells, nx*ny*nz, x fastest
+@dataclass(frozen=True)
+class TetraMesh:
+    vertices: ArrayLike; tetrahedra: ArrayLike    # (n, 3), (m, 4)
+    properties: ...; cell_properties: ...
+@dataclass(frozen=True)
+class Drillhole:
+    collar: ArrayLike                    # (3,) world coordinates
+    survey: ArrayLike                    # (k, 3): depth, azimuth degrees, dip degrees (positive down)
+    intervals: ArrayLike                 # (j, 2): from, to
+    end_of_hole: Optional[float] = None
+    properties: ...                      # one value per survey station (association "vertex")
+    interval_properties: ...             # one value per interval (association "interval")
+SceneObject = Union[Points, Vectors, Lines, Surface, BlockModel, TetraMesh, Drillhole]
+```
+
+Validity rules (all checked in `__post_init__`, so a bad object never reaches the
+codec): the vertex array has finite values; index arrays are integers with
+`0 <= i < n`; an array property has the length of its association; a 2-D property
+is refused; `cells` and `cell_sizes` are positive; a `Points` or `Vectors` object
+has no `cell_properties`.
+
+**Property to protocol data type** (`encode.py`, function `_data_array`):
+
+| Python value | `data_type` | Buffer |
+|---|---|---|
+| `float32` | `float` | `f32` |
+| other float dtype | `float` | `f64` |
+| `bool` | `boolean` | `u8` |
+| integer dtype, all values in the `i32` range | `integer` | `i32` |
+| integer dtype with a value outside `i32` | refused | `InvalidInputError` |
+| numpy string dtype (`U`, `S`) | `text` | `u8` bytes plus `u32` offsets |
+| `Categorical` | `referenced` | `u32`, with `value_map` (`id`, `name`, `colour`) |
+| `object` dtype, other | refused | `InvalidInputError` that names the accepted dtypes |
+
+The data array `id` and `name` are the property name. The buffer name is
+`data/<name>`, and the offsets buffer name is `data/<name>/offsets`. A name that
+is not unique after this rule gives `InvalidInputError`.
+
+**Vector conversion** (`orientation.py`). The directions use x east, y north, z up.
+The result is in degrees.
+
+```python
+def normals_to_orientation(normals: ArrayLike) -> tuple[np.ndarray, np.ndarray]
+    # n = normalise(normal); if n_z < 0: n = -n
+    # dip = degrees(arccos(clip(n_z, -1, 1)));  dip_direction = degrees(arctan2(n_x, n_y)) % 360
+    # n_x = n_y = 0: dip_direction = 0.0
+def directions_to_lineation(directions: ArrayLike) -> tuple[np.ndarray, np.ndarray]
+    # d = normalise(direction); if d_z > 0: d = -d     (a lineation is an axis)
+    # plunge = degrees(arcsin(clip(-d_z, -1, 1)));  trend = degrees(arctan2(d_x, d_y)) % 360
+    # d_x = d_y = 0: trend = 0.0
+def orientation_to_normals(dip_direction, dip) -> np.ndarray      # helper for S5 (fetch); inverse of the first
+def lineation_to_directions(trend, plunge) -> np.ndarray          # inverse of the second
+```
+
+A vector of length 0 or with a NaN gives `InvalidInputError`. The upward normal
+of a plane that dips to azimuth `a` with dip `d` is
+`(sin d sin a, sin d cos a, cos d)`. The unit tests use this as the independent
+expected result. `Vectors.from_directions(kind="normal")` uses the first function.
+`kind="lineation"` uses the second. Another `kind` gives `InvalidInputError`.
+
+**Property groups of `Vectors`**: group id and name `orientation` (role
+`orientation`, members `dip_direction` and `dip`) or `lineation` (role `lineation`,
+members `trend` and `plunge`). The data arrays are `float` `f64`, association
+`vertex`, ids `orientation/dip_direction`, `orientation/dip`,
+`lineation/trend`, `lineation/plunge`. A `Vectors` object with both groups has both.
+
+**Connection state** (`viewer.py`):
+
+```python
+@dataclass(frozen=True)
+class InventoryEntry: id: str; object_type: str; revision: int
+```
+
+### Functions and public API
+
+`loop_link/__init__.py` exports: `Viewer`, `PushResult`, `push_objects`,
+`Points`, `Vectors`, `Lines`, `Surface`, `BlockModel`, `TetraMesh`, `Drillhole`,
+`Categorical`, `InventoryEntry`, `Refusal`, all error classes, and `__version__`.
+`import loop_link` imports numpy and the standard library only (SC-005). A test
+checks that `sys.modules` has no key that starts with `PyQt`, `PySide`, `qgis`,
+`pyvista`, `pandas`, `loop_common` or `LoopStructural` after the import.
+
+```python
+# viewer.py
+class Viewer:
+    def __init__(self, *, port: Optional[int] = None, token: Optional[str] = None,
+                 host: str = "127.0.0.1", crs: str = "", origin: Sequence[float] = (0.0, 0.0, 0.0),
+                 settings_dir: Optional[Path] = None, timeout: float = 5.0,
+                 heartbeat_interval: float = 5.0) -> None
+    def connect(self) -> "Viewer"
+    def send(self, obj: Any, *, id: str, name: Optional[str] = None,
+             parent: Optional[str] = None) -> int
+    def send_group(self, id: str, name: str, parent: Optional[str] = None) -> int
+    def remove(self, id: str) -> None
+    def clear(self) -> None
+    def inventory(self) -> list[InventoryEntry]
+    def flush(self, settle: float = 0.5, *, raise_on_refusal: bool = True) -> list[Refusal]
+    def release_data(self) -> None
+    def close(self) -> None
+    @property
+    def revisions(self) -> Mapping[str, int]       # read-only copy
+    @property
+    def scene_origin(self) -> tuple[float, float, float]
+    @property
+    def scene_crs(self) -> str
+    @property
+    def connected(self) -> bool
+    def __enter__(self) -> "Viewer"; def __exit__(self, *exc) -> None
+```
+
+Behaviour of each method:
+
+- `send` connects when it is not connected (`connect`). `obj` is a `SceneObject`,
+  or an object that an adapter accepts (see S2). `id` is required. `name` defaults
+  to `id`. It returns the new revision. The revision of an id is `previous + 1`,
+  where `previous` is the larger of the revision that this `Viewer` sent and the
+  revision in the inventory of the last `hello` answer; for a new id it is 1
+  (FR-003, scenario 2). It raises `InvalidInputError` for an unaccepted input
+  (the text names the accepted inputs of FR-010), `ObjectTooLargeError` before any
+  byte goes out, and `ViewerClosedError` when the socket closes.
+  After each frame the method drains the socket without a wait and adds each
+  `error` frame that has an `object` to an internal list of `Refusal`.
+- `flush` waits up to `settle` seconds for late `error` frames, returns the list
+  (and clears it), and raises `ViewerRefusedError` when the list is not empty and
+  `raise_on_refusal` is true.
+- `release_data` closes the data connection and stops the keepalive thread. It
+  keeps `revisions`. A later `send` opens a new data connection (FR-014). If the
+  viewer answers `busy`, `send` and `connect` raise `BusyError` ("Another program
+  holds the data connection of the viewer. It can call `release_data()`."). The
+  objects of the other program do not change, because the viewer closes only the
+  second connection.
+- `close` calls `release_data`. `Viewer` is not thread safe. One thread uses it at
+  a time. A lock inside protects the socket against the keepalive thread only.
+- `clear` sends `scene.clear`, `remove` sends `scene.remove`; both drop the
+  revisions of the removed ids. `inventory` returns the entries of the last
+  inventory. It does not poll the viewer (the viewer sends the inventory after
+  `hello` only).
+
+```python
+# discovery.py
+@dataclass(frozen=True)
+class ViewerAddress: host: str; port: int; token: str
+DEFAULT_PORT = 47615
+def settings_dir() -> Path          # %APPDATA%\geoviewer on Windows, else ~/.geoviewer
+def find_viewer(*, port: Optional[int] = None, token: Optional[str] = None,
+                host: str = "127.0.0.1", settings: Optional[Path] = None,
+                timeout: float = 0.5) -> ViewerAddress
+```
+
+`find_viewer` order for the token: the argument, the environment variable
+`GEOVIEWER_TOKEN` (empty is not a token), the field `token` of `link.json` in the
+settings folder. No token gives `TokenError` ("Set GEOVIEWER_TOKEN, or save a
+token in the link popup of the viewer."). Order for the port: the argument; else
+the instance files `instances/<pid>.json` (fields `version`, `pid`, `port`,
+`kind`, `started`, `focused`): drop the files whose port does not accept a TCP
+connection within `timeout`, prefer `kind == "window"` over `"headless"`, then
+the largest `focused`; damaged files are ignored; else `DEFAULT_PORT` if it
+accepts a connection; else `NoViewerError`. The library never starts a viewer
+(scenario 3). A wrong token gives HTTP 401 at the handshake, and the transport
+maps it to `TokenError`.
+
+```python
+# _websocket.py  (port of loopstructural/main/geoviewer/websocket_client.py in the plugin)
+class WebSocketClient:
+    @classmethod
+    def connect(cls, host: str, port: int, *, token: str = "", timeout: float = 5.0,
+                path: str = "/") -> "WebSocketClient"
+    def send_binary(self, data: bytes) -> None
+    def receive(self, timeout: float) -> Optional[bytes]
+    def close(self) -> None
+class WebSocketError(LoopLinkError); class WebSocketClosed(WebSocketError)
+MAX_INCOMING_BYTES = MAX_FRAME_BYTES + MAX_HEADER_BYTES   # the plugin limit of 16 MiB is too small for S5
+```
+
+The port changes three things: the base class of the errors, the incoming limit
+(above), and `connect` maps an HTTP 401 to `TokenError` and a refused connection to
+`NoViewerError`. The handshake header is `Authorization: Bearer <token>`. Data
+clients use the path `/`. The path `/tool` is for S4.
+
+```python
+# encode.py
+def encode_object(obj: SceneObject, *, id: str, name: str, parent: Optional[str],
+                  revision: int, origin: Sequence[float]) -> bytes
+def hello_frame(crs: str, origin: Sequence[float], version: str) -> bytes
+def heartbeat_frame(seq: int) -> bytes
+def remove_frame(id: str) -> bytes
+def clear_frame() -> bytes
+def group_frame(id: str, name: str, parent: Optional[str], revision: int) -> bytes
+```
+
+`encode_object` gives the `scene.upsert` header with these fields: `type`, `id`,
+`object_type`, `name`, `parent`, `revision`, `edit` (`[]`), `replaces` (`null`),
+`geometry`, `params`, `data`, `property_groups`, `drape` (`null`), `style` (`{}`).
+Mapping of the types:
+
+| Class | `object_type` | `geometry` roles and buffers | `params` |
+|---|---|---|---|
+| `Points`, `Vectors` | `Points` | `vertices` | none |
+| `Lines` | `Curve` | `vertices`, `segments` (`u32`) | none |
+| `Surface` | `Surface` | `vertices`, `triangles` (`u32`) | none |
+| `TetraMesh` | `TetraMesh` | `vertices`, `tetrahedra` (`u32`) | none |
+| `BlockModel` | `BlockModel` | none | `origin` (3, minus scene origin), `cell_sizes` (3), `cells` (3) as JSON lists |
+| `Drillhole` | `Drillhole` | `collar` (3, minus origin), `survey` `f64` (k, 3), `intervals` `f64` (j, 2) | `end_of_hole` as `[value]` when set |
+
+Coordinate buffers (`vertices`, `collar`) are `f32` when the largest absolute
+value after the origin shift is at most `F32_LIMIT`, and `f64` otherwise. Before
+the frame goes out, `encode_object` sums the declared bytes of all buffers (and
+`entries * 8 + name bytes` for each `value_map`). A sum over `MAX_OBJECT_BYTES`
+or a frame over `MAX_FRAME_BYTES` raises `ObjectTooLargeError` (edge case, FR-008).
+
+### Messages and saved data
+
+No new message and no saved data. The library writes: `hello` (`application`
+`{"name": "loop_link", "version": __version__}`, `crs`, `origin`), `heartbeat`
+(`seq`), `scene.upsert`, `scene.remove`, `scene.clear`. It reads: `hello`,
+`scene.inventory`, `error`, `heartbeat`. Example `hello` header:
+
+```json
+{"type":"hello","application":{"name":"loop_link","version":"0.1.0"},
+ "crs":"EPSG:28350","origin":[500000.0,7000000.0,0.0],
+ "version":{"major":1,"minor":14},"buffers":[]}
+```
+
+A reply with an unknown type is ignored. An `error` with the code
+`unsupported_version` raises `MissingFeatureError("protocol 1.x")` with the
+`supported` field in the text.
+
+### Behaviour
+
+**Connect** (`Viewer.connect`): `find_viewer`; `WebSocketClient.connect`; send
+`hello`; read until both `hello` and `scene.inventory` arrived (timeout `timeout`,
+then `ViewerClosedError`). An `error` frame with the code `busy` raises
+`BusyError` and closes the socket. Another `error` frame raises `ViewerRefusedError`
+with a `Refusal` that has an empty `object_id`. The scene origin is the `origin`
+of the viewer `hello`; when it is `null` the origin that the caller proposed
+applies. The library keeps both `scene_origin` and `scene_crs`. When the scene
+origin differs from the proposed origin, all frames use the scene origin
+(the viewer rule; the client converts). The revisions of the inventory fill
+the internal table `max(local, inventory)`.
+
+**Keepalive**: the viewer closes a data connection that sends no frame for 15 s
+(spec 003 of geoviewer). After `connect`, a daemon thread `loop-link-heartbeat`
+tries every `heartbeat_interval` seconds (default 5.0) to take the socket lock
+without a wait. When it gets the lock and the last send was more than
+`heartbeat_interval` ago, it sends `heartbeat_frame(seq)`. When the lock is not
+free, a send is running, which counts as traffic. A socket error stops the thread
+and marks the connection closed. `release_data` and `close` stop the thread
+(`threading.Event`) and join it with a timeout of `2 * heartbeat_interval`.
+
+**Plugin API** (S3, `push.py`):
+
+```python
+@dataclass
+class PushResult:
+    sent: int = 0
+    removed: int = 0
+    refused: list[Refusal] = field(default_factory=list)
+    skipped: list[tuple[str, str]] = field(default_factory=list)   # (id, reason)
+    cancelled: bool = False
+    def summary(self) -> str
+def push_objects(viewer: Viewer, objects: Iterable[tuple[str, Any]], *,
+                 replace_prefix: Optional[str] = None,
+                 progress: Optional[Callable[[str], None]] = None,
+                 cancel: Optional[threading.Event] = None) -> PushResult
+```
+
+`objects` yields `(id, object)` pairs. The function connects the viewer when it
+is not connected. For each pair it checks `cancel` (stop with `cancelled=True`),
+calls `progress("Sending <id>...")`, and calls `viewer.send(obj, id=id)`. An
+`InvalidInputError` or `ObjectTooLargeError` for one object goes to `skipped` and
+the push goes on (the plugin rule). A `ViewerClosedError` or `BusyError` stops the
+push and goes up. After the loop, when `replace_prefix` is set, it sends
+`viewer.remove(id)` for each id of the inventory that starts with the prefix and
+was not sent in this call. Then it calls `viewer.flush(raise_on_refusal=False)` and
+puts the refusals in `refused`. The function uses no Qt and no module state. It
+calls `progress` on the thread that calls it. The plugin runs it on a worker thread.
+
+### Stages and rollback
+
+| Stage | Files and behaviour | Acceptance check | Rollback target and compatibility check |
+|---|---|---|---|
+| S1 | New package: codec, errors, WebSocket, discovery, objects, orientation, encode, `Viewer`, fake viewer; repository registration (ROADMAP, release-please, CI, Ruff, uv). Inputs: the dataclasses and numpy arrays only. | `uv run --package loop-link pytest packages/loop_link/tests`; `ruff check LoopStructural packages`; root `pytest`; SC-001, SC-004 (with the variable), SC-005, SC-006; manual check M1 | Revert the stage: the files are new, and the root files change by added lines only. The root `pytest` result is the same as before. |
+| S2 | `adapters/` for pyvista, LoopStructural, pandas; `Viewer.send` calls `adapters.convert`. | The same commands. Adapter tests (pyvista, LoopStructural, pandas extras installed in the test environment). | Revert S2. S1 still sends the dataclasses. |
+| S3 | `push.py` and its tests; frame comparison with the plugin frames; the slow-viewer and cancel tests. | The same commands; SC-004 frames of the plugin. | Revert S3. S1 and S2 stay. |
+| S4, S5 | Not planned here (OP6, OP7). | | |
+
+## Test strategy
+
+- **Unit and regression tests** (`packages/loop_link/tests/`):
+  - `test_protocol.py`: `encode_frame` then `decode_frame` for every dtype; a frame
+    with a wrong size, a header over 1 MiB, a frame over 256 MiB each give
+    `ProtocolError`/`ObjectTooLargeError`. Expected values come from the frames
+    in `fixtures/protocol/expected/*.json` of the geoviewer repository when
+    `LOOP_LINK_GEOVIEWER_FIXTURES` is set (OP8), else from literal bytes in the test.
+  - `test_orientation.py`: a table of planes (`dip_direction`, `dip`) turned into
+    normals by the formula `(sin d sin a, sin d cos a, cos d)` written in the test,
+    then converted back with the library; the same for lineations; the edge cases
+    (vertical plane, horizontal plane, vertical line, zero vector, NaN).
+    Tolerance `1e-9` degrees.
+  - `test_objects.py`: each validity rule, each of the seven types, the property
+    type table (all rows), the refusal of an `object` array and of a 2-D property.
+  - `test_encode.py`: header fields and buffers of the seven types; `f32` below
+    4000 from the origin and `f64` above; the origin shift in `f64`;
+    `ObjectTooLargeError` for 2 GiB + 1 declared bytes (a test that builds the
+    header sizes with `numpy.broadcast_to`, with no real allocation).
+  - `test_discovery.py`: token order (argument, environment, `link.json`), a
+    damaged `link.json`, instance files (window before headless, focus order, dead
+    port dropped, damaged file ignored), no viewer, default port.
+  - `test_viewer.py` (with `FakeViewer`): story 1 scenarios 1 to 7 (the two-program
+    scenario uses two `Viewer` objects on one fake viewer), revision rules, `busy`
+    with the first program unchanged, `release_data` then send from the second
+    program, the keepalive (the fake closes after `heartbeat_timeout=0.6`, the
+    viewer sends with `heartbeat_interval=0.1` and stays up for 2 s), the viewer
+    that closes in the middle of a send gives `ViewerClosedError`, the wrong token
+    gives `TokenError`, the `unsupported_version` error.
+  - `test_import.py`: SC-005 (`sys.modules` check in a subprocess run with
+    `python -I -c`).
+- **Integration and compatibility tests**: `test_fixtures.py` reads every
+  `*.bin` in `LOOP_LINK_GEOVIEWER_FIXTURES/` (`fixtures/protocol/python` of the
+  geoviewer repository) with `FakeViewer.accept_frame`, and fails for a frame
+  that the fake refuses (SC-004). It also encodes the plugin test objects and
+  compares header and buffers to the `.bin` frames. It skips with a reason when
+  the variable is missing (OP8). No public API of `GeologicalModel` is touched.
+- **Round-trip tests**: not applicable in this plan (fetch is S5). The fake viewer
+  keeps the received frames, so `test_viewer.py` compares the stored arrays with
+  the input.
+- **Backend coverage**: the library has one backend (stdlib sockets). S2 tests need
+  pyvista, `loop_common` and pandas; each test file uses `pytest.importorskip`,
+  and the CI `tests` extra installs them (`tests = ["pytest", "pyvista",
+  "loop-common", "pandas"]`), so they do not skip in CI.
+- **Cross-language fixtures**: the frames of `fixtures/protocol/python` and
+  `expected` (OP8). The Rust side is in the geoviewer repository.
+- **Grid and display checks**: `BlockModel` node and cell counts and order. The
+  test builds an analytic property `f = x + 10 y + 100 z` on the nodes of a
+  3 x 4 x 5 grid in x-fastest order, sends it, and reads the stored buffer from
+  the fake viewer. The LoopStructural adapter test repeats this with a
+  `loop_common.geometry.StructuredGrid` (x varies fastest in this class, so no
+  reorder is made; the test proves it).
+- **Performance check**: SC-001. `tests/test_performance.py` is marked
+  `@pytest.mark.slow` (the marker is registered in `packages/loop_link/pyproject.toml`;
+  the default run does not exclude it). It sends a
+  `BlockModel` of 100 x 100 x 100 cells with one `float32` cell property to the
+  fake viewer, and asserts that the inventory has the object in under 5 s. Manual
+  check M1 repeats it with the real headless viewer
+  (`geoviewer-headless --port 0`) and records the time.
+- **Merge gates**: `pytest` and `ruff check LoopStructural packages` must pass. The
+  package gate is `uv run --package loop-link pytest packages/loop_link/tests`
+  (the line of `.github/workflows/packages.yml`, which S1 extends). The root
+  `pytest` does not run the package tests. Black: `black --check packages/loop_link`.
+
+## Project structure
+
+### New package `packages/loop_link`
+
+**Responsibility**: the Python client of the geoviewer protocol: codec, transport,
+discovery, object model, `Viewer`, adapters, plugin push API, fake viewer.
+
+**Files** (S1 unless the text says S2 or S3):
+
+- `packages/loop_link/pyproject.toml` - Create. Name `loop-link`, version `0.1.0`,
+  `requires-python = ">=3.10"`, `dependencies = ["numpy"]`, extras `pyvista`,
+  `loopstructural = ["loop-common"]`, `pandas`, `tests`, setuptools
+  `where = ["src"]`, `include = ["loop_link", "loop_link.*"]`, pytest marker
+  `slow`.
+- `packages/loop_link/README.md` - Create. Install, the token, a 10-line example.
+- `packages/loop_link/LICENSE` - Create. Copy of `packages/loop_common/LICENSE`.
+- `packages/loop_link/ruff.toml` - Create. `extend = "../../pyproject.toml"` and
+  `target-version = "py310"`.
+- `packages/loop_link/src/loop_link/__init__.py` - Create. Exports (see "Functions
+  and public API").
+- `packages/loop_link/src/loop_link/errors.py` - Create. The error classes and `Refusal`.
+- `packages/loop_link/src/loop_link/protocol.py` - Create. The codec.
+- `packages/loop_link/src/loop_link/_websocket.py` - Create. Port of the plugin client.
+- `packages/loop_link/src/loop_link/discovery.py` - Create. `find_viewer`, `settings_dir`.
+- `packages/loop_link/src/loop_link/objects.py` - Create. The dataclasses and `Categorical`.
+- `packages/loop_link/src/loop_link/orientation.py` - Create. The four conversion functions.
+- `packages/loop_link/src/loop_link/encode.py` - Create. `encode_object` and the frame builders.
+- `packages/loop_link/src/loop_link/viewer.py` - Create. `Viewer`, `InventoryEntry`, keepalive thread.
+- `packages/loop_link/src/loop_link/testing/__init__.py` - Create. Exports `FakeViewer`.
+- `packages/loop_link/src/loop_link/testing/fake_viewer.py` - Create (FR-015).
+  `FakeViewer(token="secret", crs="EPSG:28350", origin=(0.0, 0.0, 0.0), kind="window",
+  heartbeat_timeout=15.0, reply_errors=None, read_delay=0.0)` with `.port`,
+  `.objects` (id to `StoredObject(header, buffers)`), `.received` (list of
+  `Frame`), `.inventory()`, `.write_instance_file(settings: Path) -> Path`,
+  `.accept_frame(data: bytes) -> list[Frame]` (apply one frame, return the
+  replies), `.close()`, and the context manager. It listens on `127.0.0.1` port 0
+  in a thread; it accepts any number of connections; it checks the bearer token
+  (HTTP 401 if wrong); it answers `hello` with `hello` and `scene.inventory`; it
+  gives `busy` to a second data connection and closes it; it closes a data
+  connection that sends no frame for `heartbeat_timeout` seconds; it applies the
+  protocol rules of `scene.upsert` (roles, index range, array length, finite
+  coordinates, object size limit) and answers `invalid_object` with `object` when
+  a rule fails; `reply_errors` maps an id to a forced error text. It accepts the
+  path `/tool` and answers every tool message with `unknown_message` in S1.
+- `packages/loop_link/src/loop_link/adapters/__init__.py` - Create (S2).
+  `convert(obj, **hints) -> SceneObject`: return `obj` when it is a `SceneObject`;
+  else choose the adapter by `type(obj).__module__` prefix (`pyvista`,
+  `loop_common`), without an import of the extra; else `InvalidInputError` with
+  the text "Accepted inputs: loop_link objects; pyvista meshes and grids;
+  numpy arrays in a loop_link object; LoopStructural Surface and StructuredGrid;
+  pandas tables for drillholes (use loop_link.adapters.drillholes_from_pandas)".
+- `packages/loop_link/src/loop_link/adapters/pyvista.py` - Create (S2).
+  `from_pyvista(mesh, *, kind: Optional[str] = None, vectors: Optional[str] = None, vectors_kind: str = "normal") -> SceneObject`.
+  Rules: `PolyData` with only vertex cells gives `Points` (`Vectors` when `vectors`
+  names a point array of shape (n, 3), converted by `Vectors.from_directions`);
+  `PolyData` with `lines` gives `Lines`; `PolyData` with faces gives `Surface`
+  (`triangulate()` first when a face is not a triangle);
+  `ImageData` or a `RectilinearGrid` with equal spacing on each axis gives
+  `BlockModel`; `UnstructuredGrid` whose cells are all type `VTK_TETRA` (10) gives
+  `TetraMesh`; any other mesh, and `kind="Drillhole"`, give `InvalidInputError`
+  (OP3, OP9). `point_data` goes to `properties`, `cell_data` to `cell_properties`;
+  a 2-D array is refused. `kind` overrides the rule for `Points` versus `Vectors`
+  only.
+- `packages/loop_link/src/loop_link/adapters/loopstructural.py` - Create (S2).
+  `from_loopstructural(obj) -> SceneObject`: `loop_common.geometry.Surface` gives
+  `Surface(vertices, triangles, properties=obj.properties or {}, cell_properties=obj.cell_properties or {})`;
+  `loop_common.geometry.StructuredGrid` gives `BlockModel(origin=obj.origin,
+  cell_sizes=obj.step_vector, cells=obj.nsteps_cells, properties=obj.properties,
+  cell_properties=obj.cell_properties)`. The adapter finds the class with
+  `sys.modules.get("loop_common.geometry")`, so it never imports the module when the
+  caller has no LoopStructural object.
+- `packages/loop_link/src/loop_link/adapters/pandas.py` - Create (S2).
+  `drillholes_from_pandas(collar, survey, logs=None, *, hole_id="hole_id", x="x", y="y", z="z", depth="depth", azimuth="azimuth", dip="dip", from_="from", to="to", dip_positive_down=True) -> dict[str, Drillhole]`.
+  It groups each table by `hole_id`; the result maps a hole id to a `Drillhole`;
+  extra columns of `logs` become `interval_properties` (a text column of strings
+  becomes a numpy `U` array; any other `object` column gives `InvalidInputError`);
+  `dip_positive_down=False` changes the sign of `dip` (the `geoh5` convention). A
+  hole in `survey` or `logs` that is not in `collar` gives `InvalidInputError`.
+  `Viewer.send` accepts one `Drillhole`. The user sends the dict with a loop of
+  `viewer.send(hole, id=hole_id)`.
+- `packages/loop_link/src/loop_link/push.py` - Create (S3). `PushResult`, `push_objects`.
+- `packages/loop_link/tests/conftest.py` - Create. Fixture `fake_viewer` (starts
+  `FakeViewer`, writes `GEOVIEWER_TOKEN` with `monkeypatch`, sets `settings_dir` to
+  `tmp_path`), and the helper `geoviewer_fixtures()` (OP8).
+- `packages/loop_link/tests/test_protocol.py`, `test_orientation.py`, `test_objects.py`,
+  `test_encode.py`, `test_discovery.py`, `test_viewer.py`, `test_import.py`,
+  `test_performance.py`, `test_fixtures.py` - Create (S1).
+- `packages/loop_link/tests/test_adapter_pyvista.py`,
+  `test_adapter_loopstructural.py`, `test_adapter_pandas.py` - Create (S2).
+- `packages/loop_link/tests/test_push.py` - Create (S3). Scenarios of story 5:
+  `push_objects` frames equal `Viewer.send` frames; `replace_prefix` removes old
+  ids; one bad object goes to `skipped`; `cancel` stops after the current object;
+  a `FakeViewer(read_delay=0.05)` push in a worker thread leaves the main thread
+  free (the main thread counts to 20 ticks of 0.01 s while the push runs).
+- `packages/loop_link/tests/manual_checks.md` - Create (S1). M1: performance with the
+  real headless viewer; M2: a send of the seven types, then a visual check in the
+  window viewer.
+
+### Repository registration (S1)
+
+**Responsibility**: FR-016, SC-006, and the repository settings for the new package.
+
+**Files**:
+
+- `ROADMAP.md` - Change. Add a stage entry for `packages/loop_link` after the
+  last entry of "Stage sequence" (the task reads the end of the list first and
+  uses the next stage number), and add one status log entry. Both entries name
+  `loop_link` (SC-006, first entry).
+- `.release-please-config.json` - Change. Add `"packages/loop_link": {"release-type":
+  "python", "component": "loop-link"}` and add `"packages/loop_link"` to `exclude-paths` of
+  the root entry (SC-006, second entry; the fix of 2026-09-27 keeps sub-package
+  commits out of the root bump).
+- `.release-please-manifest.json` - Change. Add `"packages/loop_link": "0.1.0"`.
+- `pyproject.toml` - Change. Add `loop-link = { workspace = true }` to
+  `[tool.uv.sources]` (or the `exclude` entry of OP5); add
+  `"packages/loop_link/tests/*" = ["D", "ANN"]` to the Ruff `per-file-ignores`. No
+  entry for `packages/loop_link/src`.
+- `uv.lock` - Change. Run `uv lock` (OP5).
+- `.github/workflows/packages.yml` - Change. Add `{ name: loop-link, dir: loop_link }`
+  to the matrix, and add the condition `if: ${{ !(matrix.package.name == 'loop-link' &&
+  startsWith(matrix.python-version, '3.9')) }}` to the two steps that install and test.
+  The paths filter `packages/**` already covers the new folder.
+
+## Requirement coverage
+
+| Requirement | Design and files | Verification | Gap |
+|---|---|---|---|
+| FR-001 | "Functions and public API", `discovery.py` | `test_discovery.py`; story 1 scenario 1 in `test_viewer.py` | None |
+| FR-002 | `objects.py`, `encode.py` (type table) | `test_encode.py`, `test_viewer.py` (seven types) | None |
+| FR-003 | `Viewer.send` revision rule | `test_viewer.py` scenario 2 | None |
+| FR-004 | Select by id and index | none in this plan | OP7 (S5) |
+| FR-005 | Read selection and poll | none in this plan | OP7 (S5) |
+| FR-006 | Fetch | none in this plan | OP7 (S5) |
+| FR-007 | `import loop_link` has no Qt; `push.py` has no Qt | `test_import.py` | None |
+| FR-008 | `errors.py`; each edge case maps to one class (token: `TokenError`; no viewer: `NoViewerError`; too large: `ObjectTooLargeError`; closed: `ViewerClosedError`; bad property: `InvalidInputError`; busy: `BusyError`; older viewer: `MissingFeatureError`; origin differs: handled by conversion, not an error) | `test_viewer.py`, `test_encode.py`, `test_discovery.py` | None for S1 to S3. The older-viewer case for select and read is S5 (OP7). |
+| FR-009 | `push.py` (`push_objects`, `PushResult`) | `test_push.py` | None. The plugin change is in the plugin repository. |
+| FR-010 | `adapters/` | `test_adapter_*.py` | OP3 (pyvista to Drillhole); OP9 (non-regular grids) |
+| FR-011 | `orientation.py`, `Vectors` | `test_orientation.py`; story 1 scenario 6 | None |
+| FR-012 | One codec in `protocol.py` and `encode.py`; core imports numpy and the standard library only; adapters are extras | `test_import.py`; `test_protocol.py` | None |
+| FR-013 | Missing feature detect for 066 | none in this plan | OP7 (S5) |
+| FR-014 | `Viewer.release_data`, `BusyError`, keepalive thread. The tool connection part (select, read, fetch, filter, colour while busy) is S4 and S5. | `test_viewer.py` scenario 7 (send part) | OP6, OP7 for the tool connection part |
+| FR-015 | `testing/fake_viewer.py` | `test_viewer.py`, `test_fixtures.py` | None |
+| FR-016 | "Repository registration" | `git grep -n loop_link ROADMAP.md .release-please-config.json` gives 2 entries or more | None |
+| FR-017 | `pyproject.toml` (`>=3.10`), `ruff.toml` (py310) | `ruff check` and CI on 3.10 to 3.12 | OP4 (QGIS Python), OP5 (uv) |
+| FR-018 | Filter | none in this plan | OP6 (S4) |
+| FR-019 | Filter wait and cancel | none in this plan | OP6 (S4) |
+| FR-020 | Colour | none in this plan | OP6 (S4) |
+| FR-021 | Colour in send | none in this plan | OP1, OP6 (S4) |
+| SC-001 | `test_performance.py`; M1 | assert under 5 s | None |
+| SC-002 | Round trip | none in this plan | OP7 (S5) |
+| SC-003 | Selection in one message | none in this plan | OP7 (S5) |
+| SC-004 | `test_fixtures.py` | frames of `fixtures/protocol/python`; the geoviewer tests read the frames of the library in the geoviewer repository | OP8 |
+| SC-005 | `test_import.py`; CI matrix | `sys.modules` check | None |
+| SC-006 | "Repository registration" | `git grep` of two files | None |
+| SC-007 | Reply time of colour and filter | none in this plan | OP6 (S4) |
+| Story 1 scenarios 1 to 8 | `Viewer`, `discovery.py`, `test_viewer.py`, `test_import.py` | as above | None |
+| Story 5 scenarios 1 and 2 | `push.py`, `test_push.py` | frame comparison with plugin frames (OP8); worker thread test | OP8 |
+
+## Handover
+
+Other specs and repositories use these contracts.
+
+- **Python API**: the names in "Functions and public API", `loop_link.objects`,
+  `loop_link.errors`, and `loop_link.testing.FakeViewer`. The `0.x` version means
+  a breaking change can come in a minor version, and release-please records it.
+- **Plugin repository**: `push_objects(viewer, objects, replace_prefix=, progress=,
+  cancel=)` replaces `GeoViewerLink.push`. `PushResult.summary()` keeps the text of
+  the old `PushResult.summary()`. The plugin builds `objects` as `(id, SceneObject)`
+  pairs and runs the call on its worker thread. The plugin owns the change and the
+  removal of the old client (FR-009).
+- **S4** (filter and colour) uses: `WebSocketClient.connect(..., path="/tool")`;
+  the tool messages `commands.list`, `command.run`, `command.result`,
+  `request.error`, `command.cancel`, `command.progress`; the commands
+  `filter.edit` (input `{"object": id, "edit": {"kind": "set_range", "array":
+  name, "min": text, "max": text, "keep_nan": bool}}`; kinds `add`, `set_range`,
+  `set_values` with `values: list[u32]`, `set_on`, `set_exclude`, `remove`,
+  `cancel`), `colour.set_active` (`id`, `array`), `colour.set_map` (`id`, `name`),
+  `colour.set_range` (`id`, `min` text, `max` text), `colour.clear_range` (`id`),
+  `colour.set_scale` (`object`, `scale` `linear` or `log`), `object.set_colour`
+  (`id`, `colour` RGB or `null`). The viewer answers `{"status":"done"}` or
+  `{"status":"refused","text":...}`; the result has no count of passing elements, so
+  the "count of elements that pass" of story 6 needs a check in the S4 plan.
+- **S5** (select, read selection, fetch) uses the 066 messages `selection.set`,
+  `selection.get`, `selection.result`, `object.fetch`, `object.header`,
+  `object.part`, `object.end` of protocol 1.15. `MAX_INCOMING_BYTES` already
+  allows the 64 MiB parts. The helpers `orientation_to_normals` and
+  `lineation_to_directions` are for the fetch of vectors.
+- **geoviewer repository**: the frames that `encode_object` writes must pass the
+  geoviewer protocol tests. The coordinator copies the frames to
+  `fixtures/protocol/python` by hand when the fixtures change (OP8).
+- **Shared files**: `ROADMAP.md`, `pyproject.toml`, `uv.lock`,
+  `.release-please-config.json`, `.release-please-manifest.json`,
+  `.github/workflows/packages.yml`. Specs 003 and 005 also work in these
+  repository areas. S1 changes only the lines named above. A merge conflict in
+  `uv.lock` is solved by `uv lock` again.
+
+## Complexity tracking
+
+None. Every applicable constitution check passes. The py310 target of the package
+is a decision that FR-017 asks of this plan, and it does not break a project rule
+(the repository target py39 stays for all other code).

@@ -1,0 +1,10 @@
+{
+  "spec": "006-loop-link",
+  "worktree": "C:/Users/lachl/dev/LoopStructural-006",
+  "branch": "feat/006-loop-link",
+  "review_mode": "wave",
+  "start_commit": "d4157a3e37f945f8b1570cc9b2eef9278c1ae086",
+  "waves": [],
+  "runs": {},
+  "findings": { "found": 0, "rejected": 0, "dropped": 0, "fixed": 0, "open_minor": [] }
+}
