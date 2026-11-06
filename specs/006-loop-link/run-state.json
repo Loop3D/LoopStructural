@@ -42,6 +42,12 @@
       "base": "da01e309b89fb5d348df611afd6cb9442ad8d2a9",
       "commit": "464241849a8758a95aaea7fd2a4a27212cbc37ef + test strengthening",
       "review": "pass"
+    },
+    {
+      "wave": 7,
+      "base": "c200f6745253dc7bfe196eca1bd88ba14273093c",
+      "commit": null,
+      "review": "pending"
     }
   ],
   "runs": {
@@ -148,6 +154,18 @@
       }
     ],
     "T018": [
+      {
+        "model": "sonnet",
+        "result": "pass"
+      }
+    ],
+    "T014": [
+      {
+        "model": "sonnet",
+        "result": "pass"
+      }
+    ],
+    "T020": [
       {
         "model": "sonnet",
         "result": "pass"
