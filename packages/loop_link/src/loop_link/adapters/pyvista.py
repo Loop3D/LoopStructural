@@ -99,8 +99,11 @@ def _convert_polydata(
     """Convert a PolyData to Lines, Surface, Points or Vectors."""
     if mesh.n_lines > 0:
         segments, owners = _polydata_lines(mesh)
+        # Cell data is ordered: vertices, lines, polygons, strips.
+        first = int(mesh.n_verts)
         cell_properties = {
-            name: values[owners] for name, values in _collect(mesh.cell_data, "cell").items()
+            name: values[first : first + int(mesh.n_lines)][owners]
+            for name, values in _collect(mesh.cell_data, "cell").items()
         }
         return Lines(
             vertices=np.asarray(mesh.points),
@@ -109,6 +112,11 @@ def _convert_polydata(
             cell_properties=cell_properties,
         )
     if len(mesh.faces) > 0:
+        if mesh.n_verts > 0 or mesh.n_strips > 0:
+            raise InvalidInputError(
+                "The PolyData mixes polygons with vertices or strips. "
+                "Split the mesh into one mesh for each kind of cell."
+            )
         if not mesh.is_all_triangles:
             mesh = mesh.triangulate()
         return Surface(
@@ -144,6 +152,17 @@ class _Without:
         return self._data[name]
 
 
+def _check_direction(mesh: Any) -> None:  # noqa: ANN401
+    """Raise an error when an ImageData has a rotation."""
+    direction = getattr(mesh, "direction_matrix", None)
+    if direction is not None and not np.allclose(np.asarray(direction), np.eye(3)):
+        raise InvalidInputError(
+            "The image data has a rotation that the viewer cannot show. "
+            "Resample the image data to a grid without rotation, or remove the rotation "
+            "(set direction_matrix to the identity matrix), then try again."
+        )
+
+
 def _even_step(axis: np.ndarray, label: str) -> float:
     """Return the step of an axis, or raise an error when the steps are not equal."""
     if len(axis) < 2:
@@ -160,6 +179,7 @@ def _even_step(axis: np.ndarray, label: str) -> float:
 def _convert_block(mesh: Any, pv: Any) -> BlockModel:  # noqa: ANN401
     """Convert an ImageData or a RectilinearGrid to a BlockModel."""
     if isinstance(mesh, pv.ImageData):
+        _check_direction(mesh)
         origin = np.asarray(mesh.origin, dtype=np.float64)
         sizes = np.asarray(mesh.spacing, dtype=np.float64)
         cells = np.array(mesh.dimensions) - 1

@@ -187,3 +187,27 @@ def test_bool_and_int_columns_keep_dtype(collar, survey, logs):
     assert list(props["flag"]) == [True, False]
     assert np.issubdtype(props["count"].dtype, np.integer)
     assert list(props["count"]) == [1, 2]
+
+
+def test_missing_column_names_column_and_table(collar, survey, logs):
+    with pytest.raises(InvalidInputError, match="dip.*survey"):
+        drillholes_from_pandas(collar, survey.drop(columns=["dip"]), logs)
+    with pytest.raises(InvalidInputError, match="'x'.*collar"):
+        drillholes_from_pandas(collar.drop(columns=["x"]), survey, logs)
+
+
+def test_duplicate_and_missing_hole_ids(collar, survey, logs):
+    dup = pd.concat([collar, collar.iloc[[0]]], ignore_index=True)
+    with pytest.raises(InvalidInputError, match="DH1"):
+        drillholes_from_pandas(dup, survey, logs)
+    bad = survey.copy()
+    bad["hole_id"] = [None, "DH1", "DH2", "DH2"]
+    with pytest.raises(InvalidInputError, match="hole id"):
+        drillholes_from_pandas(collar, bad, logs)
+
+
+def test_string_column_with_missing_values(collar, survey, logs):
+    bad = logs.copy()
+    bad["lith"] = pd.Series(["granite", None, "chert"], dtype=object)
+    with pytest.raises(InvalidInputError, match="lith.*missing values"):
+        drillholes_from_pandas(collar, survey, bad)

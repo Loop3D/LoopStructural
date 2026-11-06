@@ -11,7 +11,6 @@ import pytest
 pv = pytest.importorskip("pyvista")
 
 from loop_link.adapters.pyvista import from_pyvista
-
 from loop_link.errors import InvalidInputError
 from loop_link.objects import (
     BlockModel,
@@ -239,3 +238,37 @@ def test_send_grid_function_in_node_order(fake_viewer: Any, viewer_factory: Any)
     np.testing.assert_allclose(stored.header["params"]["cell_sizes"], [1.0, 2.0, 3.0])
     assert list(stored.header["params"]["cells"]) == [3, 4, 5]
     np.testing.assert_allclose(stored_array(stored, "f"), expected)
+
+
+def test_rotated_image_data_is_refused() -> None:
+    """An ImageData with a rotation gives InvalidInputError."""
+    img = pv.ImageData(dimensions=(3, 3, 3))
+    img.direction_matrix = np.array([[0, -1, 0], [1, 0, 0], [0, 0, 1.0]])
+    with pytest.raises(InvalidInputError):
+        from_pyvista(img)
+
+
+def test_identity_direction_image_data_works() -> None:
+    """An ImageData with the identity direction matrix gives BlockModel."""
+    img = pv.ImageData(dimensions=(3, 3, 3))
+    img.direction_matrix = np.eye(3)
+    assert isinstance(from_pyvista(img), BlockModel)
+
+
+def test_lines_cell_data_skips_vertex_cells() -> None:
+    """Cell data of lines is read after the vertex cells and repeated for each segment."""
+    m = pv.PolyData(np.random.default_rng(0).random((5, 3)))
+    m.lines = np.array([3, 0, 1, 2, 2, 3, 4])
+    m.verts = np.array([1, 0])
+    m.cell_data["c"] = np.array([10, 20, 30])
+    result = from_pyvista(m)
+    assert isinstance(result, Lines)
+    assert result.cell_properties["c"].tolist() == [20, 20, 30]
+
+
+def test_polygons_mixed_with_vertices_are_refused() -> None:
+    """A PolyData with polygons and vertex cells gives InvalidInputError."""
+    m = pv.PolyData(POINTS.copy(), faces=np.array([3, 0, 1, 2]))
+    m.verts = np.array([1, 3])
+    with pytest.raises(InvalidInputError):
+        from_pyvista(m)

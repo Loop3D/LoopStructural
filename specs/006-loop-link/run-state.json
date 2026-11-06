@@ -70,8 +70,8 @@
     {
       "wave": 11,
       "base": "133c19b9567cda3ec31f4bb4bc6db9765a2205bb",
-      "commit": null,
-      "review": "pending",
+      "commit": "0210cfb0 + fix commit",
+      "review": "pass (one fix round; fixes verified by orchestrator, 433 tests x3)",
       "note": "VERIFY lists fake_viewer.py, test_adapter_pandas.py, test_viewer.py as outside Files: orchestrator-ordered fix of a FakeViewer text-array bug found by T033/T032 tests"
     }
   ],
@@ -292,10 +292,10 @@
     ]
   },
   "findings": {
-    "found": 53,
+    "found": 60,
     "rejected": 0,
     "dropped": 0,
-    "fixed": 44,
+    "fixed": 50,
     "open_minor": [
       "W1 T004: loop-link CI job fails between wave 1 and wave 2 (fixed by T003/T006); do not merge wave 1 alone",
       "W2 T006: errors with formatted message are not picklable",
@@ -305,7 +305,9 @@
       "W7 T020: viewer.inventory test retries BusyError (timing)",
       "W8 T021: a single frame write longer than 15 s could still hit the viewer idle timeout (heartbeat cannot send while a send holds the lock)",
       "W9 T034/T035: replace_prefix only removes ids reported at hello time; objects the same Viewer object sent earlier are not covered unless the Viewer reconnects",
-      "W9 T037: M2 step 6 expected type names are user-facing names; the viewer reports Lines as Curve and Vectors as Points"
+      "W9 T037: M2 step 6 expected type names are user-facing names; the viewer reports Lines as Curve and Vectors as Points",
+      "W11 T031: from_loopstructural raises MissingExtraError (not InvalidInputError) when loop_common is not importable (accepted)",
+      "W11 T033: pandas adapter speed 20000 holes x 5 survey rows ~4.6 s before the sort-once change"
     ]
   },
   "merged_origin_master": "7497982b (ruff baseline fixed upstream by #395)"

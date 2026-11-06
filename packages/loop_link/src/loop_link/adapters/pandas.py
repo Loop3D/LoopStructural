@@ -33,26 +33,59 @@ def _column_array(values: pd.Series, name: str) -> np.ndarray:
     InvalidInputError
         If the column is an ``object`` column that holds a value that is not a string.
     """
-    if values.dtype == object:
-        items = list(values)
-        if all(isinstance(item, str) for item in items):
-            return np.asarray(items, dtype="U")
+    if values.dtype.kind != "f" and values.isna().any():
+        raise InvalidInputError(
+            f"The column '{name}' has missing values. "
+            "Fill or remove the missing values, then try again."
+        )
+    if values.dtype.kind in "biuf" and values.dtype != object:
+        return values.to_numpy()
+    if values.dtype.kind in "US":
+        return np.asarray(values.to_numpy(), dtype="U")
+    if values.dtype == object or str(values.dtype) in ("string", "str"):
+        if values.dtype == object and values.isna().any():
+            raise InvalidInputError(
+                f"The column '{name}' has missing values. "
+                "Fill or remove the missing values, then try again."
+            )
+        if pd_infer(values) == "string":
+            return np.asarray(values.to_numpy(dtype=object), dtype="U")
         raise InvalidInputError(
             f"The column '{name}' has values that are not all strings. "
             "Convert the column to numbers or to strings, then try again."
         )
-    if values.dtype.kind in "biuf":
-        return values.to_numpy()
-    if values.dtype.kind in "US":
-        return np.asarray(values.to_numpy(), dtype="U")
-    # A string dtype of pandas: all values must be str.
-    items = list(values)
-    if all(isinstance(item, str) for item in items):
-        return np.asarray(items, dtype="U")
     raise InvalidInputError(
         f"The column '{name}' has a type that is not supported. "
         "Convert the column to numbers or to strings, then try again."
     )
+
+
+def pd_infer(values: pd.Series) -> str:
+    """Return the pandas inferred type name of a column."""
+    from pandas.api.types import infer_dtype
+
+    return str(infer_dtype(values, skipna=False))
+
+
+def _require(table: pd.DataFrame, table_name: str, columns: list[str]) -> None:
+    """Raise if a table does not have all the named columns."""
+    for column in columns:
+        if column not in table.columns:
+            raise InvalidInputError(
+                f"The column '{column}' is not in the {table_name} table. "
+                "Check the column names and try again."
+            )
+
+
+def _hole_ids(table: pd.DataFrame, table_name: str, hole_id: str) -> list[str]:
+    """Return the hole ids of a table as strings. Raise if an id is missing."""
+    column = table[hole_id]
+    if column.isna().any():
+        raise InvalidInputError(
+            f"The {table_name} table has a missing hole id in column '{hole_id}'. "
+            "Give each row a hole id."
+        )
+    return column.astype(str).tolist()
 
 
 def drillholes_from_pandas(
@@ -113,75 +146,78 @@ def drillholes_from_pandas(
     except ImportError as exc:
         raise MissingExtraError("pandas") from exc
 
+    _require(collar, "collar", [hole_id, x, y, z])
+    _require(survey, "survey", [hole_id, depth, azimuth, dip])
     if logs is not None:
-        logs = logs.reset_index(drop=True)  # Row labels become row positions.
-    ids = [str(value) for value in collar[hole_id]]
+        _require(logs, "logs", [hole_id, from_, to])
+
+    ids = _hole_ids(collar, "collar", hole_id)
+    if len(set(ids)) != len(ids):
+        seen: set[str] = set()
+        for name in ids:
+            if name in seen:
+                raise InvalidInputError(
+                    f"The hole id '{name}' is in the collar table more than once. "
+                    "Use one collar row for each hole."
+                )
+            seen.add(name)
     known = set(ids)
 
-    def _group(table: pd.DataFrame) -> dict[str, pd.DataFrame]:
-        groups: dict[str, pd.DataFrame] = {}
-        for key, rows in table.groupby(hole_id, sort=False):
-            name = str(key)
+    def _group(table: pd.DataFrame, table_name: str, sort_by: str) -> tuple[pd.DataFrame, dict]:
+        """Sort a table once and return it with the row positions of each hole."""
+        table = table.assign(**{hole_id: _hole_ids(table, table_name, hole_id)})
+        table = table.sort_values(sort_by, kind="stable").reset_index(drop=True)
+        positions = table.groupby(hole_id, sort=False).indices
+        for name in positions:
             if name not in known:
                 raise InvalidInputError(
                     f"The hole id '{name}' is not in the collar table. "
                     "Add the hole to the collar table or remove its rows."
                 )
-            groups[name] = rows
-        return groups
+        return table, positions
 
-    survey_groups = _group(survey)
-    log_groups = _group(logs) if logs is not None else {}
-
+    survey_sorted, survey_pos = _group(survey, "survey", depth)
     sign = 1.0 if dip_positive_down else -1.0
-    log_columns: list[str] = []
+    survey_all = np.column_stack(
+        [
+            survey_sorted[depth].to_numpy(dtype=np.float64),
+            survey_sorted[azimuth].to_numpy(dtype=np.float64),
+            sign * survey_sorted[dip].to_numpy(dtype=np.float64),
+        ]
+    ).reshape(-1, 3)
+
+    log_pos: dict = {}
+    intervals_all = np.zeros((0, 2), dtype=np.float64)
     log_arrays: dict[str, np.ndarray] = {}
     if logs is not None:
-        log_columns = [c for c in logs.columns if c not in (hole_id, from_, to)]
-        for column in log_columns:
-            log_arrays[column] = _column_array(logs[column], str(column))
+        logs_sorted, log_pos = _group(logs, "logs", from_)
+        intervals_all = np.column_stack(
+            [
+                logs_sorted[from_].to_numpy(dtype=np.float64),
+                logs_sorted[to].to_numpy(dtype=np.float64),
+            ]
+        ).reshape(-1, 2)
+        for column in logs_sorted.columns:
+            if column not in (hole_id, from_, to):
+                log_arrays[str(column)] = _column_array(logs_sorted[column], str(column))
 
+    xyz = np.column_stack(
+        [
+            collar[x].to_numpy(dtype=np.float64),
+            collar[y].to_numpy(dtype=np.float64),
+            collar[z].to_numpy(dtype=np.float64),
+        ]
+    )
+    empty = np.zeros(0, dtype=np.intp)
     holes: dict[str, Drillhole] = {}
     for position, name in enumerate(ids):
-        row = collar.iloc[position]
-        xyz = [float(row[x]), float(row[y]), float(row[z])]
-
-        rows = survey_groups.get(name)
-        if rows is None or len(rows) == 0:
-            survey_values = np.zeros((0, 3), dtype=np.float64)
-        else:
-            rows = rows.sort_values(depth, kind="stable")
-            survey_values = np.column_stack(
-                [
-                    rows[depth].to_numpy(dtype=np.float64),
-                    rows[azimuth].to_numpy(dtype=np.float64),
-                    sign * rows[dip].to_numpy(dtype=np.float64),
-                ]
-            )
-
-        interval_values = np.zeros((0, 2), dtype=np.float64)
-        interval_properties: dict[str, np.ndarray] = {}
-        if logs is not None:
-            log_rows = log_groups.get(name)
-            if log_rows is not None and len(log_rows) > 0:
-                interval_values = np.column_stack(
-                    [
-                        log_rows[from_].to_numpy(dtype=np.float64),
-                        log_rows[to].to_numpy(dtype=np.float64),
-                    ]
-                )
-                index = log_rows.index.to_numpy()
-                for column in log_columns:
-                    interval_properties[str(column)] = log_arrays[column][index]
-            else:
-                for column in log_columns:
-                    interval_properties[str(column)] = log_arrays[column][:0]
-
+        rows = survey_pos.get(name, empty)
+        log_rows = log_pos.get(name, empty)
         holes[name] = Drillhole(
-            collar=xyz,
-            survey=survey_values,
-            intervals=interval_values,
+            collar=xyz[position],
+            survey=survey_all[rows],
+            intervals=intervals_all[log_rows],
             properties={},
-            interval_properties=interval_properties,
+            interval_properties={col: arr[log_rows] for col, arr in log_arrays.items()},
         )
     return holes
