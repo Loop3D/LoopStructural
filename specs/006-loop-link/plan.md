@@ -61,7 +61,14 @@ Each point has a default. A point that has no owner is for the maintainer.
 
 ## Answers
 
-(empty)
+- 2026-11-06 (orchestrator, wave 10 review): pyvista adapter. The adapter skips the arrays that
+  pyvista itself adds (`Normals`, `Texture Coordinates`) without an error, so that `pv.Sphere()`
+  and `pv.Plane()` can be sent as they are. Any other 2-D array is still refused with the array
+  name. The core object rule (a 2-D property is refused) does not change.
+- 2026-11-06 (orchestrator, wave 10 review): `Viewer.inventory()` shows the known scene: the list
+  from the hello frame, updated by `send` (add or update the entry), `remove` (drop it) and
+  `clear` (drop all). `push_objects` with `replace_prefix` keeps the ids of the objects that were
+  sent or skipped in this call, and does no removal when the push was cancelled.
 
 ## Summary
 
