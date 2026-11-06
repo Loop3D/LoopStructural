@@ -64,6 +64,12 @@
       "base": "e30df7a1",
       "commit": "6ccb8536",
       "review": "pass"
+    },
+    {
+      "wave": 51,
+      "base": "793bca04",
+      "commit": "e981a3de",
+      "review": "pass"
     }
   ],
   "runs": {
@@ -199,7 +205,7 @@
     ]
   },
   "findings": {
-    "found": 16,
+    "found": 17,
     "rejected": 0,
     "dropped": 0,
     "fixed": 1,
@@ -219,7 +225,8 @@
       "W47 T103: selector check in test_mandatory_cells_name_existing_tests is vacuous; find_skips does not scan same-file helpers",
       "W49 T105: 1 relaxed tolerance from S1 (golden gradient atol 1e-5 -> 1e-4, test_golden.py) accepted as S1 decision; maintainer to confirm",
       "W49 T105: coverage ledger rows for _fold_setup.py and exporters.py are indirect; count 52 vs 53",
-      "W50 T106: added known-issue rows beyond task text (FDI/PLI outside support, P2 einsum) - accepted"
+      "W50 T106: added known-issue rows beyond task text (FDI/PLI outside support, P2 einsum) - accepted",
+      "W51 T107: verification.md ledger names tests/unit/test_api.py:121; correct path is tests/unit/interpolator/test_api.py:121"
     ]
   },
   "answers": "",
