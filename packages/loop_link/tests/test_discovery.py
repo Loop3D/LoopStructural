@@ -126,6 +126,18 @@ def test_damaged_link_file_raises_token_error(tmp_path):
         find_viewer(port=1234, settings=tmp_path)
 
 
+def test_link_file_without_token_field_raises_token_error(tmp_path):
+    (tmp_path / "link.json").write_text(json.dumps({"other": "value"}), encoding="utf-8")
+    with pytest.raises(TokenError):
+        find_viewer(port=1234, settings=tmp_path)
+
+
+def test_link_file_with_empty_token_raises_token_error(tmp_path):
+    write_link(tmp_path, "")
+    with pytest.raises(TokenError):
+        find_viewer(port=1234, settings=tmp_path)
+
+
 # Port and host
 
 
@@ -139,6 +151,12 @@ def test_explicit_host_is_kept(tmp_path):
     write_link(tmp_path)
     address = find_viewer(port=4321, host="localhost", settings=tmp_path)
     assert address.host == "localhost"
+
+
+def test_explicit_loopback_host_is_returned(tmp_path):
+    write_link(tmp_path)
+    address = find_viewer(port=4321, host="127.0.0.1", settings=tmp_path)
+    assert address.host == "127.0.0.1"
 
 
 def test_explicit_port_skips_instance_files(tmp_path, listeners):

@@ -155,3 +155,58 @@ def test_bad_normal_raises(bad):
 def test_bad_direction_raises(bad):
     with pytest.raises(InvalidInputError):
         directions_to_lineation(np.array([bad]))
+
+
+def test_single_vector_input_normals_to_orientation():
+    # A (3,) input is one vector. The result holds one value for each output.
+    dip_direction, dip = normals_to_orientation(_upward_normal(135.0, 45.0))
+    assert np.ravel(dip_direction)[0] == pytest.approx(135.0, abs=1e-9)
+    assert np.ravel(dip)[0] == pytest.approx(45.0, abs=1e-9)
+
+
+def test_single_vector_input_directions_to_lineation():
+    trend, plunge = directions_to_lineation(_direction(270.0, 10.0))
+    assert np.ravel(trend)[0] == pytest.approx(270.0, abs=1e-9)
+    assert np.ravel(plunge)[0] == pytest.approx(10.0, abs=1e-9)
+
+
+def test_single_vector_input_orientation_to_normals():
+    normals = orientation_to_normals(90.0, 45.0)
+    np.testing.assert_allclose(np.ravel(normals), _upward_normal(90.0, 45.0), atol=1e-9)
+
+
+def test_single_vector_input_lineation_to_directions():
+    directions = lineation_to_directions(90.0, 45.0)
+    np.testing.assert_allclose(np.ravel(directions), _direction(90.0, 45.0), atol=1e-9)
+
+
+def test_downward_horizontal_normal():
+    # Watch for -0.0: the dip direction must be a plain 0.0.
+    dip_direction, dip = normals_to_orientation(np.array([[0.0, 0.0, -1.0]]))
+    assert dip_direction[0] == 0.0
+    assert 0.0 <= dip_direction[0] < 360.0
+    assert dip[0] == pytest.approx(0.0, abs=1e-9)
+
+
+def test_downward_vertical_line():
+    trend, plunge = directions_to_lineation(np.array([[0.0, 0.0, -1.0]]))
+    assert trend[0] == 0.0
+    assert 0.0 <= trend[0] < 360.0
+    assert plunge[0] == pytest.approx(90.0, abs=1e-9)
+
+
+def test_inf_vector_raises():
+    bad = np.array([[float("inf"), 0.0, 1.0]])
+    with pytest.raises(InvalidInputError):
+        normals_to_orientation(bad)
+    with pytest.raises(InvalidInputError):
+        directions_to_lineation(bad)
+
+
+def test_batch_with_one_zero_row_raises():
+    good = _upward_normal(45.0, 45.0)
+    batch = np.array([good, [0.0, 0.0, 0.0], good])
+    with pytest.raises(InvalidInputError):
+        normals_to_orientation(batch)
+    with pytest.raises(InvalidInputError):
+        directions_to_lineation(batch)

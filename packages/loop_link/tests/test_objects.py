@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+import dataclasses
+
 import numpy as np
 import pytest
 from loop_link.objects import (
@@ -59,7 +61,7 @@ def make_drillhole(**kw):
 def test_valid_objects_are_accepted_and_use_numpy():
     objs = [
         make_points(properties={"a": [1, 2, 3, 4]}),
-        Vectors(vertices=VERTS, orientation=[[1, 0, 0]] * 4),
+        Vectors(vertices=VERTS, orientation=([0] * 4, [0] * 4)),
         make_lines(properties={"a": [1, 2, 3, 4]}, cell_properties={"b": [1, 2]}),
         make_surface(properties={"a": [1, 2, 3, 4]}, cell_properties={"b": [1, 2]}),
         make_block(properties={"a": np.arange(27.0)}, cell_properties={"b": np.arange(8.0)}),
@@ -83,16 +85,53 @@ def test_valid_objects_are_accepted_and_use_numpy():
     assert isinstance(objs[6].intervals, np.ndarray)
 
 
-def test_objects_are_frozen():
-    pts = make_points()
-    with pytest.raises(AttributeError):
-        pts.vertices = np.zeros((1, 3))
+@pytest.mark.parametrize(
+    ("factory", "field"),
+    [
+        (make_points, "vertices"),
+        (lambda: Vectors(vertices=VERTS), "vertices"),
+        (make_lines, "vertices"),
+        (make_surface, "vertices"),
+        (make_block, "cells"),
+        (make_tetra, "vertices"),
+        (make_drillhole, "collar"),
+    ],
+)
+def test_objects_are_frozen(factory, field):
+    obj = factory()
+    with pytest.raises(dataclasses.FrozenInstanceError):
+        setattr(obj, field, None)
+
+
+def test_default_properties_are_not_shared():
+    first = make_points()
+    second = make_points()
+    assert first.properties is not second.properties
+    first_vec = Vectors(vertices=VERTS)
+    second_vec = Vectors(vertices=VERTS)
+    assert first_vec.properties is not second_vec.properties
 
 
 def test_categorical_valid():
     cat = Categorical(codes=[0, 1, 1], names=["a", "b"])
     assert isinstance(cat.codes, np.ndarray)
     assert cat.colours is None
+
+
+def test_default_category_colours_are_tab10():
+    expected = [
+        (31, 119, 180),
+        (255, 127, 14),
+        (44, 160, 44),
+        (214, 39, 40),
+        (148, 103, 189),
+        (140, 86, 75),
+        (227, 119, 194),
+        (127, 127, 127),
+        (188, 189, 34),
+        (23, 190, 207),
+    ]
+    assert [tuple(c) for c in DEFAULT_CATEGORY_COLOURS] == [(*rgb, 255) for rgb in expected]
 
 
 def test_default_category_colours():
@@ -158,13 +197,30 @@ def test_tetrahedra_index_out_of_range(bad):
 
 
 def test_points_property_wrong_length():
-    with pytest.raises(InvalidInputError, match="bad"):
+    with pytest.raises(InvalidInputError, match="properties"):
         make_points(properties={"bad": [1, 2, 3]})
 
 
+def test_categorical_property_valid():
+    cat = Categorical(codes=[0, 1, 1, 0], names=["a", "b"])
+    pts = make_points(properties={"c": cat})
+    assert pts.properties["c"] is cat
+
+
+def test_categorical_property_wrong_length():
+    cat = Categorical(codes=[0, 1, 1], names=["a", "b"])
+    with pytest.raises(InvalidInputError, match="properties"):
+        make_points(properties={"c": cat})
+
+
+def test_float_index_array_refused():
+    with pytest.raises(InvalidInputError, match="segments"):
+        Lines(vertices=VERTS, segments=[[0.5, 1]])
+
+
 def test_vectors_property_wrong_length():
-    with pytest.raises(InvalidInputError, match="bad"):
-        Vectors(vertices=VERTS, orientation=[[1, 0, 0]] * 4, properties={"bad": [1]})
+    with pytest.raises(InvalidInputError, match="properties"):
+        Vectors(vertices=VERTS, orientation=([0] * 4, [0] * 4), properties={"bad": [1]})
 
 
 @pytest.mark.parametrize("factory", [make_lines, make_surface, make_tetra])
@@ -269,6 +325,12 @@ def test_categorical_code_too_large():
         Categorical(codes=[0, 2], names=["a", "b"])
 
 
+@pytest.mark.parametrize("bad", [-1, 2**32])
+def test_categorical_code_out_of_range(bad):
+    with pytest.raises(InvalidInputError, match="codes"):
+        Categorical(codes=[0, bad], names=["a", "b"])
+
+
 # --- Vectors.from_directions ---
 
 
@@ -282,3 +344,56 @@ def test_from_directions_valid_kind():
     # Orientation holds two arrays, one value for each vertex.
     assert len(vec.orientation) == 2
     assert all(len(arr) == 4 for arr in vec.orientation)
+
+
+def test_from_directions_vertical_normal():
+    # A normal that points up gives dip direction 0 and dip 0.
+    vec = Vectors.from_directions(VERTS, [[0, 0, 1]] * 4, kind="normal")
+    np.testing.assert_allclose(vec.orientation[0], [0] * 4, atol=1e-9)
+    np.testing.assert_allclose(vec.orientation[1], [0] * 4, atol=1e-9)
+    assert vec.lineation is None
+
+
+def test_from_directions_tilted_normal():
+    # Normal formula: n = (sin d sin a, sin d cos a, cos d).
+    # Here a is the dip direction and d is the dip, both in degrees.
+    a, d = 40.0, 30.0
+    ar, dr = np.radians(a), np.radians(d)
+    n = [np.sin(dr) * np.sin(ar), np.sin(dr) * np.cos(ar), np.cos(dr)]
+    vec = Vectors.from_directions(VERTS, [n] * 4, kind="normal")
+    np.testing.assert_allclose(vec.orientation[0], [a] * 4, atol=1e-6)
+    np.testing.assert_allclose(vec.orientation[1], [d] * 4, atol=1e-6)
+
+
+def test_from_directions_lineation():
+    # Lineation formula: direction = (cos p sin t, cos p cos t, -sin p).
+    # Here t is the trend and p is the plunge, both in degrees.
+    t, p = 70.0, 25.0
+    tr, pr = np.radians(t), np.radians(p)
+    direction = [np.cos(pr) * np.sin(tr), np.cos(pr) * np.cos(tr), -np.sin(pr)]
+    vec = Vectors.from_directions(VERTS, [direction] * 4, kind="lineation")
+    assert vec.orientation is None
+    assert len(vec.lineation) == 2
+    np.testing.assert_allclose(vec.lineation[0], [t] * 4, atol=1e-6)
+    np.testing.assert_allclose(vec.lineation[1], [p] * 4, atol=1e-6)
+
+
+def test_from_directions_keeps_properties():
+    props = {"a": [1, 2, 3, 4]}
+    vec = Vectors.from_directions(VERTS, [[0, 0, 1]] * 4, kind="normal", properties=props)
+    np.testing.assert_array_equal(vec.properties["a"], [1, 2, 3, 4])
+
+
+# --- Vectors orientation and lineation ---
+
+
+def test_vectors_with_orientation_and_lineation():
+    vec = Vectors(vertices=VERTS, orientation=([0] * 4, [10] * 4), lineation=([5] * 4, [20] * 4))
+    assert vec.orientation is not None
+    assert vec.lineation is not None
+
+
+@pytest.mark.parametrize("field", ["orientation", "lineation"])
+def test_vectors_wrong_length_arrays(field):
+    with pytest.raises(InvalidInputError, match=field):
+        Vectors(vertices=VERTS, **{field: ([0] * 3, [0] * 3)})

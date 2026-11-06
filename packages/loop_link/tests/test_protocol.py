@@ -18,6 +18,8 @@ from loop_link.protocol import (
     encode_frame,
 )
 
+from loop_link import protocol
+
 DTYPES = {
     "f32": np.float32,
     "f64": np.float64,
@@ -121,14 +123,44 @@ def test_byte_literal_layout():
     # The frame starts with the header length (u32, little-endian).
     # The JSON header has no spaces.
     data = encode_frame({"type": "heartbeat", "seq": 1})
-    (header_len,) = struct.unpack("<I", data[:4])
-    header_json = data[4 : 4 + header_len]
-    assert len(data) == 4 + header_len
-    assert data[:4] == struct.pack("<I", len(header_json))
-    assert b" " not in header_json
-    header = json.loads(header_json)
+    json_part = data[4:]
+    assert data[:4] == struct.pack("<I", len(json_part))
+    assert b" " not in json_part
+    header = json.loads(json_part)
+    assert isinstance(header, dict)
     assert header["type"] == "heartbeat"
     assert header["seq"] == 1
+
+
+def test_frame_over_max_is_error_on_encode(monkeypatch):
+    # A frame over MAX_FRAME_BYTES is not allowed.
+    monkeypatch.setattr(protocol, "MAX_FRAME_BYTES", 100)
+    with pytest.raises(ProtocolError):
+        encode_frame({"type": "test"}, [("a", np.zeros(100, dtype=np.float64))])
+
+
+def test_big_endian_input_gives_little_endian_bytes():
+    # An input in big-endian order must be sent in little-endian order.
+    array = np.array([1.0, 2.0], dtype=">f4")
+    frame = decode_frame(encode_frame({"type": "test"}, [("a", array)]))
+    assert frame.buffers["a"].tobytes() == np.array([1.0, 2.0], "<f4").tobytes()
+
+
+def test_non_contiguous_input_gives_contiguous_bytes():
+    # A non-contiguous input must be sent as contiguous bytes.
+    array = np.array([1.0, 0.0, 2.0, 0.0], dtype="<f4")[::2]
+    assert not array.flags["C_CONTIGUOUS"]
+    frame = decode_frame(encode_frame({"type": "test"}, [("a", array)]))
+    assert frame.buffers["a"].tobytes() == np.array([1.0, 2.0], "<f4").tobytes()
+
+
+def test_header_length_over_data_is_error():
+    # The header length field is larger than the data.
+    data = struct.pack("<I", 1000) + b"{}"
+    with pytest.raises(ProtocolError):
+        decode_frame(data)
+    with pytest.raises(ProtocolError):
+        decode_header(data)
 
 
 _FIXTURE_DIR = os.environ.get("LOOP_LINK_GEOVIEWER_FIXTURES")
