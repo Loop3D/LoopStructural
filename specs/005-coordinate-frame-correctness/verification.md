@@ -1138,3 +1138,64 @@ Other records.
 - T092 (Surfe module name): the pip package is `surfepy` (version 0.52). The wheel holds the module `surfepy` and no module `surfe`. Decision: `test_p0_surfe_nans.py` now uses `pytest.importorskip("surfepy")`.
 - T093 (BOM): `_structured_grid_3d.py` and `test_fault_frame_analytic.py` lost their BOM. One line changed in each file.
 - T090 (deleted test): the test `test_inverse_transform_is_broken_for_normal_point_clouds_bug` was deleted. The new tests in `tests/unit/utils/test_transformation.py` replace it.
+
+## S6 post-fix results
+
+Method. The S6 test files ran on the tree after T100 to T103 (PowerShell, the worktree `LoopStructural-005-s6-build` on `PYTHONPATH`, each file in its own call, `-q -p no:cacheprovider --tb=short --durations=0`). The package file ran in a call of its own. All default tests ran, with no deselection. OP2 stays closed: the default run includes the long files, and `test_fault_frame_validation.py` does its 26 R2 solves. No test failed and no test was changed.
+
+Commands and counts.
+
+| Command | Result | Run time |
+|---|---|---|
+| `pytest packages/loop_common/tests/test_euclidean_transformation.py` | 12 passed | 0.07 s |
+| `pytest tests/unit/utils/test_transformation.py` | 142 passed | 0.37 s |
+| `pytest tests/unit/modelling/test_fault_frame_validation.py` | 210 passed | 174.04 s |
+| `pytest tests/unit/modelling/test_diagnostics_backends.py` | 120 passed | 70.18 s |
+| `pytest tests/unit/modelling/test_diagnostics_frames.py` | 149 passed | 155.96 s |
+| `pytest tests/unit/interpolator/test_backend_world_contract.py` | 51 passed, 0 skipped | 0.40 s |
+| `pytest tests/unit/interpolator/test_backend_optional_native_surfe.py -rs` | 24 skipped | 0.09 s |
+| `pytest tests/unit/test_backend_matrix.py` | 64 passed, 0 skipped | 1.43 s |
+
+Comparison with the pre-fix section. The package file went from 12 failed to 12 passed. The root transformation file went from 131 failed and 11 passed to 142 passed. The diagnostics backends file went from 72 failed and 48 passed to 120 passed. The matrix file went from 33 passed to 64 passed (the T102 and T103 tests are new). The other files have the same counts as before: 149, 210, 51 passed, and 24 skipped.
+
+Package file (`packages/loop_common/tests/test_euclidean_transformation.py`): 12 failed before, 12 passed now.
+
+| Test function | Passed / total | Before |
+|---|---|---|
+| `test_module_imports` | 1 / 1 | 1 failed |
+| `test_export_from_loop_common_math` | 1 / 1 | 1 failed |
+| `test_round_trip_without_fit` | 6 / 6 | 6 failed |
+| `test_two_dimensional_rotation_of_known_angle` | 1 / 1 | 1 failed |
+| `test_three_dimensional_rotation_keeps_the_z_direction` | 1 / 1 | 1 failed |
+| `test_fit_without_scikit_learn_raises_import_error` | 1 / 1 | 1 failed |
+| `test_fit_without_rotation_needs_no_scikit_learn` | 1 / 1 | 1 failed |
+
+Group counts: 1 + 1 + 6 + 1 + 1 + 1 + 1 = 12 passed.
+
+Root file (`tests/unit/utils/test_transformation.py`): 131 failed before, all 131 pass now. The file has 142 tests and 142 passed (131 + 11).
+
+| Test function | Passed / total | Before |
+|---|---|---|
+| `test_round_trip_explicit_parameters` | 96 / 96 | 96 failed |
+| `test_round_trip_after_fit` | 24 / 24 | 24 failed |
+| `test_integer_input_is_not_truncated` | 1 / 1 | 1 failed |
+| `test_one_dimensional_input_raises_value_error` | 3 / 3 | 3 failed |
+| `test_entry_points_are_one_class` | 1 / 1 | 1 failed |
+| `test_pickle_with_the_old_module_path_loads` | 1 / 1 | 1 failed |
+| `test_new_pickle_names_the_loop_common_path` | 1 / 1 | 1 failed |
+| `test_fit_aligns_a_line_with_negative_slope` | 2 / 2 | 2 failed |
+| `test_fit_three_dimensions` | 2 / 2 | 2 failed |
+
+Group counts: 96 + 24 + 1 + 3 + 1 + 1 + 1 + 2 + 2 = 131 passed. The 11 tests that passed before still pass.
+
+Diagnostics file (`tests/unit/modelling/test_diagnostics_backends.py`): 72 failed before, all 72 pass now. The file has 120 tests and 120 passed (72 + 48). Each of the three functions has 24 cells (4 anchors x 3 rotations x 2 engines).
+
+| Test function | Passed / total | Before |
+|---|---|---|
+| `test_faulted_value_residuals_use_restored_positions` | 24 / 24 | 24 failed |
+| `test_faulted_gradient_cosines_use_restored_positions` | 24 / 24 | 24 failed |
+| `test_report_physical_value_matches_independent_rms` | 24 / 24 | 24 failed |
+
+Group counts: 24 + 24 + 24 = 72 passed. The guard tests (`test_fault_restores_the_stored_rows` 24, `test_p2_misfit_leaves_state_unchanged` 12, `test_p2_report_blocks_are_separate` 12) still pass.
+
+Skipped cells. `tests/unit/interpolator/test_backend_optional_native_surfe.py` gives 24 skipped. 12 cells skip because `loop_interpolation_core` is not installed, and 12 cells skip because `surfepy` is not installed. The reason is the same as before the fix, and it is an optional dependency that is absent.

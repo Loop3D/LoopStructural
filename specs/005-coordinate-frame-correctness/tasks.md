@@ -1540,7 +1540,7 @@ frame. A legacy file needs an explicit choice. A frame change never gives a stal
 
 ## Phase 25: Stage S6 finish (FR-029, SC-014, SC-015, SC-018)
 
-- [ ] T104 [US5] [M] Record the S6 post-fix results in `verification.md`.
+- [x] T104 [US5] [M] Record the S6 post-fix results in `verification.md`.
   - Files: `specs/005-coordinate-frame-correctness/verification.md`
   - Needs: T100, T101, T102, T103
   - Wave: 48

@@ -146,6 +146,12 @@
         "model": "sonnet",
         "result": "pass"
       }
+    ],
+    "T104": [
+      {
+        "model": "sonnet",
+        "result": "pass"
+      }
     ]
   },
   "findings": {
