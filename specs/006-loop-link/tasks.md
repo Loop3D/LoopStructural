@@ -78,7 +78,7 @@ length 100; keep string quotes as written (Black `skip-string-normalization`).
   - Done when: `packages/loop_link/.venv/Scripts/python.exe -m pytest packages/loop_link/tests/test_protocol.py` fails with ImportError of `loop_link.protocol`, then passes after T008.
   - Context: API under test: `encode_frame(header: dict, buffers: Sequence[tuple[str, np.ndarray]] = ()) -> bytes`, `decode_frame(data: bytes) -> Frame` (`Frame(header: dict, buffers: dict[str, np.ndarray])`), `decode_header(data: bytes) -> dict`, `ProtocolError`, constants `MAX_FRAME_BYTES=256*1024*1024`, `MAX_HEADER_BYTES=1024*1024`, `PROTOCOL_VERSION={"major":1,"minor":14}`. Frame layout: `[u32 LE header_len][JSON header][buffers]`, little-endian. `encode_frame` adds `version` and `buffers` (`[{"name","dtype","shape"}]`). dtype names `f32 f64 u32 i32 u8`. Tests: a round trip for each of the 5 dtypes with shape (2,3); a zero-element array is valid; a frame whose length differs from `4+header_len+sum(sizes)` gives `ProtocolError`; a header over 1 MiB gives `ProtocolError` on encode; a frame under 4 bytes gives `ProtocolError`; NaN in the header gives an error (`allow_nan=False`); an unsupported dtype (`complex128`) gives `ProtocolError`. A byte-literal test: `encode_frame({"type":"heartbeat","seq":1})` starts with `struct.pack('<I', len(header_json))` and the JSON has no spaces. If the environment variable `LOOP_LINK_GEOVIEWER_FIXTURES` is set, also decode each `*.bin` file in it and assert `decode_frame` does not raise (skip with a reason when not set).
 
-- [ ] T008 [Found] [M] Implement the codec `protocol.py`.
+- [x] T008 [Found] [M] Implement the codec `protocol.py`.
   - Files: `packages/loop_link/src/loop_link/protocol.py`
   - Needs: T007
   - Wave: 4
@@ -92,7 +92,7 @@ length 100; keep string quotes as written (Black `skip-string-normalization`).
   - Done when: `packages/loop_link/.venv/Scripts/python.exe -m pytest packages/loop_link/tests/test_orientation.py` fails with ImportError, then passes after T010.
   - Context: Under test: `normals_to_orientation(normals) -> (dip_direction, dip)`, `directions_to_lineation(directions) -> (trend, plunge)`, `orientation_to_normals(dip_direction, dip) -> (n,3)`, `lineation_to_directions(trend, plunge) -> (n,3)`. Degrees. x east, y north, z up. Independent expected value in the test: a plane that dips to azimuth `a` with dip `d` has the upward normal `(sin d sin a, sin d cos a, cos d)` (write this formula in the test, not by calling the library). Tests: 12 planes (`a` in 0, 45, 90, 135, 180, 270, 359; `d` in 10, 45, 80) convert to `(a, d)` within 1e-9 degrees; a downward normal gives the same result as its upward twin; a vertical plane (n_z=0) gives dip 90; a horizontal plane gives dip 0 and dip direction 0.0; lineations: `(trend, plunge)` to direction `(cos p sin t, cos p cos t, -sin p)` and back; a direction with z>0 flips (axis); vertical line gives trend 0.0 and plunge 90; the inverse functions round trip; a zero vector and a NaN vector each raise `InvalidInputError`. Dip direction and trend are in [0, 360).
 
-- [ ] T010 [Found] [M] Implement `orientation.py`.
+- [x] T010 [Found] [M] Implement `orientation.py`.
   - Files: `packages/loop_link/src/loop_link/orientation.py`
   - Needs: T009
   - Wave: 4
@@ -141,7 +141,7 @@ length 100; keep string quotes as written (Black `skip-string-normalization`).
   - Done when: `packages/loop_link/.venv/Scripts/python.exe -m pytest packages/loop_link/tests/test_discovery.py` fails with ImportError, then passes after T017.
   - Context: Under test: `find_viewer(*, port=None, token=None, host="127.0.0.1", settings=None, timeout=0.5) -> ViewerAddress` (frozen dataclass `host, port, token`), `settings_dir() -> Path` (`%APPDATA%\geoviewer` on Windows, else `~/.geoviewer`), `DEFAULT_PORT = 47615`. Use `tmp_path` as `settings` and `monkeypatch` for `GEOVIEWER_TOKEN`. Token order: the argument; then `GEOVIEWER_TOKEN` (an empty value is not a token); then the field `token` of `settings/link.json`; none gives `TokenError`; a damaged `link.json` (not JSON) gives `TokenError`. Instance files: `settings/instances/<pid>.json` with fields `version (1), pid, port, kind ("window" or "headless"), started, focused` (ms). To make a live port, open a `socket` listener on port 0 in the test. Rules: a file whose port has no listener is dropped; `window` before `headless`; then the largest `focused`; a damaged file is ignored; an explicit `port` skips the files; no file and no listener on the default port gives `NoViewerError`. The function never starts a program. `settings_dir()` test: monkeypatch `sys.platform`, `APPDATA` and `HOME`.
 
-- [ ] T017 [Found] [M] Implement `discovery.py`.
+- [x] T017 [Found] [M] Implement `discovery.py`.
   - Files: `packages/loop_link/src/loop_link/discovery.py`
   - Needs: T016
   - Wave: 4
