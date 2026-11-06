@@ -94,6 +94,12 @@
         "model": "sonnet",
         "result": "pass"
       }
+    ],
+    "T099": [
+      {
+        "model": "sonnet",
+        "result": "pass"
+      }
     ]
   },
   "findings": {

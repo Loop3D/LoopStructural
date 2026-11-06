@@ -1483,7 +1483,7 @@ frame. A legacy file needs an explicit choice. A frame change never gives a stal
   - Done when: `pytest tests/unit/interpolator/test_backend_optional_native_surfe.py -rs` shows 24 skipped cases, each with the text "optional dependency '<module>' is not installed" (the extensions are absent here), and no error.
   - Context: New file; optional cells `native-extension` and `surfe-extension`. Each test starts with `require_optional("native")` or `require_optional("surfe")` from `tests.fixtures.backend_matrix` (T094). `test_native_extension_r1_fit_in_world` (12 = 4 anchors x 3 rotations): R1 fit (`exact=False` support, 27 value rows) solved with `solver="native"`, `solver_kwargs={"tol": 1e-12}`; world value error at most `1e-8*F` and gradient error at most `1e-8*max(1, abs(g))` at the two query offsets (SC-002); the result equals the `cg` result within `1e-6*F`. `test_surfe_extension_r1_values_and_gradients_in_world` (12): Surfe wrapper with `poly_order=1` and the default kernel; 27 interface rows; same SC-002 limits. The extensions are not installed, so the tolerances are not measured (OP21): never relax a limit; a miss is a fit-accuracy finding. Do not stub the extension in this file. Rule: tests must show a wrong answer (principle V). Write in ASD-STE100 Simplified Technical English.
 
-- [ ] T099 [US5] [M] Record the S6 pre-fix evidence in `verification.md` (FR-031).
+- [x] T099 [US5] [M] Record the S6 pre-fix evidence in `verification.md` (FR-031).
   - Files: `specs/005-coordinate-frame-correctness/verification.md`
   - Needs: T090, T091, T092, T093, T095, T096, T097, T098
   - Wave: 45

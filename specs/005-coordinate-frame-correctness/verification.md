@@ -1052,3 +1052,89 @@ The root time is 131 s more than the S4 time. The root suite has 150 more passed
 - OP12 (cell-centre result): not reproduced. All 60 cell-centre cells passed before and after the fix. The premise of the one-to-one test was corrected. No change to `_bounding_box.py`.
 - OP16 (default shape): the default shape is kept. Two families of different length now give the shape (1, N1 + N2).
 - OP17 (parity files under `packages/loop_interpolation/tests/golden`): not changed. `git diff --stat 1c029d21 HEAD -- packages/loop_interpolation/tests/golden` prints nothing.
+
+## S6 pre-fix failures
+
+Method. The new S6 tests ran on the tree before T100 and T101 (PowerShell, the worktree `LoopStructural-005-s6-build` on `PYTHONPATH`, root and package runs in separate calls). No S6 library change exists at this point. Three runs were made for this section with `-q -p no:cacheprovider --tb=line`. The other runs were measured by the orchestrator on the same tree and are cited as recorded runs.
+
+Commands and counts.
+
+| Command | Result | Kind of run |
+|---|---|---|
+| `pytest packages/loop_common/tests/test_euclidean_transformation.py` | 12 failed, 0 passed | Run for this section |
+| `pytest tests/unit/utils/test_transformation.py` | 131 failed, 11 passed | Run for this section |
+| `pytest tests/unit/modelling/test_diagnostics_backends.py` | 72 failed, 48 passed in 96.18 s | Run for this section |
+| `pytest tests/unit/modelling/test_diagnostics_frames.py` | 149 passed in 396 s | Recorded run |
+| `pytest tests/unit/modelling/test_fault_frame_validation.py` | 210 passed in 198 s | Recorded run |
+| `pytest tests/unit/interpolator/test_backend_world_contract.py` | 51 passed, 0 skipped | Recorded run |
+| `pytest tests/unit/interpolator/test_backend_optional_native_surfe.py` | 24 skipped | Recorded run |
+| `pytest tests/unit/test_backend_matrix.py` | 33 passed | Recorded run |
+
+Package file (`packages/loop_common/tests/test_euclidean_transformation.py`): 12 failed, 0 passed.
+
+| Test function | Failed / total | First error |
+|---|---|---|
+| `test_module_imports` | 1 / 1 | `ImportError: cannot import name 'getLogger' from 'loop_common.math'` (`_transformation.py` line 5; the module does not import) |
+| `test_export_from_loop_common_math` | 1 / 1 | `AttributeError: module 'loop_common.math' has no attribute 'EuclideanTransformation'` |
+| `test_round_trip_without_fit` | 6 / 6 | The same `ImportError` for `getLogger`. The ids are `[2-1]`, `[2-4]`, `[2-50]`, `[3-1]`, `[3-4]`, `[3-50]` |
+| `test_two_dimensional_rotation_of_known_angle` | 1 / 1 | The same `ImportError` |
+| `test_three_dimensional_rotation_keeps_the_z_direction` | 1 / 1 | The same `ImportError` |
+| `test_fit_without_scikit_learn_raises_import_error` | 1 / 1 | The same `ImportError` |
+| `test_fit_without_rotation_needs_no_scikit_learn` | 1 / 1 | The same `ImportError` |
+
+Group counts: 1 + 1 + 6 + 1 + 1 + 1 + 1 = 12. The old file in `loop_common` cannot be imported, so every test fails at the import.
+
+Root file (`tests/unit/utils/test_transformation.py`): 131 failed, 11 passed.
+
+| Test function | Failed / total | First error |
+|---|---|---|
+| `test_round_trip_explicit_parameters` | 96 / 96 | `dimensions=2` with 3 or 5 columns: 48 cells (N 1, 4, 50 x 4 anchors x 2 column counts x 2 angles). `ValueError: operands could not be broadcast together with remapped shapes : (1,3)->(1,newaxis,3) (2,2)->(2,2)` (the 5-column cells give (1,5)). `dimensions=3` with 3 or 5 columns: 48 cells, and every cell fails the z check. `AssertionError: assert 97.805 <= (1e-12 * 1.0)` (the largest error is 105.45) |
+| `test_round_trip_after_fit` | 24 / 24 | `ValueError: n_components=2 must be between 0 and min(n_samples, n_features)=1 with svd_solver='full'` (4 anchors x 3 values of N x 2 flags) |
+| `test_integer_input_is_not_truncated` | 1 / 1 | `AssertionError: assert 0.9617 <= 9.0e-10` (the integer input is truncated) |
+| `test_one_dimensional_input_raises_value_error` | 3 / 3 | `[transform]`: `IndexError: tuple index out of range`. `[inverse_transform]` and `[fit]`: `AssertionError: Regex pattern did not match` |
+| `test_entry_points_are_one_class` | 1 / 1 | `ImportError: cannot import name 'getLogger' from 'loop_common.math'` |
+| `test_pickle_with_the_old_module_path_loads` | 1 / 1 | `ImportError: cannot import name 'EuclideanTransformation' from 'loop_common.math'` |
+| `test_new_pickle_names_the_loop_common_path` | 1 / 1 | The same `ImportError` for `EuclideanTransformation` |
+| `test_fit_aligns_a_line_with_negative_slope` | 2 / 2 | `[-30.0]`: `AssertionError: assert 1.0472 < 1e-09`. `[-10.0]`: `assert 0.3491 < 1e-09` (the angle error is twice the slope angle) |
+| `test_fit_three_dimensions` | 2 / 2 | `ValueError: shapes (3,) and (2,) not aligned: 3 (dim 0) != 2 (dim 0)` (the fit uses 2 components only) |
+
+Group counts: 96 + 24 + 1 + 3 + 1 + 1 + 1 + 2 + 2 = 131. The defect for a missing scikit-learn is covered in the package file (`test_fit_without_scikit_learn_raises_import_error`), which fails at the import now.
+
+Diagnostics file (`tests/unit/modelling/test_diagnostics_backends.py`): 72 failed, 48 passed in 96.18 s. Each of the three failing functions has 24 cells (4 anchors x 3 rotations x 2 engines).
+
+| Test function | Failed / total | First error |
+|---|---|---|
+| `test_faulted_value_residuals_use_restored_positions` | 24 / 24 | `assert_allclose` fails (line 144). Example `[a1-r30-FDI]`: all 8 elements differ. The method gives about 0.079 to 0.083, and the independent residual at the restored positions gives 0.0001 to 0.002. The pre-fix faulted value residual is 0.083 to 0.099 |
+| `test_faulted_gradient_cosines_use_restored_positions` | 24 / 24 | `assert_allclose` fails (line 159). Example `[a1-r30-FDI]`: the method gives cosine 0.99108 and the independent value is 0.99548 (difference 0.0044) |
+| `test_report_physical_value_matches_independent_rms` | 24 / 24 | `AssertionError: assert 0.0727 <= 1.39e-07` (line 187). The report RMS differs from the independent RMS by about 0.07 to 0.08 |
+
+Group counts: 24 + 24 + 24 = 72. Tests 1, 2 and 4 of the task text are these three functions. The restored-rows test is a guard.
+
+Guard tests that pass before the fix (each line gives the file, the test and the count).
+
+- `tests/unit/modelling/test_diagnostics_backends.py::test_fault_restores_the_stored_rows`: 24 passed (the restored-rows test; 4 anchors x 3 rotations x 2 engines).
+- `tests/unit/modelling/test_diagnostics_backends.py::test_p2_misfit_leaves_state_unchanged`: 12 passed (P2 test; 4 anchors x 3 rotations).
+- `tests/unit/modelling/test_diagnostics_backends.py::test_p2_report_blocks_are_separate`: 12 passed (P2 test; 4 anchors x 3 rotations).
+- `tests/unit/modelling/test_diagnostics_frames.py` (all tests): 149 passed (recorded run). The measured largest solved residual `|1 - cos|` is 1.215e-4 (FDI) and 4.414e-4 (PLI).
+- `tests/unit/modelling/test_fault_frame_validation.py` (the R2 displacement and residual tests): 210 passed (recorded run).
+- `tests/unit/interpolator/test_backend_world_contract.py` (the changed exact-field test is in this file): 51 passed, 0 skipped (recorded run). The largest Surfe world error is 3.492e-11.
+- `tests/unit/interpolator/test_backend_optional_native_surfe.py` (the stub cells): 24 skipped (recorded run). 12 cells skip because `loop_interpolation_core` is not installed, and 12 cells skip because `surfepy` is not installed.
+- `tests/unit/test_backend_matrix.py`: 33 passed (recorded run).
+- `tests/unit/utils/test_transformation.py`: 11 passed. The ids are `test_call_is_equivalent_to_transform`, `test_default_construction`, `test_fit_finds_rotation_that_aligns_main_axis_with_x`, `test_fit_raises_if_points_have_too_few_columns`, `test_fit_rotation_false_keeps_angle_zero`, `test_repr_html_contains_translation_and_angle`, `test_rotation_and_inverse_rotation_are_transposes_in_plane`, `test_too_few_columns_raises_value_error` (2 cells), `test_transform_aligns_variance_with_x_axis`, `test_transform_raises_if_points_have_too_few_columns`.
+
+Measured tolerances (orchestrator runs).
+
+| Constant | Value | Source |
+|---|---|---|
+| `TOL_SOLVED_FDI` | 2.43e-4 | 2 x the largest solved residual `|1 - cos|` 1.215e-4 |
+| `TOL_SOLVED_PLI` | 8.83e-4 | 2 x the largest solved residual `|1 - cos|` 4.414e-4 |
+| `TAU_ASSEMBLED` | 9.2e-11 | the largest value is 4.566e-11 |
+| `TAU_ORTHOGONAL` | 1.7e-10 | the largest value is 8.408e-11 |
+| `TOL_FAULTED_VALUE` | FDI 5.11e-3, PLI 3.8e-2 | T096 measure. The pre-fix faulted value residual is 0.083 to 0.099, so the limit shows the defect. See the `plan.md` Answers entry of wave 44 for the reason |
+| `TOL_FAULTED_COS` | FDI 1.1e-2, PLI 1.7e-2 | T096 measure. See the same `plan.md` entry |
+
+Other records.
+
+- T092 (Surfe module name): the pip package is `surfepy` (version 0.52). The wheel holds the module `surfepy` and no module `surfe`. Decision: `test_p0_surfe_nans.py` now uses `pytest.importorskip("surfepy")`.
+- T093 (BOM): `_structured_grid_3d.py` and `test_fault_frame_analytic.py` lost their BOM. One line changed in each file.
+- T090 (deleted test): the test `test_inverse_transform_is_broken_for_normal_point_clouds_bug` was deleted. The new tests in `tests/unit/utils/test_transformation.py` replace it.
