@@ -1547,7 +1547,7 @@ frame. A legacy file needs an explicit choice. A frame change never gives a stal
   - Done when: `verification.md` has the heading `## S6 post-fix results` with the commands, the counts and the run time of the new S6 test files, and each failing id of T099 is shown as passing.
   - Context: Run, with the "Environment" of Phase 23: `pytest tests/unit/utils/test_transformation.py tests/unit/modelling/test_fault_frame_validation.py tests/unit/modelling/test_diagnostics_backends.py tests/unit/modelling/test_diagnostics_frames.py tests/unit/interpolator/test_backend_world_contract.py tests/unit/interpolator/test_backend_optional_native_surfe.py tests/unit/test_backend_matrix.py` (root call) and `pytest packages/loop_common/tests/test_euclidean_transformation.py` (separate call). Record the run time of each file (OP2 stays closed: the default run includes them; `test_fault_frame_validation.py` does 26 R2 solves). List the id of each T099 failure with its new result. Write only a new section; do not change other text. Write in ASD-STE100 Simplified Technical English.
 
-- [ ] T105 [US5] [M] Do the S6 golden review, tolerance audit, coverage ledger and findings disposition in `verification.md` (FR-029, SC-014, SC-015).
+- [x] T105 [US5] [M] Do the S6 golden review, tolerance audit, coverage ledger and findings disposition in `verification.md` (FR-029, SC-014, SC-015).
   - Files: `specs/005-coordinate-frame-correctness/verification.md`
   - Needs: T104
   - Wave: 49

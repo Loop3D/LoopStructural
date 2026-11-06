@@ -1045,7 +1045,7 @@ PLI fact. PLI assembles no gradient rows. In the case with 3 outside points, its
 | Root suite (orchestrator, commit `6b9e6467`) | 936.67 s (15 min 36 s). The S4 end run took 805.50 s. |
 | Package suites (orchestrator) | 140.08 s. The S4 end run took 150.24 s. |
 
-The root time is 131 s more than the S4 time. The root suite has 150 more passed tests than at the S4 end (2216 and 2066, and the one S4 failure now passes). The new files add 147 cells to the root suite, and the diagnostics cells are slow (142.77 s on the unfixed code). The two runs had different machine load, so the times do not compare exactly.
+The root time is 131 s more than the S4 time. The root suite has 150 more passed tests than at the S4 end (2216 and 2066). One of the 150 is the S4 failure that now passes, so the root suite has 149 more tests in total (2220 and 2071, with 4 skipped in each run). The new diagnostics file adds 147 cells to the root suite. The two run records do not name the source of the other 2 tests. The diagnostics cells are slow (142.77 s on the unfixed code). The two runs had different machine load, so the times do not compare exactly.
 
 ## S5 open points
 
@@ -1199,3 +1199,156 @@ Diagnostics file (`tests/unit/modelling/test_diagnostics_backends.py`): 72 faile
 Group counts: 24 + 24 + 24 = 72 passed. The guard tests (`test_fault_restores_the_stored_rows` 24, `test_p2_misfit_leaves_state_unchanged` 12, `test_p2_report_blocks_are_separate` 12) still pass.
 
 Skipped cells. `tests/unit/interpolator/test_backend_optional_native_surfe.py` gives 24 skipped. 12 cells skip because `loop_interpolation_core` is not installed, and 12 cells skip because `surfepy` is not installed. The reason is the same as before the fix, and it is an optional dependency that is absent.
+
+## S6 golden review (C-004)
+
+Order (C-004): (1) run the golden tests and list the failing keys; (2) check each key against the rule; (3) write the keys here; (4) run `--update`; (5) run the test again. SC-015: S6 changed no tolerance of a structured support golden test (`rtol=1e-9`, `atol=1e-12` stay). One gradient tolerance of the interpolation golden test came from S1; see `## S6 tolerance audit`.
+
+Step 1. The golden list is `git diff --name-status ebc7c699d5 HEAD -- . ':!specs' ':!*.py' ':!*.md'`. It prints 2 files:
+
+| Status | File | Origin |
+|---|---|---|
+| M | `packages/loop_common/tests/data/structured_support_reference.npz` | S1 (27 values) and S5 (78 keys). Both were reviewed in the S1 record and in `## S5 golden review (C-004)`. |
+| M | `packages/map2loop/pyproject.toml` | Commit `a0e82096` (pull request #395, lint baseline). It is not a spec 005 change. |
+
+Step 2. `git log ebc7c699d5..HEAD` for the `.npz` file names two commits only: `03a6e58b` (S1) and `e1c10ef6` (S5). No S6 commit (waves 43 to 48) changed it. `git diff --stat e1c10ef6 HEAD` for `packages/loop_common/tests/data`, `tests/fixtures/api_surface_snapshot.json`, `tests/unit/interpolator/*.txt` and `packages/loop_interpolation/tests/golden/golden_files` prints nothing. The S6 expectation holds: no golden number changed.
+
+Step 3. Baseline files that must stay as they are. `git diff --stat ebc7c699d5 HEAD` for each of them prints nothing:
+
+| Baseline file or folder | Changed since `ebc7c699d5` |
+|---|---|
+| `packages/loop_common/tests/data/structured_grid_2d_reference.npz` | no |
+| `tests/fixtures/api_surface_snapshot.json` | no |
+| `tests/unit/interpolator/*.txt` (`elements.txt`, `neighbours.txt`, `nodes.txt` and the other tracked files of that folder) | no |
+| `packages/loop_interpolation/tests/golden/golden_files` (all `.json` and `.npz` files) | no |
+
+So 0 unaffected baseline files changed. Steps 4 and 5 were not needed: no number changed, so `--update` was not run.
+
+## S6 behaviour-change ledger
+
+S6 changes no golden file. The behaviour changes below have analytic evidence and not a golden file.
+
+`git grep -n EuclideanTransformation HEAD` (outside `specs`) finds these files only: `LoopStructural/utils/__init__.py`, `LoopStructural/utils/_transformation.py`, `packages/loop_common/src/loop_common/math/__init__.py`, `packages/loop_common/src/loop_common/math/_transformation.py`, the two test files named below, `ROADMAP.md` and `docs/source/index.rst`. No other production caller exists. `git grep` for `_value_residuals_fresh` and `_gradient_cosines_fresh` finds them only in `LoopStructural/modelling/features/_geological_feature.py` (the definitions and the calls in the same file). So 0 baseline files are affected.
+
+| Change | Rule | Evidence | Baseline files affected |
+|---|---|---|---|
+| Faulted-feature residuals (`evaluate_value_residuals`, `evaluate_value_misfit`, `evaluate_gradient_cosines`, `evaluate_gradient_misfit`, `verification_report`) compare the stored restored rows with the interpolator at the same positions. Before, the faults acted a second time. | Analytic: the residual at the restored rows equals the independent value. | `tests/unit/modelling/test_diagnostics_backends.py`: the independent value in `test_faulted_value_residuals_use_restored_positions`, `test_faulted_gradient_cosines_use_restored_positions` and `test_report_physical_value_matches_independent_rms` (72 cells failed before and pass now). | 0 |
+| `EuclideanTransformation` fix 1: `inverse_transform` returns the original `(N, d)` points. | Hand-computed round trip. | `packages/loop_common/tests/test_euclidean_transformation.py` (`test_round_trip_without_fit`) and `tests/unit/utils/test_transformation.py` (`test_round_trip_explicit_parameters`, `test_round_trip_after_fit`). | 0 |
+| Fix 2: for `dimensions=3`, z is no longer reversed (`z' = z - tz`), and `fit` works for 3 dimensions. | Hand-computed numbers. | `test_three_dimensional_rotation_keeps_the_z_direction`, `test_fit_three_dimensions`. | 0 |
+| Fix 3: the fitted angle has the right sign for a main axis with a negative slope. | Hand-computed angle (-30 and -10 degrees). | `test_fit_aligns_a_line_with_negative_slope`. | 0 |
+| Fix 4: the methods return a float copy (an integer input was truncated), and a 1-D input raises `ValueError`. | Hand-computed values. | `test_integer_input_is_not_truncated`, `test_one_dimensional_input_raises_value_error`. | 0 |
+
+The T090 deleted test `test_inverse_transform_is_broken_for_normal_point_clouds_bug` checked the old defect (a `ValueError` for a normal point cloud). The new tests above replace it, and the old behaviour is not kept.
+
+T096 bounds decision. The `TOL_FAULTED_VALUE` and `TOL_FAULTED_COS` limits follow the ledger rule: each limit is lower than the pre-fix error, so the test shows the defect (pre-fix faulted value residual 0.083 to 0.099; limit FDI 5.11e-3, PLI 3.8e-2). The PLI value limit is above the 1e-2 cap of the plan; see `## S6 findings disposition`. The T090 constant fix has no ledger rule, because it changes no result.
+
+## S6 tolerance audit
+
+Method. `git diff -U0 ebc7c699d5 HEAD -- . ':!specs'` was filtered for removed lines (start with `-`) and added lines (start with `+`) that hold `tol`, `tp`, `tau`, `approx`, `abs=` or `<= <number>e-`. The result is 22 removed lines and 277 added lines. A second filter on removed lines (`e-<digit>`, `rtol`, `atol`, `decimal`, `1e-`, `isclose`, `allclose`) found 8 more. Each removed line was paired with its added line.
+
+| Removed line (file) | Added line | Result |
+|---|---|---|
+| `tol=None,` x5 (`LoopStructural/modelling/core/_model_feature_factory.py`) | `tol: float \| None = None,` | A type annotation was added. The default stays `None`. No change. |
+| `dot.append(np.einsum(...).tolist())` (`_geological_feature.py`) | The code was replaced by the interpolator-based `direction_cosines` path. | `tolist` matches `tol`. Not a tolerance. |
+| `tolerance=None,` (`_3d_viewer.py`) | The same line, indented by 4 spaces less (lint reflow). | No change. |
+| Lines with `import matplotlib`, `http`, `ftp`, `TODO`, `subprocess.run(...)`, `"tpw"` and `BeartypeCallHintParamViolation` (`map2loop`, `render.py`, `test_native_no_rows.py`, `test_native_parity.py`, `test_SamplerSpacing.py`) | Reflowed or reordered by the lint commit `a0e82096`. | The pattern `tp` matches them. Not tolerances. |
+| Docstring lines `output of transform/fit_transform for ordinary xyz point arrays.` (`tests/unit/utils/test_transformation.py`) | None (part of the deleted defect test, T090). | Not a tolerance. |
+| `setup.update({name: 1e-4 for name in ALL_REGULARISATION})` (`test_native_parity.py`) | `setup.update(dict.fromkeys(ALL_REGULARISATION, 0.0001))` | Same value (1e-4 = 0.0001). No change. |
+| `np.testing.assert_allclose(support.nodes.min(axis=0), 0.)` and the `.max` line with `1.` (`golden/test_golden.py`) | The same calls with `0.0` and `1.0`. | Same default tolerance. No change. |
+| `vmax=max(1e-6, float(np.nanmax(a2))))` (`golden/render.py`) | The same value, reflowed. | A plot limit, not a test limit. No change. |
+| `np.allclose(r["gradient"], golden["gradient"], atol=1e-5, rtol=0, equal_nan=True)` (`packages/loop_interpolation/tests/golden/test_golden.py`, commit `03a6e58b`, S1) | `np.allclose(r["gradient"], golden["gradient"], atol=1e-4, rtol=0, equal_nan=True)` | Relaxed. The gradient `atol` goes from 1e-5 to 1e-4. The value `atol` stays 1e-5. |
+
+Relaxed tolerances: 1. It is the gradient `atol` of `test_matches_golden_field` in `packages/loop_interpolation/tests/golden/test_golden.py`, from 1e-5 to 1e-4. The commit is `03a6e58b` (S1, pull request #392). The comment in the file gives the reason: the gradient is a derivative of the field, so it amplifies the platform noise of the value (about 1e-6) by about 1/h (h = 1/8 on the P2 mesh). No S6 commit touches this file, and the golden files did not change (`## S6 golden review (C-004)`). The count is not the expected 0, so it is reported to the orchestrator for a decision.
+
+The 277 added lines are new constants and new tests. A new constant has no removed line, so it is not a relaxation. The constants that matter: `TOL_SOLVED_FDI = 2.43e-4`, `TOL_SOLVED_PLI = 8.83e-4`, `TAU_ASSEMBLED = 9.2e-11`, `TAU_ORTHOGONAL = 1.7e-10`, `TOL_FAULTED_VALUE` (FDI 5.11e-3, PLI 3.8e-2) and `TOL_FAULTED_COS` (FDI 1.1e-2, PLI 1.7e-2). `git grep TOL_SOLVED ebc7c699d5` finds nothing, so the base has none of them.
+
+Rename `TOL_SOLVED` to `TOL_SOLVED_FDI` and `TOL_SOLVED_PLI`. The S5 constant `TOL_SOLVED` was 9e-4 (`## S5 post-fix results`). The new values are 2.43e-4 (FDI) and 8.83e-4 (PLI). Both are at most 9e-4: FDI is a tightening and PLI is a small tightening. No file uses the old name now.
+
+Deleted defect test: `test_inverse_transform_is_broken_for_normal_point_clouds_bug` in `tests/unit/utils/test_transformation.py` (T090). It tested the old defect, and the new tests replace it.
+
+## S6 coverage ledger
+
+Method. `git diff --name-only ebc7c699d5 HEAD -- LoopStructural packages`, with the test paths, fixtures and scripts removed. It gives 52 production files outside `packages/map2loop`, and 22 files in `packages/map2loop` (`pyproject.toml` and 21 `.py` files). The `map2loop` files come from the lint commit `a0e82096` (pull request #395). They are not a spec 005 change, and `packages/map2loop/tests` covers them. The column "Commits" names the stage commits that changed the file. "lint" is `a0e82096`, which only reflows code and keeps the behaviour.
+
+| Production file | Commits | Test that covers it (SC-014) |
+|---|---|---|
+| `LoopStructural/export/exporters.py` | S4 | `tests/unit/io/test_exporters.py`; `tests/unit/modelling/test_world_location_consumers.py` |
+| `LoopStructural/modelling/core/_model_exporter.py` | S4 | `tests/unit/modelling/test_world_location_consumers.py` |
+| `LoopStructural/modelling/core/_model_feature_factory.py` | S1, lint | `tests/unit/modelling/test_fault_frame_analytic.py`; `tests/unit/modelling/test_fault_frame_validation.py` |
+| `LoopStructural/modelling/core/_model_relationships.py` | lint | `tests/unit/modelling/test_fault_topology.py` |
+| `LoopStructural/modelling/core/_model_serializer.py` | lint | `tests/unit/modelling/test_frame_copy_and_lifecycle.py`; `tests/unit/test_stable_api_surface.py` |
+| `LoopStructural/modelling/core/geological_model.py` | S4 | `tests/unit/modelling/test_world_location_consumers.py`; `tests/unit/modelling/test_geological_model.py` |
+| `LoopStructural/modelling/features/_analytical_feature.py` | lint | `tests/unit/modelling/test_analytical_feature.py` |
+| `LoopStructural/modelling/features/_cross_product_geological_feature.py` | lint | `tests/unit/test_stable_api_surface.py` (API surface only) |
+| `LoopStructural/modelling/features/_feature_converters.py` | lint | `tests/unit/test_stable_api_surface.py` |
+| `LoopStructural/modelling/features/_geological_feature.py` | S4, S5, S6, lint | `tests/unit/modelling/test_diagnostics_frames.py` (S5); `tests/unit/modelling/test_diagnostics_backends.py` (S6) |
+| `LoopStructural/modelling/features/_lambda_geological_feature.py` | lint | `tests/unit/modelling/test_fault_cycle_detection.py` |
+| `LoopStructural/modelling/features/_projected_vector_feature.py` | lint | `tests/unit/test_stable_api_surface.py` |
+| `LoopStructural/modelling/features/builders/_fault_builder.py` | S1 | `tests/unit/modelling/test__fault_builder.py`; `tests/unit/modelling/test_fault_frame_analytic.py` |
+| `LoopStructural/modelling/features/builders/_folded_feature_builder.py` | lint | `tests/unit/modelling/test_fold_constraint_frames.py` |
+| `LoopStructural/modelling/features/builders/_geological_feature_builder.py` | S1, lint | `tests/unit/modelling/test_geological_feature_builder.py`; `tests/unit/modelling/test_reference_constraint_frames.py` |
+| `LoopStructural/modelling/features/builders/_structural_frame_builder.py` | lint | `tests/unit/modelling/test_structural_frame_builder.py` |
+| `LoopStructural/modelling/features/fault/_fault_segment.py` | S1 | `tests/unit/modelling/test_faults_segment.py`; `tests/unit/modelling/test_fault_frame_analytic.py` |
+| `LoopStructural/modelling/intrusions/intrusion_frame_builder.py` | S4 | `tests/unit/modelling/intrusions/test_intrusions.py`; `tests/unit/modelling/test_world_location_consumers.py` |
+| `LoopStructural/utils/_transformation.py` | S6 | `tests/unit/utils/test_transformation.py` (`test_entry_points_are_one_class`, `test_pickle_with_the_old_module_path_loads`) |
+| `LoopStructural/utils/dtm_creator.py` | lint | `tests/unit/test_imports.py` (import only) |
+| `packages/loop_common/src/loop_common/geometry/__init__.py` | S1 | `packages/loop_common/tests/test_rigid_transform_contract.py` |
+| `packages/loop_common/src/loop_common/geometry/_bounding_box.py` | S1 | `packages/loop_common/tests/test_bounding_box.py`; `packages/loop_common/tests/test_cell_centre_sampling.py` |
+| `packages/loop_common/src/loop_common/geometry/_rigid.py` | S1 | `packages/loop_common/tests/test_rigid_transform_contract.py`; `tests/unit/modelling/test_reference_constraint_frames.py` |
+| `packages/loop_common/src/loop_common/geometry/_structured_grid_2d.py` | S5 | `packages/loop_common/tests/test_resize_paths.py`; `packages/loop_common/tests/test_structured_grid_2d_reference.py` |
+| `packages/loop_common/src/loop_common/geometry/_structured_grid_3d.py` | S1, S5, T093 | `packages/loop_common/tests/test_resize_paths.py`; `packages/loop_common/tests/test_structured_support_reference.py` |
+| `packages/loop_common/src/loop_common/math/__init__.py` | S6 | `packages/loop_common/tests/test_euclidean_transformation.py` (`test_export_from_loop_common_math`) |
+| `packages/loop_common/src/loop_common/math/_transformation.py` | S6 | `packages/loop_common/tests/test_euclidean_transformation.py`; `tests/unit/utils/test_transformation.py` |
+| `packages/loop_common/src/loop_common/supports/_3d_rectilinear_grid.py` | S5 | `packages/loop_common/tests/test_resize_paths.py`; `packages/loop_common/tests/test_rectilinear_grid.py` |
+| `packages/loop_interpolation/src/loop_interpolation/__init__.py` | S3, S5 | `packages/loop_interpolation/tests/test_import.py`; `packages/loop_interpolation/tests/test_residual_exclusion_report.py` |
+| `.../loop_interpolation/_constant_norm.py` | S2 | `tests/unit/modelling/test_constant_norm_frames.py` |
+| `.../loop_interpolation/_diagnostics.py` | S5 | `packages/loop_interpolation/tests/test_residual_exclusion_report.py`; `tests/unit/modelling/test_diagnostics_backends.py` |
+| `.../loop_interpolation/_discrete_fold_interpolator.py` | S2 | `tests/unit/modelling/test_fold_constraint_frames.py`; `packages/loop_interpolation/tests/test_discrete_fold_interpolator.py` |
+| `.../loop_interpolation/_discrete_interpolator.py` | S1, S2 | `tests/unit/modelling/test_reference_constraint_frames.py`; `tests/unit/interpolator/test_discrete_interpolator.py` |
+| `.../loop_interpolation/_fd_fold_interpolator.py` | S2 | `tests/unit/modelling/test_fold_constraint_frames.py`; `packages/loop_interpolation/tests/test_fd_fold_interpolator.py` |
+| `.../loop_interpolation/_finite_difference_interpolator.py` | S3 | `tests/unit/modelling/test_frame_persistence.py`; `tests/unit/modelling/test_frame_copy_and_lifecycle.py` |
+| `.../loop_interpolation/_fold_norm_alignment.py` | S2 | `tests/unit/modelling/test_fold_constraint_frames.py` |
+| `.../loop_interpolation/_fold_setup.py` | S2 | `tests/unit/modelling/test_fold_constraint_frames.py` |
+| `.../loop_interpolation/_frame_persistence.py` | S3, S3b | `tests/unit/modelling/test_frame_persistence.py`; `tests/unit/interpolator/test_legacy_compat.py` |
+| `.../loop_interpolation/_geological_interpolator.py` | S1, S3 | `tests/unit/modelling/test_frame_persistence.py`; `packages/loop_interpolation/tests/test_geological_interpolator.py` |
+| `.../loop_interpolation/_interpolator_builder.py` | lint | `tests/unit/interpolator/test_interpolator_builder.py` |
+| `.../loop_interpolation/_interpolator_factory.py` | S3, S3b | `tests/unit/interpolator/test_interpolator_factory.py`; `tests/unit/modelling/test_frame_persistence.py` |
+| `.../loop_interpolation/_native.py` | S2 | `tests/unit/modelling/test_native_fault_frame.py`; `tests/unit/interpolator/test_backend_world_contract.py` |
+| `.../loop_interpolation/_p2_fold_interpolator.py` | S2, S3 | `packages/loop_interpolation/tests/test_p2_fold_interpolator.py`; `tests/unit/modelling/test_fold_constraint_frames.py` |
+| `.../loop_interpolation/_p2interpolator.py` | S2, S3 | `tests/unit/interpolator/test_p2interpolator.py`; `tests/unit/modelling/test_reference_constraint_frames.py` |
+| `packages/loop_interpolation_core/fixtures/make_fixture.py`, `packages/loop_interpolation_core/scripts/check_wasm_size.py` | lint | Fixture and script, not library code. No test covers them. |
+| `.../loopstructuralvisualisation/_2d_viewer.py` | lint | `packages/loopstructural_visualisation/tests/test_plotting.py`; `tests/unit/modelling/test_world_location_consumers.py` |
+| `.../loopstructuralvisualisation/_3d_viewer.py` | lint | `packages/loopstructural_visualisation/tests/test_plotting.py`; `packages/loopstructural_visualisation/tests/test_trame.py` |
+| `.../loopstructuralvisualisation/__init__.py` | lint | `packages/loopstructural_visualisation/tests/test_import.py` |
+| `.../loopstructuralvisualisation/_register_loop_ui.py` | lint | `packages/loopstructural_visualisation/tests/test_import.py` (import only) |
+| `.../loopstructuralvisualisation/_stratigraphic_column.py` | lint | `tests/unit/modelling/test_stratigraphic_column.py` |
+| `.../loopstructuralvisualisation/trame/__init__.py`, `trame/ui/vuetify3.py` | lint | `packages/loopstructural_visualisation/tests/test_trame.py` |
+| `packages/map2loop/**` (22 files) | lint | `packages/map2loop/tests/**`. Not a spec 005 change. |
+
+Gaps. 2 files have no test that covers them (`make_fixture.py` and `check_wasm_size.py`). Both are fixture and script files with a lint-only change. 5 files with a lint-only change are covered by import or API-surface tests only (`_cross_product_geological_feature.py`, `_feature_converters.py`, `_projected_vector_feature.py`, `dtm_creator.py`, `_register_loop_ui.py`). Every file with a behaviour change (S1 to S6) has a test that was added for it.
+
+## S6 findings disposition
+
+| Finding | Disposition |
+|---|---|
+| 1 and 10 (BOM) | Closed (T093). `_structured_grid_3d.py` and `test_fault_frame_analytic.py` lost their BOM. |
+| 2 (format hunks in `_structured_grid_2d.py`) | Stays. Cosmetic. |
+| 3 (`set_nelements` passes a cell count to the node setter) | Stays. Old behaviour. |
+| 4 (sentence at `verification.md` about line 910) | Closed. Check done: the sentence says that `test_each_cell_has_exactly_one_centre` was replaced and that `test_centres_are_cell_midpoints_in_world` is the guard test. `git grep test_each_cell_has_exactly_one_centre` finds no `.py` file. `test_centres_are_cell_midpoints_in_world` is in `packages/loop_common/tests/test_cell_centre_sampling.py` (line 93) and in `tests/fixtures/backend_matrix.py`. The sentence is correct. |
+| 5 to 8 | Closed (T091). |
+| 9 (`_first_stale`) | Closed in code. `_first_stale` follows faults recursively (commit `3f20a014`). No test. |
+| 11 (move the S5 sentence on the identity frame to the `evaluate_value_misfit` row) | Closed in T106 (wave 50). |
+| 12 (run-time count sentence in `## S5 test run time (OP2)`) | Closed here. Recomputed from the two run records: the S4 end run is `1 failed, 2066 passed, 4 skipped` in 805.50 s, and the S5 run is `2216 passed, 4 skipped` in 936.67 s. Time: 936.67 - 805.50 = 131.17 s (the old 131 s is right). Passed: 2216 - 2066 = 150. One of the 150 is the S4 failure that now passes, so the number of tests grew by 149 (2220 and 2071 with 4 skipped in each run). The old sentence said that the 147 new cells explain the 150. They explain 147 of the 149 new tests. The sentence in the S5 text is corrected. This is the only edit of old text. |
+| The major finding | Closed (T101). |
+| S2 T020 (native boundary cells) | Closed (T097). |
+| S3 T038 (slip 3 in the R2 fixture) | Closed (T089). |
+| S1 note on `_on_geometry_change` anisotropy rows | Stays. |
+| S3 note on the tetrahedron gradient path of a faulted feature | Stays. The public `evaluate_gradient` of a faulted feature keeps its tetrahedron path and the shape error. |
+
+S6 open items.
+
+- T095: outside the support, the FDI gradient is 0 and the PLI gradient is NaN. The difference stays. It is a known difference between the two engines.
+- P2 `add_gradient_constraints` einsum defect. It is in the library and outside the scope of spec 005. It stays.
+- T096: the PLI value limit `TOL_FAULTED_VALUE["PLI"]` is 3.8e-2, above the 1e-2 cap of the plan. The limit is lower than the pre-fix error (0.083 to 0.099), so the test shows the defect. The point stays open.
+- T090: `tests/unit/utils/test_transformation.py` has a BOM. Still open, minor.
+- Tolerance audit: 1 relaxed tolerance from S1 (gradient `atol` 1e-5 to 1e-4 in `packages/loop_interpolation/tests/golden/test_golden.py`). See `## S6 tolerance audit`. It needs a decision.
