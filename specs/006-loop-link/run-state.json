@@ -361,9 +361,15 @@
       {
         "wave": 2,
         "base": "3c71e335140837db198ef4abd971d6e1374742c7",
-        "commit": null,
-        "review": "pending",
+        "commit": "b0918ffa",
+        "review": "pass (3 minor)",
         "note": "test tasks fail as expected; ruff I001 on test_fetch.py is caused by the missing loop_link.fetch module and ends after T052"
+      },
+      {
+        "wave": 3,
+        "base": "b0918ffa",
+        "commit": null,
+        "review": "pending"
       }
     ],
     "runs": {
@@ -396,7 +402,24 @@
           "model": "sonnet",
           "result": "pass"
         }
+      ],
+      "T042": [
+        {
+          "model": "sonnet",
+          "result": "pass"
+        }
+      ],
+      "T052": [
+        {
+          "model": "sonnet",
+          "result": "pass"
+        }
       ]
-    }
+    },
+    "open_minor": [
+      "S5 W2 T051: only Points tests decode_object with an origin different from the encode origin (Drillhole collar, Surface not covered)",
+      "S5 W2 T051: dropped-property tests use Points only (no Drillhole or Surface case, warning reason text not checked)",
+      "S5 W2 T051: no referenced test with ids 0..n-1 listed out of order in value_map"
+    ]
   }
 }

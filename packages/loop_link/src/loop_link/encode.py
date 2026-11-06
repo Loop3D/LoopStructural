@@ -27,12 +27,16 @@ from loop_link.objects import (
 )
 
 __all__ = [
+    "cancel_frame",
     "clear_frame",
     "encode_object",
+    "fetch_frame",
     "group_frame",
     "heartbeat_frame",
     "hello_frame",
     "remove_frame",
+    "selection_get_frame",
+    "selection_set_frame",
 ]
 
 _I32_MIN = -(2**31)
@@ -111,6 +115,112 @@ def clear_frame() -> bytes:
         The frame.
     """
     return protocol.encode_frame({"type": "scene.clear"})
+
+
+def selection_set_frame(
+    request: int,
+    object_id: str,
+    cells: np.ndarray | None,
+    vertices: np.ndarray | None,
+    revision: int | None,
+) -> bytes:
+    """Return a ``selection.set`` frame.
+
+    An empty or None array adds no entry and no buffer. The function does not
+    check the index range.
+
+    Parameters
+    ----------
+    request : int
+        The request number.
+    object_id : str
+        The identifier of the object.
+    cells : numpy.ndarray or None
+        The cell indices.
+    vertices : numpy.ndarray or None
+        The vertex (node) indices.
+    revision : int or None
+        The revision of the object. If it is None, the header has no ``revision`` key.
+
+    Returns
+    -------
+    bytes
+        The frame.
+    """
+    header: dict[str, Any] = {"type": "selection.set", "request": request, "object": object_id}
+    if revision is not None:
+        header["revision"] = revision
+    entries: list[dict[str, str]] = []
+    buffers: Buffers = []
+    for kind, name, values in (("cells", "cells", cells), ("nodes", "nodes", vertices)):
+        if values is None:
+            continue
+        array = np.ascontiguousarray(np.asarray(values, dtype=np.uint32))
+        if array.size == 0:
+            continue
+        entries.append({"kind": kind, "indices": name})
+        buffers.append((name, array))
+    header["entries"] = entries
+    return protocol.encode_frame(header, buffers, version=protocol.TOOL_PROTOCOL_VERSION)
+
+
+def selection_get_frame(request: int) -> bytes:
+    """Return a ``selection.get`` frame.
+
+    Parameters
+    ----------
+    request : int
+        The request number.
+
+    Returns
+    -------
+    bytes
+        The frame.
+    """
+    return protocol.encode_frame(
+        {"type": "selection.get", "request": request},
+        version=protocol.TOOL_PROTOCOL_VERSION,
+    )
+
+
+def fetch_frame(request: int, id: str) -> bytes:
+    """Return an ``object.fetch`` frame.
+
+    Parameters
+    ----------
+    request : int
+        The request number.
+    id : str
+        The identifier of the object.
+
+    Returns
+    -------
+    bytes
+        The frame.
+    """
+    return protocol.encode_frame(
+        {"type": "object.fetch", "request": request, "id": id},
+        version=protocol.TOOL_PROTOCOL_VERSION,
+    )
+
+
+def cancel_frame(request: int) -> bytes:
+    """Return a ``command.cancel`` frame.
+
+    Parameters
+    ----------
+    request : int
+        The number of the request to cancel.
+
+    Returns
+    -------
+    bytes
+        The frame.
+    """
+    return protocol.encode_frame(
+        {"type": "command.cancel", "request": request},
+        version=protocol.CANCEL_PROTOCOL_VERSION,
+    )
 
 
 def _upsert_header(
