@@ -268,13 +268,13 @@ For each computational rotation, use the world model minimum as the local-frame 
 - Value and gradient probes: the 6859 points on `{-9,-8,...,9}^3`.
 - Displacement section: `y'=0`, with `x'` and `z'` on `{-9,-8.5,...,9}`. There are 1369 points.
 - Smooth-region mask: `|x'| >= 0.5`, leaving 1332 points. Report the 37 excluded fault-plane points separately.
-- Prescribed slip: 3 world-length units. Trishear comparison parameters: apex angle 50 degrees, propagation/slip ratio 1.5, concentration 1, and 20 integration steps.
-- Tip coordinate: 0. Propagation sign: -1. The scalar comparison uses 16 quadrature points.
-- The vector comparison uses the same existing test-side displacement evaluator for both frames. It must not add a new library displacement law.
-- Also check the existing library scalar displacement path with the same configured function on both frames. Its comparison measures frame effects separately from vector integration.
+- Prescribed slip: 3 world-length units. The displacement comparison uses the library displacement paths, with the default fault profile and 20 integration steps (C-019).
+- The scalar comparison uses the library scalar path. It uses no quadrature rule (C-019).
+- The vector comparison uses the library displacement path (`FaultSegment.apply_to_points`) for both frames, with the same algorithm for both frames. It must not add a new library displacement law.
+- Also check the library scalar displacement path (`FaultSegment.evaluate_displacement`) with the same function on both frames. Its comparison measures frame effects separately from vector integration.
 - The analytic frame uses the 3 expected fields above and their exact gradients. If a displacement function needs coordinate length scales, use `(20,20,20)` for the analytic frame.
 
-The R2 acceptance path builds the frame through production APIs. The test-side displacement evaluator may consume that frame. It must not replace its builder or sampler. Include its reference helpers with the implementation's test fixtures; tests must not import an external investigation workspace.
+The R2 acceptance path builds the frame through production APIs. The library displacement paths consume that frame. They must not replace its builder or sampler. Include the reference helpers with the implementation's test fixtures; tests must not import an external investigation workspace.
 
 #### R3: Reference relationships
 
@@ -468,6 +468,10 @@ The maintainer decided these points during the S2 to S4 builds and plans. The pl
 - **C-016, deprecation of `scale` (2026-11-05, maintainer)**. Question: deprecate `GeologicalModel.scale` with `rescale`? Options were: both together, `rescale` only, or `scale` one minor release later. Answer: both together. Nothing in the library calls `scale`, so no library code changes for it. The warning names the bounding-box projection as the replacement. `COMPAT.md` gets one row for each method.
 - **C-017, SC-002 for the P2 fit (2026-11-05, maintainer)**. Question: does SC-002 apply to the P2 value-only fit of R1? The fit misses SC-002 in every frame: the gradient error is 3.9e-7 against a limit of 1e-8, also in the unrotated control; the value error is 7.8e-8 against a limit of 7.5e-8 unrotated, and 2e-7 to 7.6e-7 at 30 degrees (the earlier figure of 1.8e-8 was a ratio, not the error). Options were: the exact nodal field only, a frame-invariance bound for the fit, or a fix of the P2 fit in this spec. Answer: the exact nodal field only. SC-002 for P2 checks the coordinate conversion. The fit accuracy is a solver property and goes to a separate issue (#399), as C-005 and C-006 did. The backend table and the out-of-scope list say so.
 - **C-018, backward-compatible legacy load (2026-11-05, maintainer)**. The maintainer will release a major version, but not yet. Question: can the change of FR-019 stay backward compatible until then? Answer: yes. On the 1.x line, a legacy file with no choice loads with the identity frame that older releases assumed, and it emits one `FutureWarning` (visible to end users by default, because a wrong placement can be silent). The new keyword arguments (a supplied transform, an identity declaration) work now, and a partial transform is refused. The code carries a note to remove the fallback at the next major release, when the loader raises the error of FR-019. This replaces the sentence "do not assume identity with a warning" of C-003 for the 1.x line only. From the major release, C-003 applies in full. No break ships in 1.x, so C-015 needs no exception to the 1.x rule.
+
+### Decision at the S6 plan, answered on 2026-11-06
+
+- **C-019, displacement evaluator of R2 (2026-11-06, maintainer; plan OP18)**. Question: R2 named an existing test-side displacement evaluator with trishear parameters (apex angle 50 degrees, propagation/slip ratio 1.5, concentration 1, 20 integration steps, tip coordinate 0, propagation sign -1, and 16 quadrature points). The repository has no such evaluator, and the out-of-scope list bans a trishear algorithm in the library. How does the R2 displacement comparison run? Answer: it uses the library displacement paths, with the same algorithm for both frames. The vector comparison uses `FaultSegment.apply_to_points` with 20 steps. The scalar comparison uses `FaultSegment.evaluate_displacement`. The slip is 3 and the profile is the default fault profile. The trishear parameters and the 16 quadrature points are dropped. The R2 fixture text changed to match. SC-004 does not change (1332 smooth points, bound 0.03). No library displacement law is added.
 
 ## Next step
 

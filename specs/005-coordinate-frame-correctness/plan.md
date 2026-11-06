@@ -7,21 +7,17 @@ The constitution (.specify/memory/constitution.md) has priority. -->
 
 ## Open points
 
-- **OP1**: This plan gives the exact design only for stages S1 to S5 (S1:
-  shared transform, reference-constraint boundary and fault frame; S2: fold, P2,
-  directional-regularisation and constant-norm cells; S3: saved frames, copies
-  and transform changes; S4: display, data export, fault-centre geometry and
-  intrusion classification; S5: resize paths, cell centres, non-mutating
-  diagnostics, residual and exclusion report). The spec-planner limit is 10 code files, and the
-  maintainer selected a staged plan on 2026-11-04. S2 has its exact design
-  since 2026-11-04 ("Stage S2 design"). S3 has its exact design since
-  2026-11-05 ("Stage S3 design"), and S4 since 2026-11-05 ("Stage S4 design").
-  S5 has its exact design since 2026-11-05 ("Stage S5 design"). Stage S6 has
-  a stage map, a file list from a grep survey and a requirement allocation, but
-  no exact signatures. Owner: the spec-planner
-  skill, one run for each stage. Blocks: the tasks of S6. The spec-tasks
-  skill makes the S5 tasks next (S1 is merged; S2 is in pull request #396; S3
-  is built in pull request #397).
+- **OP1** (closed 2026-11-06, see "Answers"): This plan gives the exact design for all
+  stages, S1 to S6. The spec-planner limit is 10 code files, and the maintainer selected a
+  staged plan on 2026-11-04, so each stage has its own design section: S1 (shared
+  transform, reference-constraint boundary and fault frame), S2 (fold, P2, directional
+  regularisation and constant-norm cells), S3 (saved frames, copies and transform
+  changes), S4 (display, data export, fault-centre geometry and intrusion
+  classification), S5 (resize paths, cell centres, non-mutating diagnostics, residual and
+  exclusion report) and S6 (auxiliary point transformation and its entry points, R2
+  displacement validation, backend and capability matrix, golden review, final gates).
+  S6 has its exact design since 2026-11-06 ("Stage S6 design"). Next step: the
+  spec-tasks skill makes the S6 tasks. S1 to S4 are merged; S5 is in pull request #402.
 - **OP2**: Run time of the mandatory R2 and R5 matrices. R2 needs 4 anchors x
   3 rotations x 2 centre modes x 2 engines = 48 solves (FDI with 20000
   requested cells). R5 needs 3 buffers x 3 rotations x 2 centre modes x 2
@@ -133,6 +129,64 @@ The constitution (.specify/memory/constitution.md) has priority. -->
   when the cause is the intended extent change, and name the file; leave the
   gates red and report if the cause is not clear. Blocks: the merge of S5 when a
   parity file changes.
+
+- **OP18** (closed 2026-11-06, see "Answers"): The spec (R2) named "the same existing
+  test-side displacement evaluator" with trishear parameters: apex angle 50 degrees,
+  propagation/slip ratio 1.5, concentration 1, 20 integration steps, tip coordinate 0,
+  propagation sign -1, and 16 quadrature points for the scalar comparison. The repository
+  has no such evaluator (`git grep -n -i trishear` on 2026-11-06 finds the spec only), and
+  the spec scope bans a trishear algorithm in the library. Maintainer answer: amend the
+  spec. S6 uses the library displacement paths on both frames, with the same algorithm:
+  `FaultSegment.apply_to_points` with 20 steps (vector) and
+  `FaultSegment.evaluate_displacement` (scalar), slip 3 and the default `BaseFault`
+  profile. The trishear parameters and the 16 quadrature points are not used. The spec has
+  the new clarification C-019 and the changed R2 fixture text. The SC-004 numbers do not
+  change (1332 points, 0.03).
+- **OP19** (closed 2026-11-06, see "Answers"): S5 left one decision open
+  (`run-state.json`, pull request #402). The physical residual methods
+  `_value_residuals_fresh` and `_gradient_cosines_fresh` of `GeologicalFeature` evaluated
+  through the feature, which applies the faults a second time to rows that are already
+  restored. For a faulted feature the residual compared two frames (0.080 measured, 0.0004
+  to 0.0018 true). Maintainer answer: accept the fix. The two methods evaluate the
+  interpolator directly at the stored positions, with no fault step. This reverses S5
+  decision 8 for these two private methods. The task text of `COMPAT.md` and the entry in
+  `ROADMAP.md` say so. Files: `_geological_feature.py`, `test_diagnostics_backends.py`,
+  `test_diagnostics_frames.py`, `COMPAT.md`, `ROADMAP.md` ("S6 decisions" item 6).
+- **OP20** (closed 2026-11-06 as "fix", see "Answers"): `EuclideanTransformation` has other
+  defects that are not round-trip defects: `fit` fails for `dimensions=3`; the fitted angle
+  has the wrong sign for a main axis with a negative slope; the 3D rotation matrix reverses
+  z; `fit` without scikit-learn logs an error and returns `None`. First answer (default):
+  do not fix them. Maintainer answer: fix all four in S6 ("S6 decisions" item 3). The
+  fixes change numbers for 3D users. `ROADMAP.md` gets a decision entry (behaviour change)
+  and `COMPAT.md` gets a migration notice. No caller in the repository uses the class in
+  three dimensions (fact 20).
+- **OP21**: The native extension (`loop_interpolation_core`) and Surfe (`surfepy`) are not
+  installed in the venv, so the two extension cells of S6 never ran when this plan was
+  written. Their tolerances are not measured. Owner: the maintainer. Decision needed: (a)
+  whether a CI job installs the two dependencies so that the optional cells run before a
+  release; (b) what to do if a cell misses SC-002. Default until an answer: (a) no CI
+  change; the absence is recorded as a named exclusion. (b) The limits are SC-002
+  (`1e-8*F` and `1e-8*max(1,|gradient|)`) with the native solver tolerance `1e-12`; a miss
+  is reported as a fit-accuracy finding (as OP7) and the limit is not relaxed. Blocks:
+  nothing; SC-018 passes with named exclusions.
+- **OP22**: Scope of the diagnostics tests. Default until an answer: S6 adds P2 cells for
+  the state and block tests (no analytic bound, because of issue #399) and does not add
+  a residual report test for fold features; the report code does not depend on the fold
+  data path. Owner: the maintainer. Blocks: nothing.
+- **OP23**: Other copies of public helpers exist: `LoopStructural/utils/maths.py` and
+  `loop_common/math/_maths.py` (the same function names), and the legacy modules
+  `LoopStructural/interpolators/_constant_norm.py` and `_discrete_fold_interpolator.py`
+  (not imported by `LoopStructural.interpolators`, which re-exports `loop_interpolation`).
+  FR-025 lists the "audited" utilities, and the survey names only the `_transformation.py`
+  pair. Owner: the maintainer. Decision needed: audit these copies in a later spec.
+  Default until an answer: S6 does not change or test them. Blocks: nothing.
+- **OP24**: The class `EuclideanTransformation` rotates about z only. The 3D `fit` finds
+  the main axis from the x and y columns (PCA with 2 components) and takes the mean of all
+  three columns as the translation. The z column is not part of the axis. Alternative: a
+  PCA of all three columns, and the angle from the xy part of the first vector. This gives
+  another angle when the z spread is large. Owner: the maintainer. Decision needed: accept
+  the xy axis. Default until an answer: the xy axis ("S6 decisions" item 3a). Blocks:
+  nothing.
 
 ## Answers
 
@@ -280,6 +334,55 @@ The constitution (.specify/memory/constitution.md) has priority. -->
   T081 checks the no-false-unattributed case with FDI only, and for PLI it records
   the measured `unattributed` count (expected `2 * source_points`) and the
   `outside_model` count. The worker reports both numbers.
+- 2026-11-06 (S6 plan): OP1 is closed. The S6 design is exact ("Stage S6 design"). The
+  first version of this entry said that no maintainer answer existed for OP18 to OP23. The
+  entries below replace that statement. The S1 to S5 closed answers above stand. P2 fit
+  accuracy is issue #399 and outside spec 005; S6 does not fix it.
+- 2026-11-06 (S6 plan review, maintainer, OP18): amend the spec. S6 uses the library
+  displacement paths (`FaultSegment.apply_to_points` and `evaluate_displacement`) on both
+  frames, with the same algorithm. `spec.md` has the new clarification C-019. It replaces
+  the "existing test-side evaluator and trishear parameters" text of R2 with "library
+  displacement paths, same algorithm for both frames". The R2 fixture text changed to
+  match. The SC-004 numbers do not change. OP18 is closed.
+- 2026-11-06 (S6 plan review, maintainer, OP19): accept. `_value_residuals_fresh` and
+  `_gradient_cosines_fresh` evaluate the interpolator directly at the stored positions,
+  with no fault step. This reverses S5 decision 8 for those two private methods. The task
+  text of `COMPAT.md` and the entry in `ROADMAP.md` say so. OP19 is closed.
+- 2026-11-06 (S6 plan review, maintainer, native and Surfe stub cells): the cells
+  `native-boundary` and `surfe-boundary` are mandatory and are listed apart. The spec rows 6
+  and 7 show their status from the real extension cell only (excluded in this environment).
+  The table prints the stub cells as separate lines. `main` of `backend_matrix` says so, and
+  `test_every_spec_row_has_a_cell` does not count a stub cell for a row.
+- 2026-11-06 (S6 plan review, maintainer, duplicate class): one class lives in
+  `loop_common.math._transformation` and `loop_common.math` exports it.
+  `LoopStructural/utils/_transformation.py` re-exports it. The `ROADMAP.md` entry records
+  that this reverses item 2c-5 ("closed as deferred"). `COMPAT.md` says that the module now
+  uses the `loop_common` logger, that a pickle made after S6 stores the path
+  `loop_common.math._transformation` (an older release cannot load it), and that an old
+  pickle still loads on new code (checked by reading: the old module path stays importable
+  and exposes the class).
+- 2026-11-06 (S6 plan review, maintainer, Surfe module name): `test_p0_surfe_nans.py` uses
+  `importorskip("surfe")` and the adapter imports `surfepy`. A task reads the package data
+  of `surfe` on PyPI and changes the name to `surfepy` only if the installed module is
+  only `surfepy`. The file goes into "S6 files" and into the exclusion ledger.
+- 2026-11-06 (S6 plan review, maintainer, matrix run): `backend_matrix.main(argv)` reads the
+  junit files of the three gate runs (root, `packages/loop_common/tests`,
+  `packages/loop_interpolation/tests`) and merges the outcomes. The key is `classname` plus
+  `name`. A module-level skip is matched by file only, and for an optional cell with an
+  absent dependency it counts as "skipped".
+- 2026-11-06 (S6 plan review, maintainer, 1-D input): `transform` and `inverse_transform`
+  raise `ValueError` for a 1-D input.
+- 2026-11-06 (S6 plan review, maintainer, OP20): fix the other defects of
+  `EuclideanTransformation` in S6: the 3D `fit`, the sign of the fitted angle, the reversed
+  z axis and the silent need for scikit-learn. The planner chose a lazy import with an
+  `ImportError` message, and no new dependency. `ROADMAP.md` gets a decision entry and
+  `COMPAT.md` gets a migration notice. OP20 is closed as "fix". OP24 records the choice of
+  the xy axis for the 3D fit.
+- 2026-11-06 (S6 plan review, maintainer, R2 checks): for the 37 fault-plane points the test
+  reports the largest difference and asserts finite output only. The orthogonality residual
+  rows are reported with a measured bound. Only the value, gradient, normal and curvature
+  rows must vanish at 1e-9 on the analytic field. The plan lists their constraint names
+  (fact 18).
 
 ## Summary
 
@@ -371,7 +474,7 @@ validation matrix (see "Stages and rollback").
 
 ## Design
 
-S1 to S5 have the exact design below. S6 has scope only (OP1).
+S1 to S6 have the exact design below.
 
 ### Types and data
 
@@ -2639,6 +2742,1202 @@ S5 rollback check. Revert to the S4 merge. Then run these checks.
 
 The result of each check goes to `verification.md`.
 
+### Stage S6 design
+
+S6 is the last stage of spec 005. It has five aims. First, S6 makes the auxiliary
+point transformation correct for ordinary point clouds. It also keeps one class behind
+both import paths (FR-025, SC-010). Second, S6 validates the R2 fault frame against
+analytic references: values, gradients, constraint residuals and displacement
+(FR-026, FR-027, SC-004). Third, S6 repairs the physical residuals of faulted
+features, which S5 left open (FR-023, FR-026). Fourth, S6 builds the backend and
+capability matrix, with native and Surfe (FR-030, SC-018). Fifth, S6 reviews the
+golden results of all stages, closes the open findings of S5, runs the final gates
+and writes the "005 complete" line (FR-029, SC-014, SC-015).
+
+Base: branch `feat/005-s5-diagnostics-and-resize` (S5, pull request #402, open). The
+planning worktree is `LoopStructural-005-s6` on the branch `docs/005-s6-plan`. If S5
+changes before it merges, run this planner again on the merged result.
+
+Review status. An independent review found problems in the first S6 design. The
+maintainer answered ten questions on 2026-11-06. This text includes the fixes and the
+answers (see "Answers"). OP18, OP19 and OP20 are closed.
+
+The spec has no `[NEEDS CLARIFICATION]` mark (C-001 to C-019). The planner found two
+places where the spec text and the code disagreed. First, R2 named an "existing
+test-side displacement evaluator" with trishear parameters. The repository has none
+(fact 9). The maintainer amended the spec: clarification C-019 replaces that text with
+the library displacement paths. Second, FR-025 speaks of "duplicate public entry
+points" that keep "compatible import paths". The `loop_common` copy cannot be imported
+(fact 2). The maintainer decided to keep one class (decision 1).
+
+Two terms have one meaning in all S6 text.
+
+- **Non-vacuity check**: a check that fails when a test would pass for a wrong reason.
+  For example, a comparison of two empty sets passes for any code. A non-vacuity check
+  asserts that the data are not empty, or that the effect under test is large enough.
+- **Measure first**: the test task runs the independent computation and records the
+  maximum. The task sets the bound at 2 times that maximum (the S5 rule). If the bound
+  would be above the cap in the table, the task stops and reports. The task never
+  raises a cap to make a test pass.
+
+#### S6 facts from the code (read on 2026-11-06)
+
+1. Two copies of `EuclideanTransformation` exist. They are
+   `packages/loop_common/src/loop_common/math/_transformation.py` (178 lines) and
+   `LoopStructural/utils/_transformation.py` (176 lines). A `diff` shows only four
+   differences: the import line of the logger, `from __future__ import annotations`,
+   one type hint and the quote style. Only `LoopStructural.utils` exports the class
+   (`LoopStructural/utils/__init__.py:15`). Callers (`git grep -n EuclideanTransformation`,
+   2026-11-06, all file types except `specs`): `docs/source/index.rst:88` imports the
+   class and does not use it. `tests/unit/utils/test_transformation.py` is the only
+   test. It uses `dimensions=3` in two tests that expect a `ValueError` for too few
+   columns (lines 63 and 70). No caller in the repository uses the class in three
+   dimensions with real data.
+2. The `loop_common` copy cannot be imported. Line 5 is `from . import getLogger`.
+   `loop_common.math.__init__` does not define `getLogger`. The import raises
+   `ImportError: cannot import name 'getLogger' from 'loop_common.math'` (run with the
+   worktree sources on `PYTHONPATH`, 2026-11-06). `loop_common.math.__init__` does not
+   import the module. So the duplicate has no working entry point today.
+   `loop_common.logging.get_logger(name, level="INFO", ...)` exists
+   (`loop_common/logging/logger.py:36`). `loop_common/__init__.py` imports `geometry`,
+   `io`, `logging`, `math` and `supports` in that order. `geometry/_bounding_box.py`
+   imports `loop_common.math` early. `loop_common.logging` imports no `loop_common.math`
+   module, so an import of `get_logger` in `math/_transformation.py` has no cycle.
+3. `inverse_transform` is broken in both copies. It slices `points[: self.dimensions]`.
+   That slices rows, not columns. It then stacks `points[self.dimensions :]` rows below
+   the result. The `einsum` contracts the last axis of the input with the rotation
+   block. So the result is correct only for the shape `(1, dimensions)`. It raises
+   `ValueError` when the column count differs from `dimensions`. It returns only
+   `min(N, dimensions)` rows when the column count equals `dimensions` and `N > 1`. The
+   existing test `test_inverse_transform_is_broken_for_normal_point_clouds_bug`
+   (line 93) expects the `ValueError`. FR-029 says that a test must not keep a defect.
+   S6 replaces this test.
+4. `transform` copies the input with `np.copy(points)`. An integer array keeps its
+   dtype, so the rotated values are truncated. A 1-D array gives `IndexError`
+   (`points.shape[1]`). `fit` imports `scikit-learn` first. `scikit-learn` is a
+   dependency of the root package (`pyproject.toml` lines 42 and 61). It is not a
+   dependency of `loop_common` (`packages/loop_common/pyproject.toml` line 21 lists
+   `numpy`, `pandas`, `pydantic`, `scipy`, `pyvista` and `pyyaml`). Without it, `fit`
+   logs an error and returns `None`. It sets no state in that case.
+5. Other defects of the class. The reading is confirmed by a short script outside the
+   repository (scikit-learn 1.9.0, 2026-11-06). The script ran the old formulas, not the
+   class.
+   - `_rotation` has `-1` at index `[2, 2]`. For `dimensions=3` the matrix has
+     determinant -1. It reverses z. The old output for the point `(2, 2, 5)` with
+     angle 90 degrees and translation `(1, 2, 3)` is `(6e-17, 1, -2)`. The correct
+     value is `(0, 1, 2)`.
+   - `fit` calls `np.dot(coeffs[0, :], [1, 0])`. For `dimensions=3` the first vector
+     has 3 entries and the second has 2. By reading, this raises `ValueError`. It was
+     not run.
+   - `fit` takes `-arccos(c0x)`. For a main axis with a negative `y` component this
+     has the wrong sign. The sign rule of scikit-learn makes the largest absolute
+     component of the axis positive. So the error shows for lines with a direction
+     between -45 and 0 degrees. Measured: a line at -30 degrees gives the angle -30
+     degrees (correct: +30) and the variance along y after the transform is 6.51. A
+     line at -10 degrees has the variance 1.01. Lines at +30, +120 and -60 degrees
+     have a variance of about 1e-31 (correct by chance of the sign rule).
+   - `fit` needs scikit-learn and fails silently without it (fact 4).
+6. Environment (`importlib.util.find_spec`, read only, 2026-11-06, venv
+   `C:\Users\lachl\dev\LoopStructural\.venv`). Not installed: `loop_interpolation_core`
+   (the native extension), `surfepy` (the module that `_surfe_wrapper.py:7` imports),
+   `pyevtk`, `geoh5py`, `omf`, `trimesh`, `loopstructuralvisualisation`. Installed:
+   `sklearn`, `scipy`, `pyvista`, `matplotlib`, `dill`, `skimage`. The venv has no `pip`
+   module (`python -m pip` fails, 2026-11-06). The editable install of `loop_common` in
+   this venv points to the main worktree
+   (`C:\Users\lachl\dev\LoopStructural\packages\loop_common\src`). A test run in the S6
+   worktree must put the worktree sources first on `PYTHONPATH`, as the S5 runs did. The
+   pip package name for the module `surfepy` is not verified (fact 21).
+7. Native adapter (`_native.py`, 595 lines). `check_supported` begins at line 116
+   (`_native.py`) and the adapter calls it at line 533, before the core is imported. It
+   rejects a rotated support (`support.rotation_xy` not the identity), a region mask,
+   extra sparse rows and a class that is not `FiniteDifferenceInterpolator`. A rotated
+   computational frame is not rejected: the R1 fixture builds an unrotated local support
+   over the enclosure of the projected corners. The adapter reads the stored local
+   arrays (`get_*_constraints`) and calls these methods of `core.Problem`: `add_value`,
+   `add_gradient`, `add_normal`, `add_tangent`, `add_interface`, `add_value_bound`,
+   `add_pair_bound`, `set_regularisation`, `set_border_regularisation`,
+   `add_directional_regularisation`, `set_ridge_factor`, `set_start` and `solve`.
+   `solve` imports `loop_interpolation_core` inside the function. Four native test
+   files in `packages/loop_interpolation/tests` skip at module level with
+   `pytest.importorskip("loop_interpolation_core")`: `test_native_parity.py`,
+   `test_native_inequality.py`, `test_native_orthogonal_and_limits.py` and
+   `test_native_warm_start_ridge.py`. The file
+   `tests/unit/modelling/test_native_fault_frame.py` does the same. The file
+   `test_native_no_rows.py` calls `importorskip` inside 8 test functions (lines 49 to
+   166), so it has one skipped case for each function. The file `test_native_errors.py`
+   has no module-level skip: its tests run without the extension, except one function
+   (line 250, `test_native_accepts_normal_data_rows_after_native_setup`) that calls
+   `importorskip`. `tests/unit/modelling/test_builder_solver.py` has one native test
+   with `importorskip` (line 28). No test checks the rejection of a rotated support.
+   The existing native test of an R3 operation is
+   `test_orthogonal_constraints_give_the_same_field_as_cg` in
+   `test_native_orthogonal_and_limits.py`. It checks gradient orthogonal rows and does
+   not use a rotated frame. No existing native test covers the R3 world and local
+   conversion.
+8. Surfe adapter (`_surfe_wrapper.py`, 211 lines). The module imports `surfepy` at the
+   top (line 7). `loop_interpolation.__init__` (line 92) catches the failure and exports
+   a dummy class. The adapter has no support and no bounding box of its own. It gets
+   local rows from the `get_*_constraints` methods and implements
+   `_evaluate_value_local` and `_evaluate_gradient_local`. The public methods of
+   `GeologicalInterpolator` convert world points to local points once. The tests in
+   `test_surfe_rbf_interpolator.py` skip with `HAS_SURFE`. The file
+   `test_p0_surfe_nans.py` skips with `pytest.importorskip("surfe", minversion=None)`
+   (line 6). That is the pip name, not the module name that the adapter imports. If the
+   module `surfepy` is installed and the module `surfe` is not, the file skips
+   although the tests could run (fact 21).
+9. Displacement code. `FaultSegment.apply_to_points` (`_fault_segment.py:309`) moves each
+   masked point `steps` times along the normalised gradient of coordinate 1, with the
+   step `d / steps`. `d` is `faultfunction(gx, gy, gz) * displacement`.
+   `FaultSegment.evaluate_displacement` (line 277) is the scalar path.
+   `FaultDisplacement.__call__` returns `scale * gx(gx) * gy(gy) * gz(gz)` with
+   `scale=0.5`. The default `BaseFault` profile has a cubic profile for the hanging wall
+   and the footwall, `Ones` for `gy` and `smooth_peak` for `gz`. Search results
+   (`git grep -n -i`, 2026-11-06): the word "trishear" occurred in the spec only (R2, before C-019), "apex" occurs
+   nowhere in code, and "propagation" occurs in one intrusion docstring only. The
+   repository has no trishear evaluator, no propagation ratio and no 16-point quadrature
+   for displacement. The maintainer accepted the library paths (C-019).
+10. A point outside the support. `GeologicalFeature.evaluate_value` gives NaN there. In
+    `apply_to_points` a start point with NaN `gx` gets `d = 0` and does not move. A point
+    that is inside at the start and leaves the support during the steps gets a NaN
+    position (a NaN gradient is not removed).
+11. Zero-gradient protection. `apply_to_points` (lines 405 to 408) sets `g_mag` and
+    divides only rows with `g_mag > 0`. This is the protection that FR-027 means.
+    `FaultSegment.evaluate_gradient` begins at line 247. It divides by the norm with no
+    guard (line 272). `ConstantNormInterpolator` skips elements with a zero gradient norm
+    (`loop_interpolation/_constant_norm.py`, `valid = v_t_norm > 0`, line 73). The native
+    adapter drops zero-norm rows (`drop_zero_norm`).
+12. The S1 test `test_planar_fault_frame_matches_analytic` already checks scalar values
+    (1e-6), gradient magnitudes (1e-4) and gradient directions (0.01 degree) on the 6859
+    probes for FDI and PLI, 4 anchors, 3 rotations and 2 centre modes. It builds the
+    fault with `displacement=0`, so no probe moves (S3 minor finding T038). No test checks
+    constraint residuals of the fault frame or any displacement.
+13. S5 carry-over (the major open finding). `_value_residuals_fresh` (line 362) and
+    `_gradient_cosines_fresh` (line 333) of `_geological_feature.py` call
+    `self.evaluate_value` and `self.evaluate_gradient`. Both apply `_apply_faults`
+    (`_base_geological_feature.py:252`), and the gradient path builds a tetrahedron of
+    faulted points. `GeologicalFeature.evaluate_gradient` also calls
+    `self.builder.up_to_date()`, which can rebuild a stale builder. The stored positions
+    of a faulted feature are already restored by its faults. So the faults act a second
+    time. S5 measured 0.080 against the true residual 0.0004 to 0.0018.
+    `GeologicalInterpolator.evaluate_value` and `evaluate_gradient`
+    (`_geological_interpolator.py:823` and `833`) take world points, change no state and
+    never rebuild. For a feature without faults, `GeologicalFeature.evaluate_gradient`
+    ends in `self.interpolator.evaluate_gradient` (line 247).
+14. `GeologicalFeature._first_stale` (line 252) now follows the faults of each builder
+    recursively. The S5 minor finding "checks one level of faults" is therefore closed
+    in the code (commit `3f20a014`). Its text in `run-state.json` is out of date.
+15. Golden and baseline files. `git diff --name-status ebc7c699d5 HEAD -- . ':!specs' ':!*.py' ':!*.md'`
+    (2026-11-06) lists two files: `packages/loop_common/tests/data/structured_support_reference.npz`
+    (S1: 27 values; S5: 78 keys) and `packages/map2loop/pyproject.toml`. The second file
+    comes from commit `a0e82096` (lint, pull request #395). It is not a spec 005 change.
+    The baseline files `structured_grid_2d_reference.npz`, `tests/fixtures/api_surface_snapshot.json`,
+    `tests/unit/interpolator/*.txt` and everything under
+    `packages/loop_interpolation/tests/golden/golden_files` are unchanged.
+16. The BOM. `packages/loop_common/src/loop_common/geometry/_structured_grid_3d.py` starts
+    with the bytes `ef bb bf` on this branch. It has no BOM in the S4 merge `62c420e8`.
+    S5 added it by accident. A scan of all tracked `.py`, `.toml` and `.md` files
+    (2026-11-06) finds one more BOM file:
+    `tests/unit/modelling/test_fault_frame_analytic.py` (created in S1, commit `03a6e58b`).
+17. Existing skip sites in the files of earlier stages: `test_world_location_consumers.py`
+    has `pytest.importorskip` inside two functions (viewer and `matplotlib` in one, `pyevtk` in the other).
+    The other S1 to S5 test files have no skip. `tests/conftest.py` and the files in
+    `tests/fixtures` have no skip call (`git grep`, 2026-11-06).
+18. Names of the assembled constraints. `add_constraints_to_least_squares`
+    (`_discrete_interpolator.py:340`) stores each block in `interpolator.constraints[name]`
+    with the keys `matrix`, `b` and `w`. It normalises the rows first. If the name exists,
+    it adds a numeric suffix. The names in use:
+    - FDI (`_finite_difference_interpolator.py`): `value`, `gradient`, `norm_0`, `norm_1`,
+      `norm_2`, `interface_<id>`, the curvature terms `dxx`, `dyy`, `dzz`, `dxy`, `dxz`,
+      `dyz` (names from `support.get_operators`), the border terms `dx_lower`,
+      `dx_upper`, `dy_lower`, `dy_upper`, `dz_lower`, `dz_upper`, and directional terms.
+    - PLI (`_p1interpolator.py`): `value`, `norm`, `edge jump` (curvature). PLI
+      `add_gradient_constraints` assembles no row.
+    - Orthogonality rows from the geometry builder
+      (`_geological_feature_builder.py`, line 331): `<reference feature name>_orthogonal`.
+      Their direction comes from the reference feature, which is a solved field.
+    `interpolator.constraints` is kept after the solve: the call `self._post_solve()` is
+    commented out (`_discrete_interpolator.py:1451`).
+19. Junit names. The test run has `junit_family=xunit2` by default (pytest 9.1.1, checked
+    in `_pytest/junitxml.py`). That family has no `file` attribute on a `testcase`.
+    `classname` is the node id path with dots, plus the class names. `name` is the function
+    name with its parameters. The root `pyproject.toml` sets
+    `addopts = "--import-mode=importlib"` and `testpaths = ["tests"]`. The import mode
+    does not change the node id, so it does not change `classname`. A short run
+    (2026-11-06, a scratch folder, `--import-mode=importlib`) gave
+    `classname="sub.pkg.test_ok.TestC" name="test_b[1]"` for a class test. A module-level
+    `importorskip` gave one skipped case with `classname=""` and `name="sub.pkg.test_mod"`.
+    A run from the repository root finds the root `pyproject.toml` as the ini file,
+    because `packages/loop_common/pyproject.toml` and
+    `packages/loop_interpolation/pyproject.toml` have no `[tool.pytest.ini_options]`. So
+    the rootdir is the repository root for all three gate runs.
+20. Check of the callers for three dimensions (`git grep`, 2026-11-06): no caller in the
+    repository uses `fit`, `transform` or `inverse_transform` in three dimensions with
+    real data. The fixes of the class change numbers for outside users only.
+21. The pip package of `surfepy`. The adapter imports `surfepy`
+    (`_surfe_wrapper.py:7`). `test_p0_surfe_nans.py` imports `surfe`. Neither the
+    package list in `pyproject.toml` nor the venv names the pip package. The planner could
+    not check PyPI here. A task step checks it (see "S6 task order", task 4).
+
+#### S6 decisions
+
+1. **One class, two import paths (maintainer answer 4).** `EuclideanTransformation`
+   lives in `loop_common.math._transformation`. `loop_common.math` exports it.
+   `LoopStructural/utils/_transformation.py` re-exports it. `LoopStructural.utils`
+   exports the same object. The old path `LoopStructural.utils._transformation` stays
+   importable. This is the "compatible import paths" of FR-025. This reverses item 2c-5
+   of `ROADMAP.md` ("closed as deferred"). The S6 entry of `ROADMAP.md` says so in one
+   sentence. The class keeps all attribute names, so a pickle made before S6 loads on new
+   code: the old module path stays importable and exposes the class (checked by reading
+   `LoopStructural/utils/__init__.py:15` and the new re-export; a test builds such a
+   pickle). A pickle made after S6 stores the path `loop_common.math._transformation`.
+   An older release cannot load it. `COMPAT.md` says both facts. The module uses the
+   `loop_common` logger (`loop_common.logging.get_logger`). `COMPAT.md` says that too.
+2. **Contract of `transform` and `inverse_transform`.** The input is an array-like of
+   shape `(N, d)` with `d >= dimensions` and `N >= 0`. Another rank raises
+   `ValueError`, including a 1-D array (maintainer answer 7). Fewer columns than
+   `dimensions` raises `ValueError` (same text as today). Both methods return a new float
+   array. They never change the input. The columns after `dimensions` are copied bit for
+   bit. One point is the shape `(1, d)`. A shape `(d,)` is not a documented shape; it
+   raises `ValueError` (it raised `IndexError`). `inverse_transform(transform(P))`
+   equals `P` within `Tp` for the transformed columns and exactly for the others.
+3. **The other defects of the class are fixed (OP20, closed as "fix", maintainer answer
+   8).** S6 fixes four defects.
+   - (a) The 3D `fit`. `fit` finds the main axis from the x and y columns only. The
+     rotation of the class turns the xy plane about z, so only the xy part of the cloud
+     can align with x. The translation is the mean of the first `dimensions` columns.
+     The z column keeps its meaning (OP24).
+   - (b) The sign of the fitted angle. The angle is `-arctan2(c_y, c_x)` for the main
+     axis `(c_x, c_y)`. The old code used `-arccos(c_x)`. For an axis with a positive
+     `c_y` both give the same number. For a negative `c_y` the old sign was wrong.
+   - (c) The reversed z axis. `_rotation` has `1` at index `[2, 2]`. The 3D matrix is
+     now a proper rotation (determinant 1). The 2D case does not use that entry.
+   - (d) The silent need for scikit-learn. `fit` imports scikit-learn only when
+     `fit_rotation` is true. If the import fails, `fit` raises `ImportError` with a
+     message that names the package and the install command. It changes no state. No
+     dependency is added to `packages/loop_common/pyproject.toml`. Reason: only `fit` with
+     rotation needs the package, and the root package already depends on it. A
+     NumPy-only replacement is not chosen. It would change the sign choice of the axis,
+     and the current numbers of 2D users would change.
+   The physical effect: a 3D user got a mirrored z axis (`z' = -(z - tz)`). A 3D user also
+   got a wrong rotation angle for lines with a direction between -45 and 0 degrees, and
+   `fit` failed for them. After S6, `z' = z - tz`. `ROADMAP.md` gets a decision entry for
+   this behaviour change and `COMPAT.md` gets a migration notice. The evidence for FR-029
+   is in decision 10.
+4. **Displacement uses library code only (OP18, closed by C-019).** The vector comparison
+   uses `FaultSegment.apply_to_points` with `steps = 20` on the solved frame and on an
+   analytic frame. The scalar comparison uses `FaultSegment.evaluate_displacement`. Both
+   frames use the same algorithm. The slip is 3 and the profile is the default
+   `BaseFault` profile. The analytic frame is a `FaultSegment` that holds three
+   `AnalyticReference` features (a class of `tests/fixtures/coordinate_frames.py`) with
+   the R2 values and gradients. No new displacement law is added to the library (spec
+   scope: out). The SC-004 numbers do not change (1332 points, 0.03).
+5. **Error sources are assessed apart (FR-027).** The tests keep four populations and
+   four checks apart. (a) Frame error: the S1 test and the new residual tests. (b)
+   Integration error: two checks on analytic frames. The first compares the library
+   result of the R2 analytic frame with a closed form written by hand,
+   `(0, 0, -s * 1.5 * f(|x'|/20))` with `f(t) = 1 - 3 t^2 + 2 t^3`. The second uses a
+   curved slip field (a circle) whose explicit-Euler result has a closed form. It checks
+   that the library result for 20 steps equals that closed form, and that 400 steps come
+   close to the exact arc. (c) Fault-plane samples: the 37 points with `x' = 0`. The test
+   reports the largest difference and asserts finite output only. (d) Outside-support
+   samples: points that the support does not contain. The comparison bound of SC-004
+   applies to the 1332 smooth points only.
+6. **Physical residuals use the interpolator (OP19, accepted by the maintainer).**
+   `_value_residuals_fresh` and `_gradient_cosines_fresh` evaluate
+   `self.interpolator.evaluate_value` and `self.interpolator.evaluate_gradient` at the
+   world positions of the stored rows, with no fault step. They no longer call the
+   feature methods. No fault acts a second time. For a feature with no faults and no
+   regions the numbers do not change. This reverses S5 decision 8 for these two private
+   methods only. The task text for `COMPAT.md` and the entry in `ROADMAP.md` both say so.
+   The public names, the shapes and the stale rule (S5 decisions 9 to 11) do not change.
+   A region mask of the feature no longer hides a row: before, a row outside a region
+   gave NaN; now it gives a number. That is correct for a diagnostic of stored data. The
+   public `evaluate_gradient` of a faulted feature keeps the tetrahedron path and its
+   shape error (S3 note). S6 does not fix it. `COMPAT.md` lists it as a known issue.
+7. **Backend matrix is a data table with a checker.** `tests/fixtures/backend_matrix.py`
+   holds the cells, the optional dependencies and pure functions (`classify_cell`,
+   `outcomes_from_junit`, `rows_without_real_cell`, `render_table`). A mandatory cell is
+   passed or failed. A skipped or missing mandatory cell is a violation. An optional cell
+   needs a named dependency. It is "excluded" only when the dependency is absent and the
+   cell was skipped. It is a violation when it passed without the dependency, and when it
+   was skipped with the dependency installed. The command
+   `python -m tests.fixtures.backend_matrix <junit>...` reads one or more junit files,
+   prints the table for `verification.md` and exits with 1 on a violation.
+8. **Native and Surfe have two kinds of cell (maintainer answer 3).** The boundary cells
+   (`native-boundary`, `surfe-boundary`) use a recording stub of the extension
+   (`loop_interpolation_core` or `surfepy`) that the test puts in `sys.modules`. They are
+   mandatory, they need no dependency, and they test the Python side of the boundary:
+   local rows, grid, and world results. They are listed apart. The spec rows 6 and 7
+   ("run when available; record absence explicitly") show their status from the real
+   extension cell only. In this environment both rows show "excluded". The table prints
+   the stub cells as separate lines. A stub cell is never reported as a native or Surfe
+   pass. `main` of `backend_matrix` states this in its output. The test
+   `test_every_spec_row_has_a_cell` does not count a stub cell for a row. The extension
+   cells run the real extension. They are optional. Each one calls
+   `require_optional(key)`, which skips with the text "optional dependency '<module>' is
+   not installed".
+9. **Names of the optional dependencies.** Native: module `loop_interpolation_core`
+   (extra `loop-interpolation[native]`). Surfe: module `surfepy`. The pip package name is
+   unverified (fact 21). Display: module `loopstructuralvisualisation`, `matplotlib`,
+   `pyevtk`. A task checks the pip name of Surfe and decides if
+   `test_p0_surfe_nans.py` changes its `importorskip` name to `surfepy` (maintainer
+   answer 5).
+10. **Golden review.** S6 expects no change to a golden file. The review has four parts:
+    a ledger of all baseline files changed since `ebc7c699d5` with their evidence, a
+    check that every other baseline file is unchanged, a tolerance audit of the diff,
+    and a ledger of behaviour changes that have analytic evidence but no golden file
+    (FR-029 evidence). The last ledger lists: the faulted-feature residuals (decision 6;
+    evidence: the independent value in `test_diagnostics_backends.py`) and the four
+    `EuclideanTransformation` fixes (decision 3; evidence: the hand-computed numbers in
+    `test_euclidean_transformation.py` and `test_transformation.py`). It states that
+    `git grep` finds no other caller, so 0 baseline files are affected. If an S6 test run
+    changes a golden number, the S5 order applies: list, review, record, then `--update`.
+11. **Final gates (SC-014).** The orchestrator runs them one process at a time. Each
+    pytest run writes its own junit file in a scratch folder outside the repository
+    (`<junit_dir>`):
+    ```
+    ruff check LoopStructural packages
+    pytest --junitxml=<junit_dir>/root.xml
+    pytest packages/loop_common/tests --junitxml=<junit_dir>/common.xml
+    pytest packages/loop_interpolation/tests --junitxml=<junit_dir>/interpolation.xml
+    pytest tests/unit/test_public_api_contract.py tests/unit/test_stable_api_surface.py
+    python -m tests.fixtures.backend_matrix <junit_dir>/root.xml <junit_dir>/common.xml <junit_dir>/interpolation.xml
+    ```
+    The earlier merge gate ran the two package folders in one process. S6 splits them so
+    that each run has one junit file. The two API tests also run inside the root run. All
+    runs start in the repository root, so the rootdir and the `classname` paths agree
+    (fact 19). A coverage ledger maps each production file changed since `ebc7c699d5` to a
+    test.
+12. **Disposition of the S5 open findings (run-state.json, 12 entries and 1 major).**
+    Entries 1 and 10 are the same BOM finding, so 11 distinct minor findings exist.
+    S6 closes 9 of them and the major one. 2 stay. See "S6 findings disposition".
+13. **Documents.** `COMPAT.md` gets the S6 notices and the move of one S5 sentence.
+    `ROADMAP.md` gets two decision entries (the faulted-feature residuals and the
+    `EuclideanTransformation` fixes) and the line "Spec 005 complete". `specs/README.md`
+    gets the S6 status.
+14. **Second BOM file.** S6 removes the BOM from
+    `tests/unit/modelling/test_fault_frame_analytic.py` as well. It is a 3-byte change
+    and it adds that S1 file to "S6 files". The text of the file does not change. Reason:
+    the BOM has the same cause and the same fix as finding 1.
+
+#### S6 findings disposition
+
+| Finding (S5 open list, `run-state.json`) | S6 result | How |
+|---|---|---|
+| 1 and 10. BOM in `_structured_grid_3d.py` | Closed | Remove the three bytes. Nothing else changes in the file. Check: first bytes are not `ef bb bf`; `git diff -w --stat` against `62c420e8` shows no change other than S5. The S1 file `test_fault_frame_analytic.py` has the same BOM and gets the same fix (decision 14) |
+| 2. Format-only hunks in `_structured_grid_2d.py` | Stays | Cosmetic. A revert is more churn than the noise. Recorded in `verification.md` |
+| 3. `set_nelements` passes a cell count to the node setter (`nelements=1000` gives 729 cells) | Stays | Old behaviour, not a regression. Recorded in `verification.md` and `COMPAT.md` |
+| 4. T079 sentence in `verification.md` | Already closed | The sentence is at `verification.md` line 910. S6 records the check |
+| 5. Exact-field stub ignores its points | Closed | The stub records the points and the test compares them with the world positions of the stored rows |
+| 6. One `TOL_SOLVED` for both engines | Closed | One constant for each engine, 2 times the measured maximum. Each constant is at most the old value 9e-4 (a tightening or no change) |
+| 7. PLI gradient test prints and does not assert | Closed | Assert `unattributed == 8` for the measured case |
+| 8. `id(latest_diagnostics_report)` compare | Closed | Hold the object and compare with `is` |
+| 9. `_stale_reason` checks one level of faults | Already closed in code | See fact 14. S6 adds no test |
+| 11. `COMPAT.md` report row has the misfit sentence | Closed | Move the sentence to the `evaluate_value_misfit` row |
+| 12. `verification.md` run-time count sentence (150 against 147 + 1) | Closed | Recompute from the two run records and correct the sentence |
+| Major. Physical residuals of a faulted feature | Closed | OP19, decision 6 |
+
+Earlier-stage minor findings that S6 also closes: S2 T020 ("no test of the native adapter
+world contract") by the native boundary cells; S3 T038 ("the R2 fixture displaces none of
+its probes") by the displacement fixture, whose slip is 3. Findings that stay: the S1 note
+that `_on_geometry_change` adds anisotropy rows (it is in `_fault_builder.py`, outside the
+S6 scope), and the S3 note on a shape error in the tetrahedron gradient path of
+`_geological_feature.py` for a faulted feature. The OP19 fix avoids that path in the
+diagnostics. The path itself does not change.
+
+#### S6 contracts
+
+| Boundary | Input | Output | Owner |
+|---|---|---|---|
+| `EuclideanTransformation.transform` and `.inverse_transform` | `(N, d)` array-like, `d >= dimensions` | new float array, same shape; transformed columns inverse to each other within `Tp`; other columns equal bit for bit; input unchanged; other shapes (also 1-D) raise `ValueError` | `loop_common/math/_transformation.py` |
+| `EuclideanTransformation.fit` | `(N, d)` array-like, `d >= dimensions` | the object; translation is the mean of the first `dimensions` columns; the angle aligns the xy main axis with x; for 3D the z column keeps its sign; `ImportError` (no state change) if rotation is requested and scikit-learn is missing | `loop_common/math/_transformation.py` |
+| `loop_common.math.EuclideanTransformation`, `LoopStructural.utils.EuclideanTransformation`, `LoopStructural.utils._transformation.EuclideanTransformation` | import | the same class object | `loop_common`, `LoopStructural.utils` |
+| `GeologicalFeature.evaluate_gradient_cosines`, `evaluate_value_residuals`, the two misfit methods, `verification_report` | the feature | as in S5, with no fault step in the physical residuals | `_geological_feature.py` |
+| `FaultSegment.apply_to_points`, `evaluate_displacement` | world points | unchanged. Zero gradient: no move, no warning. | `_fault_segment.py` (not changed) |
+| `tests/fixtures/backend_matrix.py` | cells, one or more junit files | one status text for each cell; stub cells listed apart; violations named | tests |
+
+#### S6 functions and signatures
+
+`packages/loop_common/src/loop_common/math/_transformation.py`. The file keeps
+`from __future__ import annotations`. `__init__`, `rotation`, `inverse_rotation`,
+`fit_transform`, `__call__` and `_repr_html_` do not change. The logger import changes.
+`fit`, `_rotation`, `transform` and `inverse_transform` change. The helper
+`_check_points` and the function `_import_decomposition` are new.
+
+```python
+from loop_common.logging import get_logger          # replaces: from . import getLogger
+
+logger = get_logger(__name__)
+
+
+def _import_decomposition():
+    """Return ``sklearn.decomposition``.
+
+    Raises
+    ------
+    ImportError
+        If scikit-learn is not installed. The message names the package and the
+        install command ("pip install scikit-learn").
+    """
+
+
+class EuclideanTransformation:
+    def _check_points(self, points: np.ndarray) -> np.ndarray:
+        """Return a float copy of ``points`` with shape (N, d), d >= dimensions.
+
+        Raises ValueError if ``points`` is not 2D ("points must be a 2D array with
+        shape (N, d)") or has fewer than ``dimensions`` columns (message:
+        "Points must have at least {n} dimensions").
+        """
+        array = np.array(points, dtype=float)
+        if array.ndim != 2:
+            raise ValueError("points must be a 2D array with shape (N, d)")
+        if array.shape[1] < self.dimensions:
+            raise ValueError(f"Points must have at least {self.dimensions} dimensions")
+        return array
+
+    def fit(self, points: np.ndarray) -> "EuclideanTransformation":
+        """Fit the translation and the angle.
+
+        The translation is the mean of the first ``dimensions`` columns. If
+        ``fit_rotation`` is true, the angle is ``-arctan2(c_y, c_x)`` for the main axis
+        ``(c_x, c_y)`` of the x and y columns (PCA with 2 components). The rotation
+        turns the xy plane about z, so the z column is not part of the axis. The
+        method changes no attribute if it raises.
+        """
+        array = self._check_points(points)
+        d = self.dimensions
+        translation = np.mean(array[:, :d], axis=0)
+        angle = 0
+        if self.fit_rotation:
+            decomposition = _import_decomposition()
+            centred = array[:, :2] - translation[None, :2]
+            axis = decomposition.PCA(n_components=2).fit(centred).components_[0]
+            angle = -np.arctan2(axis[1], axis[0])
+        self.translation = translation
+        self.angle = angle
+        logger.debug("EuclideanTransformation fitted: translation=%s angle=%s", translation, angle)
+        return self
+
+    def _rotation(self, angle):
+        """Return the 3x3 rotation about z; entry [2, 2] is +1 (it was -1)."""
+        return np.array(
+            [
+                [np.cos(angle), -np.sin(angle), 0],
+                [np.sin(angle), np.cos(angle), 0],
+                [0, 0, 1],
+            ]
+        )
+
+    def transform(self, points: np.ndarray) -> np.ndarray:
+        array = self._check_points(points)
+        d = self.dimensions
+        centred = array[:, :d] - self.translation[None, :]
+        array[:, :d] = np.einsum("ik,jk->ij", centred, self.rotation[:d, :d])
+        return array
+
+    def inverse_transform(self, points: np.ndarray) -> np.ndarray:
+        array = self._check_points(points)
+        d = self.dimensions
+        array[:, :d] = (
+            np.einsum("ik,jk->ij", array[:, :d], self.inverse_rotation[:d, :d])
+            + self.translation[None, :]
+        )
+        return array
+```
+
+The planner checked the formulas by hand (see "S6 tests"). The 2D and 3D matrices use
+`centred @ R.T`, as the old code did. So a point `p` gives `R (p - t)` and the inverse
+gives `R^T q + t`. For `dimensions=2` the old and the new `transform` give the same
+numbers, because entry `[2, 2]` is not used.
+
+`packages/loop_common/src/loop_common/math/__init__.py`: add the line
+`from ._transformation import EuclideanTransformation` after `from ._maths import *`. The
+name `EuclideanTransformation` is free in this module (`git grep -n -w` on 2026-11-06).
+No import cycle arises (fact 2).
+
+`LoopStructural/utils/_transformation.py` (whole new content):
+
+```python
+"""Old import path of ``EuclideanTransformation``.
+
+The class lives in ``loop_common.math``. This module keeps the path
+``LoopStructural.utils._transformation`` working.
+"""
+from loop_common.math._transformation import EuclideanTransformation
+
+__all__ = ["EuclideanTransformation"]
+```
+
+`LoopStructural/modelling/features/_geological_feature.py` (two changes, nothing else).
+
+```python
+# in _gradient_cosines_fresh, replace:  model = self.evaluate_gradient(positions)
+model = self.interpolator.evaluate_gradient(positions)
+
+# in _value_residuals_fresh, replace:   self.evaluate_value(positions)
+return np.abs(rows[:, 3] - self.interpolator.evaluate_value(positions))
+```
+
+Both docstrings get this sentence: "The stored positions are already restored by the
+faults of the feature. The method evaluates the interpolator, not the feature, so no
+fault acts a second time." The `positions` stay `bounding_box.reproject(...)` of the
+stored rows when the interpolator has a frame, as in S5. `_stale_reason`,
+`_physical_residual_summaries`, `verification_report` and the public methods do not
+change.
+
+`tests/fixtures/coordinate_frames.py` (changed; new names, all free by `git grep -n -w`
+on 2026-11-06):
+
+```python
+R2_SLIP = 3.0
+R2_STEPS = 20
+R2_DISPLACEMENT_TOL = 0.03          # SC-004: 1 percent of the slip
+CURVED_RADIUS = 5.0                 # start radius of the curved slip control
+CURVED_GX = 0.2                     # constant coordinate-0 value of the curved control
+
+def r2_displacement_section(anchor: np.ndarray) -> np.ndarray:
+    """Return the 1369 section points y'=0, x' and z' in {-9, -8.5, ..., 9} (world)."""
+
+def r2_section_masks(anchor: np.ndarray, section: np.ndarray) -> tuple[np.ndarray, np.ndarray]:
+    """Return (smooth, plane) boolean masks. smooth is |x'| >= 0.5 (1332), plane is the rest (37)."""
+
+def r2_analytic_fault(anchor: np.ndarray, steps: int = R2_STEPS,
+                      displacement: float = R2_SLIP, gradient_override=None) -> FaultSegment:
+    """Return a FaultSegment of three AnalyticReference features with the R2 fields.
+
+    ``gradient_override(coordinate, points, gradient)`` may replace the gradient of
+    one coordinate. It gets the current points of each call, not the start points.
+    The default profile is BaseFault. ``anchor`` shifts the reference only.
+    """
+
+def r2_closed_form_displacement(section: np.ndarray, anchor: np.ndarray,
+                                slip: float = R2_SLIP) -> np.ndarray:
+    """Return the displacement vectors (N, 3) of the R2 analytic frame, by hand.
+
+    For x' > 0 the vector is (0, 0, -0.5 * slip * f(t)); for x' < 0 it is
+    (0, 0, +0.5 * slip * f(t)); for x' = 0 it is zero. Here t = |x'| / 20 and
+    f(t) = 1 - 3 t^2 + 2 t^3. The code does not call the library profile.
+    """
+
+def r2_curved_slip_fault(anchor: np.ndarray, steps: int) -> FaultSegment:
+    """Return a FaultSegment whose slip direction turns about a vertical axis.
+
+    Coordinate 0 has the constant value CURVED_GX. Coordinate 2 has the constant
+    value 0. Coordinate 1 has the gradient (-(y-cy), (x-cx), 0) / (20 r) about the
+    axis through ``anchor`` (cx, cy). The displacement is R2_SLIP and the profile is
+    BaseFault. By hand: d = 0.5 * 3 * f(0.2) = 1.344 (f(0.2) = 0.896).
+    """
+
+def euler_circle_closed_form(radius: float, d: float, steps: int) -> tuple[float, float]:
+    """Return (final radius, turn angle) of the explicit Euler scheme on a circle.
+
+    Each step has the length s = d / steps along the tangent. The radius obeys
+    r_k^2 = radius^2 + k s^2. The angle gains arctan(s / r_k) in step k. The function
+    sums the angle with a plain loop of ``steps`` terms and does not call the library.
+    """
+
+def build_r2_fault(anchor: np.ndarray, rotation_deg: float, interpolatortype: str,
+                   explicit_center: bool = True, displacement: float = R2_SLIP) -> FaultSegment:
+    """Build the R2 fault as test_fault_frame_analytic._fault does, with displacement 3.
+
+    Copy of ``_fault`` (test_fault_frame_analytic.py lines 21 to 51). The only
+    changes are ``displacement`` in place of 0 and ``fault.steps = R2_STEPS``.
+    The S1 test file keeps its code.
+    """
+
+def faulted_foliation_model(anchor: np.ndarray, rotation_deg: float, engine: str):
+    """Return (model, fault, strati) of the S5 faulted model, shifted to ``anchor``.
+
+    Same data as ``_faulted_built_model`` in test_diagnostics_frames.py (unit cube):
+    3 fault rows at (0.5, 0.5, 0.5) (normal (1, 0, 0) with value 0, slip direction
+    (0, 0, 1), extent direction (0, 1, 0)); 8 strati value rows at z = 0.3 (value 0)
+    and z = 0.7 (value 1) for x and y in {0.2, 0.8}; 1 strati normal row at
+    (0.3, 0.3, 0.5) with the vector (0, 0, 1). The fault displacement is 0.1.
+    Every location is shifted by ``anchor``. The model uses
+    ``model_with_frame(anchor, anchor + 1, rotation_deg)``. Both features use
+    ``interpolatortype=engine`` ("FDI" or "PLI") and ``nelements=1e3``. The model is
+    built (``model.update()``) before it is returned.
+    """
+
+def residuals_of_field(interpolator, nodal_values: np.ndarray) -> dict[str, np.ndarray]:
+    """Return ``matrix @ nodal_values - b`` for each entry of ``interpolator.constraints``."""
+```
+
+`tests/fixtures/backend_matrix.py` (new; names free). Task 2 of the order writes the
+helper part. A later task writes the `MATRIX` list:
+
+```python
+Outcome = Literal["passed", "failed", "skipped", "absent"]
+
+@dataclass(frozen=True)
+class OptionalDependency:
+    key: str            # "native", "surfe", "viewer", "matplotlib", "pyevtk"
+    module: str         # top-level module name for find_spec
+    distribution: str   # pip name or extra, for the message
+    capability: str
+
+OPTIONAL_DEPENDENCIES: dict[str, OptionalDependency]
+
+@dataclass(frozen=True)
+class OptionalStatus:
+    key: str
+    module: str
+    available: bool
+    reason: str         # "" when available, else "optional dependency '<module>' is not installed (<distribution>)"
+
+def optional_status(key: str, find_spec: Callable[[str], object | None] = importlib.util.find_spec) -> OptionalStatus
+def require_optional(key: str) -> None          # pytest.skip(status.reason) when not available
+
+@dataclass(frozen=True)
+class Cell:
+    cell_id: str
+    spec_row: str                       # one of SPEC_ROWS, or "extra"
+    mandatory: bool
+    stub: bool                          # True: boundary cell with a recording stub, never a real result
+    refs: tuple[tuple[str, str, str | None], ...]   # (path with "/", test function, id selector or None)
+    min_cases: int                      # least number of junit cases that the refs must match
+    dependency: str | None              # key of OPTIONAL_DEPENDENCIES; None for a mandatory cell
+
+SPEC_ROWS: tuple[str, ...]              # the 7 rows of "Required backend coverage"
+MATRIX: tuple[Cell, ...]
+
+def classify_cell(cell: Cell, outcome: Outcome, status: OptionalStatus | None) -> str
+def outcomes_from_junit(paths: Sequence[str]) -> dict[str, Outcome]    # cell_id -> outcome
+def rows_without_real_cell(matrix: Sequence[Cell]) -> list[str]        # rows with no cell where stub is False
+def render_table(matrix: Sequence[Cell], statuses: dict[str, str]) -> str
+def main(argv: list[str] | None = None) -> int     # argv: junit files; prints the table; 1 on a violation
+```
+
+`classify_cell` returns: `"passed"`, `"failed"`, `"excluded: <reason>"` or
+`"VIOLATION: <text>"`. Rules: a mandatory cell that is skipped or absent is a
+violation. An optional cell with an absent dependency is "excluded" when it is skipped,
+a violation when it passed or is absent. An optional cell with an installed dependency is
+a violation when it is skipped or absent. A failed cell is "failed" in all cases.
+
+`outcomes_from_junit` reads every file in `paths` and merges the cases. The key of a
+case is the pair (`classname`, `name`). The junit family is `xunit2`, which has no `file`
+attribute (fact 19). If one key occurs in more than one file, the worse outcome wins
+(failed, then skipped, then passed). A cell ref `(path, function, selector)` has the
+module `path` without `.py` and with dots in place of `/`. A case matches the ref when
+`classname` equals the module or starts with the module and a dot (a test class), the
+part of `name` before `[` equals `function`, and the selector is `None` or occurs in
+`name`. A module-level skip is one skipped case with an empty `classname` and a `name`
+that equals the module. It is matched by file only: it matches every ref of that file
+and counts as "skipped". For an optional cell with an absent dependency this gives
+"excluded". It never gives "absent". For a mandatory cell it is a violation. The outcome
+of a cell: one failed case makes it failed; else one skipped case makes it skipped; else
+it needs at least `min_cases` passed cases to be passed; otherwise it is absent. The
+`--import-mode=importlib` option of the root `pyproject.toml` does not change this rule.
+The node id gives the `classname` and the node id does not depend on the import mode
+(fact 19).
+
+#### S6 tests
+
+All cells are parametrised test ids. A tolerance is given with its reason. "Non-vacuity
+check" and "measure first" are defined at the top of this stage design.
+
+`tests/unit/utils/test_transformation.py` (changed; the 9 other existing tests stay).
+`Tp(L, W)` is `tp` of the S1 fixture with `L = max(extent of the cloud, 1.0)` and
+`W = max |coordinate|`. Reason: for one point the extent is 0 and `Tp` would only keep the
+rounding part. Anchors are the four `ANCHORS`. The cloud is `anchor + rng.uniform(-50, 50)`
+(seed 0). Hand numbers are in the "Checks" column. The anchor `(500000, 6500000, 100)` has
+`W = 6.5e6`. A float64 number of that size has the spacing 9.3e-10. So a bound of 1e-12 is
+not possible for any comparison that passes a world position through a local position.
+Every bound below uses `Tp` or a value derived from it.
+
+| Test function | Cells | Checks |
+|---|---|---|
+| `test_round_trip_explicit_parameters` | dimensions {2, 3} x n {1, 4, 50} x 4 anchors x columns {3, 5} x angle {30 deg, -75 deg} = 96 | transform with a set angle and translation `anchor + (1, 2, 3)`; forward result differs from the input by more than `0.1` in some transformed column; for the x and y columns the forward result equals the closed form `x' = c(x - tx) - s(y - ty)`, `y' = s(x - tx) + c(y - ty)` computed in the test, within `1e-12 * L` (the centred values are small and the formulas agree to a few `eps`); for `dimensions=3` the z column equals `z - tz` within the same bound (this fails before S6: z was reversed); `inverse_transform(forward)` equals the input within `Tp` in the transformed columns; every other column is `np.array_equal` to the input after forward and after inverse; the input array is equal to its copy; the output does not share memory with the input |
+| `test_round_trip_after_fit` | 4 anchors x n {1, 4, 50} x `fit_rotation` {True, False} = 24 | `dimensions=2`. `fit` on a 50-point cloud along a line at 30 degrees, then forward and inverse of the first n points: same checks as above; the fitted translation equals `np.mean` of the cloud within `Tp` |
+| `test_integer_input_is_not_truncated` | 1 | an `int64` array of 4 points: the forward result equals the closed form computed with floats within `Tp` (before S6 the result is truncated) |
+| `test_one_dimensional_input_raises_value_error` | 3 (transform, inverse_transform, fit) | shape `(3,)` raises `ValueError` with the text "2D array"; before S6: `IndexError` |
+| `test_too_few_columns_raises_value_error` | 2 (transform, inverse) with `dimensions=3` and 2 columns | `ValueError` with "at least 3 dimensions" |
+| `test_entry_points_are_one_class` | 1 | `LoopStructural.utils.EuclideanTransformation`, `LoopStructural.utils._transformation.EuclideanTransformation`, `loop_common.math.EuclideanTransformation` and `loop_common.math._transformation.EuclideanTransformation` are the same object. Fails before S6 (the last two cannot be imported) |
+| `test_pickle_with_the_old_module_path_loads` | 1 | the test sets the class attribute `__module__` to `"LoopStructural.utils._transformation"` with `monkeypatch`, pickles a fitted object, restores the attribute, and loads the bytes. The result is an instance of the class with equal `translation`, `angle`, `dimensions` and `fit_rotation`. This shows that a pickle from before S6 loads |
+| `test_new_pickle_names_the_loop_common_path` | 1 | the bytes of a pickle made now contain `loop_common.math._transformation`. This documents the one-way compatibility |
+| `test_fit_aligns_a_line_with_negative_slope` | 2 (line at -30 and -10 degrees through (5, 5)) | `dimensions=2`, 50 points as in `_line_points`. By hand: the axis is `(cos 30, -sin 30)`; the rotation by +30 degrees maps it to `(1, 0)`. So `t.angle` equals `+pi/6 = 0.5235987756` for -30 degrees and `+pi/18 = 0.1745329252` for -10 degrees, within `1e-9` modulo `pi` (scikit-learn may return the opposite axis for the same line, which turns the line onto the negative x axis); the variance of the y column after `fit_transform` is below `1e-20`. Before S6 (measured, scikit-learn 1.9.0): the angle is `-pi/6` and the y variance is 6.51 (for -10 degrees: 1.01) |
+| `test_fit_three_dimensions` | 2 (line at +30 and -30 degrees) | `dimensions=3`, 50 points of `_line_points` (z = 0.1 i). By hand: the mean of z is `0.1 * 49 / 2 = 2.45`; the means of x and y are 5. So the translation equals `(5, 5, 2.45)` within `1e-9`; the angle is `-pi/6` for +30 degrees and `+pi/6` for -30 degrees within `1e-9` modulo `pi`; the transformed z equals `z - 2.45` within `1e-12`; the y variance is below `1e-20`; the inverse returns the input within `Tp`. Before S6: `fit` raises `ValueError` (the shapes (3,) and (2,) do not match; by reading) |
+
+The test `test_inverse_transform_is_broken_for_normal_point_clouds_bug` is deleted (fact 3,
+FR-029). `verification.md` records the deletion under the golden review.
+The tolerance reason for `Tp`: the round trip is two rotations and one translation of
+float64 values of size `W`. The error is about `W * eps`. `Tp` has `32 * eps * W`. So the
+margin at `W = 6.5e6` is more than 10 times.
+
+`packages/loop_common/tests/test_euclidean_transformation.py` (new). It needs no
+scikit-learn, so it is a mandatory cell of `loop_common` alone. It does not import
+`tests.fixtures`, because the package tests run alone. It holds a local helper
+`_tp(length, width)` with the same formula as `tests/fixtures/coordinate_frames.tp`
+(`1e-10 * length + 32 * eps * max(width, length)`).
+
+| Test function | Cells | Checks |
+|---|---|---|
+| `test_module_imports` | 1 | `importlib.import_module("loop_common.math._transformation")` works (before S6: `ImportError`) |
+| `test_export_from_loop_common_math` | 1 | `loop_common.math.EuclideanTransformation` is the class of the module above |
+| `test_round_trip_without_fit` | dimensions {2, 3} x n {1, 4, 50} on the anchor `(500000, 6500000, 100)` = 6 | same round-trip checks as the root test, with fixed angle and translation, and the bound `_tp` |
+| `test_two_dimensional_rotation_of_known_angle` | 1 | `dimensions=2`, angle `pi/6`, translation zero, the point `(2, 0, 7)`. By hand: `(2 cos 30, 2 sin 30, 7) = (1.7320508076, 1.0, 7)`. The result equals this within `1e-12`; the third column is exactly 7 |
+| `test_three_dimensional_rotation_keeps_the_z_direction` | 2 points | `dimensions=3`, angle `pi/2`, translation `(1, 2, 3)`. By hand: the point `(2, 2, 5)` is centred to `(1, 0, 2)` and gives `(0, 1, 2)`; the point `(1, 3, 3)` is centred to `(0, 1, 0)` and gives `(-1, 0, 0)`. Both equal the result within `1e-12`. The determinant of `rotation[:3, :3]` equals 1 within `1e-12`. `inverse_transform` returns the inputs. Before S6: the first point gives z = -2 and the determinant is -1 |
+| `test_fit_without_scikit_learn_raises_import_error` | 1 | `monkeypatch.setitem(sys.modules, "sklearn", None)`. `fit` with `fit_rotation=True` raises `ImportError` whose text contains "scikit-learn". `translation` and `angle` are equal before and after. Before S6: `fit` logs and returns `None` |
+| `test_fit_without_rotation_needs_no_scikit_learn` | 1 | the same block of `sklearn`. `fit_rotation=False` on `[[0, 0, 5], [2, 4, 6]]`. By hand: the translation is `(1, 2)` and the angle is 0. Before S6: `fit` returns `None` and sets nothing |
+
+`tests/unit/modelling/test_fault_frame_validation.py` (new; depends on the fixture task).
+A module-scoped fixture `solved_r2` with `params=CELLS` builds one solved fault for each
+cell with `build_r2_fault`. A second module-scoped fixture `solved_r2_inferred` has the
+2 inferred-centre cells. Pytest keeps one param instance of a module-scoped fixture alive
+at a time, so only one solved fault is in memory. `CELLS` is 4 anchors x 3 rotations x
+2 engines (FDI, PLI) = 24, with the explicit centre. Every test below that says 24 cells
+uses `solved_r2`, so the file does 26 R2 solves and no more. The section is
+`r2_displacement_section(anchor)`. The analytic frame is `r2_analytic_fault(anchor)`.
+
+| Test function | Cells | Checks |
+|---|---|---|
+| `test_vector_displacement_matches_analytic_frame` | 24 | `solved.apply_to_points(section)` and `analytic.apply_to_points(section)`. On the 1332 smooth points: both results finite, and the largest norm of the difference (`np.linalg.norm(diff, axis=1).max()`) is at most `0.03` (SC-004; 1 percent of slip 3). Non-vacuity check: the analytic displacement norm is at least `0.5` for at least 1200 of the 1332 smooth points (by hand: `d = 1.5 * f(t)` with `f(t) = 1 - 3t^2 + 2t^3`, `t = abs(x')/20` in `[0.025, 0.45]`, so `d >= 1.5 * 0.57475 = 0.86` on both walls; the footwall profile is the mirror) |
+| `test_scalar_displacement_matches_analytic_frame` | 24 | same for `evaluate_displacement`, bound `0.03`, same non-vacuity check |
+| `test_displacement_populations_are_counted_separately` | 24 | the section has 1369 points; the smooth mask has 1332 and the plane mask has 37 (counts from the generator, not from the solved result); the solved result is finite on all 1369 points, so the invalid-support count is 0; the three counts add up to 1369. For the 37 fault-plane points the test computes the largest difference between the solved and the analytic result, prints it, and asserts only that the solved output is finite (the hanging-wall flag `gx > 0` can switch there, so no bound applies). Precondition assertion: the support contains the analytic path (largest `abs(z')` is `9 + 1.5 = 10.5`) in world coordinates. If not, the test fails with a message instead of hiding NaN points in the invalid count |
+| `test_vector_displacement_inferred_centre` | 2 (anchor 3, rotation 30, FDI and PLI) | as the first test, with `explicit_center=False` |
+| `test_analytic_frame_displacement_matches_closed_form` | 4 anchors | `r2_analytic_fault(anchor).apply_to_points(section)` minus the section equals `r2_closed_form_displacement(section, anchor)`. The x and y components are exactly 0 (`np.array_equal`). The z component matches within `64 * eps * max(1, max abs(z))` (20 steps add the same vector; each addition rounds by at most `eps/2 * abs(z)`, so the sum is below `20 * eps/2 * abs(z)`; the factor 64 is the margin). The 37 plane points move by exactly 0. This check does not depend on the step count, because `gx`, `gz` and the direction are constant along the path. It tests the library profile against the independent hand formula |
+| `test_integration_error_follows_the_euler_closed_form` | 4 anchors | the curved control `r2_curved_slip_fault(anchor, steps)` with 8 start points on a circle of radius `CURVED_RADIUS = 5` about `anchor` (angles k * 45 degrees, same z as the anchor). By hand: `d = 1.344`. For `steps = N` each step has the length `s = d/N` along the tangent. So `r_N^2 = 25 + d^2/N`, and the turn angle is the sum of `arctan(s / r_k)` with `r_k^2 = 25 + k s^2`. (a) The library result for `N = 20` equals `euler_circle_closed_form` within `Tp(10, W)`. (b) The library result for `N = 400` differs from the exact arc (radius 5, angle `d/5`) by at most `d^2 / (N * 5) + Tp(10, W) = 9.0e-4 + Tp` (the radial term is `d^2 / (2 * N * 5) = 4.5e-4` and the angle term is smaller). (c) The results for `N = 20` and `N = 400` differ by more than `5e-3` (by hand `r_20 = sqrt(25 + 1.806/20) = 5.00902` and `r_400 = sqrt(25 + 1.806/400) = 5.00045`, so the radial gap is 8.6e-3). So the test fails if the step count has no effect |
+| `test_misplaced_frame_fails_the_displacement_bound` | 24 | the analytic frame shifted by 1 world unit along x' (`r2_analytic_fault(anchor + (1, 0, 0))`) against the solved frame: the largest smooth-point difference is more than `0.03`. By hand: shift 1 moves `gx` by 0.05; at `t = 0.45` the profile slope is -1.485, so the difference is about `1.5 * 1.485 * 0.05 = 0.11`. This shows that the bound can fail |
+| `test_outside_support_points_have_no_displacement` | 24 | six probes `anchor +- (H + 5) e_axis` where `H` is the largest world offset of the 8 support corners on that axis. Precondition: the support does not contain them. `evaluate_value` and `evaluate_gradient` of each coordinate are NaN; `evaluate_displacement` is `0.0`; `apply_to_points` returns the points unchanged (`np.array_equal`). If `apply_to_points` raises for an empty mask, the task reports the exception and tests `evaluate_displacement` only |
+| `test_zero_gradient_protection_remains_effective` | 4 anchors x variant {zero, nan} = 8 | analytic fault whose coordinate-1 gradient is `(0, 0, 0)` (or NaN) at each call for the points with current `z' > 5` (`gradient_override` gets the current points). The test defines three sets by the **start** position `z0'`. Set A: `z0' > 5`. Set B: `z0' <= 3.5`. Set C: `3.5 < z0' <= 5`. Reason: a footwall point moves up by at most 1.5, so a point of set B never reaches `z' = 5`; a point of set C can cross it during the steps. Zero variant, under `warnings.simplefilter("error")`: `apply_to_points` finishes with no warning; all outputs are finite; set A is `np.array_equal` to its start; set B is `np.array_equal` to the result without an override. Set C is only finite. NaN variant (no warning filter, because NumPy may warn about NaN for other reasons): the outputs of set A are NaN and the outputs of set B are finite and equal to the result without an override. Set C is not asserted. The zero variant fails if the `g_mag > 0` guard goes (0/0 gives a `RuntimeWarning`) |
+| `test_fault_frame_assembled_residuals_vanish_on_the_analytic_field` | 24 | for each coordinate `i`: set the nodal values to the analytic field (`r2_frame` at `local_to_world_points(support.nodes)`) and compute `residuals_of_field`. Every constraint name must be in one of three groups, else the test fails and names it (non-vacuity check: no family is ignored silently). Group 1, must vanish: FDI `value`, `gradient`, `norm_0`, `norm_1`, `norm_2`, `dxx`, `dyy`, `dzz`, `dxy`, `dxz`, `dyz`, `dx_lower`, `dx_upper`, `dy_lower`, `dy_upper`, `dz_lower`, `dz_upper`; PLI `value`, `norm`, `edge jump` (fact 18; a numeric suffix is allowed). Their maximum residual is at most `TAU_ASSEMBLED`. Measure first. Cap `1e-9`. Reason for the cap: the field is affine, the stencils are exact for affine fields, the rows are normalised, and the nodal values carry the world rounding of the node positions (up to `4.7e-10 / 20 = 2.3e-11` at the anchor `(500000, 6500000, 100)`), so the residual is a few times 1e-11. SC-008 uses `1e-10` for the same kind of row. Group 2, reported only with a measured bound `TAU_ORTHOGONAL`: the names that end in `_orthogonal`. Their direction comes from a solved neighbour field, so they do not vanish on the analytic field. The residual is about the sine of the neighbour direction error (SC-003 allows 0.01 degree = 1.7e-4). Cap `1e-3`. Group 3, no entry may exist: any other name. The test writes the constraint names and row counts of the three coordinates as literals (non-vacuity check: each coordinate has at least one `value`, `gradient` or `norm` row, and at least 1 row in group 1) |
+| `test_fault_frame_physical_residuals_match_analytic` | 24 | for each coordinate: `fault[i].verification_report().physical_residuals`. Coordinate 0: the `value` entry has 25 rows (the data rows at `x' = 0`) and `max <= 1e-6` (SC-003 scalar limit) and equals `abs(0 - fault[0].evaluate_value(rows))` within `max(1e-12, Tp(20, W) / 20)`. Reason: the field gradient is `1/20`, and the world position of a stored row passes through a local position, which moves it by about `Tp`. At `W = 6.5e6` this is 2.4e-9. Every direction family (`gradient`, `normal`): the largest angle is at most `0.01` degree (SC-003). The test also computes the angle by an independent formula, `degrees(arctan2(norm(cross(a, b)), dot(a, b)))` for the stored world direction `a` and the analytic direction `b`, and asserts the reported maximum equals the largest of these values within `1e-6` degree. The two angles come from different formulas, so the check is not the same arccos twice. Literal row counts as above |
+| `test_residual_check_detects_misplaced_reference` | 24 | the assembled residual of coordinate 0 with the analytic field shifted by 1 unit along x' has a value-constraint maximum above `1e-2`. By hand: the shift moves the field by 0.05 at the 25 data rows. This shows that the residual check can fail |
+
+`tests/unit/modelling/test_diagnostics_backends.py` (new; depends on the fixture task).
+It holds the faulted-feature cells (OP19) and the P2 cells (OP22). Two module-scoped
+parametrised fixtures build the models: `faulted_model` (the 24 cells of 4 anchors x 3
+rotations x 2 engines, with `faulted_foliation_model`) and `p2_model` (the 12 cells of 4
+anchors x 3 rotations, with `world_foliation_model`). The file builds 24 + 12 = 36 models.
+Without the shared fixtures it would build one model for each test and cell (about 120).
+No test in the file changes a model. Each test uses the methods that S5 proved to be
+read-only. Test 5 checks that.
+
+| Test function | Cells | Checks |
+|---|---|---|
+| `test_faulted_value_residuals_use_restored_positions` | 24 | `strati.evaluate_value_residuals()` equals the independent value `abs(val - interpolator.support.evaluate_value(stored local positions, interpolator.c))` within `max(1e-12, 3 * Tp(1, W))`. Reason: the feature path takes the stored position to world and back to local, which moves it by about `Tp`; the field gradient is below 3 (values 0 and 1 over 0.4 give 2.5); so the value moves by at most `3 * Tp`. The residual is at most `TOL_FAULTED_VALUE` (measure first with the independent function; cap `1e-2`; S5 measured 0.0004 to 0.0018 against 0.080 before the fix). Spy: a monkeypatch counts calls of `strati._apply_faults`, `strati.evaluate_value` and `strati.evaluate_gradient`; each count is 0 |
+| `test_faulted_gradient_cosines_use_restored_positions` | 24 | `strati.evaluate_gradient_cosines()` equals the independent cosines (`interpolator.evaluate_gradient` at the stored world positions against the stored world vectors) within `max(1e-12, 10 * Tp(1, W))`. Reason: the position moves by about `Tp`, the cell size is 0.1, and the gradient of the field changes by at most its own size over one cell, so a cosine moves by at most `Tp / 0.1`. `max(1 - cos)` is at most `TOL_FAULTED_COS` (measure first; cap `1e-2`). Same spy |
+| `test_fault_restores_the_stored_rows` | 24 | non-vacuity check: at least 4 stored rows differ from the raw world data by more than `1e-3` (the fault restores them). Write the measured number as a literal |
+| `test_report_physical_value_matches_independent_rms` | 24 | `verification_report().physical_residuals["value"].rms` equals the RMS of the independent residuals within `max(1e-12, 3 * Tp(1, W))` (same reason as the first test), and `.kind == "physical"` |
+| `test_p2_misfit_leaves_state_unchanged` | 12 (P2 foliation of `world_foliation_model`) | the S5 snapshot of `data`, `c`, flags, weights and the report object (compare with `is`) is equal after the two old methods, the two new methods and `verification_report()`. The P2 fit is not tested against the analytic field (issue #399) |
+| `test_p2_report_blocks_are_separate` | 12 | the physical and assembled blocks are different objects with `kind` `"physical"` and `"assembled"`; the physical `value` rms equals the RMS of `evaluate_value_residuals()` within `1e-12` (both come from the same arrays with the same arithmetic, for any anchor) |
+
+Pre-fix evidence for this file. The first, second and fourth tests fail on the current
+tree (the spy counts are above 0, and the residual is about 0.08). The test for the
+restored rows and the P2 tests are guards. They pass before the fix.
+
+`tests/unit/modelling/test_diagnostics_frames.py` (changed; findings 5 to 8). The
+exact-field test patches `feature.interpolator.evaluate_gradient` in place of
+`feature.evaluate_gradient`, records the points, and asserts that they equal the world
+positions of the stored rows within `Tp`. This test is a guard. For a feature without
+faults, `GeologicalFeature.evaluate_gradient` ends in `self.interpolator.evaluate_gradient`
+(fact 13). So the changed test passes before and after the fix. The old form of the test
+(a patch of `feature.evaluate_gradient`) would fail after the fix, because the fixed code
+no longer calls that method. So the change of the patch target must land with the fix
+task or before it. A search of `tests` and `packages/*/tests` (2026-11-06) finds no other
+test that patches `evaluate_gradient` or `evaluate_value`. `TOL_SOLVED` becomes
+`TOL_SOLVED_FDI` and `TOL_SOLVED_PLI` (2 times the measured maximum of each engine; the S5
+record has FDI 1.2e-4; each constant is at most the old 9e-4, so the change is a tightening
+or no change). The PLI gradient test asserts `unattributed == 8`. The snapshot keeps the
+report object and compares it with `is`.
+
+`tests/unit/interpolator/test_backend_world_contract.py` (new; mandatory; no skip; depends
+on the fixture task). Fixture `stub_core` puts a recording `loop_interpolation_core`
+module (class `Problem`) in `sys.modules` with `monkeypatch.setitem`. Its `Problem.solve`
+returns the exact R1 nodal field and `{"converged": True, "iterations": 1, "residual": 0.0}`.
+Fixture `stub_surfe` puts a recording `surfepy` module (class `Surfe_API`) in
+`sys.modules`, removes `loop_interpolation._surfe_wrapper` from `sys.modules` before the
+import, and at teardown restores `sys.modules["surfepy"]`,
+`sys.modules["loop_interpolation._surfe_wrapper"]` and the attribute `_surfe_wrapper` of the
+package `loop_interpolation` to their earlier state (absent stays absent). The teardown
+asserts the restoration.
+
+| Test function | Cells | Checks |
+|---|---|---|
+| `test_native_adapter_sends_local_rows_and_grid` | 4 anchors x 3 rotations = 12 | R1 FDI interpolator (`r1_interpolator("fdi", anchor, rotation, exact=True)`) with 4 gradient rows added in world coordinates (the offsets of `world_foliation_model`). `_native.solve` runs with the stub. The `add_value` points equal `bounding_box.project(world observations)` within `Tp`; the `add_gradient` vectors equal `world_to_local_vectors(unit R1 gradient)` within `1e-12` (a direction passes through a rotation only, so the anchor does not matter); `Problem` gets `support.origin`, `support.nsteps` and `support.step_vector`. For rotation 30 and 90 the local points differ from the world points by more than 1 (non-vacuity check) |
+| `test_native_solved_field_evaluates_in_world` | 12 | after `solve`, `interp.c` is the stub field and `interp.evaluate_value(world query)` equals `r1_value` within `1e-8 * F` (SC-002); `evaluate_gradient` equals the R1 gradient within `1e-8 * max(1, abs(g))`. The field is exact, so this tests the conversion only |
+| `test_native_unsupported_settings_keep_rejection_and_state` | 3 (rotated support `rotation_xy`, region, `P1Interpolator`) | `NotImplementedError` whose text contains `rotation_xy`, `region` or `interpolator class`; `c`, `data` and `up_to_date` are equal before and after |
+| `test_surfe_adapter_sends_local_points` | 12 | the R1 interpolator is the Surfe wrapper with `interp.bounding_box = box`. `setup_interpolator()` sends the interface points (27) equal to `project(world observations)` within `Tp`; the planar rows have local vectors |
+| `test_surfe_adapter_returns_world_values_and_gradients` | 12 | the stub's `EvaluateInterpolantAtPoints(local)` returns `r1_value(interp.local_to_world_points(local))` and `EvaluateVectorInterpolantAtPoints(local)` returns `world_to_local_vectors(R1 gradient)`. Public `evaluate_value(world)` equals `r1_value` within `1e-8 * F` and `evaluate_gradient` equals the R1 gradient within `1e-8 * max(1, abs(g))` (the SC-002 limits). Reason: the stub gets a local point that was produced from a world point, and returns a value at the world point that it computes back from it. Two conversions at the size 6.5e6 move the position by about 1e-9 (two half-spacings of 4.7e-10). The R1 gradient has the norm 0.54, so the value moves by about 5e-10. `F` is the field range over the box (about 5 or more), so the limit `1e-8 * F` is 5e-8 or more. The margin is about 100. The task records the measured maximum error. A second conversion or a missing conversion makes the stub return wrong values by far more than this |
+
+`tests/unit/interpolator/test_backend_optional_native_surfe.py` (new; optional cells;
+depends on the fixture task and on the helper part of `backend_matrix.py`). Each test
+starts with `require_optional("native")` or `require_optional("surfe")`.
+
+| Test function | Cells | Checks |
+|---|---|---|
+| `test_native_extension_r1_fit_in_world` | 4 anchors x 3 rotations = 12 | R1 fit (`exact=False` support, 27 value rows) solved with `solver="native"`, `solver_kwargs={"tol": 1e-12}`. World value and gradient errors at the two query offsets: `1e-8 * F` and `1e-8 * max(1, abs(g))` (SC-002; OP21). It also equals the `cg` result within `1e-6 * F` |
+| `test_surfe_extension_r1_values_and_gradients_in_world` | 12 | Surfe wrapper with `poly_order=1` and the default kernel; 27 interface rows. Same SC-002 limits at the two query offsets (OP21) |
+
+Existing optional evidence that the matrix lists (not edited, except one line of
+`test_p0_surfe_nans.py`): the native files in fact 7, `test_surfe_rbf_interpolator.py`,
+`test_p0_surfe_nans.py`, `test_world_location_consumers.py::test_2d_viewer_fault_ellipse_centre_is_world`
+(viewer, `matplotlib`) and `::test_internal_callers_do_not_warn` (`pyevtk`).
+
+`packages/loop_interpolation/tests/test_p0_surfe_nans.py` (edited, one line, see task 4).
+The line `pytest.importorskip("surfe", minversion=None)` uses the pip name. The adapter
+imports `surfepy`. The task reads the package data of `surfe` on PyPI and decides. The
+file changes to `pytest.importorskip("surfepy")` only if the installed module of that
+package is `surfepy` and not `surfe`. If the task cannot decide, the file does not change.
+
+`tests/unit/test_backend_matrix.py` (new; mandatory; no skip). It imports `MATRIX`,
+`SPEC_ROWS`, `classify_cell`, `optional_status`, `require_optional`,
+`outcomes_from_junit`, `rows_without_real_cell` and `render_table`. The helper tests are
+written with the helper part of `backend_matrix.py`. The tests that need the `MATRIX` list
+are written with the list, in a later wave.
+
+| Test function | Cells | Checks |
+|---|---|---|
+| `test_every_spec_row_has_a_cell` | 7 | `rows_without_real_cell(MATRIX)` is empty: each of the 7 rows of `SPEC_ROWS` has at least one cell with `stub` false. Every cell names a row of `SPEC_ROWS` or the value `"extra"`. A stub cell alone does not satisfy a row: the test removes the two real cells of rows 6 and 7 from a copy of `MATRIX`, and `rows_without_real_cell` then returns exactly those two rows |
+| `test_stub_cells_are_mandatory_and_listed_apart` | 2 | every cell with `stub` true is mandatory and has no dependency. `render_table` prints the rows 6 and 7 with the status of their real cells only, and prints the stub cells in a separate block with the heading "Boundary stub cells (Python side; not a native or Surfe result)". With the outcome "stub passed, extension skipped, dependency absent", the line of row 6 reads "excluded" and the stub line reads "passed" |
+| `test_mandatory_cells_name_existing_tests` | one for each mandatory cell (11) | each ref is a file in the repository with a top-level function of that name (AST parse, no import) |
+| `test_mandatory_cells_have_no_skip` | one for each mandatory cell (11) | in the referenced functions (decorators and body) and in the module-level statements and `pytestmark` of each referenced file, and in `tests/conftest.py`, every file `tests/fixtures/*.py` and the `conftest.py` of the folder of the ref, no use of `skip`, `skipif`, `importorskip`, `xfail` or `require_optional`. The one allowed exception is the definition of `require_optional` in `backend_matrix.py`. A temporary file with a skip makes the check fail (the test builds one in `tmp_path`) |
+| `test_optional_status_names_exact_module` | 5 dependencies | with a fake `find_spec` that returns `None`, `available` is False and the reason contains the exact module name; with a fake that returns an object, `available` is True and the reason is empty |
+| `test_require_optional_skips_with_named_dependency` | 2 (native, surfe) | with the fake `find_spec` that returns `None`, `require_optional` raises the pytest skip exception and its message contains `loop_interpolation_core` or `surfepy` |
+| `test_classify_cell_rules` | 12 | the 12 combinations of (mandatory or optional with absent dependency or optional with installed dependency) x (passed, failed, skipped, absent) give the strings of the rule above; "passed without the dependency" and "mandatory skipped" are violations |
+| `test_outcomes_from_junit` | 6 | a small XML text with passed, failed, skipped and missing cases gives the four outcomes; a cell with fewer passed cases than `min_cases` is "absent"; a class test (`classname="a.b.test_x.TestC"`) matches a ref of the file `a/b/test_x.py`; two files that hold the refs of one cell are merged (one passed case in each gives "passed"); a module-level skip (`classname=""`, `name="a.b.test_x"`) gives "skipped" for every ref of that file, and `classify_cell` of an optional cell with an absent dependency gives "excluded" for it, not "absent"; the same case for a mandatory cell is a violation |
+
+#### S6 backend and capability cells
+
+"Mandatory" cells have 0 skips (SC-018). The ids are the `cell_id` values of `MATRIX`.
+The matrix task fills `refs`, the id selectors and `min_cases` from
+`pytest --collect-only -q` and from the test names of S1 to S6. The selectors are
+literals that occur in the collected ids.
+
+| Cell id | Spec row | Level | Evidence (test files) | Dependency |
+|---|---|---|---|---|
+| `py-fdi` | Python FDI and PLI/P1 | Mandatory | R1 `test_frame_persistence.py`, `test_frame_copy_and_lifecycle.py`; R2 `test_fault_frame_analytic.py`, `test_fault_frame_validation.py`; R3 `test_reference_constraint_frames.py`; R5 `test_fault_buffer_bounds.py` (FDI ids) | none |
+| `py-pli` | Python FDI and PLI/P1 | Mandatory | the same files (PLI ids) | none |
+| `py-p2` | Python P2 | Mandatory | R1 exact field in the persistence and lifecycle files; `test_reference_constraint_frames.py` (P2 ids); `test_diagnostics_backends.py` (P2 cells) | none |
+| `py-fold-fdi`, `py-fold-pli`, `py-fold-p2` | Python FDI-fold, PLI discrete-fold, P2-fold | Mandatory | `test_fold_constraint_frames.py` (family ids) | none |
+| `py-cn-fdi`, `py-cn-pli` | Python constant-norm variants | Mandatory | `test_constant_norm_frames.py`, lifecycle files (`cn_fdi`, `cn_pli` ids) | none |
+| `common-geometry` | Common 2D and 3D geometry | Mandatory | `test_rigid_transform_contract.py`, `test_resize_paths.py`, `test_cell_centre_sampling.py`, `test_euclidean_transformation.py`, `tests/unit/utils/test_transformation.py` | none |
+| `native-boundary` | Existing native FDI or fold integration (Python side) | Mandatory, stub, listed apart (not a native pass; not a row result) | `test_backend_world_contract.py` (native tests) | none |
+| `surfe-boundary` | Optional Surfe integration (Python side) | Mandatory, stub, listed apart (not a Surfe pass; not a row result) | `test_backend_world_contract.py` (Surfe tests) | none |
+| `native-extension` | Existing native FDI or fold integration | Optional (real extension; gives the status of row 6) | `test_backend_optional_native_surfe.py`; the native files of fact 7; `test_native_fault_frame.py`; `test_native_errors.py` (13 tests run without the extension; the function at line 250 skips); `tests/unit/modelling/test_builder_solver.py` (one native test, line 28). R3: the existing test `test_orthogonal_constraints_give_the_same_field_as_cg` covers the R3 operation (gradient orthogonal rows) with no rotated frame. R3 in a rotated frame is "R3 not covered" for native (fact 7) | `loop_interpolation_core` (not installed in the venv, 2026-11-06) |
+| `surfe-extension` | Optional Surfe integration | Optional (real extension; gives the status of row 7) | `test_backend_optional_native_surfe.py`; `test_surfe_rbf_interpolator.py`; `test_p0_surfe_nans.py` | `surfepy` (not installed) |
+| `display-viewer` | Grid and display consumers (S4, not a spec row) | Optional | `test_world_location_consumers.py::test_2d_viewer_fault_ellipse_centre_is_world` | `loopstructuralvisualisation` (not installed) and `matplotlib` (installed) |
+| `export-pyevtk` | Grid and display consumers (S4) | Optional | `test_world_location_consumers.py::test_internal_callers_do_not_warn` | `pyevtk` (not installed) |
+
+`SPEC_ROWS` has the 7 rows of the spec table. The two display cells have the row value
+`"extra"`, because the spec table has no display row. The planner kept them. S6 keeps
+them. The S4 tests skip here. SC-018 needs a named dependency for each exclusion.
+
+The matrix table prints the 7 spec rows. Rows 6 and 7 show the status of their real
+extension cell only. The stub cells are printed in a separate block below the rows, with
+the note that they test the Python side only. In this environment (2026-11-06) the
+expected result is: rows 6 and 7 show "excluded" with the named dependency; the 2
+display cells are excluded with a named dependency; 0 mandatory cells are skipped
+(the 11 mandatory cells include the 2 stub cells). Unsupported capabilities keep their
+documented rejection: the native adapter rejects a rotated support, a region and sparse
+rows (`test_native_unsupported_settings_keep_rejection_and_state`). Surfe rejects nothing.
+Its inequality hooks are no-ops by design and stay.
+
+The exclusion ledger in `verification.md` also lists every other skipped test of the
+full run with its reason. It uses the junit files of the three gate runs. It groups the
+skips by dependency or reason.
+
+- Native extension `loop_interpolation_core`: the native files of fact 7, the function at
+  `test_native_errors.py:250`, and `tests/unit/modelling/test_builder_solver.py:28`.
+- Surfe: `test_surfe_rbf_interpolator.py` (`HAS_SURFE`) and `test_p0_surfe_nans.py`.
+- `geoh5py`, `omf` and `pyevtk` (module-level skips): `tests/unit/io/test_geoh5.py`,
+  `tests/unit/io/test_omf.py` and `tests/unit/io/test_exporters.py`. No test names
+  `trimesh` in a skip (`git grep`, 2026-11-06). The ledger task searches again and lists
+  any file that it finds.
+- `loopstructuralvisualisation`, `matplotlib` and `pyevtk` (function-level skips): the
+  two cells of `test_world_location_consumers.py` and `test_api.py:121` (`matplotlib`).
+- `pyvista` (function-level skips): `tests/unit/geometry/test__structured_grid.py`,
+  `test__surface.py` and `tests/unit/interpolator/test_2d_discrete_support.py`.
+- `dill` (installed here): `tests/integration/test_p2fold_model.py` and
+  `tests/unit/modelling/test_geological_model.py`.
+- Skips with no named dependency (unsupported capability, with the skip reason): for
+  example the four `TetMesh ... evaluate_d2` skips in `test_p2_interpolator.py` and the
+  skips in `packages/loop_interpolation/tests/golden/test_golden.py`.
+
+The 47 skipped tests of `packages/loop_interpolation/tests` and the skips of the root
+suite must all appear. None of them is a mandatory cell.
+
+#### S6 risks
+
+- The planner read more than 10 code files, by targeted line ranges, as S5 did. Files
+  read: `math/_transformation.py`, `utils/_transformation.py` (as a `diff`),
+  `_native.py` (lines 1 to 130, 234 to 368, 454 to 595), `_surfe_wrapper.py`,
+  `_fault_function.py` (lines 1 to 20, 197 to 225, 305 to 458), `_fault_segment.py`
+  (lines 1 to 140, 180 to 420), `_structural_frame.py` (lines 1 to 60),
+  `_geological_feature.py` (lines 125 to 430), `_base_builder.py` (lines 81 to 103),
+  `_fault_builder.py` (lines 405 to 560), `_geological_feature_builder.py` (lines 300 to
+  365), `_discrete_interpolator.py` and the FDI and PLI interpolators (the constraint
+  names), `_geological_interpolator.py` (lines 815 to 845), plus the fixture and test
+  files named above. The risk is that an unread part has another reader. Each task greps
+  for readers before it edits.
+- Neither the native extension nor `surfepy` is installed. The two extension cells did
+  not run. Their tolerances (SC-002) are not measured (OP21). The stub cells test only the
+  Python side. The final report must say "excluded", never "passed", for these two cells.
+  The matrix table lists the stub cells apart, so they cannot hide the exclusion.
+- The pip name of Surfe is unverified (fact 21). The venv has no `pip` module. The check
+  in task 4 needs a pip outside the venv and a network. If it cannot run, the file
+  `test_p0_surfe_nans.py` does not change and the task reports "not decided". The tests
+  of that file then skip even if only `surfepy` is installed. The ledger records this.
+- The R2 analytic frame is a `FaultSegment` of `AnalyticReference` features. The planner
+  read the constructor (`StructuralFrame.__init__` needs a name and a list of features)
+  and `apply_to_points` (it calls `evaluate_value` and `evaluate_gradient(...,
+  ignore_regions=True)` of the features, and `AnalyticReference` accepts both). The planner
+  did not run it. The test task runs it first. If a method of `BaseFeature` that
+  `apply_to_points` needs is missing on `AnalyticReference`, the task adds the smallest
+  method to the fixture class, not to the library.
+- `apply_to_points` of a solved fault with an empty mask may raise. The outside-support
+  test has a fallback (see the table).
+- Run time. `test_fault_frame_validation.py` does 26 R2 solves (24 + 2). S1 measured about
+  5 minutes for 4 files with 48 R2 solves. `test_diagnostics_backends.py` builds 36 small
+  models (24 faulted and 12 P2) with module-scoped fixtures. The task records the time (OP2
+  stays closed: the default run includes them). The shared fixtures need that no test
+  changes a model. Test 5 of the file checks the S5 snapshot rule.
+- The OP19 change alters the numbers of the misfit methods for faulted features, and for
+  features with a region mask (rows outside a region gave NaN; now they give numbers). The
+  S5 version of the methods is not in a release (S5 is pull request #402). The pre-005
+  methods gave wrong numbers for faulted features too. `COMPAT.md` records it.
+- `EuclideanTransformation` changes for callers outside the repository. An integer array
+  gives a float result. A 1-D array raises `ValueError`. `inverse_transform` works. The 3D
+  numbers change: z is no longer reversed, and the fitted angle has the right sign for
+  lines with a direction between -45 and 0 degrees. `fit` raises `ImportError` when
+  scikit-learn is missing and rotation is requested. No caller in the repository is
+  affected (fact 20). The old import path stays. A pickle made before S6 loads, because the
+  old module exposes the class. A pickle made after S6 stores the path
+  `loop_common.math._transformation`, and an older release cannot load it.
+- The module-level cache of the Surfe stub touches `sys.modules`. The fixture restores the
+  state and asserts it. A leak would make later Surfe tests use the stub.
+- The matrix checker reads junit names from three files (root, `loop_common` tests,
+  `loop_interpolation` tests). A change of a test id breaks the match. The test
+  `test_mandatory_cells_name_existing_tests` finds a renamed function, and `min_cases`
+  finds a lost parametrisation. If a gate run starts in another folder, the `classname`
+  paths change and every cell becomes "absent". The final-gates task checks one
+  `classname` of each file before it runs the matrix.
+- A display test passes only when the viewer package is installed. In this environment it
+  is excluded with its named dependency.
+- The SC-004 bound (0.03) is loose. The negative control shows that it can fail. The
+  frame error of S1 (1e-6) is much smaller, so a real regression of the frame shows first
+  in the S1 and residual tests.
+- The sign of the main axis from scikit-learn depends on the library version. The fit
+  tests compare the angle modulo `pi` and compare the alignment of the line, so they do
+  not depend on that sign. The hand numbers in the plan were measured with scikit-learn
+  1.9.0.
+- Stage size. The limit of 10 code files holds for each wave, not for the stage. The whole
+  stage changes 17 code files: 5 source files and 12 test and fixture files (see "S6
+  files"). The widest wave has 9. The file `backend_matrix.py` and the file
+  `test_backend_matrix.py` appear in two tasks each (tasks 6 and 15). Those tasks are in
+  different waves.
+
+#### S6 constitution check
+
+| Project rule | Result | How S6 agrees |
+|---|---|---|
+| Work stays within the existing packages | Pass | Three source files in `loop_common` and `LoopStructural.utils`, one in `LoopStructural/modelling`, one byte fix in `loop_common`. No new package or module in `src`. Test helpers are new files under `tests/fixtures`. |
+| Gates `pytest` and `ruff check LoopStructural packages` | Pass | Decision 11 and the S6 row of "Stages and rollback". |
+| numpy docstrings, type hints, py39 | Pass | New functions have numpy docstrings and hints. `_transformation.py` keeps `from __future__ import annotations`. `backend_matrix.py` uses `from __future__ import annotations` and `typing.Literal`. |
+| The public `GeologicalModel` API stays compatible; a break needs a ROADMAP.md decision and a major-version note | Pass | No `GeologicalModel` signature changes. `EuclideanTransformation` keeps both import paths and its constructor. `inverse_transform` changes from an error to a result for ordinary arrays. A 1-D input changes from `IndexError` to `ValueError`. An integer input gives a float result. `fit` raises `ImportError` in place of a log message. The 3D numbers change (decision 3). `COMPAT.md` records these, and `ROADMAP.md` records the decision for the behaviour change. The physical residuals of faulted features change by OP19; `ROADMAP.md` records that decision too. |
+| Stages can be tested and reversed independently | Pass | S6 reverts to the S5 merge. Test-only files and `backend_matrix.py` can stay or go. |
+| `ROADMAP.md` owns decisions; update it when one changes | Pass | Two decision entries, a sentence on item 2c-5, and the line "Spec 005 complete". |
+| Feature documents stay under `specs/NNN-name/` | Pass | `plan.md`, `tasks.md` and `verification.md` change there; `spec.md` gets C-019; `specs/README.md` carries the status. |
+
+#### S6 files
+
+The limit of 10 code files (.py) applies to each wave of tasks. In total S6 changes 17
+code files: 5 source files and 12 test and fixture files. Each task changes at most 3
+code files. Data files and documents are not counted.
+
+| File | Change |
+|---|---|
+| `packages/loop_common/src/loop_common/math/_transformation.py` | Logger import; `_check_points`; `_import_decomposition`; new `fit`, `_rotation`, `transform`, `inverse_transform` |
+| `packages/loop_common/src/loop_common/math/__init__.py` | Export `EuclideanTransformation` |
+| `LoopStructural/utils/_transformation.py` | Re-export of the `loop_common` class |
+| `LoopStructural/modelling/features/_geological_feature.py` | Two lines in `_gradient_cosines_fresh` and `_value_residuals_fresh`; two docstring sentences |
+| `packages/loop_common/src/loop_common/geometry/_structured_grid_3d.py` | Remove the BOM (3 bytes) |
+| `tests/unit/modelling/test_fault_frame_analytic.py` | Remove the BOM (3 bytes); no other change (decision 14) |
+| `tests/fixtures/coordinate_frames.py` | New helpers (see "S6 functions") |
+| `tests/fixtures/backend_matrix.py` | New (helper part in task 6, `MATRIX` list in task 15) |
+| `tests/unit/utils/test_transformation.py` | New cells; delete the defect test |
+| `packages/loop_common/tests/test_euclidean_transformation.py` | New |
+| `tests/unit/modelling/test_fault_frame_validation.py` | New |
+| `tests/unit/modelling/test_diagnostics_backends.py` | New |
+| `tests/unit/modelling/test_diagnostics_frames.py` | Findings 5 to 8 and the patch target of the exact-field test |
+| `tests/unit/interpolator/test_backend_world_contract.py` | New |
+| `tests/unit/interpolator/test_backend_optional_native_surfe.py` | New |
+| `tests/unit/test_backend_matrix.py` | New (helper tests in task 6, matrix tests in task 15) |
+| `packages/loop_interpolation/tests/test_p0_surfe_nans.py` | Edited, one line (the `importorskip` module name), only if task 4 decides so |
+| `COMPAT.md` | S6 notices; move one sentence of the S5 row |
+| `ROADMAP.md` | Two decision entries; one sentence on item 2c-5; the line "Spec 005 complete" |
+| `specs/005-coordinate-frame-correctness/verification.md` | S6 sections: pre-fix, post-fix, golden review (with the behaviour-change ledger), findings disposition, backend matrix and exclusion ledger, coverage ledger, rollback, run time, final gates, open points |
+| `specs/005-coordinate-frame-correctness/spec.md` | Clarification C-019 and the R2 fixture text (done in the planning run) |
+| `specs/README.md` | Status of the 005 line |
+
+Not changed (the survey in "Later stages" listed them): `_native.py`, `_surfe_wrapper.py`
+and `_fault_function.py`. The reading found no coordinate defect in them; their
+contracts get tests only. `_fault_segment.py` is not changed. The existing S1 to S5 test
+files other than `test_diagnostics_frames.py`, `tests/unit/utils/test_transformation.py`
+and the BOM file `test_fault_frame_analytic.py` are not edited.
+
+The `COMPAT.md` notices say:
+
+- `EuclideanTransformation` is one class. `loop_common.math.EuclideanTransformation` is
+  new. `LoopStructural.utils.EuclideanTransformation` is the same object.
+  `inverse_transform` returns the original points for an `(N, d)` array; before it raised
+  `ValueError` or returned too few rows. The methods return a float copy; an integer input
+  was truncated before. A 1-D input raises `ValueError`; before it raised `IndexError`.
+- The 3D behaviour changes. For `dimensions=3` the z axis is no longer reversed
+  (`z' = z - tz`; before it was `-(z - tz)`). `fit` works for `dimensions=3`; before it
+  failed. The fitted angle has the right sign for a main axis with a negative slope; before
+  it was wrong for lines with a direction between -45 and 0 degrees. A 3D user must check
+  every result that was computed with the old class: the numbers differ. `fit` with
+  `fit_rotation=True` raises `ImportError` when scikit-learn is missing; before it logged
+  an error and returned `None`. `fit` with `fit_rotation=False` needs no scikit-learn.
+- `fit` writes its debug message through the `loop_common` logger
+  (`loop_common.logging.get_logger`), not through the `LoopStructural` logger.
+- A pickle of the class made before S6 still loads, because the old module path stays
+  importable and exposes the class. A pickle made after S6 stores the path
+  `loop_common.math._transformation`. A release from before S6 cannot load it.
+- `GeologicalFeature.evaluate_gradient_misfit`, `evaluate_value_misfit`,
+  `evaluate_gradient_cosines`, `evaluate_value_residuals` and `verification_report` of a
+  faulted feature compare the stored restored rows with the interpolator at the same
+  positions. Before, the faults acted a second time. The two private methods
+  `_value_residuals_fresh` and `_gradient_cosines_fresh` now evaluate the interpolator
+  directly. This reverses S5 decision 8 for those two methods. The numbers for a feature
+  with no faults and no regions do not change. For a feature with a region mask, a row
+  outside the region gave NaN before and gives a number now.
+- Known issue, not fixed in S6: the public `evaluate_gradient` of a faulted feature keeps
+  its tetrahedron path and the shape error that S3 noted.
+- The S5 sentence "With an identity frame and no resize, the value misfit is the same as
+  before" moves from the `ConstraintDiagnosticsReport` row to the `evaluate_value_misfit`
+  row.
+
+The `ROADMAP.md` entries are dated with the day of the S6 end gate.
+
+- Decision "Residuals of faulted features (spec 005, S6)". It says that the residual
+  diagnostics of a faulted feature evaluate the interpolator at the restored positions,
+  and that S5 decision 8 changes for these two private methods. It says that the notice is
+  in `COMPAT.md`.
+- Decision "EuclideanTransformation (spec 005, S6)". It is a behaviour change. It names the
+  four defects (the 3D `fit`, the sign of the fitted angle, the reversed z axis, the silent
+  need for scikit-learn) and their physical effect (a mirrored z axis and a wrong rotation
+  of the map view for some lines). It says that one class now lives in `loop_common` and
+  that `LoopStructural.utils` re-exports it. It has one sentence: "This reverses item 2c-5
+  of the stage sequence, which was closed as deferred." It says that the notice is in
+  `COMPAT.md`.
+
+The line "Spec 005 complete" is added to the status log: "Spec 005 complete: stages S1 to S6
+implemented; the auxiliary transformation, the R2 displacement validation, the backend
+matrix and the golden review are done. Gate result: root pytest <passed> passed, <skipped>
+skipped (every skip names its dependency in
+`specs/005-coordinate-frame-correctness/verification.md`)." The task replaces the two
+placeholders with the numbers of the final gate.
+
+#### S6 task order (for the spec-tasks skill)
+
+No two tasks in one wave write the same file, and no task shares a wave with a task that it
+depends on. `verification.md`, `COMPAT.md` and `ROADMAP.md` are written by tasks in
+different waves. No two tasks in one wave write `verification.md`. Each task changes at
+most 3 code files. Each wave changes at most 10 code files. The widest wave (wave 1) has
+9. The file `backend_matrix.py` appears in task 6 (the helper) and task 15 (the `MATRIX`
+list). The file `test_backend_matrix.py` appears in the same two tasks. They are in
+different waves.
+
+| Wave | Task | Files | Depends on |
+|---|---|---|---|
+| 1 | 1. Fixture helpers | `tests/fixtures/coordinate_frames.py` | none |
+| 1 | 2. Transformation tests (they fail first) | `tests/unit/utils/test_transformation.py`, `packages/loop_common/tests/test_euclidean_transformation.py` | none |
+| 1 | 3. Changes of `test_diagnostics_frames.py` (findings 5 to 8; measures `TOL_SOLVED_FDI` and `TOL_SOLVED_PLI`) | `tests/unit/modelling/test_diagnostics_frames.py` | none |
+| 1 | 4. Name check of the Surfe package (see below) | `packages/loop_interpolation/tests/test_p0_surfe_nans.py` (only if the check decides so) | none |
+| 1 | 5. BOM removal | `packages/loop_common/src/loop_common/geometry/_structured_grid_3d.py`, `tests/unit/modelling/test_fault_frame_analytic.py` | none |
+| 1 | 6. Matrix helper and its tests | `tests/fixtures/backend_matrix.py` (helper part, `MATRIX = ()`), `tests/unit/test_backend_matrix.py` (helper tests) | none |
+| 2 | 7. R2 validation tests (measure `TAU_ASSEMBLED` and `TAU_ORTHOGONAL`) | `tests/unit/modelling/test_fault_frame_validation.py` | 1 |
+| 2 | 8. Diagnostics tests (measure `TOL_FAULTED_VALUE` and `TOL_FAULTED_COS`) | `tests/unit/modelling/test_diagnostics_backends.py` | 1 |
+| 2 | 9. Boundary tests with the stubs | `tests/unit/interpolator/test_backend_world_contract.py` | 1 |
+| 2 | 10. Optional extension tests | `tests/unit/interpolator/test_backend_optional_native_surfe.py` | 1, 6 |
+| 3 | 11. Pre-fix evidence in `verification.md` | `verification.md` | 2, 3, 7, 8, 9, 10 |
+| 4 | 12. Transformation fix | `packages/loop_common/src/loop_common/math/_transformation.py`, `packages/loop_common/src/loop_common/math/__init__.py` | 11 |
+| 4 | 13. Residual fix | `LoopStructural/modelling/features/_geological_feature.py` | 3, 8, 11 |
+| 5 | 14. Re-export | `LoopStructural/utils/_transformation.py` | 12 |
+| 5 | 15. `MATRIX` list and the matrix tests | `tests/fixtures/backend_matrix.py` (the list), `tests/unit/test_backend_matrix.py` (matrix tests) | 2, 3, 6, 7, 8, 9, 10, 12, 13 |
+| 6 | 16. Post-fix evidence in `verification.md` | `verification.md` | 12, 13, 14, 15 |
+| 7 | 17. Golden review, tolerance audit, coverage ledger, findings disposition | `verification.md` | 16 |
+| 8 | 18. `COMPAT.md` | `COMPAT.md` | 17 |
+| 9 | 19. Final gates, matrix run, rollback check, exclusion ledger, run time | `verification.md` | 18 |
+| 10 | 20. `ROADMAP.md` decisions and the line "Spec 005 complete" | `ROADMAP.md` | 19 |
+
+The orchestrator then updates `specs/README.md`.
+
+Notes for the tasks.
+
+- Task 1 writes `r2_curved_slip_fault` and `euler_circle_closed_form` among the other
+  helpers. It runs `apply_to_points` on the analytic frame first and reports the result
+  (see the risks).
+- The tasks 7 and 8 depend on task 1 because they import its helpers. Both tasks also
+  use module-scoped parametrised fixtures to build each model once.
+- Tolerances: `TOL_FAULTED_VALUE`, `TOL_FAULTED_COS`, `TAU_ASSEMBLED`, `TAU_ORTHOGONAL`
+  and the per-engine `TOL_SOLVED_*` are set inside the test tasks (3, 7 and 8), from
+  independent computations, before the fix. If a bound would pass its cap, the task stops.
+- Task 4. Step 1: run `pip index versions surfe` with a pip that is not in the venv (the
+  venv has none). Step 2: if possible, run `pip download surfe --no-deps -d <scratch>`
+  where `<scratch>` is a new folder under the scratchpad directory. Step 3: list the
+  files of the wheel (`python -I -m zipfile -l <wheel>`) and read the top-level module
+  names. Step 4, the decision: if the wheel holds the module `surfepy` and no module
+  `surfe`, change the line to `pytest.importorskip("surfepy")`. If the wheel holds
+  `surfe`, or both, or the check cannot run, do not change the file, and report the
+  package name and the module names, or "not decided". Step 5: report the result for
+  `verification.md` (task 11) and for the cell `surfe-extension` (task 15). The task does
+  not install anything into the venv and does not unpack the wheel into the repository.
+- Task 5 checks the first bytes of both files, removes `ef bb bf`, and checks that
+  `git diff -w --stat` shows no other change.
+- Task 11 expected failures before the fixes: the transformation tests (the measured count
+  goes in the record; by reading, the old `inverse_transform` fails for `dimensions=2`
+  with 3 or 5 columns, for `dimensions=3` with 5 columns, and for `dimensions=3` with 3
+  columns and N greater than 3; it works for `dimensions=3`, 3 columns and N=1, but the
+  z check of the forward step fails every `dimensions=3` cell), the defect tests of the
+  fit (negative slope, 3D fit, the z direction, the missing scikit-learn), the three
+  residual tests of faulted features (tests 1, 2 and 4 of `test_diagnostics_backends.py`),
+  and `test_entry_points_are_one_class`. Expected guards that pass: the changed exact-field
+  test of `test_diagnostics_frames.py` (it passes before and after the fix for a feature
+  with no faults), the displacement and residual tests of the R2 frame, the P2 tests, the
+  test of the restored rows, and the stub cells.
+- Task 17 commands. The golden file list: `git diff --name-status ebc7c699d5 HEAD -- . ':!specs' ':!*.py' ':!*.md'`
+  (fact 15). The tolerance audit has two parts. First, the removed lines:
+  `git diff -U0 ebc7c699d5 HEAD -- ':!specs' | grep -iE '^-.*(tol|approx|abs=|<= *[0-9.]+e-)'`.
+  The pattern ignores case, so it finds `TOL_SOLVED`, `TOL = ...`, `Tp` helpers and `tau_`
+  names (the task adds `tp` and `tau` to the pattern). Second, the added lines with the
+  same pattern, with `^+` in place of `^-`. The task pairs each removed line with its
+  added line and compares the numbers. Every removed line with a tolerance is listed and
+  explained. The expected count of relaxed tolerances is 0. The one unavoidable change is
+  the rename of `TOL_SOLVED` into `TOL_SOLVED_FDI` and `TOL_SOLVED_PLI`. It is a tightening
+  or no change, because each constant is at most 9e-4. The task names it for the SC-015
+  review. The production-file list is
+  `git diff --name-only ebc7c699d5 HEAD -- LoopStructural packages` without test paths,
+  each file mapped to a test.
+- Task 19 runs the commands of decision 11 one process at a time, then checks one
+  `classname` of each junit file (it must start with `tests.`,
+  `packages.loop_common.tests.` or `packages.loop_interpolation.tests.`), then runs the
+  matrix, the rollback check and the exclusion ledger. It writes the results to
+  `verification.md`.
+- Task 20 reads the gate numbers from task 19.
+
+S6 rollback check. Revert to the S5 merge commit, `<S5 merge commit>` (the task 19 fills
+in the hash). Then run these checks. The result of each goes to `verification.md`.
+
+- (a) `from LoopStructural.utils import EuclideanTransformation` and
+  `import LoopStructural.utils._transformation` work on both trees, and the class
+  `__init__` signature is equal. A pickle made on the S5 tree loads on the S6 tree.
+- (b) Every public name (no leading underscore) of `loop_common.math` on the S5 tree is
+  also in the S6 tree (the set of public names of `dir(loop_common.math)` of S5 is a
+  subset). The S6 tree adds `EuclideanTransformation` only. The private submodule name
+  `_transformation` is not compared.
+- (c) For a float `(N, 3)` array, `transform` gives equal output on both trees
+  (`np.array_equal`) for `dimensions=2` with a set angle and translation. For
+  `dimensions=3` the z column differs by design.
+- (d) `from loop_interpolation import *` gives the same names on both trees.
+- (e) The signatures of the five `GeologicalFeature` diagnostic methods are equal. For a
+  feature with no faults and no regions the residual numbers of the S5 test cells are equal.
+- (f) All baseline files listed in fact 15 are byte-equal after S6
+  (`git diff --stat <S5 merge commit> HEAD -- <files>` prints nothing).
+
 ### Stages and rollback
 
 | Stage | Files and behaviour | Acceptance check | Rollback target and compatibility check |
@@ -2648,7 +3947,7 @@ The result of each check goes to `verification.md`.
 | S3 | Persistence format version, transform and coordinate-space metadata ("Stage S3 design"); no second projection at load; copies keep the frame; legacy load requires a transform or identity declaration; transform change policy and restored-point cache invalidation (FR-016 to FR-020); ROADMAP.md decision for FR-019; `COMPAT.md` migration note | SC-006, SC-012, SC-016, SC-017 | Revert to the S2 merge. Check: old-format R1 files load through their documented path; a new-format file fails with 1 actionable error and 0 state changes on the old reader (SC-017). |
 | S4 | Display, export of observation geometry, fault-centre geometry and intrusion classification use stored world locations (FR-022; "Stage S4 design") | World-location comparison within `Tp` (U3.4, U3.5) | Revert to the S3 merge. Check: viewer import paths unchanged. |
 | S5 | Remaining resize paths (3D `nsteps` and `step_vector`, `set_nelements`, 2D derived counts, rectilinear guard), golden review, cell-centre tests, non-mutating misfit diagnostics, residual and exclusion report (FR-014 remainder, FR-015, FR-023, FR-024; "Stage S5 design") | SC-009, SC-011; the new S5 tests; `pytest`; `ruff check LoopStructural packages`; package tests | Revert to the S4 merge. Check: diagnostics report fields unchanged for callers (`dataclasses.fields`, `to_dict` keys, exported names; "S5 rollback check"). |
-| S6 | Auxiliary point transformations and duplicate entry points (FR-025); displacement validation R2 (FR-026, FR-027); backend matrix incl. native and Surfe (FR-030); golden review (FR-029); 005 completion line in ROADMAP.md | SC-004, SC-010, SC-014, SC-015, SC-018 | Revert to the S5 merge. Check: `LoopStructural.utils` and `loop_common.math` import paths unchanged. |
+| S6 | Auxiliary point transformation (one class, round trips, and the 3D, sign, z and scikit-learn fixes) and its entry points (FR-025); R2 validation with constraint residuals and displacement, and the physical-residual fix for faulted features (FR-026, FR-027); backend and capability matrix with native and Surfe (FR-030); golden review (FR-029); final gates and the "Spec 005 complete" line in ROADMAP.md ("Stage S6 design") | SC-004, SC-010, SC-014, SC-015, SC-018; the new S6 tests; `pytest`; `ruff check LoopStructural packages`; package tests; the matrix run over the merged junit files of the three gate runs with 0 mandatory skips | Revert to the S5 merge. Check: `LoopStructural.utils` and `loop_common.math` import paths unchanged ("S6 rollback check"). |
 
 ## Test strategy
 
@@ -2710,8 +4009,8 @@ current tree is recorded as "not reproduced"; its test stays as a guard.
   Persistence round trips (SC-006) are S3: `test_frame_persistence.py`.
 - **Backend coverage**: S1 covers Python FDI and PLI/P1 cells for R2, R3 and
   R5. S2 covers P2, FDI-fold, PLI discrete fold, P2-fold and the FDI and PLI
-  constant-norm variants ("Stage S2 design"). S6 covers native and Surfe
-  (OP1).
+  constant-norm variants ("Stage S2 design"). S6 covers the matrix with native and Surfe
+  ("Stage S6 design").
 - **Cross-language fixtures**: Not applicable in S1.
 - **Grid and display checks**: S1 checks support enclosure and resize. S4 checks
   the display and export of data, the intrusion classification and the fault
@@ -2798,10 +4097,11 @@ requests.
   rotations are rejected; extra observations added as a workaround are no
   longer necessary.
 
-### Later stages (file survey only, OP1)
+### Later stages (file survey, closed)
 
-The next planner runs read and confirm these files. The lists come from a
-grep survey on 2026-11-04 and are not final.
+The survey of 2026-11-04 listed the files of each stage. The planner runs read the
+code and confirmed or changed each list. All stages are planned, so no later stage
+remains.
 
 - **S2**: planned. See "Stage S2 design" and "S2 files".
 - **S3**: planned. See "Stage S3 design" and "S3 files". The survey listed
@@ -2817,19 +4117,21 @@ grep survey on 2026-11-04 and are not final.
   rectilinear grid among them (plus `_structured_grid_3d.py` and
   `_structured_grid_2d.py`, which the survey did not list). `_diagnostics.py` and
   `_geological_feature.py` are confirmed.
-- **S6**: `packages/loop_common/src/loop_common/math/_transformation.py`,
-  `LoopStructural/utils/_transformation.py`,
-  `packages/loop_interpolation/src/loop_interpolation/_native.py`,
-  `_surfe_wrapper.py`, `LoopStructural/modelling/features/fault/_fault_function.py`,
-  `ROADMAP.md`.
+- **S6**: planned. See "Stage S6 design" and "S6 files". The survey listed
+  `_native.py`, `_surfe_wrapper.py` and `_fault_function.py`; the code shows that S6
+  does not change them (it adds tests for their contracts). S6 changes both
+  `_transformation.py` files, `loop_common/math/__init__.py`, `_geological_feature.py`
+  (the S5 carry-over), the first bytes of `_structured_grid_3d.py` and of the S1 test file
+  `test_fault_frame_analytic.py`, one line of `test_p0_surfe_nans.py` and `ROADMAP.md`.
+  There is no later stage.
 
 ## Requirement coverage
 
 | Requirement | Design and files | Verification | Gap |
 |---|---|---|---|
-| FR-001 | Existing public evaluation; S1 keeps it; fault path in `_model_feature_factory.py` | `test_fault_frame_analytic.py` (gradients in world after rotation) | None for S1 paths; other paths OP1 |
+| FR-001 | Existing public evaluation; S1 keeps it; fault path in `_model_feature_factory.py` | `test_fault_frame_analytic.py` (gradients in world after rotation) | None (S2 to S6 cover the other paths) |
 | FR-002 | Factory keeps explicit centre in world; builder rows in world | `test_fault_frame_analytic.py` U1.1 | None |
-| FR-003 | Public conversion methods; builder uses each once | `test_rigid_transform_contract.py`; `test_reference_constraint_frames.py` | Load path (U3.2) is S3, OP1 |
+| FR-003 | Public conversion methods; builder uses each once | `test_rigid_transform_contract.py`; `test_reference_constraint_frames.py` | None (the load path U3.2 is S3) |
 | FR-004 | `install_gradient_constraint`, `install_equality_constraints`, `add_inequality_feature`; documented callbacks | `test_reference_constraint_frames.py` | None |
 | FR-005 | `world_to_local_vectors` in `install_gradient_constraint`; S2 fold rows and directional terms | SC-007, SC-008 tests; S2 P2 cells | None |
 | FR-006 | `install_equality_constraints` | 168-node check, rotated sets | None |
@@ -2850,33 +4152,33 @@ grep survey on 2026-11-04 and are not final.
 | FR-021 | `validate_rigid_rotation` in `set_local_transform` and `rotation_xy`; saved metadata checked in `resolve_frame` | `test_rigid_transform_contract.py`; `test_malformed_metadata` | None |
 | FR-022 | Remove the extra `rescale` in `GeologicalFeature.get_data` and in the intrusion classification (`_network_model_values`); the fault centre is a world point since S1 and its consumers are unchanged | `test_world_location_consumers.py` (display, export, classification, 2D ellipse); S1 `test_fault_ellipsoid_centre_is_world` | OP8 to OP10 |
 | FR-023 | S5: both misfit methods keep their names and shape, work on copies, compare in world coordinates, never rebuild (warn and NaN when stale); new `evaluate_gradient_cosines` and `evaluate_value_residuals`; `direction_cosines` | `test_diagnostics_frames.py`; `test_residual_exclusion_report.py` | OP16; the gradient value changes meaning (`COMPAT.md`, `ROADMAP.md`) |
-| FR-024 | `excluded_rows` (S1); S5: `ResidualSummary`, `ExclusionRecord`, `build_exclusion_records`, report fields, `verification_report` | `test_exclusions_are_counted_and_explained`, `test_physical_and_assembled_residuals_are_separate` | Interpolator-side drops with no recorded reason are reported as `unattributed` (in rows). Residual reports for fold and P2 cells (SC-003, SC-007, SC-008) are out of S5: S2 and S6 |
-| FR-025 | S6 | S6 | OP1 |
-| FR-026 | S1: values, gradients, residuals (SC-003, SC-008); displacement S6 | `test_fault_frame_analytic.py` | Displacement OP1 |
-| FR-027 | S6 | S6 | OP1 |
+| FR-024 | `excluded_rows` (S1); S5: `ResidualSummary`, `ExclusionRecord`, `build_exclusion_records`, report fields, `verification_report` | `test_exclusions_are_counted_and_explained`, `test_physical_and_assembled_residuals_are_separate` | Interpolator-side drops with no recorded reason are reported as `unattributed` (in rows). Residual reports for fold and P2 cells (SC-003, SC-007, SC-008) are out of S5. S2 covers their data paths; S6 adds P2 state tests and no fold report test (OP22) |
+| FR-025 | S6: `math/_transformation.py` (logger import, `_check_points`, `fit`, `_rotation`, new `transform` and `inverse_transform`), `math/__init__.py` export, `utils/_transformation.py` re-export (decisions 1 to 3) | `test_transformation.py` (96 explicit and 24 fitted round-trip cells, the fit defect tests, `test_entry_points_are_one_class`, the pickle tests), `test_euclidean_transformation.py` (hand-computed rotations, the scikit-learn tests) | OP23 (other copies not audited); OP24 (3D axis choice) |
+| FR-026 | S1: values, gradient magnitudes and directions. S6: assembled and physical constraint residuals of the R2 frame, vector and scalar displacement, and the physical-residual fix for faulted features (OP19, accepted) | `test_planar_fault_frame_matches_analytic` (S1); `test_fault_frame_validation.py`; `test_diagnostics_backends.py` | None. C-019 replaced the trishear evaluator (OP18 closed); the 37 fault-plane points are reported, not bounded |
+| FR-027 | S6 decision 5: integration error (closed form of the analytic frame and the Euler closed form of a curved control), fault-plane samples and outside-support samples assessed apart from the frame error; the zero-gradient guard of `apply_to_points` stays | `test_analytic_frame_displacement_matches_closed_form`, `test_integration_error_follows_the_euler_closed_form`, `test_displacement_populations_are_counted_separately`, `test_outside_support_points_have_no_displacement`, `test_zero_gradient_protection_remains_effective` | None |
 | FR-028 | No signature change except new keyword arguments; `COMPAT.md` note; FR-019 exception recorded in ROADMAP.md; S4: `rescale` deprecated with its behaviour kept (`COMPAT.md`, `ROADMAP.md`, `API.md`) | API contract tests; existing round-trip tests unchanged; `test_rescale_warns_and_keeps_behaviour` | None |
-| FR-029 | `verification.md` golden review section | Review record per changed result | None |
-| FR-030 | S1 FDI and PLI cells; S2 P2, fold and constant-norm cells | S1 and S2 tests | Native and Surfe cells S6, OP1 |
+| FR-029 | `verification.md` golden review: ledger of all baseline files changed in S1 to S5, S6 expects no change, tolerance audit, record of the deleted defect test, and a ledger of behaviour changes with analytic evidence but no golden file (faulted-feature residuals; the four `EuclideanTransformation` fixes) | Review record for each changed result | None |
+| FR-030 | S1 and S2 Python cells; S6: `backend_matrix.py` (cells, `classify_cell`, merged junit files), native and Surfe boundary cells with a recording stub (mandatory, listed apart), optional extension cells (give the status of spec rows 6 and 7) | `test_backend_matrix.py`; matrix table in `verification.md` | Native and Surfe extension cells are excluded while their dependencies are absent (OP21). Native R3 in a rotated frame is not covered (fact 7) |
 | FR-031 | Pre-fix rule in "Test strategy" | `verification.md` | None |
 | FR-032 | "Stages and rollback" | Rollback checks in `verification.md` | None |
 | SC-001 | `_rigid.py`, `BoundingBox` | `test_rigid_transform_contract.py` | None |
-| SC-002 | R1 fit for the constant-norm variants (S2) | `test_constant_norm_frames.py` | Other R1 cells and lifecycle S3, OP1; OP3 |
+| SC-002 | R1 fit for the constant-norm variants (S2) | `test_constant_norm_frames.py` | Other R1 cells and lifecycle: S3. Native and Surfe R1: S6, optional cells (OP21). OP3 |
 | SC-003 | Fault design | `test_fault_frame_analytic.py` | Run time OP2 |
-| SC-004 | S6 | S6 | OP1 |
+| SC-004 | S6: displacement of the solved R2 frame against the analytic frame, library paths (C-019), 1332 smooth points | `test_vector_displacement_matches_analytic_frame`, `test_scalar_displacement_matches_analytic_frame`, `test_misplaced_frame_fails_the_displacement_bound` | None |
 | SC-005 | Fault and enclosure design | `test_fault_buffer_bounds.py` | Run time OP2 |
 | SC-006 | Format version 2; local arrays restored with no conversion | `test_round_trip_world_values`, `test_local_arrays_unchanged_after_two_cycles` | None |
 | SC-007 | Reference sampling; S2 fold sampling and P2 | `test_reference_constraint_frames.py`; `test_fold_constraint_frames.py` | None |
 | SC-008 | Reference sampling; S2 fold rows and P2 | `test_reference_constraint_frames.py` (FDI, PLI, P2); `test_fold_constraint_frames.py` | None |
 | SC-009 | S5: misfit methods; `direction_cosines` | `test_misfit_leaves_state_unchanged`, `test_stale_misfit_is_not_rebuilt`, `test_gradient_cosine_matches_analytic_direction_exact_field`, `test_gradient_cosine_matches_analytic_direction_solved_model` (FDI and PLI; P2 not in S5) | None |
-| SC-010 | S6 | S6 | OP1 |
+| SC-010 | S6: transformation fix and round-trip cells with 1, 4 and 50 points; the fit fixes with hand-computed numbers | `test_round_trip_explicit_parameters`, `test_round_trip_after_fit`, `test_round_trip_without_fit`, `test_fit_three_dimensions`, `test_three_dimensional_rotation_keeps_the_z_direction` | OP24 |
 | SC-011 | `_cells_for_length` and the S5 setters (resize part); S5 cell-centre tests | `test_resize_paths.py`, `test_cell_centre_sampling.py` (first two tests) | OP12, OP17 |
 | SC-012 | Rotation part in S1; metadata and legacy part in S3 | `test_rigid_transform_contract.py`; `test_legacy_*`, `test_malformed_metadata` | None |
 | SC-013 | Extent-direction row; S2 fold R4 directions | `test_fault_frame_analytic.py`; `test_fold_constraint_frames.py` | None |
-| SC-014 | Merge gates in every stage | `pytest`, ruff, package tests | None |
-| SC-015 | `verification.md` golden review | Review record; 0 tolerance changes | None |
+| SC-014 | Merge gates in every stage; S6 final gates (three pytest runs that write junit files, ruff, API tests) and the coverage ledger of production files | `pytest`, ruff, package tests, `test_public_api_contract.py`, `test_stable_api_surface.py`; ledger in `verification.md` | None |
+| SC-015 | `verification.md` golden review (S1 to S5 ledger; S6 expects no change); tolerance audit (removed and added lines; the rename of `TOL_SOLVED` is the one change and it is a tightening or no change) | Review record; 0 relaxed tolerances | None |
 | SC-016 | Reject at use; rebuild recipe in a new frame | `test_stale_frame_rejected_without_state_change`, `test_rebuild_in_new_frame_preserves_world_evaluation`, `test_fault_restoration_uses_current_frame` | Acceptance by automatic rebuild is not built (OP4) |
 | SC-017 | Rollback column; format part S3 ("S3 rollback check") | `test_unsupported_future_version`, `test_old_reader_would_name_format_version`; `verification.md` | Old-reader error wording OP5 |
-| SC-018 | S1 and S2 cells; matrix S6 | `verification.md` backend matrix | Native and Surfe S6, OP1 |
+| SC-018 | S1 to S6 cells; `classify_cell`; exclusion ledger | Matrix table from `python -m tests.fixtures.backend_matrix <junit>...` (stub cells listed apart) | Native and Surfe extension cells excluded (OP21) |
 | SC-019 | Gate checked on 2026-11-04: 003 spec (C-006, main and native worktree copies identical) and 004 spec (2026-11-03 source-005 entries) contain the amendments | Document check | None |
 
 ## Handover
@@ -2945,6 +4247,39 @@ grep survey on 2026-11-04 and are not final.
   Spec 003 golden fault models can change only under C-006/C-004 with a
   record in `verification.md`. Spec 003 cache invalidation for transform
   changes uses `frame_signature` (S3).
+- **S6 final handover (spec 005 complete)**: Spec 005 is complete after S6. The items
+  below are for specs 003 and 004.
+  - `EuclideanTransformation` is one class. It is exported by `loop_common.math` and
+    re-exported by `LoopStructural.utils` and `LoopStructural.utils._transformation`.
+    `transform` and `inverse_transform` take an `(N, d)` array, return a new float array,
+    and keep the columns after `dimensions` bit for bit. The 3D `fit` works, the fitted
+    angle has the right sign, the z axis is not reversed, and `fit` with rotation raises
+    `ImportError` when scikit-learn is missing. Numbers from the old 3D class are wrong
+    (`COMPAT.md`, `ROADMAP.md`).
+  - The physical residual diagnostics of a faulted feature evaluate the interpolator at
+    the stored, already restored positions. Spec 003 can change how points are restored
+    (caches) if stored rows stay restored world positions. A diagnostic must never
+    restore a stored row a second time.
+  - Test fixtures for reuse: `tests/fixtures/coordinate_frames.py` (`r2_displacement_section`,
+    `r2_analytic_fault`, `r2_closed_form_displacement`, `r2_curved_slip_fault`,
+    `build_r2_fault`, `faulted_foliation_model`, `residuals_of_field`)
+    and `tests/fixtures/backend_matrix.py` (`MATRIX`, `Cell`, `classify_cell`,
+    `outcomes_from_junit`, `require_optional`, `OPTIONAL_DEPENDENCIES`). A new native or RBF
+    engine of spec 003 or 004 adds one optional `Cell` with its dependency name, and a
+    mandatory stub cell (listed apart) for its Python side. It must not become a
+    prerequisite (FR-030).
+  - Native adapter contract (unchanged in S6): local rows, a rotated frame is accepted,
+    a rotated support is rejected. `test_backend_world_contract.py` is the model for the
+    boundary test of a new adapter.
+  - Golden rule: in spec 005 only `packages/loop_common/tests/data/structured_support_reference.npz`
+    changed (S1 and S5; records in `verification.md`). The baselines and fingerprints of
+    specs 003 and 004 are checked in their own worktrees under C-004. S6 did not touch
+    them.
+  - Open items passed on, each with a default: OP21, OP22, OP23 and OP24. Findings
+    that stay: the format-only hunks in `_structured_grid_2d.py`, the node count of
+    `set_nelements`, the S1 note on anisotropy rows in `_on_geometry_change`, the shape
+    error in the public `evaluate_gradient` of a faulted feature (S3 note), and issue
+    #399 (P2 fit accuracy).
 - **Shared files**: `_geological_interpolator.py`, `_discrete_interpolator.py`
   and `_fault_builder.py` are also in the scope of specs 003 and 004.
   Coordinate the merge order with the active 003 worktree
