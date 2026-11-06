@@ -52,6 +52,12 @@
       "base": "adfbe482",
       "commit": "4d819e65",
       "review": "pass"
+    },
+    {
+      "wave": 49,
+      "base": "9ba6de6c",
+      "commit": "a7754abb",
+      "review": "pass"
     }
   ],
   "runs": {
@@ -167,7 +173,7 @@
     ]
   },
   "findings": {
-    "found": 14,
+    "found": 15,
     "rejected": 0,
     "dropped": 0,
     "fixed": 0,
@@ -185,7 +191,8 @@
       "W45 T099: add reason for 149 vs 147 cells of test_diagnostics_frames.py in verification.md",
       "W47 T103: backend_matrix.main returns 0 for a plain 'failed' cell (only VIOLATION gives 1); fix in end fix round",
       "W47 T103: selector check in test_mandatory_cells_name_existing_tests is vacuous; find_skips does not scan same-file helpers",
-      "W49 T105: 1 relaxed tolerance from S1 (golden gradient atol 1e-5 -> 1e-4, test_golden.py) accepted as S1 decision; maintainer to confirm"
+      "W49 T105: 1 relaxed tolerance from S1 (golden gradient atol 1e-5 -> 1e-4, test_golden.py) accepted as S1 decision; maintainer to confirm",
+      "W49 T105: coverage ledger rows for _fold_setup.py and exporters.py are indirect; count 52 vs 53"
     ]
   },
   "answers": "",
