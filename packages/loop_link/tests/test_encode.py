@@ -166,8 +166,29 @@ def test_drillhole_interval_property_association():
     )
     frame = _encode(hole)
     assert _data_entry(frame, "az")["association"] == "vertex"
-    assert _data_entry(frame, "lith")["association"] == "cell"
+    assert _data_entry(frame, "lith")["association"] == "interval"
     assert frame.buffers["data/lith"].tolist() == [3.0, 4.0]
+
+
+def test_drillhole_with_interval_properties_has_log_sets():
+    hole = Drillhole(
+        [0, 0, 0],
+        [[0, 0, 0], [10, 0, 0]],
+        [[0, 1], [1, 2]],
+        properties={"az": np.array([1.0, 2.0])},
+        interval_properties={"lith": np.array([3.0, 4.0]), "g": np.array([1.0, 2.0])},
+    )
+    frame = _encode(hole)
+    assert frame.header["log_sets"] == [{"name": "intervals", "kind": "interval"}]
+    for name in ("lith", "g"):
+        assert _data_entry(frame, name)["log_set"] == "intervals"
+    assert "log_set" not in _data_entry(frame, "az")
+    assert frame.header["geometry"]["intervals"] == "geometry/intervals"
+
+
+def test_drillhole_without_interval_properties_has_no_log_sets():
+    frame = _encode(Drillhole([0, 0, 0], [[0, 0, 0]], [[0, 1]], properties={"a": np.zeros(1)}))
+    assert "log_sets" not in frame.header
 
 
 def test_vertices_are_f32_after_shift_in_f64():
@@ -504,6 +525,6 @@ def test_drillhole_property_lengths():
     )
     frame = _encode(hole)
     assert _data_entry(frame, "s")["association"] == "vertex"
-    assert _data_entry(frame, "i")["association"] == "cell"
+    assert _data_entry(frame, "i")["association"] == "interval"
     assert frame.buffers["data/s"].shape == (3,)
     assert frame.buffers["data/i"].shape == (2,)

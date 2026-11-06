@@ -61,16 +61,16 @@ from loop_link.objects import BlockModel, Drillhole, Lines, Points, Surface, Tet
 from loop_link.viewer import Viewer
 
 grade3 = [1.0, 2.0, 3.0]
-tri = [[0, 0, 0], [1, 0, 0], [0, 1, 0]]
+tri = [[0, 0, 0], [100, 0, 0], [0, 100, 0]]  # 100 units: the default glyph size is 1 percent of the object
 objects = {
     "points": Points(tri, {"grade": grade3}),
     "vectors": Vectors.from_directions(tri, [[0, 0, 1]] * 3, kind="normal",
                                        properties={"grade": grade3}),
     "lines": Lines(tri, [[0, 1], [1, 2]], {"grade": grade3}),
     "surface": Surface(tri, [[0, 1, 2]], {"grade": grade3}),
-    "block": BlockModel((0, 0, 0), (1, 1, 1), (2, 2, 2), cell_properties={"grade": [1.0] * 8}),
-    "tetra": TetraMesh(tri + [[0, 0, 1]], [[0, 1, 2, 3]], {"grade": [1.0, 2.0, 3.0, 4.0]}),
-    "drillhole": Drillhole([0, 0, 0], [[0, 0, 90], [10, 0, 90]], [[0, 5], [5, 10]],
+    "block": BlockModel((0, 0, 0), (50, 50, 50), (2, 2, 2), cell_properties={"grade": [1.0] * 8}),
+    "tetra": TetraMesh(tri + [[0, 0, 100]], [[0, 1, 2, 3]], {"grade": [1.0, 2.0, 3.0, 4.0]}),
+    "drillhole": Drillhole([0, 0, 0], [[0, 0, 90], [100, 0, 90]], [[0, 50], [50, 100]],
                            interval_properties={"grade": [1.0, 2.0]}),
 }
 
@@ -84,6 +84,19 @@ viewer.release_data()
 5. Run the script. Type `packages/loop_link/.venv/Scripts/python.exe <script path>` and press Enter.
 6. Check that seven objects show in the object list. Check that the types are: points, vectors, lines, surface, block model, tetra mesh and drillhole.
 7. Select each object, one at a time. Check that the property name `grade` shows in the property table.
+   A tetra mesh has no Data button: use the isosurface or the filter controls to check `grade`.
+   The vectors show as flat discs that face up (+z).
 8. Write the result in your test record.
 
 Pass: seven objects show, each with the right type, and the property name `grade` shows in the property table for each object.
+
+## Record
+
+2026-11-07, window viewer of the geoviewer build with selection and fetch, token from the user:
+
+- M1: pass. The grid was in the inventory 0.43 s after the send (limit 5 s). It ran against the window viewer, not the headless viewer.
+- M2: pass after one fix.
+  - Drillhole `grade` was not selectable. The viewer reads drillhole interval values only from arrays with association `interval` in a log set. The encoder sent `cell`. It now sends `interval` with the log set `intervals`.
+  - Tetra mesh `grade` works through the isosurface. The viewer has no Data button for a tetra mesh.
+  - Vectors were too small to see on a 1 unit triangle (glyph size default is 1 percent of the object). They work on a 100 unit triangle.
+  - Open viewer issue: the vector glyphs and the drillhole tubes look pixelated (geoviewer issue 181).

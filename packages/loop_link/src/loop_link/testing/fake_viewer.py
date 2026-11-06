@@ -194,8 +194,6 @@ def _expected_length(
     if object_type == "Drillhole":
         if association == "vertex" and "survey" in arrays:
             return arrays["survey"].shape[0]
-        if association == "cell" and "intervals" in arrays:
-            return arrays["intervals"].shape[0]
         has_set = isinstance(log_sets, list) and any(
             isinstance(item, dict) and item.get("kind") == "interval" for item in log_sets
         )
@@ -218,7 +216,10 @@ def _check_data(
     params: object,
     log_sets: object = None,
 ) -> str | None:
-    """Return the text of a problem in one data array entry, or ``None``."""
+    """Return the text of a problem in one data array entry, or ``None``.
+
+    An ``interval`` array must name a log set of kind ``interval`` in ``log_set``.
+    """
     if not isinstance(entry, dict):
         return "A data entry is not an object."
     name = entry.get("buffer")
@@ -227,6 +228,18 @@ def _check_data(
     association = entry.get("association")
     if association not in ("vertex", "cell", "interval"):
         return f"The association {association!r} is not known."
+    if association == "interval":
+        log_set = entry.get("log_set")
+        kinds = {
+            item.get("name"): item.get("kind")
+            for item in (log_sets if isinstance(log_sets, list) else [])
+            if isinstance(item, dict)
+        }
+        if kinds.get(log_set) != "interval":
+            return (
+                f"The interval array {name!r} names the log set {log_set!r}. "
+                "It needs a log set of kind 'interval' in 'log_sets'."
+            )
     length = buffers[name].shape[0] if buffers[name].ndim else 0
     if entry.get("data_type") == "text":
         offsets_name = entry.get("offsets")

@@ -38,6 +38,9 @@ __all__ = [
 _I32_MIN = -(2**31)
 _I32_MAX = 2**31 - 1
 
+# The name of the log set that holds the interval properties of a Drillhole.
+_INTERVAL_LOG_SET = "intervals"
+
 Buffers = list[tuple[str, np.ndarray]]
 
 
@@ -207,7 +210,9 @@ def _declared_bytes(name: str, value: object) -> int:
     return 0
 
 
-def _data_array(name: str, value: object, association: str) -> tuple[dict[str, Any], Buffers]:
+def _data_array(
+    name: str, value: object, association: str, log_set: str | None = None
+) -> tuple[dict[str, Any], Buffers]:
     """Return the data description and the buffers of one property.
 
     Parameters
@@ -217,8 +222,13 @@ def _data_array(name: str, value: object, association: str) -> tuple[dict[str, A
     value : numpy.ndarray or Categorical
         The values.
     association : str
-        ``"vertex"`` or ``"cell"``. For a Drillhole, ``"vertex"`` has one value for each
-        survey station and ``"cell"`` has one value for each row of ``intervals``.
+        ``"vertex"``, ``"cell"`` or ``"interval"``. For a Drillhole, ``"vertex"`` has one
+        value for each survey station and ``"interval"`` has one value for each row of
+        ``intervals``. An ``"interval"`` array belongs to a log set. ``"cell"`` is for
+        the other object types.
+    log_set : str or None
+        The name of the log set of an ``"interval"`` array. The function writes it to
+        the data description as ``log_set``. Use ``None`` for the other associations.
 
     Returns
     -------
@@ -239,6 +249,8 @@ def _data_array(name: str, value: object, association: str) -> tuple[dict[str, A
         "buffer": buffer_name,
         "association": association,
     }
+    if log_set is not None:
+        desc["log_set"] = log_set
     if isinstance(value, Categorical):
         codes = np.asarray(value.codes).astype(np.uint32, copy=False)
         colours = value.colours
@@ -357,18 +369,22 @@ class _Builder:
         self.reserve(int(view.size) * 4)
         self.add_geometry(role, view.astype(np.uint32, copy=False))
 
-    def add_property(self, name: str, value: object, association: str) -> None:
-        """Add a property with its buffers."""
+    def add_property(
+        self, name: str, value: object, association: str, log_set: str | None = None
+    ) -> None:
+        """Add a property with its buffers. A log set name is optional."""
         self.reserve(_declared_bytes(name, value))
-        desc, buffers = _data_array(name, value, association)
+        desc, buffers = _data_array(name, value, association, log_set)
         for buffer_name, array in buffers:
             self.add_buffer(buffer_name, array)
         self.data.append(desc)
 
-    def add_properties(self, props: Mapping[str, object], association: str) -> None:
-        """Add a mapping of properties."""
+    def add_properties(
+        self, props: Mapping[str, object], association: str, log_set: str | None = None
+    ) -> None:
+        """Add a mapping of properties. A log set name is optional."""
         for name, value in props.items():
-            self.add_property(name, value, association)
+            self.add_property(name, value, association, log_set)
 
     def add_pair_group(self, role: str, names: tuple[str, str], pair: Sequence[object]) -> None:
         """Add a property group of two float arrays, such as orientation."""
@@ -437,6 +453,7 @@ def encode_object(
         raise InvalidInputError("The origin must be three finite numbers. Check the input.")
     builder = _Builder(id, origin_arr)
     params: dict[str, Any] = {}
+    log_sets: list[dict[str, str]] = []
     if isinstance(obj, Drillhole):
         object_type = "Drillhole"
         builder.reserve(
@@ -449,7 +466,9 @@ def encode_object(
         if obj.end_of_hole is not None:
             params["end_of_hole"] = [float(obj.end_of_hole)]
         builder.add_properties(obj.properties, "vertex")
-        builder.add_properties(obj.interval_properties, "cell")
+        if obj.interval_properties:
+            log_sets.append({"name": _INTERVAL_LOG_SET, "kind": "interval"})
+            builder.add_properties(obj.interval_properties, "interval", _INTERVAL_LOG_SET)
     elif isinstance(obj, BlockModel):
         object_type = "BlockModel"
         shifted = _finite_f64(obj.origin, "origin") - origin_arr
@@ -490,6 +509,8 @@ def encode_object(
     header["params"] = params
     header["data"] = builder.data
     header["property_groups"] = builder.groups
+    if log_sets:
+        header["log_sets"] = log_sets
     try:
         return protocol.encode_frame(header, builder.buffers)
     except protocol.ProtocolError as error:

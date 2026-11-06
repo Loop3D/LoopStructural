@@ -55,7 +55,12 @@ def points_frame(data: list[dict[str, Any]], groups: list[dict[str, Any]] | None
     return encode_frame(header, buffers)
 
 
-def drillhole_frame(association: str, log_sets: list[dict[str, Any]] | None = None) -> bytes:
+def drillhole_frame(
+    association: str,
+    log_sets: list[dict[str, Any]] | None = None,
+    log_set: str | None = None,
+    length: int = 2,
+) -> bytes:
     """Return a hand-made Drillhole frame with a data array."""
     header = {
         "type": "scene.upsert",
@@ -63,20 +68,20 @@ def drillhole_frame(association: str, log_sets: list[dict[str, Any]] | None = No
         "object_type": "Drillhole",
         "revision": 1,
         "geometry": {"collar": "c", "survey": "s", "intervals": "i"},
-        "data": [entry("x", association)],
+        "data": [entry("x", association, **({"log_set": log_set} if log_set else {}))],
         "log_sets": log_sets or [],
     }
     buffers = [
         ("c", np.zeros(3, dtype=np.float32)),
         ("s", np.zeros((3, 3), dtype=np.float32)),
         ("i", np.zeros((2, 2), dtype=np.float32)),
-        ("x", np.zeros(2, dtype=np.float32)),
+        ("x", np.zeros(length, dtype=np.float32)),
     ]
     return encode_frame(header, buffers)
 
 
 def test_drillhole_with_interval_properties_is_accepted(fake: Any) -> None:
-    """The encoder sends interval properties as cell arrays. The viewer accepts them."""
+    """The encoder sends interval properties as interval arrays. The viewer accepts them."""
     hole = Drillhole(
         collar=[0.0, 0.0, 0.0],
         survey=[[0.0, 0.0, 0.0], [10.0, 0.0, -90.0]],
@@ -87,13 +92,38 @@ def test_drillhole_with_interval_properties_is_accepted(fake: Any) -> None:
     data = encode_object(hole, id="h", name=None, parent=None, revision=1, origin=(0.0, 0.0, 0.0))
     assert fake.accept_frame(data) == []
     assert "h" in fake.objects
+    header = fake.objects["h"].header
+    assert header["log_sets"] == [{"name": "intervals", "kind": "interval"}]
+    assert {e["association"] for e in header["data"] if e["name"] == "grade"} == {"interval"}
 
 
 def test_interval_array_without_log_sets_is_refused(fake: Any) -> None:
     """An interval association needs a log set of kind interval."""
     assert codes(fake.accept_frame(drillhole_frame("interval"))) == ["invalid_object"]
-    with_set = drillhole_frame("interval", [{"name": "main", "kind": "interval"}])
+    no_name = drillhole_frame("interval", [{"name": "main", "kind": "interval"}])
+    assert codes(fake.accept_frame(no_name)) == ["invalid_object"]
+    with_set = drillhole_frame("interval", [{"name": "main", "kind": "interval"}], "main")
     assert fake.accept_frame(with_set) == []
+
+
+def test_interval_array_with_unknown_or_wrong_kind_log_set_is_refused(fake: Any) -> None:
+    """The log set of an interval array must exist and must have the kind interval."""
+    sets = [{"name": "main", "kind": "interval"}]
+    assert codes(fake.accept_frame(drillhole_frame("interval", sets, "other"))) == [
+        "invalid_object"
+    ]
+    point = [{"name": "main", "kind": "point"}]
+    assert codes(fake.accept_frame(drillhole_frame("interval", point, "main"))) == [
+        "invalid_object"
+    ]
+
+
+def test_interval_array_with_wrong_length_is_refused(fake: Any) -> None:
+    """An interval array needs one value for each row of intervals."""
+    sets = [{"name": "main", "kind": "interval"}]
+    assert codes(fake.accept_frame(drillhole_frame("interval", sets, "main", 3))) == [
+        "invalid_object"
+    ]
 
 
 def test_group_naming_missing_array_is_refused(fake: Any) -> None:
