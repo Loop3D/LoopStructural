@@ -22,6 +22,8 @@ import numpy as np
 from .errors import LoopLinkError
 
 PROTOCOL_VERSION: dict[str, int] = {"major": 1, "minor": 14}
+TOOL_PROTOCOL_VERSION: dict[str, int] = {"major": 1, "minor": 18}
+CANCEL_PROTOCOL_VERSION: dict[str, int] = {"major": 1, "minor": 11}
 
 # The largest frame that is allowed, in bytes.
 MAX_FRAME_BYTES: int = 256 * 1024 * 1024
@@ -70,7 +72,12 @@ class Frame:
     buffers: dict[str, np.ndarray]
 
 
-def encode_frame(header: dict[str, Any], buffers: Sequence[tuple[str, np.ndarray]] = ()) -> bytes:
+def encode_frame(
+    header: dict[str, Any],
+    buffers: Sequence[tuple[str, np.ndarray]] = (),
+    *,
+    version: dict[str, int] | None = None,
+) -> bytes:
     """Return the frame for a header and its named buffers.
 
     The function adds ``version`` and ``buffers`` to the header.
@@ -81,6 +88,9 @@ def encode_frame(header: dict[str, Any], buffers: Sequence[tuple[str, np.ndarray
         The header fields. The function does not change this dict.
     buffers : sequence of (str, numpy.ndarray)
         The named arrays. The dtype must be f32, f64, u32, i32 or u8.
+    version : dict, optional
+        The protocol version for the header. The default is ``PROTOCOL_VERSION``.
+        The function does not change this dict.
 
     Returns
     -------
@@ -106,7 +116,7 @@ def encode_frame(header: dict[str, Any], buffers: Sequence[tuple[str, np.ndarray
         descriptions.append({"name": name, "dtype": dtype_name, "shape": list(array.shape)})
         payload.append(array.astype(little, copy=False).tobytes())
     full = dict(header)
-    full["version"] = PROTOCOL_VERSION
+    full["version"] = PROTOCOL_VERSION if version is None else dict(version)
     full["buffers"] = descriptions
     header_bytes = json.dumps(full, separators=(",", ":"), allow_nan=False).encode("utf-8")
     if len(header_bytes) > MAX_HEADER_BYTES:

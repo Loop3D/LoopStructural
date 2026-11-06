@@ -346,5 +346,38 @@
   "end_review": {
     "round1": "changes needed: 1 blocker (verified), 5 major, 7 minor",
     "fix_commit": "ebbf9854197fd9f31bcb9252e9ec99279b609c6d"
+  },
+  "s5": {
+    "start_commit": "6108d264360ec52a699e363de022575c75a4dc86",
+    "review_mode": "wave",
+    "note": "S5 waves use the wave numbers of tasks.md (19 waves in all). ruff and black run with uvx.",
+    "waves": [
+      {
+        "wave": 1,
+        "base": "6108d264360ec52a699e363de022575c75a4dc86",
+        "commit": null,
+        "review": "pending"
+      }
+    ],
+    "runs": {
+      "T039": [
+        {
+          "model": "haiku",
+          "result": "pass"
+        }
+      ],
+      "T040": [
+        {
+          "model": "haiku",
+          "result": "pass"
+        }
+      ],
+      "T060": [
+        {
+          "model": "haiku",
+          "result": "pass"
+        }
+      ]
+    }
   }
 }

@@ -148,6 +148,73 @@ class ObjectTooLargeError(LoopLinkError):
         )
 
 
+class StaleRevisionError(LoopLinkError):
+    """An object is not at the revision that the caller expects.
+
+    Parameters
+    ----------
+    object_id : str
+        The identifier of the object.
+    revision : int, optional
+        The revision that the caller expected.
+
+    Attributes
+    ----------
+    object_id : str
+        The identifier of the object.
+    revision : int, optional
+        The revision that the caller expected.
+    """
+
+    def __init__(self, object_id: str, revision: int | None = None) -> None:
+        self.object_id = object_id
+        self.revision = revision
+        super().__init__(
+            f"The object '{object_id}' is not at that revision in the viewer. "
+            "Read the selection or fetch the object again, then try again."
+        )
+
+
+class CancelledError(LoopLinkError):
+    """The request was cancelled.
+
+    Parameters
+    ----------
+    message : str
+        The error text. The default text says that the request was cancelled.
+    """
+
+    def __init__(self, message: str = "The request was cancelled.") -> None:
+        super().__init__(message)
+
+
+class UnsupportedObjectError(LoopLinkError):
+    """The object type cannot be fetched by loop_link.
+
+    Parameters
+    ----------
+    object_id : str
+        The identifier of the object.
+    object_type : str
+        The type of the object.
+
+    Attributes
+    ----------
+    object_id : str
+        The identifier of the object.
+    object_type : str
+        The type of the object.
+    """
+
+    def __init__(self, object_id: str, object_type: str) -> None:
+        self.object_id = object_id
+        self.object_type = object_type
+        super().__init__(
+            f"The object '{object_id}' has the type '{object_type}'. loop_link can fetch "
+            "Points, Curve, Surface, BlockModel, TetraMesh and Drillhole objects only."
+        )
+
+
 @dataclass(frozen=True)
 class Refusal:
     """A reason why the viewer refused one object.

@@ -90,6 +90,25 @@ viewer.release_data()
 
 Pass: seven objects show, each with the right type, and the property name `grade` shows in the property table for each object.
 
+## M3: select, read and fetch with the real window viewer (stories 2 to 4)
+
+Purpose: check that the window viewer selects, reads and fetches cells, and that errors are reported.
+
+Before you start, start the geoviewer window application. Turn on the link in the viewer settings. Save the token `secret` in the viewer settings. Save your test scripts as files outside the repository. Run them with `packages/loop_link/.venv/Scripts/python.exe <script path>`.
+
+1. Run a script that sends a `BlockModel` of 10 x 10 x 10 cells. Then call `Viewer.select` with cells 12, 13 and 14. Check that the viewer outlines three cells. Check that `Viewer.selection()` returns these three cells.
+2. Select cells in the window with the mouse. Call `Viewer.selection()`. Check that the returned cells are the cells that you selected.
+3. Call `Viewer.select` with index 5000. Check that the script raises `InvalidInputError`. Check that the selection does not change.
+4. Send the block model again to replace it. Then call `Viewer.select` with the old revision. Check that the script raises `StaleRevisionError`.
+5. Fetch each of the seven types with the `fetch` method. Use the script from M2 to send the objects. Compare each fetched object with the original object.
+6. Fetch a drillhole that the viewer imported. Check that the script or the viewer shows a warning for the dropped log sets.
+7. Start `watch_selection`. Change the selection in the window. Check that the callback runs one time.
+8. Start a second program. Check that its send raises `BusyError`. While the first program runs, check that it can still select and fetch.
+
+M3 also checks the fake viewer assumptions OP12 (which types have a selection table), OP13 (one object per selection) and OP14 (parts arrive in order). Record the time of a fetch of 1,000,000 cells.
+
+Pass: all 8 steps give the expected result.
+
 ## Record
 
 2026-11-07, window viewer of the geoviewer build with selection and fetch, token from the user:

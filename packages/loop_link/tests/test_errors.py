@@ -6,6 +6,7 @@ import pytest
 
 from loop_link.errors import (
     BusyError,
+    CancelledError,
     InvalidInputError,
     LoopLinkError,
     MissingExtraError,
@@ -13,7 +14,9 @@ from loop_link.errors import (
     NoViewerError,
     ObjectTooLargeError,
     Refusal,
+    StaleRevisionError,
     TokenError,
+    UnsupportedObjectError,
     ViewerClosedError,
     ViewerRefusedError,
 )
@@ -62,6 +65,40 @@ def test_object_too_large_error_keeps_attributes_and_text() -> None:
     assert "mesh-1" in text
     assert "2048" in text
     assert "1024" in text
+
+
+def test_stale_revision_error_keeps_attributes_and_text() -> None:
+    error = StaleRevisionError("mesh-1", 7)
+
+    assert isinstance(error, LoopLinkError)
+    assert error.object_id == "mesh-1"
+    assert error.revision == 7
+    assert "mesh-1" in str(error)
+
+
+def test_stale_revision_error_revision_defaults_to_none() -> None:
+    error = StaleRevisionError("mesh-1")
+
+    assert error.revision is None
+    assert "mesh-1" in str(error)
+
+
+def test_cancelled_error_is_loop_link_error_with_default_text() -> None:
+    error = CancelledError()
+
+    assert isinstance(error, LoopLinkError)
+    assert error.args == ("The request was cancelled.",)
+
+
+def test_unsupported_object_error_keeps_attributes_and_text() -> None:
+    error = UnsupportedObjectError("obj-1", "Voxels")
+
+    assert isinstance(error, LoopLinkError)
+    assert error.object_id == "obj-1"
+    assert error.object_type == "Voxels"
+    text = str(error)
+    assert "obj-1" in text
+    assert "Voxels" in text
 
 
 def test_viewer_refused_error_keeps_refusals() -> None:

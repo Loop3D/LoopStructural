@@ -298,14 +298,14 @@ length 100; keep string quotes as written (Black `skip-string-normalization`).
 
 Test command in this phase: `packages/loop_link/.venv/Scripts/python.exe -m pytest <file>`. Geoviewer spec 067 (protocol 1.18) is the viewer side. The text of the spec calls it "066" (plan OP7).
 
-- [ ] T039 [P] [Found] [S] Three new errors, with a test.
+- [x] T039 [P] [Found] [S] Three new errors, with a test.
   - Files: `packages/loop_link/src/loop_link/errors.py`, `packages/loop_link/tests/test_errors.py`
   - Needs: none
   - Wave: 1
   - Done when: write the test first and see it fail; then `packages/loop_link/.venv/Scripts/python.exe -m pytest packages/loop_link/tests/test_errors.py` passes.
   - Context: Add three classes in the style of `ObjectTooLargeError`, all subclasses of `LoopLinkError`. `StaleRevisionError(object_id: str, revision: Optional[int] = None)`: attributes `object_id`, `revision`; text "The object '<id>' is not at that revision in the viewer. Read the selection or fetch the object again, then try again." `CancelledError(message: str = "The request was cancelled.")`. `UnsupportedObjectError(object_id: str, object_type: str)`: attributes with the same names; text "The object '<id>' has the type '<type>'. loop_link can fetch Points, Curve, Surface, BlockModel, TetraMesh and Drillhole objects only." Add the names to `__all__` if the module has one. Test: each is a `LoopLinkError`; attributes are kept; `str(error)` holds the id (and the type); `CancelledError().args` has the default text.
 
-- [ ] T040 [P] [Found] [S] Tool protocol versions and the `version` argument of `encode_frame`.
+- [x] T040 [P] [Found] [S] Tool protocol versions and the `version` argument of `encode_frame`.
   - Files: `packages/loop_link/src/loop_link/protocol.py`, `packages/loop_link/tests/test_protocol.py`
   - Needs: none
   - Wave: 1
@@ -449,7 +449,7 @@ Test command in this phase: `packages/loop_link/.venv/Scripts/python.exe -m pyte
   - Done when: `packages/loop_link/.venv/Scripts/python.exe -m pytest packages/loop_link/tests/test_fixtures.py -rs` passes or skips with a reason; with `LOOP_LINK_GEOVIEWER_FIXTURES=C:\Users\lachl\dev\geoviewer\fixtures\protocol\python` it passes with no skip for the new tests.
   - Context: Tool fixtures are in `<LOOP_LINK_GEOVIEWER_FIXTURES>/../tool/` as JSON files `selection.set.json`, `selection.get.json`, `object.fetch.json`, `command.cancel.json`. Use `geoviewer_fixtures()` of `conftest.py`; skip with a reason when the variable or the `tool` folder is missing (same style as `_folder()`). Read each fixture (look at the file to see its form: header fields `type`, `request`, `object`/`id`, `revision`, `entries`, `version`, `buffers`). Build the frame with `encode.selection_set_frame`, `selection_get_frame`, `fetch_frame`, `cancel_frame` from the `request`, `object`, `id`, `revision` and index counts of the fixture (use `np.arange(count)` for indices), decode it, and assert the header equals the fixture header including `version` and `buffers`. A fixture with a different form than the plan expects: make the test fail with a clear message.
 
-- [ ] T060 [P] [Finish] [S] Manual check M3 in `manual_checks.md`.
+- [x] T060 [P] [Finish] [S] Manual check M3 in `manual_checks.md`.
   - Files: `packages/loop_link/tests/manual_checks.md`
   - Needs: none
   - Wave: 1

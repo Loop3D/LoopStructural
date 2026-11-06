@@ -212,6 +212,43 @@ def test_deeply_nested_header_is_protocol_error(body):
         decode_header(frame)
 
 
+def test_tool_and_cancel_versions_are_fixed():
+    # The tool and cancel protocol versions are fixed by the protocol.
+    assert protocol.TOOL_PROTOCOL_VERSION == {"major": 1, "minor": 18}
+    assert protocol.CANCEL_PROTOCOL_VERSION == {"major": 1, "minor": 11}
+
+
+def test_default_header_version_is_protocol_version():
+    # Without the version argument, the header has PROTOCOL_VERSION.
+    header = decode_header(encode_frame({"type": "test"}))
+    assert header["version"] == {"major": 1, "minor": 14}
+
+
+def test_tool_version_argument_sets_header_version():
+    # The version argument replaces the header version.
+    header = decode_header(encode_frame({"type": "test"}, version=protocol.TOOL_PROTOCOL_VERSION))
+    assert header["version"] == {"major": 1, "minor": 18}
+
+
+def test_cancel_version_argument_sets_header_version():
+    # The cancel version is a valid argument too.
+    header = decode_header(encode_frame({"type": "test"}, version=protocol.CANCEL_PROTOCOL_VERSION))
+    assert header["version"] == {"major": 1, "minor": 11}
+
+
+def test_version_argument_is_keyword_only():
+    # A third positional argument is not allowed.
+    with pytest.raises(TypeError):
+        encode_frame({"type": "test"}, (), {"major": 1, "minor": 18})
+
+
+def test_version_argument_dict_is_not_changed():
+    # The caller's dict must keep its values after the call.
+    version = {"major": 1, "minor": 18}
+    encode_frame({"type": "test"}, version=version)
+    assert version == {"major": 1, "minor": 18}
+
+
 _FIXTURE_DIR = os.environ.get("LOOP_LINK_GEOVIEWER_FIXTURES")
 
 
