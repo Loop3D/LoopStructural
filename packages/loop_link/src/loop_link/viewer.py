@@ -8,27 +8,20 @@ from collections.abc import Mapping, Sequence
 from dataclasses import dataclass
 from pathlib import Path
 from types import TracebackType
-from typing import Any, get_args
+from typing import Any
 
 from loop_link import discovery, encode, protocol
 from loop_link._websocket import WebSocketClient, WebSocketClosed, WebSocketError
+from loop_link.adapters import convert
 from loop_link.errors import (
     BusyError,
-    InvalidInputError,
     MissingFeatureError,
     Refusal,
     ViewerClosedError,
     ViewerRefusedError,
 )
-from loop_link.objects import SceneObject
 from loop_link.protocol import ProtocolError
 
-_ACCEPTED_INPUTS = (
-    "Accepted inputs: loop_link objects (Points, Vectors, Lines, Surface, BlockModel, "
-    "TetraMesh, Drillhole); pyvista meshes and grids; LoopStructural Surface and "
-    "StructuredGrid; pandas tables for drillholes "
-    "(use loop_link.adapters.pandas.drillholes_from_pandas)."
-)
 _LINK_ERRORS = (OSError, WebSocketClosed, WebSocketError)
 
 
@@ -238,24 +231,27 @@ class Viewer:
 
     def send(
         self,
-        obj: SceneObject,
+        obj: Any,  # noqa: ANN401
         *,
         id: str,
         name: str | None = None,
         parent: str | None = None,
+        **hints: Any,  # noqa: ANN401
     ) -> int:
         """Send one object to the viewer.
 
         Parameters
         ----------
-        obj : SceneObject
-            The object to send.
+        obj : Any
+            The object to send: a loop_link object, or an input that an adapter converts.
         id : str
             The identifier of the object. The same id replaces the object.
         name : str, optional
             The display name. The default is the id.
         parent : str, optional
             The identifier of a group that holds the object.
+        **hints : Any
+            Options for the adapter that converts ``obj``.
 
         Returns
         -------
@@ -269,8 +265,7 @@ class Viewer:
         loop_link.errors.ViewerClosedError
             The connection is closed.
         """
-        if not isinstance(obj, get_args(SceneObject)):
-            raise InvalidInputError(_ACCEPTED_INPUTS)
+        obj = convert(obj, **hints)
         self._ensure_connected()
         revision = self._next_revision(id)
         data = encode.encode_object(
