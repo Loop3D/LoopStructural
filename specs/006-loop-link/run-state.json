@@ -9,6 +9,12 @@
       "wave": 1,
       "base": "4ed44583f45bd5073ed61bd04d164b6d538b915c",
       "commit": "5a8b9f4b0108473ed887d73dae990698d19f600c",
+      "review": "pass"
+    },
+    {
+      "wave": 2,
+      "base": "ece3030f98abc65ee2f61f9c9738d0933bda0bc9",
+      "commit": null,
       "review": "pending"
     }
   ],
@@ -36,14 +42,28 @@
         "model": "sonnet",
         "result": "pass"
       }
+    ],
+    "T003": [
+      {
+        "model": "sonnet",
+        "result": "pass (OP5 fallback)"
+      }
+    ],
+    "T006": [
+      {
+        "model": "haiku",
+        "result": "pass"
+      }
     ]
   },
   "findings": {
-    "found": 0,
+    "found": 1,
     "rejected": 0,
     "dropped": 0,
     "fixed": 0,
-    "open_minor": []
+    "open_minor": [
+      "W1 T004: loop-link CI job fails between wave 1 and wave 2 (fixed by T003/T006); do not merge wave 1 alone"
+    ]
   },
   "merged_origin_master": "7497982b (ruff baseline fixed upstream by #395)"
 }
