@@ -334,6 +334,9 @@ class GeologicalFeature(BaseFeature):
         """Compute the gradient and normal cosines without a stale check.
 
         The method copies the stored arrays. It does not change them.
+        The stored positions are already restored by the faults of the feature.
+        The method evaluates the interpolator, not the feature, so no fault
+        acts a second time.
 
         Returns
         -------
@@ -355,12 +358,16 @@ class GeologicalFeature(BaseFeature):
             if bounding_box is not None:
                 positions = bounding_box.reproject(positions)
                 data = self.interpolator.local_to_world_vectors(data)
-            model = self.evaluate_gradient(positions)
+            model = self.interpolator.evaluate_gradient(positions)
             cosines.append(direction_cosines(model, data))
         return cosines
 
     def _value_residuals_fresh(self) -> np.ndarray:
         """Compute the value residuals without a stale check.
+
+        The stored positions are already restored by the faults of the feature.
+        The method evaluates the interpolator, not the feature, so no fault
+        acts a second time.
 
         Returns
         -------
@@ -371,7 +378,7 @@ class GeologicalFeature(BaseFeature):
         positions = rows[:, :3]
         if self.interpolator.bounding_box is not None:
             positions = self.interpolator.bounding_box.reproject(positions)
-        return np.abs(rows[:, 3] - self.evaluate_value(positions))
+        return np.abs(rows[:, 3] - self.interpolator.evaluate_value(positions))
 
     def _physical_residual_summaries(self) -> dict[str, ResidualSummary]:
         """Summarise the physical residuals of the value, gradient and normal data.

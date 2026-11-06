@@ -59,7 +59,7 @@ def test_two_dimensional_rotation_of_known_angle():
 
     result = t.transform(np.array([[2.0, 0.0, 7.0]]))
 
-    assert np.allclose(result[0, :2], [1.7320508076, 1.0], atol=1e-12, rtol=0)
+    assert np.allclose(result[0, :2], [np.sqrt(3.0), 1.0], atol=1e-12, rtol=0)
     assert result[0, 2] == 7.0
 
 

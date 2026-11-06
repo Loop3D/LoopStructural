@@ -47,6 +47,10 @@
       {
         "model": "sonnet",
         "result": "pass"
+      },
+      {
+        "model": "sonnet",
+        "result": "pass"
       }
     ],
     "T091": [
@@ -102,6 +106,18 @@
       }
     ],
     "T099": [
+      {
+        "model": "sonnet",
+        "result": "pass"
+      }
+    ],
+    "T100": [
+      {
+        "model": "sonnet",
+        "result": "pass"
+      }
+    ],
+    "T101": [
       {
         "model": "sonnet",
         "result": "pass"

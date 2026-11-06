@@ -1495,7 +1495,7 @@ frame. A legacy file needs an explicit choice. A frame change never gives a stal
 **Goal**: One working `EuclideanTransformation` behind both import paths, and residual diagnostics of faulted features that evaluate the interpolator at the restored positions.
 **Independent test**: `pytest tests/unit/utils/test_transformation.py tests/unit/modelling/test_diagnostics_backends.py` (root run) and `pytest packages/loop_common/tests/test_euclidean_transformation.py`.
 
-- [ ] T100 [P] [US5] [M] Fix `EuclideanTransformation` in `loop_common` and export it (FR-025, OP20, OP24).
+- [x] T100 [P] [US5] [M] Fix `EuclideanTransformation` in `loop_common` and export it (FR-025, OP20, OP24).
   - Files: `packages/loop_common/src/loop_common/math/_transformation.py`, `packages/loop_common/src/loop_common/math/__init__.py`
   - Needs: T099
   - Wave: 46
@@ -1504,7 +1504,7 @@ frame. A legacy file needs an explicit choice. A frame change never gives a stal
     `fit(points)`: `array = self._check_points(points)`; `d = self.dimensions`; `translation = np.mean(array[:, :d], axis=0)`; `angle = 0`; if `self.fit_rotation`: `decomposition = _import_decomposition()`, `centred = array[:, :2] - translation[None, :2]`, `axis = decomposition.PCA(n_components=2).fit(centred).components_[0]`, `angle = -np.arctan2(axis[1], axis[0])`; then set `self.translation`, `self.angle`; `logger.debug(...)`; return `self`. No attribute changes if it raises. Fewer than 2 rows (n = 1): PCA cannot fit, so `angle = 0` and the PCA is not called (settled at S6 build start; test `test_round_trip_after_fit` has n = 1 with `fit_rotation=True`). `_rotation(angle)`: 3x3 about z with entry `[2, 2] = +1` (it was -1; determinant 1).
     `transform(points)`: `array = self._check_points(points)`; `centred = array[:, :d] - self.translation[None, :]`; `array[:, :d] = np.einsum("ik,jk->ij", centred, self.rotation[:d, :d])`; return `array`. `inverse_transform(points)`: `array[:, :d] = np.einsum("ik,jk->ij", array[:, :d], self.inverse_rotation[:d, :d]) + self.translation[None, :]`; return `array`. Columns after `d` stay bit for bit. The 2D numbers do not change. `math/__init__.py`: add `from ._transformation import EuclideanTransformation` after `from ._maths import *`. No new dependency in `packages/loop_common/pyproject.toml`. numpy docstrings (numpy style) for all new items. Write in ASD-STE100 Simplified Technical English.
 
-- [ ] T101 [P] [US5] [M] Fix the physical residual methods of faulted features to evaluate the interpolator (FR-023, FR-026, OP19).
+- [x] T101 [P] [US5] [M] Fix the physical residual methods of faulted features to evaluate the interpolator (FR-023, FR-026, OP19).
   - Files: `LoopStructural/modelling/features/_geological_feature.py`
   - Needs: T091, T096, T099
   - Wave: 46
