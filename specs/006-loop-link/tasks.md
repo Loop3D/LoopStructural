@@ -220,7 +220,7 @@ length 100; keep string quotes as written (Black `skip-string-normalization`).
 
 ## Phase 3: Stage S2 adapters (FR-010)
 
-- [ ] T028 [P] [US1] [M] Test: the pyvista adapter.
+- [x] T028 [P] [US1] [M] Test: the pyvista adapter.
   - Files: `packages/loop_link/tests/test_adapter_pyvista.py`
   - Needs: T027
   - Wave: 10
@@ -234,7 +234,7 @@ length 100; keep string quotes as written (Black `skip-string-normalization`).
   - Done when: `packages/loop_link/.venv/Scripts/python.exe -m pytest packages/loop_link/tests/test_adapter_pyvista.py` passes.
   - Context: `from_pyvista(mesh, *, kind: Optional[str] = None, vectors: Optional[str] = None, vectors_kind: str = "normal") -> SceneObject`. Import `pyvista` inside the module; if it is missing raise `MissingExtraError("pyvista")` at the first call of `from_pyvista`, not at `import loop_link`. Rules: `PolyData` with `n_lines > 0` -> `Lines` (segments from the line cell array: each line of k points gives k-1 segments); `PolyData` with faces -> `Surface` (call `mesh.triangulate()` when `not mesh.is_all_triangles`; triangles `faces.reshape(-1, 4)[:, 1:]`); `PolyData` of vertices only -> `Points`, or `Vectors.from_directions(points, mesh.point_data[vectors], kind=vectors_kind)` when `vectors` is set; `ImageData` -> `BlockModel(origin=mesh.origin, cell_sizes=mesh.spacing, cells=np.array(mesh.dimensions) - 1)`; `RectilinearGrid` with equal spacing on each axis (`np.allclose(np.diff(axis), step)`) -> `BlockModel`, else `InvalidInputError` (OP9); `UnstructuredGrid` with all cells `pyvista.CellType.TETRA` -> `TetraMesh` (`cells_dict[pyvista.CellType.TETRA]`); any other type or `kind="Drillhole"` -> `InvalidInputError` that names the accepted inputs (OP3 text: "A pyvista mesh cannot hold a drillhole. Use loop_link.Drillhole or loop_link.adapters.pandas.drillholes_from_pandas."). `point_data` -> `properties`, `cell_data` -> `cell_properties`, as numpy arrays; a 2-D array raises `InvalidInputError` that names the array. Order of pyvista image data is x fastest: no reorder. Add docstrings and type hints.
 
-- [ ] T030 [P] [US1] [M] Test: the LoopStructural adapter.
+- [x] T030 [P] [US1] [M] Test: the LoopStructural adapter.
   - Files: `packages/loop_link/tests/test_adapter_loopstructural.py`
   - Needs: T027
   - Wave: 10
@@ -248,7 +248,7 @@ length 100; keep string quotes as written (Black `skip-string-normalization`).
   - Done when: `packages/loop_link/.venv/Scripts/python.exe -m pytest packages/loop_link/tests/test_adapter_loopstructural.py` passes.
   - Context: `from_loopstructural(obj: Any) -> SceneObject`. Do not import `loop_common` at module level. Find the classes with `module = sys.modules.get("loop_common.geometry")`; if `module is None` or `obj` is not an instance of `module.Surface` or `module.StructuredGrid`, raise `InvalidInputError` that names the accepted inputs. If `loop_common` cannot be imported when the extra is needed, raise `MissingExtraError("loopstructural")`. `Surface` -> `Surface(vertices=obj.vertices, triangles=obj.triangles, properties=obj.properties or {}, cell_properties=obj.cell_properties or {})`. `StructuredGrid` -> `BlockModel(origin=obj.origin, cell_sizes=obj.step_vector, cells=obj.nsteps_cells, properties=obj.properties, cell_properties=obj.cell_properties)`. Coordinates are the public attributes (world coordinates, spec 005). No other transform. Add docstrings and type hints.
 
-- [ ] T032 [P] [US1] [M] Test: the pandas adapter.
+- [x] T032 [P] [US1] [M] Test: the pandas adapter.
   - Files: `packages/loop_link/tests/test_adapter_pandas.py`
   - Needs: T027
   - Wave: 10
@@ -264,7 +264,7 @@ length 100; keep string quotes as written (Black `skip-string-normalization`).
 
 ## Phase 4: Stage S3 plugin API (story 5)
 
-- [ ] T035 [US5] [M] Implement `push.py`.
+- [x] T035 [US5] [M] Implement `push.py`.
   - Files: `packages/loop_link/src/loop_link/push.py`
   - Needs: T034
   - Wave: 10

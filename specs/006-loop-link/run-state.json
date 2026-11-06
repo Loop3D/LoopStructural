@@ -58,8 +58,14 @@
     {
       "wave": 9,
       "base": "2ab8b97b4ca6f18476eae4f2594306135c9ad21a",
-      "commit": "969d92c9 + fix commit",
+      "commit": "dd11d8d1",
       "review": "pass (one fix round; fixes verified by orchestrator)"
+    },
+    {
+      "wave": 10,
+      "base": "dd11d8d10998046df4c111abcbc85a5fe1d637db",
+      "commit": null,
+      "review": "pending"
     }
   ],
   "runs": {
@@ -222,6 +228,30 @@
     "T037": [
       {
         "model": "haiku",
+        "result": "pass"
+      }
+    ],
+    "T028": [
+      {
+        "model": "sonnet",
+        "result": "pass"
+      }
+    ],
+    "T030": [
+      {
+        "model": "sonnet",
+        "result": "pass"
+      }
+    ],
+    "T032": [
+      {
+        "model": "sonnet",
+        "result": "pass"
+      }
+    ],
+    "T035": [
+      {
+        "model": "sonnet",
         "result": "pass"
       }
     ]
