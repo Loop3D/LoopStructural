@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import socket
 import threading
+import time
 from collections.abc import Callable, Iterator
 from pathlib import Path
 from typing import Any
@@ -27,7 +28,7 @@ from loop_link.errors import (
 )
 from loop_link.protocol import Frame
 from loop_link.testing import FakeViewer
-from loop_link.testing.fake_viewer import StoredObject
+from loop_link.testing.fake_viewer import StoredObject, _send
 
 TIMEOUT = 5.0
 
@@ -57,6 +58,13 @@ class _ScriptedViewer(FakeViewer):
         before each real reply. ``"unsupported"`` answers each tool message with an
         ``unsupported_version`` error. ``"silent"`` never answers a tool message.
         ``"drop_first"`` closes the first tool connection after it reads one message.
+        ``"refuse"`` answers each tool message with an ``error`` frame of an unknown code.
+        ``"ignore_cancel"`` sends one ``command.progress`` frame, waits for a
+        ``command.cancel`` and then sends ``selection.result`` as if it never saw the cancel.
+        ``"count_cancel"`` sends ``command.progress`` frames for 0.5 s, counts the
+        ``command.cancel`` messages that arrive and then sends a ``cancelled`` error.
+        ``"slow_progress"`` sends ``command.progress`` every 0.1 s for 0.5 s and then
+        ``selection.result``.
 
     Attributes
     ----------
@@ -64,12 +72,15 @@ class _ScriptedViewer(FakeViewer):
         The messages that the viewer read between the parts of a fetch.
     tool_connections : int
         The number of tool connections.
+    cancel_count : int
+        The number of ``command.cancel`` messages that mode ``"count_cancel"`` read.
     """
 
     def __init__(self, mode: str = "normal", **kwargs: Any) -> None:
         self.mode = mode
         self.cancel_frames: list[bytes] = []
         self.tool_connections = 0
+        self.cancel_count = 0
         super().__init__(**kwargs)
 
     def _tool_reply(self, frame: Frame) -> list[Frame]:
@@ -79,16 +90,82 @@ class _ScriptedViewer(FakeViewer):
             )
             return [stale, *super()._tool_reply(frame)]
         if self.mode == "unsupported":
-            header = {"type": "error", "code": "unsupported_version", "message": "Not supported."}
+            header = {
+                "type": "error",
+                "code": "unsupported_version",
+                "message": "Not supported.",
+                "supported": {"major": 1, "minor": 14},
+            }
+            return [Frame(header=header, buffers={})]
+        if self.mode == "refuse":
+            header = {"type": "error", "code": "something_new", "message": "x"}
             return [Frame(header=header, buffers={})]
         return super()._tool_reply(frame)
 
     def _cancelled(self, conn: socket.socket, reader: Any, request: object) -> bool:
         return FakeViewer._cancelled(conn, _Tap(reader, self.cancel_frames), request)
 
+    @staticmethod
+    def _push(conn: socket.socket, header: dict[str, Any]) -> None:
+        """Send one tool frame without buffers."""
+        _send(conn, protocol.encode_frame(header, [], version=protocol.TOOL_PROTOCOL_VERSION))
+
+    @staticmethod
+    def _poll(conn: socket.socket, reader: Any, wait: float) -> dict[str, Any] | None:
+        """Return the header of the next message, or None if none arrives in ``wait`` s."""
+        conn.settimeout(wait)
+        try:
+            data = reader.message()
+        except (TimeoutError, BlockingIOError):
+            return None
+        finally:
+            conn.settimeout(None)
+        return None if data is None else protocol.decode_frame(data).header
+
+    def _scripted_request(self, conn: socket.socket, reader: Any) -> None:
+        """Answer one request in a mode that sends progress frames."""
+        data = reader.message()
+        if data is None:
+            return
+        request = protocol.decode_frame(data).header["request"]
+        progress = {"type": "command.progress", "request": request, "fraction": 0.5, "text": "x"}
+        result = {"type": "selection.result", "request": request, "entries": []}
+        if self.mode == "slow_progress":
+            for _ in range(5):
+                time.sleep(0.1)
+                self._push(conn, progress)
+            self._push(conn, result)
+        elif self.mode == "ignore_cancel":
+            self._push(conn, progress)
+            deadline = time.monotonic() + 2.0
+            while time.monotonic() < deadline:
+                header = self._poll(conn, reader, 0.05)
+                if header is not None and header.get("type") == "command.cancel":
+                    break
+            self._push(conn, result)
+        else:
+            deadline = time.monotonic() + 0.5
+            while time.monotonic() < deadline:
+                self._push(conn, progress)
+                header = self._poll(conn, reader, 0.05)
+                if header is not None and header.get("type") == "command.cancel":
+                    self.cancel_count += 1
+            error = {
+                "type": "request.error",
+                "request": request,
+                "error": {"code": "cancelled", "message": "The client cancelled the request."},
+            }
+            self._push(conn, error)
+        # Wait for the client to close, so a reset does not destroy the last frames.
+        while self._poll(conn, reader, 0.05) is not None:
+            pass
+
     def _run(self, conn: socket.socket, reader: Any, tool: bool) -> None:
         if tool:
             self.tool_connections += 1
+            if self.mode in ("ignore_cancel", "count_cancel", "slow_progress"):
+                self._scripted_request(conn, reader)
+                return
             if self.mode == "silent":
                 while reader.message() is not None:
                     pass
@@ -246,7 +323,7 @@ def test_on_frame_gets_each_frame_of_a_fetch(
     )
     assert frame.header["type"] == "object.end"
     assert seen[0] == "object.header"
-    assert seen.count("object.part") == 4
+    assert seen.count("object.part") == -(-120 // 64)
 
 
 def test_progress_gets_rising_floats(
@@ -292,6 +369,37 @@ def test_cancel_gives_cancelled_error_and_one_cancel_frame(
     cancels = [header for header in headers if header.get("type") == "command.cancel"]
     assert len(cancels) == 1
     assert cancels[0]["request"] == 1
+
+
+def test_cancel_frame_is_sent_once(
+    scripted: Callable[..., _ScriptedViewer], direct: Callable[..., ToolConnection]
+) -> None:
+    viewer = scripted("count_cancel")
+    cancel = threading.Event()
+    cancel.set()
+    with pytest.raises(CancelledError):
+        direct(viewer).request(
+            encode.selection_get_frame,
+            until=("selection.result",),
+            feature="selection",
+            cancel=cancel,
+        )
+    assert viewer.cancel_count == 1
+
+
+def test_until_frame_after_cancel_is_returned(
+    scripted: Callable[..., _ScriptedViewer], direct: Callable[..., ToolConnection]
+) -> None:
+    viewer = scripted("ignore_cancel")
+    cancel = threading.Event()
+    cancel.set()
+    frame = direct(viewer).request(
+        encode.selection_get_frame,
+        until=("selection.result",),
+        feature="selection",
+        cancel=cancel,
+    )
+    assert frame.header["type"] == "selection.result"
 
 
 def test_connection_is_usable_after_cancel(
@@ -366,6 +474,7 @@ def test_no_frame_within_timeout_gives_viewer_closed_error(
 ) -> None:
     viewer = scripted("silent")
     tool = direct(viewer)
+    start = time.monotonic()
     with pytest.raises(ViewerClosedError):
         tool.request(
             encode.selection_get_frame,
@@ -373,7 +482,22 @@ def test_no_frame_within_timeout_gives_viewer_closed_error(
             feature="selection",
             timeout=0.2,
         )
+    # The default timeout is 5 s, so a short time shows that the argument was used.
+    assert time.monotonic() - start < 2.0
     assert not tool.connected
+
+
+def test_timeout_restarts_at_each_frame(
+    scripted: Callable[..., _ScriptedViewer], direct: Callable[..., ToolConnection]
+) -> None:
+    viewer = scripted("slow_progress")
+    frame = direct(viewer).request(
+        encode.selection_get_frame,
+        until=("selection.result",),
+        feature="selection",
+        timeout=0.3,
+    )
+    assert frame.header["type"] == "selection.result"
 
 
 # -- errors from the viewer ------------------------------------------------------------
@@ -432,7 +556,20 @@ def test_unsupported_version_gives_missing_feature(
         direct(viewer).request(
             encode.selection_get_frame, until=("selection.result",), feature="fetch"
         )
-    assert info.value.feature == "fetch"
+    assert info.value.feature.startswith("protocol")
+    assert info.value.feature != "fetch"
+    assert "14" in info.value.feature
+
+
+def test_other_error_frame_gives_refusal(
+    scripted: Callable[..., _ScriptedViewer], direct: Callable[..., ToolConnection]
+) -> None:
+    viewer = scripted("refuse")
+    with pytest.raises(ViewerRefusedError) as info:
+        direct(viewer).request(
+            encode.selection_get_frame, until=("selection.result",), feature="selection"
+        )
+    assert info.value.refusals == [Refusal("", "something_new", "x")]
 
 
 # -- raise_for_request_error -----------------------------------------------------------

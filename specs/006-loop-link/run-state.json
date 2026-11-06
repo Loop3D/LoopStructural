@@ -395,7 +395,7 @@
         "wave": 7,
         "base": "6dfd2047",
         "commit": null,
-        "review": "pending"
+        "review": "round 1: changes needed (6 major, 2 minor); fix commit pending round 2"
       }
     ],
     "runs": {
@@ -495,11 +495,15 @@
       "S5 W6 T043/T045: cancel test fetches blk (no parts), so a cancel between parts is not tested",
       "S5 W6 T045: a late command.cancel with no fetch running gets an unknown_message error frame (no request) and can be read as the reply of the next call",
       "S5 W6 T045: the 0.001 s cancel read can time out inside a frame and lose stream sync (rare on localhost)",
-      "S5 W6 T045: a non-cancel message sent during a fetch is dropped without a reply"
+      "S5 W6 T045: a non-cancel message sent during a fetch is dropped without a reply",
+      "S5 W7 T046: needs_window tests do not check the feature text",
+      "S5 W7 T046: progress test does not check that progress frames are not passed to on_frame, non-number fraction, or request numbers after reconnect",
+      "S5 W7 T046: T047 must keep the unsupported_version feature text \"protocol <supported>\" (task text updated)",
+      "S5 W7 T045: FakeViewer does not record command.cancel in tool_requests (test uses a subclass tap)"
     ],
     "findings": {
-      "found": 6,
-      "fixed": 3
+      "found": 14,
+      "fixed": 9
     }
   }
 }
