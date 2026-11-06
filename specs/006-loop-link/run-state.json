@@ -36,6 +36,12 @@
       "commit": "fix commits after a3646378 (last: collar shape fix)",
       "review": "pass (2 fix rounds; last fix verified by orchestrator with the real fixture)",
       "fix_round": true
+    },
+    {
+      "wave": 6,
+      "base": "da01e309b89fb5d348df611afd6cb9442ad8d2a9",
+      "commit": null,
+      "review": "pending"
     }
   ],
   "runs": {
@@ -130,6 +136,18 @@
       }
     ],
     "T019": [
+      {
+        "model": "sonnet",
+        "result": "pass"
+      }
+    ],
+    "T013": [
+      {
+        "model": "sonnet",
+        "result": "pass"
+      }
+    ],
+    "T018": [
       {
         "model": "sonnet",
         "result": "pass"
