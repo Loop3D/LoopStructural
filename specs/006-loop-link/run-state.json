@@ -73,6 +73,12 @@
       "commit": "0210cfb0 + fix commit",
       "review": "pass (one fix round; fixes verified by orchestrator, 433 tests x3)",
       "note": "VERIFY lists fake_viewer.py, test_adapter_pandas.py, test_viewer.py as outside Files: orchestrator-ordered fix of a FakeViewer text-array bug found by T033/T032 tests"
+    },
+    {
+      "wave": 12,
+      "base": "acf0db0d9006b08b0e9e022b5d0350a35f2485cb",
+      "commit": null,
+      "review": "pending"
     }
   ],
   "runs": {
@@ -285,6 +291,12 @@
       }
     ],
     "T036": [
+      {
+        "model": "haiku",
+        "result": "pass"
+      }
+    ],
+    "T022": [
       {
         "model": "haiku",
         "result": "pass"

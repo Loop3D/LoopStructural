@@ -278,7 +278,7 @@ length 100; keep string quotes as written (Black `skip-string-normalization`).
   - Done when: `packages/loop_link/.venv/Scripts/python.exe -c "from loop_link import PushResult, push_objects"` passes and `ruff check packages/loop_link` passes.
   - Context: Add `from .push import PushResult, push_objects` to `__init__.py` and add both names to `__all__`. Keep all other lines.
 
-- [ ] T022 [Finish] [S] Test: the core import needs no Qt or optional extras (SC-005).
+- [x] T022 [Finish] [S] Test: the core import needs no Qt or optional extras (SC-005).
   - Files: `packages/loop_link/tests/test_import.py`
   - Needs: T036
   - Wave: 12
