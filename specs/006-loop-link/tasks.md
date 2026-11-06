@@ -287,7 +287,7 @@ length 100; keep string quotes as written (Black `skip-string-normalization`).
 
 ## Phase 5: Finish
 
-- [ ] T038 [Finish] [M] Run the merge gates and fix the findings.
+- [x] T038 [Finish] [M] Run the merge gates and fix the findings.
   - Files: `packages/loop_link/`
   - Needs: T002, T003, T004, T005, T022, T024, T025, T029, T031, T033, T037
   - Wave: 13

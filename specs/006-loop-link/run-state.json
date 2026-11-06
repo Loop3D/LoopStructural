@@ -79,6 +79,12 @@
       "base": "acf0db0d9006b08b0e9e022b5d0350a35f2485cb",
       "commit": null,
       "review": "pending"
+    },
+    {
+      "wave": 13,
+      "base": "c3b1a73e",
+      "commit": "ebbf9854 + final record",
+      "review": "end review: round 1 changes needed (1 blocker verified, 5 major), fix commit ebbf9854, round 2 pass"
     }
   ],
   "runs": {
@@ -301,10 +307,16 @@
         "model": "haiku",
         "result": "pass"
       }
+    ],
+    "T038": [
+      {
+        "model": "sonnet",
+        "result": "pass (root pytest 2200 passed, 10 skipped, run separately by the orchestrator)"
+      }
     ]
   },
   "findings": {
-    "found": 73,
+    "found": 78,
     "rejected": 0,
     "dropped": 0,
     "fixed": 58,
@@ -324,12 +336,15 @@
       "End review: clear() empties the local inventory while the real viewer keeps scene-owned objects; remove(group) keeps children in the local inventory",
       "End review: SC-004 second half (library frames accepted by the geoviewer codec) has no repo test; reviewer proved it with a scratch Rust checker. Fake viewer now mirrors the main codec rules",
       "End review: test_push gap check timing on a loaded CI machine loosened to 0.5 s",
-      "End review: loopstructural-test job does not wait for loop-link-test in CI"
+      "End review: loopstructural-test job does not wait for loop-link-test in CI",
+      "End recheck: push_objects item of length 1 raises IndexError and items of 4 or more parts drop extra parts silently (item[0], item[1] outside the try)",
+      "End recheck: Viewer.connect adds a fixed 50 ms read before hello; weakref.finalize atexit may close sockets without the lock (harmless)",
+      "End recheck: CI job could use ./.venv-loop-link to remove any doubt about path parsing"
     ]
   },
   "merged_origin_master": "7497982b (ruff baseline fixed upstream by #395)",
   "end_review": {
     "round1": "changes needed: 1 blocker (verified), 5 major, 7 minor",
-    "fix_commit": null
+    "fix_commit": "ebbf9854197fd9f31bcb9252e9ec99279b609c6d"
   }
 }
