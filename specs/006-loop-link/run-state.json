@@ -40,8 +40,8 @@
     {
       "wave": 6,
       "base": "da01e309b89fb5d348df611afd6cb9442ad8d2a9",
-      "commit": null,
-      "review": "pending"
+      "commit": "464241849a8758a95aaea7fd2a4a27212cbc37ef + test strengthening",
+      "review": "pass"
     }
   ],
   "runs": {
@@ -155,14 +155,15 @@
     ]
   },
   "findings": {
-    "found": 23,
+    "found": 27,
     "rejected": 0,
     "dropped": 0,
-    "fixed": 18,
+    "fixed": 21,
     "open_minor": [
       "W1 T004: loop-link CI job fails between wave 1 and wave 2 (fixed by T003/T006); do not merge wave 1 alone",
       "W2 T006: errors with formatted message are not picklable",
-      "W2 T006: ViewerRefusedError text shows only the count"
+      "W2 T006: ViewerRefusedError text shows only the count",
+      "W6 T013: no test of value_map byte sum over the 2 GiB limit"
     ]
   },
   "merged_origin_master": "7497982b (ruff baseline fixed upstream by #395)"

@@ -339,6 +339,8 @@ def test_vectors_orientation_property_group():
             ],
         }
     ]
+    for member in frame.header["property_groups"][0]["members"]:
+        assert _data_entry(frame, member["data"])["id"] == member["data"]
     for name, values in (("orientation/dip_direction", dd), ("orientation/dip", dip)):
         entry = _data_entry(frame, name)
         assert entry["association"] == "vertex"
@@ -355,6 +357,8 @@ def test_vectors_lineation_property_group():
     assert len(groups) == 1
     assert groups[0]["role"] == "lineation"
     assert [m["role"] for m in groups[0]["members"]] == ["trend", "plunge"]
+    for member in groups[0]["members"]:
+        assert _data_entry(frame, member["data"])["id"] == member["data"]
     members = {m["role"]: m["data"] for m in groups[0]["members"]}
     assert frame.buffers[_data_entry(frame, members["trend"])["buffer"]].tolist() == [10.0]
     assert frame.buffers[_data_entry(frame, members["plunge"])["buffer"]].tolist() == [20.0]
@@ -362,6 +366,7 @@ def test_vectors_lineation_property_group():
 
 def test_object_too_large():
     # A broadcast view declares a large size without a real allocation.
+    # The encoder must find the size before it makes any copy of the vertices.
     big = np.broadcast_to(np.zeros(3), (2**28, 3))
     obj = _unchecked_points(big)
     with pytest.raises(ObjectTooLargeError) as info:
@@ -406,3 +411,70 @@ def test_group_frame():
     assert header["parent"] == "root"
     assert header["revision"] == 3
     assert frame.buffers == {}
+
+
+def test_vertices_just_above_limit_are_f64():
+    frame = _encode(Points(np.array([[4000.01, 0.0, 0.0]])))
+    name = frame.header["geometry"]["vertices"]
+    assert _buffer_dtype(frame, name) == "f64"
+
+
+def test_f64_when_shifted_values_are_large_and_raw_values_small():
+    # The rule uses the values after the shift, not the raw values.
+    verts = np.array([[1.0, 2.0, 3.0], [-10.0, 0.0, 0.0]])
+    frame = _encode(Points(verts), origin=(5000.0, 0.0, 0.0))
+    name = frame.header["geometry"]["vertices"]
+    assert _buffer_dtype(frame, name) == "f64"
+    assert np.allclose(frame.buffers[name], verts - np.array([5000.0, 0.0, 0.0]))
+
+
+def test_f32_when_raw_values_are_large_and_shifted_values_small():
+    verts = np.array([[5001.0, 2.0, 3.0], [5010.0, 0.0, 0.0]])
+    frame = _encode(Points(verts), origin=(5000.0, 0.0, 0.0))
+    name = frame.header["geometry"]["vertices"]
+    assert _buffer_dtype(frame, name) == "f32"
+    assert np.allclose(frame.buffers[name], verts - np.array([5000.0, 0.0, 0.0]))
+
+
+def test_frame_over_frame_limit_is_object_too_large(monkeypatch):
+    # The frame limit is small here, so a small object is too large.
+    monkeypatch.setattr("loop_link.protocol.MAX_FRAME_BYTES", 1000)
+    obj = Points(np.zeros((1000, 3)))
+    with pytest.raises(ObjectTooLargeError) as info:
+        encode.encode_object(obj, id="frame-big", name="B", parent=None, revision=1, origin=ORIGIN)
+    assert info.value.object_id == "frame-big"
+
+
+def test_block_model_properties_and_cell_properties():
+    node_values = np.arange(12, dtype=np.float64)  # (1+1)*(2+1)*(1+1) nodes
+    cell_values = np.array([1, 2], dtype=np.int64)  # 1*2*1 cells
+    block = BlockModel(
+        [0.0, 0.0, 0.0],
+        [1.0, 1.0, 1.0],
+        [1, 2, 1],
+        properties={"n": node_values},
+        cell_properties={"c": cell_values},
+    )
+    frame = _encode(block)
+    assert _data_entry(frame, "n")["association"] == "vertex"
+    assert _data_entry(frame, "c")["association"] == "cell"
+    assert frame.buffers["data/n"].tolist() == node_values.tolist()
+    assert frame.buffers["data/c"].tolist() == [1, 2]
+
+
+def test_float32_nan_property_is_accepted():
+    values = np.array([1.0, np.nan], dtype=np.float32)
+    frame = _encode(Points(np.zeros((2, 3)), {"a": values}))
+    got = frame.buffers["data/a"]
+    assert got[0] == 1.0
+    assert np.isnan(got[1])
+
+
+def test_user_property_collides_with_orientation_buffer():
+    obj = Vectors(
+        [[0.0, 0.0, 0.0]],
+        orientation=([90.0], [30.0]),
+        properties={"orientation/dip": np.array([1.0])},
+    )
+    with pytest.raises(InvalidInputError):
+        _encode(obj)
