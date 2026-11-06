@@ -355,8 +355,15 @@
       {
         "wave": 1,
         "base": "6108d264360ec52a699e363de022575c75a4dc86",
+        "commit": "3c71e335",
+        "review": "pass"
+      },
+      {
+        "wave": 2,
+        "base": "3c71e335140837db198ef4abd971d6e1374742c7",
         "commit": null,
-        "review": "pending"
+        "review": "pending",
+        "note": "test tasks fail as expected; ruff I001 on test_fetch.py is caused by the missing loop_link.fetch module and ends after T052"
       }
     ],
     "runs": {
@@ -375,6 +382,18 @@
       "T060": [
         {
           "model": "haiku",
+          "result": "pass"
+        }
+      ],
+      "T041": [
+        {
+          "model": "sonnet",
+          "result": "pass"
+        }
+      ],
+      "T051": [
+        {
+          "model": "sonnet",
           "result": "pass"
         }
       ]

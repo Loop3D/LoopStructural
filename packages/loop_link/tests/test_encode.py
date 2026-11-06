@@ -5,7 +5,7 @@ from __future__ import annotations
 import numpy as np
 import pytest
 
-from loop_link import encode
+from loop_link import encode, protocol
 from loop_link.errors import InvalidInputError, ObjectTooLargeError
 from loop_link.objects import (
     DEFAULT_CATEGORY_COLOURS,
@@ -539,3 +539,84 @@ def test_drillhole_property_lengths():
     assert _data_entry(frame, "i")["association"] == "interval"
     assert frame.buffers["data/s"].shape == (3,)
     assert frame.buffers["data/i"].shape == (2,)
+
+
+def test_selection_set_frame_cells_and_nodes():
+    frame = decode_frame(
+        encode.selection_set_frame(3, "grid", np.array([4, 5, 6]), np.array([1, 2]), 2)
+    )
+    assert frame.header == {
+        "type": "selection.set",
+        "request": 3,
+        "object": "grid",
+        "revision": 2,
+        "entries": [
+            {"kind": "cells", "indices": "cells"},
+            {"kind": "nodes", "indices": "nodes"},
+        ],
+        "version": protocol.TOOL_PROTOCOL_VERSION,
+        "buffers": [
+            {"name": "cells", "dtype": "u32", "shape": [3]},
+            {"name": "nodes", "dtype": "u32", "shape": [2]},
+        ],
+    }
+    assert frame.header["version"] == {"major": 1, "minor": 18}
+    assert frame.buffers["cells"].tolist() == [4, 5, 6]
+    assert frame.buffers["nodes"].tolist() == [1, 2]
+
+
+def test_selection_set_frame_both_empty():
+    for cells, vertices in ((None, None), (np.array([]), np.array([])), (None, [])):
+        header = decode_frame(encode.selection_set_frame(1, "grid", cells, vertices, 1)).header
+        assert header["entries"] == []
+        assert header["buffers"] == []
+
+
+def test_selection_set_frame_only_vertices():
+    frame = decode_frame(encode.selection_set_frame(1, "grid", None, np.array([9]), 1))
+    assert frame.header["entries"] == [{"kind": "nodes", "indices": "nodes"}]
+    assert [b["name"] for b in frame.header["buffers"]] == ["nodes"]
+    assert frame.buffers["nodes"].tolist() == [9]
+
+
+def test_selection_set_frame_only_cells():
+    frame = decode_frame(encode.selection_set_frame(1, "grid", np.array([9]), None, 1))
+    assert frame.header["entries"] == [{"kind": "cells", "indices": "cells"}]
+    assert list(frame.buffers) == ["cells"]
+
+
+def test_selection_set_frame_revision_none_leaves_out_key():
+    header = decode_frame(encode.selection_set_frame(1, "grid", [1], None, None)).header
+    assert "revision" not in header
+
+
+def test_selection_set_frame_list_input_is_u32():
+    frame = decode_frame(encode.selection_set_frame(1, "grid", [1, 2], [3], 1))
+    assert frame.buffers["cells"].dtype == np.dtype("<u4")
+    assert frame.buffers["nodes"].dtype == np.dtype("<u4")
+    assert frame.buffers["cells"].tolist() == [1, 2]
+
+
+def test_selection_get_frame():
+    frame = decode_frame(encode.selection_get_frame(7))
+    assert frame.header["type"] == "selection.get"
+    assert frame.header["request"] == 7
+    assert frame.header["version"] == {"major": 1, "minor": 18}
+    assert frame.header["buffers"] == []
+
+
+def test_fetch_frame():
+    frame = decode_frame(encode.fetch_frame(2, "grid"))
+    assert frame.header["type"] == "object.fetch"
+    assert frame.header["request"] == 2
+    assert frame.header["id"] == "grid"
+    assert frame.header["version"] == {"major": 1, "minor": 18}
+    assert frame.header["buffers"] == []
+
+
+def test_cancel_frame():
+    frame = decode_frame(encode.cancel_frame(2))
+    assert frame.header["type"] == "command.cancel"
+    assert frame.header["request"] == 2
+    assert frame.header["version"] == {"major": 1, "minor": 11}
+    assert frame.header["buffers"] == []

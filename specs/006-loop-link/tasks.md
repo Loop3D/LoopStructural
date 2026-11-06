@@ -312,7 +312,7 @@ Test command in this phase: `packages/loop_link/.venv/Scripts/python.exe -m pyte
   - Done when: write the test first and see it fail; then `packages/loop_link/.venv/Scripts/python.exe -m pytest packages/loop_link/tests/test_protocol.py` passes (the old tests stay green).
   - Context: Add `TOOL_PROTOCOL_VERSION: dict[str, int] = {"major": 1, "minor": 18}` and `CANCEL_PROTOCOL_VERSION: dict[str, int] = {"major": 1, "minor": 11}` next to `PROTOCOL_VERSION`. New signature: `encode_frame(header, buffers=(), *, version: Optional[dict[str, int]] = None) -> bytes`. `version=None` keeps `PROTOCOL_VERSION` (1.14), so every old frame is the same. Else the header gets `dict(version)`. Update the numpy-style docstring (new parameter). `decode_frame` does not change. Tests: default header version is 1.14; `version=TOOL_PROTOCOL_VERSION` gives `{"major":1,"minor":18}`; `version=CANCEL_PROTOCOL_VERSION` gives minor 11; the argument is keyword-only (a third positional argument raises `TypeError`); the dict that the caller gives is not changed.
 
-- [ ] T041 [Found] [M] Test: the four tool frame builders in `test_encode.py`.
+- [x] T041 [Found] [M] Test: the four tool frame builders in `test_encode.py`.
   - Files: `packages/loop_link/tests/test_encode.py`
   - Needs: T040
   - Wave: 2
@@ -384,7 +384,7 @@ Test command in this phase: `packages/loop_link/.venv/Scripts/python.exe -m pyte
 
 ## Phase 7: Stage S5b, fetch (story 4)
 
-- [ ] T051 [P] [US4] [M] Test: `decode_object` in `test_fetch.py`.
+- [x] T051 [P] [US4] [M] Test: `decode_object` in `test_fetch.py`.
   - Files: `packages/loop_link/tests/test_fetch.py`
   - Needs: T039
   - Wave: 2
