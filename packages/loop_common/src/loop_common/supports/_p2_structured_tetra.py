@@ -17,6 +17,9 @@ from ._3d_base_structured import BaseStructuredSupport
 
 logger = getLogger(__name__)
 
+# Tolerance of the point-in-tetrahedron test, in barycentric units.
+_BARYCENTRIC_TOLERANCE = 1e-10
+
 
 class P2TetMesh(BaseStructuredSupport):
     """P2 (piecewise quadratic) tetrahedral mesh from a structured cartesian grid.
@@ -555,7 +558,10 @@ class P2TetMesh(BaseStructuredSupport):
         c[:, :, 2] = vc / v
         c[:, :, 3] = vd / v
         
-        mask = np.all(c >= 0, axis=2)
+        # A point on a face has a barycentric coordinate of exactly 0 in the tetra
+        # that holds it. Rounding can give -1e-17, and the point would be lost
+        # (only the tetra of its own cell are tested). The tolerance keeps it.
+        mask = np.all(c >= -_BARYCENTRIC_TOLERANCE, axis=2)
         i, j = np.where(mask)
         pairs = dict(zip(i, j))
         mask[:] = False
