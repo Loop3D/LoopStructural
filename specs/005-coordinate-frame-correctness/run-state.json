@@ -202,6 +202,12 @@
         "model": "sonnet",
         "result": "pass"
       }
+    ],
+    "T108": [
+      {
+        "model": "sonnet",
+        "result": "pass"
+      }
     ]
   },
   "findings": {
