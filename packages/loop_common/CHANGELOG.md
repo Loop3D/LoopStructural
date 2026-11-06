@@ -1,5 +1,23 @@
 # Changelog
 
+## [0.2.0](https://github.com/Loop3D/LoopStructural/compare/loop-common-v0.1.0...loop-common-v0.2.0) (2026-11-06)
+
+
+### Features
+
+* add fold frame coordinate validation, P2 support fixes and dev-tools setup ([bb2962b](https://github.com/Loop3D/LoopStructural/commit/bb2962b4d8c02b18d6c0efa78ed9f672a13a2e33))
+* trilinear interpolation on PropertyGrid, via StructuredGrid3DGeometry ([#369](https://github.com/Loop3D/LoopStructural/issues/369)) ([8eb8b66](https://github.com/Loop3D/LoopStructural/commit/8eb8b662cf9802d756ddc7c15ea9d49d8fd793c9))
+
+
+### Bug Fixes
+
+* coordinate and fault-frame correctness, stage S1 (spec 005) ([#392](https://github.com/Loop3D/LoopStructural/issues/392)) ([03a6e58](https://github.com/Loop3D/LoopStructural/commit/03a6e58bdd2f528fc193368df0c3e2617f2d329b))
+* make scalar_field / block-model grids line up with their values ([#364](https://github.com/Loop3D/LoopStructural/issues/364)) ([916246e](https://github.com/Loop3D/LoopStructural/commit/916246e11888b921758e0f67e68db58b57b71021))
+* make StructuredGrid3DGeometry agree with the structured support it duplicates ([#366](https://github.com/Loop3D/LoopStructural/issues/366)) ([722f50a](https://github.com/Loop3D/LoopStructural/commit/722f50a74be85d7c0fd2d576c1027a7fe4c7d4b5))
+* point transformations, fault-frame validation and backend matrix, stage S6 (spec 005) ([#403](https://github.com/Loop3D/LoopStructural/issues/403)) ([6ec0263](https://github.com/Loop3D/LoopStructural/commit/6ec0263876ee9f1ca983eeb206d6d27cb972a4d9))
+* resize paths, non-mutating diagnostics and residual report, stage S5 (spec 005) ([#402](https://github.com/Loop3D/LoopStructural/issues/402)) ([e1c10ef](https://github.com/Loop3D/LoopStructural/commit/e1c10ef68bbc320d21e8a4befd9b648be20b11c0))
+* **supports:** keep points on tetrahedron faces inside despite rounding ([#404](https://github.com/Loop3D/LoopStructural/issues/404)) ([a5cb5ab](https://github.com/Loop3D/LoopStructural/commit/a5cb5ab25960990d1c36dd6af9556be6d4008455))
+
 ## [0.1.0](https://github.com/Loop3D/LoopStructural/compare/loop-common-v0.0.2...loop-common-v0.1.0) (2026-10-20)
 
 
