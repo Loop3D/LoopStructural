@@ -16,14 +16,62 @@
   },
   "env": "pytest from PowerShell; venv python; PYTHONPATH worktree first; pyevtk not on path",
   "base_note": "S6 base: docs/005-s6-plan a7eba115 on origin/master (S1 to S5 merged)",
-  "waves": [],
-  "runs": {},
+  "waves": [
+    {
+      "wave": 43,
+      "base": "ff79067",
+      "commit": "e32045cb",
+      "review": "pass"
+    }
+  ],
+  "runs": {
+    "T089": [
+      {
+        "model": "sonnet",
+        "result": "pass"
+      }
+    ],
+    "T090": [
+      {
+        "model": "sonnet",
+        "result": "pass"
+      }
+    ],
+    "T091": [
+      {
+        "model": "sonnet",
+        "result": "pass"
+      }
+    ],
+    "T092": [
+      {
+        "model": "sonnet",
+        "result": "pass"
+      }
+    ],
+    "T093": [
+      {
+        "model": "haiku",
+        "result": "pass"
+      }
+    ],
+    "T094": [
+      {
+        "model": "sonnet",
+        "result": "pass"
+      }
+    ]
+  },
   "findings": {
-    "found": 0,
+    "found": 3,
     "rejected": 0,
     "dropped": 0,
     "fixed": 0,
-    "open_minor": []
+    "open_minor": [
+      "W43 T090: tests/unit/utils/test_transformation.py starts with a BOM (strip 3 bytes; fix at S6 end)",
+      "W43 T094: _cell_statuses skips unknown dependency keys silently (index directly; fix in T103)",
+      "W43 T094: Surfe distribution name surfepy matches T092 result (no change needed)"
+    ]
   },
   "answers": "",
   "history": {
