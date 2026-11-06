@@ -1045,10 +1045,479 @@ PLI fact. PLI assembles no gradient rows. In the case with 3 outside points, its
 | Root suite (orchestrator, commit `6b9e6467`) | 936.67 s (15 min 36 s). The S4 end run took 805.50 s. |
 | Package suites (orchestrator) | 140.08 s. The S4 end run took 150.24 s. |
 
-The root time is 131 s more than the S4 time. The root suite has 150 more passed tests than at the S4 end (2216 and 2066, and the one S4 failure now passes). The new files add 147 cells to the root suite, and the diagnostics cells are slow (142.77 s on the unfixed code). The two runs had different machine load, so the times do not compare exactly.
+The root time is 131 s more than the S4 time. The root suite has 150 more passed tests than at the S4 end (2216 and 2066). One of the 150 is the S4 failure that now passes, so the root suite has 149 more tests in total (2220 and 2071, with 4 skipped in each run). The new diagnostics file adds 147 cells to the root suite. The two run records do not name the source of the other 2 tests. The diagnostics cells are slow (142.77 s on the unfixed code). The two runs had different machine load, so the times do not compare exactly.
 
 ## S5 open points
 
 - OP12 (cell-centre result): not reproduced. All 60 cell-centre cells passed before and after the fix. The premise of the one-to-one test was corrected. No change to `_bounding_box.py`.
 - OP16 (default shape): the default shape is kept. Two families of different length now give the shape (1, N1 + N2).
 - OP17 (parity files under `packages/loop_interpolation/tests/golden`): not changed. `git diff --stat 1c029d21 HEAD -- packages/loop_interpolation/tests/golden` prints nothing.
+
+## S6 pre-fix failures
+
+Method. The new S6 tests ran on the tree before T100 and T101 (PowerShell, the worktree `LoopStructural-005-s6-build` on `PYTHONPATH`, root and package runs in separate calls). No S6 library change exists at this point. Three runs were made for this section with `-q -p no:cacheprovider --tb=line`. The other runs were measured by the orchestrator on the same tree and are cited as recorded runs.
+
+Commands and counts.
+
+| Command | Result | Kind of run |
+|---|---|---|
+| `pytest packages/loop_common/tests/test_euclidean_transformation.py` | 12 failed, 0 passed | Run for this section |
+| `pytest tests/unit/utils/test_transformation.py` | 131 failed, 11 passed | Run for this section |
+| `pytest tests/unit/modelling/test_diagnostics_backends.py` | 72 failed, 48 passed in 96.18 s | Run for this section |
+| `pytest tests/unit/modelling/test_diagnostics_frames.py` | 149 passed in 396 s | Recorded run |
+| `pytest tests/unit/modelling/test_fault_frame_validation.py` | 210 passed in 198 s | Recorded run |
+| `pytest tests/unit/interpolator/test_backend_world_contract.py` | 51 passed, 0 skipped | Recorded run |
+| `pytest tests/unit/interpolator/test_backend_optional_native_surfe.py` | 24 skipped | Recorded run |
+| `pytest tests/unit/test_backend_matrix.py` | 33 passed | Recorded run |
+
+Package file (`packages/loop_common/tests/test_euclidean_transformation.py`): 12 failed, 0 passed.
+
+| Test function | Failed / total | First error |
+|---|---|---|
+| `test_module_imports` | 1 / 1 | `ImportError: cannot import name 'getLogger' from 'loop_common.math'` (`_transformation.py` line 5; the module does not import) |
+| `test_export_from_loop_common_math` | 1 / 1 | `AttributeError: module 'loop_common.math' has no attribute 'EuclideanTransformation'` |
+| `test_round_trip_without_fit` | 6 / 6 | The same `ImportError` for `getLogger`. The ids are `[2-1]`, `[2-4]`, `[2-50]`, `[3-1]`, `[3-4]`, `[3-50]` |
+| `test_two_dimensional_rotation_of_known_angle` | 1 / 1 | The same `ImportError` |
+| `test_three_dimensional_rotation_keeps_the_z_direction` | 1 / 1 | The same `ImportError` |
+| `test_fit_without_scikit_learn_raises_import_error` | 1 / 1 | The same `ImportError` |
+| `test_fit_without_rotation_needs_no_scikit_learn` | 1 / 1 | The same `ImportError` |
+
+Group counts: 1 + 1 + 6 + 1 + 1 + 1 + 1 = 12. The old file in `loop_common` cannot be imported, so every test fails at the import.
+
+Root file (`tests/unit/utils/test_transformation.py`): 131 failed, 11 passed.
+
+| Test function | Failed / total | First error |
+|---|---|---|
+| `test_round_trip_explicit_parameters` | 96 / 96 | `dimensions=2` with 3 or 5 columns: 48 cells (N 1, 4, 50 x 4 anchors x 2 column counts x 2 angles). `ValueError: operands could not be broadcast together with remapped shapes : (1,3)->(1,newaxis,3) (2,2)->(2,2)` (the 5-column cells give (1,5)). `dimensions=3` with 3 or 5 columns: 48 cells, and every cell fails the z check. `AssertionError: assert 97.805 <= (1e-12 * 1.0)` (the largest error is 105.45) |
+| `test_round_trip_after_fit` | 24 / 24 | `ValueError: n_components=2 must be between 0 and min(n_samples, n_features)=1 with svd_solver='full'` (4 anchors x 3 values of N x 2 flags) |
+| `test_integer_input_is_not_truncated` | 1 / 1 | `AssertionError: assert 0.9617 <= 9.0e-10` (the integer input is truncated) |
+| `test_one_dimensional_input_raises_value_error` | 3 / 3 | `[transform]`: `IndexError: tuple index out of range`. `[inverse_transform]` and `[fit]`: `AssertionError: Regex pattern did not match` |
+| `test_entry_points_are_one_class` | 1 / 1 | `ImportError: cannot import name 'getLogger' from 'loop_common.math'` |
+| `test_pickle_with_the_old_module_path_loads` | 1 / 1 | `ImportError: cannot import name 'EuclideanTransformation' from 'loop_common.math'` |
+| `test_new_pickle_names_the_loop_common_path` | 1 / 1 | The same `ImportError` for `EuclideanTransformation` |
+| `test_fit_aligns_a_line_with_negative_slope` | 2 / 2 | `[-30.0]`: `AssertionError: assert 1.0472 < 1e-09`. `[-10.0]`: `assert 0.3491 < 1e-09` (the angle error is twice the slope angle) |
+| `test_fit_three_dimensions` | 2 / 2 | `ValueError: shapes (3,) and (2,) not aligned: 3 (dim 0) != 2 (dim 0)` (the fit uses 2 components only) |
+
+Group counts: 96 + 24 + 1 + 3 + 1 + 1 + 1 + 2 + 2 = 131. The defect for a missing scikit-learn is covered in the package file (`test_fit_without_scikit_learn_raises_import_error`), which fails at the import now.
+
+Diagnostics file (`tests/unit/modelling/test_diagnostics_backends.py`): 72 failed, 48 passed in 96.18 s. Each of the three failing functions has 24 cells (4 anchors x 3 rotations x 2 engines).
+
+| Test function | Failed / total | First error |
+|---|---|---|
+| `test_faulted_value_residuals_use_restored_positions` | 24 / 24 | `assert_allclose` fails (line 144). Example `[a1-r30-FDI]`: all 8 elements differ. The method gives about 0.079 to 0.083, and the independent residual at the restored positions gives 0.0001 to 0.002. The pre-fix faulted value residual is 0.083 to 0.099 |
+| `test_faulted_gradient_cosines_use_restored_positions` | 24 / 24 | `assert_allclose` fails (line 159). Example `[a1-r30-FDI]`: the method gives cosine 0.99108 and the independent value is 0.99548 (difference 0.0044) |
+| `test_report_physical_value_matches_independent_rms` | 24 / 24 | `AssertionError: assert 0.0727 <= 1.39e-07` (line 187). The report RMS differs from the independent RMS by about 0.07 to 0.08 |
+
+Group counts: 24 + 24 + 24 = 72. Tests 1, 2 and 4 of the task text are these three functions. The restored-rows test is a guard.
+
+Guard tests that pass before the fix (each line gives the file, the test and the count).
+
+- `tests/unit/modelling/test_diagnostics_backends.py::test_fault_restores_the_stored_rows`: 24 passed (the restored-rows test; 4 anchors x 3 rotations x 2 engines).
+- `tests/unit/modelling/test_diagnostics_backends.py::test_p2_misfit_leaves_state_unchanged`: 12 passed (P2 test; 4 anchors x 3 rotations).
+- `tests/unit/modelling/test_diagnostics_backends.py::test_p2_report_blocks_are_separate`: 12 passed (P2 test; 4 anchors x 3 rotations).
+- `tests/unit/modelling/test_diagnostics_frames.py` (all tests): 149 passed (recorded run). The measured largest solved residual `|1 - cos|` is 1.215e-4 (FDI) and 4.414e-4 (PLI).
+- `tests/unit/modelling/test_fault_frame_validation.py` (the R2 displacement and residual tests): 210 passed (recorded run).
+- `tests/unit/interpolator/test_backend_world_contract.py` (the changed exact-field test is in this file): 51 passed, 0 skipped (recorded run). The largest Surfe world error is 3.492e-11.
+- `tests/unit/interpolator/test_backend_optional_native_surfe.py` (the stub cells): 24 skipped (recorded run). 12 cells skip because `loop_interpolation_core` is not installed, and 12 cells skip because `surfepy` is not installed.
+- `tests/unit/test_backend_matrix.py`: 33 passed (recorded run).
+- `tests/unit/utils/test_transformation.py`: 11 passed. The ids are `test_call_is_equivalent_to_transform`, `test_default_construction`, `test_fit_finds_rotation_that_aligns_main_axis_with_x`, `test_fit_raises_if_points_have_too_few_columns`, `test_fit_rotation_false_keeps_angle_zero`, `test_repr_html_contains_translation_and_angle`, `test_rotation_and_inverse_rotation_are_transposes_in_plane`, `test_too_few_columns_raises_value_error` (2 cells), `test_transform_aligns_variance_with_x_axis`, `test_transform_raises_if_points_have_too_few_columns`.
+
+Measured tolerances (orchestrator runs).
+
+| Constant | Value | Source |
+|---|---|---|
+| `TOL_SOLVED_FDI` | 2.43e-4 | 2 x the largest solved residual `|1 - cos|` 1.215e-4 |
+| `TOL_SOLVED_PLI` | 8.83e-4 | 2 x the largest solved residual `|1 - cos|` 4.414e-4 |
+| `TAU_ASSEMBLED` | 9.2e-11 | the largest value is 4.566e-11 |
+| `TAU_ORTHOGONAL` | 1.7e-10 | the largest value is 8.408e-11 |
+| `TOL_FAULTED_VALUE` | FDI 5.11e-3, PLI 3.8e-2 | T096 measure. The pre-fix faulted value residual is 0.083 to 0.099, so the limit shows the defect. See the `plan.md` Answers entry of wave 44 for the reason |
+| `TOL_FAULTED_COS` | FDI 1.1e-2, PLI 1.7e-2 | T096 measure. See the same `plan.md` entry |
+
+Other records.
+
+- T092 (Surfe module name): the pip package is `surfepy` (version 0.52). The wheel holds the module `surfepy` and no module `surfe`. Decision: `test_p0_surfe_nans.py` now uses `pytest.importorskip("surfepy")`.
+- T093 (BOM): `_structured_grid_3d.py` and `test_fault_frame_analytic.py` lost their BOM. One line changed in each file.
+- T090 (deleted test): the test `test_inverse_transform_is_broken_for_normal_point_clouds_bug` was deleted. The new tests in `tests/unit/utils/test_transformation.py` replace it.
+
+## S6 post-fix results
+
+Method. The S6 test files ran on the tree after T100 to T103 (PowerShell, the worktree `LoopStructural-005-s6-build` on `PYTHONPATH`, each file in its own call, `-q -p no:cacheprovider --tb=short --durations=0`). The package file ran in a call of its own. All default tests ran, with no deselection. OP2 stays closed: the default run includes the long files, and `test_fault_frame_validation.py` does its 26 R2 solves. No test failed and no test was changed.
+
+Commands and counts.
+
+| Command | Result | Run time |
+|---|---|---|
+| `pytest packages/loop_common/tests/test_euclidean_transformation.py` | 12 passed | 0.07 s |
+| `pytest tests/unit/utils/test_transformation.py` | 142 passed | 0.37 s |
+| `pytest tests/unit/modelling/test_fault_frame_validation.py` | 210 passed | 174.04 s |
+| `pytest tests/unit/modelling/test_diagnostics_backends.py` | 120 passed | 70.18 s |
+| `pytest tests/unit/modelling/test_diagnostics_frames.py` | 149 passed | 155.96 s |
+| `pytest tests/unit/interpolator/test_backend_world_contract.py` | 51 passed, 0 skipped | 0.40 s |
+| `pytest tests/unit/interpolator/test_backend_optional_native_surfe.py -rs` | 24 skipped | 0.09 s |
+| `pytest tests/unit/test_backend_matrix.py` | 64 passed, 0 skipped | 1.43 s |
+
+Comparison with the pre-fix section. The package file went from 12 failed to 12 passed. The root transformation file went from 131 failed and 11 passed to 142 passed. The diagnostics backends file went from 72 failed and 48 passed to 120 passed. The matrix file went from 33 passed to 64 passed (the T102 and T103 tests are new). The other files have the same counts as before: 149, 210, 51 passed, and 24 skipped.
+
+Package file (`packages/loop_common/tests/test_euclidean_transformation.py`): 12 failed before, 12 passed now.
+
+| Test function | Passed / total | Before |
+|---|---|---|
+| `test_module_imports` | 1 / 1 | 1 failed |
+| `test_export_from_loop_common_math` | 1 / 1 | 1 failed |
+| `test_round_trip_without_fit` | 6 / 6 | 6 failed |
+| `test_two_dimensional_rotation_of_known_angle` | 1 / 1 | 1 failed |
+| `test_three_dimensional_rotation_keeps_the_z_direction` | 1 / 1 | 1 failed |
+| `test_fit_without_scikit_learn_raises_import_error` | 1 / 1 | 1 failed |
+| `test_fit_without_rotation_needs_no_scikit_learn` | 1 / 1 | 1 failed |
+
+Group counts: 1 + 1 + 6 + 1 + 1 + 1 + 1 = 12 passed.
+
+Root file (`tests/unit/utils/test_transformation.py`): 131 failed before, all 131 pass now. The file has 142 tests and 142 passed (131 + 11).
+
+| Test function | Passed / total | Before |
+|---|---|---|
+| `test_round_trip_explicit_parameters` | 96 / 96 | 96 failed |
+| `test_round_trip_after_fit` | 24 / 24 | 24 failed |
+| `test_integer_input_is_not_truncated` | 1 / 1 | 1 failed |
+| `test_one_dimensional_input_raises_value_error` | 3 / 3 | 3 failed |
+| `test_entry_points_are_one_class` | 1 / 1 | 1 failed |
+| `test_pickle_with_the_old_module_path_loads` | 1 / 1 | 1 failed |
+| `test_new_pickle_names_the_loop_common_path` | 1 / 1 | 1 failed |
+| `test_fit_aligns_a_line_with_negative_slope` | 2 / 2 | 2 failed |
+| `test_fit_three_dimensions` | 2 / 2 | 2 failed |
+
+Group counts: 96 + 24 + 1 + 3 + 1 + 1 + 1 + 2 + 2 = 131 passed. The 11 tests that passed before still pass.
+
+Diagnostics file (`tests/unit/modelling/test_diagnostics_backends.py`): 72 failed before, all 72 pass now. The file has 120 tests and 120 passed (72 + 48). Each of the three functions has 24 cells (4 anchors x 3 rotations x 2 engines).
+
+| Test function | Passed / total | Before |
+|---|---|---|
+| `test_faulted_value_residuals_use_restored_positions` | 24 / 24 | 24 failed |
+| `test_faulted_gradient_cosines_use_restored_positions` | 24 / 24 | 24 failed |
+| `test_report_physical_value_matches_independent_rms` | 24 / 24 | 24 failed |
+
+Group counts: 24 + 24 + 24 = 72 passed. The guard tests (`test_fault_restores_the_stored_rows` 24, `test_p2_misfit_leaves_state_unchanged` 12, `test_p2_report_blocks_are_separate` 12) still pass.
+
+Skipped cells. `tests/unit/interpolator/test_backend_optional_native_surfe.py` gives 24 skipped. 12 cells skip because `loop_interpolation_core` is not installed, and 12 cells skip because `surfepy` is not installed. The reason is the same as before the fix, and it is an optional dependency that is absent.
+
+## S6 golden review (C-004)
+
+Order (C-004): (1) run the golden tests and list the failing keys; (2) check each key against the rule; (3) write the keys here; (4) run `--update`; (5) run the test again. SC-015: S6 changed no tolerance of a structured support golden test (`rtol=1e-9`, `atol=1e-12` stay). One gradient tolerance of the interpolation golden test came from S1; see `## S6 tolerance audit`.
+
+Step 1. The golden list is `git diff --name-status ebc7c699d5 HEAD -- . ':!specs' ':!*.py' ':!*.md'`. It prints 2 files:
+
+| Status | File | Origin |
+|---|---|---|
+| M | `packages/loop_common/tests/data/structured_support_reference.npz` | S1 (27 values) and S5 (78 keys). Both were reviewed in the S1 record and in `## S5 golden review (C-004)`. |
+| M | `packages/map2loop/pyproject.toml` | Commit `a0e82096` (pull request #395, lint baseline). It is not a spec 005 change. |
+
+Step 2. `git log ebc7c699d5..HEAD` for the `.npz` file names two commits only: `03a6e58b` (S1) and `e1c10ef6` (S5). No S6 commit (waves 43 to 48) changed it. `git diff --stat e1c10ef6 HEAD` for `packages/loop_common/tests/data`, `tests/fixtures/api_surface_snapshot.json`, `tests/unit/interpolator/*.txt` and `packages/loop_interpolation/tests/golden/golden_files` prints nothing. The S6 expectation holds: no golden number changed.
+
+Step 3. Baseline files that must stay as they are. `git diff --stat ebc7c699d5 HEAD` for each of them prints nothing:
+
+| Baseline file or folder | Changed since `ebc7c699d5` |
+|---|---|
+| `packages/loop_common/tests/data/structured_grid_2d_reference.npz` | no |
+| `tests/fixtures/api_surface_snapshot.json` | no |
+| `tests/unit/interpolator/*.txt` (`elements.txt`, `neighbours.txt`, `nodes.txt` and the other tracked files of that folder) | no |
+| `packages/loop_interpolation/tests/golden/golden_files` (all `.json` and `.npz` files) | no |
+
+So 0 unaffected baseline files changed. Steps 4 and 5 were not needed: no number changed, so `--update` was not run.
+
+## S6 behaviour-change ledger
+
+S6 changes no golden file. The behaviour changes below have analytic evidence and not a golden file.
+
+`git grep -n EuclideanTransformation HEAD` (outside `specs`) finds these files only: `LoopStructural/utils/__init__.py`, `LoopStructural/utils/_transformation.py`, `packages/loop_common/src/loop_common/math/__init__.py`, `packages/loop_common/src/loop_common/math/_transformation.py`, the two test files named below, `ROADMAP.md` and `docs/source/index.rst`. No other production caller exists. `git grep` for `_value_residuals_fresh` and `_gradient_cosines_fresh` finds them only in `LoopStructural/modelling/features/_geological_feature.py` (the definitions and the calls in the same file). So 0 baseline files are affected.
+
+| Change | Rule | Evidence | Baseline files affected |
+|---|---|---|---|
+| Faulted-feature residuals (`evaluate_value_residuals`, `evaluate_value_misfit`, `evaluate_gradient_cosines`, `evaluate_gradient_misfit`, `verification_report`) compare the stored restored rows with the interpolator at the same positions. Before, the faults acted a second time. | Analytic: the residual at the restored rows equals the independent value. | `tests/unit/modelling/test_diagnostics_backends.py`: the independent value in `test_faulted_value_residuals_use_restored_positions`, `test_faulted_gradient_cosines_use_restored_positions` and `test_report_physical_value_matches_independent_rms` (72 cells failed before and pass now). | 0 |
+| `EuclideanTransformation` fix 1: `inverse_transform` returns the original `(N, d)` points. | Hand-computed round trip. | `packages/loop_common/tests/test_euclidean_transformation.py` (`test_round_trip_without_fit`) and `tests/unit/utils/test_transformation.py` (`test_round_trip_explicit_parameters`, `test_round_trip_after_fit`). | 0 |
+| Fix 2: for `dimensions=3`, z is no longer reversed (`z' = z - tz`), and `fit` works for 3 dimensions. | Hand-computed numbers. | `test_three_dimensional_rotation_keeps_the_z_direction`, `test_fit_three_dimensions`. | 0 |
+| Fix 3: the fitted angle has the right sign for a main axis with a negative slope. | Hand-computed angle (-30 and -10 degrees). | `test_fit_aligns_a_line_with_negative_slope`. | 0 |
+| Fix 4: the methods return a float copy (an integer input was truncated), and a 1-D input raises `ValueError`. | Hand-computed values. | `test_integer_input_is_not_truncated`, `test_one_dimensional_input_raises_value_error`. | 0 |
+
+The T090 deleted test `test_inverse_transform_is_broken_for_normal_point_clouds_bug` checked the old defect (a `ValueError` for a normal point cloud). The new tests above replace it, and the old behaviour is not kept.
+
+T096 bounds decision. The `TOL_FAULTED_VALUE` and `TOL_FAULTED_COS` limits follow the ledger rule: each limit is lower than the pre-fix error, so the test shows the defect (pre-fix faulted value residual 0.083 to 0.099; limit FDI 5.11e-3, PLI 3.8e-2). The PLI value limit is above the 1e-2 cap of the plan; see `## S6 findings disposition`. The T090 constant fix has no ledger rule, because it changes no result.
+
+## S6 tolerance audit
+
+Method. `git diff -U0 ebc7c699d5 HEAD -- . ':!specs'` was filtered for removed lines (start with `-`) and added lines (start with `+`) that hold `tol`, `tp`, `tau`, `approx`, `abs=` or `<= <number>e-`. The result is 22 removed lines and 277 added lines. A second filter on removed lines (`e-<digit>`, `rtol`, `atol`, `decimal`, `1e-`, `isclose`, `allclose`) found 8 more. Each removed line was paired with its added line.
+
+| Removed line (file) | Added line | Result |
+|---|---|---|
+| `tol=None,` x5 (`LoopStructural/modelling/core/_model_feature_factory.py`) | `tol: float \| None = None,` | A type annotation was added. The default stays `None`. No change. |
+| `dot.append(np.einsum(...).tolist())` (`_geological_feature.py`) | The code was replaced by the interpolator-based `direction_cosines` path. | `tolist` matches `tol`. Not a tolerance. |
+| `tolerance=None,` (`_3d_viewer.py`) | The same line, indented by 4 spaces less (lint reflow). | No change. |
+| Lines with `import matplotlib`, `http`, `ftp`, `TODO`, `subprocess.run(...)`, `"tpw"` and `BeartypeCallHintParamViolation` (`map2loop`, `render.py`, `test_native_no_rows.py`, `test_native_parity.py`, `test_SamplerSpacing.py`) | Reflowed or reordered by the lint commit `a0e82096`. | The pattern `tp` matches them. Not tolerances. |
+| Docstring lines `output of transform/fit_transform for ordinary xyz point arrays.` (`tests/unit/utils/test_transformation.py`) | None (part of the deleted defect test, T090). | Not a tolerance. |
+| `setup.update({name: 1e-4 for name in ALL_REGULARISATION})` (`test_native_parity.py`) | `setup.update(dict.fromkeys(ALL_REGULARISATION, 0.0001))` | Same value (1e-4 = 0.0001). No change. |
+| `np.testing.assert_allclose(support.nodes.min(axis=0), 0.)` and the `.max` line with `1.` (`golden/test_golden.py`) | The same calls with `0.0` and `1.0`. | Same default tolerance. No change. |
+| `vmax=max(1e-6, float(np.nanmax(a2))))` (`golden/render.py`) | The same value, reflowed. | A plot limit, not a test limit. No change. |
+| `np.allclose(r["gradient"], golden["gradient"], atol=1e-5, rtol=0, equal_nan=True)` (`packages/loop_interpolation/tests/golden/test_golden.py`, commit `03a6e58b`, S1) | `np.allclose(r["gradient"], golden["gradient"], atol=1e-4, rtol=0, equal_nan=True)` | Relaxed. The gradient `atol` goes from 1e-5 to 1e-4. The value `atol` stays 1e-5. |
+
+Relaxed tolerances: 1. It is the gradient `atol` of `test_matches_golden_field` in `packages/loop_interpolation/tests/golden/test_golden.py`, from 1e-5 to 1e-4. The commit is `03a6e58b` (S1, pull request #392). The comment in the file gives the reason: the gradient is a derivative of the field, so it amplifies the platform noise of the value (about 1e-6) by about 1/h (h = 1/8 on the P2 mesh). No S6 commit touches this file, and the golden files did not change (`## S6 golden review (C-004)`). The count is not the expected 0, so it is reported to the orchestrator for a decision.
+
+The 277 added lines are new constants and new tests. A new constant has no removed line, so it is not a relaxation. The constants that matter: `TOL_SOLVED_FDI = 2.43e-4`, `TOL_SOLVED_PLI = 8.83e-4`, `TAU_ASSEMBLED = 9.2e-11`, `TAU_ORTHOGONAL = 1.7e-10`, `TOL_FAULTED_VALUE` (FDI 5.11e-3, PLI 3.8e-2) and `TOL_FAULTED_COS` (FDI 1.1e-2, PLI 1.7e-2). `git grep TOL_SOLVED ebc7c699d5` finds nothing, so the base has none of them.
+
+Rename `TOL_SOLVED` to `TOL_SOLVED_FDI` and `TOL_SOLVED_PLI`. The S5 constant `TOL_SOLVED` was 9e-4 (`## S5 post-fix results`). The new values are 2.43e-4 (FDI) and 8.83e-4 (PLI). Both are at most 9e-4: FDI is a tightening and PLI is a small tightening. No file uses the old name now.
+
+Deleted defect test: `test_inverse_transform_is_broken_for_normal_point_clouds_bug` in `tests/unit/utils/test_transformation.py` (T090). It tested the old defect, and the new tests replace it.
+
+## S6 coverage ledger
+
+Method. `git diff --name-only ebc7c699d5 HEAD -- LoopStructural packages`, with the test paths, fixtures and scripts removed. It gives 52 production files outside `packages/map2loop`, and 22 files in `packages/map2loop` (`pyproject.toml` and 21 `.py` files). The `map2loop` files come from the lint commit `a0e82096` (pull request #395). They are not a spec 005 change, and `packages/map2loop/tests` covers them. The column "Commits" names the stage commits that changed the file. "lint" is `a0e82096`, which only reflows code and keeps the behaviour.
+
+| Production file | Commits | Test that covers it (SC-014) |
+|---|---|---|
+| `LoopStructural/export/exporters.py` | S4 | `tests/unit/io/test_exporters.py`; `tests/unit/modelling/test_world_location_consumers.py` |
+| `LoopStructural/modelling/core/_model_exporter.py` | S4 | `tests/unit/modelling/test_world_location_consumers.py` |
+| `LoopStructural/modelling/core/_model_feature_factory.py` | S1, lint | `tests/unit/modelling/test_fault_frame_analytic.py`; `tests/unit/modelling/test_fault_frame_validation.py` |
+| `LoopStructural/modelling/core/_model_relationships.py` | lint | `tests/unit/modelling/test_fault_topology.py` |
+| `LoopStructural/modelling/core/_model_serializer.py` | lint | `tests/unit/modelling/test_frame_copy_and_lifecycle.py`; `tests/unit/test_stable_api_surface.py` |
+| `LoopStructural/modelling/core/geological_model.py` | S4 | `tests/unit/modelling/test_world_location_consumers.py`; `tests/unit/modelling/test_geological_model.py` |
+| `LoopStructural/modelling/features/_analytical_feature.py` | lint | `tests/unit/modelling/test_analytical_feature.py` |
+| `LoopStructural/modelling/features/_cross_product_geological_feature.py` | lint | `tests/unit/test_stable_api_surface.py` (API surface only) |
+| `LoopStructural/modelling/features/_feature_converters.py` | lint | `tests/unit/test_stable_api_surface.py` |
+| `LoopStructural/modelling/features/_geological_feature.py` | S4, S5, S6, lint | `tests/unit/modelling/test_diagnostics_frames.py` (S5); `tests/unit/modelling/test_diagnostics_backends.py` (S6) |
+| `LoopStructural/modelling/features/_lambda_geological_feature.py` | lint | `tests/unit/modelling/test_fault_cycle_detection.py` |
+| `LoopStructural/modelling/features/_projected_vector_feature.py` | lint | `tests/unit/test_stable_api_surface.py` |
+| `LoopStructural/modelling/features/builders/_fault_builder.py` | S1 | `tests/unit/modelling/test__fault_builder.py`; `tests/unit/modelling/test_fault_frame_analytic.py` |
+| `LoopStructural/modelling/features/builders/_folded_feature_builder.py` | lint | `tests/unit/modelling/test_fold_constraint_frames.py` |
+| `LoopStructural/modelling/features/builders/_geological_feature_builder.py` | S1, lint | `tests/unit/modelling/test_geological_feature_builder.py`; `tests/unit/modelling/test_reference_constraint_frames.py` |
+| `LoopStructural/modelling/features/builders/_structural_frame_builder.py` | lint | `tests/unit/modelling/test_structural_frame_builder.py` |
+| `LoopStructural/modelling/features/fault/_fault_segment.py` | S1 | `tests/unit/modelling/test_faults_segment.py`; `tests/unit/modelling/test_fault_frame_analytic.py` |
+| `LoopStructural/modelling/intrusions/intrusion_frame_builder.py` | S4 | `tests/unit/modelling/intrusions/test_intrusions.py`; `tests/unit/modelling/test_world_location_consumers.py` |
+| `LoopStructural/utils/_transformation.py` | S6 | `tests/unit/utils/test_transformation.py` (`test_entry_points_are_one_class`, `test_pickle_with_the_old_module_path_loads`) |
+| `LoopStructural/utils/dtm_creator.py` | lint | `tests/unit/test_imports.py` (import only) |
+| `packages/loop_common/src/loop_common/geometry/__init__.py` | S1 | `packages/loop_common/tests/test_rigid_transform_contract.py` |
+| `packages/loop_common/src/loop_common/geometry/_bounding_box.py` | S1 | `packages/loop_common/tests/test_bounding_box.py`; `packages/loop_common/tests/test_cell_centre_sampling.py` |
+| `packages/loop_common/src/loop_common/geometry/_rigid.py` | S1 | `packages/loop_common/tests/test_rigid_transform_contract.py`; `tests/unit/modelling/test_reference_constraint_frames.py` |
+| `packages/loop_common/src/loop_common/geometry/_structured_grid_2d.py` | S5 | `packages/loop_common/tests/test_resize_paths.py`; `packages/loop_common/tests/test_structured_grid_2d_reference.py` |
+| `packages/loop_common/src/loop_common/geometry/_structured_grid_3d.py` | S1, S5, T093 | `packages/loop_common/tests/test_resize_paths.py`; `packages/loop_common/tests/test_structured_support_reference.py` |
+| `packages/loop_common/src/loop_common/math/__init__.py` | S6 | `packages/loop_common/tests/test_euclidean_transformation.py` (`test_export_from_loop_common_math`) |
+| `packages/loop_common/src/loop_common/math/_transformation.py` | S6 | `packages/loop_common/tests/test_euclidean_transformation.py`; `tests/unit/utils/test_transformation.py` |
+| `packages/loop_common/src/loop_common/supports/_3d_rectilinear_grid.py` | S5 | `packages/loop_common/tests/test_resize_paths.py`; `packages/loop_common/tests/test_rectilinear_grid.py` |
+| `packages/loop_interpolation/src/loop_interpolation/__init__.py` | S3, S5 | `packages/loop_interpolation/tests/test_import.py`; `packages/loop_interpolation/tests/test_residual_exclusion_report.py` |
+| `.../loop_interpolation/_constant_norm.py` | S2 | `tests/unit/modelling/test_constant_norm_frames.py` |
+| `.../loop_interpolation/_diagnostics.py` | S5 | `packages/loop_interpolation/tests/test_residual_exclusion_report.py`; `tests/unit/modelling/test_diagnostics_backends.py` |
+| `.../loop_interpolation/_discrete_fold_interpolator.py` | S2 | `tests/unit/modelling/test_fold_constraint_frames.py`; `packages/loop_interpolation/tests/test_discrete_fold_interpolator.py` |
+| `.../loop_interpolation/_discrete_interpolator.py` | S1, S2 | `tests/unit/modelling/test_reference_constraint_frames.py`; `tests/unit/interpolator/test_discrete_interpolator.py` |
+| `.../loop_interpolation/_fd_fold_interpolator.py` | S2 | `tests/unit/modelling/test_fold_constraint_frames.py`; `packages/loop_interpolation/tests/test_fd_fold_interpolator.py` |
+| `.../loop_interpolation/_finite_difference_interpolator.py` | S3 | `tests/unit/modelling/test_frame_persistence.py`; `tests/unit/modelling/test_frame_copy_and_lifecycle.py` |
+| `.../loop_interpolation/_fold_norm_alignment.py` | S2 | `tests/unit/modelling/test_fold_constraint_frames.py` |
+| `.../loop_interpolation/_fold_setup.py` | S2 | `tests/unit/modelling/test_fold_constraint_frames.py` |
+| `.../loop_interpolation/_frame_persistence.py` | S3, S3b | `tests/unit/modelling/test_frame_persistence.py`; `tests/unit/interpolator/test_legacy_compat.py` |
+| `.../loop_interpolation/_geological_interpolator.py` | S1, S3 | `tests/unit/modelling/test_frame_persistence.py`; `packages/loop_interpolation/tests/test_geological_interpolator.py` |
+| `.../loop_interpolation/_interpolator_builder.py` | lint | `tests/unit/interpolator/test_interpolator_builder.py` |
+| `.../loop_interpolation/_interpolator_factory.py` | S3, S3b | `tests/unit/interpolator/test_interpolator_factory.py`; `tests/unit/modelling/test_frame_persistence.py` |
+| `.../loop_interpolation/_native.py` | S2 | `tests/unit/modelling/test_native_fault_frame.py`; `tests/unit/interpolator/test_backend_world_contract.py` |
+| `.../loop_interpolation/_p2_fold_interpolator.py` | S2, S3 | `packages/loop_interpolation/tests/test_p2_fold_interpolator.py`; `tests/unit/modelling/test_fold_constraint_frames.py` |
+| `.../loop_interpolation/_p2interpolator.py` | S2, S3 | `tests/unit/interpolator/test_p2interpolator.py`; `tests/unit/modelling/test_reference_constraint_frames.py` |
+| `packages/loop_interpolation_core/fixtures/make_fixture.py`, `packages/loop_interpolation_core/scripts/check_wasm_size.py` | lint | Fixture and script, not library code. No test covers them. |
+| `.../loopstructuralvisualisation/_2d_viewer.py` | lint | `packages/loopstructural_visualisation/tests/test_plotting.py`; `tests/unit/modelling/test_world_location_consumers.py` |
+| `.../loopstructuralvisualisation/_3d_viewer.py` | lint | `packages/loopstructural_visualisation/tests/test_plotting.py`; `packages/loopstructural_visualisation/tests/test_trame.py` |
+| `.../loopstructuralvisualisation/__init__.py` | lint | `packages/loopstructural_visualisation/tests/test_import.py` |
+| `.../loopstructuralvisualisation/_register_loop_ui.py` | lint | `packages/loopstructural_visualisation/tests/test_import.py` (import only) |
+| `.../loopstructuralvisualisation/_stratigraphic_column.py` | lint | `tests/unit/modelling/test_stratigraphic_column.py` |
+| `.../loopstructuralvisualisation/trame/__init__.py`, `trame/ui/vuetify3.py` | lint | `packages/loopstructural_visualisation/tests/test_trame.py` |
+| `packages/map2loop/**` (22 files) | lint | `packages/map2loop/tests/**`. Not a spec 005 change. |
+
+Gaps. 2 files have no test that covers them (`make_fixture.py` and `check_wasm_size.py`). Both are fixture and script files with a lint-only change. 5 files with a lint-only change are covered by import or API-surface tests only (`_cross_product_geological_feature.py`, `_feature_converters.py`, `_projected_vector_feature.py`, `dtm_creator.py`, `_register_loop_ui.py`). Every file with a behaviour change (S1 to S6) has a test that was added for it.
+
+## S6 findings disposition
+
+| Finding | Disposition |
+|---|---|
+| 1 and 10 (BOM) | Closed (T093). `_structured_grid_3d.py` and `test_fault_frame_analytic.py` lost their BOM. |
+| 2 (format hunks in `_structured_grid_2d.py`) | Stays. Cosmetic. |
+| 3 (`set_nelements` passes a cell count to the node setter) | Stays. Old behaviour. |
+| 4 (sentence at `verification.md` about line 910) | Closed. Check done: the sentence says that `test_each_cell_has_exactly_one_centre` was replaced and that `test_centres_are_cell_midpoints_in_world` is the guard test. `git grep test_each_cell_has_exactly_one_centre` finds no `.py` file. `test_centres_are_cell_midpoints_in_world` is in `packages/loop_common/tests/test_cell_centre_sampling.py` (line 93) and in `tests/fixtures/backend_matrix.py`. The sentence is correct. |
+| 5 to 8 | Closed (T091). |
+| 9 (`_first_stale`) | Closed in code. `_first_stale` follows faults recursively (commit `3f20a014`). No test. |
+| 11 (move the S5 sentence on the identity frame to the `evaluate_value_misfit` row) | Closed in T106 (wave 50). |
+| 12 (run-time count sentence in `## S5 test run time (OP2)`) | Closed here. Recomputed from the two run records: the S4 end run is `1 failed, 2066 passed, 4 skipped` in 805.50 s, and the S5 run is `2216 passed, 4 skipped` in 936.67 s. Time: 936.67 - 805.50 = 131.17 s (the old 131 s is right). Passed: 2216 - 2066 = 150. One of the 150 is the S4 failure that now passes, so the number of tests grew by 149 (2220 and 2071 with 4 skipped in each run). The old sentence said that the 147 new cells explain the 150. They explain 147 of the 149 new tests. The sentence in the S5 text is corrected. This is the only edit of old text. |
+| The major finding | Closed (T101). |
+| S2 T020 (native boundary cells) | Closed (T097). |
+| S3 T038 (slip 3 in the R2 fixture) | Closed (T089). |
+| S1 note on `_on_geometry_change` anisotropy rows | Stays. |
+| S3 note on the tetrahedron gradient path of a faulted feature | Stays. The public `evaluate_gradient` of a faulted feature keeps its tetrahedron path and the shape error. |
+
+S6 open items.
+
+- T095: outside the support, the FDI gradient is 0 and the PLI gradient is NaN. The difference stays. It is a known difference between the two engines.
+- P2 `add_gradient_constraints` einsum defect. It is in the library and outside the scope of spec 005. It stays.
+- T096: the PLI value limit `TOL_FAULTED_VALUE["PLI"]` is 3.8e-2, above the 1e-2 cap of the plan. The limit is lower than the pre-fix error (0.083 to 0.099), so the test shows the defect. The point stays open.
+- T090: `tests/unit/utils/test_transformation.py` has a BOM. Still open, minor.
+- Tolerance audit: 1 relaxed tolerance from S1 (gradient `atol` 1e-5 to 1e-4 in `packages/loop_interpolation/tests/golden/test_golden.py`). See `## S6 tolerance audit`. It needs a decision.
+
+## S6 rollback checks
+
+Date: 2026-11-06. The check compares the S6 tree with the S5 end code.
+
+Set-up:
+
+- The throw-away worktree was at commit e1c10ef68bbc320d21e8a4befd9b648be20b11c0 (the S5 merge commit, `git rev-parse e1c10ef6`).
+- Each tree had its own `PYTHONPATH` (the tree, `packages/loop_common/src`, `packages/loop_interpolation/src`, `packages/loopstructural_visualisation/src`) and the venv python. In each tree, `LoopStructural.__file__` and `loop_common.__file__` pointed into that tree.
+- The check scripts were short scripts in the scratchpad folder, not in a repository. Each script printed JSON. The two JSON files were compared.
+- The throw-away worktree was removed with `git worktree remove --force` and `git worktree prune`. `git worktree list` shows no throw-away worktree.
+
+| Check | Result | Note |
+|---|---|---|
+| (a) `EuclideanTransformation` import, signature, pickle | pass | `from LoopStructural.utils import EuclideanTransformation` and `import LoopStructural.utils._transformation` work on both trees. The `__init__` parameters are equal: names, order and defaults (`dimensions=2`, `angle=0`, `translation=None`, `fit_rotation=True`). The text of the annotations differs by design: S6 uses string annotations (`'int'`, `'np.ndarray \| None'`), S5 uses objects (`int`, `numpy.ndarray`). A pickle made on the S5 tree loads on the S6 tree. The loaded object is a `loop_common.math._transformation.EuclideanTransformation`. |
+| (b) public names of `loop_common.math` | pass | The S5 names are a subset of the S6 names. S6 adds `EuclideanTransformation` only. |
+| (c) `transform`, `dimensions=2` | pass | For a float (3 columns, 6 rows) array, with angle 30 and a set translation, `np.array_equal` of the two results is true. The z column was not tested for `dimensions=3` (it differs by design). |
+| (d) `from loop_interpolation import *` | pass | The two sets of names are equal. |
+| (e) five `GeologicalFeature` diagnostic methods | pass | The signatures of `evaluate_gradient_misfit`, `evaluate_value_misfit`, `evaluate_gradient_cosines`, `evaluate_value_residuals` and `verification_report` are equal on both trees. Feature: one foliation, FDI, 8 value rows, 3 normal rows, no faults, no regions. The shapes are equal (gradient misfit (1, 3), value misfit 8, gradient cosines 3, value residuals 8). The largest absolute difference is 0.0 for all four. The `to_dict()` of `verification_report` is equal. |
+| (f) baseline files | pass | `git diff --stat e1c10ef6 HEAD --` prints nothing for `packages/loop_common/tests/data/structured_support_reference.npz`, `packages/loop_common/tests/data/structured_grid_2d_reference.npz`, `tests/fixtures/api_surface_snapshot.json`, `tests/unit/interpolator/*.txt` and `packages/loop_interpolation/tests/golden/golden_files`. The two `.npz` files are not at the repository root. Their paths are the ones above. |
+
+Differences found: only the annotation text in (a), and the new name in (b). Both are by design. No other difference was found.
+
+## S6 final gates
+
+The orchestrator ran the full gates at HEAD `dfb37632` (the S6 code final; the changes after it are documents only). Each command ran alone from the repository root. The `PYTHONPATH` held the worktree, `packages/loop_common/src`, `packages/loop_interpolation/src` and `packages/loopstructural_visualisation/src`. The venv python was used. `pyevtk` is not on the path.
+
+Before the run, one `classname` of each junit file was checked. The first test case of `root.xml` has an empty `classname` because it is a module-level skip, so a normal test case was used. All three files pass the check.
+
+| Junit file | Example `classname` | Start of name |
+|---|---|---|
+| `root.xml` | `tests.integration.test_fold_models` | `tests.` |
+| `common.xml` | `packages.loop_common.tests.test_2d_discrete_support` | `packages.loop_common.tests.` |
+| `interpolation.xml` | `packages.loop_interpolation.tests.golden.test_golden` | `packages.loop_interpolation.tests.` |
+
+Every named `classname` in the three files has one of the three allowed starts (0 exceptions).
+
+| Command | Result |
+|---|---|
+| `ruff check LoopStructural packages` | All checks passed |
+| `pytest packages/loop_common/tests` | 418 passed, 7 warnings in 65.67 s |
+| `pytest packages/loop_interpolation/tests` | 615 passed, 47 skipped, 2 xfailed in 77.18 s |
+| Root `pytest` | 2781 passed, 30 skipped, 12 warnings in 1288.93 s (21 min 28 s) |
+| `pytest tests/unit/test_public_api_contract.py tests/unit/test_stable_api_surface.py` | 15 passed, 1 warning in 0.05 s |
+| `python -m tests.fixtures.backend_matrix <junit_dir>/root.xml <junit_dir>/common.xml <junit_dir>/interpolation.xml` | exit code 0 (the orchestrator checked the exit code apart from the log) |
+
+No test failed. The 2 xfailed tests are `test_known_points_on_lower_boundary_are_finite[P1]` and `[DFI]` (finding F2, strict xfail). They are not skips.
+
+## S6 backend matrix
+
+The matrix command ran with the same `PYTHONPATH` as the three pytest runs. Its status for an optional dependency comes from `find_spec` in its own process, so the statuses agree with the runs.
+
+| Spec row | Cell | Level | Result |
+|---|---|---|---|
+| Python FDI and PLI/P1 | py-fdi | mandatory | passed |
+| Python FDI and PLI/P1 | py-pli | mandatory | passed |
+| Python P2 | py-p2 | mandatory | passed |
+| Python FDI-fold, PLI discrete-fold, and P2-fold | py-fold-fdi | mandatory | passed |
+| Python FDI-fold, PLI discrete-fold, and P2-fold | py-fold-pli | mandatory | passed |
+| Python FDI-fold, PLI discrete-fold, and P2-fold | py-fold-p2 | mandatory | passed |
+| Python FDI and PLI constant-norm variants | py-cn-fdi | mandatory | passed |
+| Python FDI and PLI constant-norm variants | py-cn-pli | mandatory | passed |
+| Common 2D and 3D geometry | common-geometry | mandatory | passed |
+| Existing native FDI or fold integration | native-extension | optional | excluded: optional dependency 'loop_interpolation_core' is not installed (loop-interpolation[native]) |
+| Optional Surfe integration | surfe-extension | optional | excluded: optional dependency 'surfepy' is not installed (surfepy) |
+| extra | display-viewer | optional | passed |
+| extra | export-pyevtk | optional | excluded: optional dependency 'pyevtk' is not installed (pyevtk) |
+
+Boundary stub cells (Python side; not a native or Surfe result)
+- native-boundary (Existing native FDI or fold integration): passed
+- surfe-boundary (Optional Surfe integration): passed
+
+Stub cells test the Python side of the boundary only. They are not a native or Surfe pass.
+
+Optional cells:
+
+| Cell | Classification | Dependency | Result |
+|---|---|---|---|
+| native-extension | optional, spec row 6 | `loop_interpolation_core` | excluded |
+| surfe-extension | optional, spec row 7 | `surfepy` | excluded |
+| display-viewer | optional, extra | `loopstructuralvisualisation` and `matplotlib` | passed |
+| export-pyevtk | optional, extra | `pyevtk` | excluded |
+
+- Passed optional cell: `display-viewer`. `loopstructuralvisualisation` is on the path through `packages/loopstructural_visualisation/src` and `matplotlib` is installed. The viewer test ran and passed. No skip hides this cell.
+- Excluded optional cells: `native-extension` (`loop_interpolation_core`), `surfe-extension` (`surfepy`) and `export-pyevtk` (`pyevtk`). Rows 6 and 7 of the spec read "excluded".
+- The 2 stub cells are printed apart. They are not a native pass and not a Surfe pass.
+- 9 mandatory cells passed. 0 mandatory cells were skipped.
+
+## S6 exclusion ledger
+
+The ledger lists every skipped test case of the three junit files. A script parsed the files (`python -I`, venv python). The junit file records a module that skips at collection as one case with the message "collection skipped". For these modules, the dependency comes from the `pytest.importorskip` call at the top of the module. The search `git grep -n trimesh -- tests packages` found no use of `trimesh`, so no skip depends on it.
+
+Counts: `common.xml` 0 skipped. `root.xml` 30 skipped (14 + 12 + 3 + 1 + 0 + 0 + 0). `interpolation.xml` 47 skipped (13 + 21 + 13). The 2 xfailed tests in `interpolation.xml` are not skips. The junit file lists them as "skipped" cases, so the script found 49 cases there. 49 minus 2 xfailed is 47.
+
+### Root suite (`tests`), 30 skipped
+
+| Group | Dependency | Count | Cases and skip message |
+|---|---|---|---|
+| Native extension | `loop_interpolation_core` | 14 | 12 cells of `tests/unit/interpolator/test_backend_optional_native_surfe.py::test_native_extension_r1_fit_in_world[anchor0..3-rot0/30/90]`: "optional dependency 'loop_interpolation_core' is not installed (loop-interpolation[native])". 1 case, `tests/unit/modelling/test_builder_solver.py::test_native_solver_set_in_build_arguments_builds_no_rows`: "could not import 'loop_interpolation_core': No module named 'loop_interpolation_core'". 1 module, `tests/unit/modelling/test_native_fault_frame.py`: collection skipped (`importorskip("loop_interpolation_core")`). |
+| Surfe | `surfepy` | 12 | 12 cells of `tests/unit/interpolator/test_backend_optional_native_surfe.py::test_surfe_extension_r1_values_and_gradients_in_world[anchor0..3-rot0/30/90]`: "optional dependency 'surfepy' is not installed (surfepy)". |
+| `geoh5py`, `omf`, `pyevtk` | `pyevtk`, `geoh5py`, `omf` | 3 | 3 modules, each collection skipped: `tests/unit/io/test_exporters.py` (`importorskip("pyevtk")`), `tests/unit/io/test_geoh5.py` (`importorskip("geoh5py")`), `tests/unit/io/test_omf.py` (`importorskip("omf")`). |
+| Viewer, `matplotlib`, `pyevtk` | `pyevtk` | 1 | `tests/unit/modelling/test_world_location_consumers.py::test_internal_callers_do_not_warn`: "could not import 'pyevtk': No module named 'pyevtk'". The other cell of this file (viewer) ran. `tests/unit/interpolator/test_api.py:121` was not skipped (the viewer and `matplotlib` are installed). |
+| `pyvista` | `pyvista` | 0 | No skip in this run. |
+| `dill` | `dill` | 0 | No skip in this run. |
+| No named dependency | none | 0 | No skip in this run. |
+
+Total: 14 + 12 + 3 + 1 = 30.
+
+### Package suites
+
+`packages/loop_common/tests`: 0 skipped.
+
+`packages/loop_interpolation/tests`: 47 skipped.
+
+| Group | Dependency | Count | Cases and skip message |
+|---|---|---|---|
+| Native extension | `loop_interpolation_core` | 13 | 4 modules, each collection skipped (`importorskip("loop_interpolation_core")`): `test_native_inequality.py`, `test_native_orthogonal_and_limits.py`, `test_native_parity.py`, `test_native_warm_start_ridge.py`. 1 case, `test_native_errors.py::test_native_accepts_normal_data_rows_after_native_setup`. 8 cases in `test_native_no_rows.py`: `test_native_before_setup_builds_no_rows`, `test_native_after_setup_works_with_one_warning`, `test_update_after_native_setup_keeps_field`, `test_native_not_converged_keeps_old_field`, `test_native_via_solve_system_keeps_old_field_when_not_converged`, `test_native_after_cg_resets_history_and_timing`, `test_native_converged_report_has_no_field`, `test_native_f32_precision_gives_float64_field`. Message of the 9 cases: "could not import 'loop_interpolation_core': No module named 'loop_interpolation_core'". |
+| Surfe | `surfepy` (the module `surfe`) | 21 | 1 module, `test_p0_surfe_nans.py`: collection skipped (`importorskip("surfepy")`). 20 cases in `test_surfe_rbf_interpolator.py` (classes Basics 2, EvaluateValue 5, EvaluateGradient 5, Setup 2, NaNMaskingCorrectness 2, EdgeCases 3, GradientConsistency 1): "surfe not installed". |
+| `geoh5py`, `omf`, `pyevtk` | | 0 | No skip in this suite. |
+| Viewer, `matplotlib`, `pyevtk` | | 0 | No skip in this suite. |
+| `pyvista` | | 0 | No skip in this suite. |
+| `dill` | | 0 | No skip in this suite. |
+| No named dependency | none | 13 | 4 cases in `test_p2_interpolator.py` (`TestP2Evaluation::test_evaluate_d2_output_shape`, `::test_evaluate_d2_with_nan_points`, `::test_evaluate_d2_single_point`, `TestP2EdgeCases::test_points_at_mesh_boundaries`): "TetMesh in loop_common does not have evaluate_d2 method - mesh infrastructure limitation". 6 cells `golden/test_golden.py::test_physical_bounds[fold_sparse or refolded_sparse, with FD, P1 or P2]`: "reference only: no fold constraint, the error is expected to be large". 3 cells `golden/test_golden.py::test_data_honoured[planar_noisy, with FD, P1 or P2]`: "noisy data are smoothed on purpose". |
+
+Total: 13 + 21 + 13 = 47.
+
+Every skip has a reason. No skip hides a mandatory cell. All skips that name a dependency match a dependency that is not installed on the path (`loop_interpolation_core`, `surfepy`, `pyevtk`, `geoh5py`, `omf`).
+
+## S6 test run time (OP2)
+
+| Item | Time |
+|---|---|
+| Root suite (orchestrator, HEAD `dfb37632`) | 1288.93 s (21 min 28 s). The S5 end run took 936.67 s. |
+| `packages/loop_common/tests` (orchestrator) | 65.67 s |
+| `packages/loop_interpolation/tests` (orchestrator) | 77.18 s |
+| Package suites together | 142.85 s. The S5 end run took 140.08 s. |
+| Two API tests | 0.05 s |
+
+The root time is 352 s more than the S5 time. The root suite has 2781 passed tests, 565 more than the S5 end (2216). The S5 end run skipped 4 tests. This run skipped 30, because `pyevtk` is not on the path. The two runs had different machine load, so the times do not compare exactly.
+
+Slowest files. The sums of the junit `time` attributes of the test cases, grouped by module (`classname`). The first column is seconds.
+
+Root suite:
+
+| Time (s) | Module |
+|---|---|
+| 293.8 | `tests.unit.interpolator.test_normal_magnitude_interpolators` |
+| 208.0 | `tests.unit.validation.test_fold_frame_coordinate1` |
+| 181.6 | `tests.unit.modelling.test_fault_frame_analytic` |
+| 138.5 | `tests.unit.modelling.test_diagnostics_frames` |
+| 133.0 | `tests.unit.modelling.test_fault_frame_validation` |
+| 66.5 | `tests.unit.modelling.test_diagnostics_backends` |
+| 56.9 | `tests.unit.interpolator.test_discrete_supports` |
+| 29.9 | `tests.unit.modelling.test_frame_copy_and_lifecycle` |
+
+The top 5 root files take 955 s, about 74 percent of the root run.
+
+`packages/loop_common/tests`: `test_discrete_supports` 55.8 s, `test_unstructured_supports` 7.0 s. All other files take 0.3 s or less each.
+
+`packages/loop_interpolation/tests`: `golden/test_golden` 45.1 s, `test_geological_interpolator` 9.2 s, `test_normal_magnitude_interpolators` 8.4 s, `test_discrete_interpolator` 5.5 s, `test_native_no_rows` 2.2 s, then files of 0.8 s or less.
+
+OP2 stays closed. The default run includes all of these files. The run time is 21 min 28 s for the root suite and 142.85 s for the package suites.
+
+## S6 open points
+
+- OP21 (extension cells excluded): the native and Surfe extension cells are excluded because `loop_interpolation_core` and `surfepy` are not installed. SC-002 limits of the native and Surfe extension cells are not measured.
+- OP22 (P2 state cells only): the P2 cells test state only. P2 fit accuracy is issue #399.
+- OP23 (other copies not audited): other copies of the changed code are not audited.
+- OP24 (xy axis kept): the xy axis is kept for the 3D fit.

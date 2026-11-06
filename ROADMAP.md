@@ -152,6 +152,26 @@ A stale model gives a `UserWarning` and NaN. The model is not rebuilt.
 The new methods `evaluate_gradient_cosines` and `evaluate_value_residuals`
 give the 1-D result. The notice is in `COMPAT.md`.
 
+### Residuals of faulted features (spec 005, S6)
+Decision date: 2026-11-06 (spec 005, S6).
+
+The residual diagnostics of a faulted feature evaluate the interpolator at
+the restored positions. S5 decision 8 changes for the two private methods
+`_value_residuals_fresh` and `_gradient_cosines_fresh`. The notice is in
+`COMPAT.md`.
+
+### EuclideanTransformation (spec 005, S6)
+Decision date: 2026-11-06 (spec 005, S6).
+
+This is a behaviour change. The class had four defects: the 3D `fit`, the
+sign of the fitted angle, the reversed z axis, and the silent need for
+scikit-learn. The physical effect was a mirrored z axis and a wrong rotation
+of the map view for some lines.
+
+One class now lives in `loop_common`. `LoopStructural.utils` re-exports
+it. This reverses item 2c-5 of the stage sequence, which was closed as
+deferred. The notice is in `COMPAT.md`.
+
 ## Stage sequence
 
 - [x] **Stage 0 — Planning infra.** This file, release/versioning/compat
@@ -431,6 +451,8 @@ give the 1-D result. The notice is in `COMPAT.md`.
     (`translation: np.ndarray = np.zeros(3)`) as part of the merge.
     Closed as deferred: local class remains the runtime source for now;
     mutable-default regression was already eliminated in LoopStructural.
+    Spec 005 S6 reverses this closure: the one class in `loop_common` is now
+    the runtime source (see the S6 decision in `## Decisions`).
   - [x] **2c-6.** Resolve `loop_common`'s reverse dependency on
     `LoopStructural.export.*`: move `LoopStructural/export/geoh5.py`,
     `gocad.py`, `omf_wrapper.py`, `exporters.py` into `loop_common/io/`
@@ -894,3 +916,4 @@ give the 1-D result. The notice is in `COMPAT.md`.
 - **2026-11-05:** Spec 005 stage S3 implemented: saved interpolator frame, legacy-load rule, frame-keeping copies, stale-frame check. Gate result: root pytest 1978 passed, 5 skipped.
 - **2026-11-05:** Spec 005 stage S4 implemented: display, export and intrusion classification use stored world locations; rescale and scale deprecated.
 - **2026-11-05:** Spec 005 stage S5 implemented: resize paths keep the extent, cell-centre guard tests, non-mutating world-correct misfit diagnostics, residual and exclusion report.
+- **2026-11-06:** Spec 005 complete: stages S1 to S6 implemented; the auxiliary transformation, the R2 displacement validation, the backend matrix and the golden review are done. Gate result: root pytest 2781 passed, 30 skipped (every skip names its dependency in `specs/005-coordinate-frame-correctness/verification.md`).

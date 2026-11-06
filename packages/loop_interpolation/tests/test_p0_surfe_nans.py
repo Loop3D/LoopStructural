@@ -3,7 +3,7 @@
 import numpy as np
 import pytest
 
-pytest.importorskip("surfe", minversion=None)
+pytest.importorskip("surfepy")
 
 from loop_interpolation import SurfeRBFInterpolator
 

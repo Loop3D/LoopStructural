@@ -1,4 +1,4 @@
-﻿"""Check analytically defined fault frames in model coordinate frames."""
+"""Check analytically defined fault frames in model coordinate frames."""
 
 import numpy as np
 import pytest
