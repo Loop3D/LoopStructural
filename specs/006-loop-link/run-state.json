@@ -381,8 +381,15 @@
       {
         "wave": 5,
         "base": "63ae62ad",
+        "commit": "228fa831",
+        "review": "pass (5 minor)"
+      },
+      {
+        "wave": 6,
+        "base": "228fa831",
         "commit": null,
-        "review": "pending"
+        "review": "pending",
+        "note": "T045: fake also reads for command.cancel after object.header (the cancel test fetches blk, a BlockModel with no buffers, so it has no parts); accepted by orchestrator"
       }
     ],
     "runs": {
@@ -451,6 +458,12 @@
           "model": "sonnet",
           "result": "pass"
         }
+      ],
+      "T045": [
+        {
+          "model": "sonnet",
+          "result": "pass"
+        }
       ]
     },
     "open_minor": [
@@ -462,7 +475,12 @@
       "S5 W3 T052: duplicate ids in value_map are not rejected",
       "S5 W4 T043: no negative test for command.cancel with another request number; no check that no frame follows the cancelled error",
       "S5 W4 T043: fetch origin test uses zero origin; header[object] not compared with the stored header",
-      "S5 W4 T043: untested rules: headless fetch works, selection.set without revision, refused selection.set keeps old selection, set_user_selection invalid index, version on request.error, progress fractions rise to 1.0"
+      "S5 W4 T043: untested rules: headless fetch works, selection.set without revision, refused selection.set keeps old selection, set_user_selection invalid index, version on request.error, progress fractions rise to 1.0",
+      "S5 W5 T044: _selection_set checks buffers before the object (unknown object + bad buffer gives field indices)",
+      "S5 W5 T044: unhashable or repeated entry kind in selection.set is not rejected cleanly (TypeError would end the tool thread)",
+      "S5 W5 T044: a selection keeps its old revision after a new upsert and is not cleared by scene.remove (check with M3)",
+      "S5 W5 T044: replies keep version 1.18 when protocol_minor < 18",
+      "S5 W6 T043/T045: cancel test fetches blk (no parts), so a cancel between parts is not tested"
     ],
     "findings": {
       "found": 6,

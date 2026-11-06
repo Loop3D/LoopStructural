@@ -16,7 +16,7 @@ import socket
 import struct
 import threading
 import time
-from collections.abc import Sequence
+from collections.abc import Iterator, Sequence
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
@@ -57,6 +57,16 @@ _ROLE_WIDTH = {
     "segments": 2,
     "triangles": 3,
     "tetrahedra": 4,
+}
+
+
+# The protocol names of the array types, by NumPy dtype name.
+_PROTOCOL_DTYPES = {
+    "float32": "f32",
+    "float64": "f64",
+    "uint32": "u32",
+    "int32": "i32",
+    "uint8": "u8",
 }
 
 
@@ -694,8 +704,18 @@ class FakeViewer:
             return [_error("invalid_frame", str(error))]
         with self._state_lock:
             self.tool_requests.append(frame)
+        return self._tool_reply(frame)
+
+    def _tool_reply(self, frame: Frame) -> list[Frame]:
+        """Return the reply frames for one decoded tool-client frame.
+
+        For ``object.fetch`` the list holds all reply frames. A real connection
+        uses ``_stream_fetch`` instead, which can stop on ``command.cancel``.
+        """
         kind = frame.header.get("type")
         request = frame.header.get("request")
+        if self.protocol_minor >= 18 and kind == "object.fetch":
+            return list(self._fetch_frames(frame))
         if self.protocol_minor >= 18 and kind in ("selection.set", "selection.get"):
             if self.kind == "headless":
                 return [_request_error(request, "needs_window", "The viewer has no window.")]
@@ -756,6 +776,118 @@ class FakeViewer:
             ],
         }
         return Frame(header=result, buffers={})
+
+    def _fetch_frames(self, frame: Frame) -> Iterator[Frame]:
+        """Yield the reply frames of ``object.fetch``.
+
+        The frames are the ``object.header`` frame, the ``object.part`` frames of each
+        array in order (each followed by ``command.progress`` if there is more than one
+        part), and the ``object.end`` frame. An unknown id gives one ``request.error``.
+        """
+        request = frame.header.get("request")
+        object_id = frame.header.get("id")
+        with self._state_lock:
+            stored = self.objects.get(object_id) if isinstance(object_id, str) else None
+            if stored is None:
+                header = None
+                buffers: dict[str, np.ndarray] = {}
+            else:
+                header = dict(stored.header, buffers=[])
+                buffers = dict(stored.buffers)
+        if header is None:
+            yield _request_error(
+                request, "invalid_input", f"The object {object_id!r} is not in the scene.", "id"
+            )
+            return
+        step = max(8, self.part_bytes // 8 * 8)
+        raw = {
+            name: np.ascontiguousarray(array)
+            .astype(array.dtype.newbyteorder("<"), copy=False)
+            .tobytes()
+            for name, array in buffers.items()
+        }
+        total = sum(-(-len(data) // step) for data in raw.values())
+        arrays = [
+            {
+                "name": name,
+                "dtype": _PROTOCOL_DTYPES[array.dtype.name],
+                "shape": [int(n) for n in array.shape],
+            }
+            for name, array in buffers.items()
+        ]
+        yield Frame(
+            header={
+                "type": "object.header",
+                "request": request,
+                "origin": list(self.origin),
+                "crs": self.crs,
+                "object": header,
+                "arrays": arrays,
+            },
+            buffers={},
+        )
+        sent = 0
+        for name, data in raw.items():
+            for offset in range(0, len(data), step):
+                chunk = data[offset : offset + step]
+                sent += 1
+                yield Frame(
+                    header={
+                        "type": "object.part",
+                        "request": request,
+                        "array": name,
+                        "offset": offset,
+                        "bytes": len(chunk),
+                    },
+                    buffers={"part": np.frombuffer(chunk, dtype=np.uint8)},
+                )
+                if total > 1:
+                    progress = {
+                        "type": "command.progress",
+                        "request": request,
+                        "fraction": sent / total,
+                        "text": f"Part {sent} of {total}",
+                    }
+                    yield Frame(header=progress, buffers={})
+        yield Frame(header={"type": "object.end", "request": request, "parts": total}, buffers={})
+
+    def _stream_fetch(self, conn: socket.socket, reader: _Reader, frame: Frame) -> None:
+        """Send the reply to ``object.fetch`` and read between the parts.
+
+        After the header and after each part, the method waits at most 0.001 s for a
+        message (an object without parts has the header only). If it is a
+        ``command.cancel`` with the same request, it sends ``cancelled`` and stops.
+        """
+        request = frame.header.get("request")
+        for reply in self._fetch_frames(frame):
+            _send(conn, _encode(reply, protocol.TOOL_PROTOCOL_VERSION))
+            if reply.header["type"] not in ("object.header", "object.part"):
+                continue
+            if self.fetch_delay:
+                time.sleep(self.fetch_delay)
+            if self._cancelled(conn, reader, request):
+                error = _request_error(request, "cancelled", "The client cancelled the request.")
+                _send(conn, _encode(error, protocol.TOOL_PROTOCOL_VERSION))
+                return
+
+    @staticmethod
+    def _cancelled(conn: socket.socket, reader: _Reader, request: object) -> bool:
+        """Return whether a ``command.cancel`` for ``request`` arrives within 0.001 s."""
+        previous = conn.gettimeout()
+        conn.settimeout(0.001)
+        try:
+            data = reader.message()
+        except (TimeoutError, BlockingIOError):
+            return False
+        finally:
+            conn.settimeout(previous)
+        if data is None:
+            raise _Closed
+        try:
+            header = protocol.decode_frame(data).header
+        except ProtocolError:
+            return False
+        return header.get("type") == "command.cancel" and header.get("request") == request
 
     # -- server -------------------------------------------------------------
 
@@ -852,6 +984,23 @@ class FakeViewer:
         )
         return path, _Reader(conn, rest)
 
+    def _fetch_request(self, data: bytes) -> Frame | None:
+        """Return the frame if ``data`` is an ``object.fetch`` that this viewer supports.
+
+        The method also keeps the frame in ``tool_requests``.
+        """
+        if self.protocol_minor < 18:
+            return None
+        try:
+            frame = protocol.decode_frame(data)
+        except ProtocolError:
+            return None
+        if frame.header.get("type") != "object.fetch":
+            return None
+        with self._state_lock:
+            self.tool_requests.append(frame)
+        return frame
+
     def _run(self, conn: socket.socket, reader: _Reader, tool: bool) -> None:
         """Read messages and send the replies."""
         while True:
@@ -859,6 +1008,10 @@ class FakeViewer:
             if data is None:
                 return
             if tool:
+                fetch = self._fetch_request(data)
+                if fetch is not None:
+                    self._stream_fetch(conn, reader, fetch)
+                    continue
                 for reply in self.tool_frame(data):
                     _send(conn, _encode(reply, protocol.TOOL_PROTOCOL_VERSION))
             else:

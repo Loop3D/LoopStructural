@@ -340,7 +340,7 @@ Test command in this phase: `packages/loop_link/.venv/Scripts/python.exe -m pyte
   - Done when: `packages/loop_link/.venv/Scripts/python.exe -m pytest packages/loop_link/tests/test_fake_viewer.py -k "selection or protocol_minor or headless or user_selection or tool_requests"` passes, and the whole old test file still passes.
   - Context: Change `FakeViewer.__init__` (new keyword arguments with defaults `protocol_minor=18`, `part_bytes=64*1024*1024`, `fetch_delay=0.0`, as in T043) and `_run` (the `tool=True` branch now calls a new method `tool_frame(data: bytes) -> list[Frame]` and appends each frame to `.tool_requests`; keep `read_delay`). Implement `selection.set` and `selection.get` with the rules in T043; replies are `Frame(header, buffers)` with `version` 1.18 and the `request` of the message (look at `_error` and `_encode` for the frame helpers). Messages of another type and all messages when `protocol_minor < 18` get `error` code `unknown_message`. Add `.selection`, `.set_user_selection`, `.tool_requests`. The data path (`accept_frame`) does not change. Add docstrings and type hints.
 
-- [ ] T045 [Found] [M] Fake viewer: tool endpoint, fetch part.
+- [x] T045 [Found] [M] Fake viewer: tool endpoint, fetch part.
   - Files: `packages/loop_link/src/loop_link/testing/fake_viewer.py`
   - Needs: T044
   - Wave: 7
