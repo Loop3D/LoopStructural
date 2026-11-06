@@ -65,6 +65,13 @@ Each point has a default. A point that has no owner is for the maintainer.
   pyvista itself adds (`Normals`, `Texture Coordinates`) without an error, so that `pv.Sphere()`
   and `pv.Plane()` can be sent as they are. Any other 2-D array is still refused with the array
   name. The core object rule (a 2-D property is refused) does not change.
+- 2026-11-06 (orchestrator, end review, verified against the geoviewer Rust codec): a Drillhole
+  `interval_properties` array goes out with the association `cell` (one value for each interval,
+  protocol 1.4 and later), not `interval`. The association `interval` needs a `log_sets` entry in the
+  header, and `loop_link` sends none. Where this plan says `interval`, read `cell`.
+- 2026-11-06 (orchestrator, end review): `push_objects` takes items `(id, obj)` or
+  `(id, obj, options)`; `options` is a dict with the keys `name` and `parent`. The removal step of
+  `replace_prefix` never removes an object of type `Group`.
 - 2026-11-06 (orchestrator, wave 10 review): `Viewer.inventory()` shows the known scene: the list
   from the hello frame, updated by `send` (add or update the entry), `remove` (drop it) and
   `clear` (drop all). `push_objects` with `replace_prefix` keeps the ids of the objects that were
