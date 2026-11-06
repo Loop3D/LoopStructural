@@ -4,13 +4,15 @@ This class intentionally stays thin: it delegates object creation to
 InterpolatorFactory and provides a chainable API for adding constraints,
 configuring setup options, and solving.
 """
+
 from __future__ import annotations
 
 import numpy as np
 from loop_common.geometry import BoundingBox
 
-from ._interpolatortype import InterpolatorType
+from ._geological_interpolator import GeologicalInterpolator
 from ._interpolator_factory import InterpolatorFactory
+from ._interpolatortype import InterpolatorType
 
 
 class InterpolatorBuilder:
@@ -228,9 +230,7 @@ class InterpolatorBuilder:
         """
         return self._set_constraint("set_tangent_constraints", tangent_constraints)
 
-    def add_inequality_constraints(
-        self, inequality_constraints: np.ndarray
-    ) -> InterpolatorBuilder:
+    def add_inequality_constraints(self, inequality_constraints: np.ndarray) -> InterpolatorBuilder:
         return self._set_constraint("set_value_inequality_constraints", inequality_constraints)
 
     def add_inequality_pair_constraints(

@@ -7,7 +7,6 @@ import pandas as pd
 
 from ....interpolators import DiscreteInterpolator, GeologicalInterpolator, InterpolatorFactory
 from ....modelling.features import GeologicalFeature
-from ._base_builder import BaseBuilder
 from ....utils import getLogger
 from ....utils._api_registry import public_api
 from ....utils.helper import (
@@ -24,6 +23,7 @@ from ....utils.helper import (
     weight_name,
     xyz_names,
 )
+from ._base_builder import BaseBuilder
 
 logger = getLogger(__name__)
 
@@ -57,7 +57,7 @@ class GeologicalFeatureBuilder(BaseBuilder):
             nelements=nelements,
             buffer=kwargs.get("buffer", 0.2),
         )
-        
+
         if not issubclass(type(interpolator), GeologicalInterpolator):
             raise TypeError(
                 f"interpolator is {type(interpolator)} and must be a GeologicalInterpolator"
@@ -83,8 +83,19 @@ class GeologicalFeatureBuilder(BaseBuilder):
         )
         self._orthogonal_features = {}
         self._equality_constraints = {}
+        # Rows not installed from reference features:
+        # {constraint name: {reason: number of rows}}
+        self.excluded_rows: dict[str, dict[str, int]] = {}
         # add default parameters
-        self.update_build_arguments({'cpw':1.0,'npw':1.0,'regularisation':1.,'nelements':self.interpolator.n_elements})
+        self.update_build_arguments(
+            {
+                'cpw': 1.0,
+                'npw': 1.0,
+                'regularisation': 1.0,
+                'nelements': self.interpolator.n_elements,
+            }
+        )
+
     def set_not_up_to_date(self, caller):
         logger.info(
             f"Setting {self.name} to not up to date from an instance of {caller.__class__.__name__}"
@@ -118,9 +129,7 @@ class GeologicalFeatureBuilder(BaseBuilder):
         """
         self.data = data_frame.copy()
 
-    def add_orthogonal_feature(
-        self, feature, w=1.0, region=None, step=1, B=0, sample_rule=None
-    ):
+    def add_orthogonal_feature(self, feature, w=1.0, region=None, step=1, B=0, sample_rule=None):
         """
         Add a constraint to the interpolator so that the gradient of an exisitng
         feature is orthogonal to the feature being built. E.g. dot product
@@ -299,6 +308,8 @@ class GeologicalFeatureBuilder(BaseBuilder):
 
     def install_gradient_constraint(self):
         if issubclass(type(self.interpolator), DiscreteInterpolator):
+            for key in [k for k in self.excluded_rows if k.endswith("_orthogonal")]:
+                del self.excluded_rows[key]
             for g in self._orthogonal_features.values():
                 feature, w, _region, step, B, sample_rule = g
                 if w == 0:
@@ -317,16 +328,35 @@ class GeologicalFeatureBuilder(BaseBuilder):
                         support.nodes, support.elements[tets], sample_rule
                     )
                     weight = w * np.sqrt(q)
+                name = f"{feature.name}_orthogonal"
+                # The sample points are local. The reference feature
+                # works in world coordinates.
+                world_points = self.interpolator.local_to_world_points(points)
                 # don't worry about masking for unconformities here
-                vector = feature.evaluate_gradient(points, ignore_regions=True)
+                vector = np.asarray(
+                    feature.evaluate_gradient(world_points, ignore_regions=True), dtype=float
+                )
                 norm = np.linalg.norm(vector, axis=1)
-                vector[norm > 0] /= norm[norm > 0, None]
+                valid = np.all(np.isfinite(vector), axis=1) & np.isfinite(norm) & (norm > 0)
+                n_invalid = int((~valid).sum())
+                if n_invalid > 0:
+                    self.excluded_rows.setdefault(name, {})[
+                        "invalid_reference_direction"
+                    ] = n_invalid
+                if not valid.any():
+                    logger.warning(
+                        f"No valid reference gradients for {name} in {self.name}: "
+                        f"{n_invalid} rows excluded"
+                    )
+                    continue
+                vector = vector[valid] / norm[valid, None]
+                local_vector = self.interpolator.world_to_local_vectors(vector)
                 self.interpolator.add_gradient_orthogonal_constraints(
-                    points,
-                    vector,
-                    w=weight,
+                    points[valid],
+                    local_vector,
+                    w=weight[valid] if np.ndim(weight) > 0 else weight,
                     b=B,
-                    name=f'{feature.name}_orthogonal',
+                    name=name,
                 )
 
     def add_equality_constraints(self, feature, region, scalefactor=1.0):
@@ -335,20 +365,32 @@ class GeologicalFeatureBuilder(BaseBuilder):
         self._up_to_date = False
 
     def install_equality_constraints(self):
+        for key in [k for k in self.excluded_rows if k.endswith("_equality")]:
+            del self.excluded_rows[key]
         for e in self._equality_constraints.values():
+            name = f"{e[0].name}_equality"
+            idc = None
             try:
                 # assume all parts of structural frame have the same support
                 support = self.interpolator.support
 
                 # work out the values of the nodes where we want hard
-                # constraints
-                idc = np.arange(0, support.n_nodes)[e[1](support.nodes)]
-                val = e[0].evaluate_value(support.nodes[e[1](support.nodes), :])
-                mask = ~np.isnan(val)
-                self.interpolator.add_equality_constraints(idc[mask], val[mask] * e[2])
+                # constraints. The nodes are local. The region and the
+                # reference feature work in world coordinates.
+                world_nodes = self.interpolator.local_to_world_points(support.nodes)
+                selected = np.asarray(e[1](world_nodes), dtype=bool)
+                idc = np.flatnonzero(selected)
+                val = np.asarray(e[0].evaluate_value(world_nodes[idc]), dtype=float)
+                mask = np.isfinite(val)
+                n_invalid = int((~mask).sum())
+                if n_invalid > 0:
+                    self.excluded_rows.setdefault(name, {})["invalid_reference_value"] = n_invalid
+                self.interpolator.add_equality_constraints(idc[mask], val[mask] * e[2], name=name)
             except (AttributeError, TypeError, ValueError, RuntimeError) as exc:
                 logger.error(f"Could not add equality for {self.name}")
                 logger.error(f"Exception: {exc}")
+                count = idc.size if idc is not None else self.interpolator.support.n_nodes
+                self.excluded_rows.setdefault(name, {})["evaluation_error"] = int(count)
 
     def get_value_constraints(self):
         """
@@ -429,6 +471,7 @@ class GeologicalFeatureBuilder(BaseBuilder):
             )
         else:
             return np.zeros((0, 5))
+
     # def get_inequality_pair_constraints(self):
     #     mask = np.all(~np.isnan(self.data.loc[:,pairs_name()].to_numpy(float())),axis=1)
     #     if mask.shape[0] > 0:
@@ -468,13 +511,10 @@ class GeologicalFeatureBuilder(BaseBuilder):
             return
 
         # origin/maximum are given in world coordinates (e.g. straight from
-        # model.bounding_box or fault-frame data); project into the
-        # interpolator's local frame before writing to the support. Exact
-        # for translation-only transforms -- no code sets a non-identity
-        # rotation on the bounding box today.
+        # model.bounding_box or fault-frame data). Use the local box that
+        # encloses all corners of the world box.
         if self.interpolator.bounding_box is not None:
-            origin = self.interpolator.bounding_box.project(origin)
-            maximum = self.interpolator.bounding_box.project(maximum)
+            origin, maximum = self.interpolator.bounding_box.local_enclosure(origin, maximum)
 
         self.interpolator.support.origin = origin
         self.interpolator.support.maximum = maximum
@@ -492,19 +532,18 @@ class GeologicalFeatureBuilder(BaseBuilder):
         """
         if self.interpolator.support is not None:
             logger.info(f"Checking interpolation geometry for {self.name}")
-            origin = self.interpolator.support.origin
-            maximum = self.interpolator.support.maximum
-            pts = self.model.bounding_box.with_buffer(buffer).regular_grid(local=True)
+            # The grid and the fault restoration are in world coordinates.
+            pts = self.model.bounding_box.with_buffer(buffer).regular_grid(local=False)
             for f in self.faults:
                 pts = f.apply_to_points(pts)
-
-            origin[origin > np.min(pts, axis=0)] = np.min(pts, axis=0)[origin > np.min(pts, axis=0)]
-            maximum[maximum < np.max(pts, axis=0)] = np.max(pts, axis=0)[
-                maximum < np.max(pts, axis=0)
-            ]
+            pts = self.interpolator.world_to_local_points(pts)
+            # Use copies. Do not change the support arrays in place.
+            origin = np.minimum(self.interpolator.support.origin.copy(), np.min(pts, axis=0))
+            maximum = np.maximum(self.interpolator.support.maximum.copy(), np.max(pts, axis=0))
             self.interpolator.support.origin = origin
             self.interpolator.support.maximum = maximum
-            self.update_build_arguments({'nelements':self.interpolator.n_elements})
+            self.update_build_arguments({'nelements': self.interpolator.n_elements})
+
     def build(self, data_region=None, **kwargs):
         """
         Runs the interpolation and builds the geological feature
@@ -533,7 +572,9 @@ class GeologicalFeatureBuilder(BaseBuilder):
             logger.info(f'Kwargs has {kwargs["nelements"]} elements')
             if self.interpolator.n_elements != kwargs['nelements']:
                 logger.info('Setting nelements to {} for {}'.format(kwargs['nelements'], self.name))
-                self.build_arguments['nelements'] = self.interpolator.set_nelements(kwargs['nelements'])
+                self.build_arguments['nelements'] = self.interpolator.set_nelements(
+                    kwargs['nelements']
+                )
                 logger.info(f'Interpolator nelements {self.interpolator.n_elements}')
                 self._up_to_date = False
         if domain:
@@ -545,24 +586,20 @@ class GeologicalFeatureBuilder(BaseBuilder):
             # if self.model.reuse_supports == False:
             if np.any(np.min(bb[0, :]) < self.interpolator.support.origin):
                 neworigin = np.min([self.interpolator.support.origin, bb[0, :]], axis=0)
-                logger.info(
-                    f"Changing origin of support for {self.name} from \
+                logger.info(f"Changing origin of support for {self.name} from \
                         {self.interpolator.support.origin[0]} \
                         {self.interpolator.support.origin[1]} \
                         {self.interpolator.support.origin[2]} \
-                        to {neworigin[0]} {neworigin[1]} {neworigin[2]}"
-                )
+                        to {neworigin[0]} {neworigin[1]} {neworigin[2]}")
 
                 self.interpolator.support.origin = neworigin
             if np.any(np.max(bb[0, :]) < self.interpolator.support.maximum):
                 newmax = np.max([self.interpolator.support.maximum, bb[0, :]], axis=0)
-                logger.info(
-                    f"Changing origin of support for {self.name} from \
+                logger.info(f"Changing origin of support for {self.name} from \
                         from {self.interpolator.support.maximum[0]} \
                         {self.interpolator.support.maximum[1]} \
                             {self.interpolator.support.maximum[2]} \
-                                to {newmax[0]} {newmax[1]} {newmax[2]}"
-                )
+                                to {newmax[0]} {newmax[1]} {newmax[2]}")
 
                 self.interpolator.support.maximum = newmax
             self.interpolator.set_region(region=region)

@@ -34,7 +34,7 @@ class Loop2DView:
             self.model = model
         self.ax = ax
         if self.ax is None:
-            fig, self.ax = plt.subplots(1, figsize=(10, 10))
+            _, self.ax = plt.subplots(1, figsize=(10, 10))
         self.ax.set_aspect("equal", adjustable="box")
 
         # set plot limits to model bounding box
@@ -343,8 +343,8 @@ class Loop2DView:
         for f in self.model.features:
             if f.type == FeatureType.FAULT:
                 # create a function to return true if displacement > 0
-                def mask(x):
-                    val = f.displacementfeature.evaluate_value(x)
+                def mask(x, feature=f):
+                    val = feature.displacementfeature.evaluate_value(x)
                     val[np.isnan(val)] = 0
                     maskv = np.zeros(val.shape).astype(bool)
                     maskv[np.abs(val) > 0.001] = 1

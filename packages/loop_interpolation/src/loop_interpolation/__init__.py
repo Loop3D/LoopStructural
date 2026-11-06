@@ -13,12 +13,14 @@ __all__ = [
     "DirectionalRegularisation",
     "DiscreteFoldInterpolator",
     "DiscreteInterpolator",
+    "ExclusionRecord",
     "FDFoldInterpolator",
     "FiniteDifferenceInterpolator",
     "FoldEvent",
     "FoldRotationType",
     "FourierSeriesFoldRotationAngleProfile",
     "GeologicalInterpolator",
+    "InterpolatorFormatError",
     "InterpolatorType",
     "LambdaFoldRotationAngleProfile",
     "P1Interpolator",
@@ -30,11 +32,15 @@ __all__ = [
     "PiecewiseLinearInterpolator",
     "RegionCoverageDiagnostics",
     "RegularisationConfig",
+    "ResidualSummary",
+    "StaleFrameError",
     "StructuredGrid",
     "StructuredGrid2D",
     "SurfeRBFInterpolator",
     "TetMesh",
     "UnStructuredTetMesh",
+    "build_exclusion_records",
+    "direction_cosines",
     "get_fold_rotation_profile",
 ]
 from loop_common.logging import get_logger as getLogger
@@ -58,7 +64,11 @@ from ._constant_norm import ConstantNormFDIInterpolator, ConstantNormP1Interpola
 from ._diagnostics import (
     ConstraintDiagnosticsReport,
     ConstraintFamilyDiagnostics,
+    ExclusionRecord,
     RegionCoverageDiagnostics,
+    ResidualSummary,
+    build_exclusion_records,
+    direction_cosines,
 )
 from ._discrete_fold_interpolator import (
     DiscreteFoldInterpolator,
@@ -68,6 +78,7 @@ from ._fd_fold_interpolator import FDFoldInterpolator
 from ._finite_difference_interpolator import (
     FiniteDifferenceInterpolator,
 )
+from ._frame_persistence import InterpolatorFormatError, StaleFrameError
 from ._geological_interpolator import GeologicalInterpolator
 from ._p1interpolator import P1Interpolator
 from ._p1interpolator import (

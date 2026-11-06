@@ -10,10 +10,10 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
+import pyvista
 from trame.ui.vuetify3 import SinglePageWithDrawerLayout
 from trame.widgets import vuetify3 as vuetify
 
-import pyvista
 try:
     from trame_pyvista.ui.vuetify3 import Viewer
 except ImportError:
@@ -47,10 +47,10 @@ class LoopViewer(Viewer):
         this is a slot called by the state change, the kwargs are the current state
         so we need to check the keys and update accordingly
         """
-        for k in kwargs.keys():
+        for k, visibility in kwargs.items():
             object_name = k.split("__visibility")[0]
             if object_name in self.plotter.actors:
-                self.plotter.actors[object_name].visibility = kwargs[k]
+                self.plotter.actors[object_name].visibility = visibility
         self.update()
         # self.actors[k].visibility = not self.actors[k].visibility
 
@@ -59,54 +59,51 @@ class LoopViewer(Viewer):
         this is a slot called by the state change, the kwargs are the current state
         so we need to check the keys and update accordingly
         """
-        for k in kwargs.keys():
+        for k, opacity in kwargs.items():
             object_name = k.split("__opacity")[0]
             if object_name in self.plotter.actors:
-                self.plotter.actors[object_name].prop.opacity = kwargs[k]
+                self.plotter.actors[object_name].prop.opacity = opacity
         self.update()
         # self.actors[k].visibility = not self.actors[k].visibility
 
     def object_menu(self):
-        with self.layout.drawer as drawer:
-            with vuetify.VCard():
+        with self.layout.drawer as drawer, vuetify.VCard():
 
-                for k, a in self.plotter.actors.items():
-                    if type(a) is not pyvista.plotting.actor.Actor:
-                        continue
-                    drawer.server.state[f"{k}__visibility"] = True
-                    drawer.server.state[f"{k}__control_visibility"] = False
-                    drawer.server.state[f"{k}__opacity"] = a.prop.opacity
-                    drawer.server.state.change(f"{k}__visibility")(self.toggle_visibility)
-                    drawer.server.state.change(f"{k}__opacity")(self.set_opacity)
-                    with vuetify.VRow(
-                        classes='pa-0 ma-0 align-center fill-height',
-                        style='flex-wrap: nowrap',
-                    ):
-                        with vuetify.VCol():
+            for k, a in self.plotter.actors.items():
+                if type(a) is not pyvista.plotting.actor.Actor:
+                    continue
+                drawer.server.state[f"{k}__visibility"] = True
+                drawer.server.state[f"{k}__control_visibility"] = False
+                drawer.server.state[f"{k}__opacity"] = a.prop.opacity
+                drawer.server.state.change(f"{k}__visibility")(self.toggle_visibility)
+                drawer.server.state.change(f"{k}__opacity")(self.set_opacity)
+                with vuetify.VRow(
+                    classes='pa-0 ma-0 align-center fill-height',
+                    style='flex-wrap: nowrap',
+                ):
+                    with vuetify.VCol():
 
-                            vuetify.VCheckbox(
-                                label=k,
-                                classes="ma-0 pa-0",
-                                v_model=(f"{k}__visibility"),
-                                # click=(self.toggle_visibility("test")),
-                            )
-                        with vuetify.VCol():
-                            vuetify.VBtn(
-                                icon='mdi-dots-horizontal',
-                                click=(f'{k}__control_visibility=!{k}__control_visibility'),
-                                # click=(self.toggle_visibility("test")),
-                            )
-                    with vuetify.VCard(classes="ma-0 pa-0", v_show=f'{k}__control_visibility'):
-
-                        with vuetify.VRow(
-                            classes="ma-0 pa-0 d-flex align-center",
-                        ):
-
-                            vuetify.VSlider(
-                                v_model=(f"{k}__opacity"),
-                                label="Opacity",
-                                min=0,
-                                max=1,
-                                step=0.1,
-                                thumb_label=True,
-                            )
+                        vuetify.VCheckbox(
+                            label=k,
+                            classes="ma-0 pa-0",
+                            v_model=(f"{k}__visibility"),
+                            # click=(self.toggle_visibility("test")),
+                        )
+                    with vuetify.VCol():
+                        vuetify.VBtn(
+                            icon='mdi-dots-horizontal',
+                            click=(f'{k}__control_visibility=!{k}__control_visibility'),
+                            # click=(self.toggle_visibility("test")),
+                        )
+                with (
+                    vuetify.VCard(classes="ma-0 pa-0", v_show=f'{k}__control_visibility'),
+                    vuetify.VRow(classes="ma-0 pa-0 d-flex align-center"),
+                ):
+                    vuetify.VSlider(
+                        v_model=(f"{k}__opacity"),
+                        label="Opacity",
+                        min=0,
+                        max=1,
+                        step=0.1,
+                        thumb_label=True,
+                    )

@@ -7,19 +7,19 @@ One PNG per case. One row per engine. Columns:
   3. Section: unit gradient arrows, solved (blue) over truth (grey).
   4. Plan (XY at z = 0.5): signed value error. Blue = solved too low, red = too high.
 """
+
 from __future__ import annotations
 
-import textwrap
 from pathlib import Path
 
 import matplotlib
 
 matplotlib.use("Agg")
-import matplotlib.pyplot as plt  # noqa: E402
-import numpy as np  # noqa: E402
+import matplotlib.pyplot as plt
+import numpy as np
 
-from . import geomodels  # noqa: E402
-from .harness import OUT_DIR, angle_deg  # noqa: E402
+from . import geomodels
+from .harness import OUT_DIR, angle_deg
 
 N = 61  # section resolution
 SECTION_Y = 0.5
@@ -40,8 +40,15 @@ def _plane_grid(kind: str):
 def _horizons(ax, a, b, field, colors, styles, widths=1.2):
     if np.isfinite(field).sum() < 4:
         return
-    ax.contour(a, b, field.reshape(a.shape), levels=geomodels.HORIZONS, colors=colors,
-               linestyles=styles, linewidths=widths)
+    ax.contour(
+        a,
+        b,
+        field.reshape(a.shape),
+        levels=geomodels.HORIZONS,
+        colors=colors,
+        linestyles=styles,
+        linewidths=widths,
+    )
 
 
 def _data(ax, case, kind):
@@ -53,7 +60,9 @@ def _data(ax, case, kind):
         if mn.any():
             nn = n[mn]
             u = nn[:, 3:6] / np.linalg.norm(nn[:, 3:6], axis=1, keepdims=True)
-            ax.quiver(nn[:, 0], nn[:, 2], u[:, 0], u[:, 2], color="k", scale=22, width=0.006, zorder=6)
+            ax.quiver(
+                nn[:, 0], nn[:, 2], u[:, 0], u[:, 2], color="k", scale=22, width=0.006, zorder=6
+            )
         ax.plot(n[~mn, 0], n[~mn, 2], "^", ms=3, mfc="none", mec="0.5", mew=0.6, zorder=5)
     else:
         mv, mn = np.abs(v[:, 2] - PLAN_Z) < SLAB, np.abs(n[:, 2] - PLAN_Z) < SLAB
@@ -61,15 +70,17 @@ def _data(ax, case, kind):
         ax.plot(n[mn, 0], n[mn, 1], "^", ms=4, mfc="white", mec="k", mew=0.8, zorder=5)
 
 
-def render_case(case_name: str, results: dict[str, dict], out_dir: Path | None = None,
-                suffix: str = "") -> Path:
+def render_case(
+    case_name: str, results: dict[str, dict], out_dir: Path | None = None, suffix: str = ""
+) -> Path:
     """`results` maps engine name -> harness.compute() result."""
     case = geomodels.build(case_name)
     out_dir = Path(out_dir or OUT_DIR / "figures")
     out_dir.mkdir(parents=True, exist_ok=True)
     engines = list(results)
-    fig, axes = plt.subplots(len(engines), 4, figsize=(15, 3.55 * len(engines)), squeeze=False,
-                             constrained_layout=True)
+    fig, axes = plt.subplots(
+        len(engines), 4, figsize=(15, 3.55 * len(engines)), squeeze=False, constrained_layout=True
+    )
     xa, za, xz = _plane_grid("xz")
     xb, yb, xy = _plane_grid("xy")
     truth_xz, tgrad_xz = case.truth(xz), case.truth_grad(xz)
@@ -84,8 +95,14 @@ def render_case(case_name: str, results: dict[str, dict], out_dir: Path | None =
         v_xy = np.asarray(interp.evaluate_value(xy), float)
         ax1, ax2, ax3, ax4 = axes[row]
 
-        im = ax1.contourf(xa, za, v_xz.reshape(xa.shape), levels=np.linspace(fmin, fmax, 21),
-                          cmap="cividis", extend="both")
+        im = ax1.contourf(
+            xa,
+            za,
+            v_xz.reshape(xa.shape),
+            levels=np.linspace(fmin, fmax, 21),
+            cmap="cividis",
+            extend="both",
+        )
         _horizons(ax1, xa, za, truth_xz, "k", "--", 1.4)
         _horizons(ax1, xa, za, v_xz, "#ff7f0e", "-", 1.6)
         _data(ax1, case, "xz")
@@ -94,17 +111,34 @@ def render_case(case_name: str, results: dict[str, dict], out_dir: Path | None =
         ang = angle_deg(g_xz, tgrad_xz).reshape(xa.shape)
         im2 = ax2.pcolormesh(xa, za, ang, cmap="magma_r", vmin=0, vmax=45, shading="auto")
         _horizons(ax2, xa, za, truth_xz, "k", "--", 1.0)
-        ax2.set_title(f"gradient error  median {m['angle_median']:.1f}  p90 {m['angle_p90']:.1f} deg", fontsize=9)
+        ax2.set_title(
+            f"gradient error  median {m['angle_median']:.1f}  p90 {m['angle_p90']:.1f} deg",
+            fontsize=9,
+        )
 
         gu = g_xz / np.linalg.norm(g_xz, axis=1, keepdims=True)
         tu = tgrad_xz / np.linalg.norm(tgrad_xz, axis=1, keepdims=True)
         _horizons(ax3, xa, za, truth_xz, "0.6", "-", 0.8)
         sx, sz = xa[arrow, arrow], za[arrow, arrow]
         shape = xa.shape
-        ax3.quiver(sx, sz, tu[:, 0].reshape(shape)[arrow, arrow], tu[:, 2].reshape(shape)[arrow, arrow],
-                   color="0.55", scale=18, width=0.007)
-        ax3.quiver(sx, sz, gu[:, 0].reshape(shape)[arrow, arrow], gu[:, 2].reshape(shape)[arrow, arrow],
-                   color="#1f77b4", scale=18, width=0.004)
+        ax3.quiver(
+            sx,
+            sz,
+            tu[:, 0].reshape(shape)[arrow, arrow],
+            tu[:, 2].reshape(shape)[arrow, arrow],
+            color="0.55",
+            scale=18,
+            width=0.007,
+        )
+        ax3.quiver(
+            sx,
+            sz,
+            gu[:, 0].reshape(shape)[arrow, arrow],
+            gu[:, 2].reshape(shape)[arrow, arrow],
+            color="#1f77b4",
+            scale=18,
+            width=0.004,
+        )
         ax3.set_title("unit gradient: solved (blue) over truth (grey)", fontsize=9)
 
         e = (v_xy - truth_xy).reshape(xb.shape)
@@ -133,8 +167,14 @@ def render_case(case_name: str, results: dict[str, dict], out_dir: Path | None =
     return path
 
 
-def render_diff(case_name: str, engine: str, points: np.ndarray, golden: dict, current: dict,
-                out_dir: Path | None = None) -> Path:
+def render_diff(
+    case_name: str,
+    engine: str,
+    points: np.ndarray,
+    golden: dict,
+    current: dict,
+    out_dir: Path | None = None,
+) -> Path:
     """Where did the field move? Maps the |current - golden| value and angle change on two sections."""
     out_dir = Path(out_dir or OUT_DIR / "failures")
     out_dir.mkdir(parents=True, exist_ok=True)
@@ -144,15 +184,26 @@ def render_diff(case_name: str, engine: str, points: np.ndarray, golden: dict, c
     da = angle_deg(current["gradient"], golden["gradient"]).reshape(shape)
     fig, axes = plt.subplots(2, 3, figsize=(12, 7), constrained_layout=True)
     i = n // 2
-    views = {"XZ (y mid)": (dv[:, i, :], da[:, i, :]), "XY (z mid)": (dv[i, :, :], da[i, :, :]),
-             "YZ (x mid)": (dv[:, :, i], da[:, :, i])}
+    views = {
+        "XZ (y mid)": (dv[:, i, :], da[:, i, :]),
+        "XY (z mid)": (dv[i, :, :], da[i, :, :]),
+        "YZ (x mid)": (dv[:, :, i], da[:, :, i]),
+    }
     for col, (name, (v2, a2)) in enumerate(views.items()):
         lim = max(1e-12, float(np.nanmax(np.abs(v2))))
-        p = axes[0, col].imshow(v2, origin="lower", extent=(0, 1, 0, 1), cmap="RdBu_r", vmin=-lim, vmax=lim)
+        p = axes[0, col].imshow(
+            v2, origin="lower", extent=(0, 1, 0, 1), cmap="RdBu_r", vmin=-lim, vmax=lim
+        )
         axes[0, col].set_title(f"{name}: value change (current - golden)")
         fig.colorbar(p, ax=axes[0, col], shrink=0.8)
-        q = axes[1, col].imshow(a2, origin="lower", extent=(0, 1, 0, 1), cmap="magma_r", vmin=0,
-                                vmax=max(1e-6, float(np.nanmax(a2))))
+        q = axes[1, col].imshow(
+            a2,
+            origin="lower",
+            extent=(0, 1, 0, 1),
+            cmap="magma_r",
+            vmin=0,
+            vmax=max(1e-6, float(np.nanmax(a2))),
+        )
         axes[1, col].set_title(f"{name}: gradient direction change (deg)")
         fig.colorbar(q, ax=axes[1, col], shrink=0.8)
     fig.suptitle(f"{case_name} / {engine}: current vs golden", fontsize=11)
@@ -174,7 +225,9 @@ def render_surfaces(case_name: str, engine: str, interp, n: int = 41) -> bytes:
     u = np.linspace(eps, 1 - eps, n)
     zz, yy, xx = np.meshgrid(u, u, u, indexing="ij")
     pts = np.c_[xx.ravel(), yy.ravel(), zz.ravel()]
-    grid = pv.ImageData(dimensions=(n, n, n), spacing=((1 - 2 * eps) / (n - 1),) * 3, origin=(eps,) * 3)
+    grid = pv.ImageData(
+        dimensions=(n, n, n), spacing=((1 - 2 * eps) / (n - 1),) * 3, origin=(eps,) * 3
+    )
     grid["solved"] = np.asarray(interp.evaluate_value(pts), float)
     grid["truth"] = case.truth(pts)
 
@@ -189,12 +242,22 @@ def render_surfaces(case_name: str, engine: str, interp, n: int = 41) -> bytes:
         truth = grid.contour([level], scalars="truth")
         if truth.n_points:
             pl.add_mesh(truth, color="black", style="wireframe", opacity=0.3, line_width=1)
-    pl.add_mesh(pv.PolyData(case.values[:, :3]), color="white", point_size=9,
-                render_points_as_spheres=True)
-    pl.add_mesh(pv.PolyData(case.values[:, :3]), color="black", point_size=11,
-                render_points_as_spheres=True, opacity=0.35)
-    pl.add_arrows(case.normals[:, :3], case.normals[:, 3:6] / np.linalg.norm(case.normals[:, 3:6], axis=1, keepdims=True),
-                  mag=0.12, color="red")
+    pl.add_mesh(
+        pv.PolyData(case.values[:, :3]), color="white", point_size=9, render_points_as_spheres=True
+    )
+    pl.add_mesh(
+        pv.PolyData(case.values[:, :3]),
+        color="black",
+        point_size=11,
+        render_points_as_spheres=True,
+        opacity=0.35,
+    )
+    pl.add_arrows(
+        case.normals[:, :3],
+        case.normals[:, 3:6] / np.linalg.norm(case.normals[:, 3:6], axis=1, keepdims=True),
+        mag=0.12,
+        color="red",
+    )
     pl.camera_position = [(2.1, -1.7, 1.5), (0.5, 0.5, 0.5), (0, 0, 1)]
     img = pl.screenshot(return_img=True)
     pl.close()

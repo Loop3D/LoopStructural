@@ -1,10 +1,11 @@
 """ """
+
 from __future__ import annotations
 
 import numpy as np
 
-from ._base_geological_feature import BaseFeature
 from ...utils import getLogger
+from ._base_geological_feature import BaseFeature
 
 logger = getLogger(__name__)
 

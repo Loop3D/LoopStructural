@@ -1,11 +1,16 @@
+import logging
+import os
+from unittest.mock import patch
+
 import pytest
+import requests
+from pyproj.exceptions import CRSError
+
+from map2loop.m2l_enums import VerboseLevel
 from map2loop.project import Project
 from map2loop.sorter import SorterUseNetworkX
-from map2loop.m2l_enums import VerboseLevel
-from unittest.mock import patch
-from pyproj.exceptions import CRSError
-import requests
-import os
+
+logger = logging.getLogger(__name__)
 
 # Define constants for common parameters
 bbox_3d = {
@@ -18,8 +23,9 @@ bbox_3d = {
 }
 loop_project_filename = "wa_output.loop3d"
 
+
 # create a project function
-def create_project(state_data="WA", projection="EPSG:28350"):
+def create_project(state_data="WA", projection="EPSG:28350", config_filename=""):
     return Project(
         use_australian_state_data=state_data,
         working_projection=projection,
@@ -27,6 +33,7 @@ def create_project(state_data="WA", projection="EPSG:28350"):
         verbose_level=VerboseLevel.NONE,
         loop_project_filename=loop_project_filename,
         overwrite_loopprojectfile=True,
+        config_filename=config_filename,
     )
 
 
@@ -35,6 +42,7 @@ def test_project_execution():
     try:
         proj = create_project()
     except Exception:
+        logger.exception("Could not create project from server data")
         pytest.skip("Skipping the project test from server data due to loading failure")
     try:
         proj.set_sorter(SorterUseNetworkX())
@@ -94,9 +102,9 @@ def test_expect_state_error():
 # does the project fail when a config file is invalid?
 def test_expect_config_error():
     try:
-        with pytest.raises(Exception):
-            create_project(config_file='InvalidConfig.csv')
-        print("FileNotFoundError//Exception by catchall in project.py was raised as expected.")
+        with pytest.raises(FileNotFoundError):
+            create_project(config_filename="InvalidConfig.csv")
+        print("FileNotFoundError was raised as expected.")
     except requests.exceptions.ReadTimeout:
         print("Timeout occurred, skipping test_expect_config_error.")
         pytest.skip("Skipping test_expect_config_error due to a timeout.")

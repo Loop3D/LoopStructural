@@ -1,6 +1,5 @@
 """Tests for DiscreteFoldInterpolator."""
 
-
 import numpy as np
 import pytest
 from loop_common.supports._3d_structured_tetra import TetMesh
@@ -13,7 +12,9 @@ class MockFoldEvent:
 
     def __init__(self, orientation_grad=None, axis_grad=None, deformed_normal=None):
         """Initialize mock fold with configurable return values."""
-        self.orientation_grad = orientation_grad if orientation_grad is not None else np.ones((10, 3))
+        self.orientation_grad = (
+            orientation_grad if orientation_grad is not None else np.ones((10, 3))
+        )
         self.axis_grad = axis_grad if axis_grad is not None else np.ones((10, 3))
         self.deformed_normal = deformed_normal if deformed_normal is not None else np.ones((10, 3))
 
@@ -331,7 +332,7 @@ class TestDiscreteFoldInterpolatorAllElements:
             assert np.array_equal(np.asarray(a["w"]), np.asarray(b["w"]))
 
     def test_mask_function_zeroes_weights_in_mesh_order(self):
-        support, interpolator = self._built(nsteps=3)
+        support, _ = self._built(nsteps=3)
         masked = DiscreteFoldInterpolator(support, fold=MockFoldEvent())
         masked.add_fold_constraints(
             fold_regularisation=None,

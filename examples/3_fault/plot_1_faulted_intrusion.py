@@ -68,10 +68,7 @@ viewer = Loop3DView(model)
 viewer.plot_surface(fault, value=0)
 viewer.plot_vector_field(fault)
 viewer.add_points(
-    model.rescale(
-        model.data[model.data["feature_name"] == "strati"][["X", "Y", "Z"]].values,
-        inplace=False,
-    ),
+    model.data[model.data["feature_name"] == "strati"][["X", "Y", "Z"]].values,
     name="prefault",
 )
 viewer.display()
@@ -97,10 +94,7 @@ viewer.plot_surface(strati, value=0.0)
 viewer.plot_data(strati)
 viewer.plot_surface(fault, value=0.0)
 viewer.add_points(
-    model.rescale(
-        model.data[model.data["feature_name"] == "strati"][["X", "Y", "Z"]].values,
-        inplace=False,
-    ),
+    model.data[model.data["feature_name"] == "strati"][["X", "Y", "Z"]].values,
     name="prefault",
 )
 viewer.display()

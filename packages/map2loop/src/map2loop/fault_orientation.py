@@ -1,11 +1,12 @@
 from abc import ABC, abstractmethod
+
 import beartype
-import pandas
 import geopandas
-from .mapdata import MapData
 import numpy as np
+import pandas
 
 from .logging import getLogger
+from .mapdata import MapData
 
 logger = getLogger(__name__)
 
@@ -52,7 +53,6 @@ class FaultOrientation(ABC):
         Returns:
             pandas.DataFrame: fault orientations assigned to a fault label
         """
-        pass
 
 
 class FaultOrientationNearest(FaultOrientation):

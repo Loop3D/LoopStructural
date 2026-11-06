@@ -1,6 +1,7 @@
 """
 Geological features
 """
+
 from __future__ import annotations
 
 from typing import Callable
@@ -9,9 +10,9 @@ import numpy as np
 
 from LoopStructural.utils.maths import gradient_from_tetrahedron, regular_tetraherdron_for_points
 
-from ._base_geological_feature import BaseFeature
-from . import FeatureType
 from ...utils import LoopValueError, getLogger
+from . import FeatureType
+from ._base_geological_feature import BaseFeature
 
 logger = getLogger(__name__)
 
@@ -50,7 +51,14 @@ class LambdaGeologicalFeature(BaseFeature):
         builder : optional
             the builder used to create this feature, by default None
         """
-        BaseFeature.__init__(self, name, model, faults if faults is not None else [], regions if regions is not None else [], builder)
+        BaseFeature.__init__(
+            self,
+            name,
+            model,
+            faults if faults is not None else [],
+            regions if regions is not None else [],
+            builder,
+        )
         self.type = FeatureType.LAMBDA
         self.function = function
         self.gradient_function = gradient_function
@@ -95,10 +103,12 @@ class LambdaGeologicalFeature(BaseFeature):
                 pos = f.apply_to_points(pos, precomputed_gx=precomputed_gx.get(id(f)))
 
         if self.function is not None:
-            v[mask] = self.function(pos[mask,:])
+            v[mask] = self.function(pos[mask, :])
         return v
 
-    def evaluate_gradient(self, pos: np.ndarray, ignore_regions=False,element_scale_parameter=None) -> np.ndarray:
+    def evaluate_gradient(
+        self, pos: np.ndarray, ignore_regions=False, element_scale_parameter=None
+    ) -> np.ndarray:
         """Evaluate the gradient of the underlying function at locations, applying
         any faults associated with this feature
 
@@ -165,9 +175,7 @@ class LambdaGeologicalFeature(BaseFeature):
                 tetrahedron.shape
             )
 
-            values = self.function(tetrahedron_faulted.reshape(-1, 3)).reshape(
-                (-1, 4)
-            )
+            values = self.function(tetrahedron_faulted.reshape(-1, 3)).reshape((-1, 4))
             v[mask, :] = gradient_from_tetrahedron(tetrahedron[mask, :, :], values[mask])
 
             return v
@@ -190,5 +198,6 @@ class LambdaGeologicalFeature(BaseFeature):
             self.faults,
             self.builder,
         )
+
     def is_valid(self):
         return not (self.function is None and self.gradient_function is None)

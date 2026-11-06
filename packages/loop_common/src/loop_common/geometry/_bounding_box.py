@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import copy
+from itertools import product
 
 import numpy as np
 
@@ -9,6 +10,7 @@ from loop_common.logging import get_logger as getLogger
 # from LoopStructural.utils.exceptions import LoopValueError
 from loop_common.math import rng
 
+from ._rigid import validate_rigid_rotation
 from ._structured_grid import PropertyGrid
 
 logger = getLogger(__name__)
@@ -16,7 +18,6 @@ logger = getLogger(__name__)
 
 class LoopValueError(ValueError):
     """Custom error for invalid values in LoopStructural."""
-
 
 
 class BoundingBox:
@@ -74,7 +75,9 @@ class BoundingBox:
 
         if nsteps is not None:
             if len(nsteps) != dimensions:
-                logger.warning(f"Nsteps has {len(nsteps)} dimensions but bounding box has {dimensions}")
+                logger.warning(
+                    f"Nsteps has {len(nsteps)} dimensions but bounding box has {dimensions}"
+                )
                 raise LoopValueError("Nsteps has incorrect number of dimensions")
             if np.any(np.asarray(nsteps) <= 0):
                 raise LoopValueError("Nsteps must be positive integers")
@@ -146,17 +149,15 @@ class BoundingBox:
         """
         if local_origin is None:
             local_origin = np.zeros(self.dimensions, dtype=float)
-        local_origin = np.asarray(local_origin, dtype=float)
+        local_origin = np.array(local_origin, dtype=float, copy=True)
         if local_origin.shape != (self.dimensions,):
             raise LoopValueError("Local origin has incorrect number of dimensions")
+        if not np.all(np.isfinite(local_origin)):
+            raise LoopValueError("Local origin must contain only finite values")
 
         if rotation_matrix is None:
             rotation_matrix = np.eye(self.dimensions, dtype=float)
-        rotation_matrix = np.asarray(rotation_matrix, dtype=float)
-        if rotation_matrix.shape != (self.dimensions, self.dimensions):
-            raise LoopValueError(
-                f"Rotation matrix must have shape ({self.dimensions}, {self.dimensions})"
-            )
+        rotation_matrix = validate_rigid_rotation(rotation_matrix, self.dimensions)
 
         self._local_origin = local_origin
         self._local_rotation = rotation_matrix
@@ -167,6 +168,50 @@ class BoundingBox:
 
         self._world_to_local = world_to_local
         self._local_to_world = np.linalg.inv(world_to_local)
+
+    def local_enclosure(
+        self,
+        origin: np.ndarray | None = None,
+        maximum: np.ndarray | None = None,
+    ) -> tuple[np.ndarray, np.ndarray]:
+        """Return local bounds enclosing a world-space axis-aligned box.
+
+        Parameters
+        ----------
+        origin : np.ndarray, optional
+            World-space minimum corner. Defaults to the bounding box origin.
+        maximum : np.ndarray, optional
+            World-space maximum corner. Defaults to the bounding box maximum.
+
+        Returns
+        -------
+        tuple[np.ndarray, np.ndarray]
+            Local-space minimum and maximum coordinates.
+
+        Raises
+        ------
+        LoopValueError
+            If either bound is missing, invalid, or has the wrong shape.
+        """
+        if origin is None:
+            origin = self._origin
+        if maximum is None:
+            maximum = self._maximum
+        if origin is None or maximum is None:
+            raise LoopValueError("Origin and maximum must be set")
+
+        origin = np.asarray(origin, dtype=float)
+        maximum = np.asarray(maximum, dtype=float)
+        if origin.shape != (self.dimensions,) or maximum.shape != (self.dimensions,):
+            raise LoopValueError("Bounds have incorrect number of dimensions")
+        if not np.all(np.isfinite(origin)) or not np.all(np.isfinite(maximum)):
+            raise LoopValueError("Bounds must contain only finite values")
+        if np.any(origin > maximum):
+            raise LoopValueError("Maximum must be greater than or equal to origin")
+
+        corners = np.array(list(product(*zip(origin, maximum))), dtype=float)
+        local_corners = self.project(corners)
+        return np.min(local_corners, axis=0), np.max(local_corners, axis=0)
 
     def _apply_affine(
         self, xyz: np.ndarray, matrix: np.ndarray, inplace: bool = False

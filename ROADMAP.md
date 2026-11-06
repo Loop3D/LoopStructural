@@ -92,6 +92,66 @@ same-release removal. `.github/workflows/qgis-compat.yml` checks this out
 against the plugin's own test/import suite on every PR/push to `master`, not
 just at release time.
 
+### Legacy interpolator payloads (spec 005, FR-019)
+Decision date: 2026-11-03 (spec 005, decision C-003, user decision). Amended on 2026-11-05 (C-018, user decision).
+
+A legacy interpolator payload has no recoverable transform. The payload
+does not store the local origin or the local rotation. The loader cannot
+find them from the data.
+
+On the 1.x line, the loader keeps the old behaviour. A call with no choice
+loads the payload with the identity frame. It emits one `FutureWarning`.
+The warning names the choices and says that the next major release raises
+an error.
+
+The caller can choose now:
+- `local_origin` and `local_rotation` (both). The caller states the
+  transform.
+- `declare_identity=True`. The caller states that the transform is the
+  identity.
+
+A partial transform (only one of `local_origin` and `local_rotation`)
+raises `InterpolatorFormatError`.
+
+At the next major release, the loader raises `InterpolatorFormatError` for
+a call with no choice. The code carries a note to remove the fallback
+(`_STRICT_LEGACY` in `loop_interpolation._frame_persistence`).
+
+New payloads carry `format_version: 2`. A reader from before S3 fails on
+such a payload with a `TypeError` that names `format_version`.
+
+No stage of spec 005 breaks the 1.x public API (FR-028).
+
+The policy for a transform change, after constraints exist, is "reject at
+use" (decided 2026-11-05). The interpolator raises `StaleFrameError` at the
+next `set`, `evaluate` or `save` call. The interpolator changes no state.
+
+### Deprecation of GeologicalModel.rescale and scale (spec 005, S4)
+Decision date: 2026-11-05 (spec 005, decisions C-013 and C-016).
+
+`rescale` (local to world) and `scale` (world to local) keep their behaviour
+and their signature. Each one emits a `DeprecationWarning`. The warning names
+`bounding_box.reproject` and `bounding_box.project`.
+
+This replaces the status-log entry "2c-3". That entry said that both methods
+stay as signature-stable pass-throughs. The tier stays "stable" until removal.
+
+Removal is not before 2 minor releases after the first release that warns.
+Removal is also not before the known callers (the QGIS plugin) have moved.
+The library no longer calls either method.
+
+### Misfit diagnostics of GeologicalFeature (spec 005, S5)
+Decision date: 2026-11-05 (spec 005, S5, Q2).
+
+The misfit methods `evaluate_gradient_misfit` and `evaluate_value_misfit`
+keep their names and their public shape. The gradient value is now a cosine
+in world coordinates.
+
+A stale model gives a `UserWarning` and NaN. The model is not rebuilt.
+
+The new methods `evaluate_gradient_cosines` and `evaluate_value_residuals`
+give the 1-D result. The notice is in `COMPAT.md`.
+
 ## Stage sequence
 
 - [x] **Stage 0 — Planning infra.** This file, release/versioning/compat
@@ -836,6 +896,9 @@ just at release time.
   `loopstructuralvisualisation`, none warranted in `map2loop`), and the
   release-please/PyPI/ruff wiring. `tests/unit`: 695 passed/4 skipped, zero
   regressions.
+- **2026-11-05:** Spec 005 stage S3 implemented: saved interpolator frame, legacy-load rule, frame-keeping copies, stale-frame check. Gate result: root pytest 1978 passed, 5 skipped.
+- **2026-11-05:** Spec 005 stage S4 implemented: display, export and intrusion classification use stored world locations; rescale and scale deprecated.
+- **2026-11-05:** Spec 005 stage S5 implemented: resize paths keep the extent, cell-centre guard tests, non-mutating world-correct misfit diagnostics, residual and exclusion report.
 
 - **2026-11-06:** Stage 7 started. The spec and the plan for
   `packages/loop_link` exist (`specs/006-loop-link`). The package is new.

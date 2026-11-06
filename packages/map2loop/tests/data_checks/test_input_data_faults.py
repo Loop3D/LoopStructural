@@ -1,9 +1,10 @@
-import pytest
 import geopandas as gpd
+import pytest
 import shapely.geometry
-from map2loop.mapdata import MapData
-from map2loop.m2l_enums import Datatype
+
 from map2loop.data_checks import check_fault_fields_validity
+from map2loop.m2l_enums import Datatype
+from map2loop.mapdata import MapData
 
 
 @pytest.mark.parametrize(

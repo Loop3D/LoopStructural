@@ -1,22 +1,29 @@
 """Command line for the golden suite.
 
-  python -m tests.golden.run                      run everything, write figures + report.html to out/
-  python -m tests.golden.run --update             also (re)write the golden files from the current code
-  python -m tests.golden.run --case dome          one case
-  python -m tests.golden.run --engine P2          one engine
-  python -m tests.golden.run --vti                also write one .vti per run (open in ParaView / pyvista)
+python -m tests.golden.run                      run everything, write figures + report.html to out/
+python -m tests.golden.run --update             also (re)write the golden files from the current code
+python -m tests.golden.run --case dome          one case
+python -m tests.golden.run --engine P2          one engine
+python -m tests.golden.run --vti                also write one .vti per run (open in ParaView / pyvista)
 """
+
 from __future__ import annotations
 
 import argparse
 import html
-import json
 
 import numpy as np
 
 from . import geomodels, harness, render
 
-METRIC_COLS = ["value_rms", "angle_median", "angle_p90", "flipped_fraction", "data_value_rms", "data_normal_angle_max"]
+METRIC_COLS = [
+    "value_rms",
+    "angle_median",
+    "angle_p90",
+    "flipped_fraction",
+    "data_value_rms",
+    "data_normal_angle_max",
+]
 
 
 def write_vti(case_name: str, engine: str, result: dict, n: int = 33):
@@ -52,7 +59,9 @@ def report(all_results: dict, golden_status: dict):
             st = golden_status.get((case_name, eng), "")
             cells = "".join(f"<td>{r['metrics'][c]:.4g}</td>" for c in METRIC_COLS)
             body += f"<tr><td>{eng}</td><td>{r['info']['dof']}</td>{cells}<td>{st}</td></tr>"
-        rows.append(f"<table><tr><th>engine</th><th>dof</th>{head}<th>vs golden</th></tr>{body}</table>")
+        rows.append(
+            f"<table><tr><th>engine</th><th>dof</th>{head}<th>vs golden</th></tr>{body}</table>"
+        )
     page = (
         "<!doctype html><meta charset=utf-8><title>Interpolation golden report</title>"
         "<style>body{font:14px system-ui;margin:20px;max-width:1500px}table{border-collapse:collapse;margin:8px 0 28px}"
@@ -81,7 +90,7 @@ def main():
             continue
         r = harness.compute(case_name, engine)
         all_results.setdefault(case_name, {})[engine] = r
-        arrays, meta = harness.load_golden(case_name, engine)
+        arrays, _ = harness.load_golden(case_name, engine)
         if arrays is None:
             status[(case_name, engine)] = "no golden"
         else:
@@ -93,8 +102,10 @@ def main():
         if a.vti:
             write_vti(case_name, engine, r)
         m = r["metrics"]
-        print(f"{case_name:22s} {engine:7s} rms {m['value_rms']:.4f}  ang med {m['angle_median']:6.2f}  "
-              f"p90 {m['angle_p90']:6.2f}  solve {r['info']['t_solve']:.1f}s  {status[(case_name, engine)]}")
+        print(
+            f"{case_name:22s} {engine:7s} rms {m['value_rms']:.4f}  ang med {m['angle_median']:6.2f}  "
+            f"p90 {m['angle_p90']:6.2f}  solve {r['info']['t_solve']:.1f}s  {status[(case_name, engine)]}"
+        )
 
     for case_name, per_engine in all_results.items():
         render.render_case(case_name, per_engine)

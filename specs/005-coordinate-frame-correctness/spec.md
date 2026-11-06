@@ -1,6 +1,6 @@
 # Feature spec: Coordinate and fault-frame correctness
 
-**Feature**: `005-coordinate-frame-correctness` | **Created**: 2026-11-03 | **Status**: Review corrections applied; planning blocked on the required cascade to specs 003 and 004
+**Feature**: `005-coordinate-frame-correctness` | **Created**: 2026-11-03 | **Status**: S1 merged (pull request #392); S2 in #396; S3 in #397; S4 planned; S5 and S6 need planning
 
 **Input**: Fix the shared world-to-local coordinate defects and the fault-frame interpolation defects found in the two investigations.
 
@@ -96,11 +96,12 @@ A modeller saves an interpolator, reloads it, copies its configuration, or displ
 3. **Given** an API that returns an empty copy, **when** the copy is created, **then** it retains the coordinate frame. It need not contain the source observations or coefficients.
 4. **Given** an observation already stored in world coordinates, **when** it is displayed or exported as observation geometry, **then** its physical location is unchanged.
 5. **Given** a world-coordinate fault centre or intrusion observation, **when** a downstream consumer uses it, **then** no extra inverse projection changes its location.
-6. **Given** a legacy file with no recoverable transform or explicit caller declaration, **when** loading is requested, **then** loading fails. The error identifies the missing transform and the required caller action. No partial field is published.
-7. **Given** that legacy file and a caller-supplied transform or explicit identity declaration, **when** loading is retried, **then** its world evaluations satisfy SC-006. The loader does not silently guess identity.
+6. **Given** a legacy file with no recoverable transform or explicit caller declaration, **when** loading is requested on the 1.x line, **then** the file loads with the identity frame that older releases assumed, and one warning that end users see by default names the choices and says that the next major release raises an error. From the next major release, loading fails instead. The error identifies the missing transform and the required caller action. No partial field is published.
+7. **Given** that legacy file and a caller-supplied transform or explicit identity declaration, **when** loading is retried, **then** its world evaluations satisfy SC-006. The loader does not guess identity without a warning.
 8. **Given** a newly saved interpolator, **when** its payload is inspected, **then** it declares its format version, transform, and constraint coordinate space. These declarations survive 2 save/load cycles.
-9. **Given** a populated interpolator, **when** its transform is changed, **then** the documented FR-020 policy applies. Rejection preserves prior state. Acceptance preserves world evaluation after rebuilding. Existing restoration caches are populated before a separate check for stale use.
+9. **Given** a populated interpolator, **when** its transform is changed, **then** the documented FR-020 policy applies. Rejection preserves prior state; so does the rejection of each later use of the stale state. Acceptance preserves world evaluation after rebuilding. Restoration caches that exist (spec 003 adds them) are populated before a separate check for stale use.
 10. **Given** a completed stage and its documented rollback target, **when** the stage is reversed, **then** old-format R1 fields remain usable. An unsupported new-format field fails without changing valid state.
+11. **Given** a stable method that this work deprecates, **when** a caller uses it, **then** it returns the same result as before and emits one `DeprecationWarning` that names its replacement. No call inside the library emits that warning.
 
 ### User story 4: Trust support geometry and diagnostics (priority: P2)
 
@@ -148,7 +149,7 @@ A developer compares frame interpolation, displacement, and coordinate utilities
 - Explicit and inferred fault centres; nonorthogonal input fault directions; curved observations; conflicting extent observations.
 - Buffers of 0, 0.2, and 0.5; forced mesh geometry; constraints on and outside support boundaries.
 - A transform changed after data, coefficients, or restored-point caches already exist.
-- Legacy files without transform metadata fail until the caller supplies a transform or explicitly declares identity. Recoverable metadata is used without guessing.
+- Legacy files without transform metadata load with the identity frame and one warning on the 1.x line, unless the caller supplies a transform or explicitly declares identity. From the next major release they fail until the caller does so. Recoverable metadata is used without guessing.
 - Malformed metadata and unsupported future format versions fail without publishing a partial field or changing prior valid state.
 - Conflicting caller transform information and saved metadata fail with an error naming the conflict. An explicit identity declaration is not an implicit default.
 - A diagnostic with no valid vectors; a constant scalar field; residual normalisation with zero field range.
@@ -176,9 +177,9 @@ A developer compares frame interpolation, displacement, and coordinate utilities
 - **FR-015**: Cell-centre sampling MUST agree with the world geometry and cell association of the returned grid. No centre may lie beyond its associated cell because of mixed bases or endpoint spacing.
 - **FR-016**: Interpolator persistence MUST retain its transform and the declared coordinate space of saved constraints. A format version MUST identify the new metadata.
 - **FR-017**: Loading saved local arrays MUST NOT apply the public world-input conversion to them a second time.
-- **FR-018**: APIs that copy an interpolator configuration MUST retain its coordinate frame, including APIs whose documented result is empty.
-- **FR-019**: A legacy file with no recoverable transform MUST require a caller-supplied transform or an explicit identity declaration. Missing, malformed, unsupported, or conflicting transform information MUST fail with an actionable error before a partial field is published. The loader MUST NOT silently assume identity.
-- **FR-020**: Changes to a transform MUST NOT leave dependent constraints, coefficients, or caches reusable in their previous coordinate frame. Rebuilding or rejecting the change before mutation are acceptable documented policies.
+- **FR-018**: APIs that copy an interpolator configuration MUST retain its coordinate frame, including APIs whose documented result is empty. An API that has no such copy (the piecewise linear interpolator has no `copy`) stays unsupported and keeps its documented rejection.
+- **FR-019**: A legacy file with no recoverable transform MUST require a caller-supplied transform (the local origin and the local rotation, both) or an explicit identity declaration. A partial transform is not enough. Missing, malformed, unsupported, or conflicting transform information MUST fail with an actionable error before a partial field is published. The loader MUST NOT silently assume identity. On the 1.x line, a legacy file with no choice at all is the one exception to the error: it loads with the identity frame that older releases assumed, and it emits one `FutureWarning` that names the choices and says that the next major release raises an error. The code that allows this MUST carry a note to remove it at the next major release (C-018).
+- **FR-020**: Changes to a transform MUST NOT leave dependent constraints, coefficients, or caches reusable in their previous coordinate frame. Rebuilding the dependent state, rejecting the change before mutation, or rejecting every later use of the stale state are acceptable documented policies. In each policy the stored constraints, coefficients, and caches stay unchanged until the caller rebuilds them.
 - **FR-021**: A matrix accepted as a rotation MUST be finite, have the correct dimensions, and represent a proper rigid rotation. Scale and shear MUST NOT silently use rigid gradient-transformation rules.
 - **FR-022**: Displayed observations, fault-centre geometry, and intrusion classification MUST use their stored world locations without an extra inverse projection.
 - **FR-023**: Gradient and value diagnostics MUST compare quantities in one coordinate basis and MUST NOT mutate the state they inspect.
@@ -186,11 +187,12 @@ A developer compares frame interpolation, displacement, and coordinate utilities
 - **FR-025**: The audited auxiliary point-transformation utilities MUST support forward/inverse round trips for their documented point-cloud shapes. Duplicate public entry points MUST retain their compatible import paths.
 - **FR-026**: Fault-frame validation MUST check scalar values, gradient magnitudes, gradient directions, constraint residuals, and displacement against analytic references.
 - **FR-027**: Integration error, fault discontinuities, and outside-support behaviour MUST be assessed separately from smooth frame-interpolation error. Existing zero-gradient protection MUST remain effective.
-- **FR-028**: The public model API, return shapes, supported import paths, and inputs with known coordinate meaning MUST be preserved. The approved exception for ambiguous legacy files is FR-019 and requires a migration note. Any required public API breaking change MUST follow the constitution and roadmap decision process.
+- **FR-028**: The public model API, return shapes, supported import paths, and inputs with known coordinate meaning MUST be preserved. On the 1.x line, a legacy file keeps its old load path (FR-019, C-018), so no stage breaks the public API there. The change of that path to an error happens at the next major release, which the maintainer plans. `ROADMAP.md` and `COMPAT.md` record the plan and the removal of the fallback. Any required public API breaking change MUST follow the constitution and roadmap decision process.
 - **FR-029**: Analytic evidence MAY justify an explicitly reviewed correction to an affected golden result. Each change MUST identify the defect and its expected physical effect. Unaffected baselines and acceptance tolerances MUST remain unchanged. Tests MUST NOT preserve a demonstrated defect merely because an old result contains it.
 - **FR-030**: Each required backend and capability in the coverage matrix MUST satisfy the coordinate contract through its integration boundary. Optional exclusions MUST identify the unavailable dependency or unsupported capability. A new native, browser, or RBF solver MUST NOT become a prerequisite for existing Python fixes.
 - **FR-031**: Production-path regression tests MUST reproduce each defect before its fix and verify it after the fix. Replacement investigation samplers MUST NOT be the acceptance path.
 - **FR-032**: The work MUST ship in independently testable stages. Each stage MUST have a documented rollback and MUST preserve compatibility entry points.
+- **FR-033**: A stable public method that this work stops using inside the library MAY be deprecated if its behaviour and signature stay unchanged. A deprecation MUST emit a runtime `DeprecationWarning` that names the replacement. It MUST be logged in `COMPAT.md` with its removal rule. No call inside the library MAY trigger it. The first deprecations are `GeologicalModel.rescale` (local to world; the replacement is the bounding-box reprojection) and `GeologicalModel.scale` (world to local; the replacement is the bounding-box projection). Both go in the same release, with one lifecycle.
 
 ### Ownership and boundaries
 
@@ -324,7 +326,7 @@ R4 checks geometric compatibility and sampling. It does not require an exact non
 | Backend or capability | Required fixtures and operations | Gate |
 |---|---|---|
 | Python FDI and PLI/P1 | R1 evaluation and fitting; R2 fault frame and displacement; R3 relationships; R5 bounds; supported persistence and copies; transform lifecycle | Mandatory for both engines |
-| Python P2 | R1 evaluation and supported fitting; R3 reference and row assembly; bounds, persistence, and documented copy operations; transform lifecycle | Mandatory |
+| Python P2 | R1 evaluation with the exact nodal field (C-017); R3 reference and row assembly; bounds, persistence, and documented copy operations; transform lifecycle | Mandatory |
 | Python FDI-fold, PLI discrete-fold, and P2-fold | R3 point and direction sampling, masks, sign alignment, nonzero targets, and each supported regularisation family; R4 geometry | Mandatory for every existing family; preserve documented unsupported cases |
 | Python FDI and PLI constant-norm variants | R1 with its analytic norm target; world queries and gradients; transform lifecycle; inherited affected relationships | Mandatory |
 | Common 2D and 3D geometry | Point and direction round trips, corner enclosures, resize stability, cell centres, and auxiliary transformations | Mandatory |
@@ -334,7 +336,7 @@ R4 checks geometric compatibility and sampling. It does not require an exact non
 An unsupported capability must retain its documented rejection. Missing optional dependencies must not skip mandatory Python checks. A future native or RBF engine is not a prerequisite.
 
 - **SC-001**: Rigid point round trips differ by at most `Tp` for 2 and 3 dimensions. Direction round trips have maximum component error at most `1e-12` for unit inputs.
-- **SC-002**: R1 value error is at most `1e-8*F`. Its gradient component error is at most `1e-8*max(1,|gradient|)`. The same limits apply after translation and computational or physical rotation.
+- **SC-002**: R1 value error is at most `1e-8*F`. Its gradient component error is at most `1e-8*max(1,|gradient|)`. The same limits apply after translation and computational or physical rotation. For P2, these limits apply to the exact nodal field of R1 (C-017).
 - **SC-003**: R2 has maximum scalar-coordinate error at most `1e-6`, relative gradient-magnitude error at most `1e-4`, and maximum direction error at most 0.01 degree. Sample its 6859 specified probes with both FDI and PLI. Use CG relative tolerance `1e-10`, absolute tolerance `1e-12`, and at most 20000 iterations. Explicit and inferred centres satisfy the same limits.
 - **SC-004**: On R2's 1332 off-fault section points, each displacement comparison differs from its analytic-frame result by at most 0.03 world-length units. This is 1 percent of slip 3. Use the same displacement algorithm for both frames. Count fault-plane and invalid-support samples separately.
 - **SC-005**: Run R5 for 3 buffers, 3 rotations, and explicit and inferred centres with both FDI and PLI. All requested corners and generated observations are enclosed within `Tp`. Each face differs from its expected bound by at most 1 cell plus `Tp`, outward only. All 3 buffer requests produce distinct bounds. Zero valid observations are lost because of a space mismatch.
@@ -344,11 +346,11 @@ An unsupported capability must retain its documented rejection. Missing optional
 - **SC-009**: Diagnostics cause 0 changes to stored positions, vectors, weights, coefficients, and cache-validity state. A matching analytic unit direction gives cosine agreement within `1e-10`.
 - **SC-010**: Test each documented auxiliary forward/inverse transformation with 1 point and point clouds of 4 and 50 points. Maximum round-trip position error is at most `Tp`. Untransformed columns remain exactly unchanged.
 - **SC-011**: Reapplying unchanged support bounds 10 times causes 0 changes to origin, maximum, spacing, and counts. Every grid cell has exactly 1 centre; all centres match their exported physical cells within `Tp`.
-- **SC-012**: Invalid rotations and invalid saved metadata produce 1 actionable failure per attempted operation and 0 changes to valid prior state. An ambiguous legacy file fails without an explicit caller choice. With a supplied transform or identity declaration, its values and gradients satisfy SC-006.
+- **SC-012**: Invalid rotations and invalid saved metadata produce 1 actionable failure per attempted operation and 0 changes to valid prior state. From the next major release, an ambiguous legacy file fails without an explicit caller choice; on the 1.x line it loads with the identity frame and one warning. With a supplied transform or identity declaration, its values and gradients satisfy SC-006.
 - **SC-013**: R4 reference samples and the new automatic direction targets agree with their analytic unit gradients within `1e-10` per component. The centre extent is `(0,1,0)`. The two off-centre sampled extent directions differ by at least 15 degrees. A constant centre direction applied at those probes fails acceptance.
 - **SC-014**: 100 percent of affected production paths have regression coverage. Before merge, `pytest` and `ruff check LoopStructural packages` must both pass. Affected package tests and API/import compatibility checks must also pass. Pre-change comparisons diagnose existing failures; they do not waive a failing required gate.
 - **SC-015**: 100 percent of changed golden results have analytic evidence and an explicit review record. Exactly 0 unaffected baseline files change. Acceptance tolerances are relaxed in exactly 0 cases to make a correction pass.
-- **SC-016**: For populated R1, change the local origin to `O+(3,-2,1)` and rotate 30 degrees about z. Rejection causes 0 state changes. Acceptance causes 0 stale constraint or coefficient uses and preserves world evaluation within SC-002 after rebuilding. If restoration caches exist, repeat on R2 after populating them. After an accepted change, require 0 stale cache hits and world restored points within `Tp` of an uncached control.
+- **SC-016**: For populated R1, change the local origin to `O+(3,-2,1)` and rotate 30 degrees about z. Rejection causes 0 state changes. If the policy rejects each later use of the stale state, each use of the populated interpolator raises 1 error. It causes 0 state changes. A rebuild in the new frame preserves world evaluation within SC-002. Acceptance causes 0 stale constraint or coefficient uses and preserves world evaluation within SC-002 after rebuilding. If restoration caches exist (spec 003 adds them), repeat on R2 after populating them. After an accepted change, require 0 stale cache hits and world restored points within `Tp` of an uncached control.
 - **SC-017**: Each stage records 1 rollback target and passes 1 rollback compatibility check. Old-format R1 inputs retain their documented load path and SC-006 accuracy. An unsupported new-format input causes 1 actionable failure and 0 mutations of valid state. Test an unknown future format version as a separate failure case.
 - **SC-018**: Every mandatory backend-matrix cell has a passing test result and 0 skips. Optional exclusions identify their exact dependency or unsupported capability. A missing optional backend is never reported as having passed.
 - **SC-019**: Before planning starts, both affected specs 003 and 004 contain the accepted scoped amendments. There are 0 remaining conflicts about corrected baselines, fingerprints, cache invalidation, or the coordinate-conversion boundary. This gate does not require either solver feature to be implemented.
@@ -391,6 +393,7 @@ An unsupported capability must retain its documented rejection. Missing optional
 | FR-030 | U5.6; SC-018 |
 | FR-031 | SC-014; pre-fix and post-fix regression evidence |
 | FR-032 | U3.10; SC-017 |
+| FR-033 | U3.11; SC-014 |
 
 ## Out of scope
 
@@ -402,12 +405,15 @@ An unsupported capability must retain its documented rejection. Missing optional
 - A new RBF, native, browser, or GPU solver; performance work beyond checking that correctness changes do not remove existing supported paths.
 - A rewrite of the intrusion workflow, QGIS plugin, model graph, or all export formats. The audited coordinate consumers and shared geometry are in scope.
 - Changes to other spec documents, branches, worktrees, commits, or release publication during this interview.
+- The trace and dip anisotropy settings of a fault after a property change. A rebuild after a property change uses anisotropy weights of 1.0, also when the caller set 0. FR-012 covers only the fault buffer and forced mesh geometry. Issue #394 records this defect (C-005).
+- Solver settings that `build` ignores. Top-level `rtol`, `atol` and `maxiter` have no effect, and no warning occurs; only `solver_kwargs` applies them. This is not a coordinate-frame defect. Issue #393 records it (C-006). The tests of this spec give the SC-003 solve settings through `solver_kwargs`.
+- The accuracy of the P2 value-only fit of R1. In every frame it misses the SC-002 limits, also in the unrotated control. It depends on the solver and the regularisation, not on a coordinate space. Issue #399 records it (C-017).
 
 ## Risks and rollback
 
 Coordinate fixes intentionally change outputs that encoded the defect. This can affect stored golden results and user workarounds that supplied extra observations. The user approved reviewed changes supported by analytic evidence; unaffected baselines remain fixed. Migration notes must explain the corrected world-coordinate behaviour and the effect on such workarounds.
 
-A saved solved field may lack the information needed to recover its physical placement. Loading then requires a caller-supplied transform or an explicit identity declaration. The error must explain that requirement. No warning-only identity fallback is allowed.
+A saved solved field may lack the information needed to recover its physical placement. From the next major release, loading requires a caller-supplied transform or an explicit identity declaration, and the error explains that requirement. On the 1.x line, a legacy file with no choice loads with the identity frame and one warning (C-018).
 
 Stages must retain compatible entry points. A stage can be reverted independently if its acceptance checks fail. Files written in a new format must retain their declared version. A rollback must reject unsupported new files instead of silently treating them as legacy identity files.
 
@@ -426,7 +432,7 @@ Each stage must demonstrate its rollback against the documented reader version a
 
 - **C-001, name**. Question: which name should this spec use? Answer: keep `005-coordinate-frame-correctness`.
 - **C-002, extent geometry**. Question: how should supplied centre, normal, and slip directions constrain generated extent geometry? Answer: use those directions at the centre and allow curvature away from it. An explicit planar mode is not required.
-- **C-003, legacy persistence**. Question: how should an old interpolator load when its transform cannot be recovered? Answer: require the caller to supply the transform or explicitly declare identity. Do not assume identity with a warning.
+- **C-003, legacy persistence**. Question: how should an old interpolator load when its transform cannot be recovered? Answer: require the caller to supply the transform or explicitly declare identity. Do not assume identity with a warning. (C-018 allows the warning-only fallback on the 1.x line until the next major release.)
 - **C-004, known-defect baselines**. Question: may analytic evidence justify a change to a golden result containing a coordinate defect? Answer: allow reviewed corrections to affected baselines and preserve unaffected results.
 
 All four interview decisions are resolved. The requirements, acceptance scenarios, edge cases, and success criteria above incorporate the answers.
@@ -439,6 +445,30 @@ All four interview decisions are resolved. The requirements, acceptance scenario
 - Made the accepted cascade to specs 003 and 004 a pre-plan prerequisite. This review has not changed those documents.
 - Review verdict remains **Needs changes** only because that external prerequisite is still outstanding. No new user-policy clarification is required.
 
+### Decisions after stage S1, answered on 2026-11-04
+
+The S1 build (pull request #392) found two defects that the spec did not decide, and the maintainer decided the plan point OP2.
+
+- **C-005, anisotropy after a property change**. Question: must FR-012 also keep the trace and dip anisotropy settings through a rebuild? Answer: no. This is out of scope for spec 005. Issue #394 records it.
+- **C-006, ignored solver settings**. Question: must this spec make `build` apply or reject top-level solver settings? Answer: no. It is not a coordinate-frame defect. Issue #393 records it.
+- **C-007, R2 and R5 run time (plan OP2)**. Question: where does the mandatory R2 and R5 matrix run? Answer: in the default `pytest` run, with no marker. In S1, the four new test files take about 5 minutes. The analytic file takes 264 s. The full root suite takes about 14.5 minutes.
+
+### Decisions after stages S2 to S4, answered on 2026-11-05
+
+The maintainer decided these points during the S2 to S4 builds and plans. The plan holds their detail.
+
+- **C-008, constant-norm FDI defect (S2)**. `ConstantNormFDIInterpolator` raised `IndexError` for every frame, because `StructuredGrid.element_size` is one scalar. The defect does not depend on the frame. A separate task fixed it. No requirement changed.
+- **C-009, policy for a transform change (S3, plan OP4)**. The interpolator rejects each later use of its stored data in another frame, and changes no state. S3 neither rejects the change itself nor rebuilds automatically. FR-020, U3.9 and SC-016 name this policy.
+- **C-010, old reader (S3, plan OP5)**. A reader from before S3 fails on a new-format file with a `TypeError` that names `format_version`, and makes no object. The maintainer accepts this as the failure that SC-017 asks for at the rollback target.
+- **C-011, partial legacy transform (S3 end review)**. A legacy file needs the local origin and the local rotation, both, or an identity declaration. A partial input raises an error that names the missing part. FR-019 states this.
+- **C-012, P2 fit accuracy (S3, plan OP7)**. The P2 value-only fit of R1 misses SC-002 in every frame. The S3 rebuild test uses the exact nodal control for P2. C-017 decided the scope of SC-002 for P2.
+- **C-013, deprecation of `rescale` (S4 plan)**. `GeologicalModel.rescale` keeps its behaviour and warns. FR-033 and U3.11 state this.
+- **C-014, version of the legacy-load break**. The first draft of FR-028 asked for a major version with a `BREAKING CHANGE` commit footer. C-015 replaced it.
+- **C-015, release of the legacy-load break (2026-11-05, maintainer)**. Question: how does the break of FR-019 ship? Options were a major release with a `BREAKING CHANGE` footer on the squash commit of pull request #397, a hold of stage S3 for a 2.0 line, or a minor release with a note. Answer: a minor release with a note. (C-018 removes the break from 1.x, so no exception is needed there; the rest of this entry applies to the major release.) The rule of `ROADMAP.md` ("1.x stays truly backward compatible") gets an explicit exception. The constitution asks for a "major-version note" for a breaking change. The note is the statement of this decision in `ROADMAP.md`, `COMPAT.md` and the release notes. If the maintainer reads the constitution as a demand for a major release, the maintainer amends it by pull request.
+- **C-016, deprecation of `scale` (2026-11-05, maintainer)**. Question: deprecate `GeologicalModel.scale` with `rescale`? Options were: both together, `rescale` only, or `scale` one minor release later. Answer: both together. Nothing in the library calls `scale`, so no library code changes for it. The warning names the bounding-box projection as the replacement. `COMPAT.md` gets one row for each method.
+- **C-017, SC-002 for the P2 fit (2026-11-05, maintainer)**. Question: does SC-002 apply to the P2 value-only fit of R1? The fit misses SC-002 in every frame: the gradient error is 3.9e-7 against a limit of 1e-8, also in the unrotated control; the value error is 7.8e-8 against a limit of 7.5e-8 unrotated, and 2e-7 to 7.6e-7 at 30 degrees (the earlier figure of 1.8e-8 was a ratio, not the error). Options were: the exact nodal field only, a frame-invariance bound for the fit, or a fix of the P2 fit in this spec. Answer: the exact nodal field only. SC-002 for P2 checks the coordinate conversion. The fit accuracy is a solver property and goes to a separate issue (#399), as C-005 and C-006 did. The backend table and the out-of-scope list say so.
+- **C-018, backward-compatible legacy load (2026-11-05, maintainer)**. The maintainer will release a major version, but not yet. Question: can the change of FR-019 stay backward compatible until then? Answer: yes. On the 1.x line, a legacy file with no choice loads with the identity frame that older releases assumed, and it emits one `FutureWarning` (visible to end users by default, because a wrong placement can be silent). The new keyword arguments (a supplied transform, an identity declaration) work now, and a partial transform is refused. The code carries a note to remove the fallback at the next major release, when the loader raises the error of FR-019. This replaces the sentence "do not assume identity with a warning" of C-003 for the 1.x line only. From the major release, C-003 applies in full. No break ships in 1.x, so C-015 needs no exception to the 1.x rule.
+
 ## Next step
 
-Run spec-cascade to apply the accepted changes to specs 003 and 004. Recheck their consistency with 005 and confirm SC-019. Planning may start only after that gate passes. No clarification marks remain.
+S1 is merged (#392). S2 is in pull request #396, and S3 in #397 (stacked on #396). The S4 plan is in `plan.md`. No clarification mark is open. Run the spec-tasks skill for stage S4. Stages S5 and S6 need the spec-planner skill (plan OP1).

@@ -2,11 +2,11 @@
 ### at the moment only tests for DIPDIR values lower than 360 degrees
 ### TODO: add more tests for this function
 
-import pytest
 import geopandas
 import shapely
-from map2loop.mapdata import MapData
+
 from map2loop.m2l_enums import Datatype
+from map2loop.mapdata import MapData
 
 
 def test_if_m2l_returns_all_sampled_structures_with_DIPDIR_lower_than_360():
@@ -28,7 +28,11 @@ def test_if_m2l_returns_all_sampled_structures_with_DIPDIR_lower_than_360():
 
     # create mock data
     data = {
-        'geometry': [shapely.geometry.Point(1, 1), shapely.geometry.Point(2, 2), shapely.geometry.Point(3, 3)],
+        'geometry': [
+            shapely.geometry.Point(1, 1),
+            shapely.geometry.Point(2, 2),
+            shapely.geometry.Point(3, 3),
+        ],
         'DIPDIR': [45.0, 370.0, 420.0],
         'DIP': [30.0, 60.0, 50],
         'OVERTURNED': ["False", "True", "True"],
@@ -44,15 +48,9 @@ def test_if_m2l_returns_all_sampled_structures_with_DIPDIR_lower_than_360():
 
     # make it parse the structure map and raise exception if error in parse_structure_map
 
-    try:
-        md.parse_structure_map()
-    except Exception as e:
-        pytest.fail(f"parse_structure_map raised an exception: {e}")
+    md.parse_structure_map()
 
     # check if all values below 360
     assert (
         md.data[Datatype.STRUCTURE]['DIPDIR'].all() < 360
     ), "MapData.STRUCTURE is producing DIPDIRs > 360 degrees"
-
-
-#

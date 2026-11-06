@@ -2,10 +2,12 @@ import logging
 
 loggers = {}
 
-ch = ch = logging.StreamHandler()
+ch = logging.StreamHandler()
 formatter = logging.Formatter("%(levelname)s: %(asctime)s: %(filename)s:%(lineno)d -- %(message)s")
 ch.setFormatter(formatter)
 ch.setLevel(logging.WARNING)
+
+
 def get_levels():
     """dict for converting to logger levels from string
 

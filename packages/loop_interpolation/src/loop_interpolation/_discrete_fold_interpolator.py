@@ -10,7 +10,11 @@ from loop_common.logging import get_logger as getLogger
 
 from ._fold_event import FoldEvent
 from ._fold_norm_alignment import resolve_fold_norm_target
-from ._fold_setup import setup_with_fold_constraints
+from ._fold_setup import (
+    sample_fold_geometry,
+    setup_with_fold_constraints,
+    world_norm_constraints,
+)
 from ._interpolatortype import InterpolatorType
 from ._p1interpolator import P1Interpolator as PiecewiseLinearInterpolator
 from ._regularisation import DirectionalRegularisation
@@ -94,7 +98,7 @@ class DiscreteFoldInterpolator(PiecewiseLinearInterpolator):
             constraints (if present). ``warn`` logs only, ``correct`` flips
             the effective ``fold_norm`` sign, and ``none`` skips checks.
         mask_fn : callable, optional
-            called with the element barycentres; elements for which it returns True get zero weight
+            called with the world element barycentres; elements for which it returns True get zero weight
 
 
         Returns
@@ -109,16 +113,20 @@ class DiscreteFoldInterpolator(PiecewiseLinearInterpolator):
         eg = self.support.get_element_gradients(np.arange(self.support.n_elements))
         # get array of all nodes for all elements N,4,3
         nodes = self.support.nodes[self.support.get_elements()[np.arange(self.support.n_elements)]]
-        # calculate the fold geometry for the elements barycentre
-        deformed_orientation, fold_axis, dgz = self.fold.get_deformed_orientation(
-            self.support.barycentre
+        # the fold provider works in world coordinates, so sample it at the
+        # world barycentres and convert each direction to local coordinates
+        world_bc, deformed_w, axis_w, dgz_w = sample_fold_geometry(
+            self, self.fold, self.support.barycentre
         )
+        deformed_orientation = self.world_to_local_vectors(deformed_w)
+        fold_axis = self.world_to_local_vectors(axis_w)
+        dgz = self.world_to_local_vectors(dgz_w)
         # calculate element volume for weighting
         vecs = nodes[:, 1:, :] - nodes[:, 0, None, :]
         vol = np.abs(np.linalg.det(vecs)) / 6
         weight = np.ones(self.support.n_elements, dtype=float)
         if mask_fn is not None:
-            weight[mask_fn(self.support.barycentre)] = 0
+            weight[mask_fn(world_bc)] = 0
         if fold_orientation is not None:
             """
             dot product between vector in deformed ori plane = 0
@@ -172,7 +180,7 @@ class DiscreteFoldInterpolator(PiecewiseLinearInterpolator):
 
             target_norm = resolve_fold_norm_target(
                 fold=self.fold,
-                normal_constraints=self.get_norm_constraints(),
+                normal_constraints=world_norm_constraints(self),
                 fold_norm=fold_norm,
                 dgz_alignment=dgz_alignment,
                 logger=logger,
@@ -199,6 +207,8 @@ class DiscreteFoldInterpolator(PiecewiseLinearInterpolator):
                 f"Adding fold regularisation constraint to  w = {fold_regularisation[0]} {fold_regularisation[1]} {fold_regularisation[2]}"
             )
 
+            # the base method calls the provider with world points
+            # and converts the returned world vectors to local vectors
             def _masked_fold_direction(component_index: int):
                 def _provider(points: np.ndarray) -> np.ndarray:
                     deformed, axis, normal = self.fold.get_deformed_orientation(points)
