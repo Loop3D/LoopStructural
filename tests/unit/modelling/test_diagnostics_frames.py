@@ -22,15 +22,17 @@ from tests.fixtures.coordinate_frames import (
     model_with_frame,
     r3_gradient,
     r3_value,
+    tp,
     world_foliation_model,
 )
 
 ENGINES = ("FDI", "PLI")
 R1_UNIT = R1_GRADIENT / np.linalg.norm(R1_GRADIENT)
-# Bound of |1 - cosine| for the real solved model. The independent measurement
-# over the 24 cells gave a maximum of 4.41e-4. The bound is 2 times this value
-# (8.8e-4), rounded up to one significant digit.
-TOL_SOLVED = 9e-4
+# Bounds of |1 - cosine| for the real solved model, one for each engine.
+# Each bound is 2 times the largest value measured over the 12 cells of that
+# engine with the method under test (FDI 1.215e-4, PLI 4.414e-4).
+TOL_SOLVED_FDI = 2.43e-4
+TOL_SOLVED_PLI = 8.83e-4
 
 
 def _cell_id(cell):
@@ -82,7 +84,7 @@ def _snapshot(feature):
             name: copy.deepcopy(constraint["w"])
             for name, constraint in interpolator.constraints.items()
         },
-        "report_id": id(interpolator.latest_diagnostics_report),
+        "report": interpolator.latest_diagnostics_report,
     }
 
 
@@ -96,7 +98,7 @@ def _assert_same_state(before, after):
     assert before["weights"].keys() == after["weights"].keys()
     for name, weights in before["weights"].items():
         assert np.array_equal(weights, after["weights"][name]), f"weights of {name} changed"
-    assert before["report_id"] == after["report_id"]
+    assert before["report"] is after["report"], "the report object changed"
 
 
 def _independent_cosines(feature):
@@ -153,17 +155,37 @@ def test_gradient_cosine_matches_analytic_direction_exact_field(cell, monkeypatc
     """With an exact field the world cosine of each stored row is 1."""
     anchor, rotation, engine = cell
     _, feature, _ = _build(anchor, rotation, engine)
+    recorded = []
 
     def analytic_gradient(points, *args, **kwargs):
-        return np.tile(R1_UNIT, (len(np.atleast_2d(points)), 1))
+        points = np.atleast_2d(points)
+        recorded.append(np.array(points, dtype=float, copy=True))
+        return np.tile(R1_UNIT, (len(points), 1))
 
-    monkeypatch.setattr(feature, "evaluate_gradient", analytic_gradient)
+    # A feature with no faults ends in interpolator.evaluate_gradient.
+    monkeypatch.setattr(feature.interpolator, "evaluate_gradient", analytic_gradient)
     old = np.asarray(feature.evaluate_gradient_misfit(), dtype=float)
     assert old.shape == (2, 4)
     assert np.all(np.abs(1.0 - old) <= 1e-10)
+    recorded.clear()
     new = feature.evaluate_gradient_cosines()
     assert new.shape == (8,)
     assert np.all(np.abs(1.0 - new) <= 1e-10)
+    # The points that reach the interpolator are the world positions of the stored rows.
+    interpolator = feature.interpolator
+    expected = np.concatenate(
+        [
+            interpolator.local_to_world_points(
+                np.array(interpolator.data[key], dtype=float, copy=True)[:, :3]
+            )
+            for key in ("gradient", "normal")
+        ]
+    )
+    seen = np.concatenate(recorded)
+    assert seen.shape == expected.shape == (8, 3)
+    length = max(float(np.ptp(expected, axis=0).max()), 1.0)
+    width = float(np.abs(expected).max())
+    np.testing.assert_allclose(seen, expected, rtol=0, atol=tp(length, width))
 
 
 @pytest.mark.parametrize("cell", CELLS, ids=CELL_IDS)
@@ -175,7 +197,8 @@ def test_gradient_cosine_matches_analytic_direction_exact_field_solved_model(cel
     print(f"max |1 - cos| independent {_cell_id(cell)}: {np.max(np.abs(1.0 - independent)):.3e}")
     new = feature.evaluate_gradient_cosines()
     assert new.shape == (8,)
-    assert np.max(np.abs(1.0 - new)) <= TOL_SOLVED
+    tolerance = TOL_SOLVED_FDI if engine == "FDI" else TOL_SOLVED_PLI
+    assert np.max(np.abs(1.0 - new)) <= tolerance
 
 
 @pytest.mark.parametrize("cell", VALUE_CELLS, ids=VALUE_IDS)
@@ -472,8 +495,8 @@ def test_gradient_outside_points_with_pli_are_measured():
     unattributed = sum(
         r.count for r in records if (r.family, r.reason) == ("gradient", "unattributed")
     )
-    print(f"PLI gradient: unattributed={unattributed} outside_model={outside}")
     assert outside == 3
+    assert unattributed == 8
 
 
 def _faulted_built_model():

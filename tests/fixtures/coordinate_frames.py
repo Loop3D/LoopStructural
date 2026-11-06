@@ -18,6 +18,7 @@ from loop_interpolation import (
 )
 
 from LoopStructural import GeologicalModel
+from LoopStructural.modelling.features.fault import FaultSegment
 
 ANCHORS = np.array(
     [
@@ -369,3 +370,223 @@ class AnalyticFold:
             lambda points: _tile((0.0, 0.0, 1.0), points),
             lambda points: _unit(r4_frame(points, anchor)[1][0]),
         )
+
+
+R2_SLIP = 3.0
+R2_STEPS = 20
+R2_DISPLACEMENT_TOL = 0.03
+CURVED_RADIUS = 5.0
+CURVED_GX = 0.2
+
+
+def r2_displacement_section(anchor: np.ndarray) -> np.ndarray:
+    """Return the 1369 world points of the R2 section at y' = 0.
+
+    The local x' and z' coordinates are -9, -8.5, ..., 9 (37 values each).
+    """
+    offsets = np.arange(-9, 9.5, 0.5)
+    x_values, z_values = np.meshgrid(offsets, offsets, indexing="ij")
+    local = np.column_stack((x_values.ravel(), np.zeros(x_values.size), z_values.ravel()))
+    return anchor + local
+
+
+def r2_section_masks(anchor: np.ndarray, section: np.ndarray) -> tuple[np.ndarray, np.ndarray]:
+    """Return the masks (smooth, plane) of the section points.
+
+    The smooth mask selects ``abs(x') >= 0.5`` (1332 points). The plane mask
+    selects the points on the fault plane (37 points).
+    """
+    smooth = np.abs((np.asarray(section) - anchor)[:, 0]) >= 0.5
+    return smooth, ~smooth
+
+
+def r2_analytic_fault(
+    anchor: np.ndarray,
+    steps: int = R2_STEPS,
+    displacement: float = R2_SLIP,
+    gradient_override: Callable[[int, np.ndarray, np.ndarray], np.ndarray] | None = None,
+) -> FaultSegment:
+    """Return a fault segment whose three frame coordinates are the R2 analytic frame.
+
+    Parameters
+    ----------
+    anchor : np.ndarray
+        World origin of the R2 frame.
+    steps : int
+        Number of integration steps of the fault.
+    displacement : float
+        Maximum displacement of the fault.
+    gradient_override : callable, optional
+        Function ``(coordinate, points, gradient)`` that returns a replacement for the
+        gradient of one coordinate. It gets the current points of each call.
+    """
+
+    def _value(coordinate: int) -> Callable[[np.ndarray], np.ndarray]:
+        return lambda points: r2_frame(points, anchor)[0][:, coordinate]
+
+    def _gradient(coordinate: int) -> Callable[[np.ndarray], np.ndarray]:
+        def _evaluate(points: np.ndarray) -> np.ndarray:
+            gradient = r2_frame(points, anchor)[1][:, coordinate, :]
+            if gradient_override is not None:
+                gradient = gradient_override(coordinate, points, gradient)
+            return gradient
+
+        return _evaluate
+
+    features = [AnalyticReference(_value(i), _gradient(i), f"r2_coordinate_{i}") for i in range(3)]
+    return FaultSegment("r2_fault", features, steps=steps, displacement=displacement)
+
+
+def _cubic_profile(t: np.ndarray) -> np.ndarray:
+    """Return ``f(t) = 1 - 3 t^2 + 2 t^3``."""
+    return 1 - 3 * t**2 + 2 * t**3
+
+
+def r2_closed_form_displacement(
+    section: np.ndarray, anchor: np.ndarray, slip: float = R2_SLIP
+) -> np.ndarray:
+    """Return the R2 displacement vectors by hand, with no library profile.
+
+    For ``x' > 0`` the vector is ``(0, 0, -0.5 * slip * f(t))``, for ``x' < 0`` it is
+    ``(0, 0, +0.5 * slip * f(t))`` and for ``x' = 0`` it is zero. Here ``t = abs(x') / 20``.
+    """
+    x = (np.asarray(section) - anchor)[:, 0]
+    vectors = np.zeros((len(x), 3))
+    vectors[:, 2] = -np.sign(x) * 0.5 * slip * _cubic_profile(np.abs(x) / 20)
+    return vectors
+
+
+def r2_curved_slip_fault(anchor: np.ndarray, steps: int) -> FaultSegment:
+    """Return a fault segment with a slip direction that turns about a vertical axis.
+
+    Coordinate 0 is the constant ``CURVED_GX`` and coordinate 2 is the constant 0.
+    The gradient of coordinate 1 is ``(-(y - cy), (x - cx), 0) / (20 r)`` about the
+    vertical axis through ``anchor``. The displacement is ``R2_SLIP``. By hand,
+    ``d = 0.5 * 3 * f(0.2) = 1.344``.
+    """
+
+    def _constant(value: float) -> Callable[[np.ndarray], np.ndarray]:
+        return lambda points: np.full(len(points), value)
+
+    def _zero_gradient(points: np.ndarray) -> np.ndarray:
+        return np.zeros((len(points), 3))
+
+    def _turning_gradient(points: np.ndarray) -> np.ndarray:
+        local = np.asarray(points) - anchor
+        radius = np.hypot(local[:, 0], local[:, 1])
+        gradient = np.zeros((len(local), 3))
+        gradient[:, 0] = -local[:, 1] / (20 * radius)
+        gradient[:, 1] = local[:, 0] / (20 * radius)
+        return gradient
+
+    features = [
+        AnalyticReference(_constant(CURVED_GX), _zero_gradient, "curved_coordinate_0"),
+        AnalyticReference(_constant(0.0), _turning_gradient, "curved_coordinate_1"),
+        AnalyticReference(_constant(0.0), _zero_gradient, "curved_coordinate_2"),
+    ]
+    return FaultSegment("curved_fault", features, steps=steps, displacement=R2_SLIP)
+
+
+def euler_circle_closed_form(radius: float, d: float, steps: int) -> tuple[float, float]:
+    """Return the final radius and the turn angle of an Euler walk about a circle.
+
+    Each step has the length ``s = d / steps`` and goes along the tangent. Then
+    ``r_k^2 = radius^2 + k s^2`` and the angle gains ``arctan(s / r_k)`` in step k.
+    """
+    step_length = d / steps
+    angle = 0.0
+    for k in range(steps):
+        angle += np.arctan(step_length / np.sqrt(radius**2 + k * step_length**2))
+    return float(np.sqrt(radius**2 + steps * step_length**2)), float(angle)
+
+
+def build_r2_fault(
+    anchor: np.ndarray,
+    rotation_deg: float,
+    interpolatortype: str,
+    explicit_center: bool = True,
+    displacement: float = R2_SLIP,
+) -> FaultSegment:
+    """Build the R2 fault in a rotated frame, with a non-zero displacement.
+
+    This is a copy of ``_fault`` in ``test_fault_frame_analytic.py``. Only the
+    displacement and the number of steps (``R2_STEPS``) are different.
+    """
+    half_size = np.full(3, 10.0)
+    model = model_with_frame(anchor - half_size, anchor + half_size, rotation_deg)
+    data = r2_fault_data(anchor)
+    model.data = data
+    fault = model.create_and_add_fault(
+        "fault",
+        displacement,
+        data=data,
+        interpolatortype=interpolatortype,
+        fault_center=anchor if explicit_center else None,
+        fault_normal_vector=np.array([1.0, 0.0, 0.0]),
+        fault_slip_vector=np.array([0.0, 0.0, -1.0]),
+        major_axis=20,
+        minor_axis=10,
+        intermediate_axis=20,
+        fault_buffer=0.2,
+        nelements=20_000 if interpolatortype == "FDI" else 1_000,
+        fault_trace_anisotropy=0,
+        fault_dip_anisotropy=0,
+    )
+    fault.steps = R2_STEPS
+    # These are the CG solve settings of SC-003. The builder ignores
+    # top-level rtol, atol and maxiter, so they go in solver_kwargs.
+    fault.builder.build(
+        solver="cg",
+        solver_kwargs={"rtol": 1e-10, "atol": 1e-12, "maxiter": 20_000},
+        w1=1,
+        w2=1,
+        w3=1,
+        step=10,
+    )
+    return fault
+
+
+def faulted_foliation_model(
+    anchor: np.ndarray, rotation_deg: float, engine: str
+) -> tuple[GeologicalModel, FaultSegment, object]:
+    """Return an updated model with one fault and one foliation in a rotated frame.
+
+    The data are those of a unit cube. All locations are shifted by ``anchor``.
+
+    Parameters
+    ----------
+    anchor : np.ndarray
+        World origin of the model frame.
+    rotation_deg : float
+        Rotation of the local frame around the z axis, in degrees.
+    engine : str
+        Interpolator type of both features, ``"FDI"`` or ``"PLI"``.
+    """
+    model = model_with_frame(anchor, anchor + 1, rotation_deg)
+    rows = [
+        [0.5, 0.5, 0.5, 1, 0, 0, 0, "fault", 0],
+        [0.5, 0.5, 0.5, 0, 0, 1, 1, "fault", 0],
+        [0.5, 0.5, 0.5, 0, 1, 0, 2, "fault", 0],
+    ]
+    for x in (0.2, 0.8):
+        for y in (0.2, 0.8):
+            rows.append([x, y, 0.3, np.nan, np.nan, np.nan, np.nan, "strati", 0.0])
+            rows.append([x, y, 0.7, np.nan, np.nan, np.nan, np.nan, "strati", 1.0])
+    rows.append([0.3, 0.3, 0.5, 0, 0, 1, np.nan, "strati", np.nan])
+    data = pd.DataFrame(
+        rows, columns=["X", "Y", "Z", "nx", "ny", "nz", "coord", "feature_name", "val"]
+    )
+    data[["X", "Y", "Z"]] = data[["X", "Y", "Z"]].to_numpy(dtype=float) + anchor
+    model.data = data
+    fault = model.create_and_add_fault("fault", 0.1, interpolatortype=engine, nelements=1e3)
+    strati = model.create_and_add_foliation("strati", interpolatortype=engine, nelements=1e3)
+    model.update()
+    return model, fault, strati
+
+
+def residuals_of_field(interpolator: object, nodal_values: np.ndarray) -> dict[str, np.ndarray]:
+    """Return ``matrix @ nodal_values - b`` for each constraint of an interpolator."""
+    return {
+        name: constraint["matrix"] @ nodal_values - constraint["b"]
+        for name, constraint in interpolator.constraints.items()
+    }
