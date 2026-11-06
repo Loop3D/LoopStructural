@@ -7,7 +7,7 @@ and stores the arrays as numpy arrays. A check that fails raises
 
 from __future__ import annotations
 
-from collections.abc import Sequence
+from collections.abc import Mapping, Sequence
 from dataclasses import dataclass, field
 from typing import Any, Union
 
@@ -53,9 +53,11 @@ _MAX_CODES = 2**32
 def _vertices(value: object, name: str = "vertices") -> np.ndarray:
     """Return vertices as a finite float64 array with shape (n, 3)."""
     try:
-        arr = np.asarray(value, dtype=np.float64)
+        arr = np.array(value, dtype=np.float64, copy=True)
     except (TypeError, ValueError) as exc:
         raise InvalidInputError(f"The field '{name}' must be numbers. Check the input.") from exc
+    if arr.size == 0 and arr.ndim == 1:
+        arr = arr.reshape(0, 3)
     if arr.ndim != 2 or arr.shape[1] != 3:
         raise InvalidInputError(f"The field '{name}' must have shape (n, 3). Check the input.")
     if not np.all(np.isfinite(arr)):
@@ -66,7 +68,7 @@ def _vertices(value: object, name: str = "vertices") -> np.ndarray:
 def _vector3(value: object, name: str) -> np.ndarray:
     """Return a finite float64 array with shape (3,)."""
     try:
-        arr = np.asarray(value, dtype=np.float64)
+        arr = np.array(value, dtype=np.float64, copy=True)
     except (TypeError, ValueError) as exc:
         raise InvalidInputError(f"The field '{name}' must be numbers. Check the input.") from exc
     if arr.shape != (3,):
@@ -85,7 +87,7 @@ def _integer_array(value: object, name: str) -> np.ndarray:
         If the values are not integers.
     """
     try:
-        arr = np.asarray(value)
+        arr = np.array(value, copy=True)
     except (TypeError, ValueError) as exc:
         raise InvalidInputError(f"The field '{name}' must be integers. Check the input.") from exc
     if arr.size == 0:
@@ -98,6 +100,8 @@ def _integer_array(value: object, name: str) -> np.ndarray:
 def _index_array(value: object, name: str, width: int, count: int) -> np.ndarray:
     """Return an index array with shape (m, width) and values in [0, count)."""
     arr = _integer_array(value, name)
+    if arr.size == 0 and arr.ndim == 1:
+        arr = arr.reshape(0, width)
     if arr.ndim != 2 or arr.shape[1] != width:
         raise InvalidInputError(
             f"The field '{name}' must have shape (m, {width}). Check the input."
@@ -139,7 +143,26 @@ class Categorical:
             raise InvalidInputError(
                 f"The field 'codes' must have values from 0 to {limit - 1}. Check the input."
             )
+        colours = self.colours
+        if colours is not None:
+            try:
+                arr = np.array(colours, copy=True)
+            except (TypeError, ValueError) as exc:
+                raise InvalidInputError(
+                    "The field 'colours' must be RGBA numbers. Check the input."
+                ) from exc
+            if arr.shape != (len(self.names), 4) or arr.dtype.kind not in "iu":
+                raise InvalidInputError(
+                    "The field 'colours' must have one RGBA tuple of 4 integers for each name. "
+                    "Check the input."
+                )
+            if arr.size and (arr.min() < 0 or arr.max() > 255):
+                raise InvalidInputError(
+                    "The field 'colours' must have values from 0 to 255. Check the input."
+                )
+            colours = tuple(tuple(int(v) for v in row) for row in arr)
         object.__setattr__(self, "codes", codes)
+        object.__setattr__(self, "colours", colours)
 
 
 Property = Union[np.ndarray, Sequence, Categorical]  # noqa: UP007
@@ -167,14 +190,18 @@ def _properties(properties: dict[str, Any] | None, length: int, field_name: str)
     InvalidInputError
         If a property is not one-dimensional or has the wrong length.
     """
+    if properties is None:
+        properties = {}
+    if not isinstance(properties, Mapping):
+        raise InvalidInputError(f"The field '{field_name}' must be a mapping. Check the input.")
     result: dict[str, Any] = {}
-    for key, value in (properties or {}).items():
+    for key, value in properties.items():
         if isinstance(value, Categorical):
             size = len(value.codes)
             result[key] = value
         else:
             try:
-                arr = np.asarray(value)
+                arr = np.array(value, copy=True)
             except (TypeError, ValueError) as exc:
                 raise InvalidInputError(
                     f"The property '{key}' in '{field_name}' is not valid. Check the input."
@@ -256,7 +283,7 @@ class Vectors:
             arrays = []
             for part in (first, second):
                 try:
-                    arr = np.asarray(part, dtype=np.float64)
+                    arr = np.array(part, dtype=np.float64, copy=True)
                 except (TypeError, ValueError) as exc:
                     raise InvalidInputError(
                         f"The field '{name}' must be numbers. Check the input."
@@ -513,7 +540,7 @@ class Drillhole:
         collar = _vector3(self.collar, "collar")
         survey = _vertices(self.survey, "survey")
         try:
-            intervals = np.asarray(self.intervals, dtype=np.float64)
+            intervals = np.array(self.intervals, dtype=np.float64, copy=True)
         except (TypeError, ValueError) as exc:
             raise InvalidInputError(
                 "The field 'intervals' must be numbers. Check the input."
@@ -527,7 +554,12 @@ class Drillhole:
                 "The field 'intervals' must be finite numbers. Check the input."
             )
         if self.end_of_hole is not None:
-            eoh = float(self.end_of_hole)
+            try:
+                eoh = float(self.end_of_hole)
+            except (TypeError, ValueError) as exc:
+                raise InvalidInputError(
+                    "The field 'end_of_hole' must be a number. Check the input."
+                ) from exc
             if not np.isfinite(eoh):
                 raise InvalidInputError(
                     "The field 'end_of_hole' must be a finite number. Check the input."

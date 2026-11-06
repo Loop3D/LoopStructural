@@ -13,6 +13,7 @@ import hashlib
 import os
 import socket
 import struct
+import time
 
 from loop_link.errors import LoopLinkError, NoViewerError, TokenError
 from loop_link.protocol import MAX_FRAME_BYTES, MAX_HEADER_BYTES
@@ -34,6 +35,8 @@ _FRAME_TIMEOUT = 10.0
 # Time to send one frame. A receive can leave a short timeout on the socket,
 # so each send sets this first.
 _SEND_TIMEOUT = 60.0
+# The smallest socket timeout: a timeout of zero makes the socket non-blocking.
+_MIN_WAIT = 1e-3
 
 
 class WebSocketError(LoopLinkError):
@@ -84,6 +87,9 @@ class WebSocketClient:
         self._sock = sock
         self._buffer = b""
         self._partial = False
+        self._fragmenting = False
+        self._fragment_opcode = OP_BINARY
+        self._fragments = bytearray()
         self.closed = False
 
     @classmethod
@@ -233,9 +239,12 @@ class WebSocketClient:
 
         Raises
         ------
+        WebSocketClosed
+            If the connection is already closed.
         WebSocketError
             If the send fails. The connection is then closed.
         """
+        self._check_open()
         self._send_frame(OP_BINARY, data)
 
     # -- receiving ----------------------------------------------------------
@@ -287,6 +296,12 @@ class WebSocketClient:
             (length,) = struct.unpack(">H", self._read_exactly(2))
         elif length == 127:
             (length,) = struct.unpack(">Q", self._read_exactly(8))
+        if first & 0x70:
+            self._abort()
+            raise WebSocketError("The viewer sent a frame with a reserved bit set.")
+        if opcode >= OP_CLOSE and length > 125:
+            self._abort()
+            raise WebSocketError("The viewer sent a control frame that is too long.")
         if length > MAX_INCOMING_BYTES:
             self._abort()
             raise WebSocketError("The viewer sent a message that is too large.")
@@ -318,14 +333,13 @@ class WebSocketClient:
         WebSocketError
             If a message is too large, the stream breaks, or a read fails.
         """
-        message = bytearray()
-        message_opcode = None
+        self._check_open()
+        deadline = time.monotonic() + timeout
         try:
             while True:
-                # True while a message in parts is read; `_read_frame` also sets
-                # it after the first bytes of a frame.
-                self._partial = bool(message)
-                fin, opcode, payload = self._read_frame(timeout if not message else _FRAME_TIMEOUT)
+                self._partial = False
+                wait = max(deadline - time.monotonic(), _MIN_WAIT)
+                fin, opcode, payload = self._read_frame(wait)
                 if opcode == OP_PING:
                     self._send_frame(OP_PONG, payload)
                 elif opcode == OP_PONG:
@@ -336,21 +350,32 @@ class WebSocketClient:
                         self._send_frame(OP_CLOSE, payload[:2])
                     except WebSocketError:
                         pass
+                    self._close_socket()
                     raise WebSocketClosed("The viewer closed the connection.")
                 else:
-                    if opcode != OP_CONTINUATION:
-                        message_opcode = opcode
-                        message = bytearray()
-                    message += payload
-                    if len(message) > MAX_INCOMING_BYTES:
+                    if opcode == OP_CONTINUATION:
+                        if not self._fragmenting:
+                            self._abort()
+                            raise WebSocketError("The viewer sent an unexpected continuation.")
+                    else:
+                        if self._fragmenting:
+                            self._abort()
+                            raise WebSocketError("The viewer sent a new message too early.")
+                        self._fragment_opcode = opcode
+                        self._fragments = bytearray()
+                    self._fragments += payload
+                    if len(self._fragments) > MAX_INCOMING_BYTES:
                         self._abort()
                         raise WebSocketError("The viewer sent a message that is too large.")
-                    if fin and message_opcode == OP_BINARY:
-                        return bytes(message)
+                    self._fragmenting = not fin
                     if fin:
-                        message = bytearray()
-        except TimeoutError as error:
+                        message = bytes(self._fragments)
+                        self._fragments = bytearray()
+                        if self._fragment_opcode == OP_BINARY:
+                            return message
+        except (TimeoutError, BlockingIOError) as error:
             if not self._partial:
+                # The state of a message in parts stays: a later call goes on with it.
                 return None
             # The bytes of the frame that were read are gone, so the next read
             # would start in the middle of a frame.
@@ -359,6 +384,18 @@ class WebSocketClient:
         except OSError as error:
             self._abort()
             raise WebSocketError(f"Cannot read from the viewer: {error}") from error
+
+    def _check_open(self) -> None:
+        """Raise ``WebSocketClosed`` if the connection is closed."""
+        if self.closed:
+            raise WebSocketClosed("The connection is closed.")
+
+    def _close_socket(self) -> None:
+        """Close the socket and ignore errors."""
+        try:
+            self._sock.close()
+        except OSError:
+            pass
 
     def _abort(self) -> None:
         """Close the socket without a close frame: the stream is broken."""

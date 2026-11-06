@@ -10,6 +10,7 @@ from __future__ import annotations
 import base64
 import hashlib
 import json
+import math
 import os
 import socket
 import struct
@@ -22,7 +23,13 @@ from typing import Any
 import numpy as np
 
 from .. import protocol
-from ..protocol import MAX_OBJECT_BYTES, Frame, ProtocolError
+from ..protocol import (
+    MAX_FRAME_BYTES,
+    MAX_HEADER_BYTES,
+    MAX_OBJECT_BYTES,
+    Frame,
+    ProtocolError,
+)
 
 _GUID = b"258EAFA5-E914-47DA-95CA-C5AB0DC85B11"
 
@@ -41,6 +48,16 @@ _INDEX_ROLES = ("segments", "triangles", "tetrahedra")
 _COORDINATE_ROLES = ("vertices", "collar", "survey")
 # The roles that give the cell count of an object.
 _CELL_ROLES = ("segments", "triangles", "tetrahedra")
+# The row width that each geometry role needs.
+_ROLE_WIDTH = {
+    "vertices": 3,
+    "collar": 3,
+    "survey": 3,
+    "intervals": 2,
+    "segments": 2,
+    "triangles": 3,
+    "tetrahedra": 4,
+}
 
 
 class _Closed(Exception):
@@ -116,6 +133,8 @@ class _Reader:
             (length,) = struct.unpack(">H", self._take(2))
         elif length == 127:
             (length,) = struct.unpack(">Q", self._take(8))
+        if length > MAX_FRAME_BYTES + MAX_HEADER_BYTES:
+            raise _Closed
         key = self._take(4)
         payload = self._take(length)
         if length:
@@ -151,8 +170,47 @@ class _Reader:
                 parts = []
 
 
+def _cell_count(arrays: dict[str, np.ndarray]) -> int | None:
+    """Return the number of segments, triangles or tetrahedra, or ``None``."""
+    return next((arrays[r].shape[0] for r in _CELL_ROLES if r in arrays), None)
+
+
+def _expected_length(
+    object_type: str,
+    association: object,
+    arrays: dict[str, np.ndarray],
+    params: object,
+) -> int | None:
+    """Return the length that a data array needs, or ``None`` if it cannot fit."""
+    if object_type == "BlockModel":
+        cells = params.get("cells") if isinstance(params, dict) else None
+        if not isinstance(cells, list) or not all(type(n) is int and n >= 0 for n in cells):
+            return None
+        if association == "cell":
+            return math.prod(cells)
+        if association == "vertex":
+            return math.prod(n + 1 for n in cells)
+        return None
+    if object_type == "Drillhole":
+        if association == "vertex" and "survey" in arrays:
+            return arrays["survey"].shape[0]
+        if association == "interval" and "intervals" in arrays:
+            return arrays["intervals"].shape[0]
+        return None
+    vertices = arrays.get("vertices")
+    if association == "vertex" and vertices is not None:
+        return vertices.shape[0]
+    if association == "cell" and object_type in ("Curve", "Surface", "TetraMesh"):
+        return _cell_count(arrays)
+    return None
+
+
 def _check_data(
-    entry: object, arrays: dict[str, np.ndarray], buffers: dict[str, np.ndarray]
+    object_type: str,
+    entry: object,
+    arrays: dict[str, np.ndarray],
+    buffers: dict[str, np.ndarray],
+    params: object,
 ) -> str | None:
     """Return the text of a problem in one data array entry, or ``None``."""
     if not isinstance(entry, dict):
@@ -161,18 +219,12 @@ def _check_data(
     if name not in buffers:
         return f"The data entry {entry.get('name')!r} names the buffer {name!r}, which is missing."
     association = entry.get("association")
-    length = buffers[name].shape[0] if buffers[name].ndim else 0
-    expected: int | None
-    if association == "vertex":
-        expected = arrays["vertices"].shape[0] if "vertices" in arrays else None
-    elif association == "cell":
-        expected = next((arrays[r].shape[0] for r in _CELL_ROLES if r in arrays), None)
-    elif association == "interval":
-        expected = arrays["intervals"].shape[0] if "intervals" in arrays else None
-    else:
+    if association not in ("vertex", "cell", "interval"):
         return f"The association {association!r} is not known."
+    length = buffers[name].shape[0] if buffers[name].ndim else 0
+    expected = _expected_length(object_type, association, arrays, params)
     if expected is None:
-        return f"The association {association!r} does not fit the geometry."
+        return f"The association {association!r} does not fit the object type {object_type}."
     if length != expected:
         return f"The data array {name!r} has {length} values. The association needs {expected}."
     return None
@@ -228,6 +280,7 @@ class FakeViewer:
         self.objects: dict[str, StoredObject] = {}
         self.received: list[Frame] = []
         self._lock = threading.Lock()
+        self._state_lock = threading.Lock()
         self._data_connections = 0
         self._connections: set[socket.socket] = set()
         self._server = socket.socket()
@@ -267,13 +320,15 @@ class FakeViewer:
 
     def inventory(self) -> list[dict[str, Any]]:
         """Return the inventory entries of the objects in the scene."""
+        with self._state_lock:
+            items = list(self.objects.items())
         return [
             {
                 "id": object_id,
                 "object_type": stored.header.get("object_type"),
                 "revision": stored.header.get("revision", 1),
             }
-            for object_id, stored in list(self.objects.items())
+            for object_id, stored in items
         ]
 
     def write_instance_file(self, settings: Path) -> Path:
@@ -307,7 +362,8 @@ class FakeViewer:
             frame = protocol.decode_frame(data)
         except ProtocolError as error:
             return [_error("invalid_frame", str(error))]
-        self.received.append(frame)
+        with self._state_lock:
+            self.received.append(frame)
         header = frame.header
         version = header.get("version")
         major = version.get("major") if isinstance(version, dict) else None
@@ -328,10 +384,12 @@ class FakeViewer:
         if kind == "scene.upsert":
             return self._upsert(frame)
         if kind == "scene.remove":
-            self.objects.pop(header.get("id"), None)
+            with self._state_lock:
+                self.objects.pop(header.get("id"), None)
             return []
         if kind == "scene.clear":
-            self.objects.clear()
+            with self._state_lock:
+                self.objects.clear()
             return []
         return [_error("unknown_message", f"The message type {kind!r} is not known.")]
 
@@ -344,7 +402,8 @@ class FakeViewer:
         problem = self._check_object(frame)
         if problem is not None:
             return [_error("invalid_object", problem, object_id)]
-        self.objects[object_id] = StoredObject(header=header, buffers=dict(frame.buffers))
+        with self._state_lock:
+            self.objects[object_id] = StoredObject(header=header, buffers=dict(frame.buffers))
         return []
 
     @staticmethod
@@ -368,6 +427,12 @@ class FakeViewer:
             if name not in buffers:
                 return f"The geometry role {role!r} names the buffer {name!r}, which is missing."
             arrays[role] = buffers[name]
+        for role, width in _ROLE_WIDTH.items():
+            array = arrays.get(role)
+            if array is not None and (array.ndim != 2 or array.shape[1] != width):
+                return (
+                    f"The buffer for {role!r} has the shape {array.shape}. It needs (n, {width})."
+                )
         for role in _COORDINATE_ROLES:
             array = arrays.get(role)
             if array is not None and array.dtype.kind == "f" and not np.all(np.isfinite(array)):
@@ -377,12 +442,19 @@ class FakeViewer:
             count = vertices.shape[0] if vertices.ndim else 0
             for role in _INDEX_ROLES:
                 array = arrays.get(role)
-                if array is not None and array.size and int(array.max()) >= count:
-                    return f"The buffer for {role!r} has an index that is not less than {count}."
+                if array is None or not array.size:
+                    continue
+                if array.dtype.kind not in "iu":
+                    return f"The buffer for {role!r} does not hold integers."
+                if int(array.min()) < 0 or int(array.max()) >= count:
+                    return f"The buffer for {role!r} has an index outside 0 to {count - 1}."
         for entry in header.get("data") or []:
-            problem = _check_data(entry, arrays, buffers)
+            problem = _check_data(object_type, entry, arrays, buffers, header.get("params"))
             if problem is not None:
                 return problem
+        for name, array in buffers.items():
+            if array.size * array.itemsize != array.nbytes:
+                return f"The buffer {name!r} does not match its declared size."
         size = sum(int(array.nbytes) for array in buffers.values())
         if size > MAX_OBJECT_BYTES:
             return f"The object is {size} bytes. The limit is {MAX_OBJECT_BYTES} bytes."
@@ -421,6 +493,7 @@ class FakeViewer:
                 refusal = _error("busy", "Another client is connected.")
                 _send(conn, _encode(refusal))
                 conn.sendall(bytes([0x88, 0]))
+                self._drain(conn)
                 return
             conn.settimeout(self.heartbeat_timeout)
             self._run(conn, reader, tool=False)
@@ -436,6 +509,20 @@ class FakeViewer:
                 conn.close()
             except OSError:
                 pass
+
+    @staticmethod
+    def _drain(conn: socket.socket) -> None:
+        """Stop sending, then read until the peer closes or 0.5 s pass.
+
+        This stops a reset from the system that would destroy the last frames.
+        """
+        try:
+            conn.shutdown(socket.SHUT_WR)
+            conn.settimeout(0.5)
+            while conn.recv(65536):
+                pass
+        except OSError:
+            pass
 
     def _handshake(self, conn: socket.socket) -> tuple[str, _Reader] | None:
         """Read the HTTP upgrade request. Return the path and a reader, or ``None``."""
