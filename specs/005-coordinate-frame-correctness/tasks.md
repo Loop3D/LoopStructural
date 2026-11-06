@@ -1511,7 +1511,7 @@ frame. A legacy file needs an explicit choice. A frame change never gives a stal
   - Done when: `pytest tests/unit/modelling/test_diagnostics_backends.py tests/unit/modelling/test_diagnostics_frames.py` passes (the tests that failed in T099 pass now), and `ruff check LoopStructural packages` passes.
   - Context: Change two lines and two docstrings, nothing else. In `_gradient_cosines_fresh` (about line 333) replace `model = self.evaluate_gradient(positions)` by `model = self.interpolator.evaluate_gradient(positions)`. In `_value_residuals_fresh` (about line 362) replace `self.evaluate_value(positions)` by `self.interpolator.evaluate_value(positions)`: `return np.abs(rows[:, 3] - self.interpolator.evaluate_value(positions))`. Add this sentence to both docstrings: "The stored positions are already restored by the faults of the feature. The method evaluates the interpolator, not the feature, so no fault acts a second time." The `positions` stay `bounding_box.reproject(...)` of the stored rows when the interpolator has a frame. Do not change `_stale_reason`, `_physical_residual_summaries`, `verification_report` or the public methods. The public `evaluate_gradient` of a faulted feature keeps its tetrahedron path and its shape error (known issue). Before the edit, grep `LoopStructural packages` for other readers of the two private methods. Also run `pytest tests/unit/modelling/test_scalar_field_grid.py`. Write in ASD-STE100 Simplified Technical English.
 
-- [ ] T102 [P] [US5] [S] Re-export the `loop_common` class from the old module path (FR-025).
+- [x] T102 [P] [US5] [S] Re-export the `loop_common` class from the old module path (FR-025).
   - Files: `LoopStructural/utils/_transformation.py`
   - Needs: T100
   - Wave: 47
@@ -1529,7 +1529,7 @@ frame. A legacy file needs an explicit choice. A frame change never gives a stal
     ```
     `LoopStructural/utils/__init__.py` line 15 already exports the name from this module; do not change that file. Rule: keep both import paths (FR-025). Write in ASD-STE100 Simplified Technical English.
 
-- [ ] T103 [P] [US5] [M] Write the `MATRIX` list and the matrix tests (FR-030, SC-018).
+- [x] T103 [P] [US5] [M] Write the `MATRIX` list and the matrix tests (FR-030, SC-018).
   - Files: `tests/fixtures/backend_matrix.py`, `tests/unit/test_backend_matrix.py`
   - Needs: T090, T091, T094, T095, T096, T097, T098, T100, T101
   - Wave: 47

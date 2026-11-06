@@ -168,7 +168,6 @@ def test_round_trip_explicit_parameters(dimensions, n, anchor, columns, angle_de
 @pytest.mark.parametrize("anchor", ANCHORS, ids=lambda a: f"anchor{a[0]:g}")
 def test_round_trip_after_fit(anchor, n, fit_rotation):
     """A fitted transformation is inverted by `inverse_transform`."""
-    pytest.importorskip("sklearn")
     points = _line_points(50, 30.0, centre=(anchor[0], anchor[1]))[:n]
     points[:, 2] += anchor[2]
     original = points.copy()
@@ -234,7 +233,6 @@ def test_entry_points_are_one_class():
 
 def _fitted_common_object():
     """Return a fitted object of the class in `loop_common.math`."""
-    pytest.importorskip("sklearn")
     from loop_common.math import EuclideanTransformation as CommonClass
 
     fitted = CommonClass(dimensions=2)
@@ -266,7 +264,6 @@ def test_new_pickle_names_the_loop_common_path():
 @pytest.mark.parametrize("slope_deg", [-30.0, -10.0])
 def test_fit_aligns_a_line_with_negative_slope(slope_deg):
     """A line with a negative slope must end up along the x axis."""
-    pytest.importorskip("sklearn")
     pts = _line_points(angle_deg=slope_deg)
     t = EuclideanTransformation(dimensions=2)
     transformed = t.fit_transform(pts)
@@ -278,7 +275,6 @@ def test_fit_aligns_a_line_with_negative_slope(slope_deg):
 @pytest.mark.parametrize("slope_deg", [30.0, -30.0])
 def test_fit_three_dimensions(slope_deg):
     """The fit works with `dimensions=3` and keeps z as z - mean(z)."""
-    pytest.importorskip("sklearn")
     pts = _line_points(angle_deg=slope_deg)
     tol, _ = _tolerance(pts)
     t = EuclideanTransformation(dimensions=3)
