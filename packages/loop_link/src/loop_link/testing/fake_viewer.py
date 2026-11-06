@@ -51,7 +51,6 @@ _CELL_ROLES = ("segments", "triangles", "tetrahedra")
 # The row width that each geometry role needs.
 _ROLE_WIDTH = {
     "vertices": 3,
-    "collar": 3,
     "survey": 3,
     "intervals": 2,
     "segments": 2,
@@ -427,6 +426,9 @@ class FakeViewer:
             if name not in buffers:
                 return f"The geometry role {role!r} names the buffer {name!r}, which is missing."
             arrays[role] = buffers[name]
+        collar = arrays.get("collar")
+        if collar is not None and collar.shape not in ((3,), (1, 3)):
+            return f"The buffer for 'collar' has the shape {collar.shape}. It needs (3,) or (1, 3)."
         for role, width in _ROLE_WIDTH.items():
             array = arrays.get(role)
             if array is not None and (array.ndim != 2 or array.shape[1] != width):
