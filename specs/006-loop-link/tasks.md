@@ -106,7 +106,7 @@ length 100; keep string quotes as written (Black `skip-string-normalization`).
   - Done when: `packages/loop_link/.venv/Scripts/python.exe -m pytest packages/loop_link/tests/test_objects.py` fails with ImportError of `loop_link.objects`, then passes after T012.
   - Context: Frozen dataclasses in `loop_link.objects`: `Points(vertices, properties={})`; `Vectors(vertices, orientation=None, lineation=None, properties={})` with `Vectors.from_directions(vertices, directions, *, kind, properties=None)` (`kind` is `"normal"` or `"lineation"`, else `InvalidInputError`); `Lines(vertices, segments, properties, cell_properties)`; `Surface(vertices, triangles, properties, cell_properties)`; `BlockModel(origin, cell_sizes, cells, properties, cell_properties)`; `TetraMesh(vertices, tetrahedra, properties, cell_properties)`; `Drillhole(collar, survey, intervals, end_of_hole=None, properties, interval_properties)`; `Categorical(codes, names, colours=None)`; `DEFAULT_CATEGORY_COLOURS` (10 RGBA tuples). Rules to test (each raises `InvalidInputError` that names the field): vertices not (n,3) or not finite; an index array with a negative value or a value >= n; a property of the wrong length (vertex: n; cell: m; `BlockModel` nodes: (nx+1)(ny+1)(nz+1), cells: nx*ny*nz, x fastest; Drillhole `properties`: k stations, `interval_properties`: j rows); a 2-D property; `cell_sizes` <= 0 or `cells` < 1 or non-integer; `Points` or `Vectors` with `cell_properties` (they have no such field, so the test checks `TypeError`); `Categorical` with a code >= `len(names)`. Valid input of all 7 types is accepted and arrays become numpy arrays.
 
-- [ ] T012 [Found] [M] Implement `objects.py`.
+- [x] T012 [Found] [M] Implement `objects.py`.
   - Files: `packages/loop_link/src/loop_link/objects.py`
   - Needs: T011, T010
   - Wave: 5
@@ -127,7 +127,7 @@ length 100; keep string quotes as written (Black `skip-string-normalization`).
   - Done when: `packages/loop_link/.venv/Scripts/python.exe -m pytest packages/loop_link/tests/test_encode.py` passes.
   - Context: Public: `encode_object`, `hello_frame(crs: str, origin: Sequence[float], version: str) -> bytes` (header `type hello`, `application {"name":"loop_link","version":version}`, `crs`, `origin` as floats), `heartbeat_frame(seq: int)`, `remove_frame(id)` (`scene.remove`), `clear_frame()` (`scene.clear`), `group_frame(id, name, parent, revision)` (a `scene.upsert` of `object_type` `Group`). Private `_data_array(name, value, association) -> (desc: dict, buffers: list[tuple[str, np.ndarray]])` follows the type table in the test of T013. Use `loop_link.protocol.encode_frame`. Before building the frame, sum the declared bytes of all buffers plus `entries*8+name bytes` of each `value_map`; if the sum is over `MAX_OBJECT_BYTES`, or the frame is over `MAX_FRAME_BYTES` (catch `ProtocolError` from `encode_frame`), raise `ObjectTooLargeError(id, size, limit)`. Use broadcast views without copying when computing sizes (read `array.size * itemsize`, not `tobytes`). Coordinates: reject NaN and infinity with `InvalidInputError` (objects already check this). Principle IV: subtract the origin in float64 before any cast to f32.
 
-- [ ] T015 [Found] [M] Port the stdlib WebSocket client to `_websocket.py`.
+- [x] T015 [Found] [M] Port the stdlib WebSocket client to `_websocket.py`.
   - Files: `packages/loop_link/src/loop_link/_websocket.py`
   - Needs: T008
   - Wave: 5
@@ -148,7 +148,7 @@ length 100; keep string quotes as written (Black `skip-string-normalization`).
   - Done when: `packages/loop_link/.venv/Scripts/python.exe -m pytest packages/loop_link/tests/test_discovery.py` passes.
   - Context: Public: `DEFAULT_PORT = 47615`, `ViewerAddress`, `settings_dir()`, `find_viewer(...)`. Token text on failure: "Set GEOVIEWER_TOKEN, or save a token in the link popup of the viewer." (`TokenError`). Alive check: `socket.create_connection((host, port), timeout)` then close. Sort key of live instances: `(kind != "window", -focused)`. Read JSON with `json.loads`; catch `OSError` and `ValueError` per file. The `NoViewerError` text says: "No viewer found. Start geoviewer and turn the link on. This library never starts a viewer." Use only the standard library. An explicit `port` argument is returned as given: do no alive check and do not read the instance files (the tests of T016 assume this). The test file imports `from loop_link import discovery`.
 
-- [ ] T019 [Found] [M] Implement the fake viewer.
+- [x] T019 [Found] [M] Implement the fake viewer.
   - Files: `packages/loop_link/src/loop_link/testing/__init__.py`, `packages/loop_link/src/loop_link/testing/fake_viewer.py`
   - Needs: T008, T006
   - Wave: 5

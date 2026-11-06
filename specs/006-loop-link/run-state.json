@@ -26,9 +26,15 @@
     {
       "wave": 4,
       "base": "d95d114a2ea06215f42c0fecb061a53f0838d1c3",
-      "commit": "fix commits after d08cc734",
+      "commit": "c585652f419f22701d5649b41c8e76386ca97169",
       "review": "pass (2 fix rounds; last fix verified by orchestrator)",
       "fix_round": true
+    },
+    {
+      "wave": 5,
+      "base": "c585652f419f22701d5649b41c8e76386ca97169",
+      "commit": null,
+      "review": "pending"
     }
   ],
   "runs": {
@@ -105,6 +111,24 @@
       }
     ],
     "T017": [
+      {
+        "model": "sonnet",
+        "result": "pass"
+      }
+    ],
+    "T012": [
+      {
+        "model": "sonnet",
+        "result": "pass"
+      }
+    ],
+    "T015": [
+      {
+        "model": "sonnet",
+        "result": "pass"
+      }
+    ],
+    "T019": [
       {
         "model": "sonnet",
         "result": "pass"
