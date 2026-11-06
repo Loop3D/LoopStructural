@@ -3,13 +3,21 @@
 from __future__ import annotations
 
 import copy
+import json
 from typing import Any
 
 import numpy as np
 import pytest
 from conftest import geoviewer_fixtures
 
-from loop_link.encode import encode_object, hello_frame
+from loop_link.encode import (
+    cancel_frame,
+    encode_object,
+    fetch_frame,
+    hello_frame,
+    selection_get_frame,
+    selection_set_frame,
+)
 from loop_link.objects import Drillhole
 from loop_link.protocol import decode_frame
 from loop_link.testing import FakeViewer
@@ -94,3 +102,59 @@ def test_drillhole_frame_matches_encoder() -> None:
     assert made_buffers.keys() == real_buffers.keys()
     for role, array in real_buffers.items():
         assert np.array_equal(made_buffers[role], array), role
+
+
+def _tool_header(name: str) -> dict[str, Any]:
+    """Return the header of the tool fixture ``name``, or skip when the folder is missing."""
+    folder = _folder().parent / "tool"
+    if not folder.is_dir():
+        pytest.skip(f"the folder {folder} does not exist")
+    path = folder / name
+    if not path.exists():
+        pytest.fail(f"the tool fixture {name} is not in {folder}")
+    return json.loads(path.read_text(encoding="utf-8"))
+
+
+def _check_header(made: bytes, fixture: dict[str, Any]) -> None:
+    """Assert that the header of the decoded frame equals the fixture header."""
+    assert decode_frame(made).header == fixture
+
+
+def test_selection_set_matches_fixture() -> None:
+    """The encoder builds the selection.set frame of the geoviewer repository."""
+    fixture = _tool_header("selection.set.json")
+    try:
+        counts = {entry["kind"]: 0 for entry in fixture["entries"]}
+        shapes = {entry["name"]: entry["shape"] for entry in fixture["buffers"]}
+        for entry in fixture["entries"]:
+            counts[entry["kind"]] = shapes[entry["indices"]][0]
+        unknown = set(counts) - {"cells", "nodes"}
+        request, object_id = fixture["request"], fixture["object"]
+        revision = fixture.get("revision")
+    except (KeyError, IndexError, TypeError) as error:
+        pytest.fail(f"selection.set.json has an unexpected form: {error!r}")
+    assert not unknown, f"selection.set.json has unknown entry kinds: {unknown}"
+    cells = np.arange(counts["cells"]) if "cells" in counts else None
+    nodes = np.arange(counts["nodes"]) if "nodes" in counts else None
+    _check_header(selection_set_frame(request, object_id, cells, nodes, revision), fixture)
+
+
+def test_selection_get_matches_fixture() -> None:
+    """The encoder builds the selection.get frame of the geoviewer repository."""
+    fixture = _tool_header("selection.get.json")
+    assert "request" in fixture, "selection.get.json has no request"
+    _check_header(selection_get_frame(fixture["request"]), fixture)
+
+
+def test_object_fetch_matches_fixture() -> None:
+    """The encoder builds the object.fetch frame of the geoviewer repository."""
+    fixture = _tool_header("object.fetch.json")
+    assert "request" in fixture and "id" in fixture, "object.fetch.json has no request or id"
+    _check_header(fetch_frame(fixture["request"], fixture["id"]), fixture)
+
+
+def test_command_cancel_matches_fixture() -> None:
+    """The encoder builds the command.cancel frame of the geoviewer repository."""
+    fixture = _tool_header("command.cancel.json")
+    assert "request" in fixture, "command.cancel.json has no request"
+    _check_header(cancel_frame(fixture["request"]), fixture)

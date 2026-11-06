@@ -326,7 +326,7 @@ Test command in this phase: `packages/loop_link/.venv/Scripts/python.exe -m pyte
   - Done when: `packages/loop_link/.venv/Scripts/python.exe -m pytest packages/loop_link/tests/test_encode.py` passes and `ruff check packages/loop_link` passes.
   - Context: Add `selection_set_frame`, `selection_get_frame`, `fetch_frame`, `cancel_frame` with the signatures and headers of T041, and add the names to `__all__`. Use `protocol.encode_frame(header, buffers, version=protocol.TOOL_PROTOCOL_VERSION)`; `cancel_frame` uses `protocol.CANCEL_PROTOCOL_VERSION`. Buffers: `np.ascontiguousarray(np.asarray(x, dtype=np.uint32))`, 1-D, names `cells` and `nodes`. Do not check the index range here (`Viewer.select` does). Numpy-style docstrings and type hints.
 
-- [ ] T043 [Found] [M] Test: the tool endpoint of the fake viewer (selection and fetch rules).
+- [x] T043 [Found] [M] Test: the tool endpoint of the fake viewer (selection and fetch rules).
   - Files: `packages/loop_link/tests/test_fake_viewer.py`
   - Needs: T042
   - Wave: 4
@@ -435,14 +435,14 @@ Test command in this phase: `packages/loop_link/.venv/Scripts/python.exe -m pyte
   - Done when: `packages/loop_link/.venv/Scripts/python.exe -c "import loop_link as l; [getattr(l, n) for n in l.__all__]"` passes and `packages/loop_link/.venv/Scripts/python.exe -m pytest packages/loop_link/tests/test_import.py` passes.
   - Context: Add imports and `__all__` entries (keep `__all__` sorted as it is): from `.errors`: `CancelledError`, `StaleRevisionError`, `UnsupportedObjectError`; from `.selection`: `Selection`, `SelectionWatcher`; from `.fetch`: `FetchResult`. Keep all old lines. Do not import pyvista, pandas, Qt or LoopStructural (SC-005, `test_import.py`).
 
-- [ ] T058 [P] [US2] [M] Test: tool frames against the real geoviewer codec.
+- [x] T058 [P] [US2] [M] Test: tool frames against the real geoviewer codec.
   - Files: `packages/loop_link/tests/test_codec_real.py`
   - Needs: T042
   - Wave: 4
   - Done when: `packages/loop_link/.venv/Scripts/python.exe -m pytest packages/loop_link/tests/test_codec_real.py -rs` passes or skips with the reason that the variable is not set; with `LOOP_LINK_GEOVIEWER_REPO=C:\Users\lachl\dev\geoviewer` and `cargo` on the PATH it passes with no skip.
   - Context: In `_cases()` add the frames: `selection_set` (cells and nodes, revision 2), `selection_set_no_revision`, `selection_set_cells_only`, `selection_set_clear` (both `None`), `selection_get`, `object_fetch`, `command_cancel`. Build them with `encode.selection_set_frame(3, "grid", np.array([1, 2, 3]), np.array([4]), 2)`, `encode.selection_get_frame(4)`, `encode.fetch_frame(5, "grid")`, `encode.cancel_frame(6)`. The existing helper, the validator program and the negative control stay. Do not change `codec_validator/`. If the validator reports FAIL for a type it does not know, make the task fail with the validator output as the reason; do not drop the case.
 
-- [ ] T059 [P] [US2] [M] Test: tool fixtures of the geoviewer repository (OP11).
+- [x] T059 [P] [US2] [M] Test: tool fixtures of the geoviewer repository (OP11).
   - Files: `packages/loop_link/tests/test_fixtures.py`
   - Needs: T042
   - Wave: 4

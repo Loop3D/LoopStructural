@@ -368,8 +368,15 @@
       {
         "wave": 3,
         "base": "b0918ffa",
+        "commit": "378331ef",
+        "review": "pass (3 minor)"
+      },
+      {
+        "wave": 4,
+        "base": "378331ef",
         "commit": null,
-        "review": "pending"
+        "review": "pending",
+        "note": "T043: 19 new tests fail as planned until T044/T045; one fix round for protocol dtype names (orchestrator finding)"
       }
     ],
     "runs": {
@@ -414,12 +421,33 @@
           "model": "sonnet",
           "result": "pass"
         }
+      ],
+      "T043": [
+        {
+          "model": "sonnet",
+          "result": "pass (1 retry for dtype names)"
+        }
+      ],
+      "T058": [
+        {
+          "model": "sonnet",
+          "result": "pass"
+        }
+      ],
+      "T059": [
+        {
+          "model": "sonnet",
+          "result": "pass"
+        }
       ]
     },
     "open_minor": [
       "S5 W2 T051: only Points tests decode_object with an origin different from the encode origin (Drillhole collar, Surface not covered)",
       "S5 W2 T051: dropped-property tests use Points only (no Drillhole or Surface case, warning reason text not checked)",
-      "S5 W2 T051: no referenced test with ids 0..n-1 listed out of order in value_map"
+      "S5 W2 T051: no referenced test with ids 0..n-1 listed out of order in value_map",
+      "S5 W3 T052: decode_object does not check the origin shape (origin=[1.0] broadcasts)",
+      "S5 W3 T052: desc[\"name\"]/desc[\"id\"] KeyError on a malformed header (check in T054 or raise InvalidInputError)",
+      "S5 W3 T052: duplicate ids in value_map are not rejected"
     ]
   }
 }

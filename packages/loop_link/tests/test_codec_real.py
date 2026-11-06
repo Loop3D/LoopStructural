@@ -220,6 +220,15 @@ def _cases() -> dict[str, bytes]:
     cases["group_with_parent"] = encode.group_frame("grp2", "Group 2", "grp", 2)
     cases["remove"] = encode.remove_frame("obj")
     cases["clear"] = encode.clear_frame()
+    cells = np.array([1, 2, 3])
+    nodes = np.array([4])
+    cases["selection_set"] = encode.selection_set_frame(3, "grid", cells, nodes, 2)
+    cases["selection_set_no_revision"] = encode.selection_set_frame(3, "grid", cells, nodes, None)
+    cases["selection_set_cells_only"] = encode.selection_set_frame(3, "grid", cells, None, 2)
+    cases["selection_set_clear"] = encode.selection_set_frame(3, "grid", None, None, None)
+    cases["selection_get"] = encode.selection_get_frame(4)
+    cases["object_fetch"] = encode.fetch_frame(5, "grid")
+    cases["command_cancel"] = encode.cancel_frame(6)
     return cases
 
 
