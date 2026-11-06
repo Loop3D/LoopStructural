@@ -375,7 +375,7 @@
         "wave": 4,
         "base": "378331ef",
         "commit": null,
-        "review": "pending",
+        "review": "round 1: changes needed (3 major, 3 minor); fix commit pending round 2",
         "note": "T043: 19 new tests fail as planned until T044/T045; one fix round for protocol dtype names (orchestrator finding)"
       }
     ],
@@ -447,7 +447,14 @@
       "S5 W2 T051: no referenced test with ids 0..n-1 listed out of order in value_map",
       "S5 W3 T052: decode_object does not check the origin shape (origin=[1.0] broadcasts)",
       "S5 W3 T052: desc[\"name\"]/desc[\"id\"] KeyError on a malformed header (check in T054 or raise InvalidInputError)",
-      "S5 W3 T052: duplicate ids in value_map are not rejected"
-    ]
+      "S5 W3 T052: duplicate ids in value_map are not rejected",
+      "S5 W4 T043: no negative test for command.cancel with another request number; no check that no frame follows the cancelled error",
+      "S5 W4 T043: fetch origin test uses zero origin; header[object] not compared with the stored header",
+      "S5 W4 T043: untested rules: headless fetch works, selection.set without revision, refused selection.set keeps old selection, set_user_selection invalid index, version on request.error, progress fractions rise to 1.0"
+    ],
+    "findings": {
+      "found": 6,
+      "fixed": 3
+    }
   }
 }

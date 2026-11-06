@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import contextlib
+import copy
 from collections.abc import Iterator
 from typing import Any
 
@@ -293,7 +294,7 @@ def error_of(frame: Frame) -> dict[str, Any]:
     return frame.header["error"]
 
 
-def test_tool_endpoint_below_minor_18_answers_unknown_message() -> None:
+def test_protocol_minor_17_answers_unknown_message() -> None:
     """With protocol_minor below 18, each selection or fetch message gets an error frame."""
     with tool_session(protocol_minor=17) as (_, client):
         frames = [
@@ -551,17 +552,39 @@ def test_fetch_cancel_gives_cancelled_error() -> None:
         assert "object.end" not in [f.header["type"] for f in frames]
 
 
-def test_fetch_changes_neither_objects_nor_selection() -> None:
+def test_fetch_leaves_scene_and_cursor_unchanged() -> None:
     """object.fetch does not change the objects and does not change the selection."""
     with tool_session(part_bytes=16) as (viewer, client):
         set_selection(client, "srf", 2, nodes=[1])
-        before = {k: (v.header, list(v.buffers)) for k, v in viewer.objects.items()}
+
+        def snapshot() -> dict[str, Any]:
+            return {
+                k: (copy.deepcopy(v.header), {n: a.copy() for n, a in v.buffers.items()})
+                for k, v in viewer.objects.items()
+            }
+
+        before = snapshot()
         client.send_binary(fetch_frame(1, "srf"))
         replies_until_done(client)
-        assert {k: (v.header, list(v.buffers)) for k, v in viewer.objects.items()} == before
+        after = snapshot()
+        assert set(after) == set(before)
+        for key, (header, arrays) in after.items():
+            assert header == before[key][0]
+            assert list(arrays) == list(before[key][1])
+            for name, array in arrays.items():
+                assert np.array_equal(array, before[key][1][name])
         assert viewer.selection is not None
         assert viewer.selection["object"] == "srf"
         assert indices(viewer.selection, "nodes") == [1]
+
+
+def test_fetch_with_one_part_sends_no_progress() -> None:
+    """When all data fits in one part, object.fetch sends no command.progress frame."""
+    with tool_session() as (_, client):
+        client.send_binary(fetch_frame(4, "pts"))
+        frames = replies_until_done(client)
+        assert [f.header["type"] for f in frames] == ["object.header", "object.part", "object.end"]
+        assert frames[-1].header["parts"] == 1
 
 
 def test_tool_requests_keep_the_frames_of_the_tool_endpoint() -> None:
