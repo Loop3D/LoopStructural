@@ -60,17 +60,48 @@
         "model": "sonnet",
         "result": "pass"
       }
+    ],
+    "T095": [
+      {
+        "model": "sonnet",
+        "result": "pass"
+      }
+    ],
+    "T096": [
+      {
+        "model": "sonnet",
+        "result": "pass"
+      },
+      {
+        "model": "sonnet",
+        "result": "pass"
+      }
+    ],
+    "T097": [
+      {
+        "model": "sonnet",
+        "result": "pass"
+      }
+    ],
+    "T098": [
+      {
+        "model": "sonnet",
+        "result": "pass"
+      }
     ]
   },
   "findings": {
-    "found": 3,
+    "found": 6,
     "rejected": 0,
     "dropped": 0,
     "fixed": 0,
     "open_minor": [
       "W43 T090: tests/unit/utils/test_transformation.py starts with a BOM (strip 3 bytes; fix at S6 end)",
       "W43 T094: _cell_statuses skips unknown dependency keys silently (index directly; fix in T103)",
-      "W43 T094: Surfe distribution name surfepy matches T092 result (no change needed)"
+      "W43 T094: Surfe distribution name surfepy matches T092 result (no change needed)",
+      "W44 T095: outside the support the FDI gradient is exactly 0 (PLI gives NaN, value NaN); test pins current behaviour; maintainer to decide if FDI should give NaN",
+      "W44 T096: PLI/cosine bounds above plan cap 1e-2 (orchestrator decision, see plan Answers)",
+      "W44 T096: P2Interpolator.add_gradient_constraints raises ValueError for P2 foliation with gradient rows (library defect outside spec 005)"
     ]
   },
   "answers": "",
