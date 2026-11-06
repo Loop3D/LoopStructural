@@ -227,7 +227,7 @@ length 100; keep string quotes as written (Black `skip-string-normalization`).
   - Done when: `packages/loop_link/.venv/Scripts/python.exe -m pytest packages/loop_link/tests/test_adapter_pyvista.py` fails with ImportError of `loop_link.adapters.pyvista`, then passes after T029.
   - Context: `pv = pytest.importorskip("pyvista")`. Under test: `from_pyvista(mesh, *, kind=None, vectors=None, vectors_kind="normal") -> SceneObject` and `Viewer.send(mesh, id=...)`. Cases: `pv.PolyData(points)` with only vertices -> `Points`, `point_data` -> `properties`; with a point array `"n"` of shape (n,3) and `vectors="n"` -> `Vectors` (check `dip` against the formula arccos(n_z) for upward normals); `pv.lines_from_points` PolyData -> `Lines` with segments (m,2); `pv.Sphere().triangulate()` -> `Surface` (vertices, triangles (m,3), cell data -> `cell_properties`); a quad `pv.Plane()` face set is triangulated -> `Surface`; `pv.ImageData(dimensions=(4,5,6), spacing=(1,2,3), origin=(10,20,30))` -> `BlockModel(origin=(10,20,30), cell_sizes=(1,2,3), cells=(3,4,5))` with point data on nodes and cell data on cells; `pv.RectilinearGrid` with uneven spacing -> `InvalidInputError` (OP9); `pv.StructuredGrid` -> `InvalidInputError`; an `UnstructuredGrid` of all tetra cells (`pv.UnstructuredGrid(cells, [pv.CellType.TETRA], points)`) -> `TetraMesh` with tetrahedra (m,4); a mixed-cell `UnstructuredGrid` -> `InvalidInputError`; `kind="Drillhole"` -> `InvalidInputError` whose text names `Drillhole` and `drillholes_from_pandas` (OP3); a 2-D array in `point_data` of shape (n,2) -> `InvalidInputError`. Analytic grid test: `f = x + 10 y + 100 z` on the nodes of the ImageData grid; send it and read the stored buffer from the `FakeViewer`; it equals `f` at the node order x fastest.
 
-- [ ] T029 [US1] [M] Implement the pyvista adapter.
+- [x] T029 [US1] [M] Implement the pyvista adapter.
   - Files: `packages/loop_link/src/loop_link/adapters/pyvista.py`
   - Needs: T028
   - Wave: 11
@@ -241,7 +241,7 @@ length 100; keep string quotes as written (Black `skip-string-normalization`).
   - Done when: `packages/loop_link/.venv/Scripts/python.exe -m pytest packages/loop_link/tests/test_adapter_loopstructural.py` fails with ImportError of `loop_link.adapters.loopstructural`, then passes after T031.
   - Context: `geometry = pytest.importorskip("loop_common.geometry")`. Classes: `loop_common.geometry.Surface` (fields `vertices`, `triangles`, `properties: dict|None`, `cell_properties: dict|None`, `name`) and `loop_common.geometry.StructuredGrid` (fields `origin`, `step_vector`, `nsteps` (node counts), `properties` (per node, x fastest), `cell_properties` (per cell, x fastest), property `nsteps_cells`). Under test: `from_loopstructural(obj)` and `Viewer.send(obj, id=...)`. Cases: `Surface` with 4 vertices, 2 triangles, `properties={"a": ...}`, `cell_properties={"b": ...}` -> `Surface` with the same arrays; `properties=None` -> empty mapping; `StructuredGrid(origin=[1,2,3], step_vector=[1,2,3], nsteps=[4,5,6])` -> `BlockModel(origin=(1,2,3), cell_sizes=(1,2,3), cells=(3,4,5))`; analytic check: set `properties["f"]` to `grid.nodes @ [1, 10, 100]` and send it; the stored buffer from the `FakeViewer` equals it (so no reorder is needed); any other class from `loop_common.geometry` (for example `ValuePoints`) -> `InvalidInputError` that names the accepted inputs.
 
-- [ ] T031 [US1] [M] Implement the LoopStructural adapter.
+- [x] T031 [US1] [M] Implement the LoopStructural adapter.
   - Files: `packages/loop_link/src/loop_link/adapters/loopstructural.py`
   - Needs: T030
   - Wave: 11
@@ -255,7 +255,7 @@ length 100; keep string quotes as written (Black `skip-string-normalization`).
   - Done when: `packages/loop_link/.venv/Scripts/python.exe -m pytest packages/loop_link/tests/test_adapter_pandas.py` fails with ImportError of `loop_link.adapters.pandas`, then passes after T033.
   - Context: `pd = pytest.importorskip("pandas")`. Under test: `drillholes_from_pandas(collar, survey, logs=None, *, hole_id="hole_id", x="x", y="y", z="z", depth="depth", azimuth="azimuth", dip="dip", from_="from", to="to", dip_positive_down=True) -> dict[str, Drillhole]`. Data: collar `hole_id,x,y,z` for `DH1`, `DH2`; survey `hole_id,depth,azimuth,dip` (2 rows each); logs `hole_id,from,to,grade,lith` (grade float, lith strings). Cases: result keys `DH1`, `DH2`; `Drillhole.collar` equals the row; `survey` shape (2,3) in the order depth, azimuth, dip; `intervals` shape (j,2); `interval_properties["grade"]` float array and `["lith"]` a numpy `U` array; `dip_positive_down=False` changes the sign of `dip`; a custom column name through `x="east"` works; a hole in `survey` that is not in `collar` -> `InvalidInputError`; an `object` column with a non-string value in `logs` -> `InvalidInputError`; `logs=None` gives holes with 0 intervals (`intervals` shape (0,2)); the result sends with `Viewer.send(hole, id=hole_id)` to the `FakeViewer` and the stored `object_type` is `Drillhole`.
 
-- [ ] T033 [US1] [M] Implement the pandas adapter.
+- [x] T033 [US1] [M] Implement the pandas adapter.
   - Files: `packages/loop_link/src/loop_link/adapters/pandas.py`
   - Needs: T032
   - Wave: 11
@@ -271,7 +271,7 @@ length 100; keep string quotes as written (Black `skip-string-normalization`).
   - Done when: `packages/loop_link/.venv/Scripts/python.exe -m pytest packages/loop_link/tests/test_push.py` passes.
   - Context: `@dataclass class PushResult: sent: int = 0; removed: int = 0; refused: list[Refusal] = field(default_factory=list); skipped: list[tuple[str, str]] = field(default_factory=list); cancelled: bool = False` and `summary(self) -> str` (text as in the test of T034: "<sent> objects sent to GeoViewer", ", <n> old objects removed", ", <n> objects skipped", ". The viewer refused <n> messages", final "."). `push_objects(viewer: Viewer, objects: Iterable[tuple[str, Any]], *, replace_prefix: Optional[str] = None, progress: Optional[Callable[[str], None]] = None, cancel: Optional[threading.Event] = None) -> PushResult`. Steps: `viewer.connect()` if `not viewer.connected`; for each `(id, obj)`: if `cancel` is set, set `cancelled=True` and stop; call `progress(f"Sending {id}...")`; `viewer.send(obj, id=id)` and `sent += 1`; `InvalidInputError` or `ObjectTooLargeError` -> `skipped.append((id, str(error)))` and go on; `ViewerClosedError` and `BusyError` are not caught. After the loop, if `replace_prefix`, for each id in `viewer.inventory()` that starts with the prefix and was not sent in this call: `viewer.remove(id)` and `removed += 1`. Then `refused = viewer.flush(raise_on_refusal=False)`. No Qt, no module state; `progress` runs on the calling thread. Docstrings and type hints.
 
-- [ ] T036 [US5] [S] Export `PushResult` and `push_objects`.
+- [x] T036 [US5] [S] Export `PushResult` and `push_objects`.
   - Files: `packages/loop_link/src/loop_link/__init__.py`
   - Needs: T035, T023
   - Wave: 11

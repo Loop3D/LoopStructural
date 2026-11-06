@@ -64,8 +64,15 @@
     {
       "wave": 10,
       "base": "dd11d8d10998046df4c111abcbc85a5fe1d637db",
-      "commit": "cf05ac8b + fix commit",
+      "commit": "133c19b9",
       "review": "pass (one fix round; fixes verified by orchestrator)"
+    },
+    {
+      "wave": 11,
+      "base": "133c19b9567cda3ec31f4bb4bc6db9765a2205bb",
+      "commit": null,
+      "review": "pending",
+      "note": "VERIFY lists fake_viewer.py, test_adapter_pandas.py, test_viewer.py as outside Files: orchestrator-ordered fix of a FakeViewer text-array bug found by T033/T032 tests"
     }
   ],
   "runs": {
@@ -247,11 +254,39 @@
       {
         "model": "sonnet",
         "result": "pass"
+      },
+      {
+        "model": "sonnet",
+        "result": "test fix (async read)"
       }
     ],
     "T035": [
       {
         "model": "sonnet",
+        "result": "pass"
+      }
+    ],
+    "T029": [
+      {
+        "model": "sonnet",
+        "result": "pass"
+      }
+    ],
+    "T031": [
+      {
+        "model": "sonnet",
+        "result": "pass"
+      }
+    ],
+    "T033": [
+      {
+        "model": "sonnet",
+        "result": "pass"
+      }
+    ],
+    "T036": [
+      {
+        "model": "haiku",
         "result": "pass"
       }
     ]

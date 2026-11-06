@@ -221,6 +221,16 @@ def _check_data(
     if association not in ("vertex", "cell", "interval"):
         return f"The association {association!r} is not known."
     length = buffers[name].shape[0] if buffers[name].ndim else 0
+    if entry.get("data_type") == "text":
+        offsets_name = entry.get("offsets")
+        if offsets_name not in buffers:
+            return f"The text array {name!r} has no offsets buffer."
+        offsets = buffers[offsets_name].astype(np.int64)
+        if offsets.ndim != 1 or offsets.size < 1:
+            return f"The offsets of {name!r} are not valid."
+        if offsets[0] != 0 or offsets[-1] != length or np.any(np.diff(offsets) < 0):
+            return f"The offsets of {name!r} do not fit its {length} bytes."
+        length = offsets.size - 1
     expected = _expected_length(object_type, association, arrays, params)
     if expected is None:
         return f"The association {association!r} does not fit the object type {object_type}."

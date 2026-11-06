@@ -26,6 +26,7 @@ from loop_link.errors import (
 )
 from loop_link.objects import (
     BlockModel,
+    Categorical,
     Drillhole,
     Lines,
     Points,
@@ -33,7 +34,7 @@ from loop_link.objects import (
     TetraMesh,
     Vectors,
 )
-from loop_link.protocol import Frame
+from loop_link.protocol import Frame, encode_frame
 from loop_link.testing import FakeViewer
 from loop_link.viewer import InventoryEntry, Viewer
 
@@ -445,3 +446,48 @@ def test_inventory_of_new_connection_is_hello_list(
             assert time.monotonic() < deadline
             time.sleep(0.01)
     assert [(e.id, e.revision) for e in second.inventory()] == [("a", 1)]
+
+
+def test_text_and_categorical_properties_are_stored(
+    fake_viewer: Any, viewer_factory: FACTORY
+) -> None:
+    """A text property and a Categorical property reach the scene without refusal."""
+    points = Points(
+        np.zeros((3, 3)),
+        properties={
+            "lith": np.array(["a", "bb", "ccc"]),
+            "unit": Categorical([0, 1, 1], ["x", "y"]),
+        },
+    )
+    viewer = viewer_factory()
+    viewer.send(points, id="pts")
+    assert viewer.flush() == []
+    assert wait_for(lambda: "pts" in fake_viewer.viewer.objects)
+
+
+def test_text_offsets_must_match_vertex_count(fake_viewer: Any) -> None:
+    """A text array with 2 values on 3 vertices is refused with invalid_object."""
+    header = {
+        "type": "scene.upsert",
+        "id": "bad",
+        "object_type": "Points",
+        "geometry": {"vertices": "v"},
+        "data": [
+            {
+                "id": "t",
+                "name": "t",
+                "buffer": "t",
+                "association": "vertex",
+                "data_type": "text",
+                "offsets": "t/offsets",
+            }
+        ],
+    }
+    buffers = [
+        ("v", np.zeros((3, 3), dtype=np.float32)),
+        ("t", np.frombuffer(b"abc", dtype=np.uint8)),
+        ("t/offsets", np.array([0, 1, 3], dtype=np.uint32)),
+    ]
+    replies = fake_viewer.viewer.accept_frame(encode_frame(header, buffers))
+    assert [r.header["code"] for r in replies] == ["invalid_object"]
+    assert "bad" not in fake_viewer.viewer.objects

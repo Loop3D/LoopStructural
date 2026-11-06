@@ -18,6 +18,7 @@ from .errors import (
     ViewerRefusedError,
 )
 from .objects import BlockModel, Categorical, Drillhole, Lines, Points, Surface, TetraMesh, Vectors
+from .push import PushResult, push_objects
 from .viewer import InventoryEntry, Viewer
 
 __all__ = [
@@ -34,6 +35,7 @@ __all__ = [
     "NoViewerError",
     "ObjectTooLargeError",
     "Points",
+    "PushResult",
     "Refusal",
     "Surface",
     "TetraMesh",
@@ -42,4 +44,5 @@ __all__ = [
     "Viewer",
     "ViewerClosedError",
     "ViewerRefusedError",
+    "push_objects",
 ]

@@ -2,13 +2,14 @@
 
 from __future__ import annotations
 
+import time
+
 import numpy as np
 import pytest
 
 pd = pytest.importorskip("pandas")
 
 from loop_link.adapters.pandas import drillholes_from_pandas
-
 from loop_link.errors import InvalidInputError
 from loop_link.objects import Drillhole
 
@@ -136,6 +137,10 @@ def test_result_sends_to_viewer(collar, survey, logs, fake_viewer, viewer_factor
     hole = drillholes_from_pandas(collar, survey, logs)["DH1"]
     viewer = viewer_factory()
     viewer.send(hole, id="DH1")
+    viewer.flush()
+    deadline = time.monotonic() + 5.0
+    while time.monotonic() < deadline and "DH1" not in fake_viewer.viewer.objects:
+        time.sleep(0.01)
     assert fake_viewer.viewer.objects["DH1"].header["object_type"] == "Drillhole"
 
 
