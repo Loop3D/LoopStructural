@@ -22,6 +22,12 @@
       "base": "ff79067",
       "commit": "e32045cb",
       "review": "pass"
+    },
+    {
+      "wave": 44,
+      "base": "513b2026",
+      "commit": "b3d673f0",
+      "review": "pass"
     }
   ],
   "runs": {
@@ -91,7 +97,7 @@
     ]
   },
   "findings": {
-    "found": 6,
+    "found": 10,
     "rejected": 0,
     "dropped": 0,
     "fixed": 0,
@@ -101,7 +107,11 @@
       "W43 T094: Surfe distribution name surfepy matches T092 result (no change needed)",
       "W44 T095: outside the support the FDI gradient is exactly 0 (PLI gives NaN, value NaN); test pins current behaviour; maintainer to decide if FDI should give NaN",
       "W44 T096: PLI/cosine bounds above plan cap 1e-2 (orchestrator decision, see plan Answers)",
-      "W44 T096: P2Interpolator.add_gradient_constraints raises ValueError for P2 foliation with gradient rows (library defect outside spec 005)"
+      "W44 T096: P2Interpolator.add_gradient_constraints raises ValueError for P2 foliation with gradient rows (library defect outside spec 005)",
+      "W44 T095: FDI gradient 0 vs PLI NaN outside support is a known open item; no test of a path leaving the support",
+      "W44 T096: p2_model drops gradient rows (P2 defect); add follow-up when P2 fixed",
+      "W44 T097: test sets interp.up_to_date by hand after _native.solve",
+      "W44 T095: misplaced-reference test shifts along world x (text said x')"
     ]
   },
   "answers": "",
