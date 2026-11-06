@@ -170,6 +170,12 @@
         "model": "sonnet",
         "result": "pass"
       }
+    ],
+    "T106": [
+      {
+        "model": "sonnet",
+        "result": "pass"
+      }
     ]
   },
   "findings": {
