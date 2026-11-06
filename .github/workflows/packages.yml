@@ -12,6 +12,18 @@ name: "📦 Workspace packages"
 # LoopStructural test suite in tester.yml. loopstructural-test waits on both
 # jobs (needs:) so the root suite only runs once every workspace package is
 # confirmed working.
+#
+# On a pull request, only the jobs whose code changed run (see the `changes`
+# job). A change in a package also runs the packages and the root suite that
+# depend on it:
+#
+#   loop_common       -> loop_interpolation, LoopStructural, visualisation
+#   loop_interpolation -> LoopStructural, visualisation
+#   LoopStructural    -> visualisation
+#   map2loop          -> (nothing; it does not depend on the others)
+#
+# A change in uv.lock or in this file runs everything. A push to master and a
+# manual run always run everything.
 
 on:
   push:
@@ -19,12 +31,20 @@ on:
       - master
     paths:
       - 'packages/**'
+      - 'LoopStructural/**'
+      - 'tests/**'
+      - pyproject.toml
+      - uv.lock
       - .github/workflows/packages.yml
   pull_request:
     branches:
       - master
     paths:
       - 'packages/**'
+      - 'LoopStructural/**'
+      - 'tests/**'
+      - pyproject.toml
+      - uv.lock
       - .github/workflows/packages.yml
   workflow_dispatch:
 
@@ -32,7 +52,96 @@ permissions:
   contents: read
 
 jobs:
+  changes:
+    # Decides which test jobs run. It writes one flag for each job group and
+    # the list of workspace packages for the packages-test matrix.
+    name: Changed code
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: read
+    outputs:
+      packages: ${{ steps.decide.outputs.packages }}
+      map2loop: ${{ steps.decide.outputs.map2loop }}
+      root: ${{ steps.decide.outputs.root }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Find the changed paths
+        id: filter
+        uses: dorny/paths-filter@v3
+        with:
+          filters: |
+            common:
+              - 'packages/loop_common/**'
+            interpolation:
+              - 'packages/loop_interpolation/**'
+            visualisation:
+              - 'packages/loopstructural_visualisation/**'
+            map2loop:
+              - 'packages/map2loop/**'
+            root:
+              - 'LoopStructural/**'
+              - 'tests/**'
+              - 'pyproject.toml'
+            shared:
+              - 'uv.lock'
+              - '.github/workflows/packages.yml'
+
+      - name: Decide which tests run
+        id: decide
+        env:
+          EVENT: ${{ github.event_name }}
+          COMMON: ${{ steps.filter.outputs.common }}
+          INTERPOLATION: ${{ steps.filter.outputs.interpolation }}
+          VISUALISATION: ${{ steps.filter.outputs.visualisation }}
+          MAP2LOOP: ${{ steps.filter.outputs.map2loop }}
+          ROOT: ${{ steps.filter.outputs.root }}
+          SHARED: ${{ steps.filter.outputs.shared }}
+        run: |
+          set -euo pipefail
+          is() { [ "$1" = "true" ]; }
+
+          # Everything runs for a push, a manual run, and a shared change.
+          everything=false
+          if [ "$EVENT" != "pull_request" ] || is "$SHARED"; then everything=true; fi
+
+          run_common=$everything
+          run_interpolation=$everything
+          run_visualisation=$everything
+          run_map2loop=$everything
+          run_root=$everything
+
+          # A change runs the code that depends on it (see the header comment).
+          if is "$COMMON"; then
+            run_common=true; run_interpolation=true; run_root=true; run_visualisation=true
+          fi
+          if is "$INTERPOLATION"; then
+            run_interpolation=true; run_root=true; run_visualisation=true
+          fi
+          if is "$ROOT"; then run_root=true; run_visualisation=true; fi
+          if is "$VISUALISATION"; then run_visualisation=true; fi
+          if is "$MAP2LOOP"; then run_map2loop=true; fi
+
+          packages=""
+          add() {
+            packages="${packages:+$packages,}{\"name\":\"$1\",\"dir\":\"$2\"}"
+          }
+          if is "$run_common"; then add loop_common loop_common; fi
+          if is "$run_interpolation"; then add loop_interpolation loop_interpolation; fi
+          if is "$run_visualisation"; then add loopstructuralvisualisation loopstructural_visualisation; fi
+
+          packages="[$packages]"
+          {
+            echo "packages=$packages"
+            echo "map2loop=$run_map2loop"
+            echo "root=$run_root"
+          } >> "$GITHUB_OUTPUT"
+          echo "packages=$packages map2loop=$run_map2loop root=$run_root"
+
   packages-test:
+    needs: changes
+    if: needs.changes.outputs.packages != '[]'
     # matrix.package.name is the uv/PyPI package name (as declared in each
     # package's pyproject.toml `[project] name`); matrix.package.dir is its
     # directory under packages/. These differ for loopstructuralvisualisation:
@@ -44,10 +153,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        package:
-          - { name: loop_common, dir: loop_common }
-          - { name: loop_interpolation, dir: loop_interpolation }
-          - { name: loopstructuralvisualisation, dir: loopstructural_visualisation }
+        package: ${{ fromJSON(needs.changes.outputs.packages) }}
         os: ${{ fromJSON(vars.BUILD_OS)}}
         python-version: ${{ fromJSON(vars.PYTHON_VERSIONS)}}
     steps:
@@ -70,6 +176,8 @@ jobs:
           uv run --package ${{ matrix.package.name }} pytest packages/${{ matrix.package.dir }}/tests
 
   map2loop-test:
+    needs: changes
+    if: needs.changes.outputs.map2loop == 'true'
     # Separate job (not part of the packages-test matrix above): map2loop
     # imports osgeo/gdal at module load time, which has no pip-installable
     # wheel on Windows/macOS (confirmed: building GDAL from the PyPI sdist
@@ -115,7 +223,14 @@ jobs:
 
   loopstructural-test:
     name: LoopStructural (python ${{ matrix.python-version }})
-    needs: [packages-test, map2loop-test]
+    needs: [changes, packages-test, map2loop-test]
+    # always(): a skipped job in `needs` would otherwise skip this job too. The
+    # root suite still waits for the jobs that ran, and stops if one failed.
+    if: >-
+      ${{ always()
+      && needs.changes.outputs.root == 'true'
+      && !contains(needs.*.result, 'failure')
+      && !contains(needs.*.result, 'cancelled') }}
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
