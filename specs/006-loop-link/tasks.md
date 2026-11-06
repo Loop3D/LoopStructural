@@ -347,7 +347,7 @@ Test command in this phase: `packages/loop_link/.venv/Scripts/python.exe -m pyte
   - Done when: `packages/loop_link/.venv/Scripts/python.exe -m pytest packages/loop_link/tests/test_fake_viewer.py` passes and `ruff check packages/loop_link` passes.
   - Context: Add `object.fetch` to `tool_frame` (T044) with the rules in T043. The tool loop must send several reply frames and read between parts: after each `object.part` the fake reads for at most 0.001 s on the connection (use a short socket timeout, restore it after) and, on a `command.cancel` with the same `request`, sends `request.error` code `cancelled` and stops. So `_run` needs a streaming path for fetch, not a list of replies; keep `tool_frame` for the one-reply messages. `fetch_delay` is a `time.sleep` after each part. Parts: for each stored buffer in header order, slices of at most `part_bytes` bytes (`array.tobytes()`), `offset` = bytes already sent for that array; `arrays` shape from the stored array. A stored buffer of zero bytes still is in `arrays` and gets no part. `parts` in `object.end` is the total part count. Origin and crs in the header are those of the fake.
 
-- [ ] T046 [Found] [M] Test: `ToolConnection` in `test_tool.py`.
+- [x] T046 [Found] [M] Test: `ToolConnection` in `test_tool.py`.
   - Files: `packages/loop_link/tests/test_tool.py`
   - Needs: T045, T039
   - Wave: 8
