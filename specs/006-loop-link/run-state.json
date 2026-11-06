@@ -48,6 +48,12 @@
       "base": "c200f6745253dc7bfe196eca1bd88ba14273093c",
       "commit": "0590c43f + fix commit",
       "review": "pass (one fix round; fixes verified by orchestrator)"
+    },
+    {
+      "wave": 8,
+      "base": "10e6d9b308286938801e30b47ce61c7394ad6d3f",
+      "commit": null,
+      "review": "pending"
     }
   ],
   "runs": {
@@ -166,6 +172,12 @@
       }
     ],
     "T020": [
+      {
+        "model": "sonnet",
+        "result": "pass"
+      }
+    ],
+    "T021": [
       {
         "model": "sonnet",
         "result": "pass"
