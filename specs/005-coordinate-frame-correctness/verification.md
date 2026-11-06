@@ -1352,3 +1352,172 @@ S6 open items.
 - T096: the PLI value limit `TOL_FAULTED_VALUE["PLI"]` is 3.8e-2, above the 1e-2 cap of the plan. The limit is lower than the pre-fix error (0.083 to 0.099), so the test shows the defect. The point stays open.
 - T090: `tests/unit/utils/test_transformation.py` has a BOM. Still open, minor.
 - Tolerance audit: 1 relaxed tolerance from S1 (gradient `atol` 1e-5 to 1e-4 in `packages/loop_interpolation/tests/golden/test_golden.py`). See `## S6 tolerance audit`. It needs a decision.
+
+## S6 rollback checks
+
+Date: 2026-11-06. The check compares the S6 tree with the S5 end code.
+
+Set-up:
+
+- The throw-away worktree was at commit e1c10ef68bbc320d21e8a4befd9b648be20b11c0 (the S5 merge commit, `git rev-parse e1c10ef6`).
+- Each tree had its own `PYTHONPATH` (the tree, `packages/loop_common/src`, `packages/loop_interpolation/src`, `packages/loopstructural_visualisation/src`) and the venv python. In each tree, `LoopStructural.__file__` and `loop_common.__file__` pointed into that tree.
+- The check scripts were short scripts in the scratchpad folder, not in a repository. Each script printed JSON. The two JSON files were compared.
+- The throw-away worktree was removed with `git worktree remove --force` and `git worktree prune`. `git worktree list` shows no throw-away worktree.
+
+| Check | Result | Note |
+|---|---|---|
+| (a) `EuclideanTransformation` import, signature, pickle | pass | `from LoopStructural.utils import EuclideanTransformation` and `import LoopStructural.utils._transformation` work on both trees. The `__init__` parameters are equal: names, order and defaults (`dimensions=2`, `angle=0`, `translation=None`, `fit_rotation=True`). The text of the annotations differs by design: S6 uses string annotations (`'int'`, `'np.ndarray \| None'`), S5 uses objects (`int`, `numpy.ndarray`). A pickle made on the S5 tree loads on the S6 tree. The loaded object is a `loop_common.math._transformation.EuclideanTransformation`. |
+| (b) public names of `loop_common.math` | pass | The S5 names are a subset of the S6 names. S6 adds `EuclideanTransformation` only. |
+| (c) `transform`, `dimensions=2` | pass | For a float (3 columns, 6 rows) array, with angle 30 and a set translation, `np.array_equal` of the two results is true. The z column was not tested for `dimensions=3` (it differs by design). |
+| (d) `from loop_interpolation import *` | pass | The two sets of names are equal. |
+| (e) five `GeologicalFeature` diagnostic methods | pass | The signatures of `evaluate_gradient_misfit`, `evaluate_value_misfit`, `evaluate_gradient_cosines`, `evaluate_value_residuals` and `verification_report` are equal on both trees. Feature: one foliation, FDI, 8 value rows, 3 normal rows, no faults, no regions. The shapes are equal (gradient misfit (1, 3), value misfit 8, gradient cosines 3, value residuals 8). The largest absolute difference is 0.0 for all four. The `to_dict()` of `verification_report` is equal. |
+| (f) baseline files | pass | `git diff --stat e1c10ef6 HEAD --` prints nothing for `packages/loop_common/tests/data/structured_support_reference.npz`, `packages/loop_common/tests/data/structured_grid_2d_reference.npz`, `tests/fixtures/api_surface_snapshot.json`, `tests/unit/interpolator/*.txt` and `packages/loop_interpolation/tests/golden/golden_files`. The two `.npz` files are not at the repository root. Their paths are the ones above. |
+
+Differences found: only the annotation text in (a), and the new name in (b). Both are by design. No other difference was found.
+
+## S6 final gates
+
+The orchestrator ran the full gates at HEAD `dfb37632` (the S6 code final; the changes after it are documents only). Each command ran alone from the repository root. The `PYTHONPATH` held the worktree, `packages/loop_common/src`, `packages/loop_interpolation/src` and `packages/loopstructural_visualisation/src`. The venv python was used. `pyevtk` is not on the path.
+
+Before the run, one `classname` of each junit file was checked. The first test case of `root.xml` has an empty `classname` because it is a module-level skip, so a normal test case was used. All three files pass the check.
+
+| Junit file | Example `classname` | Start of name |
+|---|---|---|
+| `root.xml` | `tests.integration.test_fold_models` | `tests.` |
+| `common.xml` | `packages.loop_common.tests.test_2d_discrete_support` | `packages.loop_common.tests.` |
+| `interpolation.xml` | `packages.loop_interpolation.tests.golden.test_golden` | `packages.loop_interpolation.tests.` |
+
+Every named `classname` in the three files has one of the three allowed starts (0 exceptions).
+
+| Command | Result |
+|---|---|
+| `ruff check LoopStructural packages` | All checks passed |
+| `pytest packages/loop_common/tests` | 418 passed, 7 warnings in 65.67 s |
+| `pytest packages/loop_interpolation/tests` | 615 passed, 47 skipped, 2 xfailed in 77.18 s |
+| Root `pytest` | 2781 passed, 30 skipped, 12 warnings in 1288.93 s (21 min 28 s) |
+| `pytest tests/unit/test_public_api_contract.py tests/unit/test_stable_api_surface.py` | 15 passed, 1 warning in 0.05 s |
+| `python -m tests.fixtures.backend_matrix <junit_dir>/root.xml <junit_dir>/common.xml <junit_dir>/interpolation.xml` | exit code 0 (the orchestrator checked the exit code apart from the log) |
+
+No test failed. The 2 xfailed tests are `test_known_points_on_lower_boundary_are_finite[P1]` and `[DFI]` (finding F2, strict xfail). They are not skips.
+
+## S6 backend matrix
+
+The matrix command ran with the same `PYTHONPATH` as the three pytest runs. Its status for an optional dependency comes from `find_spec` in its own process, so the statuses agree with the runs.
+
+| Spec row | Cell | Level | Result |
+|---|---|---|---|
+| Python FDI and PLI/P1 | py-fdi | mandatory | passed |
+| Python FDI and PLI/P1 | py-pli | mandatory | passed |
+| Python P2 | py-p2 | mandatory | passed |
+| Python FDI-fold, PLI discrete-fold, and P2-fold | py-fold-fdi | mandatory | passed |
+| Python FDI-fold, PLI discrete-fold, and P2-fold | py-fold-pli | mandatory | passed |
+| Python FDI-fold, PLI discrete-fold, and P2-fold | py-fold-p2 | mandatory | passed |
+| Python FDI and PLI constant-norm variants | py-cn-fdi | mandatory | passed |
+| Python FDI and PLI constant-norm variants | py-cn-pli | mandatory | passed |
+| Common 2D and 3D geometry | common-geometry | mandatory | passed |
+| Existing native FDI or fold integration | native-extension | optional | excluded: optional dependency 'loop_interpolation_core' is not installed (loop-interpolation[native]) |
+| Optional Surfe integration | surfe-extension | optional | excluded: optional dependency 'surfepy' is not installed (surfepy) |
+| extra | display-viewer | optional | passed |
+| extra | export-pyevtk | optional | excluded: optional dependency 'pyevtk' is not installed (pyevtk) |
+
+Boundary stub cells (Python side; not a native or Surfe result)
+- native-boundary (Existing native FDI or fold integration): passed
+- surfe-boundary (Optional Surfe integration): passed
+
+Stub cells test the Python side of the boundary only. They are not a native or Surfe pass.
+
+Optional cells:
+
+| Cell | Classification | Dependency | Result |
+|---|---|---|---|
+| native-extension | optional, spec row 6 | `loop_interpolation_core` | excluded |
+| surfe-extension | optional, spec row 7 | `surfepy` | excluded |
+| display-viewer | optional, extra | `loopstructuralvisualisation` and `matplotlib` | passed |
+| export-pyevtk | optional, extra | `pyevtk` | excluded |
+
+- Passed optional cell: `display-viewer`. `loopstructuralvisualisation` is on the path through `packages/loopstructural_visualisation/src` and `matplotlib` is installed. The viewer test ran and passed. No skip hides this cell.
+- Excluded optional cells: `native-extension` (`loop_interpolation_core`), `surfe-extension` (`surfepy`) and `export-pyevtk` (`pyevtk`). Rows 6 and 7 of the spec read "excluded".
+- The 2 stub cells are printed apart. They are not a native pass and not a Surfe pass.
+- 9 mandatory cells passed. 0 mandatory cells were skipped.
+
+## S6 exclusion ledger
+
+The ledger lists every skipped test case of the three junit files. A script parsed the files (`python -I`, venv python). The junit file records a module that skips at collection as one case with the message "collection skipped". For these modules, the dependency comes from the `pytest.importorskip` call at the top of the module. The search `git grep -n trimesh -- tests packages` found no use of `trimesh`, so no skip depends on it.
+
+Counts: `common.xml` 0 skipped. `root.xml` 30 skipped (14 + 12 + 3 + 1 + 0 + 0 + 0). `interpolation.xml` 47 skipped (13 + 21 + 13). The 2 xfailed tests in `interpolation.xml` are not skips. The junit file lists them as "skipped" cases, so the script found 49 cases there. 49 minus 2 xfailed is 47.
+
+### Root suite (`tests`), 30 skipped
+
+| Group | Dependency | Count | Cases and skip message |
+|---|---|---|---|
+| Native extension | `loop_interpolation_core` | 14 | 12 cells of `tests/unit/interpolator/test_backend_optional_native_surfe.py::test_native_extension_r1_fit_in_world[anchor0..3-rot0/30/90]`: "optional dependency 'loop_interpolation_core' is not installed (loop-interpolation[native])". 1 case, `tests/unit/modelling/test_builder_solver.py::test_native_solver_set_in_build_arguments_builds_no_rows`: "could not import 'loop_interpolation_core': No module named 'loop_interpolation_core'". 1 module, `tests/unit/modelling/test_native_fault_frame.py`: collection skipped (`importorskip("loop_interpolation_core")`). |
+| Surfe | `surfepy` | 12 | 12 cells of `tests/unit/interpolator/test_backend_optional_native_surfe.py::test_surfe_extension_r1_values_and_gradients_in_world[anchor0..3-rot0/30/90]`: "optional dependency 'surfepy' is not installed (surfepy)". |
+| `geoh5py`, `omf`, `pyevtk` | `pyevtk`, `geoh5py`, `omf` | 3 | 3 modules, each collection skipped: `tests/unit/io/test_exporters.py` (`importorskip("pyevtk")`), `tests/unit/io/test_geoh5.py` (`importorskip("geoh5py")`), `tests/unit/io/test_omf.py` (`importorskip("omf")`). |
+| Viewer, `matplotlib`, `pyevtk` | `pyevtk` | 1 | `tests/unit/modelling/test_world_location_consumers.py::test_internal_callers_do_not_warn`: "could not import 'pyevtk': No module named 'pyevtk'". The other cell of this file (viewer) ran. `tests/unit/test_api.py:121` was not skipped (the viewer and `matplotlib` are installed). |
+| `pyvista` | `pyvista` | 0 | No skip in this run. |
+| `dill` | `dill` | 0 | No skip in this run. |
+| No named dependency | none | 0 | No skip in this run. |
+
+Total: 14 + 12 + 3 + 1 = 30.
+
+### Package suites
+
+`packages/loop_common/tests`: 0 skipped.
+
+`packages/loop_interpolation/tests`: 47 skipped.
+
+| Group | Dependency | Count | Cases and skip message |
+|---|---|---|---|
+| Native extension | `loop_interpolation_core` | 13 | 4 modules, each collection skipped (`importorskip("loop_interpolation_core")`): `test_native_inequality.py`, `test_native_orthogonal_and_limits.py`, `test_native_parity.py`, `test_native_warm_start_ridge.py`. 1 case, `test_native_errors.py::test_native_accepts_normal_data_rows_after_native_setup`. 8 cases in `test_native_no_rows.py`: `test_native_before_setup_builds_no_rows`, `test_native_after_setup_works_with_one_warning`, `test_update_after_native_setup_keeps_field`, `test_native_not_converged_keeps_old_field`, `test_native_via_solve_system_keeps_old_field_when_not_converged`, `test_native_after_cg_resets_history_and_timing`, `test_native_converged_report_has_no_field`, `test_native_f32_precision_gives_float64_field`. Message of the 9 cases: "could not import 'loop_interpolation_core': No module named 'loop_interpolation_core'". |
+| Surfe | `surfepy` (the module `surfe`) | 21 | 1 module, `test_p0_surfe_nans.py`: collection skipped (`importorskip("surfepy")`). 20 cases in `test_surfe_rbf_interpolator.py` (classes Basics 2, EvaluateValue 5, EvaluateGradient 5, Setup 2, NaNMaskingCorrectness 2, EdgeCases 3, GradientConsistency 1): "surfe not installed". |
+| `geoh5py`, `omf`, `pyevtk` | | 0 | No skip in this suite. |
+| Viewer, `matplotlib`, `pyevtk` | | 0 | No skip in this suite. |
+| `pyvista` | | 0 | No skip in this suite. |
+| `dill` | | 0 | No skip in this suite. |
+| No named dependency | none | 13 | 4 cases in `test_p2_interpolator.py` (`TestP2Evaluation::test_evaluate_d2_output_shape`, `::test_evaluate_d2_with_nan_points`, `::test_evaluate_d2_single_point`, `TestP2EdgeCases::test_points_at_mesh_boundaries`): "TetMesh in loop_common does not have evaluate_d2 method - mesh infrastructure limitation". 6 cells `golden/test_golden.py::test_physical_bounds[fold_sparse or refolded_sparse, with FD, P1 or P2]`: "reference only: no fold constraint, the error is expected to be large". 3 cells `golden/test_golden.py::test_data_honoured[planar_noisy, with FD, P1 or P2]`: "noisy data are smoothed on purpose". |
+
+Total: 13 + 21 + 13 = 47.
+
+Every skip has a reason. No skip hides a mandatory cell. All skips that name a dependency match a dependency that is not installed on the path (`loop_interpolation_core`, `surfepy`, `pyevtk`, `geoh5py`, `omf`).
+
+## S6 test run time (OP2)
+
+| Item | Time |
+|---|---|
+| Root suite (orchestrator, HEAD `dfb37632`) | 1288.93 s (21 min 28 s). The S5 end run took 936.67 s. |
+| `packages/loop_common/tests` (orchestrator) | 65.67 s |
+| `packages/loop_interpolation/tests` (orchestrator) | 77.18 s |
+| Package suites together | 142.85 s. The S5 end run took 140.08 s. |
+| Two API tests | 0.05 s |
+
+The root time is 352 s more than the S5 time. The root suite has 2781 passed tests, 565 more than the S5 end (2216). The S5 end run skipped 4 tests. This run skipped 30, because `pyevtk` is not on the path. The two runs had different machine load, so the times do not compare exactly.
+
+Slowest files. The sums of the junit `time` attributes of the test cases, grouped by module (`classname`). The first column is seconds.
+
+Root suite:
+
+| Time (s) | Module |
+|---|---|
+| 293.8 | `tests.unit.interpolator.test_normal_magnitude_interpolators` |
+| 208.0 | `tests.unit.validation.test_fold_frame_coordinate1` |
+| 181.6 | `tests.unit.modelling.test_fault_frame_analytic` |
+| 138.5 | `tests.unit.modelling.test_diagnostics_frames` |
+| 133.0 | `tests.unit.modelling.test_fault_frame_validation` |
+| 66.5 | `tests.unit.modelling.test_diagnostics_backends` |
+| 56.9 | `tests.unit.interpolator.test_discrete_supports` |
+| 29.9 | `tests.unit.modelling.test_frame_copy_and_lifecycle` |
+
+The top 5 root files take 955 s, about 74 percent of the root run.
+
+`packages/loop_common/tests`: `test_discrete_supports` 55.8 s, `test_unstructured_supports` 7.0 s. All other files take 0.3 s or less each.
+
+`packages/loop_interpolation/tests`: `golden/test_golden` 45.1 s, `test_geological_interpolator` 9.2 s, `test_normal_magnitude_interpolators` 8.4 s, `test_discrete_interpolator` 5.5 s, `test_native_no_rows` 2.2 s, then files of 0.8 s or less.
+
+OP2 stays closed. The default run includes all of these files. The run time is 21 min 28 s for the root suite and 142.85 s for the package suites.
+
+## S6 open points
+
+- OP21 (extension cells excluded): the native and Surfe extension cells are excluded because `loop_interpolation_core` and `surfepy` are not installed. SC-002 limits of the native and Surfe extension cells are not measured.
+- OP22 (P2 state cells only): the P2 cells test state only. P2 fit accuracy is issue #399.
+- OP23 (other copies not audited): other copies of the changed code are not audited.
+- OP24 (xy axis kept): the xy axis is kept for the 3D fit.

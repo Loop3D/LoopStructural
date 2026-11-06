@@ -186,6 +186,16 @@
         "model": "sonnet",
         "result": "pass"
       }
+    ],
+    "T107": [
+      {
+        "model": "sonnet",
+        "result": "pass"
+      },
+      {
+        "model": "sonnet",
+        "result": "pass"
+      }
     ]
   },
   "findings": {
