@@ -15,6 +15,8 @@ import socket
 import struct
 import time
 
+import numpy as np
+
 from loop_link.errors import LoopLinkError, NoViewerError, TokenError
 from loop_link.protocol import MAX_FRAME_BYTES, MAX_HEADER_BYTES
 
@@ -37,6 +39,8 @@ _FRAME_TIMEOUT = 10.0
 _SEND_TIMEOUT = 60.0
 # The smallest socket timeout: a timeout of zero makes the socket non-blocking.
 _MIN_WAIT = 1e-3
+# The size of one chunk for the mask. It must be a multiple of 4.
+_MASK_CHUNK_BYTES = 1024 * 1024
 
 
 class WebSocketError(LoopLinkError):
@@ -47,26 +51,37 @@ class WebSocketClosed(WebSocketError):
     """The server closed the connection."""
 
 
-def _mask(data: bytes, key: bytes) -> bytes:
+def _mask(data: bytes | bytearray, key: bytes) -> bytes | bytearray:
     """Apply the WebSocket mask to data.
+
+    The function works in chunks, so the peak memory is about two times the
+    size of the data.
 
     Parameters
     ----------
-    data : bytes
+    data : bytes or bytearray
         The bytes to mask or unmask.
     key : bytes
         The 4-byte mask key.
 
     Returns
     -------
-    bytes
+    bytes or bytearray
         The data after the XOR with the repeated key.
     """
-    if not data:
+    size = len(data)
+    if not size:
         return data
-    repeated = (key * (len(data) // 4 + 1))[: len(data)]
-    value = int.from_bytes(data, "little") ^ int.from_bytes(repeated, "little")
-    return value.to_bytes(len(data), "little")
+    source = np.frombuffer(data, dtype=np.uint8)
+    result = bytearray(size)
+    target = np.frombuffer(result, dtype=np.uint8)
+    key_array = np.frombuffer(key, dtype=np.uint8)
+    # The chunk size is a multiple of 4, so the key stays aligned between chunks.
+    pattern = np.tile(key_array, _MASK_CHUNK_BYTES // 4)
+    for start in range(0, size, _MASK_CHUNK_BYTES):
+        end = min(start + _MASK_CHUNK_BYTES, size)
+        np.bitwise_xor(source[start:end], pattern[: end - start], out=target[start:end])
+    return result
 
 
 class WebSocketClient:
@@ -223,7 +238,8 @@ class WebSocketClient:
         key = os.urandom(4)
         try:
             self._sock.settimeout(_SEND_TIMEOUT)
-            self._sock.sendall(bytes(head) + key + _mask(payload, key))
+            self._sock.sendall(bytes(head) + key)
+            self._sock.sendall(_mask(payload, key))
         except OSError as error:
             # This includes a timeout: part of the frame can be sent, so the stream is broken.
             self._abort()

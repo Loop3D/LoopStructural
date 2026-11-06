@@ -2,8 +2,12 @@
 
 from __future__ import annotations
 
+import base64
 import contextlib
+import gc
+import hashlib
 import socket
+import struct
 import subprocess
 import threading
 import time
@@ -173,7 +177,7 @@ def test_seven_object_types(fake_viewer: Any, viewer_factory: FACTORY) -> None:
         "hole": (
             Drillhole(
                 (0.0, 0.0, 0.0),
-                [[0.0, 0.0, 0.0], [0.0, 0.0, -10.0]],
+                [[0.0, 0.0, 90.0], [10.0, 0.0, 90.0]],
                 [[0.0, 5.0], [5.0, 10.0]],
             ),
             "Drillhole",
@@ -422,7 +426,7 @@ def test_inventory_follows_sends_removes_and_clear(
     assert {e.id: e.object_type for e in viewer.inventory()}["g"] == "Group"
     viewer.remove("a")
     assert {e.id for e in viewer.inventory()} == {"b", "g"}
-    assert viewer.revisions["a"] == 2
+    assert "a" not in viewer.revisions
     viewer.clear()
     assert viewer.inventory() == []
 
@@ -491,3 +495,119 @@ def test_text_offsets_must_match_vertex_count(fake_viewer: Any) -> None:
     replies = fake_viewer.viewer.accept_frame(encode_frame(header, buffers))
     assert [r.header["code"] for r in replies] == ["invalid_object"]
     assert "bad" not in fake_viewer.viewer.objects
+
+
+def test_connect_returns_viewer(fake_viewer: Any, viewer_factory: FACTORY) -> None:
+    """connect returns the viewer, so calls can chain."""
+    viewer = viewer_factory()
+    assert viewer.connect() is viewer
+    assert viewer.connect().send(small_points(), id="a") == 1
+
+
+def test_remove_and_clear_drop_revisions(fake_viewer: Any, viewer_factory: FACTORY) -> None:
+    """After remove or clear, the next send of the id has revision 1."""
+    viewer = viewer_factory()
+    viewer.send(small_points(), id="a")
+    viewer.send(small_points(), id="b")
+    viewer.remove("a")
+    assert viewer.send(small_points(), id="a") == 1
+    viewer.clear()
+    assert viewer.send(small_points(), id="b") == 1
+
+
+def _serve_busy(server: socket.socket) -> None:
+    """Accept one client, send busy and a close frame, and close without reading."""
+    try:
+        conn, _ = server.accept()
+    except OSError:
+        return
+    crlf = chr(13) + chr(10)
+    data = b""
+    while (crlf * 2).encode() not in data:
+        data += conn.recv(4096)
+    key = next(
+        line.split(":", 1)[1].strip()
+        for line in data.decode().split(crlf)
+        if line.lower().startswith("sec-websocket-key")
+    )
+    guid = b"258EAFA5-E914-47DA-95CA-C5AB0DC85B11"
+    accept = base64.b64encode(hashlib.sha1(key.encode() + guid).digest()).decode()
+    lines = [
+        "HTTP/1.1 101 Switching Protocols",
+        "Upgrade: websocket",
+        "Connection: Upgrade",
+        f"Sec-WebSocket-Accept: {accept}",
+        "",
+        "",
+    ]
+    conn.sendall(crlf.join(lines).encode())
+    from loop_link.protocol import encode_frame
+
+    body = encode_frame({"type": "error", "code": "busy", "message": "Busy."})
+    conn.sendall(bytes([0x82, 126]) + struct.pack(">H", len(body)) + body)
+    conn.sendall(bytes([0x88, 0]))
+    conn.close()
+
+
+def test_busy_server_that_closes_at_once_gives_busy_error() -> None:
+    """A viewer that sends busy and closes without reading gives BusyError each time."""
+    for _ in range(20):
+        server = socket.socket()
+        server.bind(("127.0.0.1", 0))
+        server.listen(1)
+        thread = threading.Thread(target=_serve_busy, args=(server,), daemon=True)
+        thread.start()
+        try:
+            viewer = Viewer(port=server.getsockname()[1], token="t", timeout=2.0)
+            with pytest.raises(BusyError):
+                viewer.connect()
+        finally:
+            server.close()
+            thread.join(timeout=2.0)
+
+
+def test_dropped_viewer_frees_the_data_slot(fake_viewer: Any, viewer_factory: FACTORY) -> None:
+    """A Viewer that is deleted closes its socket, so another Viewer can send."""
+    first = Viewer(settings_dir=fake_viewer.settings, heartbeat_interval=0.1)
+    first.send(small_points(), id="one")
+    first.flush()
+    del first
+    gc.collect()
+    second = viewer_factory()
+    deadline = time.monotonic() + 2.0
+    while True:
+        try:
+            second.send(small_points(), id="two")
+            break
+        except BusyError:
+            assert time.monotonic() < deadline
+            time.sleep(0.02)
+
+
+def test_bad_incoming_frame_closes_the_viewer(
+    fake_viewer: Any, viewer_factory: FACTORY, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """A frame that cannot be decoded gives ViewerClosedError and marks the viewer closed."""
+    from loop_link import viewer as viewer_module
+    from loop_link.protocol import ProtocolError
+
+    viewer = viewer_factory()
+    viewer.connect()
+    fake_viewer.viewer.reply_errors["bad"] = "No."
+    real = viewer_module.protocol.decode_frame
+    main = threading.current_thread()
+
+    def broken(data: bytes) -> Any:
+        # The fake viewer decodes frames in other threads, so break only the test thread.
+        if threading.current_thread() is not main:
+            return real(data)
+        monkeypatch.setattr(viewer_module.protocol, "decode_frame", real)
+        raise ProtocolError("Garbage.")
+
+    monkeypatch.setattr(viewer_module.protocol, "decode_frame", broken)
+    with pytest.raises(ViewerClosedError):
+        viewer.send(small_points(), id="bad")
+        viewer.flush()
+    assert not viewer.connected
+    with pytest.raises(ViewerClosedError):
+        viewer.send(small_points(), id="again")

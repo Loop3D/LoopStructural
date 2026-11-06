@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import threading
 import time
+import weakref
 from collections.abc import Mapping, Sequence
 from dataclasses import dataclass
 from pathlib import Path
@@ -91,6 +92,8 @@ class Viewer:
         self._lock = threading.Lock()
         self._client: WebSocketClient | None = None
         self._stop = threading.Event()
+        self._shared: dict[str, Any] = {"client": None, "stop": self._stop}
+        weakref.finalize(self, _release_shared, self._shared)
         self._thread: threading.Thread | None = None
         self._dead = False
         self._last_send = 0.0
@@ -143,7 +146,7 @@ class Viewer:
 
     # -- connection -----------------------------------------------------------
 
-    def connect(self) -> None:
+    def connect(self) -> Viewer:
         """Connect to the viewer and read its ``hello`` and inventory.
 
         Raises
@@ -160,11 +163,16 @@ class Viewer:
             The viewer sent another error.
         loop_link.errors.ViewerClosedError
             The viewer closed the connection before it finished the hello.
+
+        Returns
+        -------
+        Viewer
+            The viewer itself.
         """
         from loop_link import __version__
 
         if self.connected:
-            return
+            return self
         self._stop_thread()
         self._drop_client()
         address = discovery.find_viewer(
@@ -177,10 +185,18 @@ class Viewer:
             address.host, address.port, token=address.token, timeout=self._timeout, path="/"
         )
         try:
+            _read_early(client)
             client.send_binary(encode.hello_frame(self._crs, self._proposed_origin, __version__))
             hello, entries = self._read_hello(client)
             origin, crs = _parse_hello(hello)
         except _LINK_ERRORS as error:
+            try:
+                _read_early(client, 0.3)
+            except _LINK_ERRORS:
+                pass
+            except BaseException:
+                _close_client(client)
+                raise
             _close_client(client)
             raise ViewerClosedError from error
         except BaseException:
@@ -192,16 +208,19 @@ class Viewer:
         self._inventory_revisions = {entry.id: entry.revision for entry in entries}
         self._refusals = []
         self._client = client
+        self._shared["client"] = client
         self._dead = False
         self._last_send = time.monotonic()
         self._stop = threading.Event()
+        self._shared["stop"] = self._stop
         self._thread = threading.Thread(
-            target=self._heartbeat_loop,
-            args=(self._stop,),
+            target=_heartbeat_loop,
+            args=(weakref.ref(self), self._stop, self._heartbeat_interval),
             name="loop-link-heartbeat",
             daemon=True,
         )
         self._thread.start()
+        return self
 
     def _read_hello(self, client: WebSocketClient) -> tuple[dict[str, Any], list[InventoryEntry]]:
         """Read frames until the ``hello`` and the inventory arrive."""
@@ -307,7 +326,7 @@ class Viewer:
         return revision
 
     def remove(self, id: str) -> None:
-        """Remove one object from the scene. The revision count of the id stays.
+        """Remove one object from the scene. The revision count of the id is dropped.
 
         Parameters
         ----------
@@ -317,12 +336,16 @@ class Viewer:
         self._ensure_connected()
         self._send_frame(encode.remove_frame(id))
         self._inventory.pop(id, None)
+        self._revisions.pop(id, None)
+        self._inventory_revisions.pop(id, None)
 
     def clear(self) -> None:
         """Remove all objects from the scene."""
         self._ensure_connected()
         self._send_frame(encode.clear_frame())
         self._inventory.clear()
+        self._revisions.clear()
+        self._inventory_revisions.clear()
 
     def inventory(self) -> list[InventoryEntry]:
         """Return the known scene.
@@ -397,6 +420,7 @@ class Viewer:
         """Close the socket, if there is one."""
         with self._lock:
             client, self._client = self._client, None
+            self._shared["client"] = None
         if client is not None:
             _close_client(client)
 
@@ -433,7 +457,14 @@ class Viewer:
             data = client.receive(wait)
             if data is None:
                 return
-            header = protocol.decode_frame(data).header
+            try:
+                header = protocol.decode_frame(data).header
+            except ProtocolError as error:
+                self._dead = True
+                _close_client(client)
+                raise ViewerClosedError(
+                    "The viewer sent a frame that is not valid. The connection is closed."
+                ) from error
             if header.get("type") == "error" and header.get("object") is not None:
                 self._refusals.append(
                     Refusal(
@@ -444,32 +475,31 @@ class Viewer:
                 )
             wait = 0.001
 
-    def _heartbeat_loop(self, stop: threading.Event) -> None:
-        """Send a heartbeat when the connection is idle. Stop on a socket error."""
-        interval = self._heartbeat_interval
-        while not stop.wait(interval):
-            if not self._lock.acquire(blocking=False):
-                continue
+    def _heartbeat_tick(self) -> bool:
+        """Do one keepalive step. Return False when the thread must stop."""
+        if not self._lock.acquire(blocking=False):
+            return True
+        try:
+            client = self._client
+            if client is None or self._dead:
+                return False
             try:
-                client = self._client
-                if client is None:
-                    return
-                try:
-                    self._drain_locked(client, 0.001)
-                except _LINK_ERRORS:
-                    self._dead = True
-                    return
-                if time.monotonic() - self._last_send < interval:
-                    continue
-                self._seq += 1
-                try:
-                    client.send_binary(encode.heartbeat_frame(self._seq))
-                    self._last_send = time.monotonic()
-                except _LINK_ERRORS:
-                    self._dead = True
-                    return
-            finally:
-                self._lock.release()
+                self._drain_locked(client, 0.001)
+            except _LINK_ERRORS + (ViewerClosedError,):
+                self._dead = True
+                return False
+            if time.monotonic() - self._last_send < self._heartbeat_interval:
+                return True
+            self._seq += 1
+            try:
+                client.send_binary(encode.heartbeat_frame(self._seq))
+                self._last_send = time.monotonic()
+            except _LINK_ERRORS:
+                self._dead = True
+                return False
+            return True
+        finally:
+            self._lock.release()
 
     def _stop_thread(self) -> None:
         thread, self._thread = self._thread, None
@@ -533,3 +563,33 @@ def _parse_inventory(header: dict[str, Any]) -> list[InventoryEntry]:
         ]
     except (TypeError, ValueError, KeyError, AttributeError) as error:
         raise ProtocolError("The viewer sent an inventory frame that is not valid.") from error
+
+
+def _read_early(client: WebSocketClient, wait: float = 0.05) -> None:
+    """Read frames that wait already. Raise the hello error if one is an ``error`` frame."""
+    for _ in range(4):
+        data = client.receive(wait)
+        if data is None:
+            return
+        header = protocol.decode_frame(data).header
+        if header.get("type") == "error":
+            _raise_hello_error(header)
+
+
+def _heartbeat_loop(
+    ref: weakref.ReferenceType[Viewer], stop: threading.Event, interval: float
+) -> None:
+    """Run the keepalive. The thread holds only a weak reference to the viewer."""
+    while not stop.wait(interval):
+        viewer = ref()
+        if viewer is None or not viewer._heartbeat_tick():
+            return
+        del viewer
+
+
+def _release_shared(shared: dict[str, Any]) -> None:
+    """Stop the thread and close the socket of a viewer that is gone."""
+    shared["stop"].set()
+    client = shared.get("client")
+    if client is not None:
+        _close_client(client)

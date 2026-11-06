@@ -179,6 +179,7 @@ def _expected_length(
     association: object,
     arrays: dict[str, np.ndarray],
     params: object,
+    log_sets: object,
 ) -> int | None:
     """Return the length that a data array needs, or ``None`` if it cannot fit."""
     if object_type == "BlockModel":
@@ -193,7 +194,12 @@ def _expected_length(
     if object_type == "Drillhole":
         if association == "vertex" and "survey" in arrays:
             return arrays["survey"].shape[0]
-        if association == "interval" and "intervals" in arrays:
+        if association == "cell" and "intervals" in arrays:
+            return arrays["intervals"].shape[0]
+        has_set = isinstance(log_sets, list) and any(
+            isinstance(item, dict) and item.get("kind") == "interval" for item in log_sets
+        )
+        if association == "interval" and has_set and "intervals" in arrays:
             return arrays["intervals"].shape[0]
         return None
     vertices = arrays.get("vertices")
@@ -210,6 +216,7 @@ def _check_data(
     arrays: dict[str, np.ndarray],
     buffers: dict[str, np.ndarray],
     params: object,
+    log_sets: object = None,
 ) -> str | None:
     """Return the text of a problem in one data array entry, or ``None``."""
     if not isinstance(entry, dict):
@@ -231,11 +238,41 @@ def _check_data(
         if offsets[0] != 0 or offsets[-1] != length or np.any(np.diff(offsets) < 0):
             return f"The offsets of {name!r} do not fit its {length} bytes."
         length = offsets.size - 1
-    expected = _expected_length(object_type, association, arrays, params)
+    expected = _expected_length(object_type, association, arrays, params, log_sets)
     if expected is None:
         return f"The association {association!r} does not fit the object type {object_type}."
     if length != expected:
         return f"The data array {name!r} has {length} values. The association needs {expected}."
+    return None
+
+
+_GROUP_MEMBERS: dict[str, tuple[set[str], set[str]]] = {
+    "orientation": ({"dip_direction", "dip", "polarity"}, {"dip_direction", "dip"}),
+    "lineation": ({"trend", "plunge"}, {"trend", "plunge"}),
+}
+
+
+def _check_group(group: object, data_ids: list[Any]) -> str | None:
+    """Return the text of a problem in one property group, or ``None``."""
+    if not isinstance(group, dict):
+        return "A property group is not an object."
+    members = group.get("members") or []
+    for member in members:
+        if not isinstance(member, dict) or member.get("data") not in data_ids:
+            return f"The group {group.get('id')!r} names a data array that the object lacks."
+    role = group.get("role")
+    if role is None:
+        return None
+    if role not in _GROUP_MEMBERS:
+        return f"The group role {role!r} is not known."
+    allowed, required = _GROUP_MEMBERS[role]
+    roles = [member.get("role") for member in members]
+    if any(r not in allowed for r in roles):
+        return (
+            f"The {role} group {group.get('id')!r} has a member role that the role does not list."
+        )
+    if len(set(roles)) != len(roles) or not required <= set(roles):
+        return f"The {role} group {group.get('id')!r} needs each of {sorted(required)} once."
     return None
 
 
@@ -460,8 +497,21 @@ class FakeViewer:
                     return f"The buffer for {role!r} does not hold integers."
                 if int(array.min()) < 0 or int(array.max()) >= count:
                     return f"The buffer for {role!r} has an index outside 0 to {count - 1}."
-        for entry in header.get("data") or []:
-            problem = _check_data(object_type, entry, arrays, buffers, header.get("params"))
+        revision = header.get("revision")
+        if type(revision) is not int or revision < 1:
+            return f"The revision {revision!r} is not an integer of 1 or more."
+        data = header.get("data") or []
+        ids = [entry.get("id") for entry in data if isinstance(entry, dict)]
+        if len(set(ids)) != len(ids):
+            return "Two data arrays have the same id."
+        for entry in data:
+            problem = _check_data(
+                object_type, entry, arrays, buffers, header.get("params"), header.get("log_sets")
+            )
+            if problem is not None:
+                return problem
+        for group in header.get("property_groups") or []:
+            problem = _check_group(group, ids)
             if problem is not None:
                 return problem
         for name, array in buffers.items():

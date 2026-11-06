@@ -166,7 +166,7 @@ def test_drillhole_interval_property_association():
     )
     frame = _encode(hole)
     assert _data_entry(frame, "az")["association"] == "vertex"
-    assert _data_entry(frame, "lith")["association"] == "interval"
+    assert _data_entry(frame, "lith")["association"] == "cell"
     assert frame.buffers["data/lith"].tolist() == [3.0, 4.0]
 
 
@@ -478,3 +478,32 @@ def test_user_property_collides_with_orientation_buffer():
     )
     with pytest.raises(InvalidInputError):
         _encode(obj)
+
+
+def test_bytes_property_is_text():
+    frame = _encode(Points(np.zeros((2, 3)), {"t": np.array([b"ab", "é".encode()])}))
+    entry = _data_entry(frame, "t")
+    assert entry["data_type"] == "text"
+    assert bytes(frame.buffers["data/t"]) == "abé".encode()
+    assert frame.buffers["data/t/offsets"].tolist() == [0, 2, 4]
+
+
+def test_bytes_property_with_invalid_utf8_is_rejected():
+    obj = Points(np.zeros((1, 3)), {"t": np.array([bytes([255, 254])])})
+    with pytest.raises(InvalidInputError):
+        _encode(obj)
+
+
+def test_drillhole_property_lengths():
+    hole = Drillhole(
+        [0, 0, 0],
+        [[0, 0, 0], [10, 0, 0], [20, 0, 0]],
+        [[0, 1], [1, 2]],
+        properties={"s": np.zeros(3)},
+        interval_properties={"i": np.zeros(2)},
+    )
+    frame = _encode(hole)
+    assert _data_entry(frame, "s")["association"] == "vertex"
+    assert _data_entry(frame, "i")["association"] == "cell"
+    assert frame.buffers["data/s"].shape == (3,)
+    assert frame.buffers["data/i"].shape == (2,)

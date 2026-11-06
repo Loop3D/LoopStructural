@@ -202,7 +202,7 @@ def _declared_bytes(name: str, value: object) -> int:
         return int(arr.size)
     if kind in "iu":
         return int(arr.size) * 4
-    if kind == "U":
+    if kind in "US":
         return int(arr.size) * int(arr.dtype.itemsize) + (int(arr.size) + 1) * 4
     return 0
 
@@ -217,7 +217,8 @@ def _data_array(name: str, value: object, association: str) -> tuple[dict[str, A
     value : numpy.ndarray or Categorical
         The values.
     association : str
-        ``"vertex"``, ``"cell"`` or ``"interval"``.
+        ``"vertex"`` or ``"cell"``. For a Drillhole, ``"vertex"`` has one value for each
+        survey station and ``"cell"`` has one value for each row of ``intervals``.
 
     Returns
     -------
@@ -270,12 +271,17 @@ def _data_array(name: str, value: object, association: str) -> tuple[dict[str, A
             )
         desc["data_type"] = "integer"
         return desc, [(buffer_name, arr.astype(np.int32, copy=False))]
-    if kind == "U":
+    if kind in "US":
         try:
-            parts = [str(item).encode("utf-8") for item in arr.tolist()]
-        except UnicodeEncodeError as error:
+            if kind == "U":
+                parts = [str(item).encode("utf-8") for item in arr.tolist()]
+            else:
+                parts = [bytes(item) for item in arr.tolist()]
+                for part in parts:
+                    part.decode("utf-8")
+        except (UnicodeEncodeError, UnicodeDecodeError) as error:
             raise InvalidInputError(
-                f"The property '{name}' has text that cannot be encoded as UTF-8. "
+                f"The property '{name}' has text that is not valid UTF-8. "
                 "Remove the characters that are not valid."
             ) from error
         offsets = np.zeros(len(parts) + 1, dtype=np.uint32)
@@ -443,7 +449,7 @@ def encode_object(
         if obj.end_of_hole is not None:
             params["end_of_hole"] = [float(obj.end_of_hole)]
         builder.add_properties(obj.properties, "vertex")
-        builder.add_properties(obj.interval_properties, "interval")
+        builder.add_properties(obj.interval_properties, "cell")
     elif isinstance(obj, BlockModel):
         object_type = "BlockModel"
         shifted = _finite_f64(obj.origin, "origin") - origin_arr

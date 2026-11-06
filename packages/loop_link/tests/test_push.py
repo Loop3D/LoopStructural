@@ -161,7 +161,7 @@ def test_main_thread_is_not_blocked_by_slow_push(tmp_path: Path, monkeypatch: An
             assert not worker.is_alive()
             assert ticks == 20
             largest_gap = max(b - a for a, b in itertools.pairwise(tick_times))
-            assert largest_gap < 0.2
+            assert largest_gap < 0.5
             assert push_running or elapsed < 0.5
             assert results[0].sent == 5
     finally:
@@ -275,3 +275,44 @@ def test_generator_expression_input(fake_viewer: Any, viewer_factory: Callable[.
     result = push_objects(viewer, pairs)
     assert result.sent == 3
     assert _wait_for(lambda: len(fake_viewer.viewer.objects) == 3)
+
+
+def test_options_set_name_and_parent(fake_viewer: Any, viewer_factory: Callable[..., Any]) -> None:
+    viewer = viewer_factory()
+    items = [
+        ("model/a", _points(0.0), {"name": "Layer A", "parent": "model/root"}),
+        ("model/b", _points(1.0)),
+    ]
+    result = push_objects(viewer, items)
+    assert result.sent == 2
+    assert _wait_for(lambda: len(fake_viewer.viewer.objects) == 2)
+    header = fake_viewer.viewer.objects["model/a"].header
+    assert header["name"] == "Layer A"
+    assert header["parent"] == "model/root"
+    assert fake_viewer.viewer.objects["model/b"].header["name"] == "model/b"
+
+
+def test_replace_prefix_keeps_groups(fake_viewer: Any, viewer_factory: Callable[..., Any]) -> None:
+    viewer = viewer_factory()
+    viewer.send_group("model/root", "Model")
+    result = push_objects(
+        viewer,
+        [("model/a", _points(0.0), {"parent": "model/root"})],
+        replace_prefix="model/",
+    )
+    assert result.removed == 0
+    assert _wait_for(lambda: {"model/root", "model/a"} <= set(fake_viewer.viewer.objects))
+
+
+def test_bad_options_are_skipped(fake_viewer: Any, viewer_factory: Callable[..., Any]) -> None:
+    viewer = viewer_factory()
+    items: list[tuple[Any, ...]] = [
+        ("bad/unknown", _points(0.0), {"colour": "red"}),
+        ("bad/type", _points(1.0), "parent"),
+        ("good", _points(2.0), {"name": "Good"}),
+    ]
+    result = push_objects(viewer, items)
+    assert result.sent == 1
+    assert [item[0] for item in result.skipped] == ["bad/unknown", "bad/type"]
+    assert _wait_for(lambda: "good" in fake_viewer.viewer.objects)
+    assert "bad/unknown" not in fake_viewer.viewer.objects

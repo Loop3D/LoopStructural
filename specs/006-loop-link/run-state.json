@@ -304,10 +304,10 @@
     ]
   },
   "findings": {
-    "found": 60,
+    "found": 73,
     "rejected": 0,
     "dropped": 0,
-    "fixed": 50,
+    "fixed": 58,
     "open_minor": [
       "W1 T004: loop-link CI job fails between wave 1 and wave 2 (fixed by T003/T006); do not merge wave 1 alone",
       "W2 T006: errors with formatted message are not picklable",
@@ -319,8 +319,17 @@
       "W9 T034/T035: replace_prefix only removes ids reported at hello time; objects the same Viewer object sent earlier are not covered unless the Viewer reconnects",
       "W9 T037: M2 step 6 expected type names are user-facing names; the viewer reports Lines as Curve and Vectors as Points",
       "W11 T031: from_loopstructural raises MissingExtraError (not InvalidInputError) when loop_common is not importable (accepted)",
-      "W11 T033: pandas adapter speed 20000 holes x 5 survey rows ~4.6 s before the sort-once change"
+      "W11 T033: pandas adapter speed 20000 holes x 5 survey rows ~4.6 s before the sort-once change",
+      "End review: vertex and cell properties with the same name collide (buffer data/<name>): pyvista meshes often have this, push skips the object",
+      "End review: clear() empties the local inventory while the real viewer keeps scene-owned objects; remove(group) keeps children in the local inventory",
+      "End review: SC-004 second half (library frames accepted by the geoviewer codec) has no repo test; reviewer proved it with a scratch Rust checker. Fake viewer now mirrors the main codec rules",
+      "End review: test_push gap check timing on a loaded CI machine loosened to 0.5 s",
+      "End review: loopstructural-test job does not wait for loop-link-test in CI"
     ]
   },
-  "merged_origin_master": "7497982b (ruff baseline fixed upstream by #395)"
+  "merged_origin_master": "7497982b (ruff baseline fixed upstream by #395)",
+  "end_review": {
+    "round1": "changes needed: 1 blocker (verified), 5 major, 7 minor",
+    "fix_commit": null
+  }
 }

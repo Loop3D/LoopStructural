@@ -17,6 +17,38 @@ if TYPE_CHECKING:
     from loop_link.viewer import Viewer
 
 
+_OPTION_KEYS = ("name", "parent")
+
+
+def _read_options(options: Any) -> dict[str, Any]:  # noqa: ANN401
+    """Check the options of one item and return them.
+
+    Parameters
+    ----------
+    options : Any
+        The third part of an item. It must be a dict with the keys ``name`` and
+        ``parent`` only.
+
+    Returns
+    -------
+    dict
+        The same options as a new dict.
+
+    Raises
+    ------
+    InvalidInputError
+        If ``options`` is not a dict or it has an unknown key.
+    """
+    if not isinstance(options, dict):
+        raise InvalidInputError("The options of an object must be a dict.")
+    unknown = sorted(str(key) for key in options if key not in _OPTION_KEYS)
+    if unknown:
+        raise InvalidInputError(
+            f"Unknown options: {', '.join(unknown)}. Use only 'name' and 'parent'."
+        )
+    return dict(options)
+
+
 @dataclass
 class PushResult:
     """Result of one call to `push_objects`.
@@ -62,7 +94,7 @@ class PushResult:
 
 def push_objects(
     viewer: Viewer,
-    objects: Iterable[tuple[str, Any]],
+    objects: Iterable[tuple[Any, ...]],
     *,
     replace_prefix: str | None = None,
     progress: Callable[[str], None] | None = None,
@@ -74,11 +106,15 @@ def push_objects(
     ----------
     viewer : Viewer
         The viewer connection. The function connects it when it is not connected.
-    objects : iterable of tuple of str and object
-        Pairs of object id and object.
+    objects : iterable of tuple
+        Items of the form ``(id, obj)`` or ``(id, obj, options)``. ``options`` is a
+        dict with the optional keys ``name`` (display name) and ``parent`` (id of a
+        group). An unknown key, or an ``options`` value that is not a dict, skips
+        the item.
     replace_prefix : str, optional
         When given, the function removes each old object in the viewer inventory
         whose id starts with this prefix and that this call did not send or skip.
+        The function never removes a group (an entry with the type ``Group``).
         The function does not remove old objects when the push is cancelled.
     progress : callable, optional
         Called with a text before each object is sent. It runs on the calling thread.
@@ -101,14 +137,16 @@ def push_objects(
     if not viewer.connected:
         viewer.connect()
     kept_ids: set[str] = set()
-    for object_id, obj in objects:
+    for item in objects:
+        object_id, obj = item[0], item[1]
         if cancel is not None and cancel.is_set():
             result.cancelled = True
             break
         if progress is not None:
             progress(f"Sending {object_id}...")
         try:
-            viewer.send(obj, id=object_id)
+            options = _read_options(item[2]) if len(item) > 2 else {}
+            viewer.send(obj, id=object_id, **options)
         except (InvalidInputError, ObjectTooLargeError) as error:
             result.skipped.append((object_id, str(error)))
             kept_ids.add(object_id)
@@ -117,7 +155,11 @@ def push_objects(
         result.sent += 1
     if replace_prefix and not result.cancelled:
         for entry in viewer.inventory():
-            if entry.id.startswith(replace_prefix) and entry.id not in kept_ids:
+            if (
+                entry.id.startswith(replace_prefix)
+                and entry.id not in kept_ids
+                and entry.object_type != "Group"
+            ):
                 viewer.remove(entry.id)
                 result.removed += 1
     result.refused = viewer.flush(raise_on_refusal=False)
