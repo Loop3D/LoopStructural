@@ -21,6 +21,7 @@ from loop_link.errors import (
     ViewerRefusedError,
 )
 from loop_link.objects import SceneObject
+from loop_link.protocol import ProtocolError
 
 _ACCEPTED_INPUTS = (
     "Accepted inputs: loop_link objects (Points, Vectors, Lines, Surface, BlockModel, "
@@ -185,15 +186,15 @@ class Viewer:
         try:
             client.send_binary(encode.hello_frame(self._crs, self._proposed_origin, __version__))
             hello, entries = self._read_hello(client)
+            origin, crs = _parse_hello(hello)
         except _LINK_ERRORS as error:
             _close_client(client)
             raise ViewerClosedError from error
         except BaseException:
             _close_client(client)
             raise
-        origin = hello.get("origin")
-        self._scene_origin = _triple(origin) if origin is not None else self._proposed_origin
-        self._scene_crs = str(hello.get("crs") or "")
+        self._scene_origin = origin if origin is not None else self._proposed_origin
+        self._scene_crs = crs
         self._inventory = entries
         self._inventory_revisions = {entry.id: entry.revision for entry in entries}
         self._refusals = []
@@ -230,14 +231,7 @@ class Viewer:
             elif kind == "hello":
                 hello = header
             elif kind == "scene.inventory":
-                entries = [
-                    InventoryEntry(
-                        id=str(item["id"]),
-                        object_type=str(item.get("object_type", "")),
-                        revision=int(item.get("revision", 1)),
-                    )
-                    for item in header.get("entries", [])
-                ]
+                entries = _parse_inventory(header)
         return hello, entries
 
     # -- sending --------------------------------------------------------------
@@ -288,6 +282,7 @@ class Viewer:
             origin=self._scene_origin,
         )
         self._send_frame(data)
+        self._revisions[id] = revision
         return revision
 
     def send_group(self, id: str, name: str | None = None, parent: str | None = None) -> int:
@@ -310,6 +305,7 @@ class Viewer:
         self._ensure_connected()
         revision = self._next_revision(id)
         self._send_frame(encode.group_frame(id, id if name is None else name, parent, revision))
+        self._revisions[id] = revision
         return revision
 
     def remove(self, id: str) -> None:
@@ -372,8 +368,12 @@ class Viewer:
     # -- closing --------------------------------------------------------------
 
     def release_data(self) -> None:
-        """Close the connection so another client can own the scene."""
-        self.close()
+        """Close the connection so another client can own the scene.
+
+        A later ``send`` opens a new connection. The revision numbers stay.
+        """
+        self._stop_thread()
+        self._drop_client()
 
     def close(self) -> None:
         """Close the connection. The revision numbers stay."""
@@ -397,9 +397,7 @@ class Viewer:
             _close_client(client)
 
     def _next_revision(self, id: str) -> int:
-        revision = max(self._revisions.get(id, 0), self._inventory_revisions.get(id, 0)) + 1
-        self._revisions[id] = revision
-        return revision
+        return max(self._revisions.get(id, 0), self._inventory_revisions.get(id, 0)) + 1
 
     def _send_frame(self, data: bytes) -> None:
         with self._lock:
@@ -452,6 +450,11 @@ class Viewer:
                 client = self._client
                 if client is None:
                     return
+                try:
+                    self._drain_locked(client, 0.001)
+                except _LINK_ERRORS:
+                    self._dead = True
+                    return
                 if time.monotonic() - self._last_send < interval:
                     continue
                 self._seq += 1
@@ -492,5 +495,37 @@ def _raise_hello_error(header: dict[str, Any]) -> None:
     if code == "busy":
         raise BusyError(message or "The viewer is busy. Wait a moment and try again.")
     if code == "unsupported_version":
-        raise MissingFeatureError("protocol version")
+        supported = header.get("supported")
+        feature = "protocol version"
+        if supported is not None:
+            feature = f"protocol 1.x (the viewer supports: {supported})"
+        raise MissingFeatureError(feature)
     raise ViewerRefusedError([Refusal(str(header.get("object", "")), str(code), message)])
+
+
+def _parse_hello(hello: dict[str, Any]) -> tuple[tuple[float, float, float] | None, str]:
+    """Return the origin and the CRS of a ``hello`` frame. Raise ProtocolError if it is bad."""
+    try:
+        origin = hello.get("origin")
+        crs = hello.get("crs")
+        return (
+            _triple(origin) if origin is not None else None,
+            "" if crs is None else str(crs),
+        )
+    except (TypeError, ValueError, AttributeError) as error:
+        raise ProtocolError("The viewer sent a hello frame that is not valid.") from error
+
+
+def _parse_inventory(header: dict[str, Any]) -> list[InventoryEntry]:
+    """Return the entries of a ``scene.inventory`` frame. Raise ProtocolError if it is bad."""
+    try:
+        return [
+            InventoryEntry(
+                id=str(item["id"]),
+                object_type=str(item.get("object_type", "")),
+                revision=int(item.get("revision", 1)),
+            )
+            for item in header.get("entries", [])
+        ]
+    except (TypeError, ValueError, KeyError, AttributeError) as error:
+        raise ProtocolError("The viewer sent an inventory frame that is not valid.") from error

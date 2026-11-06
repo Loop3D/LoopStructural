@@ -13,7 +13,6 @@ from typing import Any
 
 import numpy as np
 import pytest
-from loop_link.viewer import InventoryEntry, Viewer
 
 from loop_link import discovery
 from loop_link.errors import (
@@ -36,6 +35,7 @@ from loop_link.objects import (
 )
 from loop_link.protocol import Frame
 from loop_link.testing import FakeViewer
+from loop_link.viewer import InventoryEntry, Viewer
 
 FACTORY = Callable[..., Any]
 
@@ -378,3 +378,27 @@ def test_name_defaults_to_id(fake_viewer: Any, viewer_factory: FACTORY) -> None:
     viewer.flush()
     assert wait_for(lambda: "x" in fake_viewer.viewer.objects)
     assert fake_viewer.viewer.objects["x"].header["name"] == "x"
+
+
+def test_send_after_release_data_reconnects(fake_viewer: Any, viewer_factory: FACTORY) -> None:
+    """After release_data, a send opens a new connection and the revision goes on."""
+    viewer = viewer_factory()
+    assert viewer.send(small_points(), id="a") == 1
+    viewer.flush()
+    viewer.release_data()
+    assert wait_for(lambda: "a" in fake_viewer.viewer.objects)
+    assert viewer.send(small_points(), id="a") == 2
+    viewer.flush()
+    assert wait_for(
+        lambda: "a" in fake_viewer.viewer.objects
+        and fake_viewer.viewer.objects["a"].header["revision"] == 2
+    )
+
+
+def test_send_after_close_raises(fake_viewer: Any, viewer_factory: FACTORY) -> None:
+    """After close, a send gives ViewerClosedError."""
+    viewer = viewer_factory()
+    viewer.connect()
+    viewer.close()
+    with pytest.raises(ViewerClosedError):
+        viewer.send(small_points(), id="a")
