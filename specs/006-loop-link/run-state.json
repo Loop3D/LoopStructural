@@ -58,8 +58,8 @@
     {
       "wave": 9,
       "base": "2ab8b97b4ca6f18476eae4f2594306135c9ad21a",
-      "commit": null,
-      "review": "pending"
+      "commit": "969d92c9 + fix commit",
+      "review": "pass (one fix round; fixes verified by orchestrator)"
     }
   ],
   "runs": {
@@ -227,10 +227,10 @@
     ]
   },
   "findings": {
-    "found": 40,
+    "found": 45,
     "rejected": 0,
     "dropped": 0,
-    "fixed": 32,
+    "fixed": 36,
     "open_minor": [
       "W1 T004: loop-link CI job fails between wave 1 and wave 2 (fixed by T003/T006); do not merge wave 1 alone",
       "W2 T006: errors with formatted message are not picklable",
@@ -238,7 +238,9 @@
       "W6 T013: no test of value_map byte sum over the 2 GiB limit",
       "W7 T014: size pre-check counts vertices at 8 bytes/value even for f32, so a very large f32 object (> about 125 MiB real) is refused early",
       "W7 T020: viewer.inventory test retries BusyError (timing)",
-      "W8 T021: a single frame write longer than 15 s could still hit the viewer idle timeout (heartbeat cannot send while a send holds the lock)"
+      "W8 T021: a single frame write longer than 15 s could still hit the viewer idle timeout (heartbeat cannot send while a send holds the lock)",
+      "W9 T034/T035: replace_prefix only removes ids reported at hello time; objects the same Viewer object sent earlier are not covered unless the Viewer reconnects",
+      "W9 T037: M2 step 6 expected type names are user-facing names; the viewer reports Lines as Curve and Vectors as Points"
     ]
   },
   "merged_origin_master": "7497982b (ruff baseline fixed upstream by #395)"

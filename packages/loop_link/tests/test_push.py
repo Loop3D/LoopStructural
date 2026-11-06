@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import itertools
 import threading
 import time
 from collections.abc import Callable, Iterator
@@ -74,6 +75,7 @@ def test_replace_prefix_removes_old_objects(
     viewer.send(_points(1.0), id="other/keep")
     viewer.flush()
     assert _wait_for(lambda: len(fake_viewer.viewer.objects) == 2)
+    viewer.release_data()  # the next connect reads an inventory with both old objects
     result = push_objects(viewer, [("model/new", _points(2.0))], replace_prefix="model/")
     assert result.removed == 1
     assert result.sent == 1
@@ -147,14 +149,18 @@ def test_main_thread_is_not_blocked_by_slow_push(tmp_path: Path, monkeypatch: An
             start = time.monotonic()
             worker.start()
             ticks = 0
+            tick_times = [start]
             for _ in range(20):
                 time.sleep(0.01)
                 ticks += 1
+                tick_times.append(time.monotonic())
             elapsed = time.monotonic() - start
             push_running = worker.is_alive()
             worker.join(timeout=10.0)
             assert not worker.is_alive()
             assert ticks == 20
+            largest_gap = max(b - a for a, b in itertools.pairwise(tick_times))
+            assert largest_gap < 0.2
             assert push_running or elapsed < 0.5
             assert results[0].sent == 5
     finally:
