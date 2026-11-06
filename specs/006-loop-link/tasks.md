@@ -71,7 +71,7 @@ length 100; keep string quotes as written (Black `skip-string-normalization`).
   - Done when: write the test first and see it fail; then `packages/loop_link/.venv/Scripts/python.exe -m pytest packages/loop_link/tests/test_errors.py` passes.
   - Context: Classes, all subclasses of `LoopLinkError(Exception)`: `NoViewerError`, `TokenError`, `BusyError`, `InvalidInputError`, `ViewerClosedError`, plus `MissingFeatureError(feature: str)` (attribute `feature`; text names the feature), `ObjectTooLargeError(object_id: str, size: int, limit: int)` (attributes with the same names; text has all three), `ViewerRefusedError(refusals: list[Refusal])` (attribute `refusals`), `MissingExtraError(extra: str)` (attribute `extra`; text says `pip install loop-link[<extra>]`). `@dataclass(frozen=True) class Refusal: object_id: str; code: str; message: str`. Each default text says what to do (FR-008). Test: each class is a `LoopLinkError`; the attributes are kept; `str(error)` is not empty; `Refusal` is hashable.
 
-- [ ] T007 [P] [Found] [M] Test: the codec in `test_protocol.py`.
+- [x] T007 [P] [Found] [M] Test: the codec in `test_protocol.py`.
   - Files: `packages/loop_link/tests/test_protocol.py`
   - Needs: T006
   - Wave: 3
@@ -85,7 +85,7 @@ length 100; keep string quotes as written (Black `skip-string-normalization`).
   - Done when: `packages/loop_link/.venv/Scripts/python.exe -m pytest packages/loop_link/tests/test_protocol.py` passes and `ruff check packages/loop_link` passes.
   - Context: Port the idea of `encode_frame` and `decode_header` from `C:\Users\lachl\dev\plugin_loopstructural-geoviewer\loopstructural\main\geoviewer\protocol.py` (read it). Public names: `PROTOCOL_VERSION`, `MAX_FRAME_BYTES`, `MAX_HEADER_BYTES`, `MAX_OBJECT_BYTES = 2*1024**3`, `F32_LIMIT = 4000.0`, `Frame` (frozen dataclass), `encode_frame`, `decode_frame`, `decode_header`, `ProtocolError(LoopLinkError)`. The codec raises `ProtocolError` for size problems. A frame over `MAX_FRAME_BYTES` raises `ProtocolError` in `encode_frame` (the object-level `ObjectTooLargeError` comes from `encode.py`, T014). JSON: `json.dumps(full, separators=(",", ":"), allow_nan=False)`. Buffers: `np.ascontiguousarray`, little-endian `tobytes`. `decode_frame` returns arrays with the shape of the header (`np.frombuffer(...).reshape(shape)`, a copy is not needed). Numpy and the standard library only.
 
-- [ ] T009 [P] [Found] [M] Test: vector conversion in `test_orientation.py`.
+- [x] T009 [P] [Found] [M] Test: vector conversion in `test_orientation.py`.
   - Files: `packages/loop_link/tests/test_orientation.py`
   - Needs: T006
   - Wave: 3
@@ -99,7 +99,7 @@ length 100; keep string quotes as written (Black `skip-string-normalization`).
   - Done when: `packages/loop_link/.venv/Scripts/python.exe -m pytest packages/loop_link/tests/test_orientation.py` passes.
   - Context: Signatures take array-like (n,3) or (3,) input and return numpy arrays: `normals_to_orientation(normals) -> tuple[np.ndarray, np.ndarray]`; `directions_to_lineation(directions) -> tuple[np.ndarray, np.ndarray]`; `orientation_to_normals(dip_direction, dip) -> np.ndarray`; `lineation_to_directions(trend, plunge) -> np.ndarray`. Rules: `n = v/|v|`; for normals, if `n_z < 0` use `-n`; `dip = degrees(arccos(clip(n_z,-1,1)))`; `dip_direction = degrees(arctan2(n_x, n_y)) % 360`; if `n_x == n_y == 0` the dip direction is 0.0. For lineations, if `d_z > 0` use `-d`; `plunge = degrees(arcsin(clip(-d_z,-1,1)))`; `trend = degrees(arctan2(d_x, d_y)) % 360`; if `d_x == d_y == 0` the trend is 0.0. Inverse of normals: `(sin d sin a, sin d cos a, cos d)`. Inverse of lineations: `(cos p sin t, cos p cos t, -sin p)`. A zero-length or non-finite vector raises `InvalidInputError` (from `loop_link.errors`).
 
-- [ ] T011 [P] [Found] [M] Test: the object model in `test_objects.py`.
+- [x] T011 [P] [Found] [M] Test: the object model in `test_objects.py`.
   - Files: `packages/loop_link/tests/test_objects.py`
   - Needs: T006
   - Wave: 3
@@ -134,7 +134,7 @@ length 100; keep string quotes as written (Black `skip-string-normalization`).
   - Done when: `ruff check packages/loop_link` passes and `packages/loop_link/.venv/Scripts/python.exe -c "import loop_link._websocket"` passes. Behaviour is tested through `test_viewer.py` (T020).
   - Context: Read and port `C:\Users\lachl\dev\plugin_loopstructural-geoviewer\loopstructural\main\geoviewer\websocket_client.py` (245 lines, standard library only). Keep the class `WebSocketClient` with `connect(cls, host, port, *, token="", timeout=5.0, path="/")`, `send_binary(data: bytes)`, `receive(timeout: float) -> Optional[bytes]`, `close()`. Changes: (1) `WebSocketError(LoopLinkError)` and `WebSocketClosed(WebSocketError)`; (2) `MAX_INCOMING_BYTES = MAX_FRAME_BYTES + MAX_HEADER_BYTES` (import from `loop_link.protocol`; the old limit was 16 MiB); (3) in `connect`, an HTTP 401 answer raises `TokenError`, and a refused or timed-out TCP connection raises `NoViewerError` (both from `loop_link.errors`); (4) add numpy-style docstrings and type hints to every public method (Ruff `D` and `ANN` apply to new files); (5) the handshake header stays `Authorization: Bearer <token>`. Keep the thread rule: not thread safe.
 
-- [ ] T016 [P] [Found] [M] Test: discovery in `test_discovery.py`.
+- [x] T016 [P] [Found] [M] Test: discovery in `test_discovery.py`.
   - Files: `packages/loop_link/tests/test_discovery.py`
   - Needs: T006
   - Wave: 3
@@ -146,7 +146,7 @@ length 100; keep string quotes as written (Black `skip-string-normalization`).
   - Needs: T016
   - Wave: 4
   - Done when: `packages/loop_link/.venv/Scripts/python.exe -m pytest packages/loop_link/tests/test_discovery.py` passes.
-  - Context: Public: `DEFAULT_PORT = 47615`, `ViewerAddress`, `settings_dir()`, `find_viewer(...)`. Token text on failure: "Set GEOVIEWER_TOKEN, or save a token in the link popup of the viewer." (`TokenError`). Alive check: `socket.create_connection((host, port), timeout)` then close. Sort key of live instances: `(kind != "window", -focused)`. Read JSON with `json.loads`; catch `OSError` and `ValueError` per file. The `NoViewerError` text says: "No viewer found. Start geoviewer and turn the link on. This library never starts a viewer." Use only the standard library.
+  - Context: Public: `DEFAULT_PORT = 47615`, `ViewerAddress`, `settings_dir()`, `find_viewer(...)`. Token text on failure: "Set GEOVIEWER_TOKEN, or save a token in the link popup of the viewer." (`TokenError`). Alive check: `socket.create_connection((host, port), timeout)` then close. Sort key of live instances: `(kind != "window", -focused)`. Read JSON with `json.loads`; catch `OSError` and `ValueError` per file. The `NoViewerError` text says: "No viewer found. Start geoviewer and turn the link on. This library never starts a viewer." Use only the standard library. An explicit `port` argument is returned as given: do no alive check and do not read the instance files (the tests of T016 assume this). The test file imports `from loop_link import discovery`.
 
 - [ ] T019 [Found] [M] Implement the fake viewer.
   - Files: `packages/loop_link/src/loop_link/testing/__init__.py`, `packages/loop_link/src/loop_link/testing/fake_viewer.py`

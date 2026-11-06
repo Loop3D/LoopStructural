@@ -16,6 +16,12 @@
       "base": "ece3030f98abc65ee2f61f9c9738d0933bda0bc9",
       "commit": "0e969185e7026700323902cc536fb5e933a08753",
       "review": "pass"
+    },
+    {
+      "wave": 3,
+      "base": "23e3f1fbd1abe4c34da4dfdd4d0284ef268d2929",
+      "commit": null,
+      "review": "pending"
     }
   ],
   "runs": {
@@ -52,6 +58,30 @@
     "T006": [
       {
         "model": "haiku",
+        "result": "pass"
+      }
+    ],
+    "T007": [
+      {
+        "model": "sonnet",
+        "result": "pass"
+      }
+    ],
+    "T009": [
+      {
+        "model": "sonnet",
+        "result": "pass"
+      }
+    ],
+    "T011": [
+      {
+        "model": "sonnet",
+        "result": "pass"
+      }
+    ],
+    "T016": [
+      {
+        "model": "sonnet",
         "result": "pass"
       }
     ]
