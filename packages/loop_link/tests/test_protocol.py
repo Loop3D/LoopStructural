@@ -202,6 +202,16 @@ def test_frame_over_max_is_error_on_decode(monkeypatch):
         decode_frame(data)
 
 
+@pytest.mark.parametrize("body", [b"[" * 20000 + b"]" * 20000, b'{"a":' * 5000])
+def test_deeply_nested_header_is_protocol_error(body):
+    # A deeply nested header must raise ProtocolError and not RecursionError.
+    frame = struct.pack("<I", len(body)) + body
+    with pytest.raises(ProtocolError):
+        decode_frame(frame)
+    with pytest.raises(ProtocolError):
+        decode_header(frame)
+
+
 _FIXTURE_DIR = os.environ.get("LOOP_LINK_GEOVIEWER_FIXTURES")
 
 

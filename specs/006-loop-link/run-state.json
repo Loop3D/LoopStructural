@@ -26,8 +26,8 @@
     {
       "wave": 4,
       "base": "d95d114a2ea06215f42c0fecb061a53f0838d1c3",
-      "commit": null,
-      "review": "pending",
+      "commit": "fix commits after d08cc734",
+      "review": "pass (2 fix rounds; last fix verified by orchestrator)",
       "fix_round": true
     }
   ],
@@ -112,10 +112,10 @@
     ]
   },
   "findings": {
-    "found": 13,
+    "found": 14,
     "rejected": 0,
     "dropped": 0,
-    "fixed": 8,
+    "fixed": 10,
     "open_minor": [
       "W1 T004: loop-link CI job fails between wave 1 and wave 2 (fixed by T003/T006); do not merge wave 1 alone",
       "W2 T006: errors with formatted message are not picklable",

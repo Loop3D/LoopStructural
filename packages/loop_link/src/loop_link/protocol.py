@@ -136,7 +136,7 @@ def _read_header(data: bytes) -> tuple[dict[str, Any], int]:
         raise ProtocolError("The frame stops inside the header.")
     try:
         header = json.loads(data[_LENGTH.size : end].decode("utf-8"))
-    except ValueError as error:
+    except (ValueError, RecursionError) as error:
         raise ProtocolError(f"The header is not valid JSON: {error}") from error
     if not isinstance(header, dict):
         raise ProtocolError("The header is not a JSON object.")
