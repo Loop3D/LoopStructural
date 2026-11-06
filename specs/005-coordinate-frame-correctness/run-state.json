@@ -70,6 +70,12 @@
       "base": "793bca04",
       "commit": "e981a3de",
       "review": "pass"
+    },
+    {
+      "wave": 52,
+      "base": "ed71f2eb",
+      "commit": "92e41139",
+      "review": "pass"
     }
   ],
   "runs": {
@@ -211,7 +217,7 @@
     ]
   },
   "findings": {
-    "found": 17,
+    "found": 24,
     "rejected": 0,
     "dropped": 0,
     "fixed": 1,
@@ -232,7 +238,14 @@
       "W49 T105: 1 relaxed tolerance from S1 (golden gradient atol 1e-5 -> 1e-4, test_golden.py) accepted as S1 decision; maintainer to confirm",
       "W49 T105: coverage ledger rows for _fold_setup.py and exporters.py are indirect; count 52 vs 53",
       "W50 T106: added known-issue rows beyond task text (FDI/PLI outside support, P2 einsum) - accepted",
-      "W51 T107: verification.md ledger names tests/unit/test_api.py:121; correct path is tests/unit/interpolator/test_api.py:121"
+      "W51 T107: verification.md ledger names tests/unit/test_api.py:121; correct path is tests/unit/interpolator/test_api.py:121",
+      "W52 T108: older ROADMAP stage note (line ~741) still says _transformation.py deliberately kept local",
+      "End review: test_transformation.py inverse check of untransformed columns uses back[:,3:] (weak for dimensions=2)",
+      "End review: fit accepts 0 rows and gives NaN translation",
+      "End review: test_too_few_columns lacks inverse_transform",
+      "End review: misplaced-frame control measures 2.994 (plane crossing) not 0.11; still valid",
+      "End review: cosmetic anchor label in a diagnostic print of test_fault_frame_validation",
+      "End review: round-trip test of the package file lacks bit-equality check of extra columns"
     ]
   },
   "answers": "",
