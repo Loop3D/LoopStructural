@@ -394,8 +394,14 @@
       {
         "wave": 7,
         "base": "6dfd2047",
+        "commit": "94f41176 + fix 1b292cb9",
+        "review": "pass (round 2)"
+      },
+      {
+        "wave": 8,
+        "base": "1b292cb9",
         "commit": null,
-        "review": "round 1: changes needed (6 major, 2 minor); fix commit pending round 2"
+        "review": "pending"
       }
     ],
     "runs": {
@@ -476,6 +482,12 @@
           "model": "sonnet",
           "result": "pass"
         }
+      ],
+      "T047": [
+        {
+          "model": "sonnet",
+          "result": "pass"
+        }
       ]
     },
     "open_minor": [
@@ -499,7 +511,8 @@
       "S5 W7 T046: needs_window tests do not check the feature text",
       "S5 W7 T046: progress test does not check that progress frames are not passed to on_frame, non-number fraction, or request numbers after reconnect",
       "S5 W7 T046: T047 must keep the unsupported_version feature text \"protocol <supported>\" (task text updated)",
-      "S5 W7 T045: FakeViewer does not record command.cancel in tool_requests (test uses a subclass tap)"
+      "S5 W7 T045: FakeViewer does not record command.cancel in tool_requests (test uses a subclass tap)",
+      "S5 W7 T046: _scripted_request ends its last loop at 50 ms of silence, not at client close (possible flake on a slow runner)"
     ],
     "findings": {
       "found": 14,
