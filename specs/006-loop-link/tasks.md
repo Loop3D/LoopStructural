@@ -3,8 +3,8 @@
 **Feature**: `006-loop-link` | **Plan**: [plan.md](plan.md)
 
 <!--
-Scope: stages S1 to S3 of the plan (stories 1 and 5). Stages S4 (stories 6, 7;
-OP6) and S5 (stories 2 to 4; OP7) get tasks after their own planner runs.
+Scope: stages S1 to S3 of the plan (stories 1 and 5, built, T001 to T038) and stage S5
+(stories 2 to 4, T039 to T063). Stage S4 (stories 6, 7; OP6) gets tasks after its own planner run.
 Package test command: `packages/loop_link/.venv/Scripts/python.exe -m pytest packages/loop_link/tests/<file>`.
 The root `pytest` does not run these tests (testpaths = ["tests"]).
 OP5 RESULT (2026-11-06): the uv workspace fallback was used (`packages/loop_link` is in the
@@ -22,7 +22,7 @@ length 100; keep string quotes as written (Black `skip-string-normalization`).
 
 - Run this file with the spec-orchestrator skill. It has the rules for the
   worktree, the sub agents, the checks and the commits.
-- Waves: 13. Tiers: [S] = simple model, [M] = standard model.
+- Waves: 19. Tiers: [S] = simple model, [M] = standard model.
 - Do not start a task with "Blocked by".
 
 ## Phase 1: Setup
@@ -294,34 +294,229 @@ length 100; keep string quotes as written (Black `skip-string-normalization`).
   - Done when: `ruff check LoopStructural packages && pytest` passes, `packages/loop_link/.venv/Scripts/python.exe -m pytest packages/loop_link/tests` passes, and `black --check packages/loop_link` passes.
   - Context: Constitution merge gate: `pytest` and `ruff check LoopStructural packages` must both pass. The root `pytest` does not run the package tests, so run the package command too. Run `black packages/loop_link` to fix format (line length 100, quotes kept). Fix only problems in `packages/loop_link/`. Do not change a gate or add a Ruff ignore for `packages/loop_link/src`. Run `git grep -n loop_link ROADMAP.md .release-please-config.json .release-please-manifest.json` and check 2 files or more show the name (SC-006). Report the result of each command in the commit message.
 
+## Phase 6: Stage S5a, tool connection and selection (stories 2 and 3)
+
+Test command in this phase: `packages/loop_link/.venv/Scripts/python.exe -m pytest <file>`. Geoviewer spec 067 (protocol 1.18) is the viewer side. The text of the spec calls it "066" (plan OP7).
+
+- [ ] T039 [P] [Found] [S] Three new errors, with a test.
+  - Files: `packages/loop_link/src/loop_link/errors.py`, `packages/loop_link/tests/test_errors.py`
+  - Needs: none
+  - Wave: 1
+  - Done when: write the test first and see it fail; then `packages/loop_link/.venv/Scripts/python.exe -m pytest packages/loop_link/tests/test_errors.py` passes.
+  - Context: Add three classes in the style of `ObjectTooLargeError`, all subclasses of `LoopLinkError`. `StaleRevisionError(object_id: str, revision: Optional[int] = None)`: attributes `object_id`, `revision`; text "The object '<id>' is not at that revision in the viewer. Read the selection or fetch the object again, then try again." `CancelledError(message: str = "The request was cancelled.")`. `UnsupportedObjectError(object_id: str, object_type: str)`: attributes with the same names; text "The object '<id>' has the type '<type>'. loop_link can fetch Points, Curve, Surface, BlockModel, TetraMesh and Drillhole objects only." Add the names to `__all__` if the module has one. Test: each is a `LoopLinkError`; attributes are kept; `str(error)` holds the id (and the type); `CancelledError().args` has the default text.
+
+- [ ] T040 [P] [Found] [S] Tool protocol versions and the `version` argument of `encode_frame`.
+  - Files: `packages/loop_link/src/loop_link/protocol.py`, `packages/loop_link/tests/test_protocol.py`
+  - Needs: none
+  - Wave: 1
+  - Done when: write the test first and see it fail; then `packages/loop_link/.venv/Scripts/python.exe -m pytest packages/loop_link/tests/test_protocol.py` passes (the old tests stay green).
+  - Context: Add `TOOL_PROTOCOL_VERSION: dict[str, int] = {"major": 1, "minor": 18}` and `CANCEL_PROTOCOL_VERSION: dict[str, int] = {"major": 1, "minor": 11}` next to `PROTOCOL_VERSION`. New signature: `encode_frame(header, buffers=(), *, version: Optional[dict[str, int]] = None) -> bytes`. `version=None` keeps `PROTOCOL_VERSION` (1.14), so every old frame is the same. Else the header gets `dict(version)`. Update the numpy-style docstring (new parameter). `decode_frame` does not change. Tests: default header version is 1.14; `version=TOOL_PROTOCOL_VERSION` gives `{"major":1,"minor":18}`; `version=CANCEL_PROTOCOL_VERSION` gives minor 11; the argument is keyword-only (a third positional argument raises `TypeError`); the dict that the caller gives is not changed.
+
+- [ ] T041 [Found] [M] Test: the four tool frame builders in `test_encode.py`.
+  - Files: `packages/loop_link/tests/test_encode.py`
+  - Needs: T040
+  - Wave: 2
+  - Done when: `packages/loop_link/.venv/Scripts/python.exe -m pytest packages/loop_link/tests/test_encode.py` fails with AttributeError for the new builders, then passes after T042.
+  - Context: Add tests for `loop_link.encode`; decode each result with `decode_frame`. Signatures: `selection_set_frame(request: int, object_id: str, cells: Optional[np.ndarray], vertices: Optional[np.ndarray], revision: Optional[int]) -> bytes`; `selection_get_frame(request: int)`; `fetch_frame(request: int, id: str)`; `cancel_frame(request: int)`. Expected headers (add `version`, `buffers`): `{"type":"selection.set","request":3,"object":"grid","revision":2,"entries":[{"kind":"cells","indices":"cells"},{"kind":"nodes","indices":"nodes"}]}` with two `u32` buffers `cells` and `nodes`, shape `[k]`; `{"type":"selection.get","request":7}`; `{"type":"object.fetch","request":2,"id":"grid"}`; `{"type":"command.cancel","request":2}`. Version of the first three: `{"major":1,"minor":18}`. Version of `cancel_frame`: `{"major":1,"minor":11}`. Rules to test: an empty or `None` array adds no entry and no buffer; both empty gives `"entries": []` and `buffers: []`; `revision=None` leaves out the key `revision`; only `vertices` gives one entry with kind `nodes` and buffer `nodes`; list input becomes `uint32`; the entry order is cells, then nodes. Old tests stay green.
+
+- [ ] T042 [Found] [M] Implement the four tool frame builders in `encode.py`.
+  - Files: `packages/loop_link/src/loop_link/encode.py`
+  - Needs: T041
+  - Wave: 3
+  - Done when: `packages/loop_link/.venv/Scripts/python.exe -m pytest packages/loop_link/tests/test_encode.py` passes and `ruff check packages/loop_link` passes.
+  - Context: Add `selection_set_frame`, `selection_get_frame`, `fetch_frame`, `cancel_frame` with the signatures and headers of T041, and add the names to `__all__`. Use `protocol.encode_frame(header, buffers, version=protocol.TOOL_PROTOCOL_VERSION)`; `cancel_frame` uses `protocol.CANCEL_PROTOCOL_VERSION`. Buffers: `np.ascontiguousarray(np.asarray(x, dtype=np.uint32))`, 1-D, names `cells` and `nodes`. Do not check the index range here (`Viewer.select` does). Numpy-style docstrings and type hints.
+
+- [ ] T043 [Found] [M] Test: the tool endpoint of the fake viewer (selection and fetch rules).
+  - Files: `packages/loop_link/tests/test_fake_viewer.py`
+  - Needs: T042
+  - Wave: 4
+  - Done when: `packages/loop_link/.venv/Scripts/python.exe -m pytest packages/loop_link/tests/test_fake_viewer.py` fails for the new tests (the tool endpoint still answers `unknown_message`), then passes after T045.
+  - Context: Talk to the fake with `WebSocketClient.connect("127.0.0.1", fake.port, token="secret", path="/tool")`, `send_binary(frame)`, `receive(timeout)` and `decode_frame`. Send objects first with `fake.accept_frame(encode_object(...))`. New `FakeViewer` arguments: `protocol_minor=18` (below 18: each selection or fetch message gets an `error` frame code `unknown_message`), `part_bytes=64*1024*1024` (multiple of 8), `fetch_delay=0.0`; `kind="headless"` makes `selection.set` and `selection.get` answer `request.error` code `needs_window`. Members: `.selection` (`{"object","revision","cells","nodes"}` or `None`), `.set_user_selection(object_id, *, cells=None, nodes=None)`, `.tool_requests` (list of `Frame`). One test for each rule. `selection.set` replies `selection.result` (`request`, `object`, `revision`, `entries` with `kind`, `count`) or `request.error` (`request`, `error`={code, message, field}) with code `invalid_input` and field: unknown object `object`; wrong `revision` `revision`; kind the object lacks `kind` (Points: nodes only; Curve, Surface, BlockModel, TetraMesh: nodes and cells; Drillhole, Group: no table); index at or above the count `indices`; buffer not `u32` or missing `indices`. Nodes: vertex count (BlockModel `(nx+1)(ny+1)(nz+1)`); cells: segments, triangles, tetrahedra or `nx*ny*nz`. A repeated index counts one time. A new selection replaces the old one (also on another object). Empty `entries` clears it. `selection.get`: reply has `object`, `revision` and one entry per kind with a `u32` buffer named `cells` or `nodes`; no selection gives `"entries": []` and no `object`. `object.fetch`: unknown id gives `invalid_input` field `id`; else `object.header` (`origin`, `crs`, `object` = stored header with `buffers: []`, `arrays` = `[{name,dtype,shape}]`), then `object.part` (`array`, `offset`, `bytes`, one `u8` buffer `part`, at most `part_bytes`, offset multiple of 8) per array in order, then `object.end` (`parts` = count). With more than one part, `command.progress` (`fraction`, `text`) follows each part. A `command.cancel` with the same `request` while `fetch_delay=0.05` gives `request.error` code `cancelled`. A fetch does not change objects or selection. All replies carry the `request` of the message. Replies use version 1.18.
+
+- [ ] T044 [Found] [M] Fake viewer: tool endpoint, selection part.
+  - Files: `packages/loop_link/src/loop_link/testing/fake_viewer.py`
+  - Needs: T043, T019
+  - Wave: 6
+  - Done when: `packages/loop_link/.venv/Scripts/python.exe -m pytest packages/loop_link/tests/test_fake_viewer.py -k "selection or protocol_minor or headless or user_selection or tool_requests"` passes, and the whole old test file still passes.
+  - Context: Change `FakeViewer.__init__` (new keyword arguments with defaults `protocol_minor=18`, `part_bytes=64*1024*1024`, `fetch_delay=0.0`, as in T043) and `_run` (the `tool=True` branch now calls a new method `tool_frame(data: bytes) -> list[Frame]` and appends each frame to `.tool_requests`; keep `read_delay`). Implement `selection.set` and `selection.get` with the rules in T043; replies are `Frame(header, buffers)` with `version` 1.18 and the `request` of the message (look at `_error` and `_encode` for the frame helpers). Messages of another type and all messages when `protocol_minor < 18` get `error` code `unknown_message`. Add `.selection`, `.set_user_selection`, `.tool_requests`. The data path (`accept_frame`) does not change. Add docstrings and type hints.
+
+- [ ] T045 [Found] [M] Fake viewer: tool endpoint, fetch part.
+  - Files: `packages/loop_link/src/loop_link/testing/fake_viewer.py`
+  - Needs: T044
+  - Wave: 7
+  - Done when: `packages/loop_link/.venv/Scripts/python.exe -m pytest packages/loop_link/tests/test_fake_viewer.py` passes and `ruff check packages/loop_link` passes.
+  - Context: Add `object.fetch` to `tool_frame` (T044) with the rules in T043. The tool loop must send several reply frames and read between parts: after each `object.part` the fake reads for at most 0.001 s on the connection (use a short socket timeout, restore it after) and, on a `command.cancel` with the same `request`, sends `request.error` code `cancelled` and stops. So `_run` needs a streaming path for fetch, not a list of replies; keep `tool_frame` for the one-reply messages. `fetch_delay` is a `time.sleep` after each part. Parts: for each stored buffer in header order, slices of at most `part_bytes` bytes (`array.tobytes()`), `offset` = bytes already sent for that array; `arrays` shape from the stored array. A stored buffer of zero bytes still is in `arrays` and gets no part. `parts` in `object.end` is the total part count. Origin and crs in the header are those of the fake.
+
+- [ ] T046 [Found] [M] Test: `ToolConnection` in `test_tool.py`.
+  - Files: `packages/loop_link/tests/test_tool.py`
+  - Needs: T045, T039
+  - Wave: 8
+  - Done when: `packages/loop_link/.venv/Scripts/python.exe -m pytest packages/loop_link/tests/test_tool.py` fails with ImportError of `loop_link.tool`, then passes after T047.
+  - Context: Use fixtures `fake_viewer` (`.viewer` is the `FakeViewer`, `.settings` the settings folder) and `viewer_factory` of `conftest.py`. API: `ToolConnection(*, port=None, token=None, host="127.0.0.1", settings_dir=None, timeout=5.0)` with `connected`, `connect()`, `request(build, *, until, feature, object_id=None, on_frame=None, progress=None, cancel=None, timeout=None) -> Frame`, `close()`; `raise_for_request_error(error, *, object_id)`. Frames come from `loop_link.encode` (`selection_get_frame`, `fetch_frame`, ...). Tests: request numbers start at 1 and rise by 1 for each request; the reply of `selection.get` is returned for `until=("selection.result",)`; a frame with another request number is dropped (send a stale frame with a raw server or by calling twice); `progress` gets rising floats for a fetch with `part_bytes=64`; `cancel` set gives `CancelledError` (with `fetch_delay=0.05`) and the fake sees one `command.cancel`; the socket closes in the middle of a request gives `ViewerClosedError`, and the next request connects again; wrong token gives `TokenError`; no viewer gives `NoViewerError`; no frame within `timeout=0.2` gives `ViewerClosedError`. Error table (call `raise_for_request_error` directly with `{"code","message","field"}`): `invalid_input`+field `revision` -> `StaleRevisionError(object_id)`; `invalid_input` other field -> `InvalidInputError` (text starts "The viewer refused the request:"); `needs_window` -> `MissingFeatureError`; `cancelled` -> `CancelledError`; `busy` -> `BusyError`; other code -> `ViewerRefusedError` with one `Refusal(object_id or "", code, message)`. An `error` frame code `unknown_message` (fake with `protocol_minor=14`) -> `MissingFeatureError` whose `feature` is the `feature` argument; code `unsupported_version` -> `MissingFeatureError`.
+
+- [ ] T047 [Found] [M] Implement `tool.py`.
+  - Files: `packages/loop_link/src/loop_link/tool.py`
+  - Needs: T046
+  - Wave: 9
+  - Done when: `packages/loop_link/.venv/Scripts/python.exe -m pytest packages/loop_link/tests/test_tool.py` passes and `ruff check packages/loop_link` passes.
+  - Context: Create `ToolConnection` and `raise_for_request_error(error: Mapping[str, Any], *, object_id: Optional[str]) -> NoReturn` (signatures and error table in T046; the `error` frame rows take `code`, `message` from the frame header). `request`: take `self._lock`; connect when `self._client is None` (`discovery.find_viewer(...)`, then `WebSocketClient.connect(host, port, token=..., timeout=..., path="/tool")`; no `hello`; no keepalive thread). Number `n` starts at 1. Send `build(n)`. Loop `client.receive(0.1)`; `protocol.decode_frame` (a `ProtocolError` closes the socket and raises `ViewerClosedError("The viewer sent a frame that is not valid. ...")`). `type == "error"` -> `raise_for_request_error`; a frame with another `request` is dropped; for `request == n`: `request.error` -> `raise_for_request_error(header["error"], object_id=object_id)` (for `unknown_message` of an `error` frame the feature text is the `feature` argument); `command.progress` -> `progress(fraction)` when `fraction` is a number; `on_frame(frame)` sees every other frame of the request; a type in `until` ends the loop and is returned. The wait restarts at each frame; after `timeout` (default `self._timeout`) with no frame close and raise `ViewerClosedError("The viewer did not answer in time. ...")`. When `cancel` is set: send `cancel_frame(n)` one time and keep reading until `cancelled` (raise `CancelledError`) or an `until` frame (return it). A socket error (`OSError`, `WebSocketClosed`, `WebSocketError`) sets the socket to `None` and raises `ViewerClosedError`. Docstrings and type hints.
+
+- [ ] T048 [US2] [M] Test: select and read the selection in `test_selection.py` (stories 2 and 3).
+  - Files: `packages/loop_link/tests/test_selection.py`
+  - Needs: T047, T045
+  - Wave: 10
+  - Done when: `packages/loop_link/.venv/Scripts/python.exe -m pytest packages/loop_link/tests/test_selection.py` fails with ImportError of `loop_link.selection`, then passes after T050.
+  - Context: Use `fake_viewer` and `viewer_factory`. Send a `BlockModel` (cells 4x4x4, id `grid`) first. API on `Viewer`: `select(object_id, *, cells=None, vertices=None, revision=None) -> dict[str, int]` (returns `{"cell": n, "vertex": m}`), `selection() -> Selection`, `watch_selection(callback, *, interval=0.5, initial=False) -> SelectionWatcher`, `tool_connected`. `loop_link.selection`: `Selection(object_id, revision, cells, vertices)` (frozen, `uint32` arrays, `.empty`, `.same_as(other)` compares object id and sorted cells and vertices, not the revision), `parse_selection_result(frame)` (an entry with a count but no buffer, a buffer not `uint32`, or a length not equal to `count` gives `ProtocolError`), `SelectionWatcher` (`running`, `error`, `stop()`, context manager). Tests: story 2 scenarios 1 to 4 (select cells 12 and 13: `fake.selection` holds them; index 64 gives `InvalidInputError` and the selection stays; `StaleRevisionError` for an old `revision`; `FakeViewer(protocol_minor=14)` gives `MissingFeatureError`); clear with `cells=[]`; `select()` with neither argument, a float index, a bool, a negative value or a value above 2**32-1 each give `InvalidInputError` that names the argument; `cells` and `vertices` together; duplicates count one time; 100,000 cells are one `selection.set` frame with a `u32` buffer of shape `[100000]` (`fake.tool_requests`, SC-003); `kind="headless"` gives `MissingFeatureError`; story 3: `selection()` after `set_user_selection` returns object id, cells, vertices; a 100,000-cell selection returns a `uint32` array; empty selection has `object_id is None`; `watch_selection` calls the callback once per change at the next poll (`interval=0.05`), not for no change, `initial=True` calls once with a non-empty first selection, `interval<=0` gives `InvalidInputError`, `stop()` ends the thread, no thread named `loop-link-selection-poll` exists before the call, an exception in the callback sets `.error` and ends the thread, a dropped `Viewer` ends the thread. A `Viewer` that only selects does not open the data connection (`viewer.connected` is false). `close()` stops watchers and a later `selection()` raises `ViewerClosedError`.
+
+- [ ] T049 [US3] [M] Implement `selection.py`.
+  - Files: `packages/loop_link/src/loop_link/selection.py`
+  - Needs: T048
+  - Wave: 11
+  - Done when: `packages/loop_link/.venv/Scripts/python.exe -m pytest packages/loop_link/tests/test_selection.py -k "parse or same_as or empty or dtype"` passes and `ruff check packages/loop_link` passes. The watcher tests pass after T050.
+  - Context: Create `Selection` (`@dataclass(frozen=True, eq=False)`: `object_id: Optional[str]`, `revision: Optional[int]`, `cells: np.ndarray`, `vertices: np.ndarray`; property `empty`; `same_as`), `parse_selection_result(frame: Frame) -> Selection` (kind `cells` -> `cells`, kind `nodes` -> `vertices`; array is `frame.buffers[entry["indices"]]`; checks as in T048; `ProtocolError` from `loop_link.protocol`) and `SelectionWatcher`. The watcher is made only by `Viewer.watch_selection`: `SelectionWatcher(viewer_ref: weakref.ref, callback, interval, last: Selection)`, a daemon thread named `loop-link-selection-poll`. Loop: wait `interval` on a `threading.Event` (so `stop` is fast); get the viewer from the weak reference (end the thread if it is gone); call `viewer.selection()`; when the result is not `same_as` the last one, call `callback(selection)` one time and keep it. An exception of the poll or of the callback goes to `error` and the thread ends. `stop()` sets the event and joins with timeout `2 * interval + 1`. `__enter__` returns self, `__exit__` calls `stop`. No thread before `start`. Docstrings and type hints.
+
+- [ ] T050 [US2] [M] Add `select`, `selection`, `watch_selection` and the tool connection to `Viewer`.
+  - Files: `packages/loop_link/src/loop_link/viewer.py`
+  - Needs: T049, T047, T042
+  - Wave: 12
+  - Done when: `packages/loop_link/.venv/Scripts/python.exe -m pytest packages/loop_link/tests/test_selection.py packages/loop_link/tests/test_viewer.py packages/loop_link/tests/test_push.py` passes and `ruff check packages/loop_link` passes.
+  - Context: New members as in T048. The `Viewer` makes its `ToolConnection` (from `loop_link.tool`) at the first tool call, with its own `port`, `token`, `host`, `settings_dir`, `timeout`; tool calls never open the data connection. `release_data` keeps the tool connection. `close` stops all watchers, closes the tool connection and sets `_dead`; a later tool call raises `ViewerClosedError`. `select`: `object_id` must be a non-empty `str`; at least one of `cells`, `vertices` not `None`, else `InvalidInputError("Give cells or vertices. Use an empty list to clear the selection.")`; each given array is a 1-D sequence of integers from 0 to 2**32-1 (no float, no bool, no negative, check `np.asarray`, dtype kind `i` or `u`, and bool dtype refused), else `InvalidInputError` that names the argument. One `selection.set` frame (`encode.selection_set_frame`), `until=("selection.result",)`, `feature="selection and fetch (geoviewer protocol 1.18)"`; return `{"cell": n, "vertex": m}` for the kinds in the reply. `selection()`: `selection.get` -> `parse_selection_result` -> `Selection` with `object_id`/`revision` from the header (`None` when absent). `watch_selection(callback, *, interval=0.5, initial=False)`: `interval <= 0` gives `InvalidInputError`; read the selection in the calling thread first (errors go to the caller); call the callback once when `initial` and the selection is not empty; then start `SelectionWatcher` with a `weakref.ref(self)`; keep it in a list. Do not change the data-connection code.
+
+## Phase 7: Stage S5b, fetch (story 4)
+
+- [ ] T051 [P] [US4] [M] Test: `decode_object` in `test_fetch.py`.
+  - Files: `packages/loop_link/tests/test_fetch.py`
+  - Needs: T039
+  - Wave: 2
+  - Done when: `packages/loop_link/.venv/Scripts/python.exe -m pytest packages/loop_link/tests/test_fetch.py` fails with ImportError of `loop_link.fetch`, then passes after T052.
+  - Context: Under test: `loop_link.fetch.decode_object(header: Mapping, arrays: Mapping[str, np.ndarray], origin: Optional[Sequence[float]]) -> SceneObject`. `header` is the `object` field of a viewer `object.header`: the `scene.upsert` fields (`id`, `object_type`, `name`, `revision`, `geometry` {role: buffer name}, `params`, `data` [{id,name,buffer,data_type,association,offsets?,value_map?}], `property_groups`). Build cases by hand as the viewer writes them (use `encode_object` and `decode_frame` to get a header and buffers, then change them). Rules: `Points` -> `Vectors` when a group has role `orientation` or `lineation` (member arrays float64 become the tuples; they are not in `properties`), else `Points`; `Curve` -> `Lines`; `Surface`; `TetraMesh`; `BlockModel` (origin = `params["origin"] + origin`); `Drillhole` (collar + origin; `end_of_hole = params["end_of_hole"][0]` when present); `Group`, `Grid2D`, `GeoImage` -> `UnsupportedObjectError(id, type)`. `vertices` and `collar` = `array.astype(float64) + origin`; `origin` None means (0,0,0); result float64. Properties: association `vertex` -> `properties`; `cell` -> `cell_properties` (Drillhole: `interval_properties`); `interval` with no `log_set` or the first interval log set -> Drillhole `interval_properties`; `cell` on Points/Vectors -> `UnsupportedObjectError`; other log set, `sample`, `object` -> dropped with `warnings.warn("loop_link dropped the property '<name>' of object '<id>': <reason>", UserWarning)` one time each (use `pytest.warns`). Types: `float` keeps f32 or f64; `integer` -> int32; `boolean` -> numpy bool; `text` -> numpy `U` array from data bytes (u8) and `offsets` (u32); `referenced` -> `Categorical(codes, names, colours)` with names ordered by `id`, codes renumbered when ids are not 0..n-1, 3-value colours get alpha 255, a code not in `value_map` -> `InvalidInputError`.
+
+- [ ] T052 [US4] [M] Implement `FetchResult` and `decode_object` in `fetch.py`.
+  - Files: `packages/loop_link/src/loop_link/fetch.py`
+  - Needs: T051
+  - Wave: 3
+  - Done when: `packages/loop_link/.venv/Scripts/python.exe -m pytest packages/loop_link/tests/test_fetch.py` passes and `ruff check packages/loop_link` passes.
+  - Context: Create the module with `FetchResult` (`@dataclass(frozen=True, eq=False)`: `id: str`, `object: SceneObject`, `object_type: str`, `revision: int`, `name: Optional[str]`, `parent: Optional[str]`, `origin: Optional[tuple[float, float, float]]`, `crs: Optional[str]`) and `decode_object` with the rules in T051. Use the classes of `loop_link.objects`; for the Vectors groups use members `dip_direction`, `dip` (role `orientation`) and `trend`, `plunge` (role `lineation`), each from the data array named in `members[].data`. Data array lookup: `arrays[entry["buffer"]]`; text uses `arrays[entry["buffer"]]` bytes and `arrays[entry["offsets"]]`. Do not import pyvista, pandas or Qt. `_Assembler` and `fetch_object` come in T054. Docstrings and type hints.
+
+- [ ] T053 [US4] [M] Test: assembler, `fetch_object` and `Viewer.fetch` in `test_fetch.py`.
+  - Files: `packages/loop_link/tests/test_fetch.py`
+  - Needs: T052, T050
+  - Wave: 13
+  - Done when: `packages/loop_link/.venv/Scripts/python.exe -m pytest packages/loop_link/tests/test_fetch.py` fails for the new tests (AttributeError on `fetch_object`, `_Assembler` and `Viewer.fetch`), then passes after T055.
+  - Context: Names fixed by this task list: `loop_link.fetch._Assembler(object_id: str)` with `feed(frame: Frame) -> None` and `finish() -> FetchResult`; `fetch_object(tool, id, *, progress=None, cancel=None, timeout=30.0) -> FetchResult`; `Viewer.fetch(id, *, progress=None, cancel=None) -> FetchResult`. Name the Viewer tests `test_viewer_fetch_*`. Assembler tests feed hand-built frames (`Frame(header, buffers)`): first frame not `object.header` -> `ProtocolError`; arrays with the sum of bytes over 2 GiB (header only, no allocation) -> `ObjectTooLargeError`; part for an array not in `arrays`; `offset` not a multiple of 8; part past the end; a gap; an overlap; a missing part at `object.end`; wrong `parts` count; `part` buffer not `u8` -> each `ProtocolError`; a buffer name in `geometry`, `data[*].buffer` or `offsets` that is not in `arrays` -> `ProtocolError`; a good stream gives a `FetchResult` with the revision of `header["object"]["revision"]`. `fetch_object` and `Viewer.fetch` with the fake (`fake_viewer`, `viewer_factory`): fetch of a sent `Surface` equals the input; `FakeViewer(part_bytes=64)` gives several parts and `progress` calls that rise to 1; `FakeViewer(fetch_delay=0.05, part_bytes=64)` with `cancel` set gives `CancelledError` and `fake.objects` is the same; unknown id -> `InvalidInputError`; `kind="headless"` fake still fetches; a stream error closes the tool connection and raises `ViewerClosedError("The viewer sent an object that is not valid: ...")`; the revision is in the result; FR-014: program A holds the data connection (`send`), program B (`viewer_factory()`) gets `BusyError` from `send`, but `select`, `selection` and `fetch` work; after A calls `release_data`, B sends and the objects of A stay (`fake.objects`).
+
+- [ ] T054 [US4] [M] Implement `_Assembler` and `fetch_object` in `fetch.py`.
+  - Files: `packages/loop_link/src/loop_link/fetch.py`
+  - Needs: T053
+  - Wave: 14
+  - Done when: `packages/loop_link/.venv/Scripts/python.exe -m pytest packages/loop_link/tests/test_fetch.py -k "not test_viewer_fetch"` passes and `ruff check packages/loop_link` passes.
+  - Context: `fetch_object` calls `tool.request(lambda n: encode.fetch_frame(n, id), until=("object.end",), feature="selection and fetch (geoviewer protocol 1.18)", object_id=id, on_frame=assembler.feed, progress=progress, cancel=cancel, timeout=timeout)`, then returns `assembler.finish()`. It catches `ProtocolError`, calls `tool.close()` and raises `ViewerClosedError("The viewer sent an object that is not valid: <text>")`; other library errors go up. `_Assembler` rules: (1) first frame must be `object.header`; (2) header checks: each `arrays` entry has a unique `name`, a `dtype` in `f32 f64 u32 i32 u8`, a `shape` of non-negative integers; the sum of bytes over `protocol.MAX_OBJECT_BYTES` -> `ObjectTooLargeError(id, size, limit)`; each buffer name in `object.geometry`, `object.data[*].buffer` and `offsets` is in `arrays`; then one `numpy.empty(nbytes, dtype=numpy.uint8)` per array; (3) `object.part`: array known; `offset % 8 == 0`; buffer `part` is `u8`; `offset` equals the bytes already filled in that array (in order, no gap, no overlap); `offset + bytes` at most the array size; copy in; (4) `object.end`: `parts` equals the count received and each array is full; (5) `finish`: view each array with its dtype and shape (`.view`, `.reshape`), call `decode_object(header["object"], arrays, header["origin"])`; fill `FetchResult` (`origin` as tuple or None, `crs`, `name`, `parent`, `revision`, `object_type`). Every break raises `ProtocolError`.
+
+- [ ] T055 [US4] [M] Add `Viewer.fetch`.
+  - Files: `packages/loop_link/src/loop_link/viewer.py`
+  - Needs: T054, T050
+  - Wave: 15
+  - Done when: `packages/loop_link/.venv/Scripts/python.exe -m pytest packages/loop_link/tests/test_fetch.py packages/loop_link/tests/test_selection.py packages/loop_link/tests/test_viewer.py` passes and `ruff check packages/loop_link` passes.
+  - Context: Add `Viewer.fetch(self, id: str, *, progress: Optional[Callable[[float], None]] = None, cancel: Optional[threading.Event] = None) -> FetchResult`. It uses the tool connection of T050 (same lazy creation, same closed rule) and calls `fetch.fetch_object(tool, id, progress=progress, cancel=cancel)`. It never opens the data connection. An unknown id gives `InvalidInputError` (the tool layer maps `invalid_input`). `progress` gets floats from 0 to 1. Import `FetchResult` and `fetch_object` from `loop_link.fetch`. Numpy-style docstring with Parameters, Returns, Raises (`InvalidInputError`, `CancelledError`, `MissingFeatureError`, `ViewerClosedError`, `UnsupportedObjectError`).
+
+- [ ] T056 [US4] [M] Test: send then fetch for the seven types in `test_roundtrip.py` (SC-002).
+  - Files: `packages/loop_link/tests/test_roundtrip.py`, `packages/loop_link/src/loop_link/fetch.py`
+  - Needs: T055
+  - Wave: 16
+  - Done when: `packages/loop_link/.venv/Scripts/python.exe -m pytest packages/loop_link/tests/test_roundtrip.py` passes.
+  - Context: Use `fake_viewer` and `viewer_factory` (`FakeViewer(origin=(500000.0, 7000000.0, 0.0))` for the origin cases: build it in the test and write its instance file as `conftest.py` does). For each of `Points`, `Vectors` (made with `Vectors.from_directions`), `Lines`, `Surface`, `BlockModel`, `TetraMesh`, `Drillhole`: `viewer.send(obj, id=...)`, then `viewer.fetch(id).object`. Compare: floats with `np.testing.assert_allclose(rtol=1e-6)`; integers, booleans, text, `Categorical` (codes, names, colours) and index arrays with `np.array_equal`; the dtype of each property stays (float32 stays float32); coordinates are float64 world coordinates, also for a point 10 km from the origin. Vectors: compare `orientation` angles to the input within 1e-6 degrees (the viewer keeps angles; an x,y,z input is equal up to the conversion). The test file is the task. Change `fetch.py` only if a case shows a bug in `decode_object` or the assembler; then say so in the task result.
+
+## Phase 8: Stage S5c, real codec, fixtures, manual check, docs
+
+- [ ] T057 [Found] [S] Export the S5 public names.
+  - Files: `packages/loop_link/src/loop_link/__init__.py`
+  - Needs: T055, T049, T039
+  - Wave: 16
+  - Done when: `packages/loop_link/.venv/Scripts/python.exe -c "import loop_link as l; [getattr(l, n) for n in l.__all__]"` passes and `packages/loop_link/.venv/Scripts/python.exe -m pytest packages/loop_link/tests/test_import.py` passes.
+  - Context: Add imports and `__all__` entries (keep `__all__` sorted as it is): from `.errors`: `CancelledError`, `StaleRevisionError`, `UnsupportedObjectError`; from `.selection`: `Selection`, `SelectionWatcher`; from `.fetch`: `FetchResult`. Keep all old lines. Do not import pyvista, pandas, Qt or LoopStructural (SC-005, `test_import.py`).
+
+- [ ] T058 [P] [US2] [M] Test: tool frames against the real geoviewer codec.
+  - Files: `packages/loop_link/tests/test_codec_real.py`
+  - Needs: T042
+  - Wave: 4
+  - Done when: `packages/loop_link/.venv/Scripts/python.exe -m pytest packages/loop_link/tests/test_codec_real.py -rs` passes or skips with the reason that the variable is not set; with `LOOP_LINK_GEOVIEWER_REPO=C:\Users\lachl\dev\geoviewer` and `cargo` on the PATH it passes with no skip.
+  - Context: In `_cases()` add the frames: `selection_set` (cells and nodes, revision 2), `selection_set_no_revision`, `selection_set_cells_only`, `selection_set_clear` (both `None`), `selection_get`, `object_fetch`, `command_cancel`. Build them with `encode.selection_set_frame(3, "grid", np.array([1, 2, 3]), np.array([4]), 2)`, `encode.selection_get_frame(4)`, `encode.fetch_frame(5, "grid")`, `encode.cancel_frame(6)`. The existing helper, the validator program and the negative control stay. Do not change `codec_validator/`. If the validator reports FAIL for a type it does not know, make the task fail with the validator output as the reason; do not drop the case.
+
+- [ ] T059 [P] [US2] [M] Test: tool fixtures of the geoviewer repository (OP11).
+  - Files: `packages/loop_link/tests/test_fixtures.py`
+  - Needs: T042
+  - Wave: 4
+  - Done when: `packages/loop_link/.venv/Scripts/python.exe -m pytest packages/loop_link/tests/test_fixtures.py -rs` passes or skips with a reason; with `LOOP_LINK_GEOVIEWER_FIXTURES=C:\Users\lachl\dev\geoviewer\fixtures\protocol\python` it passes with no skip for the new tests.
+  - Context: Tool fixtures are in `<LOOP_LINK_GEOVIEWER_FIXTURES>/../tool/` as JSON files `selection.set.json`, `selection.get.json`, `object.fetch.json`, `command.cancel.json`. Use `geoviewer_fixtures()` of `conftest.py`; skip with a reason when the variable or the `tool` folder is missing (same style as `_folder()`). Read each fixture (look at the file to see its form: header fields `type`, `request`, `object`/`id`, `revision`, `entries`, `version`, `buffers`). Build the frame with `encode.selection_set_frame`, `selection_get_frame`, `fetch_frame`, `cancel_frame` from the `request`, `object`, `id`, `revision` and index counts of the fixture (use `np.arange(count)` for indices), decode it, and assert the header equals the fixture header including `version` and `buffers`. A fixture with a different form than the plan expects: make the test fail with a clear message.
+
+- [ ] T060 [P] [Finish] [S] Manual check M3 in `manual_checks.md`.
+  - Files: `packages/loop_link/tests/manual_checks.md`
+  - Needs: none
+  - Wave: 1
+  - Done when: `git grep -n -c "^## M3" packages/loop_link/tests/manual_checks.md` gives 1.
+  - Context: Add a section `## M3: select, read and fetch with the real window viewer (stories 2 to 4)` before `## Record`, in ASD-STE100 English, 8 steps or fewer in the style of M2. Steps: (1) send a `BlockModel` of 10x10x10 cells, select cells 12, 13, 14 with `Viewer.select`, check the viewer outlines three cells and `Viewer.selection()` returns them; (2) select cells in the window with the mouse and read them with `Viewer.selection()`; (3) `select` with index 5000 gives `InvalidInputError` and the selection stays; (4) send, replace, then `select` with the old revision gives `StaleRevisionError`; (5) fetch each of the seven types (script of M2 plus `fetch`) and compare with the original; (6) fetch a drillhole that the viewer imported and check the warning for the dropped log sets; (7) start `watch_selection`, change the selection in the window, check the callback runs once; (8) start a second program that sends and check it gets `BusyError` while the first program still selects and fetches. Add a closing paragraph: M3 checks the fake viewer assumptions OP12 (which types have a selection table), OP13 (one object per selection) and OP14 (parts arrive in order); record the time of a fetch of 1,000,000 cells. Pass line: all 8 steps give the expected result.
+
+- [ ] T061 [P] [Finish] [S] README section "Select and fetch".
+  - Files: `packages/loop_link/README.md`
+  - Needs: T057
+  - Wave: 17
+  - Done when: `git grep -n -c "^## Select and fetch" packages/loop_link/README.md` gives 1.
+  - Context: Add `## Select and fetch` before `## Test against the real codec`, with an example of about 10 lines: `from loop_link import Viewer, BlockModel`; `viewer = Viewer()`; `viewer.send(grid, id="grid")`; `viewer.select("grid", cells=[12, 13])`; `sel = viewer.selection()` then `sel.object_id`, `sel.cells`; `watcher = viewer.watch_selection(print, interval=0.5)` and `watcher.stop()`; `result = viewer.fetch("grid")` and `result.object`. Add 3 short sentences: select, read and fetch use the tool connection, so they work while another program holds the data connection; a viewer without geoviewer protocol 1.18 gives `MissingFeatureError`; a fetch of a drillhole keeps the first interval set and warns about dropped properties. ASD-STE100 English.
+
+## Phase 9: Finish
+
+- [ ] T062 [Finish] [S] Update `ROADMAP.md`: stage S5 done.
+  - Files: `ROADMAP.md`
+  - Needs: T056, T057, T058, T059, T060, T061
+  - Wave: 18
+  - Done when: `git grep -n -c "loop_link" ROADMAP.md` gives 3 or more and `git grep -n "stage S5" ROADMAP.md` shows 1 or more lines.
+  - Context: In the entry `- [ ] **Stage 7 — `loop_link`: Python link to geoviewer.**` replace the sentence "Select, fetch, filter and colour wait for geoviewer spec 066." with "Stage S5 (select, read the selection and fetch; geoviewer spec 067) is done. Filter and colour (stage S4) are not planned yet." Add one status log entry at the end of "Status log", in the style of the neighbours, dated with the date of the run (YYYY-MM-DD): "Stage 7 stage S5 implemented: tool connection, select, read selection, fetch and round trip in `packages/loop_link`." Do not tick the Stage 7 box (S4 is open).
+
+- [ ] T063 [Finish] [M] Run the merge gates for S5 and fix the findings.
+  - Files: `packages/loop_link/`
+  - Needs: T062, T038
+  - Wave: 19
+  - Done when: `ruff check LoopStructural packages && pytest` passes, `packages/loop_link/.venv/Scripts/python.exe -m pytest packages/loop_link/tests` passes, and `black --check packages/loop_link` passes.
+  - Context: Constitution merge gate: `pytest` and `ruff check LoopStructural packages` must both pass. The root `pytest` does not run the package tests, so run the package command too. Run `black packages/loop_link` to fix the format (line length 100, quotes kept). Fix only problems in `packages/loop_link/`. Do not change a gate or add a Ruff ignore for `packages/loop_link/src`. Also run `packages/loop_link/tests/test_import.py` alone (SC-005: no Qt or extras at import). If `LOOP_LINK_GEOVIEWER_REPO` and `LOOP_LINK_GEOVIEWER_FIXTURES` are set on this machine, run `test_codec_real.py` and `test_fixtures.py` with them. Report the result of each command in the commit message.
 ## Wave table
 
 | Wave | Tasks | Tier [S] | Tier [M] |
 |---|---|---|---|
-| 1 | T001, T002, T004, T005 | 2 | 2 |
-| 2 | T003, T006 | 1 | 1 |
-| 3 | T007, T009, T011, T016 | 0 | 4 |
-| 4 | T008, T010, T017 | 0 | 3 |
+| 1 | T001, T002, T004, T005, T039, T040, T060 | 5 | 2 |
+| 2 | T003, T006, T041, T051 | 1 | 3 |
+| 3 | T007, T009, T011, T016, T042, T052 | 0 | 6 |
+| 4 | T008, T010, T017, T043, T058, T059 | 0 | 6 |
 | 5 | T012, T015, T019 | 0 | 3 |
-| 6 | T013, T018 | 0 | 2 |
-| 7 | T014, T020 | 0 | 2 |
-| 8 | T021 | 0 | 1 |
-| 9 | T023, T024, T025, T027, T034, T037 | 3 | 3 |
-| 10 | T028, T030, T032, T035 | 0 | 4 |
-| 11 | T029, T031, T033, T036 | 1 | 3 |
-| 12 | T022 | 1 | 0 |
-| 13 | T038 | 0 | 1 |
+| 6 | T013, T018, T044 | 0 | 3 |
+| 7 | T014, T020, T045 | 0 | 3 |
+| 8 | T021, T046 | 0 | 2 |
+| 9 | T023, T024, T025, T027, T034, T037, T047 | 3 | 4 |
+| 10 | T028, T030, T032, T035, T048 | 0 | 5 |
+| 11 | T029, T031, T033, T036, T049 | 1 | 4 |
+| 12 | T022, T050 | 1 | 1 |
+| 13 | T038, T053 | 0 | 2 |
+| 14 | T054 | 0 | 1 |
+| 15 | T055 | 0 | 1 |
+| 16 | T056, T057 | 1 | 1 |
+| 17 | T061 | 1 | 0 |
+| 18 | T062 | 1 | 0 |
+| 19 | T063 | 0 | 1 |
 
 ## Critical path
 
-T001 -> T006 -> T009 -> T010 -> T012 -> T013 -> T014 -> T021 -> T034 -> T035 -> T036 -> T022 -> T038
+T001 -> T006 -> T007 -> T008 -> T019 -> T044 -> T045 -> T046 -> T047 -> T048 -> T049 -> T050 -> T053 -> T054 -> T055 -> T057 -> T061 -> T062 -> T063
 
 ## Dependencies
 
-Setup (T001 to T005) first. T006 (errors) opens the foundation. Then three chains in parallel:
-codec (T007, T008), vector math (T009, T010), objects (T011, T012; needs T010), and discovery
-(T016, T017). The chain objects, then encode (T013, T014), joins the WebSocket port (T015) and
-discovery in `Viewer` (T020, T021; needs the fake viewer T019 and `conftest.py` T018). After T021:
-exports (T023), speed (T024), fixtures (T025), adapter dispatch (T027), push tests (T034) and
-manual checks (T037) run in parallel. S2 adapters follow T027 as test-then-code pairs
-(T028 to T033). S3 is T034, T035, T036. T022 and T038 close the work.
+T001 to T038 (stages S1 to S3) are done. Stage S5 adds T039 to T063.
+
+- S5a: errors (T039) and tool versions (T040) start at once. Frame builders follow (T041, T042). The fake
+  viewer tool endpoint is tested (T043) and built in two steps, selection then fetch (T044, T045; both
+  change `fake_viewer.py`, so they run in a chain after T019). `ToolConnection` is tested and built
+  (T046, T047). Then selection tests, `selection.py` and the `Viewer` members (T048, T049, T050).
+- S5b: the pure `decode_object` runs early and apart (T051, T052). The assembler tests, `fetch_object`
+  and `Viewer.fetch` need the tool connection (T053, T054, T055). The round trip test closes it (T056).
+- S5c: real codec cases (T058) and fixture checks (T059) need only the frame builders (T042), so they
+  run in wave 4. The manual check M3 (T060) has no dependency. Exports (T057), README (T061),
+  ROADMAP (T062) and the gate (T063) close the work.
+- Open points: none blocks a task. OP1 and OP6 block S4, which has no tasks yet.

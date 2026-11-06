@@ -1,11 +1,11 @@
 # Implementation plan: loop_link, a Python link to geoviewer
 
-**Feature**: `006-loop-link` | **Date**: 2026-11-06 | **Spec**: [spec.md](spec.md)
+**Feature**: `006-loop-link` | **Date**: 2026-11-06 (S5 added 2026-11-07) | **Spec**: [spec.md](spec.md)
 
 <!-- A plan says HOW. Written in ASD-STE100 Simplified Technical English.
-Scope of this plan: stories 1 and 5 (stages S1 to S3), as the index of
-specs/README.md says. Stories 6 and 7 (S4) and stories 2 to 4 (S5) get their own
-planner runs (OP6, OP7). -->
+Scope of this plan: stories 1 and 5 (stages S1 to S3, built), and stories 2 to 4
+(stage S5, planned 2026-11-07, see "Design of stage S5"). Stories 6 and 7 (S4) get
+their own planner run (OP6). -->
 
 ## Open points
 
@@ -45,9 +45,12 @@ Each point has a default. A point that has no owner is for the maintainer.
 - **OP6**: Stories 6 and 7 (filter and colour, FR-018 to FR-021, SC-007) need the
   tool connection. Default: plan them in a later planner run as stage S4. The
   names of the commands are in "Handover".
-- **OP7**: Stories 2, 3 and 4 (select, read selection, fetch) wait for geoviewer
-  spec 066. Default: plan them in a later planner run as stage S5, after 066
-  lands. The plan of 066 uses protocol 1.15 and may change names (its OP4).
+- **OP7**: Stories 2, 3 and 4 (select, read selection, fetch) are planned in stage S5
+  (see "Design of stage S5"). They use geoviewer spec 067-selection-and-fetch
+  (protocol 1.18), merged in the geoviewer repository. The text of this spec and of
+  the earlier parts of this plan calls it "066"; read "067". The spec owner should
+  change the number in `spec.md`. The names of the messages are final (they are in
+  `docs/protocol.md` of the geoviewer repository).
 - **OP8**: SC-004 needs the folder `fixtures/protocol/python` of the geoviewer
   repository. CI of this repository cannot see it. Default: the tests read the
   folder from the environment variable `LOOP_LINK_GEOVIEWER_FIXTURES`. When it
@@ -58,6 +61,30 @@ Each point has a default. A point that has no owner is for the maintainer.
   axis-aligned grid). Default: a non-regular pyvista `StructuredGrid` or a
   `RectilinearGrid` with uneven spacing gives `InvalidInputError`. The viewer has
   no type for them.
+
+- **OP10**: A fetch of a Drillhole that the viewer made by an import can have log
+  sets, sample sets and per-hole values that the `Drillhole` dataclass cannot hold
+  (it has one set of intervals). Default: `fetch` keeps the first interval set and
+  the survey values, and drops the rest with a `UserWarning` that names each dropped
+  property. The other choice is an error, which would make most imported holes
+  impossible to fetch. Owner: spec owner. Blocks no task.
+- **OP11**: The tool fixtures of geoviewer are in `fixtures/protocol/tool`, next to
+  `fixtures/protocol/python`. Default: the tests read them from
+  `<LOOP_LINK_GEOVIEWER_FIXTURES>/../tool` and skip when the folder is missing (OP8
+  rule). No new variable.
+- **OP12**: Which object types have a selection table is a viewer fact that the
+  protocol text does not list. Default for the fake viewer: `Points` has nodes only;
+  `Curve`, `Surface`, `BlockModel` and `TetraMesh` have nodes and cells; `Drillhole`
+  and `Group` have no table. Manual check M3 repeats this with the real viewer. If the
+  real viewer differs, change the fake viewer (one task).
+- **OP13**: The spec entity "Selection" is a list of object ids. Spec 067 gives one
+  object for each selection (one table). Default: `Selection` has one `object_id`
+  (or `None`). The spec owner should change the entity text.
+- **OP14**: The plan of geoviewer spec 067 says that a part has an `offset` and that
+  the parts follow the order of `arrays`. It does not say that the parts of one array
+  arrive in order with no gap. Default: the assembler requires this and gives an error
+  otherwise. M3 checks it with the real viewer. If the real viewer sends the parts in
+  another order, relax the rule to "each byte is filled one time" (one task).
 
 ## Answers
 
@@ -76,6 +103,15 @@ Each point has a default. A point that has no owner is for the maintainer.
   from the hello frame, updated by `send` (add or update the entry), `remove` (drop it) and
   `clear` (drop all). `push_objects` with `replace_prefix` keeps the ids of the objects that were
   sent or skipped in this call, and does no removal when the push was cancelled.
+- 2026-11-07 (orchestrator, manual check M2 with the real window viewer; this replaces the
+  2026-11-06 entry about `cell`): a Drillhole `interval_properties` array goes out with the
+  association `interval`, the field `log_set` = `"intervals"` in its description, and the header
+  field `log_sets` = `[{"name": "intervals", "kind": "interval"}]`. The viewer offers
+  drillhole interval values for colour only from such arrays; with `cell` it accepted the object
+  but showed no property. A Drillhole with no interval properties has no `log_sets`. A tetra
+  mesh has no Data button in the viewer; its properties are used by the isosurface and filter.
+- 2026-11-07 (maintainer): the geoviewer spec for stories 2 to 4 is 067-selection-and-fetch
+  (the text calls it 066).
 
 ## Summary
 
@@ -88,8 +124,10 @@ push API with no Qt, and a fake viewer in `loop_link.testing`. The package
 registers in `ROADMAP.md`, the release-please files, the CI matrix and the Ruff
 config.
 
-The work has three stages in this plan: S1 (send, story 1), S2 (adapters,
-FR-010), S3 (plugin API, story 5). The stages S4 and S5 are for later runs.
+The work has three built stages: S1 (send, story 1), S2 (adapters, FR-010), S3
+(plugin API, story 5). Stage S5 (planned 2026-11-07) adds the tool connection, the
+selection calls and the fetch (stories 2 to 4). Stage S4 (filter and colour) is for
+a later run.
 
 ## Technical context
 
@@ -528,7 +566,492 @@ calls `progress` on the thread that calls it. The plugin runs it on a worker thr
 | S1 | New package: codec, errors, WebSocket, discovery, objects, orientation, encode, `Viewer`, fake viewer; repository registration (ROADMAP, release-please, CI, Ruff, uv). Inputs: the dataclasses and numpy arrays only. | `uv run --package loop-link pytest packages/loop_link/tests`; `ruff check LoopStructural packages`; root `pytest`; SC-001, SC-004 (with the variable), SC-005, SC-006; manual check M1 | Revert the stage: the files are new, and the root files change by added lines only. The root `pytest` result is the same as before. |
 | S2 | `adapters/` for pyvista, LoopStructural, pandas; `Viewer.send` calls `adapters.convert`. | The same commands. Adapter tests (pyvista, LoopStructural, pandas extras installed in the test environment). | Revert S2. S1 still sends the dataclasses. |
 | S3 | `push.py` and its tests; frame comparison with the plugin frames; the slow-viewer and cancel tests. | The same commands; SC-004 frames of the plugin. | Revert S3. S1 and S2 stay. |
-| S4, S5 | Not planned here (OP6, OP7). | | |
+| S4 | Not planned here (OP6). | | |
+| S5 | Planned in "Design of stage S5": S5a (tool connection and selection), S5b (fetch), S5c (real codec checks, manual check M3, docs). | See "Stages and rollback of S5". | See "Stages and rollback of S5". |
+
+## Design of stage S5 (stories 2 to 4)
+
+Planned 2026-11-07, after S1 to S3 were built (PR 406) and geoviewer spec 067 merged
+(protocol 1.18). S5 adds the tool connection, the selection calls and the fetch. S4
+(filter and colour) is not in S5, but S4 reuses the tool connection of S5.
+
+### Facts that S5 uses (geoviewer spec 067, `docs/protocol.md` version 1.18)
+
+- A tool connects to the same server on the path `/tool`, with the same bearer token.
+  It sends no `hello`. The viewer accepts 8 tool connections at the same time. A tool
+  connection does not take the one data slot, so it works while another program holds
+  the data connection (FR-014).
+- Each tool message has the field `request` (a number that the tool chooses). Replies
+  have the same number. The new messages: `selection.set`, `selection.get`,
+  `selection.result`, `object.fetch`, `object.header`, `object.part`, `object.end`.
+  Fixtures of these messages are in `fixtures/protocol/tool/` of the geoviewer
+  repository. They use the version `{"major":1,"minor":18}`. `command.cancel` and
+  `command.progress` come from spec 035 (the fixture of `command.cancel` has minor 11).
+- `selection.set`: fields `object`, optional `revision`, `entries` (list of
+  `{"kind": "cells" | "nodes", "indices": <buffer name>}`), one `u32` buffer for each
+  entry. An empty `entries` list clears the selection of the object. A kind that is
+  not in the list is cleared. The viewer counts a repeated index one time. The reply
+  is `selection.result` with `object`, `revision` and `entries` that have `kind` and
+  `count` only.
+- `selection.get`: no fields. The reply is `selection.result` with one entry for each
+  kind that has a selection, and a `u32` buffer for each entry (`indices` gives its
+  name). The selection is the selection of the table that the user (or a tool)
+  changed last, so it holds one object. With no table the reply has no `object`, no
+  `revision` and `"entries": []`.
+- `object.fetch`: field `id`. Replies, in this order: `object.header` (fields
+  `origin`, `crs`, `object` = the `scene.upsert` fields of the object with no buffers,
+  and `arrays` = the list of `{name, dtype, shape}` that the parts fill), then
+  `object.part` messages (fields `array`, `offset`, `bytes`; one `u8` buffer named
+  `part`; at most 64 MiB; `offset` is a multiple of 8), then `object.end` (field
+  `parts`). Between parts the viewer sends `command.progress` with the same
+  `request`. A tool cancels with `command.cancel` (field `request`); the reply is
+  `request.error` with the code `cancelled`. A fetch needs no window.
+- All coordinates of a fetch are relative to `origin` (f32 or f64 as stored).
+- `request.error` has `error` = `{code, message, field}`. The codes that S5 meets:
+  `invalid_input` (`field` is `object`, `id`, `kind`, `indices` or `revision`),
+  `needs_window`, `cancelled`, `busy`, `failed`, `too_large`.
+- A viewer older than 1.18 answers a tool message that it does not know with an
+  `error` frame that has the code `unknown_message`. The tool connection has no
+  `hello`, so this reply is the only way to detect an old viewer (FR-013).
+
+### Names and errors
+
+All new names below are free (checked with `git grep -n -w` on 2026-11-07).
+
+New errors in `errors.py` (all derive from `LoopLinkError`):
+
+```python
+class StaleRevisionError(LoopLinkError):
+    # attributes: object_id: str, revision: Optional[int]
+    def __init__(self, object_id: str, revision: Optional[int] = None) -> None
+    # text: "The object '<id>' is not at that revision in the viewer. Read the
+    #        selection or fetch the object again, then try again."
+class CancelledError(LoopLinkError):
+    def __init__(self, message: str = "The request was cancelled.") -> None
+class UnsupportedObjectError(LoopLinkError):
+    # attributes: object_id: str, object_type: str
+    def __init__(self, object_id: str, object_type: str) -> None
+    # text: "The object '<id>' has the type '<type>'. loop_link can fetch Points, Curve,
+    #        Surface, BlockModel, TetraMesh and Drillhole objects only."
+```
+
+`loop_link/__init__.py` exports them, and `Selection`, `SelectionWatcher`,
+`FetchResult`.
+
+Mapping of a tool failure to a library error (function `raise_for_request_error(error:
+Mapping[str, Any], *, object_id: Optional[str]) -> NoReturn` in `tool.py`):
+
+| Tool reply | Library error |
+|---|---|
+| `request.error`, code `invalid_input`, field `revision` | `StaleRevisionError(object_id)` |
+| `request.error`, code `invalid_input`, other field | `InvalidInputError("The viewer refused the request: <message>")` |
+| `request.error`, code `needs_window` | `MissingFeatureError("a viewer window (this viewer has no window)")` |
+| `request.error`, code `cancelled` | `CancelledError()` |
+| `request.error`, code `busy` | `BusyError()` |
+| `request.error`, any other code | `ViewerRefusedError([Refusal(object_id or "", code, message)])` |
+| `error` frame, code `unknown_message` | `MissingFeatureError(feature)`, where `feature` is the argument of `request` (for S5: `"selection and fetch (geoviewer protocol 1.18)"`) |
+| `error` frame, code `unsupported_version` | `MissingFeatureError("protocol " + str(supported))` |
+| other `error` frame | `ViewerRefusedError([Refusal("", code, message)])` |
+| HTTP 401 at connect | `TokenError()` (the client already does this) |
+| socket closed, or no frame in time | `ViewerClosedError` |
+
+### Protocol changes (`protocol.py`, `encode.py`)
+
+```python
+TOOL_PROTOCOL_VERSION: dict[str, int] = {"major": 1, "minor": 18}
+CANCEL_PROTOCOL_VERSION: dict[str, int] = {"major": 1, "minor": 11}
+def encode_frame(header, buffers=(), *, version: Optional[dict[str, int]] = None) -> bytes
+    # version=None keeps PROTOCOL_VERSION (1.14). Else the header gets this version.
+```
+
+New frame builders in `encode.py` (each returns the bytes of one frame):
+
+```python
+def selection_set_frame(request: int, object_id: str, cells: Optional[np.ndarray],
+                        vertices: Optional[np.ndarray], revision: Optional[int]) -> bytes
+def selection_get_frame(request: int) -> bytes
+def fetch_frame(request: int, id: str) -> bytes
+def cancel_frame(request: int) -> bytes     # command.cancel, version CANCEL_PROTOCOL_VERSION
+```
+
+`selection_set_frame`: the header is `{"type": "selection.set", "request": n, "object":
+id, ["revision": r,] "entries": [...]}`. An entry is added for `cells` (kind `cells`,
+buffer name `cells`) and for `vertices` (kind `nodes`, buffer name `nodes`) only when
+the array is not empty. Each buffer is `u32` with shape `[k]`. With no entry, there is
+no buffer. The `revision` key is left out when `revision` is `None`. The version is
+`TOOL_PROTOCOL_VERSION`. `selection_get_frame` and `fetch_frame` use the same version.
+
+### Tool connection (`tool.py`)
+
+```python
+class ToolConnection:
+    def __init__(self, *, port: Optional[int] = None, token: Optional[str] = None,
+                 host: str = "127.0.0.1", settings_dir: Optional[Path] = None,
+                 timeout: float = 5.0) -> None
+    @property
+    def connected(self) -> bool
+    def connect(self) -> ToolConnection          # no hello; path "/tool"
+    def request(self, build: Callable[[int], bytes], *, until: Sequence[str],
+                feature: str, object_id: Optional[str] = None,
+                on_frame: Optional[Callable[[Frame], None]] = None,
+                progress: Optional[Callable[[float], None]] = None,
+                cancel: Optional[threading.Event] = None,
+                timeout: Optional[float] = None) -> Frame
+    def close(self) -> None
+```
+
+Behaviour of `request`:
+
+1. It takes the lock `self._lock` (one request at a time on one connection). It
+   connects when there is no socket (`discovery.find_viewer`, then
+   `WebSocketClient.connect(host, port, token=..., timeout=..., path="/tool")`). It
+   sends no `hello`.
+2. It makes the number `n` (starts at 1, increases by 1 for each request of this
+   connection), sends `build(n)`, and notes the time.
+3. It reads frames with `client.receive(0.1)` in a loop. It decodes each with
+   `protocol.decode_frame`. A `ProtocolError` closes the connection and raises
+   `ViewerClosedError("The viewer sent a frame that is not valid. ...")`.
+4. A frame with `type == "error"` goes to `raise_for_request_error` (the `error` rows
+   of the table). A frame with another `request` number is dropped (a late frame of an
+   older request). For a frame with the number `n`: `request.error` goes to
+   `raise_for_request_error`; `command.progress` calls `progress(fraction)` when
+   `fraction` is a number and `progress` is not `None`; a frame whose type is in
+   `until` ends the loop and is returned (before that, `on_frame` has seen it too);
+   any other frame goes to `on_frame` when it is not `None`, else it is dropped.
+   `on_frame` sees every frame of the request except `command.progress` and
+   `request.error`.
+5. The wait time restarts at each frame of the request. When `timeout` seconds (default
+   `self._timeout`) pass with no frame, the function closes the connection and raises
+   `ViewerClosedError("The viewer did not answer in time. ...")`.
+6. When `cancel` is set, the function sends `cancel_frame(n)` one time and goes on
+   reading until the `cancelled` error arrives (then `CancelledError` goes up), or the
+   `until` frame arrives (the request ended first, so it is returned), or the time
+   runs out.
+7. A socket error sets the socket to `None` and raises `ViewerClosedError`. The next
+   call of `request` connects again.
+
+`connect` raises `NoViewerError` and `TokenError`. A tool connection has no keepalive
+thread (the viewer sets no idle time for it).
+
+### Selection (`selection.py`)
+
+```python
+@dataclass(frozen=True, eq=False)
+class Selection:
+    object_id: Optional[str]        # None when nothing is selected
+    revision: Optional[int]
+    cells: np.ndarray               # uint32, 1-D, empty when none
+    vertices: np.ndarray            # uint32, 1-D, empty when none
+    @property
+    def empty(self) -> bool         # no cells and no vertices
+    def same_as(self, other: Selection) -> bool
+        # same object_id, and the sorted cells and the sorted vertices are equal.
+        # The revision is not compared.
+
+def parse_selection_result(frame: Frame) -> Selection
+    # kind "cells" gives cells, kind "nodes" gives vertices. The array is
+    # frame.buffers[entry["indices"]]. An entry with a count but no buffer, a buffer
+    # that is not uint32, or a length that differs from count gives ProtocolError.
+
+class SelectionWatcher:
+    @property
+    def running(self) -> bool
+    @property
+    def error(self) -> Optional[BaseException]    # the error that stopped the thread
+    def stop(self) -> None                         # stop, then join (timeout 2 * interval + 1 s)
+    def __enter__(self) -> SelectionWatcher
+    def __exit__(self, *exc) -> None
+```
+
+Only `Viewer.watch_selection` makes a `SelectionWatcher`. It has a daemon thread
+`loop-link-selection-poll`. The thread holds a `weakref` to the `Viewer`, so a dropped
+`Viewer` ends it. Loop of the thread: wait `interval` seconds on a `threading.Event`
+(so `stop` is fast), call `viewer.selection()`, and when the result is not `same_as`
+the last one, call `callback(selection)` one time and keep it as the last one. An
+exception of the poll or of the callback goes to `error`, and the thread ends. No
+thread runs before `watch_selection` is called (FR-005).
+
+### Fetch (`fetch.py`)
+
+```python
+@dataclass(frozen=True, eq=False)
+class FetchResult:
+    id: str
+    object: SceneObject          # Points, Vectors, Lines, Surface, BlockModel, TetraMesh, Drillhole
+    object_type: str             # the viewer type name, for example "Curve"
+    revision: int
+    name: Optional[str]
+    parent: Optional[str]
+    origin: Optional[tuple[float, float, float]]
+    crs: Optional[str]
+
+def fetch_object(tool: ToolConnection, id: str, *,
+                 progress: Optional[Callable[[float], None]] = None,
+                 cancel: Optional[threading.Event] = None,
+                 timeout: float = 30.0) -> FetchResult
+
+def decode_object(header: Mapping[str, Any], arrays: Mapping[str, np.ndarray],
+                  origin: Optional[Sequence[float]]) -> SceneObject
+```
+
+`fetch_object` calls `tool.request(lambda n: encode.fetch_frame(n, id), until=("object.end",),
+feature="selection and fetch (geoviewer protocol 1.18)", object_id=id,
+on_frame=assembler.feed, progress=progress, cancel=cancel, timeout=timeout)`. The
+private class `_Assembler` keeps the state and the rules:
+
+1. The first frame must be `object.header`. Any other first frame gives `ProtocolError`.
+2. Header checks. Each entry of `arrays` has a unique `name`, a `dtype` in `f32 f64 u32
+   i32 u8`, and a `shape` of non-negative integers. The sum of the bytes of all arrays
+   must be at most `protocol.MAX_OBJECT_BYTES`, else `ObjectTooLargeError(id, size,
+   limit)`. Each buffer name in `object.geometry`, in `object.data[*].buffer`, and in the
+   `offsets` fields must be in `arrays`, else `ProtocolError`. Then the assembler makes
+   one `numpy.empty(nbytes, dtype=numpy.uint8)` for each array.
+3. `object.part`: the array must be in `arrays`; `offset % 8 == 0`; the buffer `part` must
+   be `u8` with `bytes` entries; `offset` must equal the bytes already filled in that
+   array (parts of one array arrive in order, with no gap and no overlap); `offset +
+   bytes` must be at most the size of the array. A break gives `ProtocolError`. The
+   assembler copies the part into the array.
+4. `object.end`: `parts` must equal the number of parts received, and each array must be
+   full. A break gives `ProtocolError`.
+5. The assembler views each array with its dtype and shape (`numpy.ndarray.view`,
+   `reshape`) and calls `decode_object(header["object"], arrays, header["origin"])`. The
+   `revision` of the result is `header["object"]["revision"]`.
+
+`ProtocolError` is the existing `loop_link.protocol.ProtocolError`. `fetch_object`
+catches it, closes the tool connection (the stream is out of step), and raises
+`ViewerClosedError("The viewer sent an object that is not valid: <text>")`.
+`CancelledError` and the other library errors go up unchanged.
+
+Rules of `decode_object` (world coordinates, no other change of values):
+
+| `object_type` | Result |
+|---|---|
+| `Points` | `Vectors` when `property_groups` has an entry with the role `orientation` or `lineation`; else `Points`. |
+| `Curve` | `Lines(vertices, segments, ...)` |
+| `Surface` | `Surface(vertices, triangles, ...)` |
+| `BlockModel` | `BlockModel(origin = params["origin"] + origin, cell_sizes = params["cell_sizes"], cells = params["cells"], ...)` |
+| `TetraMesh` | `TetraMesh(vertices, tetrahedra, ...)` |
+| `Drillhole` | `Drillhole(collar + origin, survey, intervals, end_of_hole = params["end_of_hole"][0] when present, ...)` |
+| any other (`Grid2D`, `GeoImage`, `Group`) | `UnsupportedObjectError(id, object_type)` |
+
+- `origin` is `None` or three numbers; `None` means `(0, 0, 0)`. The `vertices` and
+  `collar` are computed in float64: `array.astype(float64) + origin`. The result is
+  float64. This is the only dtype change: the viewer holds f32 relative to the origin,
+  and the sum in f64 is the world coordinate.
+- Property rules, for each entry of `object["data"]` (the name is `name`; the values are
+  the array of `buffer`):
+  - Association `vertex` goes to `properties`. Association `cell` goes to
+    `cell_properties`, except for a Drillhole, where `cell` and `interval` (with no
+    `log_set`, or with the first interval log set) go to `interval_properties`. For
+    `Points` or `Vectors`, an association `cell` gives `UnsupportedObjectError`.
+  - A property of another log set of a Drillhole, a property with the association `sample`
+    or `object`, and any other association are dropped. The function calls
+    `warnings.warn("loop_link dropped the property '<name>' of object '<id>': <reason>",
+    UserWarning, stacklevel=2)` one time for each (OP10).
+  - Types: `data_type` `float` keeps the stored dtype (f32 stays f32, f64 stays f64);
+    `integer` gives int32; `boolean` gives `numpy.bool_` (`values != 0`); `text` gives a
+    numpy `U` array (decode each item as UTF-8 from the data and the `offsets` arrays);
+    `referenced` gives `Categorical(codes, names, colours)`: `names` are the `name` fields
+    of `value_map` ordered by `id`; the codes are renumbered with a lookup when the ids
+    are not `0..n-1`; a code that is not in `value_map` gives `InvalidInputError`;
+    `colours` are the `colour` lists as 4-tuples (alpha 255 when a list has 3 values).
+  - Vectors: for each entry of `property_groups` with the role `orientation` (members
+    `dip_direction`, `dip`) or `lineation` (members `trend`, `plunge`), the member arrays
+    (as float64) form the tuple `orientation` or `lineation`. The member arrays are not
+    in `properties`.
+
+### Viewer (`viewer.py`)
+
+New members (the code of the data connection does not change):
+
+```python
+class Viewer:
+    @property
+    def tool_connected(self) -> bool
+    def select(self, object_id: str, *, cells: Optional[ArrayLike] = None,
+               vertices: Optional[ArrayLike] = None,
+               revision: Optional[int] = None) -> dict[str, int]
+    def selection(self) -> Selection
+    def watch_selection(self, callback: Callable[[Selection], None], *,
+                        interval: float = 0.5, initial: bool = False) -> SelectionWatcher
+    def fetch(self, id: str, *, progress: Optional[Callable[[float], None]] = None,
+              cancel: Optional[threading.Event] = None) -> FetchResult
+```
+
+- The `Viewer` makes its `ToolConnection` at the first call of `select`, `selection`,
+  `watch_selection` or `fetch`, with the same `port`, `token`, `host`, `settings_dir` and
+  `timeout`. These calls do not open the data connection. So a program that gets
+  `BusyError` from `connect` or `send` can still select, read and fetch (FR-014).
+  `release_data` does not close the tool connection. `close` stops all watchers, closes
+  the tool connection and marks the viewer closed. A later tool call raises
+  `ViewerClosedError`, as `send` does.
+- `select(object_id, cells, vertices, revision)`: `object_id` must be a non-empty `str`.
+  At least one of `cells`, `vertices` must not be `None`, else `InvalidInputError("Give
+  cells or vertices. Use an empty list to clear the selection.")`. Each given array must
+  be a 1-D sequence of integers from 0 to 2**32 - 1 (no float, no bool, no negative
+  value), else `InvalidInputError` that names the argument. The call sends one
+  `selection.set` frame (all indices in one message, SC-003). It returns
+  `{"cell": n, "vertex": m}` with the counts of the reply (only the kinds that the reply
+  has). Empty lists clear the selection. When the viewer refuses the call, the selection
+  does not change.
+- `selection()` sends `selection.get` and returns a `Selection`.
+- `watch_selection(callback, interval, initial)`: `interval` must be more than 0, else
+  `InvalidInputError`. The call first reads the selection in the calling thread, so
+  `MissingFeatureError` and `ViewerClosedError` go to the caller. When `initial` is true
+  and this first selection is not empty, the callback is called once with it. Then the
+  call starts the `SelectionWatcher` thread. The `Viewer` keeps a list of its watchers.
+- `fetch(id, progress, cancel)` calls `fetch.fetch_object(...)` on the tool connection.
+  `progress` gets a float from 0 to 1. `cancel` is a `threading.Event`; when it is set,
+  the fetch stops and raises `CancelledError`. An unknown id gives `InvalidInputError`
+  (the viewer reply `invalid_input`, field `id`).
+
+### Fake viewer changes (`testing/fake_viewer.py`)
+
+The tool endpoint answers the 1.18 messages. New constructor arguments (all have
+defaults, so no S1 to S3 test changes): `protocol_minor: int = 18` (a value below 18
+makes each selection or fetch message get an `error` frame with the code
+`unknown_message`), `part_bytes: int = 64 * 1024 * 1024` (the largest part; it must be a
+multiple of 8), `fetch_delay: float = 0.0` (the pause after each part; it makes a cancel
+test possible). `kind="headless"` (it exists) makes `selection.set` and `selection.get`
+answer `request.error` with `needs_window`. New members:
+
+- `.selection` (property): the current selection as `{"object": str, "revision": int,
+  "cells": list[int], "nodes": list[int]}`, or `None`.
+- `.set_user_selection(object_id: str, *, cells=None, nodes=None) -> None`: it simulates a
+  selection that the user made in the window. It uses the checks of `selection.set`.
+- `.tool_requests` (list of `Frame`): each tool frame that arrived, for tests.
+
+Rules of the fake tool endpoint (they follow spec 067; the real viewer is the
+authority, and manual check M3 repeats them):
+
+- `selection.set`: an unknown object gives `invalid_input` (field `object`). A `revision`
+  that is not the current revision gives `invalid_input` (field `revision`). An object
+  with no table (the types `Drillhole` and `Group`, see OP12), or a kind that the object
+  lacks (`Points` has `nodes` only), gives `invalid_input` (field `kind`). An index at or
+  above the element count gives `invalid_input` (field `indices`). A buffer that is not
+  `u32`, or is not in the frame, gives `invalid_input` (field `indices`). Counts: nodes
+  are the vertex count (a BlockModel has `(nx+1)(ny+1)(nz+1)`); cells are the segments,
+  triangles, tetrahedra, or `nx*ny*nz`. A repeated index counts one time. The new
+  selection replaces the old one, also when the old one is on another object. An empty
+  `entries` list clears it. The reply has `object`, `revision`, and `entries` with `kind`
+  and `count`.
+- `selection.get`: the reply has `object`, `revision`, and one entry for each kind that
+  has indices, with a `u32` buffer named `cells` or `nodes`. With no selection the reply
+  has `"entries": []`.
+- `object.fetch`: an unknown id gives `invalid_input` (field `id`). Else the fake sends
+  `object.header` (`origin` and `crs` of the fake, the stored header of the object with
+  `buffers: []`, and `arrays` = the stored buffers), then `object.part` frames of at
+  most `part_bytes` for each array in order, then `object.end`. When there is more than
+  one part, a `command.progress` frame (`fraction`, `text`) follows each part. After
+  each part the fake reads for at most 0.001 s. When it finds a `command.cancel` with the
+  same `request`, it sends `request.error` with the code `cancelled` and stops. A fetch
+  does not change the selection or the objects.
+
+### Files (S5)
+
+- `packages/loop_link/src/loop_link/errors.py` - Change. The three new errors.
+- `packages/loop_link/src/loop_link/protocol.py` - Change. `TOOL_PROTOCOL_VERSION`,
+  `CANCEL_PROTOCOL_VERSION`, `encode_frame(..., version=None)`.
+- `packages/loop_link/src/loop_link/encode.py` - Change. The four frame builders.
+- `packages/loop_link/src/loop_link/tool.py` - Create. `ToolConnection`,
+  `raise_for_request_error`.
+- `packages/loop_link/src/loop_link/selection.py` - Create. `Selection`,
+  `parse_selection_result`, `SelectionWatcher`.
+- `packages/loop_link/src/loop_link/fetch.py` - Create. `FetchResult`, `fetch_object`,
+  `decode_object`, `_Assembler`.
+- `packages/loop_link/src/loop_link/viewer.py` - Change. The new members.
+- `packages/loop_link/src/loop_link/__init__.py` - Change. The new exports.
+- `packages/loop_link/src/loop_link/testing/fake_viewer.py` - Change. The tool endpoint.
+- `packages/loop_link/tests/test_tool.py` - Create. `ToolConnection` and each row of the
+  error table; request numbers; a late frame of an older request is dropped; progress;
+  cancel; the connection closes in the middle of a request; reconnect at the next
+  request; wrong token; no viewer; `unknown_message` with `protocol_minor=14`.
+- `packages/loop_link/tests/test_selection.py` - Create. Story 2 scenarios 1 to 4; story 3
+  scenarios 1 to 3; the clear rule and the duplicate rule; `cells` and `vertices`
+  together; `StaleRevisionError`; `needs_window` for `kind="headless"`; a selection of
+  100,000 cells is one frame (SC-003: `fake.tool_requests` has one `selection.set` frame
+  with a `u32` buffer of shape `[100000]`); a selection that the user made
+  (`set_user_selection`); `watch_selection` (the callback runs once for a change and not
+  for no change, `initial`, `stop`, no thread before the call, the error of a callback
+  is in `.error`, a dropped `Viewer` ends the thread); FR-014 (program A holds the data
+  connection; program B gets `BusyError` from `send` but selects, reads and fetches; after
+  A calls `release_data`, B sends and the objects of A stay).
+- `packages/loop_link/tests/test_fetch.py` - Create. `decode_object` for each row of the
+  table, each property rule, and each drop with its warning. The cases are built by hand
+  as a viewer writes them: an orientation group, a value map with ids that are not
+  `0..n-1`, text, boolean, a Drillhole with two log sets and a sample set, a non-zero
+  origin, `UnsupportedObjectError` for a `Group`. `_Assembler` with hostile frames: the
+  first frame is not a header; an array too large for the 2 GiB limit (a header only);
+  a part for an array that the header does not list; an offset that is not a multiple of
+  8; a part past the end; a gap; an overlap; a missing part; a wrong `parts` count; a
+  `part` buffer that is not `u8`. A fetch of several parts (`part_bytes=64`) with
+  `progress` calls that rise. A cancel with `fetch_delay=0.05` gives `CancelledError`
+  and the scene stays the same. An unknown id gives `InvalidInputError`. A headless fake
+  still fetches. The revision is in the result.
+- `packages/loop_link/tests/test_roundtrip.py` - Create. SC-002 and story 4 scenario 2:
+  for each of the seven types (and a `Vectors` made with `from_directions`), `send` then
+  `fetch`; compare with `numpy.testing.assert_allclose(rtol=1e-6)` for floats and
+  `array_equal` for integers, booleans, text, `Categorical` (codes, names, colours) and
+  index arrays; the dtype of each property stays; the coordinates are float64 world
+  coordinates for a scene with a non-zero origin and for a point 10 km from it.
+- `packages/loop_link/tests/test_codec_real.py` - Change. Add the cases `selection.set`
+  (cells and nodes, with and without `revision`, with no entry), `selection.get`,
+  `object.fetch` and `command.cancel`, written by the new builders, and check that the
+  real codec accepts them (the helper and the negative control stay).
+- `packages/loop_link/tests/test_fixtures.py` - Change. When `LOOP_LINK_GEOVIEWER_FIXTURES`
+  is set, read `<variable>/../tool/{selection.set,selection.get,object.fetch,command.cancel}.json`
+  (OP11). For each, build the frame with the `request`, `object` or `id`, `revision` and
+  indices of the fixture, and assert that the header equals the fixture (including
+  `version` and `buffers`). Skip with a reason when the variable or the folder is missing.
+- `packages/loop_link/tests/test_fake_viewer.py` - Change. Add the rules of the fake tool
+  endpoint (one test for each row of the list above).
+- `packages/loop_link/tests/manual_checks.md` - Change. Add M3 (see "Test strategy of S5").
+- `packages/loop_link/README.md` - Change. A short section "Select and fetch" with an
+  example of about 10 lines.
+- `ROADMAP.md` - Change (last task of S5). Update the Stage 7 entry: S5 done.
+
+### Stages and rollback of S5
+
+| Stage | Files and behaviour | Acceptance check | Rollback target and compatibility check |
+|---|---|---|---|
+| S5a | `errors.py`, `protocol.py`, `encode.py`, `tool.py`, `selection.py`, `viewer.py` (select, selection, watch_selection), `__init__.py`, fake viewer (selection part), `test_tool.py`, `test_selection.py`, `test_fake_viewer.py` | `packages/loop_link/.venv/Scripts/python.exe -m pytest packages/loop_link/tests`; `ruff check LoopStructural packages`; `black --check packages/loop_link`; FR-004, FR-005, FR-013 (selection part), FR-014 (tool part), SC-003 | Revert S5a. S1 to S3 do not use the new files. The new argument of `encode_frame` has a default that keeps the old frames. |
+| S5b | `fetch.py`, `viewer.py` (fetch), fake viewer (fetch part), `test_fetch.py`, `test_roundtrip.py` | The same commands; FR-006, FR-013 (fetch part), SC-002 | Revert S5b. S5a stays. |
+| S5c | `test_codec_real.py`, `test_fixtures.py`, `manual_checks.md` (M3), `README.md`, `ROADMAP.md` | The same commands with `LOOP_LINK_GEOVIEWER_REPO` and `LOOP_LINK_GEOVIEWER_FIXTURES` set; M3 by hand with the 067 viewer build | Revert S5c. |
+
+### Test strategy of S5
+
+- Unit and regression tests: the files above. The fake viewer applies the rules of spec
+  067, as the S1 fake applies the rules of the codec.
+- Integration and compatibility: the real geoviewer codec checks the frames that the
+  library writes (`test_codec_real.py`, needs `LOOP_LINK_GEOVIEWER_REPO`). The fixtures
+  of `fixtures/protocol/tool` check the headers (`test_fixtures.py`).
+- Manual check M3 (real window viewer built from geoviewer spec 067):
+  1. Send a `BlockModel` of 10 x 10 x 10 cells. Select cells 12, 13 and 14 with
+     `Viewer.select`. Check that the viewer outlines three cells and that
+     `Viewer.selection()` returns them.
+  2. Select cells in the window with the mouse. Read them with `Viewer.selection()`.
+  3. `select` with an index of 5000 gives `InvalidInputError`, and the selection stays.
+  4. Send, replace, then `select` with the old revision. It gives `StaleRevisionError`.
+  5. Fetch each of the seven types back and compare with the original (the script of M2
+     plus `fetch`).
+  6. Fetch a drillhole that the viewer imported. Check the warning for the log sets that
+     the library drops.
+  7. Start `watch_selection`. Change the selection in the window. Check that the callback
+     runs once.
+  8. Start a second program that sends. Check that it gets `BusyError` while the first
+     program still selects and fetches.
+  M3 checks the points that the fake viewer assumes (OP12, OP13), and the order of the
+  parts of a fetch (OP14). Record the time of a fetch of 1,000,000 cells (no limit).
+- Backend coverage and cross-language fixtures: as in the main "Test strategy".
+- Performance: SC-002 has no time limit.
+- Merge gates: as in the main "Test strategy".
+
+### Constitution check for S5
+
+All rows of the table above hold for S5. The differences: the new files are under
+`packages/loop_link` only; docstrings and type hints follow the same rules (`D` and
+`ANN` apply to `src`); the ROADMAP entry is updated in the last task; each stage is a
+separate revert.
 
 ## Test strategy
 
@@ -567,9 +1090,8 @@ calls `progress` on the thread that calls it. The plugin runs it on a worker thr
   that the fake refuses (SC-004). It also encodes the plugin test objects and
   compares header and buffers to the `.bin` frames. It skips with a reason when
   the variable is missing (OP8). No public API of `GeologicalModel` is touched.
-- **Round-trip tests**: not applicable in this plan (fetch is S5). The fake viewer
-  keeps the received frames, so `test_viewer.py` compares the stored arrays with
-  the input.
+- **Round-trip tests**: S1 to S3 compare the arrays that the fake viewer stored with
+  the input (`test_viewer.py`). S5 adds `test_roundtrip.py` (send, then fetch).
 - **Backend coverage**: the library has one backend (stdlib sockets). S2 tests need
   pyvista, `loop_common` and pandas; each test file uses `pytest.importorskip`,
   and the CI `tests` extra installs them (`tests = ["pytest", "pyvista",
@@ -724,17 +1246,17 @@ discovery, object model, `Viewer`, adapters, plugin push API, fake viewer.
 | FR-001 | "Functions and public API", `discovery.py` | `test_discovery.py`; story 1 scenario 1 in `test_viewer.py` | None |
 | FR-002 | `objects.py`, `encode.py` (type table) | `test_encode.py`, `test_viewer.py` (seven types) | None |
 | FR-003 | `Viewer.send` revision rule | `test_viewer.py` scenario 2 | None |
-| FR-004 | Select by id and index | none in this plan | OP7 (S5) |
-| FR-005 | Read selection and poll | none in this plan | OP7 (S5) |
-| FR-006 | Fetch | none in this plan | OP7 (S5) |
+| FR-004 | `Viewer.select`, `encode.selection_set_frame` (S5a) | `test_selection.py`, `test_codec_real.py`, `test_fixtures.py` | None (OP12, OP13 are viewer facts that M3 checks) |
+| FR-005 | `Viewer.selection`, `Viewer.watch_selection`, `SelectionWatcher` (S5a) | `test_selection.py` (poll once for a change, interval, no thread before the call) | None |
+| FR-006 | `Viewer.fetch`, `fetch.py` (S5b) | `test_fetch.py`, `test_roundtrip.py` | OP10 (a drillhole with several log sets loses the extra sets, with a warning), OP14 |
 | FR-007 | `import loop_link` has no Qt; `push.py` has no Qt | `test_import.py` | None |
 | FR-008 | `errors.py`; each edge case maps to one class (token: `TokenError`; no viewer: `NoViewerError`; too large: `ObjectTooLargeError`; closed: `ViewerClosedError`; bad property: `InvalidInputError`; busy: `BusyError`; older viewer: `MissingFeatureError`; origin differs: handled by conversion, not an error) | `test_viewer.py`, `test_encode.py`, `test_discovery.py` | None for S1 to S3. The older-viewer case for select and read is S5 (OP7). |
 | FR-009 | `push.py` (`push_objects`, `PushResult`) | `test_push.py` | None. The plugin change is in the plugin repository. |
 | FR-010 | `adapters/` | `test_adapter_*.py` | OP3 (pyvista to Drillhole); OP9 (non-regular grids) |
 | FR-011 | `orientation.py`, `Vectors` | `test_orientation.py`; story 1 scenario 6 | None |
 | FR-012 | One codec in `protocol.py` and `encode.py`; core imports numpy and the standard library only; adapters are extras | `test_import.py`; `test_protocol.py` | None |
-| FR-013 | Missing feature detect for 066 | none in this plan | OP7 (S5) |
-| FR-014 | `Viewer.release_data`, `BusyError`, keepalive thread. The tool connection part (select, read, fetch, filter, colour while busy) is S4 and S5. | `test_viewer.py` scenario 7 (send part) | OP6, OP7 for the tool connection part |
+| FR-013 | `unknown_message` of the tool connection gives `MissingFeatureError` (`raise_for_request_error`) | `test_tool.py`, `test_selection.py` (`protocol_minor=14`) | None |
+| FR-014 | `Viewer.release_data`, `BusyError`, keepalive thread; the tool connection (S5) for select, read and fetch while another program holds the data connection. Filter and colour use the same tool connection (S4). | `test_viewer.py` scenario 7 (send part); `test_selection.py` (tool part) | OP6 for filter and colour |
 | FR-015 | `testing/fake_viewer.py` | `test_viewer.py`, `test_fixtures.py` | None |
 | FR-016 | "Repository registration" | `git grep -n loop_link ROADMAP.md .release-please-config.json` gives 2 entries or more | None |
 | FR-017 | `pyproject.toml` (`>=3.10`), `ruff.toml` (py310) | `ruff check` and CI on 3.10 to 3.12 | OP4 (QGIS Python), OP5 (uv) |
@@ -743,13 +1265,16 @@ discovery, object model, `Viewer`, adapters, plugin push API, fake viewer.
 | FR-020 | Colour | none in this plan | OP6 (S4) |
 | FR-021 | Colour in send | none in this plan | OP1, OP6 (S4) |
 | SC-001 | `test_performance.py`; M1 | assert under 5 s | None |
-| SC-002 | Round trip | none in this plan | OP7 (S5) |
-| SC-003 | Selection in one message | none in this plan | OP7 (S5) |
+| SC-002 | `fetch.py`, `Viewer.fetch` | `test_roundtrip.py` (rtol 1e-6, seven types) | None |
+| SC-003 | `encode.selection_set_frame` (one frame, one `u32` buffer) | `test_selection.py` (100,000 cells in one frame) | None |
 | SC-004 | `test_fixtures.py` | frames of `fixtures/protocol/python`; the geoviewer tests read the frames of the library in the geoviewer repository | OP8 |
 | SC-005 | `test_import.py`; CI matrix | `sys.modules` check | None |
 | SC-006 | "Repository registration" | `git grep` of two files | None |
 | SC-007 | Reply time of colour and filter | none in this plan | OP6 (S4) |
 | Story 1 scenarios 1 to 8 | `Viewer`, `discovery.py`, `test_viewer.py`, `test_import.py` | as above | None |
+| Story 2 scenarios 1 to 4 | `Viewer.select`, errors table | `test_selection.py` | None |
+| Story 3 scenarios 1 to 3 | `Viewer.selection`, `watch_selection`, `parse_selection_result` | `test_selection.py` | None |
+| Story 4 scenarios 1 to 3 | `Viewer.fetch`, `decode_object` | `test_fetch.py`, `test_roundtrip.py` | None |
 | Story 5 scenarios 1 and 2 | `push.py`, `test_push.py` | frame comparison with plugin frames (OP8); worker thread test | OP8 |
 
 ## Handover
@@ -776,11 +1301,16 @@ Other specs and repositories use these contracts.
   (`id`, `colour` RGB or `null`). The viewer answers `{"status":"done"}` or
   `{"status":"refused","text":...}`; the result has no count of passing elements, so
   the "count of elements that pass" of story 6 needs a check in the S4 plan.
-- **S5** (select, read selection, fetch) uses the 066 messages `selection.set`,
-  `selection.get`, `selection.result`, `object.fetch`, `object.header`,
-  `object.part`, `object.end` of protocol 1.15. `MAX_INCOMING_BYTES` already
-  allows the 64 MiB parts. The helpers `orientation_to_normals` and
-  `lineation_to_directions` are for the fetch of vectors.
+- **S5** (select, read selection, fetch) gives: `Viewer.select`, `Viewer.selection`,
+  `Viewer.watch_selection`, `Viewer.fetch`, `Selection`, `SelectionWatcher`,
+  `FetchResult`, the errors `StaleRevisionError`, `CancelledError` and
+  `UnsupportedObjectError`, and the fake viewer members `selection`,
+  `set_user_selection`, `tool_requests`. S4 (filter and colour) reuses
+  `loop_link.tool.ToolConnection`: `request(build, until=("command.result",),
+  feature=..., object_id=...)` with a frame builder for `command.run`, and
+  `raise_for_request_error` for the failures. The plugin can use `select`,
+  `selection` and `watch_selection` on a worker thread (the tool connection takes
+  one request at a time).
 - **geoviewer repository**: the frames that `encode_object` writes must pass the
   geoviewer protocol tests. The coordinator copies the frames to
   `fixtures/protocol/python` by hand when the fixtures change (OP8).
