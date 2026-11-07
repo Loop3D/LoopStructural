@@ -375,7 +375,7 @@ Test command in this phase: `packages/loop_link/.venv/Scripts/python.exe -m pyte
   - Done when: `packages/loop_link/.venv/Scripts/python.exe -m pytest packages/loop_link/tests/test_selection.py -k "parse or same_as or empty or dtype"` passes and `ruff check packages/loop_link` passes. The watcher tests pass after T050.
   - Context: Create `Selection` (`@dataclass(frozen=True, eq=False)`: `object_id: Optional[str]`, `revision: Optional[int]`, `cells: np.ndarray`, `vertices: np.ndarray`; property `empty`; `same_as`), `parse_selection_result(frame: Frame) -> Selection` (kind `cells` -> `cells`, kind `nodes` -> `vertices`; array is `frame.buffers[entry["indices"]]`; checks as in T048; `ProtocolError` from `loop_link.protocol`) and `SelectionWatcher`. The watcher is made only by `Viewer.watch_selection`: `SelectionWatcher(viewer_ref: weakref.ref, callback, interval, last: Selection)`, a daemon thread named `loop-link-selection-poll`. Loop: wait `interval` on a `threading.Event` (so `stop` is fast); get the viewer from the weak reference (end the thread if it is gone); call `viewer.selection()`; when the result is not `same_as` the last one, call `callback(selection)` one time and keep it. An exception of the poll or of the callback goes to `error` and the thread ends. `stop()` sets the event and joins with timeout `2 * interval + 1`. `__enter__` returns self, `__exit__` calls `stop`. No thread before `start`. Docstrings and type hints.
 
-- [ ] T050 [US2] [M] Add `select`, `selection`, `watch_selection` and the tool connection to `Viewer`.
+- [x] T050 [US2] [M] Add `select`, `selection`, `watch_selection` and the tool connection to `Viewer`.
   - Files: `packages/loop_link/src/loop_link/viewer.py`
   - Needs: T049, T047, T042
   - Wave: 12

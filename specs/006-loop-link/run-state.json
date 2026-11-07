@@ -414,6 +414,12 @@
         "base": "13b7b822",
         "commit": "c86aee99",
         "review": "pass (4 minor)"
+      },
+      {
+        "wave": 11,
+        "base": "c86aee99",
+        "commit": "27c19aa8 + bookkeeping",
+        "review": "pending"
       }
     ],
     "runs": {
@@ -508,6 +514,12 @@
         }
       ],
       "T049": [
+        {
+          "model": "sonnet",
+          "result": "pass"
+        }
+      ],
+      "T050": [
         {
           "model": "sonnet",
           "result": "pass"
