@@ -214,7 +214,7 @@ def test_select_duplicates_count_one_time(fake_viewer: Any, viewer: Any) -> None
     assert fake_viewer.viewer.selection["cells"].tolist() == [5, 6]
 
 
-def test_select_empty_list_clears(fake_viewer: Any, viewer: Any) -> None:
+def test_select_no_indices_clears(fake_viewer: Any, viewer: Any) -> None:
     viewer.select("grid", cells=[1, 2])
     assert fake_viewer.viewer.selection is not None
     result = viewer.select("grid", cells=[])
@@ -377,7 +377,7 @@ def test_selection_of_100000_cells(fake_viewer: Any, viewer_factory: Any) -> Non
     assert selection.cells[-1] == 99_999
 
 
-def test_selection_with_no_user_selection_is_empty(selector: Any) -> None:
+def test_selection_none_has_no_object(selector: Any) -> None:
     selection = selector.selection()
     assert selection.object_id is None
     assert selection.empty

@@ -407,7 +407,7 @@
         "wave": 9,
         "base": "77aea501",
         "commit": null,
-        "review": "pending"
+        "review": "round 1: changes needed (1 major, 3 minor); fix commit pending round 2"
       }
     ],
     "runs": {
@@ -528,11 +528,14 @@
       "S5 W8 T047: a handshake failure that is not 401 (for example HTTP 404 on /tool of an old viewer) raises a bare WebSocketError instead of a loop_link error",
       "S5 W8 T047: ToolConnection.close() takes the request lock, so it waits for a running request (matters for Viewer.close with a long fetch)",
       "S5 W8 T047: a non-mapping `error` field in request.error gives AttributeError",
-      "S5 W8 T047: a callback exception leaves the socket open with the rest of the frames; `until` given as a str is a substring test"
+      "S5 W8 T047: a callback exception leaves the socket open with the rest of the frames; `until` given as a str is a substring test",
+      "S5 W9 T048: negative-cell case can pass without a local index check (add: no new selection.set frame)",
+      "S5 W9 T048: test_select_largest_index_is_accepted cannot tell sending 2**32-1 from refusing it locally",
+      "S5 W9 T048: _put_grid builds the grid by hand (revision 1) while other tests use the real client"
     ],
     "findings": {
-      "found": 14,
-      "fixed": 9
+      "found": 18,
+      "fixed": 10
     }
   }
 }
