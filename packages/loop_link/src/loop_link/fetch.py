@@ -115,6 +115,10 @@ def _decode_text(desc: Mapping[str, Any], arrays: Mapping[str, np.ndarray]) -> n
     return np.array(items, dtype=str)
 
 
+class _UnmappedCodeError(Exception):
+    """A code of a referenced property is not in its value map."""
+
+
 def _decode_referenced(
     desc: Mapping[str, Any], arrays: Mapping[str, np.ndarray], object_id: str
 ) -> Categorical:
@@ -134,10 +138,7 @@ def _decode_referenced(
     positions = np.searchsorted(ids, raw)
     safe = np.minimum(positions, max(len(ids) - 1, 0))
     if raw.size and (len(ids) == 0 or not np.all(ids[safe] == raw)):
-        raise InvalidInputError(
-            f"The property '{desc['name']}' of object '{object_id}' has a code that is not "
-            "in its value map. Check the object in the viewer."
-        )
+        raise _UnmappedCodeError
     return Categorical(positions, names, colours)
 
 
@@ -236,13 +237,12 @@ def decode_object(
     ------
     UnsupportedObjectError
         If the object type is not supported, or a cell property is on a Points object.
-    InvalidInputError
-        If a code of a referenced property is not in its value map.
 
     Warns
     -----
     UserWarning
-        One time for each property that the function drops.
+        One time for each property that the function drops. This includes a
+        referenced property that has a code that is not in its value map.
     """
     object_id = str(header.get("id"))
     object_type = str(header.get("object_type"))
@@ -279,7 +279,14 @@ def decode_object(
             continue
         target = _route(desc, object_type, object_id, interval_set)
         if target is not None:
-            targets[target][str(desc["name"])] = _decode_values(desc, arrays, object_id)
+            try:
+                targets[target][str(desc["name"])] = _decode_values(desc, arrays, object_id)
+            except _UnmappedCodeError:
+                _warn_dropped(
+                    str(desc["name"]),
+                    object_id,
+                    "a code is not in its value map",
+                )
 
     if object_type == "Drillhole":
         end_of_hole = params.get("end_of_hole")

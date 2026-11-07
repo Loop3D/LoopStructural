@@ -389,11 +389,22 @@ def test_referenced_three_value_colours_get_alpha_255():
     assert value.colours == ((40, 50, 60, 70), (10, 20, 30, 255), (80, 90, 100, 255))
 
 
-def test_referenced_code_not_in_value_map_raises():
+def test_referenced_code_not_in_value_map_is_dropped_with_warning():
     header, arrays = _sparse_referenced()
     arrays["data/c"] = np.array([9, 5, 7], dtype=np.uint32)
-    with pytest.raises(InvalidInputError):
-        decode_object(header, arrays, ORIGIN)
+    with pytest.warns(UserWarning, match="'c'.*value map"):
+        result = decode_object(header, arrays, ORIGIN)
+    assert "c" not in result.properties
+
+
+def test_referenced_with_empty_value_map_is_dropped():
+    """The real viewer sends an all blank text column as codes 0 and an empty value map."""
+    header, arrays = _sparse_referenced()
+    _datum(header, "c")["value_map"] = []
+    arrays["data/c"] = np.array([0, 0, 0], dtype=np.uint32)
+    with pytest.warns(UserWarning, match="'c'.*value map"):
+        result = decode_object(header, arrays, ORIGIN)
+    assert "c" not in result.properties
 
 
 def test_referenced_on_drillhole_interval():

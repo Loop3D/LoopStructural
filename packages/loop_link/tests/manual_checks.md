@@ -119,3 +119,17 @@ Pass: all 8 steps give the expected result.
   - Tetra mesh `grade` works through the isosurface. The viewer has no Data button for a tetra mesh.
   - Vectors were too small to see on a 1 unit triangle (glyph size default is 1 percent of the object). They work on a 100 unit triangle.
   - Open viewer issue: the vector glyphs and the drillhole tubes look pixelated (geoviewer issue 181).
+- M3: partly passed on 2026-11-07, window viewer `ui-fixes-build`, token from the user. A person did steps 2 and 7. The scripts did the other steps.
+  - Step 1 pass: select cells 12, 13 and 14 and `selection()` returns them. The first try failed. The scene had objects at map coordinates (origin 500000, 7000000) and the test block was at (0, 0, 0). The viewer showed rendering artefacts and `selection.get` returned nothing. After a fresh scene (`clear`), it worked. Put a test object near the scene origin, or use a fresh scene.
+  - Step 2 pass: the user selected 11 rows with the mouse. `selection()` returned `m3-block`, revision 2, cells `[1, 2, 3, 4, 5, 6, 7, 8, 9, 45, 302]`.
+  - Step 3 pass: index 5000 gives `InvalidInputError`. The selection does not change.
+  - Step 4 pass: an old revision gives `StaleRevisionError`.
+  - Step 5 pass: all seven types fetch with the `grade` property.
+  - Step 6 partly passed: see the fix below. The warning for dropped properties works. The warning for dropped log sets was not seen, because the imported holes seem to have one log set.
+  - Step 7 not decided: the callback ran 4 times, once for each different selection, with no repeats. The record does not say how many changes the user made.
+  - Step 8 partly passed: the first program selected and fetched while a second program held the data connection. A real `BusyError` was not tested.
+  - OP12: points and vectors take vertices only. Lines, surface, block model and tetra mesh take cells. A drillhole takes neither kind (no table tab).
+  - OP13: one object has a selection at a time. A new selection on another object replaces the old one.
+  - OP14: a fetch of 1,000,000 cells took 0.07 s and arrived complete. Several parts were not tested directly.
+  - Fix: a viewer-imported drillhole (`import-1/0`) failed to fetch. Text columns such as `COMMENTS` come as `referenced` data with an empty `value_map`. `loop_link` now drops such a property and warns. A fetch takes about 1.8 s for a hole with about 100 properties.
+  - Open viewer gap: a tool cannot select drillhole intervals or holes. A new geoviewer spec is needed.
