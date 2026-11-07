@@ -400,6 +400,12 @@
       {
         "wave": 8,
         "base": "1b292cb9",
+        "commit": "77aea501",
+        "review": "pass (5 minor)"
+      },
+      {
+        "wave": 9,
+        "base": "77aea501",
         "commit": null,
         "review": "pending"
       }
@@ -488,6 +494,12 @@
           "model": "sonnet",
           "result": "pass"
         }
+      ],
+      "T048": [
+        {
+          "model": "sonnet",
+          "result": "pass"
+        }
       ]
     },
     "open_minor": [
@@ -512,7 +524,11 @@
       "S5 W7 T046: progress test does not check that progress frames are not passed to on_frame, non-number fraction, or request numbers after reconnect",
       "S5 W7 T046: T047 must keep the unsupported_version feature text \"protocol <supported>\" (task text updated)",
       "S5 W7 T045: FakeViewer does not record command.cancel in tool_requests (test uses a subclass tap)",
-      "S5 W7 T046: _scripted_request ends its last loop at 50 ms of silence, not at client close (possible flake on a slow runner)"
+      "S5 W7 T046: _scripted_request ends its last loop at 50 ms of silence, not at client close (possible flake on a slow runner)",
+      "S5 W8 T047: a handshake failure that is not 401 (for example HTTP 404 on /tool of an old viewer) raises a bare WebSocketError instead of a loop_link error",
+      "S5 W8 T047: ToolConnection.close() takes the request lock, so it waits for a running request (matters for Viewer.close with a long fetch)",
+      "S5 W8 T047: a non-mapping `error` field in request.error gives AttributeError",
+      "S5 W8 T047: a callback exception leaves the socket open with the rest of the frames; `until` given as a str is a substring test"
     ],
     "findings": {
       "found": 14,
