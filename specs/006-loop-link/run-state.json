@@ -436,6 +436,12 @@
       {
         "wave": 14,
         "base": "313d5b86",
+        "commit": "4a6afd2c",
+        "review": "pass (no findings)"
+      },
+      {
+        "wave": 15,
+        "base": "4a6afd2c",
         "commit": null,
         "review": "pending"
       }
@@ -558,6 +564,18 @@
       "T055": [
         {
           "model": "sonnet",
+          "result": "pass"
+        }
+      ],
+      "T056": [
+        {
+          "model": "sonnet",
+          "result": "pass"
+        }
+      ],
+      "T057": [
+        {
+          "model": "haiku",
           "result": "pass"
         }
       ]

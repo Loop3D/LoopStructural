@@ -419,7 +419,7 @@ Test command in this phase: `packages/loop_link/.venv/Scripts/python.exe -m pyte
   - Done when: `packages/loop_link/.venv/Scripts/python.exe -m pytest packages/loop_link/tests/test_fetch.py packages/loop_link/tests/test_selection.py packages/loop_link/tests/test_viewer.py` passes and `ruff check packages/loop_link` passes.
   - Context: Add `Viewer.fetch(self, id: str, *, progress: Optional[Callable[[float], None]] = None, cancel: Optional[threading.Event] = None) -> FetchResult`. It uses the tool connection of T050 (same lazy creation, same closed rule) and calls `fetch.fetch_object(tool, id, progress=progress, cancel=cancel)`. It never opens the data connection. An unknown id gives `InvalidInputError` (the tool layer maps `invalid_input`). `progress` gets floats from 0 to 1. Import `FetchResult` and `fetch_object` from `loop_link.fetch`. Numpy-style docstring with Parameters, Returns, Raises (`InvalidInputError`, `CancelledError`, `MissingFeatureError`, `ViewerClosedError`, `UnsupportedObjectError`).
 
-- [ ] T056 [US4] [M] Test: send then fetch for the seven types in `test_roundtrip.py` (SC-002).
+- [x] T056 [US4] [M] Test: send then fetch for the seven types in `test_roundtrip.py` (SC-002).
   - Files: `packages/loop_link/tests/test_roundtrip.py`, `packages/loop_link/src/loop_link/fetch.py`
   - Needs: T055
   - Wave: 16
@@ -428,7 +428,7 @@ Test command in this phase: `packages/loop_link/.venv/Scripts/python.exe -m pyte
 
 ## Phase 8: Stage S5c, real codec, fixtures, manual check, docs
 
-- [ ] T057 [Found] [S] Export the S5 public names.
+- [x] T057 [Found] [S] Export the S5 public names.
   - Files: `packages/loop_link/src/loop_link/__init__.py`
   - Needs: T055, T049, T039
   - Wave: 16
