@@ -661,11 +661,19 @@
       "S5 W13 T054: ObjectTooLargeError raised from feed mid-stream does not close the tool connection (viewer keeps sending parts for the dead request)",
       "S5 W13 T054: no regression test for malformed header fields (revision Infinity etc.): test file not in T054 Files; checked with a scratch script",
       "S5 W15 T056: int64 property comes back as int32 by design (wire type); no value above 2**31 tested",
-      "S5 W15 T056: rtol 1e-6 on far-origin coordinates is loose (guarded by an absolute check and the dtype check)"
+      "S5 W15 T056: rtol 1e-6 on far-origin coordinates is loose (guarded by an absolute check and the dtype check)",
+      "S5 end review: the real selection.get returns object/revision with entries [] for an open table with no selection; the fake returns no object (Selection.object_id may be set for an empty selection)",
+      "S5 end review: tool.py maps the error frame code busy (ninth tool connection) to ViewerRefusedError, not BusyError",
+      "S5 end review: ToolConnection.request holds a non-re-entrant lock while it calls progress/on_frame (a callback that calls the viewer would deadlock)",
+      "S5 end review: Viewer._dead is shared by the data and tool connections (a broken data socket makes tool calls raise ViewerClosedError)"
     ],
     "findings": {
-      "found": 26,
-      "fixed": 13
+      "found": 31,
+      "fixed": 14
+    },
+    "end_review": {
+      "round1": "changes needed: 1 blocker (verified by the orchestrator against geoviewer header.rs and the upsert_points fixture, and by the regression tests failing on the old code), 4 minor",
+      "fix": "null offsets/value_map/colour_map accepted in fetch.py, fake header writes the null fields, 4 regression tests"
     }
   }
 }

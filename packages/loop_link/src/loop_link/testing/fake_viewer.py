@@ -793,6 +793,10 @@ class FakeViewer:
                 buffers: dict[str, np.ndarray] = {}
             else:
                 header = dict(stored.header, buffers=[])
+                header["data"] = [
+                    {"offsets": None, "value_map": None, "colour_map": None, **entry}
+                    for entry in stored.header.get("data") or []
+                ]
                 buffers = dict(stored.buffers)
         if header is None:
             yield _request_error(

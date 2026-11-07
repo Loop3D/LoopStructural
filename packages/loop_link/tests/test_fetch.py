@@ -644,6 +644,110 @@ def test_assembler_offsets_buffer_not_in_arrays():
         _assemble([_header_frame(obj), *_vertex_parts(), _end_frame(3)])
 
 
+def _null_field_stream(
+    data: list[dict[str, Any]], arrays: list[tuple[str, str, np.ndarray]]
+) -> Any:
+    """Assemble a Points object whose data entries have null optional fields, as the viewer sends."""
+    obj = {
+        "id": "p",
+        "name": "p",
+        "object_type": "Points",
+        "parent": None,
+        "revision": 1,
+        "edit": [],
+        "replaces": None,
+        "geometry": {"vertices": "v"},
+        "params": {},
+        "data": data,
+        "property_groups": [],
+        "drape": None,
+        "style": {},
+    }
+    vertices = np.arange(6, dtype="<f4")
+    items = [("v", "f32", vertices), *arrays]
+    header = {
+        "type": "object.header",
+        "request": 1,
+        "origin": [0.0, 0.0, 0.0],
+        "crs": None,
+        "object": obj,
+        "arrays": [
+            {"name": name, "dtype": dtype, "shape": [2, 3] if name == "v" else list(array.shape)}
+            for name, dtype, array in items
+        ],
+    }
+    assembler = fetch_module._Assembler("p")
+    assembler.feed(Frame(header, {}))
+    for name, _dtype, array in items:
+        raw = np.ascontiguousarray(array).view(np.uint8).reshape(-1)
+        part = {"type": "object.part", "array": name, "offset": 0, "bytes": raw.size}
+        assembler.feed(Frame(part, {"part": raw}))
+    assembler.feed(Frame({"type": "object.end", "parts": len(items)}, {}))
+    return assembler.finish()
+
+
+def test_real_viewer_header_with_null_offsets_is_accepted():
+    entry = {
+        "id": "a",
+        "name": "a",
+        "association": "vertex",
+        "data_type": "float",
+        "buffer": "a",
+        "offsets": None,
+        "value_map": None,
+        "colour_map": None,
+    }
+    result = _null_field_stream([entry], [("a", "f32", np.ones(2, dtype="<f4"))])
+    np.testing.assert_array_equal(result.object.properties["a"], [1.0, 1.0])
+
+
+def test_real_viewer_header_referenced_property_with_null_fields():
+    entry = {
+        "id": "r",
+        "name": "r",
+        "association": "vertex",
+        "data_type": "referenced",
+        "buffer": "r",
+        "offsets": None,
+        "colour_map": None,
+        "value_map": [{"id": 1, "name": "A"}, {"id": 2, "name": "B"}],
+    }
+    result = _null_field_stream([entry], [("r", "i32", np.array([2, 1], dtype="<i4"))])
+    assert list(result.object.properties["r"].names) == ["A", "B"]
+
+
+def test_real_viewer_header_text_property_with_null_fields():
+    entry = {
+        "id": "t",
+        "name": "t",
+        "association": "vertex",
+        "data_type": "text",
+        "buffer": "t",
+        "offsets": "o",
+        "value_map": None,
+        "colour_map": None,
+    }
+    arrays = [
+        ("t", "u8", np.frombuffer(b"abc", dtype=np.uint8)),
+        ("o", "i32", np.array([0, 1, 3], dtype="<i4")),
+    ]
+    result = _null_field_stream([entry], arrays)
+    assert list(result.object.properties["t"]) == ["a", "bc"]
+
+
+def test_text_property_with_null_offsets_is_a_protocol_error():
+    entry = {
+        "id": "t",
+        "name": "t",
+        "association": "vertex",
+        "data_type": "text",
+        "buffer": "t",
+        "offsets": None,
+    }
+    with pytest.raises(ProtocolError):
+        _null_field_stream([entry], [("t", "u8", np.frombuffer(b"abc", dtype=np.uint8))])
+
+
 # --- fetch_object and Viewer.fetch with the fake viewer ---
 
 

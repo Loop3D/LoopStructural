@@ -105,6 +105,8 @@ def _warn_dropped(name: str, object_id: str, reason: str) -> None:
 
 def _decode_text(desc: Mapping[str, Any], arrays: Mapping[str, np.ndarray]) -> np.ndarray:
     """Return a numpy unicode array from the bytes and the offsets of a text property."""
+    if desc.get("offsets") is None:
+        raise ProtocolError(f"The text property '{desc.get('name')}' has no offsets.")
     data = np.asarray(arrays[desc["buffer"]], dtype=np.uint8).tobytes()
     offsets = np.asarray(arrays[desc["offsets"]]).astype(np.int64)
     items = [
@@ -117,7 +119,7 @@ def _decode_referenced(
     desc: Mapping[str, Any], arrays: Mapping[str, np.ndarray], object_id: str
 ) -> Categorical:
     """Return a :class:`Categorical` from the codes and the value map of a property."""
-    value_map = sorted(desc.get("value_map", []), key=lambda item: item["id"])
+    value_map = sorted(desc.get("value_map") or [], key=lambda item: item["id"])
     ids = np.array([item["id"] for item in value_map], dtype=np.int64)
     names = [str(item["name"]) for item in value_map]
     colours = []
@@ -195,7 +197,7 @@ def _group_pair(
     arrays: Mapping[str, np.ndarray],
 ) -> tuple[np.ndarray, np.ndarray]:
     """Return the two float64 arrays of a property group."""
-    by_role = {member["role"]: member["data"] for member in group.get("members", [])}
+    by_role = {member["role"]: member["data"] for member in group.get("members") or []}
     result = []
     for role in names:
         if role not in by_role or by_role[role] not in entries:
@@ -247,22 +249,22 @@ def decode_object(
     if object_type not in _SUPPORTED_TYPES:
         raise UnsupportedObjectError(object_id, object_type)
     shift = np.zeros(3) if origin is None else np.asarray(origin, dtype=np.float64)
-    geometry = header.get("geometry", {})
-    params = header.get("params", {})
+    geometry = header.get("geometry") or {}
+    params = header.get("params") or {}
 
     def geo(role: str) -> np.ndarray:
         return np.asarray(arrays[geometry[role]])
 
-    entries = {str(desc["id"]): desc for desc in header.get("data", [])}
+    entries = {str(desc["id"]): desc for desc in header.get("data") or []}
     groups = [
         group
-        for group in header.get("property_groups", [])
+        for group in header.get("property_groups") or []
         if object_type == "Points" and group.get("role") in _GROUP_MEMBERS
     ]
-    member_ids = {member["data"] for group in groups for member in group.get("members", [])}
+    member_ids = {member["data"] for group in groups for member in group.get("members") or []}
 
     interval_set = None
-    for log_set in header.get("log_sets", []):
+    for log_set in header.get("log_sets") or []:
         if log_set.get("kind") == "interval":
             interval_set = log_set.get("name")
             break
@@ -496,14 +498,14 @@ class _Assembler:
     @staticmethod
     def _check_buffer_names(obj: dict[str, Any], sizes: Mapping[str, int]) -> None:
         """Check that each buffer name of the object is in the arrays."""
-        names = list(_as_dict(obj.get("geometry", {}), "geometry").values())
-        data = obj.get("data", [])
+        names = list(_as_dict(obj.get("geometry") or {}, "geometry").values())
+        data = obj.get("data") or []
         if not isinstance(data, list):
             raise ProtocolError("The 'data' field of the object is not a list.")
         for desc in data:
             desc = _as_dict(desc, "data entry")
             names.append(desc.get("buffer"))
-            if "offsets" in desc:
+            if desc.get("offsets") is not None:
                 names.append(desc["offsets"])
         for name in names:
             if not isinstance(name, str) or name not in sizes:
