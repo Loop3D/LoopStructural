@@ -24,6 +24,7 @@ from loop_link.errors import (
     ViewerClosedError,
     ViewerRefusedError,
 )
+from loop_link.fetch import FetchResult, fetch_object
 from loop_link.protocol import ProtocolError
 from loop_link.selection import Selection, SelectionWatcher, parse_selection_result
 from loop_link.tool import ToolConnection
@@ -539,6 +540,57 @@ class Viewer:
         watcher.start()
         return watcher
 
+    # -- fetching -------------------------------------------------------------
+
+    def fetch(
+        self,
+        id: str,
+        *,
+        progress: Callable[[float], None] | None = None,
+        cancel: threading.Event | None = None,
+    ) -> FetchResult:
+        """Read one object from the viewer.
+
+        This method uses the tool connection. It does not open the data connection.
+
+        Parameters
+        ----------
+        id : str
+            The identifier of the object.
+        progress : callable, optional
+            The function to call with the fraction done, from 0 to 1.
+        cancel : threading.Event, optional
+            When this event is set, the fetch stops.
+
+        Returns
+        -------
+        FetchResult
+            The object, with its id, type, revision and name.
+
+        Raises
+        ------
+        loop_link.errors.InvalidInputError
+            The id is not valid, or the viewer does not know the id.
+        loop_link.errors.CancelledError
+            The ``cancel`` event was set.
+        loop_link.errors.MissingFeatureError
+            The viewer does not support the fetch.
+        loop_link.errors.ViewerClosedError
+            The connection is closed, or the viewer sent an object that is not valid.
+        loop_link.errors.UnsupportedObjectError
+            The viewer sent an object type that this package cannot read.
+        loop_link.errors.NoViewerError
+            No viewer was found.
+        loop_link.errors.TokenError
+            The viewer refused the token.
+        loop_link.errors.ObjectTooLargeError
+            The object is larger than the limit.
+        """
+        if not isinstance(id, str) or not id:
+            raise InvalidInputError("The id must be a string that is not empty.")
+        tool = self._tool()
+        return fetch_object(tool, id, progress=progress, cancel=cancel)
+
     # -- closing --------------------------------------------------------------
 
     def release_data(self) -> None:
@@ -556,6 +608,7 @@ class Viewer:
         for watcher in watchers:
             watcher.stop()
         with self._tool_lock:
+            self._dead = True
             tool, self._tool_connection = self._tool_connection, None
         if tool is not None:
             tool.close()
@@ -570,6 +623,8 @@ class Viewer:
         if self._dead:
             raise ViewerClosedError
         with self._tool_lock:
+            if self._dead:
+                raise ViewerClosedError
             if self._tool_connection is None:
                 self._tool_connection = ToolConnection(
                     port=self._port,

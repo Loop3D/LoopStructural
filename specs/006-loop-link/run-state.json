@@ -430,8 +430,14 @@
       {
         "wave": 13,
         "base": "fbace3a1",
+        "commit": "2de35984 + fix 313d5b86",
+        "review": "pass (round 2)"
+      },
+      {
+        "wave": 14,
+        "base": "313d5b86",
         "commit": null,
-        "review": "round 1: changes needed (1 major, 2 minor); fix commit pending round 2"
+        "review": "pending"
       }
     ],
     "runs": {
@@ -544,6 +550,12 @@
         }
       ],
       "T054": [
+        {
+          "model": "sonnet",
+          "result": "pass (1 fix round)"
+        }
+      ],
+      "T055": [
         {
           "model": "sonnet",
           "result": "pass"
