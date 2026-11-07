@@ -406,8 +406,14 @@
       {
         "wave": 9,
         "base": "77aea501",
+        "commit": "9b62e733 + fix 13b7b822",
+        "review": "pass (round 2 done by orchestrator: the fix is two renames, verified by diff)"
+      },
+      {
+        "wave": 10,
+        "base": "13b7b822",
         "commit": null,
-        "review": "round 1: changes needed (1 major, 3 minor); fix commit pending round 2"
+        "review": "pending"
       }
     ],
     "runs": {
@@ -496,6 +502,12 @@
         }
       ],
       "T048": [
+        {
+          "model": "sonnet",
+          "result": "pass"
+        }
+      ],
+      "T049": [
         {
           "model": "sonnet",
           "result": "pass"
