@@ -665,7 +665,8 @@
       "S5 end review: the real selection.get returns object/revision with entries [] for an open table with no selection; the fake returns no object (Selection.object_id may be set for an empty selection)",
       "S5 end review: tool.py maps the error frame code busy (ninth tool connection) to ViewerRefusedError, not BusyError",
       "S5 end review: ToolConnection.request holds a non-re-entrant lock while it calls progress/on_frame (a callback that calls the viewer would deadlock)",
-      "S5 end review: Viewer._dead is shared by the data and tool connections (a broken data socket makes tool calls raise ViewerClosedError)"
+      "S5 end review: Viewer._dead is shared by the data and tool connections (a broken data socket makes tool calls raise ViewerClosedError)",
+      "S5 end recheck: decode_object drops the optional polarity member of an orientation group without a warning"
     ],
     "findings": {
       "found": 31,
@@ -673,7 +674,8 @@
     },
     "end_review": {
       "round1": "changes needed: 1 blocker (verified by the orchestrator against geoviewer header.rs and the upsert_points fixture, and by the regression tests failing on the old code), 4 minor",
-      "fix": "null offsets/value_map/colour_map accepted in fetch.py, fake header writes the null fields, 4 regression tests"
+      "fix": "null offsets/value_map/colour_map accepted in fetch.py, fake header writes the null fields, 4 regression tests",
+      "round2": "pass: no findings; 10 real viewer fixtures fed through _Assembler, 90 tests passed in the review worktree"
     }
   }
 }
