@@ -456,6 +456,13 @@
         "base": "6c9583bc",
         "commit": null,
         "review": "orchestrator check (docs only)"
+      },
+      {
+        "wave": 19,
+        "base": "b0e6bbc7",
+        "commit": null,
+        "review": "n/a (gates)",
+        "note": "T063 [!]: root pytest has no result (slow fold integration tests; tests/unit run stopped for low memory)"
       }
     ],
     "runs": {
@@ -601,6 +608,12 @@
         {
           "model": "haiku",
           "result": "pass"
+        }
+      ],
+      "T063": [
+        {
+          "model": "sonnet",
+          "result": "blocked (root pytest)"
         }
       ]
     },

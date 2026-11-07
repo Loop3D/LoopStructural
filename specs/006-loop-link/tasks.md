@@ -472,7 +472,7 @@ Test command in this phase: `packages/loop_link/.venv/Scripts/python.exe -m pyte
   - Done when: `git grep -n -c "loop_link" ROADMAP.md` gives 3 or more and `git grep -n "stage S5" ROADMAP.md` shows 1 or more lines.
   - Context: In the entry `- [ ] **Stage 7 — `loop_link`: Python link to geoviewer.**` replace the sentence "Select, fetch, filter and colour wait for geoviewer spec 066." with "Stage S5 (select, read the selection and fetch; geoviewer spec 067) is done. Filter and colour (stage S4) are not planned yet." Add one status log entry at the end of "Status log", in the style of the neighbours, dated with the date of the run (YYYY-MM-DD): "Stage 7 stage S5 implemented: tool connection, select, read selection, fetch and round trip in `packages/loop_link`." Do not tick the Stage 7 box (S4 is open).
 
-- [ ] T063 [Finish] [M] Run the merge gates for S5 and fix the findings.
+- [!] T063 [Finish] [M] Run the merge gates for S5 and fix the findings. Failed: the package gates pass (ruff, black, 660 package tests twice, import test, real codec and fixtures 45 passed) but the root `pytest` has no result: tests/integration/test_fold_models.py is extremely slow here and a tests/unit run was stopped by the system for low memory.
   - Files: `packages/loop_link/`
   - Needs: T062, T038
   - Wave: 19
