@@ -398,7 +398,7 @@ Test command in this phase: `packages/loop_link/.venv/Scripts/python.exe -m pyte
   - Done when: `packages/loop_link/.venv/Scripts/python.exe -m pytest packages/loop_link/tests/test_fetch.py` passes and `ruff check packages/loop_link` passes.
   - Context: Create the module with `FetchResult` (`@dataclass(frozen=True, eq=False)`: `id: str`, `object: SceneObject`, `object_type: str`, `revision: int`, `name: Optional[str]`, `parent: Optional[str]`, `origin: Optional[tuple[float, float, float]]`, `crs: Optional[str]`) and `decode_object` with the rules in T051. Use the classes of `loop_link.objects`; for the Vectors groups use members `dip_direction`, `dip` (role `orientation`) and `trend`, `plunge` (role `lineation`), each from the data array named in `members[].data`. Data array lookup: `arrays[entry["buffer"]]`; text uses `arrays[entry["buffer"]]` bytes and `arrays[entry["offsets"]]`. Do not import pyvista, pandas or Qt. `_Assembler` and `fetch_object` come in T054. Docstrings and type hints.
 
-- [ ] T053 [US4] [M] Test: assembler, `fetch_object` and `Viewer.fetch` in `test_fetch.py`.
+- [x] T053 [US4] [M] Test: assembler, `fetch_object` and `Viewer.fetch` in `test_fetch.py`.
   - Files: `packages/loop_link/tests/test_fetch.py`
   - Needs: T052, T050
   - Wave: 13

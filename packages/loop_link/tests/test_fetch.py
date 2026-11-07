@@ -2,14 +2,28 @@
 
 from __future__ import annotations
 
+import contextlib
 import copy
+import threading
+import time
 import warnings
+from collections.abc import Callable, Iterator
+from pathlib import Path
+from typing import Any
 
 import numpy as np
 import pytest
 
 from loop_link import encode
-from loop_link.errors import InvalidInputError, UnsupportedObjectError
+from loop_link import fetch as fetch_module
+from loop_link.errors import (
+    BusyError,
+    CancelledError,
+    InvalidInputError,
+    ObjectTooLargeError,
+    UnsupportedObjectError,
+    ViewerClosedError,
+)
 from loop_link.fetch import decode_object
 from loop_link.objects import (
     BlockModel,
@@ -21,9 +35,13 @@ from loop_link.objects import (
     TetraMesh,
     Vectors,
 )
-from loop_link.protocol import decode_frame
+from loop_link.protocol import Frame, ProtocolError, decode_frame
+from loop_link.testing import FakeViewer
+from loop_link.tool import ToolConnection
+from loop_link.viewer import Viewer
 
 ORIGIN = (1000.0, 2000.0, 3000.0)
+WAIT = 3.0
 VERTS = np.array([[1001.5, 2002.5, 3003.5], [1010.0, 2020.0, 3030.0], [999.0, 1999.0, 2999.0]])
 
 
@@ -384,3 +402,514 @@ def test_referenced_on_drillhole_interval():
     value = result.interval_properties["lith"]
     assert list(value.names) == ["rock", "soil"]
     np.testing.assert_array_equal(value.codes, [1, 0])
+
+
+# --- the assembler ---
+
+_PROTOCOL_DTYPES = {"float32": "f32", "float64": "f64", "uint32": "u32", "int32": "i32"}
+
+
+def _points_object() -> dict[str, Any]:
+    """Return the object header of a small Points object that has one array, ``v``."""
+    return {
+        "type": "scene.upsert",
+        "id": "obj-1",
+        "object_type": "Points",
+        "name": "Object 1",
+        "parent": None,
+        "revision": 4,
+        "geometry": {"vertices": "v"},
+        "data": [],
+        "buffers": [],
+    }
+
+
+def _vertex_bytes() -> bytes:
+    """Return the 48 bytes of a (4, 3) f32 array."""
+    return np.arange(12, dtype="<f4").tobytes()
+
+
+def _header_frame(
+    obj: dict[str, Any] | None = None,
+    arrays: list[dict[str, Any]] | None = None,
+    origin: list[float] | None = None,
+    crs: str | None = "EPSG:28350",
+) -> Frame:
+    """Return an ``object.header`` frame. The defaults give one f32 array, ``v``."""
+    header: dict[str, Any] = {
+        "type": "object.header",
+        "request": 1,
+        "origin": origin,
+        "crs": crs,
+        "object": _points_object() if obj is None else obj,
+        "arrays": [{"name": "v", "dtype": "f32", "shape": [4, 3]}] if arrays is None else arrays,
+    }
+    return Frame(header=header, buffers={})
+
+
+def _part_frame(
+    array: str, offset: int, data: bytes, buffer: np.ndarray | None = None, size: int | None = None
+) -> Frame:
+    """Return an ``object.part`` frame for ``data``."""
+    header = {
+        "type": "object.part",
+        "request": 1,
+        "array": array,
+        "offset": offset,
+        "bytes": len(data) if size is None else size,
+    }
+    part = np.frombuffer(data, dtype=np.uint8) if buffer is None else buffer
+    return Frame(header=header, buffers={"part": part})
+
+
+def _end_frame(parts: int) -> Frame:
+    """Return an ``object.end`` frame."""
+    return Frame(header={"type": "object.end", "request": 1, "parts": parts}, buffers={})
+
+
+def _vertex_parts(sizes: tuple[int, ...] = (16, 16, 16)) -> list[Frame]:
+    """Return the ``object.part`` frames of ``v``, cut at ``sizes``."""
+    data = _vertex_bytes()
+    frames = []
+    offset = 0
+    for size in sizes:
+        frames.append(_part_frame("v", offset, data[offset : offset + size]))
+        offset += size
+    return frames
+
+
+def _assemble(frames: list[Frame]) -> Any:
+    """Feed all frames to a new assembler and return the result of ``finish``."""
+    assembler = fetch_module._Assembler("obj-1")
+    for frame in frames:
+        assembler.feed(frame)
+    return assembler.finish()
+
+
+def _stream(obj: Any, origin: tuple[float, float, float] = ORIGIN, part_size: int = 24):
+    """Return the frames of a good reply to ``object.fetch`` for ``obj``."""
+    frame = decode_frame(
+        encode.encode_object(
+            obj, id="obj-1", name="Object 1", parent="grp", revision=7, origin=origin
+        )
+    )
+    arrays = []
+    parts = []
+    for name, array in frame.buffers.items():
+        raw = np.ascontiguousarray(array).astype(array.dtype.newbyteorder("<")).tobytes()
+        dtype = _PROTOCOL_DTYPES[array.dtype.name]
+        arrays.append({"name": name, "dtype": dtype, "shape": [int(n) for n in array.shape]})
+        for offset in range(0, len(raw), part_size):
+            parts.append(_part_frame(name, offset, raw[offset : offset + part_size]))
+    header = _header_frame(
+        copy.deepcopy(dict(frame.header, buffers=[])), arrays, list(origin), "EPSG:28350"
+    )
+    return [header, *parts, _end_frame(len(parts))]
+
+
+def _assert_surface(actual: Any, expected: Surface) -> None:
+    """Check that two surfaces have the same vertices, triangles and properties."""
+    assert isinstance(actual, Surface)
+    np.testing.assert_allclose(actual.vertices, expected.vertices)
+    np.testing.assert_array_equal(actual.triangles, expected.triangles)
+    assert list(actual.properties) == list(expected.properties)
+    for key, values in expected.properties.items():
+        np.testing.assert_allclose(actual.properties[key], values)
+
+
+def _surface(count: int = 40) -> Surface:
+    """Return a surface with ``count`` vertices, a few triangles and one property."""
+    vertices = np.arange(count * 3, dtype=np.float64).reshape(count, 3) * 0.5
+    triangles = np.array([[i, i + 1, i + 2] for i in range(count - 2)])
+    return Surface(vertices, triangles, {"p": np.arange(count, dtype=np.float64)})
+
+
+def test_assembler_good_stream_gives_the_result():
+    obj = Surface(VERTS, [[0, 1, 2]], {"v": np.array([1.0, 2.0, 3.0])})
+    result = _assemble(_stream(obj))
+    assert result.id == "obj-1"
+    assert result.object_type == "Surface"
+    assert result.revision == 7
+    assert result.name == "Object 1"
+    assert result.parent == "grp"
+    assert result.origin == ORIGIN
+    assert isinstance(result.origin, tuple)
+    assert result.crs == "EPSG:28350"
+    _assert_surface(result.object, obj)
+
+
+def test_assembler_object_without_arrays():
+    block = BlockModel([1.0, 2.0, 3.0], [1.0, 1.0, 1.0], [1, 1, 1])
+    result = _assemble(_stream(block, origin=(0.0, 0.0, 0.0)))
+    assert isinstance(result.object, BlockModel)
+    np.testing.assert_allclose(result.object.origin, [1.0, 2.0, 3.0])
+
+
+def test_assembler_first_frame_must_be_the_header():
+    with pytest.raises(ProtocolError):
+        _assemble([*_vertex_parts(), _end_frame(3)])
+
+
+def test_assembler_header_too_large():
+    arrays = [{"name": "v", "dtype": "f32", "shape": [3, 2**29]}]
+    with pytest.raises(ObjectTooLargeError):
+        _assemble([_header_frame(arrays=arrays)])
+
+
+def test_assembler_sum_of_arrays_too_large():
+    arrays = [
+        {"name": "v", "dtype": "f32", "shape": [2**28, 2]},
+        {"name": "w", "dtype": "f64", "shape": [2**27, 2]},
+    ]
+    with pytest.raises(ObjectTooLargeError):
+        _assemble([_header_frame(arrays=arrays)])
+
+
+def test_assembler_small_stream_with_the_revision_of_the_header():
+    result = _assemble([_header_frame(), *_vertex_parts(), _end_frame(3)])
+    assert result.revision == 4
+
+
+def _bad_streams() -> dict[str, list[Frame]]:
+    """Return streams that each break one rule, by a short name."""
+    data = _vertex_bytes()
+    wrong_dtype = np.zeros(2, dtype=np.float32)
+    first = _vertex_parts((16, 16, 16))[:1]
+    return {
+        "unknown_array": [_header_frame(), _part_frame("w", 0, data[:16]), _end_frame(1)],
+        "offset_not_multiple_of_8": [_header_frame(), *_vertex_parts((4, 44)), _end_frame(2)],
+        "past_the_end": [
+            _header_frame(),
+            *_vertex_parts((16, 16)),
+            _part_frame("v", 32, data[:32]),
+            _end_frame(3),
+        ],
+        "gap": [_header_frame(), *first, _part_frame("v", 24, data[24:]), _end_frame(2)],
+        "overlap": [
+            _header_frame(),
+            _part_frame("v", 0, data[:24]),
+            _part_frame("v", 16, data[16:]),
+            _end_frame(2),
+        ],
+        "missing_part": [_header_frame(), *_vertex_parts()[:2], _end_frame(2)],
+        "too_many_parts_claimed": [_header_frame(), *_vertex_parts(), _end_frame(4)],
+        "too_few_parts_claimed": [_header_frame(), *_vertex_parts(), _end_frame(2)],
+        "part_not_u8": [
+            _header_frame(),
+            _part_frame("v", 0, b"", buffer=wrong_dtype, size=8),
+            _end_frame(1),
+        ],
+    }
+
+
+@pytest.mark.parametrize("case", sorted(_bad_streams()))
+def test_assembler_rejects_a_bad_stream(case):
+    with pytest.raises(ProtocolError):
+        _assemble(_bad_streams()[case])
+
+
+def test_assembler_geometry_buffer_not_in_arrays():
+    obj = _points_object()
+    obj["geometry"] = {"vertices": "missing"}
+    with pytest.raises(ProtocolError):
+        _assemble([_header_frame(obj), *_vertex_parts(), _end_frame(3)])
+
+
+def test_assembler_data_buffer_not_in_arrays():
+    obj = _points_object()
+    obj["data"] = [{"id": "a", "name": "a", "buffer": "missing", "association": "vertex"}]
+    with pytest.raises(ProtocolError):
+        _assemble([_header_frame(obj), *_vertex_parts(), _end_frame(3)])
+
+
+def test_assembler_offsets_buffer_not_in_arrays():
+    obj = _points_object()
+    obj["data"] = [
+        {"id": "t", "name": "t", "buffer": "v", "offsets": "missing", "data_type": "text"}
+    ]
+    with pytest.raises(ProtocolError):
+        _assemble([_header_frame(obj), *_vertex_parts(), _end_frame(3)])
+
+
+# --- fetch_object and Viewer.fetch with the fake viewer ---
+
+
+@pytest.fixture
+def fake_factory(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> Iterator[Callable[..., tuple[FakeViewer, Path]]]:
+    """Return a function that starts a fake viewer with options. It gives the fake and its folder."""
+    made: list[FakeViewer] = []
+
+    def make(cls: type[FakeViewer] = FakeViewer, **options: Any) -> tuple[FakeViewer, Path]:
+        fake = cls(**options)
+        made.append(fake)
+        settings = tmp_path / "geoviewer"
+        fake.write_instance_file(settings)
+        monkeypatch.setenv("GEOVIEWER_TOKEN", "secret")
+        return fake, settings
+
+    yield make
+    for fake in made:
+        fake.close()
+
+
+@pytest.fixture
+def tool_factory() -> Iterator[Callable[[Path], ToolConnection]]:
+    """Return a function that makes tool connections. Each one is closed at teardown."""
+    made: list[ToolConnection] = []
+
+    def make(settings: Path) -> ToolConnection:
+        tool = ToolConnection(settings_dir=settings, token="secret", timeout=WAIT)
+        made.append(tool)
+        return tool
+
+    yield make
+    for tool in made:
+        tool.close()
+
+
+@pytest.fixture
+def own_viewers() -> Iterator[Callable[[Path], Viewer]]:
+    """Return a function that makes viewers for a settings folder. Each is closed at teardown."""
+    made: list[Viewer] = []
+
+    def make(settings: Path) -> Viewer:
+        viewer = Viewer(settings_dir=settings, heartbeat_interval=0.1, timeout=WAIT)
+        made.append(viewer)
+        return viewer
+
+    yield make
+    for viewer in made:
+        with contextlib.suppress(Exception):
+            viewer.close()
+
+
+def _put(fake: FakeViewer, obj: Any, object_id: str = "s1", revision: int = 3) -> None:
+    """Put an object into the fake viewer without a data connection."""
+    fake.accept_frame(encode.hello_frame("", (0.0, 0.0, 0.0), "test"))
+    fake.accept_frame(
+        encode.encode_object(
+            obj, id=object_id, name="Name 1", parent=None, revision=revision, origin=fake.origin
+        )
+    )
+
+
+class _BadPartFake(FakeViewer):
+    """A fake viewer that sends an ``object.part`` with an offset that is not valid."""
+
+    def _fetch_frames(self, frame: Frame) -> Iterator[Frame]:
+        for reply in super()._fetch_frames(frame):
+            if reply.header["type"] == "object.part":
+                reply = Frame(header=dict(reply.header, offset=3), buffers=reply.buffers)
+            yield reply
+
+
+def _same_objects(before: dict[str, Any], fake: FakeViewer) -> bool:
+    """Return whether the fake holds the same stored objects as in ``before``."""
+    return list(fake.objects) == list(before) and all(
+        fake.objects[key] is before[key] for key in before
+    )
+
+
+def test_fetch_object_returns_the_sent_surface(fake_viewer, tool_factory):
+    surface = _surface()
+    _put(fake_viewer.viewer, surface)
+    result = fetch_module.fetch_object(tool_factory(fake_viewer.settings), "s1", timeout=WAIT)
+    _assert_surface(result.object, surface)
+    assert result.id == "s1"
+    assert result.object_type == "Surface"
+    assert result.revision == 3
+    assert result.name == "Name 1"
+    assert result.parent is None
+    assert result.origin == (0.0, 0.0, 0.0)
+    assert result.crs == "EPSG:28350"
+
+
+def test_fetch_object_with_the_origin_and_crs_of_the_viewer(fake_factory, tool_factory):
+    fake, settings = fake_factory(origin=(500.0, 600.0, 700.0), crs="EPSG:32750")
+    _put(fake, Surface(VERTS, [[0, 1, 2]]))
+    result = fetch_module.fetch_object(tool_factory(settings), "s1", timeout=WAIT)
+    assert result.origin == (500.0, 600.0, 700.0)
+    assert result.crs == "EPSG:32750"
+    np.testing.assert_allclose(result.object.vertices, VERTS)
+
+
+def test_fetch_object_block_model_has_no_parts(fake_viewer, tool_factory):
+    _put(fake_viewer.viewer, BlockModel([1.0, 2.0, 3.0], [1.0, 1.0, 1.0], [2, 2, 2]))
+    result = fetch_module.fetch_object(tool_factory(fake_viewer.settings), "s1", timeout=WAIT)
+    assert isinstance(result.object, BlockModel)
+    np.testing.assert_array_equal(result.object.cells, [2, 2, 2])
+
+
+def test_fetch_object_progress_rises_and_ends_at_one(fake_factory, tool_factory):
+    fake, settings = fake_factory(part_bytes=64)
+    surface = _surface()
+    _put(fake, surface)
+    calls: list[float] = []
+    result = fetch_module.fetch_object(
+        tool_factory(settings), "s1", progress=calls.append, timeout=WAIT
+    )
+    _assert_surface(result.object, surface)
+    assert len(calls) > 1
+    assert calls == sorted(calls)
+    assert calls[-1] == pytest.approx(1.0)
+    assert all(0.0 < value <= 1.0 for value in calls)
+
+
+def test_fetch_object_cancel_set_before_the_call(fake_factory, tool_factory):
+    fake, settings = fake_factory(part_bytes=64, fetch_delay=0.05)
+    _put(fake, _surface())
+    before = dict(fake.objects)
+    cancel = threading.Event()
+    cancel.set()
+    with pytest.raises(CancelledError):
+        fetch_module.fetch_object(tool_factory(settings), "s1", cancel=cancel, timeout=WAIT)
+    assert _same_objects(before, fake)
+
+
+def test_fetch_object_cancel_set_from_progress(fake_factory, tool_factory):
+    fake, settings = fake_factory(part_bytes=64, fetch_delay=0.05)
+    _put(fake, _surface())
+    before = dict(fake.objects)
+    cancel = threading.Event()
+    with pytest.raises(CancelledError):
+        fetch_module.fetch_object(
+            tool_factory(settings),
+            "s1",
+            progress=lambda _fraction: cancel.set(),
+            cancel=cancel,
+            timeout=WAIT,
+        )
+    assert cancel.is_set()
+    assert _same_objects(before, fake)
+
+
+def test_fetch_object_unknown_id(fake_viewer, tool_factory):
+    with pytest.raises(InvalidInputError):
+        fetch_module.fetch_object(tool_factory(fake_viewer.settings), "nope", timeout=WAIT)
+
+
+def test_fetch_object_headless_viewer(fake_factory, tool_factory):
+    fake, settings = fake_factory(kind="headless")
+    surface = _surface()
+    _put(fake, surface)
+    result = fetch_module.fetch_object(tool_factory(settings), "s1", timeout=WAIT)
+    _assert_surface(result.object, surface)
+
+
+def test_fetch_object_stream_error_closes_the_connection(fake_factory, tool_factory):
+    fake, settings = fake_factory(_BadPartFake)
+    _put(fake, _surface())
+    tool = tool_factory(settings)
+    with pytest.raises(ViewerClosedError) as info:
+        fetch_module.fetch_object(tool, "s1", timeout=WAIT)
+    assert str(info.value).startswith("The viewer sent an object that is not valid")
+    assert not tool.connected
+
+
+def test_fetch_object_can_run_twice(fake_viewer, tool_factory):
+    _put(fake_viewer.viewer, _surface())
+    tool = tool_factory(fake_viewer.settings)
+    first = fetch_module.fetch_object(tool, "s1", timeout=WAIT)
+    second = fetch_module.fetch_object(tool, "s1", timeout=WAIT)
+    assert first.revision == second.revision
+
+
+def test_viewer_fetch_returns_the_sent_surface(viewer_factory):
+    viewer = viewer_factory(timeout=WAIT)
+    surface = _surface()
+    revision = viewer.send(surface, id="s1", name="Name 1")
+    viewer.flush()
+    result = viewer.fetch("s1")
+    _assert_surface(result.object, surface)
+    assert result.id == "s1"
+    assert result.object_type == "Surface"
+    assert result.revision == revision
+    assert result.name == "Name 1"
+
+
+def test_viewer_fetch_progress_and_parts(fake_factory, own_viewers):
+    _fake, settings = fake_factory(part_bytes=64)
+    viewer = own_viewers(settings)
+    surface = _surface()
+    viewer.send(surface, id="s1")
+    viewer.flush()
+    calls: list[float] = []
+    result = viewer.fetch("s1", progress=calls.append)
+    _assert_surface(result.object, surface)
+    assert len(calls) > 1
+    assert calls == sorted(calls)
+    assert calls[-1] == pytest.approx(1.0)
+
+
+def test_viewer_fetch_cancel(fake_factory, own_viewers):
+    fake, settings = fake_factory(part_bytes=64, fetch_delay=0.05)
+    viewer = own_viewers(settings)
+    viewer.send(_surface(), id="s1")
+    viewer.flush()
+    before = dict(fake.objects)
+    cancel = threading.Event()
+    with pytest.raises(CancelledError):
+        viewer.fetch("s1", progress=lambda _fraction: cancel.set(), cancel=cancel)
+    assert _same_objects(before, fake)
+
+
+def test_viewer_fetch_unknown_id(viewer_factory):
+    viewer = viewer_factory(timeout=WAIT)
+    with pytest.raises(InvalidInputError):
+        viewer.fetch("nope")
+
+
+def test_viewer_fetch_headless_viewer(fake_factory, own_viewers):
+    _fake, settings = fake_factory(kind="headless")
+    viewer = own_viewers(settings)
+    surface = _surface()
+    viewer.send(surface, id="s1")
+    viewer.flush()
+    _assert_surface(viewer.fetch("s1").object, surface)
+
+
+def test_viewer_fetch_stream_error_closes_the_tool_connection(fake_factory, own_viewers):
+    _fake, settings = fake_factory(_BadPartFake)
+    viewer = own_viewers(settings)
+    viewer.send(_surface(), id="s1")
+    viewer.flush()
+    with pytest.raises(ViewerClosedError) as info:
+        viewer.fetch("s1")
+    assert str(info.value).startswith("The viewer sent an object that is not valid")
+    assert not viewer.tool_connected
+
+
+def test_viewer_fetch_gives_the_revision(viewer_factory):
+    viewer = viewer_factory(timeout=WAIT)
+    viewer.send(_surface(), id="s1")
+    viewer.send(_surface(), id="s1")
+    revision = viewer.send(_surface(), id="s1")
+    viewer.flush()
+    assert viewer.fetch("s1").revision == revision == 3
+
+
+def test_viewer_fetch_while_another_program_holds_the_data_connection(fake_viewer, viewer_factory):
+    program_a = viewer_factory(timeout=WAIT)
+    program_b = viewer_factory(timeout=WAIT)
+    surface = _surface()
+    program_a.send(surface, id="a1")
+    program_a.flush()
+    with pytest.raises(BusyError):
+        program_b.send(surface, id="b1")
+    assert program_b.select("a1", cells=[0, 1]) == {"cell": 2, "vertex": 0}
+    assert program_b.selection().object_id == "a1"
+    _assert_surface(program_b.fetch("a1").object, surface)
+    program_a.release_data()
+    deadline = time.monotonic() + WAIT
+    while True:
+        try:
+            program_b.send(surface, id="b1")
+            break
+        except BusyError:
+            if time.monotonic() > deadline:
+                raise
+            time.sleep(0.05)
+    program_b.flush()
+    assert {"a1", "b1"} <= set(fake_viewer.viewer.objects)

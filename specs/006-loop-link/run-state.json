@@ -418,7 +418,13 @@
       {
         "wave": 11,
         "base": "c86aee99",
-        "commit": "27c19aa8 + bookkeeping",
+        "commit": "27c19aa8..6c6f4956",
+        "review": "pass (5 minor)"
+      },
+      {
+        "wave": 12,
+        "base": "6c6f4956",
+        "commit": null,
         "review": "pending"
       }
     ],
@@ -524,6 +530,12 @@
           "model": "sonnet",
           "result": "pass"
         }
+      ],
+      "T053": [
+        {
+          "model": "sonnet",
+          "result": "pass"
+        }
       ]
     },
     "open_minor": [
@@ -558,7 +570,12 @@
       "S5 W9 T048: _put_grid builds the grid by hand (revision 1) while other tests use the real client",
       "S5 W10 T049: a poll error caused by stop()/close() can be stored in SelectionWatcher.error (race)",
       "S5 W10 T049: parse_selection_result can raise ValueError/AttributeError for a malformed entry instead of ProtocolError",
-      "S5 W10 T049: Selection arrays are not read-only; start() docstring lacks Raises"
+      "S5 W10 T049: Selection arrays are not read-only; start() docstring lacks Raises",
+      "S5 W11 T050: race between Viewer._tool() and close() can leave a tool connection open (check _dead again under _tool_lock)",
+      "S5 W11 T050: weakref.finalize does not close the tool connection of a dropped Viewer",
+      "S5 W11 T050: Raises sections of select/selection/watch_selection are incomplete",
+      "S5 W11 T050: _indices: [[]] gives the dtype error, [1, True] passes",
+      "S5 W11 T050: _watchers keeps stopped watchers"
     ],
     "findings": {
       "found": 18,
