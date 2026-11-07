@@ -412,8 +412,8 @@
       {
         "wave": 10,
         "base": "13b7b822",
-        "commit": null,
-        "review": "pending"
+        "commit": "c86aee99",
+        "review": "pass (4 minor)"
       }
     ],
     "runs": {
@@ -543,7 +543,10 @@
       "S5 W8 T047: a callback exception leaves the socket open with the rest of the frames; `until` given as a str is a substring test",
       "S5 W9 T048: negative-cell case can pass without a local index check (add: no new selection.set frame)",
       "S5 W9 T048: test_select_largest_index_is_accepted cannot tell sending 2**32-1 from refusing it locally",
-      "S5 W9 T048: _put_grid builds the grid by hand (revision 1) while other tests use the real client"
+      "S5 W9 T048: _put_grid builds the grid by hand (revision 1) while other tests use the real client",
+      "S5 W10 T049: a poll error caused by stop()/close() can be stored in SelectionWatcher.error (race)",
+      "S5 W10 T049: parse_selection_result can raise ValueError/AttributeError for a malformed entry instead of ProtocolError",
+      "S5 W10 T049: Selection arrays are not read-only; start() docstring lacks Raises"
     ],
     "findings": {
       "found": 18,

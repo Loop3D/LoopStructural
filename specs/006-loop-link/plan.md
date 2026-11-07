@@ -112,6 +112,9 @@ Each point has a default. A point that has no owner is for the maintainer.
   mesh has no Data button in the viewer; its properties are used by the isosurface and filter.
 - 2026-11-07 (maintainer): the geoviewer spec for stories 2 to 4 is 067-selection-and-fetch
   (the text calls it 066).
+- 2026-11-07 (orchestrator, wave 11): `Viewer.select` always returns both keys, `{"cell": n, "vertex": m}`.
+  A kind that the reply does not list has the count 0. This replaces "only the kinds that the reply has" in
+  the text of "Viewer (`viewer.py`)" of stage S5. The tests of T048 check this shape.
 
 ## Summary
 

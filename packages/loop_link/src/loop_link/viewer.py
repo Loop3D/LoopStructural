@@ -5,25 +5,33 @@ from __future__ import annotations
 import threading
 import time
 import weakref
-from collections.abc import Mapping, Sequence
+from collections.abc import Callable, Mapping, Sequence
 from dataclasses import dataclass
 from pathlib import Path
 from types import TracebackType
 from typing import Any
+
+import numpy as np
 
 from loop_link import discovery, encode, protocol
 from loop_link._websocket import WebSocketClient, WebSocketClosed, WebSocketError
 from loop_link.adapters import convert
 from loop_link.errors import (
     BusyError,
+    InvalidInputError,
     MissingFeatureError,
     Refusal,
     ViewerClosedError,
     ViewerRefusedError,
 )
 from loop_link.protocol import ProtocolError
+from loop_link.selection import Selection, SelectionWatcher, parse_selection_result
+from loop_link.tool import ToolConnection
 
 _LINK_ERRORS = (OSError, WebSocketClosed, WebSocketError)
+_SELECTION_FEATURE = "selection and fetch (geoviewer protocol 1.18)"
+_KIND_NAMES = {"cells": "cell", "nodes": "vertex"}
+_INDEX_MAX = 2**32 - 1
 
 
 @dataclass(frozen=True)
@@ -98,6 +106,9 @@ class Viewer:
         self._dead = False
         self._last_send = 0.0
         self._seq = 0
+        self._tool_lock = threading.Lock()
+        self._tool_connection: ToolConnection | None = None
+        self._watchers: list[SelectionWatcher] = []
 
         self._revisions: dict[str, int] = {}
         self._inventory: dict[str, InventoryEntry] = {}
@@ -127,6 +138,12 @@ class Viewer:
     def connected(self) -> bool:
         """True while the connection is open."""
         return self._client is not None and not self._dead
+
+    @property
+    def tool_connected(self) -> bool:
+        """True while the tool connection is open."""
+        tool = self._tool_connection
+        return tool is not None and tool.connected and not self._dead
 
     # -- context manager ------------------------------------------------------
 
@@ -392,23 +409,176 @@ class Viewer:
             raise ViewerRefusedError(refusals)
         return refusals
 
+    # -- selection ------------------------------------------------------------
+
+    def select(
+        self,
+        object_id: str,
+        *,
+        cells: Sequence[int] | np.ndarray | None = None,
+        vertices: Sequence[int] | np.ndarray | None = None,
+        revision: int | None = None,
+    ) -> dict[str, int]:
+        """Select cells and vertices of one object in the viewer.
+
+        Parameters
+        ----------
+        object_id : str
+            The identifier of the object.
+        cells : sequence of int, optional
+            The cell indices. Each index is from 0 to 2**32-1.
+        vertices : sequence of int, optional
+            The vertex indices. Each index is from 0 to 2**32-1.
+        revision : int, optional
+            The revision that the selection is for. The viewer refuses an old revision.
+
+        Returns
+        -------
+        dict of str to int
+            The number of selected cells (key ``cell``) and vertices (key ``vertex``).
+
+        Raises
+        ------
+        loop_link.errors.InvalidInputError
+            The id is not valid, no index list is given, an index list is not valid,
+            or the viewer refused the indices.
+        loop_link.errors.StaleRevisionError
+            The revision is old.
+        loop_link.errors.MissingFeatureError
+            The viewer does not support the selection.
+        loop_link.errors.ViewerClosedError
+            The connection is closed.
+        """
+        if not isinstance(object_id, str) or not object_id:
+            raise InvalidInputError("The object_id must be a string that is not empty.")
+        if cells is None and vertices is None:
+            raise InvalidInputError(
+                "Give cells or vertices. Use an empty list to clear the selection."
+            )
+        cell_array = None if cells is None else _indices(cells, "cells")
+        vertex_array = None if vertices is None else _indices(vertices, "vertices")
+        tool = self._tool()
+        frame = tool.request(
+            lambda request: encode.selection_set_frame(
+                request, object_id, cell_array, vertex_array, revision
+            ),
+            until=("selection.result",),
+            feature=_SELECTION_FEATURE,
+            object_id=object_id,
+        )
+        counts = {"cell": 0, "vertex": 0}
+        for entry in frame.header.get("entries") or []:
+            name = _KIND_NAMES.get(entry.get("kind"))
+            if name is not None:
+                counts[name] = int(entry.get("count", 0))
+        return counts
+
+    def selection(self) -> Selection:
+        """Read the selection in the viewer.
+
+        Returns
+        -------
+        Selection
+            The selection. It is empty when nothing is selected.
+
+        Raises
+        ------
+        loop_link.errors.MissingFeatureError
+            The viewer does not support the selection.
+        loop_link.errors.ViewerClosedError
+            The connection is closed.
+        """
+        tool = self._tool()
+        frame = tool.request(
+            encode.selection_get_frame,
+            until=("selection.result",),
+            feature=_SELECTION_FEATURE,
+        )
+        return parse_selection_result(frame)
+
+    def watch_selection(
+        self,
+        callback: Callable[[Selection], None],
+        *,
+        interval: float = 0.5,
+        initial: bool = False,
+    ) -> SelectionWatcher:
+        """Call a function each time the selection in the viewer changes.
+
+        Parameters
+        ----------
+        callback : callable
+            The function to call with the new ``Selection``.
+        interval : float
+            The time in seconds between two polls. It must be more than zero.
+        initial : bool
+            If true, call the function once with the current selection when it is
+            not empty.
+
+        Returns
+        -------
+        SelectionWatcher
+            The running watcher. Call its ``stop`` method to end it.
+
+        Raises
+        ------
+        loop_link.errors.InvalidInputError
+            The interval is not more than zero.
+        loop_link.errors.MissingFeatureError
+            The viewer does not support the selection.
+        loop_link.errors.ViewerClosedError
+            The connection is closed.
+        """
+        if not interval > 0:
+            raise InvalidInputError("The interval must be more than zero.")
+        last = self.selection()
+        if initial and not last.empty:
+            callback(last)
+        watcher = SelectionWatcher(weakref.ref(self), callback, interval, last)
+        self._watchers.append(watcher)
+        watcher.start()
+        return watcher
+
     # -- closing --------------------------------------------------------------
 
     def release_data(self) -> None:
         """Close the connection so another client can own the scene.
 
-        A later ``send`` opens a new connection. The revision numbers stay.
+        A later ``send`` opens a new connection. The revision numbers stay. The
+        tool connection stays open.
         """
         self._stop_thread()
         self._drop_client()
 
     def close(self) -> None:
-        """Close the connection. The revision numbers stay."""
+        """Close the connection and stop all selection watchers. The revision numbers stay."""
+        watchers, self._watchers = self._watchers, []
+        for watcher in watchers:
+            watcher.stop()
+        with self._tool_lock:
+            tool, self._tool_connection = self._tool_connection, None
+        if tool is not None:
+            tool.close()
         self._stop_thread()
         self._drop_client()
         self._dead = True
 
     # -- helpers --------------------------------------------------------------
+
+    def _tool(self) -> ToolConnection:
+        """Return the tool connection. Make it at the first call."""
+        if self._dead:
+            raise ViewerClosedError
+        with self._tool_lock:
+            if self._tool_connection is None:
+                self._tool_connection = ToolConnection(
+                    port=self._port,
+                    token=self._token,
+                    host=self._host,
+                    settings_dir=self._settings_dir,
+                    timeout=self._timeout,
+                )
+            return self._tool_connection
 
     def _ensure_connected(self) -> None:
         if self._dead:
@@ -512,6 +682,23 @@ def _triple(values: Sequence[float]) -> tuple[float, float, float]:
     """Return three floats from a sequence of three numbers."""
     x, y, z = (float(v) for v in values)
     return (x, y, z)
+
+
+def _indices(values: Any, name: str) -> np.ndarray:  # noqa: ANN401
+    """Return a 1-D ``uint32`` array from index values. Raise InvalidInputError if bad."""
+    try:
+        array = np.asarray(values)
+    except (TypeError, ValueError) as error:
+        raise InvalidInputError(f"The {name} must be a list of integers.") from error
+    if array.size == 0 and array.ndim == 1:
+        return np.empty(0, dtype=np.uint32)
+    if array.dtype.kind not in "iu":
+        raise InvalidInputError(f"The {name} must be integers. Do not use float or bool values.")
+    if array.ndim != 1:
+        raise InvalidInputError(f"The {name} must be a 1-D list of integers.")
+    if array.min() < 0 or array.max() > _INDEX_MAX:
+        raise InvalidInputError(f"The {name} must be from 0 to {_INDEX_MAX}.")
+    return array.astype(np.uint32)
 
 
 def _close_client(client: WebSocketClient) -> None:
