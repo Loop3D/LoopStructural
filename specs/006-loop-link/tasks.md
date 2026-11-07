@@ -456,7 +456,7 @@ Test command in this phase: `packages/loop_link/.venv/Scripts/python.exe -m pyte
   - Done when: `git grep -n -c "^## M3" packages/loop_link/tests/manual_checks.md` gives 1.
   - Context: Add a section `## M3: select, read and fetch with the real window viewer (stories 2 to 4)` before `## Record`, in ASD-STE100 English, 8 steps or fewer in the style of M2. Steps: (1) send a `BlockModel` of 10x10x10 cells, select cells 12, 13, 14 with `Viewer.select`, check the viewer outlines three cells and `Viewer.selection()` returns them; (2) select cells in the window with the mouse and read them with `Viewer.selection()`; (3) `select` with index 5000 gives `InvalidInputError` and the selection stays; (4) send, replace, then `select` with the old revision gives `StaleRevisionError`; (5) fetch each of the seven types (script of M2 plus `fetch`) and compare with the original; (6) fetch a drillhole that the viewer imported and check the warning for the dropped log sets; (7) start `watch_selection`, change the selection in the window, check the callback runs once; (8) start a second program that sends and check it gets `BusyError` while the first program still selects and fetches. Add a closing paragraph: M3 checks the fake viewer assumptions OP12 (which types have a selection table), OP13 (one object per selection) and OP14 (parts arrive in order); record the time of a fetch of 1,000,000 cells. Pass line: all 8 steps give the expected result.
 
-- [ ] T061 [P] [Finish] [S] README section "Select and fetch".
+- [x] T061 [P] [Finish] [S] README section "Select and fetch".
   - Files: `packages/loop_link/README.md`
   - Needs: T057
   - Wave: 17

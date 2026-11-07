@@ -442,8 +442,14 @@
       {
         "wave": 15,
         "base": "4a6afd2c",
+        "commit": "b8b404d8",
+        "review": "pass (3 minor)"
+      },
+      {
+        "wave": 17,
+        "base": "b8b404d8",
         "commit": null,
-        "review": "pending"
+        "review": "orchestrator check (docs only)"
       }
     ],
     "runs": {
@@ -578,6 +584,12 @@
           "model": "haiku",
           "result": "pass"
         }
+      ],
+      "T061": [
+        {
+          "model": "haiku",
+          "result": "pass"
+        }
       ]
     },
     "open_minor": [
@@ -622,7 +634,9 @@
       "S5 W12 T053: header rules of T054 untested: duplicate array name, bad dtype, bad shape, part bytes != buffer length, frame after object.end",
       "S5 W12 T053: tests are the only check for the stream rules; positive control passes after T054 (not T055)",
       "S5 W13 T054: ObjectTooLargeError raised from feed mid-stream does not close the tool connection (viewer keeps sending parts for the dead request)",
-      "S5 W13 T054: no regression test for malformed header fields (revision Infinity etc.): test file not in T054 Files; checked with a scratch script"
+      "S5 W13 T054: no regression test for malformed header fields (revision Infinity etc.): test file not in T054 Files; checked with a scratch script",
+      "S5 W15 T056: int64 property comes back as int32 by design (wire type); no value above 2**31 tested",
+      "S5 W15 T056: rtol 1e-6 on far-origin coordinates is loose (guarded by an absolute check and the dtype check)"
     ],
     "findings": {
       "found": 26,
