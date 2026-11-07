@@ -465,7 +465,7 @@ Test command in this phase: `packages/loop_link/.venv/Scripts/python.exe -m pyte
 
 ## Phase 9: Finish
 
-- [ ] T062 [Finish] [S] Update `ROADMAP.md`: stage S5 done.
+- [x] T062 [Finish] [S] Update `ROADMAP.md`: stage S5 done.
   - Files: `ROADMAP.md`
   - Needs: T056, T057, T058, T059, T060, T061
   - Wave: 18

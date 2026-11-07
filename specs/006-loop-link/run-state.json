@@ -448,6 +448,12 @@
       {
         "wave": 17,
         "base": "b8b404d8",
+        "commit": "6c9583bc",
+        "review": "orchestrator check (docs only)"
+      },
+      {
+        "wave": 18,
+        "base": "6c9583bc",
         "commit": null,
         "review": "orchestrator check (docs only)"
       }
@@ -586,6 +592,12 @@
         }
       ],
       "T061": [
+        {
+          "model": "haiku",
+          "result": "pass"
+        }
+      ],
+      "T062": [
         {
           "model": "haiku",
           "result": "pass"
