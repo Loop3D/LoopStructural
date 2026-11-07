@@ -570,10 +570,16 @@ def test_assembler_small_stream_with_the_revision_of_the_header():
     assert result.revision == 4
 
 
+def test_assembler_accepts_the_same_stream_with_u8_buffer_and_in_order_parts():
+    """Positive controls for the cases of the bad streams."""
+    assert _assemble([_header_frame(), *_vertex_parts((48,)), _end_frame(1)]).revision == 4
+    assert _assemble([_header_frame(), *_vertex_parts((16, 16, 16)), _end_frame(3)]).revision == 4
+
+
 def _bad_streams() -> dict[str, list[Frame]]:
     """Return streams that each break one rule, by a short name."""
     data = _vertex_bytes()
-    wrong_dtype = np.zeros(2, dtype=np.float32)
+    wrong_dtype = np.arange(12, dtype=np.float32)
     first = _vertex_parts((16, 16, 16))[:1]
     return {
         "unknown_array": [_header_frame(), _part_frame("w", 0, data[:16]), _end_frame(1)],
@@ -591,12 +597,19 @@ def _bad_streams() -> dict[str, list[Frame]]:
             _part_frame("v", 16, data[16:]),
             _end_frame(2),
         ],
+        "ranges_do_not_tile": [
+            _header_frame(),
+            _part_frame("v", 0, data[:16]),
+            _part_frame("v", 8, data[8:24]),
+            _part_frame("v", 32, data[32:48]),
+            _end_frame(3),
+        ],
         "missing_part": [_header_frame(), *_vertex_parts()[:2], _end_frame(2)],
         "too_many_parts_claimed": [_header_frame(), *_vertex_parts(), _end_frame(4)],
         "too_few_parts_claimed": [_header_frame(), *_vertex_parts(), _end_frame(2)],
         "part_not_u8": [
             _header_frame(),
-            _part_frame("v", 0, b"", buffer=wrong_dtype, size=8),
+            _part_frame("v", 0, b"", buffer=wrong_dtype, size=48),
             _end_frame(1),
         ],
     }

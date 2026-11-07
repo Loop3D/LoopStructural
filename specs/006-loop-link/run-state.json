@@ -425,7 +425,7 @@
         "wave": 12,
         "base": "6c6f4956",
         "commit": null,
-        "review": "pending"
+        "review": "round 1: changes needed (2 major, 3 minor); fix commit pending round 2"
       }
     ],
     "runs": {
@@ -575,11 +575,14 @@
       "S5 W11 T050: weakref.finalize does not close the tool connection of a dropped Viewer",
       "S5 W11 T050: Raises sections of select/selection/watch_selection are incomplete",
       "S5 W11 T050: _indices: [[]] gives the dtype error, [1, True] passes",
-      "S5 W11 T050: _watchers keeps stopped watchers"
+      "S5 W11 T050: _watchers keeps stopped watchers",
+      "S5 W12 T053: no test proves the assembler allocates nothing before the 2 GiB check (monkeypatch numpy.empty)",
+      "S5 W12 T053: header rules of T054 untested: duplicate array name, bad dtype, bad shape, part bytes != buffer length, frame after object.end",
+      "S5 W12 T053: tests are the only check for the stream rules; positive control passes after T054 (not T055)"
     ],
     "findings": {
-      "found": 18,
-      "fixed": 10
+      "found": 23,
+      "fixed": 12
     }
   }
 }
