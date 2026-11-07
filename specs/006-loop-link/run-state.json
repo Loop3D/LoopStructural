@@ -431,7 +431,7 @@
         "wave": 13,
         "base": "fbace3a1",
         "commit": null,
-        "review": "pending"
+        "review": "round 1: changes needed (1 major, 2 minor); fix commit pending round 2"
       }
     ],
     "runs": {
@@ -590,11 +590,13 @@
       "S5 W11 T050: _watchers keeps stopped watchers",
       "S5 W12 T053: no test proves the assembler allocates nothing before the 2 GiB check (monkeypatch numpy.empty)",
       "S5 W12 T053: header rules of T054 untested: duplicate array name, bad dtype, bad shape, part bytes != buffer length, frame after object.end",
-      "S5 W12 T053: tests are the only check for the stream rules; positive control passes after T054 (not T055)"
+      "S5 W12 T053: tests are the only check for the stream rules; positive control passes after T054 (not T055)",
+      "S5 W13 T054: ObjectTooLargeError raised from feed mid-stream does not close the tool connection (viewer keeps sending parts for the dead request)",
+      "S5 W13 T054: no regression test for malformed header fields (revision Infinity etc.): test file not in T054 Files; checked with a scratch script"
     ],
     "findings": {
-      "found": 23,
-      "fixed": 12
+      "found": 26,
+      "fixed": 13
     }
   }
 }

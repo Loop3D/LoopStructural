@@ -335,6 +335,18 @@ def _as_dict(value: object, what: str) -> dict[str, Any]:
     return value
 
 
+def _is_origin(origin: object) -> bool:
+    """Return whether the value is a list of 3 finite numbers."""
+    return (
+        isinstance(origin, list)
+        and len(origin) == 3
+        and all(
+            isinstance(v, int | float) and not isinstance(v, bool) and math.isfinite(v)
+            for v in origin
+        )
+    )
+
+
 def _as_origin(origin: Sequence[float]) -> tuple[float, float, float]:
     """Return the origin as a tuple of 3 floats."""
     x, y, z = (float(value) for value in origin)
@@ -412,20 +424,42 @@ class _Assembler:
             for name, data in self._arrays.items()
         }
         try:
-            obj = header["object"]
+            obj = _as_dict(header["object"], "object header")
             origin = header["origin"]
+            object_type = obj["object_type"]
+            revision = obj["revision"]
+            if not isinstance(object_type, str):
+                raise ProtocolError("The field 'object_type' is not a string.")
+            if not _is_int(revision) or revision < 0:
+                raise ProtocolError("The field 'revision' is not a non-negative integer.")
+            for field, value in (
+                ("name", obj.get("name")),
+                ("parent", obj.get("parent")),
+                ("crs", header.get("crs")),
+            ):
+                if value is not None and not isinstance(value, str):
+                    raise ProtocolError(f"The field '{field}' is not a string or null.")
+            if origin is not None and not _is_origin(origin):
+                raise ProtocolError("The field 'origin' is not null or 3 finite numbers.")
             scene_object = decode_object(obj, arrays, origin)
             return FetchResult(
                 id=self._object_id,
                 object=scene_object,
-                object_type=str(obj["object_type"]),
-                revision=int(obj["revision"]),
+                object_type=object_type,
+                revision=revision,
                 name=obj.get("name"),
                 parent=obj.get("parent"),
                 origin=None if origin is None else _as_origin(origin),
                 crs=header.get("crs"),
             )
-        except (KeyError, TypeError, ValueError, IndexError) as error:
+        except (
+            KeyError,
+            TypeError,
+            ValueError,
+            IndexError,
+            OverflowError,
+            AttributeError,
+        ) as error:
             raise ProtocolError(f"The object header is not valid: {error!r}") from error
 
     def _take_header(self, header: dict[str, Any]) -> None:
