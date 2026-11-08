@@ -1,26 +1,22 @@
 # Implementation plan: loop_link, a Python link to geoviewer
 
-**Feature**: `006-loop-link` | **Date**: 2026-11-06 (S5 added 2026-11-07) | **Spec**: [spec.md](spec.md)
+**Feature**: `006-loop-link` | **Date**: 2026-11-06 (S5 added 2026-11-07, S4 added 2026-11-08) | **Spec**: [spec.md](spec.md)
 
 <!-- A plan says HOW. Written in ASD-STE100 Simplified Technical English.
 Scope of this plan: stories 1 and 5 (stages S1 to S3, built), and stories 2 to 4
-(stage S5, planned 2026-11-07, see "Design of stage S5"). Stories 6 and 7 (S4) get
-their own planner run (OP6). -->
+(stage S5, planned 2026-11-07, see "Design of stage S5"), and stories 6 and 7 (stage S4,
+planned 2026-11-08, see "Design of stage S4"). -->
 
 ## Open points
 
 Each point has a default. A point that has no owner is for the maintainer.
 
-- **OP1**: The `[NEEDS CLARIFICATION]` mark of story 7, scenario 7 (FR-021).
-  The protocol 1.14 data array can carry `colour_map` (`name`, `range`, `clip`,
-  `scale`). So the map, the range and the scale can go in the send message. The
-  property that colours the object (active array) and the plain colour of the
-  object have no field in `scene.upsert`. The `style` field has no schema. Default
-  for S4: send the map, range and scale in `colour_map`, and send the active
-  array and the plain colour as follow-up commands (`colour.set_active`,
-  `object.set_colour`) on the tool connection, inside the same call. The S4
-  task reads how the viewer applies `style` first. It blocks S4 only. S1 to S3
-  do not use it.
+- **OP1**: The `[NEEDS CLARIFICATION]` mark of story 7, scenario 7 (FR-021). Answered
+  2026-11-08 (see "Answers"): all colour settings go as follow-up commands on the tool
+  connection, in the same call. The `scene.upsert` data array can carry `colour_map`
+  (`name`, `range`, `clip`, `scale`), but it has no field for the property that colours
+  the object or for the plain colour, so the follow-up commands are needed anyway. One
+  path is simpler than two. The user sees one call.
 - **OP2**: The default `crs` of `hello`. `Hello.crs` is a required string in the
   viewer. The viewer may refuse an empty text. Default: `Viewer(crs="")`, and the
   library keeps the CRS that the viewer answers in `Viewer.scene_crs`. Task T-S1
@@ -42,9 +38,8 @@ Each point has a default. A point that has no owner is for the maintainer.
   members, add `packages/loop_link` to `[tool.uv.workspace] exclude` (as
   `packages/loop_interpolation_core` is) and make the CI job install it with
   `pip install -e packages/loop_link[tests]`.
-- **OP6**: Stories 6 and 7 (filter and colour, FR-018 to FR-021, SC-007) need the
-  tool connection. Default: plan them in a later planner run as stage S4. The
-  names of the commands are in "Handover".
+- **OP6**: Stories 6 and 7 (filter and colour, FR-018 to FR-021, SC-007) are planned in
+  stage S4 (see "Design of stage S4"). They use the tool connection of S5.
 - **OP7**: Stories 2, 3 and 4 (select, read selection, fetch) are planned in stage S5
   (see "Design of stage S5"). They use geoviewer spec 067-selection-and-fetch
   (protocol 1.18), merged in the geoviewer repository. The text of this spec and of
@@ -86,6 +81,37 @@ Each point has a default. A point that has no owner is for the maintainer.
   otherwise. M3 checks it with the real viewer. If the real viewer sends the parts in
   another order, relax the rule to "each byte is filled one time" (one task).
 
+- **OP15**: FR-019 asks the call to wait for the end of a filter build. The viewer gives
+  no signal for it: `filter.edit` is not a long command, it sends no `command.progress`,
+  and it answers when the edit is accepted. Default (stage S4d): `wait=True` sends the
+  edits, then sends the same `set_on` edit again until the viewer takes it without `busy`.
+  A command that waits when busy waits for the end of the build, so this works only if the
+  scene is busy while the filter builds and a repeated `set_on` does not start a new build.
+  Both are unverified. M4 step 7 checks them. If a point fails, the fallback is to leave
+  `wait` out and to ask the geoviewer maintainer for a long `filter.edit` with progress. The
+  cancel part of FR-019 (`cancel_filter`) does not depend on this. Owner: spec owner.
+  Blocks S4d only.
+- **OP16**: The viewer does not say if `add` for an array that has a filter is an error, or
+  if a new filter is on after `add` and `set_range`. Default: the library sends `add`,
+  goes on if it is refused, and sends `set_on` true at the end. M4 step 9 checks it.
+- **OP17**: A value filter takes the `u32` ids of the value map. Story 6 scenario 2 says "the
+  values to show" and does not say if the user gives names. Default: S4 takes ids
+  (integers). The library keeps no value map of the objects it sent. A later stage can add
+  `names=`. Owner: spec owner. Blocks no task.
+- **OP18**: The type rules (a filter on a text property, a map on a category) are assumed to
+  give `refused` with a text. If the real viewer accepts them without a change, scenario 4
+  of story 6 and scenario 5 of story 7 fail against the real viewer. M4 steps 4 and 6 check
+  it. The fix would then be a type check in the library, which needs the types of the
+  properties (a fetch), or a viewer change.
+- **OP19**: `send(..., colour=...)` waits 0.5 s (`flush`) before the colour commands. A
+  large object can take longer to enter the scene, and the first colour command then gets
+  an error for an unknown object. M4 step 8 checks it. If it fails, replace the fixed wait
+  by a retry for a time that the user sets. Owner: maintainer. Blocks no task.
+- **OP20**: Story 6 says "the viewer reports the filter as on, with the count of elements
+  that pass". The viewer result has no count. S4 checks "filter on" with the fake
+  (`FakeViewer.filters`) and gives no count. The spec owner should change the sentence, or
+  ask for a count in the geoviewer result. Blocks no task.
+
 ## Answers
 
 - 2026-11-06 (orchestrator, wave 10 review): pyvista adapter. The adapter skips the arrays that
@@ -115,6 +141,11 @@ Each point has a default. A point that has no owner is for the maintainer.
 - 2026-11-07 (orchestrator, wave 11): `Viewer.select` always returns both keys, `{"cell": n, "vertex": m}`.
   A kind that the reply does not list has the count 0. This replaces "only the kinds that the reply has" in
   the text of "Viewer (`viewer.py`)" of stage S5. The tests of T048 check this shape.
+- 2026-11-08 (planner, S4): OP1 is answered. `send(..., colour=ColourSettings(...))` sends the
+  object, waits with `flush()`, and then sends the colour commands (`colour.set_active`,
+  `colour.set_map`, `colour.set_range`, `colour.set_scale`, `object.set_colour`) on the tool
+  connection. The `colour_map` field of the data array is not used. The commands use the
+  protocol version 1.11 of the fixtures.
 
 ## Summary
 
@@ -569,7 +600,7 @@ calls `progress` on the thread that calls it. The plugin runs it on a worker thr
 | S1 | New package: codec, errors, WebSocket, discovery, objects, orientation, encode, `Viewer`, fake viewer; repository registration (ROADMAP, release-please, CI, Ruff, uv). Inputs: the dataclasses and numpy arrays only. | `uv run --package loop-link pytest packages/loop_link/tests`; `ruff check LoopStructural packages`; root `pytest`; SC-001, SC-004 (with the variable), SC-005, SC-006; manual check M1 | Revert the stage: the files are new, and the root files change by added lines only. The root `pytest` result is the same as before. |
 | S2 | `adapters/` for pyvista, LoopStructural, pandas; `Viewer.send` calls `adapters.convert`. | The same commands. Adapter tests (pyvista, LoopStructural, pandas extras installed in the test environment). | Revert S2. S1 still sends the dataclasses. |
 | S3 | `push.py` and its tests; frame comparison with the plugin frames; the slow-viewer and cancel tests. | The same commands; SC-004 frames of the plugin. | Revert S3. S1 and S2 stay. |
-| S4 | Not planned here (OP6). | | |
+| S4 | Planned in "Design of stage S4": S4a (frames, commands module, fake commands), S4b (filter and colour members), S4c (colour in send), S4d (filter wait), S4e (real codec checks, manual check M4, docs). | See "Stages and rollback of S4". | See "Stages and rollback of S4". |
 | S5 | Planned in "Design of stage S5": S5a (tool connection and selection), S5b (fetch), S5c (real codec checks, manual check M3, docs). | See "Stages and rollback of S5". | See "Stages and rollback of S5". |
 
 ## Design of stage S5 (stories 2 to 4)
@@ -1056,6 +1087,342 @@ All rows of the table above hold for S5. The differences: the new files are unde
 `ANN` apply to `src`); the ROADMAP entry is updated in the last task; each stage is a
 separate revert.
 
+## Design of stage S4 (stories 6 and 7)
+
+Planned 2026-11-08, after S5 was built. S4 adds the filter calls and the colour calls. It
+reuses the tool connection of S5 (`tool.py`). It needs no viewer change, except that the
+list of colour map names (FR-020) needs a viewer of protocol 1.18 (geoviewer spec 067 gives
+the names in the schema of `colour.set_map`; the text of this spec calls it "066").
+
+### Facts that S4 uses (geoviewer `ui-fixes` build, read 2026-11-08)
+
+The facts come from `crates/geoviewer/src/tool/input_colour.rs`, `tool/result.rs`,
+`tool/host.rs`, `tool/input_object.rs`, `fixtures/protocol/tool/` and `docs/protocol.md`
+of the geoviewer repository. The real viewer is the authority. Manual check M4 repeats the
+points marked "assumed".
+
+- A command goes on the tool connection (path `/tool`) in a `command.run` message:
+  `{"type": "command.run", "version": {"major": 1, "minor": 11}, "request": n,
+  "command": name, "input": {...}, "buffers": []}`. The fixtures use minor 11 for it. The
+  reply is `command.result` with `"result": {"status": ...}`, or `request.error`.
+- `commands.list` (field `request` only) has the reply `commands`: `{"type": "commands",
+  "request": n, "viewer": "window" | "headless", "commands": [{"name", "description",
+  "needs_window", "tool_available", "unavailable_reason", "input_schema",
+  "result_schema"}]}`.
+- The seven commands that S4 uses, with their input. Each input rejects an unknown field.
+
+| Command | Input | Note |
+|---|---|---|
+| `filter.edit` | `{"object": id, "edit": {"kind": ..., ...}}` | The kinds are in the next list. |
+| `colour.set_active` | `{"id": id, "array": name}`; leave `array` out for no array | |
+| `colour.set_map` | `{"id": id, "name": text}` | In a viewer of protocol 1.18 the schema of `name` is `{"type": "string", "enum": [...]}`. The names are `viridis`, `grey` and `coolwarm`. |
+| `colour.set_range` | `{"id": id, "min": text, "max": text}` | The numbers are texts. |
+| `colour.clear_range` | `{"id": id}` | |
+| `colour.set_scale` | `{"object": id, "scale": "linear" or "log"}` | The key is `object`, not `id`. It needs a window. It does not wait when the scene is busy (the reply is `busy` at once). |
+| `object.set_colour` | `{"id": id, "colour": [r, g, b] or null}` | `null` removes the plain colour. |
+
+- The edits of `filter.edit` (field `kind`): `add` (`array`), `set_range` (`array`, `min`
+  text, `max` text, `keep_nan` bool), `set_values` (`array`, `values`: list of `u32`, the
+  `id` values of the `value_map` of the array), `set_on` (`array`, `on` bool),
+  `set_exclude` (`array`, `exclude` bool), `remove` (`array`), `cancel` (no other field;
+  it cancels the running job).
+- The result of each of these commands is `{"status": "done"}` or `{"status":
+  "refused", "text": ...}`. A filter edit that fails (for example an array that does not
+  exist) gives `refused` with a text. The result has no count of elements that pass.
+- A command that "waits when busy" waits at most 5 s for a scene that is not busy, then
+  gets `request.error` with the code `busy`. All commands of the list above wait, except
+  `colour.set_scale`.
+- `filter.edit` is not a long command: it sends no `command.progress`, and it answers when the
+  edit is accepted. The viewer builds the filter after that. No message tells the end of
+  the build (OP15).
+- Assumed (M4 checks): a filter on a text property, a filter on a property that does not
+  exist, and a map, a range or a scale on a category or boolean property are `refused`
+  with a text. A new revision of an object keeps its filters and its colour settings. A
+  command for an unknown object gives `request.error` `invalid_input` or `refused`.
+- The data array in `scene.upsert` can carry `colour_map` (`name`, `range`, `clip`,
+  `scale`). It has no field for the array that colours the object or for the plain
+  colour. See the answer of OP1 for the S4 decision.
+
+### Names and errors
+
+All new names below are free (checked with `git grep -n -w` on 2026-11-08).
+
+No new error class. S4 uses the errors of S5 and S1:
+
+| Reply | Library error |
+|---|---|
+| `command.result`, status `done` | none |
+| `command.result`, status `refused`, with `text` | `InvalidInputError("The viewer refused the command '<command>': <text>")` |
+| `command.result`, any other status | `ProtocolError("The viewer sent an unknown result status '<status>'.")` |
+| `request.error` and `error` frames | `raise_for_request_error` (the table of S5). `needs_window` gives `MissingFeatureError`. `busy` gives `BusyError`. `invalid_input` gives `InvalidInputError`. |
+| `error` frame, code `unknown_message` for `commands.list` or `command.run` | `MissingFeatureError("filter and colour commands (geoviewer protocol 1.11)")` |
+| A map name that is not in the list of the viewer | `InvalidInputError("The viewer has no colour map '<name>'. The names are: <list>.")`, before any frame goes out |
+
+### Protocol changes (`protocol.py`, `encode.py`)
+
+```python
+COMMAND_PROTOCOL_VERSION: dict[str, int] = {"major": 1, "minor": 11}   # protocol.py
+def commands_list_frame(request: int) -> bytes                          # encode.py
+def command_frame(request: int, command: str, input: Mapping[str, Any]) -> bytes
+```
+
+`commands_list_frame` writes `{"type": "commands.list", "request": n, "buffers": []}`.
+`command_frame` writes `{"type": "command.run", "request": n, "command": command,
+"input": dict(input), "buffers": []}`. Both use the version `COMMAND_PROTOCOL_VERSION`, so
+a viewer of protocol 1.11 to 1.17 accepts them (FR-018: no viewer change). The header must
+equal `fixtures/protocol/tool/commands.list.json` and `command.run.json` when the
+arguments are the same.
+
+### Commands module (`commands.py`)
+
+```python
+@dataclass(frozen=True)
+class ColourSettings:
+    array: Optional[str] = None                      # property that colours the object
+    colour_map: Optional[str] = None                 # name of a map of the viewer
+    range: Optional[tuple[float, float]] = None      # (minimum, maximum)
+    scale: Optional[str] = None                      # "linear" or "log"
+    plain: Optional[tuple[int, int, int]] = None     # plain colour of the object
+    # A field that is None is not sent. __post_init__ calls the check functions below.
+
+def run_command(tool: ToolConnection, command: str, input: Mapping[str, Any], *,
+                object_id: Optional[str] = None, timeout: Optional[float] = None,
+                cancel: Optional[threading.Event] = None) -> Mapping[str, Any]
+def list_colour_map_names(tool: ToolConnection) -> Optional[tuple[str, ...]]
+def parse_colour_map_names(frame: Frame) -> Optional[tuple[str, ...]]
+def raise_for_command_result(result: Mapping[str, Any], *, command: str) -> None
+def format_number(value: float) -> str
+def check_number(value: object, name: str) -> float
+def check_text(value: object, name: str) -> str
+def check_rgb(value: object, name: str) -> tuple[int, int, int]
+def check_codes(values: object, name: str) -> list[int]
+```
+
+- `run_command` calls `tool.request(lambda n: encode.command_frame(n, command, input),
+  until=("command.result",), feature="filter and colour commands (geoviewer protocol 1.11)",
+  object_id=object_id, ...)`. It reads `frame.header["result"]`, calls
+  `raise_for_command_result`, and returns the result mapping. A result that is not a
+  mapping with a `status` text gives `ProtocolError`.
+- `list_colour_map_names` calls `commands_list_frame` with `until=("commands",)` and returns
+  `parse_colour_map_names(frame)`.
+- `parse_colour_map_names` finds the entry with `name == "colour.set_map"`. It reads
+  `input_schema["properties"]["name"]["enum"]`. It returns the tuple of names. It returns
+  `None` when the entry, the property or the `enum` is missing (a viewer older than 1.18). A
+  malformed field (the `enum` is not a list of text) gives `ProtocolError`.
+- `format_number(value)` returns `repr(float(value))` (for example `"0.5"` or `"1e-05"`).
+- `check_number` accepts `int` and `float` (and numpy numbers) that are not `bool` and not
+  NaN or infinite, and returns `float`. Other input gives `InvalidInputError` that names
+  `name`. `check_text` accepts a non-empty `str`. `check_rgb` accepts three integers from 0
+  to 255 (not `bool`). `check_codes` accepts a sequence or array of integers from 0 to
+  2**32 - 1 (not `bool`, not float) and returns a `list[int]`.
+
+### Viewer (`viewer.py`)
+
+New members. They use the tool connection of S5 (`self._tool()`), so they work while another
+program holds the data connection (FR-014). They do not open the data connection. Each one
+raises `InvalidInputError` for a wrong argument before any frame goes out.
+
+```python
+class Viewer:
+    def filter_range(self, object_id: str, array: str, minimum: float, maximum: float, *,
+                     keep_nan: bool = False, wait: bool = True,
+                     cancel: Optional[threading.Event] = None, timeout: float = 60.0) -> None
+    def filter_values(self, object_id: str, array: str, values: ArrayLike, *,
+                      exclude: bool = False, wait: bool = True,
+                      cancel: Optional[threading.Event] = None, timeout: float = 60.0) -> None
+    def filter_enable(self, object_id: str, array: str, on: bool = True) -> None
+    def filter_remove(self, object_id: str, array: str) -> None
+    def cancel_filter(self, object_id: str) -> None
+    def colour_map_names(self) -> tuple[str, ...]
+    def set_colour_property(self, object_id: str, array: Optional[str]) -> None
+    def set_colour_map(self, object_id: str, name: str) -> None
+    def set_colour_range(self, object_id: str, minimum: float, maximum: float) -> None
+    def clear_colour_range(self, object_id: str) -> None
+    def set_colour_scale(self, object_id: str, scale: str) -> None
+    def set_object_colour(self, object_id: str, colour: Optional[tuple[int, int, int]]) -> None
+    def apply_colour(self, object_id: str, settings: ColourSettings) -> None
+    # send() gets one new keyword-only argument, before **hints:
+    #   colour: Optional[ColourSettings] = None
+```
+
+Filter rules (each call sends the edits in the order shown, with `run_command`; the first
+refusal stops the call and raises):
+
+- `filter_range`: `add`, `set_range` (`min` and `max` are `format_number` texts, `keep_nan`),
+  `set_on` with `on` true. `minimum` must not be more than `maximum`, else
+  `InvalidInputError`. If `add` is refused, the call goes on with `set_range` (OP16: the
+  filter can exist already). If `set_range` is refused, its text goes up.
+- `filter_values`: `add` (the same refusal rule), `set_values` (the codes from
+  `check_codes`), `set_exclude` (`exclude`), `set_on` true. The codes are the `id` values of
+  the `value_map` of the property. A `Categorical` that the library sent has the ids
+  `0..n-1` in the order of its names (OP17: names as input are a later stage).
+- `filter_enable`: one `set_on` edit. `filter_remove`: one `remove` edit. `cancel_filter`:
+  one `cancel` edit.
+- `wait` is true by default and is stage S4d. In S4a to S4c the argument exists, and a
+  true value is accepted and does nothing more than return when the viewer accepted the
+  edits. S4d adds the wait (OP15). `cancel` and `timeout` are used only by the wait.
+
+Colour rules:
+
+- `colour_map_names()` returns the names from `list_colour_map_names`. It keeps the tuple
+  for the life of the tool connection. If the result is `None`, it raises
+  `MissingFeatureError("colour map names (geoviewer protocol 1.18)")`.
+- `set_colour_map(object_id, name)`: `name` must be a non-empty `str`. The method reads the
+  names. When the viewer gives names and `name` is not one of them, it raises the error of
+  the table above. When the viewer gives no names (older viewer), it sends the name and
+  the viewer decides. It sends `colour.set_map` `{"id", "name"}`.
+- `set_colour_property`: `colour.set_active` `{"id", "array"}`. With `array=None` the key
+  `array` is left out (no property).
+- `set_colour_range`: `colour.set_range` `{"id", "min", "max"}` with `format_number` texts.
+  `minimum` must be less than `maximum`. `clear_colour_range`: `colour.clear_range`.
+- `set_colour_scale`: `scale` must be `"linear"` or `"log"`, else `InvalidInputError`.
+  It sends `colour.set_scale` `{"object", "scale"}`.
+- `set_object_colour`: it sends `object.set_colour` `{"id", "colour"}` with the list
+  `[r, g, b]` (from `check_rgb`) or `null`.
+- `apply_colour(object_id, settings)`: it sends, in this order, `colour.set_active`,
+  `colour.set_map`, `colour.set_range`, `colour.set_scale`, `object.set_colour`, each one
+  only when its field is not `None`. It checks all fields before it sends any frame.
+- `send(..., colour=settings)`: the call sends the object as before. When `colour` is not
+  `None`, it then calls `self.flush()` (this waits 0.5 s for a late refusal of the object
+  and raises it), and then `self.apply_colour(id, settings)`. If a colour command fails,
+  the object is already in the viewer, and the error goes up. The user can call the
+  `set_colour_*` methods later. The send returns the revision as before.
+
+### Fake viewer changes (`testing/fake_viewer.py`)
+
+New constructor arguments, all with defaults, so no earlier test changes:
+`filter_delay: float = 0.0` (the seconds that the scene stays busy after a `filter.edit`
+that changes a filter) and `busy_wait: float = 5.0` (the seconds that a waiting command
+waits before `busy`; tests set it to 0.05). New members: `.filters` (property): a
+`dict[str, dict[str, dict]]`, by object id and array name, with the keys `kind` (`"range"`
+or `"values"`), `on`, `minimum`, `maximum`, `keep_nan`, `values`, `exclude`; `.colouring`
+(property): a `dict[str, dict]` by object id with the keys `array`, `colour_map`,
+`range`, `scale`, `plain`. Both return copies.
+
+Rules of the fake tool endpoint (they follow the facts above; the real viewer is the
+authority and M4 repeats them):
+
+- `commands.list` answers `commands` with `viewer` = `self.kind` and one entry for each
+  command of the table (and no other). `needs_window` is true only for `colour.set_scale`.
+  `input_schema` of `colour.set_map` has `properties.name.enum` = `["viridis", "grey",
+  "coolwarm"]` when `protocol_minor >= 18`, and `properties.name.type` = `"string"` only
+  below 18. With `protocol_minor < 11` the endpoint answers `unknown_message`.
+- `command.run` of an unknown command: `request.error` `invalid_input`, field `command`.
+  An input with an unknown or a missing field, or a field of a wrong type (the key and type
+  rules of the table above), gives `request.error` `invalid_input` with that field. An
+  object that does not exist gives `request.error` `invalid_input`, field `id` (or
+  `object` for the two commands that use that key). `kind="headless"` gives `needs_window`
+  for `colour.set_scale` only.
+- A command that waits: while the scene is busy (the time `filter_delay` after a filter
+  edit), each command except `colour.set_scale` waits up to `busy_wait` seconds. Then it
+  runs, or it gets `request.error` `busy` when the scene is still busy. `colour.set_scale`
+  gets `busy` at once. `filter.edit` with `cancel` ends the busy time.
+- Property rules, from the header of the stored object (`data` entries: `name`,
+  `data_type`, `association`): a filter on an array that does not exist, or on a `text`
+  array or an `object` association array, is `refused` with a text that names the array. A
+  range edit on a `referenced` or `boolean` array, and a values edit on a number array,
+  are `refused`. `colour.set_active` with an unknown array is `refused`. `colour.set_map`,
+  `colour.set_range` and `colour.set_scale` on an object whose active array is `referenced`
+  or `boolean` are `refused`. These rules are assumed from the spec (OP18).
+- Effects: `add` creates an off filter. `set_range`, `set_values`, `set_exclude` and
+  `set_on` change it (a missing filter is `refused`). `remove` deletes it. A
+  `scene.upsert` of an object that already exists keeps its `filters` and `colouring`
+  (story 6, scenario 6). When the new revision has no array of that name, the fake drops
+  the filter of that array.
+- The reply is `command.result` `{"status": "done"}` or `{"status": "refused", "text":
+  ...}`, with the same `request` number.
+
+### Files (S4)
+
+- `packages/loop_link/src/loop_link/protocol.py` - Change. `COMMAND_PROTOCOL_VERSION`.
+- `packages/loop_link/src/loop_link/encode.py` - Change. `commands_list_frame`, `command_frame`.
+- `packages/loop_link/src/loop_link/commands.py` - Create. The names of "Commands module".
+- `packages/loop_link/src/loop_link/viewer.py` - Change. The new members and the `colour`
+  argument of `send`.
+- `packages/loop_link/src/loop_link/__init__.py` - Change. Export `ColourSettings`.
+- `packages/loop_link/src/loop_link/testing/fake_viewer.py` - Change. The commands endpoint.
+- `packages/loop_link/tests/test_commands.py` - Create. The frame builders (header
+  equal to the two fixtures when the arguments are the same), `check_*` functions,
+  `raise_for_command_result` for each row of the table, `parse_colour_map_names` (with
+  names, without names, malformed), `ColourSettings`.
+- `packages/loop_link/tests/test_filter.py` - Create. Story 6 scenarios 1 to 4 and 6:
+  range, values with exclude, off, on and remove (data does not change: the stored object
+  stays the same), a missing array, a text array, `minimum > maximum`, a new revision keeps
+  the filters, `add` refused and the call goes on, `cancel_filter`; the viewer without
+  window; an old viewer (`protocol_minor=10`) gives `MissingFeatureError`; the tool part of
+  FR-014 (program A holds the data connection; program B filters and colours). S4d adds the
+  tests of the wait.
+- `packages/loop_link/tests/test_colour.py` - Create. Story 7 scenarios 1 to 7: property,
+  no property, map, range, clear, scale, plain colour, a category and a boolean property
+  (`InvalidInputError` with the viewer text), an unknown map name (the error lists the
+  names, and the fake received no `colour.set_map`), an older viewer without names,
+  `colour_map_names`, `send(..., colour=...)` (the object is in the fake before the
+  commands, the commands arrive in the order of `apply_colour`, a failed command leaves the
+  object in the viewer), the headless viewer for `set_colour_scale`. SC-007: with an object
+  of 1,000,000 cells, each of the commands of the table gets its reply in less than 250 ms.
+- `packages/loop_link/tests/test_fake_viewer.py` - Change. One test for each rule of the
+  fake commands endpoint.
+- `packages/loop_link/tests/test_codec_real.py` - Change. Add `commands.list` and
+  `command.run` for `filter.edit` (each kind) and each colour command; the real codec
+  accepts them.
+- `packages/loop_link/tests/test_fixtures.py` - Change. When `LOOP_LINK_GEOVIEWER_FIXTURES`
+  is set, read `<variable>/../tool/{commands.list,command.run}.json` (OP11). Build the
+  frames with the `request`, `command` and `input` of the fixtures, and assert that the
+  headers are equal. Skip with a reason when the folder is missing.
+- `packages/loop_link/tests/manual_checks.md` - Change. Add M4 (see "Test strategy of S4").
+- `packages/loop_link/README.md` - Change. A section "Filter and colour", about 10 lines.
+- `ROADMAP.md` - Change (last task of S4). Update the Stage 7 entry: S4 done.
+
+### Stages and rollback of S4
+
+| Stage | Files and behaviour | Acceptance check | Rollback target and compatibility check |
+|---|---|---|---|
+| S4a | `protocol.py`, `encode.py`, `commands.py`, fake viewer (commands endpoint), `test_commands.py`, `test_fake_viewer.py` | `packages/loop_link/.venv/Scripts/python.exe -m pytest packages/loop_link/tests`; `ruff check LoopStructural packages`; `black --check packages/loop_link` | Revert S4a. Nothing else uses the new names. |
+| S4b | `viewer.py` (filter and colour members, no wait, no `send` argument), `__init__.py`, `test_filter.py`, `test_colour.py` | The same commands; FR-018, FR-020, FR-014 (tool part), SC-007 | Revert S4b. S4a stays. |
+| S4c | `viewer.py` (`colour` argument of `send`, `apply_colour` use), tests in `test_colour.py` | The same commands; FR-021 | Revert S4c. The default `colour=None` keeps the old `send`. |
+| S4d | `viewer.py` (the wait of `filter_range`, `filter_values`), tests in `test_filter.py` | The same commands; FR-019. Blocked by OP15 and by step 7 of M4 | Revert S4d. `wait=True` goes back to "return when accepted". |
+| S4e | `test_codec_real.py`, `test_fixtures.py`, `manual_checks.md` (M4), `README.md`, `ROADMAP.md` | The same commands with `LOOP_LINK_GEOVIEWER_REPO` and `LOOP_LINK_GEOVIEWER_FIXTURES` set; M4 by hand | Revert S4e. |
+
+### Test strategy of S4
+
+- Unit and regression tests: the files above. The fake viewer applies the rules above, as the
+  S5 fake applies the rules of spec 067.
+- Integration and compatibility: the real geoviewer codec checks the frames
+  (`test_codec_real.py`, needs `LOOP_LINK_GEOVIEWER_REPO`). The fixtures check the two
+  headers that exist (`test_fixtures.py`).
+- Manual check M4 (real window viewer of protocol 1.18). Use a fresh scene (`Viewer.clear`)
+  and place test objects near the origin of the scene (M3 found that far objects give wrong
+  pictures):
+  1. Send a `BlockModel` with a number property `grade`. Call `filter_range` for `grade`
+     from 0.5 to 1.0. Check that the viewer shows only the cells in the range.
+  2. Send an object with a category property. Call `filter_values` with two codes, then with
+     `exclude=True`. Check the picture each time.
+  3. Call `filter_enable(False)` and then `filter_remove`. Check that all cells show again.
+  4. Call `filter_range` for a text property and for a property that does not exist. Check
+     the `InvalidInputError` and its text.
+  5. Call `set_colour_property`, `set_colour_map` (`coolwarm`), `set_colour_range`,
+     `set_colour_scale("log")` and `set_object_colour`. Check the picture after each call.
+  6. Call the colour map, range and scale methods for a category property. Check the error.
+     Call `colour_map_names()` and check that it gives the names of the viewer.
+  7. Send the same id again (a new revision). Check that the filter and the colours stay.
+     Start a filter that takes time (an object with 1,000,000 cells), call `filter_range`
+     with `wait=False`, and check what a second command does while the viewer builds
+     (OP15). Call `cancel_filter` during the build.
+  8. Send an object of 1,000,000 cells with `colour=ColourSettings(...)`. Check that the
+     colour settings apply (OP19: the 0.5 s of `flush` can be too short).
+  9. Check the questions "assumed" in the facts: does `add` for an existing filter get
+     `refused` (OP16), and is a new filter on after `add` and `set_range`.
+  M4 records the time of one `set_range` command on the object of 1,000,000 cells.
+- Backend coverage and cross-language fixtures: as in the main "Test strategy".
+- Performance: SC-007 is a test with the fake viewer (a limit of 250 ms per command).
+- Merge gates: as in the main "Test strategy".
+
+### Constitution check for S4
+
+All rows of the table above hold for S4. The differences: the new files are under
+`packages/loop_link` only; docstrings and type hints follow the same rules; the ROADMAP
+entry is updated in the last task; each stage is a separate revert.
+
 ## Test strategy
 
 - **Unit and regression tests** (`packages/loop_link/tests/`):
@@ -1259,25 +1626,27 @@ discovery, object model, `Viewer`, adapters, plugin push API, fake viewer.
 | FR-011 | `orientation.py`, `Vectors` | `test_orientation.py`; story 1 scenario 6 | None |
 | FR-012 | One codec in `protocol.py` and `encode.py`; core imports numpy and the standard library only; adapters are extras | `test_import.py`; `test_protocol.py` | None |
 | FR-013 | `unknown_message` of the tool connection gives `MissingFeatureError` (`raise_for_request_error`) | `test_tool.py`, `test_selection.py` (`protocol_minor=14`) | None |
-| FR-014 | `Viewer.release_data`, `BusyError`, keepalive thread; the tool connection (S5) for select, read and fetch while another program holds the data connection. Filter and colour use the same tool connection (S4). | `test_viewer.py` scenario 7 (send part); `test_selection.py` (tool part) | OP6 for filter and colour |
+| FR-014 | `Viewer.release_data`, `BusyError`, keepalive thread; the tool connection (S5) for select, read and fetch while another program holds the data connection. Filter and colour use the same tool connection (S4b). | `test_viewer.py` scenario 7 (send part); `test_selection.py` (tool part); `test_filter.py` (filter and colour while another program holds the data connection) | None |
 | FR-015 | `testing/fake_viewer.py` | `test_viewer.py`, `test_fixtures.py` | None |
 | FR-016 | "Repository registration" | `git grep -n loop_link ROADMAP.md .release-please-config.json` gives 2 entries or more | None |
 | FR-017 | `pyproject.toml` (`>=3.10`), `ruff.toml` (py310) | `ruff check` and CI on 3.10 to 3.12 | OP4 (QGIS Python), OP5 (uv) |
-| FR-018 | Filter | none in this plan | OP6 (S4) |
-| FR-019 | Filter wait and cancel | none in this plan | OP6 (S4) |
-| FR-020 | Colour | none in this plan | OP6 (S4) |
-| FR-021 | Colour in send | none in this plan | OP1, OP6 (S4) |
+| FR-018 | `Viewer.filter_range`, `filter_values`, `filter_enable`, `filter_remove`, `commands.run_command` (S4b) | `test_filter.py`, `test_codec_real.py`, `test_fixtures.py`; M4 steps 1 to 4 | OP16, OP17, OP18, OP20 |
+| FR-019 | `Viewer.cancel_filter` (S4b); the `wait` argument (S4d) | `test_filter.py`; M4 step 7 | OP15 (the viewer gives no end signal) |
+| FR-020 | `Viewer.set_colour_property`, `set_colour_map`, `set_colour_range`, `clear_colour_range`, `set_colour_scale`, `set_object_colour`, `colour_map_names` (S4b) | `test_colour.py`, `test_commands.py`; M4 steps 5 and 6 | OP18 |
+| FR-021 | `ColourSettings`, `Viewer.apply_colour`, the `colour` argument of `Viewer.send` (S4c) | `test_colour.py`; M4 step 8 | OP19 |
 | SC-001 | `test_performance.py`; M1 | assert under 5 s | None |
 | SC-002 | `fetch.py`, `Viewer.fetch` | `test_roundtrip.py` (rtol 1e-6, seven types) | None |
 | SC-003 | `encode.selection_set_frame` (one frame, one `u32` buffer) | `test_selection.py` (100,000 cells in one frame) | None |
 | SC-004 | `test_fixtures.py` | frames of `fixtures/protocol/python`; the geoviewer tests read the frames of the library in the geoviewer repository | OP8 |
 | SC-005 | `test_import.py`; CI matrix | `sys.modules` check | None |
 | SC-006 | "Repository registration" | `git grep` of two files | None |
-| SC-007 | Reply time of colour and filter | none in this plan | OP6 (S4) |
+| SC-007 | `run_command` on the tool connection (S4b) | `test_colour.py` (each command under 250 ms with an object of 1,000,000 cells in the fake) | None |
 | Story 1 scenarios 1 to 8 | `Viewer`, `discovery.py`, `test_viewer.py`, `test_import.py` | as above | None |
 | Story 2 scenarios 1 to 4 | `Viewer.select`, errors table | `test_selection.py` | None |
 | Story 3 scenarios 1 to 3 | `Viewer.selection`, `watch_selection`, `parse_selection_result` | `test_selection.py` | None |
 | Story 4 scenarios 1 to 3 | `Viewer.fetch`, `decode_object` | `test_fetch.py`, `test_roundtrip.py` | None |
+| Story 6 scenarios 1 to 6 | `Viewer.filter_*`, `cancel_filter`, the fake `filters` | `test_filter.py` (scenario 5 in S4d); M4 | OP15, OP16, OP17, OP18, OP20 |
+| Story 7 scenarios 1 to 7 | `Viewer.set_colour_*`, `apply_colour`, `send(colour=)` | `test_colour.py`; M4 | OP18, OP19 |
 | Story 5 scenarios 1 and 2 | `push.py`, `test_push.py` | frame comparison with plugin frames (OP8); worker thread test | OP8 |
 
 ## Handover
@@ -1292,18 +1661,14 @@ Other specs and repositories use these contracts.
   the old `PushResult.summary()`. The plugin builds `objects` as `(id, SceneObject)`
   pairs and runs the call on its worker thread. The plugin owns the change and the
   removal of the old client (FR-009).
-- **S4** (filter and colour) uses: `WebSocketClient.connect(..., path="/tool")`;
-  the tool messages `commands.list`, `command.run`, `command.result`,
-  `request.error`, `command.cancel`, `command.progress`; the commands
-  `filter.edit` (input `{"object": id, "edit": {"kind": "set_range", "array":
-  name, "min": text, "max": text, "keep_nan": bool}}`; kinds `add`, `set_range`,
-  `set_values` with `values: list[u32]`, `set_on`, `set_exclude`, `remove`,
-  `cancel`), `colour.set_active` (`id`, `array`), `colour.set_map` (`id`, `name`),
-  `colour.set_range` (`id`, `min` text, `max` text), `colour.clear_range` (`id`),
-  `colour.set_scale` (`object`, `scale` `linear` or `log`), `object.set_colour`
-  (`id`, `colour` RGB or `null`). The viewer answers `{"status":"done"}` or
-  `{"status":"refused","text":...}`; the result has no count of passing elements, so
-  the "count of elements that pass" of story 6 needs a check in the S4 plan.
+- **S4** (filter and colour) gives: `Viewer.filter_range`, `filter_values`, `filter_enable`,
+  `filter_remove`, `cancel_filter`, `colour_map_names`, `set_colour_property`,
+  `set_colour_map`, `set_colour_range`, `clear_colour_range`, `set_colour_scale`,
+  `set_object_colour`, `apply_colour`, the `colour` argument of `Viewer.send`,
+  `loop_link.commands.ColourSettings`, and the fake viewer members `filters` and
+  `colouring`. It uses the tool messages `commands.list`, `command.run`, `command.result`
+  and the commands of "Facts that S4 uses". The viewer result has no count of elements
+  that pass (OP20).
 - **S5** (select, read selection, fetch) gives: `Viewer.select`, `Viewer.selection`,
   `Viewer.watch_selection`, `Viewer.fetch`, `Selection`, `SelectionWatcher`,
   `FetchResult`, the errors `StaleRevisionError`, `CancelledError` and
