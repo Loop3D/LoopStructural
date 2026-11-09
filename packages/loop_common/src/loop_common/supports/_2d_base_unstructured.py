@@ -173,8 +173,9 @@ class BaseUnstructured2d(BaseSupport):
     def element_size(self):
         v1 = self.nodes[self.elements[:, 1], :] - self.nodes[self.elements[:, 0], :]
         v2 = self.nodes[self.elements[:, 2], :] - self.nodes[self.elements[:, 0], :]
-        # cross product isn't defined in 2d, numpy returns the magnitude of the orthogonal vector.
-        return 0.5 * np.cross(v1, v2, axisa=1, axisb=1)
+        # The cross product is not defined in 2d. Use the z part of the 3d cross product
+        # (numpy 2 no longer accepts 2d vectors in np.cross).
+        return 0.5 * (v1[:, 0] * v2[:, 1] - v1[:, 1] * v2[:, 0])
 
     @abstractmethod
     def evaluate_shape(self, locations) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
