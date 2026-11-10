@@ -5,10 +5,13 @@ import inspect
 from dataclasses import dataclass
 
 import numpy as np
+from loop_common.logging import get_logger
 from scipy.sparse import csr_matrix, diags, vstack
 from scipy.sparse.linalg import LinearOperator, cg, lsmr, lsqr
 
 from .admm_method import ADMM
+
+logger = get_logger(__name__)
 
 
 @dataclass
@@ -95,6 +98,7 @@ def admm_solve(
     model_update_tol: float = 0.0,
     min_iterations: int = 5,
     return_history: bool = False,
+    warn_on_nonconvergence: bool = True,
 ):
     if A.shape[1] != x0.shape[0]:
         raise ValueError("Number of columns in interpolation matrix does not match x0")
@@ -320,6 +324,11 @@ def admm_solve(
         )
 
     history = []
+    # how the major loop ended: it converged, it stopped because the model stopped changing (the
+    # caller asked for that with model_update_tol), or it used all of nmajor iterations
+    converged = False
+    stopped_on_model_update = False
+    last_residuals = None
     inner_x0 = None
     active_rows_prev = None
     use_cached_normal_eq = solver_name == "cg" and not active_set
@@ -415,6 +424,8 @@ def admm_solve(
             eps_pri = float(n_ie_sqrt * admm_abs_tol + admm_rel_tol * max(qx_norm, z_norm))
             eps_dual = float(n_ie_sqrt * admm_abs_tol + admm_rel_tol * u_norm)
 
+            last_residuals = (primal_norm, eps_pri, dual_norm, eps_dual)
+
             if return_history:
                 history.append(
                     {
@@ -431,6 +442,7 @@ def admm_solve(
                 )
 
             if (_i + 1) >= min_iterations and primal_norm <= eps_pri and dual_norm <= eps_dual:
+                converged = True
                 break
 
             if model_update_tol > 0.0 and (_i + 1) >= min_iterations:
@@ -440,6 +452,7 @@ def admm_solve(
                         history[-1]["stopped_on_model_update"] = True
                         history[-1]["dx_norm"] = dx_norm
                         history[-1]["model_norm"] = model_norm_before
+                    stopped_on_model_update = True
                     break
 
             if adaptive_rho_enabled and (_i + 1) >= min_iterations:
@@ -457,6 +470,32 @@ def admm_solve(
             model_scale = max(model_norm_before, 1.0)
             if dx_norm <= model_update_tol * model_scale:
                 break
+
+    if (
+        warn_on_nonconvergence
+        and Q.shape[0] > 0
+        and not converged
+        and not stopped_on_model_update
+        and last_residuals
+    ):
+        primal_norm, eps_pri, dual_norm, eps_dual = last_residuals
+        if primal_norm > eps_pri:
+            consequence = "the inequality constraints may not be fully satisfied"
+            advice = (
+                f"Try a larger admm_weight (the final value used was {rho:g}) or a larger nmajor."
+            )
+        else:
+            # the bounds hold to tolerance; only the dual residual (optimality) missed
+            consequence = (
+                "the inequality constraints are satisfied to tolerance but the solution may "
+                "not be fully converged"
+            )
+            advice = f"Try a larger nmajor (the final admm_weight was {rho:g})."
+        logger.warning(
+            f"ADMM used all {nmajor} iterations without converging: primal residual "
+            f"{primal_norm:.3g} (tolerance {eps_pri:.3g}), dual residual {dual_norm:.3g} "
+            f"(tolerance {eps_dual:.3g}); {consequence}. {advice}"
+        )
 
     if return_history:
         return model, history
