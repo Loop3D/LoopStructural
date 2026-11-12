@@ -1,0 +1,1109 @@
+{
+ "units": [
+  {
+   "unit": 0,
+   "series": "cover",
+   "lower": null,
+   "upper": 0.0
+  },
+  {
+   "unit": 1,
+   "series": "cover",
+   "lower": 0.0,
+   "upper": 0.15
+  },
+  {
+   "unit": 2,
+   "series": "cover",
+   "lower": 0.15,
+   "upper": 0.3
+  },
+  {
+   "unit": 3,
+   "series": "cover",
+   "lower": 0.3,
+   "upper": null
+  },
+  {
+   "unit": 4,
+   "series": "basement",
+   "lower": null,
+   "upper": 0.05
+  },
+  {
+   "unit": 5,
+   "series": "basement",
+   "lower": 0.05,
+   "upper": 0.2
+  },
+  {
+   "unit": 6,
+   "series": "basement",
+   "lower": 0.2,
+   "upper": 0.35
+  },
+  {
+   "unit": 7,
+   "series": "basement",
+   "lower": 0.35,
+   "upper": 0.5
+  },
+  {
+   "unit": 8,
+   "series": "basement",
+   "lower": 0.5,
+   "upper": 0.65
+  },
+  {
+   "unit": 9,
+   "series": "basement",
+   "lower": 0.65,
+   "upper": null
+  }
+ ],
+ "materials": {
+  "1007": {
+   "ref": 1007,
+   "sides": {
+    "f_post": -1,
+    "f_pre": -1
+   },
+   "gx": {
+    "f_post": -1,
+    "f_pre": -1
+   },
+   "inside_tip": {},
+   "region": "basement",
+   "interval": [
+    0,
+    0
+   ],
+   "parent": 1003,
+   "cut": "horizon basement 0.05 [f_pre-,f_post-]",
+   "unit": 4,
+   "n_tets": 1607
+  },
+  "1011": {
+   "ref": 1011,
+   "sides": {
+    "f_post": -1
+   },
+   "gx": {
+    "f_post": -1
+   },
+   "inside_tip": {},
+   "region": "cover",
+   "interval": [
+    1,
+    1
+   ],
+   "parent": 1004,
+   "cut": "horizon cover 0.15 [f_post-]",
+   "unit": 1,
+   "n_tets": 4566
+  },
+  "1013": {
+   "ref": 1013,
+   "sides": {
+    "f_post": 1
+   },
+   "gx": {
+    "f_post": 1
+   },
+   "inside_tip": {},
+   "region": "cover",
+   "interval": [
+    1,
+    1
+   ],
+   "parent": 1006,
+   "cut": "horizon cover 0.15 [f_post+]",
+   "unit": 1,
+   "n_tets": 14292
+  },
+  "1015": {
+   "ref": 1015,
+   "sides": {
+    "f_post": -1
+   },
+   "gx": {
+    "f_post": -1
+   },
+   "inside_tip": {},
+   "region": "cover",
+   "interval": [
+    2,
+    2
+   ],
+   "parent": 1012,
+   "cut": "horizon cover 0.3 [f_post-]",
+   "unit": 2,
+   "n_tets": 3455
+  },
+  "1016": {
+   "ref": 1016,
+   "sides": {
+    "f_post": -1
+   },
+   "gx": {
+    "f_post": -1
+   },
+   "inside_tip": {},
+   "region": "cover",
+   "interval": [
+    3,
+    3
+   ],
+   "parent": 1012,
+   "cut": "horizon cover 0.3 [f_post-]",
+   "unit": 3,
+   "n_tets": 1595
+  },
+  "1017": {
+   "ref": 1017,
+   "sides": {
+    "f_post": 1
+   },
+   "gx": {
+    "f_post": 1
+   },
+   "inside_tip": {},
+   "region": "cover",
+   "interval": [
+    2,
+    2
+   ],
+   "parent": 1014,
+   "cut": "horizon cover 0.3 [f_post+]",
+   "unit": 2,
+   "n_tets": 12407
+  },
+  "1018": {
+   "ref": 1018,
+   "sides": {
+    "f_post": 1
+   },
+   "gx": {
+    "f_post": 1
+   },
+   "inside_tip": {},
+   "region": "cover",
+   "interval": [
+    3,
+    3
+   ],
+   "parent": 1014,
+   "cut": "horizon cover 0.3 [f_post+]",
+   "unit": 3,
+   "n_tets": 18771
+  },
+  "1019": {
+   "ref": 1019,
+   "sides": {
+    "f_post": -1,
+    "f_pre": 1
+   },
+   "gx": {
+    "f_post": -1,
+    "f_pre": 1
+   },
+   "inside_tip": {},
+   "region": "basement",
+   "interval": [
+    0,
+    0
+   ],
+   "parent": 1008,
+   "cut": "horizon basement 0.05 [f_pre+,f_post-]",
+   "unit": 4,
+   "n_tets": 17334
+  },
+  "1021": {
+   "ref": 1021,
+   "sides": {
+    "f_post": 1,
+    "f_pre": -1
+   },
+   "gx": {
+    "f_post": 1,
+    "f_pre": -1
+   },
+   "inside_tip": {},
+   "region": "basement",
+   "interval": [
+    0,
+    0
+   ],
+   "parent": 1009,
+   "cut": "horizon basement 0.05 [f_pre-,f_post+]",
+   "unit": 4,
+   "n_tets": 5701
+  },
+  "1023": {
+   "ref": 1023,
+   "sides": {
+    "f_post": 1,
+    "f_pre": 1
+   },
+   "gx": {
+    "f_post": 1,
+    "f_pre": 1
+   },
+   "inside_tip": {},
+   "region": "basement",
+   "interval": [
+    0,
+    0
+   ],
+   "parent": 1010,
+   "cut": "horizon basement 0.05 [f_pre+,f_post+]",
+   "unit": 4,
+   "n_tets": 1169
+  },
+  "1025": {
+   "ref": 1025,
+   "sides": {
+    "f_post": -1,
+    "f_pre": 1
+   },
+   "gx": {
+    "f_post": -1,
+    "f_pre": 1
+   },
+   "inside_tip": {},
+   "region": "basement",
+   "interval": [
+    1,
+    1
+   ],
+   "parent": 1020,
+   "cut": "horizon basement 0.2 [f_pre+,f_post-]",
+   "unit": 5,
+   "n_tets": 7641
+  },
+  "1026": {
+   "ref": 1026,
+   "sides": {
+    "f_post": -1,
+    "f_pre": 1
+   },
+   "gx": {
+    "f_post": -1,
+    "f_pre": 1
+   },
+   "inside_tip": {},
+   "region": "basement",
+   "interval": [
+    2,
+    2
+   ],
+   "parent": 1020,
+   "cut": "horizon basement 0.35 [f_pre+,f_post-]",
+   "unit": 6,
+   "n_tets": 3478
+  },
+  "1027": {
+   "ref": 1027,
+   "sides": {
+    "f_post": 1,
+    "f_pre": -1
+   },
+   "gx": {
+    "f_post": 1,
+    "f_pre": -1
+   },
+   "inside_tip": {},
+   "region": "basement",
+   "interval": [
+    1,
+    1
+   ],
+   "parent": 1022,
+   "cut": "horizon basement 0.2 [f_pre-,f_post+]",
+   "unit": 5,
+   "n_tets": 4963
+  },
+  "1029": {
+   "ref": 1029,
+   "sides": {
+    "f_post": 1,
+    "f_pre": 1
+   },
+   "gx": {
+    "f_post": 1,
+    "f_pre": 1
+   },
+   "inside_tip": {},
+   "region": "basement",
+   "interval": [
+    1,
+    1
+   ],
+   "parent": 1024,
+   "cut": "horizon basement 0.2 [f_pre+,f_post+]",
+   "unit": 5,
+   "n_tets": 3708
+  },
+  "1031": {
+   "ref": 1031,
+   "sides": {
+    "f_post": 1,
+    "f_pre": -1
+   },
+   "gx": {
+    "f_post": 1,
+    "f_pre": -1
+   },
+   "inside_tip": {},
+   "region": "basement",
+   "interval": [
+    2,
+    2
+   ],
+   "parent": 1028,
+   "cut": "horizon basement 0.35 [f_pre-,f_post+]",
+   "unit": 6,
+   "n_tets": 3650
+  },
+  "1032": {
+   "ref": 1032,
+   "sides": {
+    "f_post": 1,
+    "f_pre": -1
+   },
+   "gx": {
+    "f_post": 1,
+    "f_pre": -1
+   },
+   "inside_tip": {},
+   "region": "basement",
+   "interval": [
+    3,
+    3
+   ],
+   "parent": 1028,
+   "cut": "horizon basement 0.5 [f_pre-,f_post+]",
+   "unit": 7,
+   "n_tets": 3757
+  },
+  "1033": {
+   "ref": 1033,
+   "sides": {
+    "f_post": 1,
+    "f_pre": 1
+   },
+   "gx": {
+    "f_post": 1,
+    "f_pre": 1
+   },
+   "inside_tip": {},
+   "region": "basement",
+   "interval": [
+    2,
+    2
+   ],
+   "parent": 1030,
+   "cut": "horizon basement 0.35 [f_pre+,f_post+]",
+   "unit": 6,
+   "n_tets": 6650
+  },
+  "1035": {
+   "ref": 1035,
+   "sides": {
+    "f_post": 1,
+    "f_pre": 1
+   },
+   "gx": {
+    "f_post": 1,
+    "f_pre": 1
+   },
+   "inside_tip": {},
+   "region": "basement",
+   "interval": [
+    3,
+    3
+   ],
+   "parent": 1034,
+   "cut": "horizon basement 0.5 [f_pre+,f_post+]",
+   "unit": 7,
+   "n_tets": 6043
+  },
+  "1036": {
+   "ref": 1036,
+   "sides": {
+    "f_post": 1,
+    "f_pre": 1
+   },
+   "gx": {
+    "f_post": 1,
+    "f_pre": 1
+   },
+   "inside_tip": {},
+   "region": "basement",
+   "interval": [
+    4,
+    4
+   ],
+   "parent": 1034,
+   "cut": "horizon basement 0.65 [f_pre+,f_post+]",
+   "unit": 8,
+   "n_tets": 577
+  }
+ },
+ "lineage": {
+  "1": {
+   "ref": 1,
+   "sides": {},
+   "gx": {},
+   "inside_tip": {},
+   "region": null,
+   "interval": null,
+   "parent": null,
+   "cut": null
+  },
+  "1001": {
+   "ref": 1001,
+   "sides": {
+    "f_post": -1
+   },
+   "gx": {
+    "f_post": -1
+   },
+   "inside_tip": {},
+   "region": null,
+   "interval": null,
+   "parent": 1,
+   "cut": "fault f_post [all]"
+  },
+  "1002": {
+   "ref": 1002,
+   "sides": {
+    "f_post": 1
+   },
+   "gx": {
+    "f_post": 1
+   },
+   "inside_tip": {},
+   "region": null,
+   "interval": null,
+   "parent": 1,
+   "cut": "fault f_post [all]"
+  },
+  "1003": {
+   "ref": 1003,
+   "sides": {
+    "f_post": -1
+   },
+   "gx": {
+    "f_post": -1
+   },
+   "inside_tip": {},
+   "region": null,
+   "interval": null,
+   "parent": 1001,
+   "cut": "unconformity cover [f_post-]"
+  },
+  "1004": {
+   "ref": 1004,
+   "sides": {
+    "f_post": -1
+   },
+   "gx": {
+    "f_post": -1
+   },
+   "inside_tip": {},
+   "region": "cover",
+   "interval": [
+    1,
+    3
+   ],
+   "parent": 1001,
+   "cut": "unconformity cover [f_post-]"
+  },
+  "1005": {
+   "ref": 1005,
+   "sides": {
+    "f_post": 1
+   },
+   "gx": {
+    "f_post": 1
+   },
+   "inside_tip": {},
+   "region": null,
+   "interval": null,
+   "parent": 1002,
+   "cut": "unconformity cover [f_post+]"
+  },
+  "1006": {
+   "ref": 1006,
+   "sides": {
+    "f_post": 1
+   },
+   "gx": {
+    "f_post": 1
+   },
+   "inside_tip": {},
+   "region": "cover",
+   "interval": [
+    1,
+    3
+   ],
+   "parent": 1002,
+   "cut": "unconformity cover [f_post+]"
+  },
+  "1007": {
+   "ref": 1007,
+   "sides": {
+    "f_post": -1,
+    "f_pre": -1
+   },
+   "gx": {
+    "f_post": -1,
+    "f_pre": -1
+   },
+   "inside_tip": {},
+   "region": "basement",
+   "interval": [
+    0,
+    0
+   ],
+   "parent": 1003,
+   "cut": "horizon basement 0.05 [f_pre-,f_post-]"
+  },
+  "1008": {
+   "ref": 1008,
+   "sides": {
+    "f_post": -1,
+    "f_pre": 1
+   },
+   "gx": {
+    "f_post": -1,
+    "f_pre": 1
+   },
+   "inside_tip": {},
+   "region": "basement",
+   "interval": [
+    0,
+    5
+   ],
+   "parent": 1003,
+   "cut": "fault f_pre [f_post-]"
+  },
+  "1009": {
+   "ref": 1009,
+   "sides": {
+    "f_post": 1,
+    "f_pre": -1
+   },
+   "gx": {
+    "f_post": 1,
+    "f_pre": -1
+   },
+   "inside_tip": {},
+   "region": "basement",
+   "interval": [
+    0,
+    5
+   ],
+   "parent": 1005,
+   "cut": "fault f_pre [f_post+]"
+  },
+  "1010": {
+   "ref": 1010,
+   "sides": {
+    "f_post": 1,
+    "f_pre": 1
+   },
+   "gx": {
+    "f_post": 1,
+    "f_pre": 1
+   },
+   "inside_tip": {},
+   "region": "basement",
+   "interval": [
+    0,
+    5
+   ],
+   "parent": 1005,
+   "cut": "fault f_pre [f_post+]"
+  },
+  "1011": {
+   "ref": 1011,
+   "sides": {
+    "f_post": -1
+   },
+   "gx": {
+    "f_post": -1
+   },
+   "inside_tip": {},
+   "region": "cover",
+   "interval": [
+    1,
+    1
+   ],
+   "parent": 1004,
+   "cut": "horizon cover 0.15 [f_post-]"
+  },
+  "1012": {
+   "ref": 1012,
+   "sides": {
+    "f_post": -1
+   },
+   "gx": {
+    "f_post": -1
+   },
+   "inside_tip": {},
+   "region": "cover",
+   "interval": [
+    2,
+    3
+   ],
+   "parent": 1004,
+   "cut": "horizon cover 0.15 [f_post-]"
+  },
+  "1013": {
+   "ref": 1013,
+   "sides": {
+    "f_post": 1
+   },
+   "gx": {
+    "f_post": 1
+   },
+   "inside_tip": {},
+   "region": "cover",
+   "interval": [
+    1,
+    1
+   ],
+   "parent": 1006,
+   "cut": "horizon cover 0.15 [f_post+]"
+  },
+  "1014": {
+   "ref": 1014,
+   "sides": {
+    "f_post": 1
+   },
+   "gx": {
+    "f_post": 1
+   },
+   "inside_tip": {},
+   "region": "cover",
+   "interval": [
+    2,
+    3
+   ],
+   "parent": 1006,
+   "cut": "horizon cover 0.15 [f_post+]"
+  },
+  "1015": {
+   "ref": 1015,
+   "sides": {
+    "f_post": -1
+   },
+   "gx": {
+    "f_post": -1
+   },
+   "inside_tip": {},
+   "region": "cover",
+   "interval": [
+    2,
+    2
+   ],
+   "parent": 1012,
+   "cut": "horizon cover 0.3 [f_post-]"
+  },
+  "1016": {
+   "ref": 1016,
+   "sides": {
+    "f_post": -1
+   },
+   "gx": {
+    "f_post": -1
+   },
+   "inside_tip": {},
+   "region": "cover",
+   "interval": [
+    3,
+    3
+   ],
+   "parent": 1012,
+   "cut": "horizon cover 0.3 [f_post-]"
+  },
+  "1017": {
+   "ref": 1017,
+   "sides": {
+    "f_post": 1
+   },
+   "gx": {
+    "f_post": 1
+   },
+   "inside_tip": {},
+   "region": "cover",
+   "interval": [
+    2,
+    2
+   ],
+   "parent": 1014,
+   "cut": "horizon cover 0.3 [f_post+]"
+  },
+  "1018": {
+   "ref": 1018,
+   "sides": {
+    "f_post": 1
+   },
+   "gx": {
+    "f_post": 1
+   },
+   "inside_tip": {},
+   "region": "cover",
+   "interval": [
+    3,
+    3
+   ],
+   "parent": 1014,
+   "cut": "horizon cover 0.3 [f_post+]"
+  },
+  "1019": {
+   "ref": 1019,
+   "sides": {
+    "f_post": -1,
+    "f_pre": 1
+   },
+   "gx": {
+    "f_post": -1,
+    "f_pre": 1
+   },
+   "inside_tip": {},
+   "region": "basement",
+   "interval": [
+    0,
+    0
+   ],
+   "parent": 1008,
+   "cut": "horizon basement 0.05 [f_pre+,f_post-]"
+  },
+  "1020": {
+   "ref": 1020,
+   "sides": {
+    "f_post": -1,
+    "f_pre": 1
+   },
+   "gx": {
+    "f_post": -1,
+    "f_pre": 1
+   },
+   "inside_tip": {},
+   "region": "basement",
+   "interval": [
+    1,
+    5
+   ],
+   "parent": 1008,
+   "cut": "horizon basement 0.05 [f_pre+,f_post-]"
+  },
+  "1021": {
+   "ref": 1021,
+   "sides": {
+    "f_post": 1,
+    "f_pre": -1
+   },
+   "gx": {
+    "f_post": 1,
+    "f_pre": -1
+   },
+   "inside_tip": {},
+   "region": "basement",
+   "interval": [
+    0,
+    0
+   ],
+   "parent": 1009,
+   "cut": "horizon basement 0.05 [f_pre-,f_post+]"
+  },
+  "1022": {
+   "ref": 1022,
+   "sides": {
+    "f_post": 1,
+    "f_pre": -1
+   },
+   "gx": {
+    "f_post": 1,
+    "f_pre": -1
+   },
+   "inside_tip": {},
+   "region": "basement",
+   "interval": [
+    1,
+    5
+   ],
+   "parent": 1009,
+   "cut": "horizon basement 0.05 [f_pre-,f_post+]"
+  },
+  "1023": {
+   "ref": 1023,
+   "sides": {
+    "f_post": 1,
+    "f_pre": 1
+   },
+   "gx": {
+    "f_post": 1,
+    "f_pre": 1
+   },
+   "inside_tip": {},
+   "region": "basement",
+   "interval": [
+    0,
+    0
+   ],
+   "parent": 1010,
+   "cut": "horizon basement 0.05 [f_pre+,f_post+]"
+  },
+  "1024": {
+   "ref": 1024,
+   "sides": {
+    "f_post": 1,
+    "f_pre": 1
+   },
+   "gx": {
+    "f_post": 1,
+    "f_pre": 1
+   },
+   "inside_tip": {},
+   "region": "basement",
+   "interval": [
+    1,
+    5
+   ],
+   "parent": 1010,
+   "cut": "horizon basement 0.05 [f_pre+,f_post+]"
+  },
+  "1025": {
+   "ref": 1025,
+   "sides": {
+    "f_post": -1,
+    "f_pre": 1
+   },
+   "gx": {
+    "f_post": -1,
+    "f_pre": 1
+   },
+   "inside_tip": {},
+   "region": "basement",
+   "interval": [
+    1,
+    1
+   ],
+   "parent": 1020,
+   "cut": "horizon basement 0.2 [f_pre+,f_post-]"
+  },
+  "1026": {
+   "ref": 1026,
+   "sides": {
+    "f_post": -1,
+    "f_pre": 1
+   },
+   "gx": {
+    "f_post": -1,
+    "f_pre": 1
+   },
+   "inside_tip": {},
+   "region": "basement",
+   "interval": [
+    2,
+    2
+   ],
+   "parent": 1020,
+   "cut": "horizon basement 0.35 [f_pre+,f_post-]"
+  },
+  "1027": {
+   "ref": 1027,
+   "sides": {
+    "f_post": 1,
+    "f_pre": -1
+   },
+   "gx": {
+    "f_post": 1,
+    "f_pre": -1
+   },
+   "inside_tip": {},
+   "region": "basement",
+   "interval": [
+    1,
+    1
+   ],
+   "parent": 1022,
+   "cut": "horizon basement 0.2 [f_pre-,f_post+]"
+  },
+  "1028": {
+   "ref": 1028,
+   "sides": {
+    "f_post": 1,
+    "f_pre": -1
+   },
+   "gx": {
+    "f_post": 1,
+    "f_pre": -1
+   },
+   "inside_tip": {},
+   "region": "basement",
+   "interval": [
+    2,
+    5
+   ],
+   "parent": 1022,
+   "cut": "horizon basement 0.2 [f_pre-,f_post+]"
+  },
+  "1029": {
+   "ref": 1029,
+   "sides": {
+    "f_post": 1,
+    "f_pre": 1
+   },
+   "gx": {
+    "f_post": 1,
+    "f_pre": 1
+   },
+   "inside_tip": {},
+   "region": "basement",
+   "interval": [
+    1,
+    1
+   ],
+   "parent": 1024,
+   "cut": "horizon basement 0.2 [f_pre+,f_post+]"
+  },
+  "1030": {
+   "ref": 1030,
+   "sides": {
+    "f_post": 1,
+    "f_pre": 1
+   },
+   "gx": {
+    "f_post": 1,
+    "f_pre": 1
+   },
+   "inside_tip": {},
+   "region": "basement",
+   "interval": [
+    2,
+    5
+   ],
+   "parent": 1024,
+   "cut": "horizon basement 0.2 [f_pre+,f_post+]"
+  },
+  "1031": {
+   "ref": 1031,
+   "sides": {
+    "f_post": 1,
+    "f_pre": -1
+   },
+   "gx": {
+    "f_post": 1,
+    "f_pre": -1
+   },
+   "inside_tip": {},
+   "region": "basement",
+   "interval": [
+    2,
+    2
+   ],
+   "parent": 1028,
+   "cut": "horizon basement 0.35 [f_pre-,f_post+]"
+  },
+  "1032": {
+   "ref": 1032,
+   "sides": {
+    "f_post": 1,
+    "f_pre": -1
+   },
+   "gx": {
+    "f_post": 1,
+    "f_pre": -1
+   },
+   "inside_tip": {},
+   "region": "basement",
+   "interval": [
+    3,
+    3
+   ],
+   "parent": 1028,
+   "cut": "horizon basement 0.5 [f_pre-,f_post+]"
+  },
+  "1033": {
+   "ref": 1033,
+   "sides": {
+    "f_post": 1,
+    "f_pre": 1
+   },
+   "gx": {
+    "f_post": 1,
+    "f_pre": 1
+   },
+   "inside_tip": {},
+   "region": "basement",
+   "interval": [
+    2,
+    2
+   ],
+   "parent": 1030,
+   "cut": "horizon basement 0.35 [f_pre+,f_post+]"
+  },
+  "1034": {
+   "ref": 1034,
+   "sides": {
+    "f_post": 1,
+    "f_pre": 1
+   },
+   "gx": {
+    "f_post": 1,
+    "f_pre": 1
+   },
+   "inside_tip": {},
+   "region": "basement",
+   "interval": [
+    3,
+    5
+   ],
+   "parent": 1030,
+   "cut": "horizon basement 0.35 [f_pre+,f_post+]"
+  },
+  "1035": {
+   "ref": 1035,
+   "sides": {
+    "f_post": 1,
+    "f_pre": 1
+   },
+   "gx": {
+    "f_post": 1,
+    "f_pre": 1
+   },
+   "inside_tip": {},
+   "region": "basement",
+   "interval": [
+    3,
+    3
+   ],
+   "parent": 1034,
+   "cut": "horizon basement 0.5 [f_pre+,f_post+]"
+  },
+  "1036": {
+   "ref": 1036,
+   "sides": {
+    "f_post": 1,
+    "f_pre": 1
+   },
+   "gx": {
+    "f_post": 1,
+    "f_pre": 1
+   },
+   "inside_tip": {},
+   "region": "basement",
+   "interval": [
+    4,
+    4
+   ],
+   "parent": 1034,
+   "cut": "horizon basement 0.65 [f_pre+,f_post+]"
+  }
+ }
+}
