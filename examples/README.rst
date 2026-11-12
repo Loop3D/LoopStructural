@@ -13,6 +13,11 @@ learn them:
 4. **Advanced use** - building models directly from geological map data,
    logging, controlling data weighting, and comparing interpolators.
 
+6. **Fault modelling scenarios** - synthetic fault models, from one planar
+   fault to finite faults, listric faults, fault networks, faults and
+   unconformities, drag and fault uncertainty, each checked against the
+   known stratigraphy before faulting.
+
 Each example is a standalone, runnable Python script. Most examples load
 one of the sample datasets bundled in :code:`LoopStructural.datasets`, so
 no external data is required to follow along.
