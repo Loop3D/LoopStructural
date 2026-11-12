@@ -1,0 +1,120 @@
+--- a/fault_mesh_benchmarks/src/fault_benchmarks/spec.py
++++ b/fault_mesh_benchmarks/src/fault_benchmarks/spec.py
+@@ -160,6 +160,32 @@
+     return surf
+ 
+ 
++def bend_surface(x_center: float, step: float, y_bend: float, width: float) -> SurfaceFn:
++    """Vertical fault whose map trace makes a smooth step at ``y_bend``.
++
++    Trace: x(y) = x_center - 0.5 * step * tanh((y - y_bend) / width). For
++    ``step > 0`` the trace moves toward -x going north (+y): with dextral
++    slip (the +x block moves -y) this is a restraining (left-stepping) bend.
++    The normal points to +x.
++    """
++
++    def x_of(y):
++        return x_center - 0.5 * step * np.tanh((y - y_bend) / width)
++
++    def dx_dy(y):
++        return -0.5 * step / width / np.cosh((y - y_bend) / width) ** 2
++
++    def surf(u, v):
++        y = 0.5 + 0.6 * u
++        z = 0.5 + 0.6 * v
++        p = np.stack([x_of(y), y, z], axis=1)
++        n = np.stack([np.ones_like(y), -dx_dy(y), np.zeros_like(y)], axis=1)
++        n /= np.linalg.norm(n, axis=1)[:, None]
++        return p, n
++
++    return surf
++
++
+ def listric_surface(
+     x_top: float,
+     z_top: float,
+--- a/fault_mesh_benchmarks/src/fault_benchmarks/cases.py
++++ b/fault_mesh_benchmarks/src/fault_benchmarks/cases.py
+@@ -11,7 +11,15 @@
+ 
+ import numpy as np
+ 
+-from .spec import CaseSpec, FaultSpec, SeriesSpec, dip_vectors, listric_surface, planar_surface
++from .spec import (
++    CaseSpec,
++    FaultSpec,
++    SeriesSpec,
++    bend_surface,
++    dip_vectors,
++    listric_surface,
++    planar_surface,
++)
+ 
+ CASES: dict[str, Callable[[], CaseSpec]] = {}
+ 
+@@ -411,6 +419,55 @@
+     )
+ 
+ 
++@register
++def restraining_bend() -> CaseSpec:
++    step, width = 0.2, 0.12
++    surf = bend_surface(x_center=0.5, step=step, y_bend=0.5, width=width)
++    p0, n0 = surf(np.array([0.0]), np.array([0.0]))
++    tangent = np.array([-n0[0, 1], n0[0, 0], 0.0])  # along strike, pointing +y
++    main = FaultSpec(
++        name="f_main",
++        center=tuple(p0[0]),
++        normal=tuple(n0[0]),
++        slip=tuple(-tangent),  # dextral: the +x (hanging-wall) block moves -y
++        displacement=0.12,
++        surface=surf,
++        profile="constant",
++        samples=(15, 9),
++        nelements=40_000,
++    )
++    # Positive flower: reverse splays dipping toward the bend, one on each side.
++    # Each abuts the main fault at depth and dies out along strike (tips at
++    # |y - 0.5| = 0.3), so the pop-up is confined to the bend.
++    east = _planar_fault("f_splay_e", (0.62, 0.5, 0.75), 60, 270, 0.06, sense="reverse",
++                         profile="base", axes=(0.3, 4.0, 0.3), abuts=("f_main", 1))
++    west = _planar_fault("f_splay_w", (0.38, 0.5, 0.75), 60, 90, 0.06, sense="reverse",
++                         profile="base", axes=(0.3, 4.0, 0.3), abuts=("f_main", -1))
++    strat = SeriesSpec(
++        name="strat",
++        field=lambda p: p[:, 2] + 0.3 * (p[:, 1] - 0.5),
++        expression="z + 0.3*(y - 0.5)",
++        isovalues=[0.2, 0.4, 0.6, 0.8],
++        faults=["f_main", "f_splay_e", "f_splay_w"],
++        n_samples=2000,
++        nelements=50_000,
++    )
++    return CaseSpec(
++        name="restraining_bend",
++        category="pseudo-real",
++        description=(
++            "Vertical dextral strike-slip fault (slip 0.12) whose trace steps left by 0.2 "
++            "across a smooth 40 deg bend at y = 0.5: a restraining bend. Two reverse splays "
++            "(dip 60, throw 0.06) dip toward the bend from each side, abut the main fault at "
++            "depth and die out along strike, making a positive flower (pop-up). Layers dip "
++            "along y, so the horizontal slip gives a visible offset that changes along the bend."
++        ),
++        faults=[main, east, west],
++        series=[strat],
++        tags=["strike-slip", "restraining-bend", "flower", "curved", "abutment", "tip"],
++    )
++
++
+ @register
+ def narrow_horst() -> CaseSpec:
+     west = _planar_fault("f_west", (0.48, 0.5, 0.5), 89, 270, 0.08)
+--- a/fault_mesh_benchmarks/README.md
++++ b/fault_mesh_benchmarks/README.md
+@@ -45,6 +45,7 @@
+ | `crossing_faults` | idealised | Younger fault cuts and offsets an older fault: four blocks, split fault surface. |
+ | `graben` | idealised | Two facing faults converging just below the base. |
+ | `folded_faulted` | pseudo-real | Oblique folds cut by a normal and a reverse fault with variable throw and drag. |
++| `restraining_bend` | pseudo-real | Vertical dextral strike-slip fault with a smooth 40 deg left step (restraining bend); two reverse splays abut it at depth and die out along strike (positive flower). Curved fault with horizontal slip, abutment on a curved host, tips of abutting faults. |
+ | `unconformity_faulted` | pseudo-real | Tilted basement with an early fault, angular unconformity, flat cover, late fault through all. |
+ | `displacement_gradient_{sharp,medium,broad}` | uncertainty | Same offset at the fault; displacement decays over 0.06, 0.2 or 0.6. |
+ | `fault_uncertainty_{0,1,2}` | uncertainty | Seeded realisations of dip, displacement, decay width and position. |
