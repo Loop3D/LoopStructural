@@ -409,8 +409,15 @@ class VolumeMesher:
         sel = np.isin(self.mesh.refs, list(active_refs))
         return np.unique(self.mesh.tets[sel])
 
-    def _cut(self, name: str, active: list[int], fn, neg_update, pos_update) -> None:
-        """Insert fn = 0 in the active materials (fn evaluated at their vertices)."""
+    def _cut(self, name: str, active: list[int], fn, neg_update, pos_update,
+             zero_vertices: np.ndarray | None = None) -> None:
+        """Insert fn = 0 in the active materials (fn evaluated at their vertices).
+
+        ``zero_vertices``: vertices that already lie on this surface in a block
+        where the field is continuous with the active block (a tip cap). Their
+        value is set to exactly 0 so MMG reuses them instead of cutting a second
+        intersection point a rounding distance away.
+        """
         if not active:
             return
         vids = self._active_vertices(active)
@@ -419,9 +426,15 @@ class VolumeMesher:
         bad = ~np.isfinite(vals)
         if bad.any():
             raise ValueError(f"{name}: {int(bad.sum())} non-finite field values")
+        rec = {"cut": name, "active_refs": len(active), "active_vertices": int(len(vids))}
+        if zero_vertices is not None and len(zero_vertices):
+            z = np.isin(vids, zero_vertices)
+            if z.any():
+                rec["snapped_to_zero"] = int(z.sum())
+                rec["snapped_max_abs_value"] = float(np.abs(vals[z]).max())
+                vals[z] = 0.0
         values[vids] = vals
-        rec = {"cut": name, "active_refs": len(active), "active_vertices": int(len(vids)),
-               "min": float(vals.min()), "max": float(vals.max())}
+        rec.update({"min": float(vals.min()), "max": float(vals.max())})
         if vals.min() >= 0 or vals.max() <= 0:
             # No sign change: no MMG call, relabel every active material.
             positive = not (vals.max() <= 0 and vals.min() < 0)
@@ -446,6 +459,44 @@ class VolumeMesher:
         rec.update(mrec)
         rec["materials_after"] = len(self.table.mats)
         self.records.append(rec)
+
+    def _same_gx(self, ma: Material, mb: Material) -> bool:
+        """No real fault between the two materials (raw gx side equal for every fault)."""
+        return all(ma.gx.get(f) == mb.gx.get(f) for f in self.inserted_faults)
+
+    def _zero_on_caps(self, on_surface) -> np.ndarray:
+        """Vertices on an already cut piece of a surface that also lie on a tip cap.
+
+        ``on_surface(ma, mb)`` is True for a face of the surface between materials
+        ``ma`` and ``mb``. A tip cap face separates two sides of a fault with the
+        same raw gx sign: the block fields are equal there, so the next block's
+        piece of the surface must pass through the same vertices.
+        """
+        faces, ta, tb, counts = face_table(self.mesh)
+        inner = counts == 2
+        ra, rb = self.mesh.refs[ta[inner]], self.mesh.refs[tb[inner]]
+        fi = faces[inner]
+        diff = ra != rb
+        fi, ra, rb = fi[diff], ra[diff], rb[diff]
+        pairs = {(int(a), int(b)) for a, b in zip(ra, rb)}
+        surf_pairs, cap_pairs = set(), set()
+        mats = self.table.mats
+        for a, b in pairs:
+            ma, mb = mats[a], mats[b]
+            if on_surface(ma, mb) or on_surface(mb, ma):
+                surf_pairs.add((a, b))
+            for f in self.inserted_faults:
+                sa, sb = ma.sides.get(f), mb.sides.get(f)
+                ga, gb = ma.gx.get(f), mb.gx.get(f)
+                if sa is not None and sb is not None and sa != sb and ga is not None \
+                        and ga == gb:
+                    cap_pairs.add((a, b))
+        if not surf_pairs or not cap_pairs:
+            return np.zeros(0, dtype=np.int64)
+        key = list(zip(ra.tolist(), rb.tolist()))
+        s_sel = np.array([k in surf_pairs for k in key])
+        c_sel = np.array([k in cap_pairs for k in key])
+        return np.intersect1d(np.unique(fi[s_sel]), np.unique(fi[c_sel]))
 
     def _refs(self, pred) -> list[int]:
         present = set(np.unique(self.mesh.refs).tolist())
@@ -501,7 +552,10 @@ class VolumeMesher:
                 m.sides[name] = 1
                 m.gx[name] = 1
 
-            self._cut(f"fault {name} {_pat(pattern)}", refs, gx_fn, neg, pos)
+            zero = self._zero_on_caps(
+                lambda ma, mb: ma.gx.get(name) == -1 and mb.gx.get(name) == 1
+                and self._same_gx(ma, mb))
+            self._cut(f"fault {name} {_pat(pattern)}", refs, gx_fn, neg, pos, zero)
         if has_tip:
             # Footwall side only: beyond the tip (t < 0) the footwall is geologically
             # the hanging-wall block (the fault displaces nothing there).
@@ -550,8 +604,11 @@ class VolumeMesher:
                 m.region = sname
                 m.interval = (lo, n)
 
+            zero = self._zero_on_caps(
+                lambda ma, mb: ma.region == sname and mb.region is None
+                and self._same_gx(ma, mb))
             self._cut(f"unconformity {sname} {_pat(pattern)}", refs,
-                      self._series_fn(sname, pattern, u), lambda m: None, above)
+                      self._series_fn(sname, pattern, u), lambda m: None, above, zero)
 
     def assign_rest(self, sname: str) -> None:
         n = len(self.spec.series_by_name(sname).isovalues)
@@ -578,8 +635,14 @@ class VolumeMesher:
                 def above(m, k=k):
                     m.interval = (k + 1, m.interval[1])
 
+                def on_horizon(ma, mb, k=k):
+                    return (ma.region == sname and mb.region == sname
+                            and ma.interval[0] == k + 1 and mb.interval[1] == k
+                            and self._same_gx(ma, mb))
+
+                zero = self._zero_on_caps(on_horizon)
                 self._cut(f"horizon {sname} {iso:g} {_pat(pattern)}", refs,
-                          self._series_fn(sname, pattern, float(iso)), below, above)
+                          self._series_fn(sname, pattern, float(iso)), below, above, zero)
 
     # -- driver ----------------------------------------------------------
     def run(self) -> TetMesh:
@@ -927,8 +990,20 @@ def volume_qa(mesher: VolumeMesher, surfaces: list[Surface], labels: dict) -> di
     classified = set()
     for s in surfaces:
         classified.update(map(tuple, np.sort(s.faces, axis=1).tolist()))
+    def tip_cap(ma, mb):
+        """Only differences are fault sides across a tip cap (same raw gx side)."""
+        if ma.region != mb.region or ma.interval != mb.interval:
+            return False
+        names = set(ma.sides) | set(mb.sides)
+        return all(ma.sides.get(f) == mb.sides.get(f)
+                   or (ma.gx.get(f) is not None and ma.gx.get(f) == mb.gx.get(f))
+                   for f in names)
+
     same_geo = np.array([geo(mats[int(a)]) == geo(mats[int(b)]) for a, b in zip(ra, rb)],
                         dtype=bool)
+    cap = np.array([not s and tip_cap(mats[int(a)], mats[int(b)])
+                    for s, a, b in zip(same_geo, ra, rb)], dtype=bool)
+    same_geo |= cap
     is_cls = np.array([tuple(f) in classified for f in np.sort(fi, axis=1).tolist()],
                       dtype=bool)
     unexplained = ~same_geo & ~is_cls
@@ -951,6 +1026,8 @@ def volume_qa(mesher: VolumeMesher, surfaces: list[Surface], labels: dict) -> di
             "geological": int(is_cls.sum()),
             "non_geological_same_geology": int(same_geo.sum()),
             "non_geological_area": float(_tri_area(mesh.points, fi[same_geo]).sum()),
+            "tip_cap_faces": int(cap.sum()),
+            "tip_cap_area": float(_tri_area(mesh.points, fi[cap]).sum()),
             "unexplained": int(unexplained.sum()),
             "unexplained_area": float(_tri_area(mesh.points, fi[unexplained]).sum()),
         },

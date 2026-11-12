@@ -1,0 +1,339 @@
+{
+ "case": "fault_tip",
+ "options": {
+  "cells": 20,
+  "executable": null,
+  "adapt": true,
+  "hsiz": 0.05,
+  "hausd": 0.002,
+  "hgrad": 1.4,
+  "hmin": null,
+  "timeout": 900.0,
+  "keep_files": false
+ },
+ "mmg_calls": 10,
+ "volume": {
+  "n_vertices": 24823,
+  "n_tets": 136014,
+  "volume": 0.9999999999999974,
+  "min_tet_volume": 1.0990198124000407e-10,
+  "nonpositive_tets": 0,
+  "faces_with_more_than_two_tets": 0,
+  "boundary_faces_not_on_cube": 0,
+  "unlabelled_tets": 0,
+  "materials": 14,
+  "units_present": [
+   0,
+   1,
+   2,
+   3,
+   4
+  ],
+  "unit_volumes": {
+   "0": 0.2506634745102899,
+   "1": 0.2003638184928888,
+   "2": 0.1970425484438061,
+   "3": 0.15183740728015133,
+   "4": 0.20009275127286125
+  },
+  "quality": {
+   "min": 1.6194934664831105e-05,
+   "median": 0.8191778441134338,
+   "below_0.1": 129,
+   "below_0.01": 24
+  },
+  "min_dihedral_deg": {
+   "min": 0.0006678660378247269,
+   "below_5": 87,
+   "below_1": 28
+  },
+  "interface_faces": {
+   "geological": 5834,
+   "non_geological_same_geology": 858,
+   "non_geological_area": 0.6456645735970039,
+   "unexplained": 3079,
+   "unexplained_area": 1.3646332164144939
+  }
+ },
+ "surfaces": {
+  "fault_f1": {
+   "kind": "fault",
+   "fault": "f1",
+   "n_triangles": 756,
+   "n_vertices": 438,
+   "area": 0.41851312147204056,
+   "boundary_edges": 118,
+   "nonmanifold_edges": 0,
+   "degenerate_triangles": 0,
+   "blocks": [
+    "[all]"
+   ],
+   "vertex_distance_to_implicit_surface": {
+    "max": 2.9302163232831797e-08,
+    "mean": 4.979046103332053e-09,
+    "p99": 2.1013653170988824e-08
+   },
+   "reference_area": 0.420000522040562,
+   "area_relative_difference": -0.0035414255232230074
+  },
+  "horizon_strat_0": {
+   "kind": "horizon",
+   "series": "strat",
+   "isovalue": 0.25,
+   "unconformity": false,
+   "n_triangles": 1150,
+   "n_vertices": 647,
+   "area": 0.9989833912500948,
+   "boundary_edges": 148,
+   "nonmanifold_edges": 0,
+   "degenerate_triangles": 0,
+   "blocks": [
+    "[f1+]",
+    "[f1-]"
+   ],
+   "vertex_distance_to_implicit_surface": {
+    "max": 0.000764977249432257,
+    "mean": 5.9734594961068125e-05,
+    "p99": 0.0006240372392660488
+   },
+   "reference_area": 0.9991390693495835,
+   "area_relative_difference": -0.00015581224302441132
+  },
+  "horizon_strat_1": {
+   "kind": "horizon",
+   "series": "strat",
+   "isovalue": 0.45,
+   "unconformity": false,
+   "n_triangles": 1181,
+   "n_vertices": 663,
+   "area": 0.9911562398052731,
+   "boundary_edges": 145,
+   "nonmanifold_edges": 0,
+   "degenerate_triangles": 0,
+   "blocks": [
+    "[f1+]",
+    "[f1-]"
+   ],
+   "vertex_distance_to_implicit_surface": {
+    "max": 0.0018935771936042804,
+    "mean": 0.0002090405966225904,
+    "p99": 0.0013916854911489574
+   },
+   "reference_area": 0.9916934775865816,
+   "area_relative_difference": -0.0005417377379710597
+  },
+  "horizon_strat_2": {
+   "kind": "horizon",
+   "series": "strat",
+   "isovalue": 0.65,
+   "unconformity": false,
+   "n_triangles": 1466,
+   "n_vertices": 807,
+   "area": 0.9926527753307377,
+   "boundary_edges": 150,
+   "nonmanifold_edges": 0,
+   "degenerate_triangles": 0,
+   "blocks": [
+    "[f1+]",
+    "[f1-]"
+   ],
+   "vertex_distance_to_implicit_surface": {
+    "max": 0.0010950367993262146,
+    "mean": 8.03368564080224e-05,
+    "p99": 0.0008818576113119958
+   },
+   "reference_area": 0.9928723710423113,
+   "area_relative_difference": -0.00022117214455574796
+  },
+  "horizon_strat_3": {
+   "kind": "horizon",
+   "series": "strat",
+   "isovalue": 0.8,
+   "unconformity": false,
+   "n_triangles": 1281,
+   "n_vertices": 689,
+   "area": 1.000015074154589,
+   "boundary_edges": 95,
+   "nonmanifold_edges": 0,
+   "degenerate_triangles": 0,
+   "blocks": [
+    "[f1+]"
+   ],
+   "vertex_distance_to_implicit_surface": {
+    "max": 0.0007586953947716243,
+    "mean": 3.1004271670608674e-05,
+    "p99": 0.00048463427221852263
+   },
+   "reference_area": 1.0000106604404353,
+   "area_relative_difference": 4.413667102021179e-06
+  }
+ },
+ "missing_surfaces": [],
+ "cuts": [
+  {
+   "cut": "fault f1 [all]",
+   "active_refs": 1,
+   "active_vertices": 9261,
+   "min": -2.5634308546294537,
+   "max": 2.5634448143183146,
+   "command": "mmg3d_O3.exe -in in.mesh -sol in.sol -out out.mesh -ls 0 -f in.mmg3d -v 1 -hsiz 0.05 -hausd 0.002 -hgrad 1.4",
+   "returncode": 0,
+   "seconds": 9.155,
+   "in_vertices": 9261,
+   "in_tets": 48000,
+   "warnings": [],
+   "out_vertices": 18398,
+   "out_tets": 100005,
+   "materials_after": 2
+  },
+  {
+   "cut": "tip f1 [all]",
+   "active_refs": 1,
+   "active_vertices": 9392,
+   "min": -1.1366376934713451,
+   "max": 0.9911076542395191,
+   "command": "mmg3d_O3.exe -in in.mesh -sol in.sol -out out.mesh -ls 0 -f in.mmg3d -v 1 -hsiz 0.05 -hausd 0.002 -hgrad 1.4",
+   "returncode": 0,
+   "seconds": 27.03,
+   "in_vertices": 18398,
+   "in_tets": 100005,
+   "warnings": [],
+   "out_vertices": 29025,
+   "out_tets": 159102,
+   "materials_after": 3
+  },
+  {
+   "cut": "horizon strat 0.25 [f1+]",
+   "active_refs": 2,
+   "active_vertices": 22851,
+   "min": -0.2503222176409151,
+   "max": 0.7505168789984413,
+   "command": "mmg3d_O3.exe -in in.mesh -sol in.sol -out out.mesh -ls 0 -f in.mmg3d -v 1 -hsiz 0.05 -hausd 0.002 -hgrad 1.4",
+   "returncode": 0,
+   "seconds": 23.983,
+   "in_vertices": 29025,
+   "in_tets": 159102,
+   "warnings": [],
+   "out_vertices": 25542,
+   "out_tets": 139815,
+   "materials_after": 5
+  },
+  {
+   "cut": "horizon strat 0.25 [f1-]",
+   "active_refs": 1,
+   "active_vertices": 6999,
+   "min": -0.2501194342484303,
+   "max": 0.5349023682806531,
+   "command": "mmg3d_O3.exe -in in.mesh -sol in.sol -out out.mesh -ls 0 -f in.mmg3d -v 1 -hsiz 0.05 -hausd 0.002 -hgrad 1.4",
+   "returncode": 0,
+   "seconds": 20.555,
+   "in_vertices": 25542,
+   "in_tets": 139815,
+   "warnings": [],
+   "out_vertices": 24656,
+   "out_tets": 134893,
+   "materials_after": 6
+  },
+  {
+   "cut": "horizon strat 0.45 [f1+]",
+   "active_refs": 2,
+   "active_vertices": 13780,
+   "min": -0.20114723635216875,
+   "max": 0.5505168789984414,
+   "command": "mmg3d_O3.exe -in in.mesh -sol in.sol -out out.mesh -ls 0 -f in.mmg3d -v 1 -hsiz 0.05 -hausd 0.002 -hgrad 1.4",
+   "returncode": 0,
+   "seconds": 17.13,
+   "in_vertices": 24656,
+   "in_tets": 134893,
+   "warnings": [],
+   "out_vertices": 23849,
+   "out_tets": 130506,
+   "materials_after": 8
+  },
+  {
+   "cut": "horizon strat 0.45 [f1-]",
+   "active_refs": 1,
+   "active_vertices": 4331,
+   "min": -0.20034823231778554,
+   "max": 0.33455557395177876,
+   "command": "mmg3d_O3.exe -in in.mesh -sol in.sol -out out.mesh -ls 0 -f in.mmg3d -v 1 -hsiz 0.05 -hausd 0.002 -hgrad 1.4",
+   "returncode": 0,
+   "seconds": 15.641,
+   "in_vertices": 23849,
+   "in_tets": 130506,
+   "warnings": [],
+   "out_vertices": 24284,
+   "out_tets": 132990,
+   "materials_after": 9
+  },
+  {
+   "cut": "horizon strat 0.65 [f1+]",
+   "active_refs": 2,
+   "active_vertices": 11026,
+   "min": -0.20085489580184102,
+   "max": 0.3505168789984413,
+   "command": "mmg3d_O3.exe -in in.mesh -sol in.sol -out out.mesh -ls 0 -f in.mmg3d -v 1 -hsiz 0.05 -hausd 0.002 -hgrad 1.4",
+   "returncode": 0,
+   "seconds": 19.68,
+   "in_vertices": 24284,
+   "in_tets": 132990,
+   "warnings": [],
+   "out_vertices": 24845,
+   "out_tets": 136167,
+   "materials_after": 11
+  },
+  {
+   "cut": "horizon strat 0.65 [f1-]",
+   "active_refs": 1,
+   "active_vertices": 2819,
+   "min": -0.20152056696058207,
+   "max": 0.13450912346277033,
+   "command": "mmg3d_O3.exe -in in.mesh -sol in.sol -out out.mesh -ls 0 -f in.mmg3d -v 1 -hsiz 0.05 -hausd 0.002 -hgrad 1.4",
+   "returncode": 0,
+   "seconds": 17.177,
+   "in_vertices": 24845,
+   "in_tets": 136167,
+   "warnings": [],
+   "out_vertices": 23666,
+   "out_tets": 129703,
+   "materials_after": 12
+  },
+  {
+   "cut": "horizon strat 0.8 [f1+]",
+   "active_refs": 2,
+   "active_vertices": 8122,
+   "min": -0.15078430248009056,
+   "max": 0.20051687899844128,
+   "command": "mmg3d_O3.exe -in in.mesh -sol in.sol -out out.mesh -ls 0 -f in.mmg3d -v 1 -hsiz 0.05 -hausd 0.002 -hgrad 1.4",
+   "returncode": 0,
+   "seconds": 21.196,
+   "in_vertices": 23666,
+   "in_tets": 129703,
+   "warnings": [],
+   "out_vertices": 23811,
+   "out_tets": 130444,
+   "materials_after": 14
+  },
+  {
+   "cut": "horizon strat 0.8 [f1-]",
+   "active_refs": 1,
+   "active_vertices": 1113,
+   "min": -0.15101737426659145,
+   "max": -0.01568901187377658,
+   "mmg": "skipped (no sign change)",
+   "side": "negative"
+  },
+  {
+   "command": "-in in.mesh -out out.mesh -v 1 -hausd 0.002 -hgrad 1.4 -optim",
+   "returncode": 0,
+   "seconds": 28.449,
+   "out_tets": 136014,
+   "cut": "final optim"
+  }
+ ],
+ "timings_seconds": {
+  "build": 63.78539860001183,
+  "mesh": 226.82850750000216,
+  "write_qa": 8.844924400007585
+ }
+}

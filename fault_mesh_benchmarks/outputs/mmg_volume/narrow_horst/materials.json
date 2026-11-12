@@ -1,0 +1,920 @@
+{
+ "units": [
+  {
+   "unit": 0,
+   "series": "strat",
+   "lower": null,
+   "upper": 0.25
+  },
+  {
+   "unit": 1,
+   "series": "strat",
+   "lower": 0.25,
+   "upper": 0.45
+  },
+  {
+   "unit": 2,
+   "series": "strat",
+   "lower": 0.45,
+   "upper": 0.65
+  },
+  {
+   "unit": 3,
+   "series": "strat",
+   "lower": 0.65,
+   "upper": 0.8
+  },
+  {
+   "unit": 4,
+   "series": "strat",
+   "lower": 0.8,
+   "upper": null
+  }
+ ],
+ "materials": {
+  "1007": {
+   "ref": 1007,
+   "sides": {
+    "f_west": -1,
+    "f_east": -1
+   },
+   "gx": {
+    "f_west": -1,
+    "f_east": -1
+   },
+   "inside_tip": {},
+   "region": "strat",
+   "interval": [
+    0,
+    0
+   ],
+   "parent": 1003,
+   "cut": "horizon strat 0.25 [f_west-,f_east-]",
+   "unit": 0,
+   "n_tets": 1782
+  },
+  "1009": {
+   "ref": 1009,
+   "sides": {
+    "f_west": -1,
+    "f_east": 1
+   },
+   "gx": {
+    "f_west": -1,
+    "f_east": 1
+   },
+   "inside_tip": {},
+   "region": "strat",
+   "interval": [
+    0,
+    0
+   ],
+   "parent": 1004,
+   "cut": "horizon strat 0.25 [f_west-,f_east+]",
+   "unit": 0,
+   "n_tets": 8498
+  },
+  "1011": {
+   "ref": 1011,
+   "sides": {
+    "f_west": 1,
+    "f_east": -1
+   },
+   "gx": {
+    "f_west": 1,
+    "f_east": -1
+   },
+   "inside_tip": {},
+   "region": "strat",
+   "interval": [
+    0,
+    0
+   ],
+   "parent": 1005,
+   "cut": "horizon strat 0.25 [f_west+,f_east-]",
+   "unit": 0,
+   "n_tets": 8284
+  },
+  "1013": {
+   "ref": 1013,
+   "sides": {
+    "f_west": -1,
+    "f_east": -1
+   },
+   "gx": {
+    "f_west": -1,
+    "f_east": -1
+   },
+   "inside_tip": {},
+   "region": "strat",
+   "interval": [
+    1,
+    1
+   ],
+   "parent": 1008,
+   "cut": "horizon strat 0.45 [f_west-,f_east-]",
+   "unit": 1,
+   "n_tets": 1507
+  },
+  "1015": {
+   "ref": 1015,
+   "sides": {
+    "f_west": -1,
+    "f_east": 1
+   },
+   "gx": {
+    "f_west": -1,
+    "f_east": 1
+   },
+   "inside_tip": {},
+   "region": "strat",
+   "interval": [
+    1,
+    1
+   ],
+   "parent": 1010,
+   "cut": "horizon strat 0.45 [f_west-,f_east+]",
+   "unit": 1,
+   "n_tets": 10345
+  },
+  "1017": {
+   "ref": 1017,
+   "sides": {
+    "f_west": 1,
+    "f_east": -1
+   },
+   "gx": {
+    "f_west": 1,
+    "f_east": -1
+   },
+   "inside_tip": {},
+   "region": "strat",
+   "interval": [
+    1,
+    1
+   ],
+   "parent": 1012,
+   "cut": "horizon strat 0.45 [f_west+,f_east-]",
+   "unit": 1,
+   "n_tets": 10396
+  },
+  "1019": {
+   "ref": 1019,
+   "sides": {
+    "f_west": -1,
+    "f_east": -1
+   },
+   "gx": {
+    "f_west": -1,
+    "f_east": -1
+   },
+   "inside_tip": {},
+   "region": "strat",
+   "interval": [
+    2,
+    2
+   ],
+   "parent": 1014,
+   "cut": "horizon strat 0.65 [f_west-,f_east-]",
+   "unit": 2,
+   "n_tets": 1486
+  },
+  "1021": {
+   "ref": 1021,
+   "sides": {
+    "f_west": -1,
+    "f_east": 1
+   },
+   "gx": {
+    "f_west": -1,
+    "f_east": 1
+   },
+   "inside_tip": {},
+   "region": "strat",
+   "interval": [
+    2,
+    2
+   ],
+   "parent": 1016,
+   "cut": "horizon strat 0.65 [f_west-,f_east+]",
+   "unit": 2,
+   "n_tets": 10618
+  },
+  "1023": {
+   "ref": 1023,
+   "sides": {
+    "f_west": 1,
+    "f_east": -1
+   },
+   "gx": {
+    "f_west": 1,
+    "f_east": -1
+   },
+   "inside_tip": {},
+   "region": "strat",
+   "interval": [
+    2,
+    2
+   ],
+   "parent": 1018,
+   "cut": "horizon strat 0.65 [f_west+,f_east-]",
+   "unit": 2,
+   "n_tets": 10577
+  },
+  "1025": {
+   "ref": 1025,
+   "sides": {
+    "f_west": -1,
+    "f_east": -1
+   },
+   "gx": {
+    "f_west": -1,
+    "f_east": -1
+   },
+   "inside_tip": {},
+   "region": "strat",
+   "interval": [
+    3,
+    3
+   ],
+   "parent": 1020,
+   "cut": "horizon strat 0.8 [f_west-,f_east-]",
+   "unit": 3,
+   "n_tets": 1227
+  },
+  "1026": {
+   "ref": 1026,
+   "sides": {
+    "f_west": -1,
+    "f_east": -1
+   },
+   "gx": {
+    "f_west": -1,
+    "f_east": -1
+   },
+   "inside_tip": {},
+   "region": "strat",
+   "interval": [
+    4,
+    4
+   ],
+   "parent": 1020,
+   "cut": "horizon strat 0.8 [f_west-,f_east-]",
+   "unit": 4,
+   "n_tets": 1439
+  },
+  "1027": {
+   "ref": 1027,
+   "sides": {
+    "f_west": -1,
+    "f_east": 1
+   },
+   "gx": {
+    "f_west": -1,
+    "f_east": 1
+   },
+   "inside_tip": {},
+   "region": "strat",
+   "interval": [
+    3,
+    3
+   ],
+   "parent": 1022,
+   "cut": "horizon strat 0.8 [f_west-,f_east+]",
+   "unit": 3,
+   "n_tets": 8237
+  },
+  "1028": {
+   "ref": 1028,
+   "sides": {
+    "f_west": -1,
+    "f_east": 1
+   },
+   "gx": {
+    "f_west": -1,
+    "f_east": 1
+   },
+   "inside_tip": {},
+   "region": "strat",
+   "interval": [
+    4,
+    4
+   ],
+   "parent": 1022,
+   "cut": "horizon strat 0.8 [f_west-,f_east+]",
+   "unit": 4,
+   "n_tets": 15218
+  },
+  "1029": {
+   "ref": 1029,
+   "sides": {
+    "f_west": 1,
+    "f_east": -1
+   },
+   "gx": {
+    "f_west": 1,
+    "f_east": -1
+   },
+   "inside_tip": {},
+   "region": "strat",
+   "interval": [
+    3,
+    3
+   ],
+   "parent": 1024,
+   "cut": "horizon strat 0.8 [f_west+,f_east-]",
+   "unit": 3,
+   "n_tets": 8302
+  },
+  "1030": {
+   "ref": 1030,
+   "sides": {
+    "f_west": 1,
+    "f_east": -1
+   },
+   "gx": {
+    "f_west": 1,
+    "f_east": -1
+   },
+   "inside_tip": {},
+   "region": "strat",
+   "interval": [
+    4,
+    4
+   ],
+   "parent": 1024,
+   "cut": "horizon strat 0.8 [f_west+,f_east-]",
+   "unit": 4,
+   "n_tets": 14950
+  }
+ },
+ "lineage": {
+  "1": {
+   "ref": 1,
+   "sides": {},
+   "gx": {},
+   "inside_tip": {},
+   "region": null,
+   "interval": null,
+   "parent": null,
+   "cut": null
+  },
+  "1001": {
+   "ref": 1001,
+   "sides": {
+    "f_west": -1
+   },
+   "gx": {
+    "f_west": -1
+   },
+   "inside_tip": {},
+   "region": null,
+   "interval": null,
+   "parent": 1,
+   "cut": "fault f_west [all]"
+  },
+  "1002": {
+   "ref": 1002,
+   "sides": {
+    "f_west": 1
+   },
+   "gx": {
+    "f_west": 1
+   },
+   "inside_tip": {},
+   "region": null,
+   "interval": null,
+   "parent": 1,
+   "cut": "fault f_west [all]"
+  },
+  "1003": {
+   "ref": 1003,
+   "sides": {
+    "f_west": -1,
+    "f_east": -1
+   },
+   "gx": {
+    "f_west": -1,
+    "f_east": -1
+   },
+   "inside_tip": {},
+   "region": "strat",
+   "interval": [
+    0,
+    4
+   ],
+   "parent": 1001,
+   "cut": "fault f_east [all]"
+  },
+  "1004": {
+   "ref": 1004,
+   "sides": {
+    "f_west": -1,
+    "f_east": 1
+   },
+   "gx": {
+    "f_west": -1,
+    "f_east": 1
+   },
+   "inside_tip": {},
+   "region": "strat",
+   "interval": [
+    0,
+    4
+   ],
+   "parent": 1001,
+   "cut": "fault f_east [all]"
+  },
+  "1005": {
+   "ref": 1005,
+   "sides": {
+    "f_west": 1,
+    "f_east": -1
+   },
+   "gx": {
+    "f_west": 1,
+    "f_east": -1
+   },
+   "inside_tip": {},
+   "region": "strat",
+   "interval": [
+    0,
+    4
+   ],
+   "parent": 1002,
+   "cut": "fault f_east [all]"
+  },
+  "1006": {
+   "ref": 1006,
+   "sides": {
+    "f_west": 1,
+    "f_east": 1
+   },
+   "gx": {
+    "f_west": 1,
+    "f_east": 1
+   },
+   "inside_tip": {},
+   "region": null,
+   "interval": null,
+   "parent": 1002,
+   "cut": "fault f_east [all]"
+  },
+  "1007": {
+   "ref": 1007,
+   "sides": {
+    "f_west": -1,
+    "f_east": -1
+   },
+   "gx": {
+    "f_west": -1,
+    "f_east": -1
+   },
+   "inside_tip": {},
+   "region": "strat",
+   "interval": [
+    0,
+    0
+   ],
+   "parent": 1003,
+   "cut": "horizon strat 0.25 [f_west-,f_east-]"
+  },
+  "1008": {
+   "ref": 1008,
+   "sides": {
+    "f_west": -1,
+    "f_east": -1
+   },
+   "gx": {
+    "f_west": -1,
+    "f_east": -1
+   },
+   "inside_tip": {},
+   "region": "strat",
+   "interval": [
+    1,
+    4
+   ],
+   "parent": 1003,
+   "cut": "horizon strat 0.25 [f_west-,f_east-]"
+  },
+  "1009": {
+   "ref": 1009,
+   "sides": {
+    "f_west": -1,
+    "f_east": 1
+   },
+   "gx": {
+    "f_west": -1,
+    "f_east": 1
+   },
+   "inside_tip": {},
+   "region": "strat",
+   "interval": [
+    0,
+    0
+   ],
+   "parent": 1004,
+   "cut": "horizon strat 0.25 [f_west-,f_east+]"
+  },
+  "1010": {
+   "ref": 1010,
+   "sides": {
+    "f_west": -1,
+    "f_east": 1
+   },
+   "gx": {
+    "f_west": -1,
+    "f_east": 1
+   },
+   "inside_tip": {},
+   "region": "strat",
+   "interval": [
+    1,
+    4
+   ],
+   "parent": 1004,
+   "cut": "horizon strat 0.25 [f_west-,f_east+]"
+  },
+  "1011": {
+   "ref": 1011,
+   "sides": {
+    "f_west": 1,
+    "f_east": -1
+   },
+   "gx": {
+    "f_west": 1,
+    "f_east": -1
+   },
+   "inside_tip": {},
+   "region": "strat",
+   "interval": [
+    0,
+    0
+   ],
+   "parent": 1005,
+   "cut": "horizon strat 0.25 [f_west+,f_east-]"
+  },
+  "1012": {
+   "ref": 1012,
+   "sides": {
+    "f_west": 1,
+    "f_east": -1
+   },
+   "gx": {
+    "f_west": 1,
+    "f_east": -1
+   },
+   "inside_tip": {},
+   "region": "strat",
+   "interval": [
+    1,
+    4
+   ],
+   "parent": 1005,
+   "cut": "horizon strat 0.25 [f_west+,f_east-]"
+  },
+  "1013": {
+   "ref": 1013,
+   "sides": {
+    "f_west": -1,
+    "f_east": -1
+   },
+   "gx": {
+    "f_west": -1,
+    "f_east": -1
+   },
+   "inside_tip": {},
+   "region": "strat",
+   "interval": [
+    1,
+    1
+   ],
+   "parent": 1008,
+   "cut": "horizon strat 0.45 [f_west-,f_east-]"
+  },
+  "1014": {
+   "ref": 1014,
+   "sides": {
+    "f_west": -1,
+    "f_east": -1
+   },
+   "gx": {
+    "f_west": -1,
+    "f_east": -1
+   },
+   "inside_tip": {},
+   "region": "strat",
+   "interval": [
+    2,
+    4
+   ],
+   "parent": 1008,
+   "cut": "horizon strat 0.45 [f_west-,f_east-]"
+  },
+  "1015": {
+   "ref": 1015,
+   "sides": {
+    "f_west": -1,
+    "f_east": 1
+   },
+   "gx": {
+    "f_west": -1,
+    "f_east": 1
+   },
+   "inside_tip": {},
+   "region": "strat",
+   "interval": [
+    1,
+    1
+   ],
+   "parent": 1010,
+   "cut": "horizon strat 0.45 [f_west-,f_east+]"
+  },
+  "1016": {
+   "ref": 1016,
+   "sides": {
+    "f_west": -1,
+    "f_east": 1
+   },
+   "gx": {
+    "f_west": -1,
+    "f_east": 1
+   },
+   "inside_tip": {},
+   "region": "strat",
+   "interval": [
+    2,
+    4
+   ],
+   "parent": 1010,
+   "cut": "horizon strat 0.45 [f_west-,f_east+]"
+  },
+  "1017": {
+   "ref": 1017,
+   "sides": {
+    "f_west": 1,
+    "f_east": -1
+   },
+   "gx": {
+    "f_west": 1,
+    "f_east": -1
+   },
+   "inside_tip": {},
+   "region": "strat",
+   "interval": [
+    1,
+    1
+   ],
+   "parent": 1012,
+   "cut": "horizon strat 0.45 [f_west+,f_east-]"
+  },
+  "1018": {
+   "ref": 1018,
+   "sides": {
+    "f_west": 1,
+    "f_east": -1
+   },
+   "gx": {
+    "f_west": 1,
+    "f_east": -1
+   },
+   "inside_tip": {},
+   "region": "strat",
+   "interval": [
+    2,
+    4
+   ],
+   "parent": 1012,
+   "cut": "horizon strat 0.45 [f_west+,f_east-]"
+  },
+  "1019": {
+   "ref": 1019,
+   "sides": {
+    "f_west": -1,
+    "f_east": -1
+   },
+   "gx": {
+    "f_west": -1,
+    "f_east": -1
+   },
+   "inside_tip": {},
+   "region": "strat",
+   "interval": [
+    2,
+    2
+   ],
+   "parent": 1014,
+   "cut": "horizon strat 0.65 [f_west-,f_east-]"
+  },
+  "1020": {
+   "ref": 1020,
+   "sides": {
+    "f_west": -1,
+    "f_east": -1
+   },
+   "gx": {
+    "f_west": -1,
+    "f_east": -1
+   },
+   "inside_tip": {},
+   "region": "strat",
+   "interval": [
+    3,
+    4
+   ],
+   "parent": 1014,
+   "cut": "horizon strat 0.65 [f_west-,f_east-]"
+  },
+  "1021": {
+   "ref": 1021,
+   "sides": {
+    "f_west": -1,
+    "f_east": 1
+   },
+   "gx": {
+    "f_west": -1,
+    "f_east": 1
+   },
+   "inside_tip": {},
+   "region": "strat",
+   "interval": [
+    2,
+    2
+   ],
+   "parent": 1016,
+   "cut": "horizon strat 0.65 [f_west-,f_east+]"
+  },
+  "1022": {
+   "ref": 1022,
+   "sides": {
+    "f_west": -1,
+    "f_east": 1
+   },
+   "gx": {
+    "f_west": -1,
+    "f_east": 1
+   },
+   "inside_tip": {},
+   "region": "strat",
+   "interval": [
+    3,
+    4
+   ],
+   "parent": 1016,
+   "cut": "horizon strat 0.65 [f_west-,f_east+]"
+  },
+  "1023": {
+   "ref": 1023,
+   "sides": {
+    "f_west": 1,
+    "f_east": -1
+   },
+   "gx": {
+    "f_west": 1,
+    "f_east": -1
+   },
+   "inside_tip": {},
+   "region": "strat",
+   "interval": [
+    2,
+    2
+   ],
+   "parent": 1018,
+   "cut": "horizon strat 0.65 [f_west+,f_east-]"
+  },
+  "1024": {
+   "ref": 1024,
+   "sides": {
+    "f_west": 1,
+    "f_east": -1
+   },
+   "gx": {
+    "f_west": 1,
+    "f_east": -1
+   },
+   "inside_tip": {},
+   "region": "strat",
+   "interval": [
+    3,
+    4
+   ],
+   "parent": 1018,
+   "cut": "horizon strat 0.65 [f_west+,f_east-]"
+  },
+  "1025": {
+   "ref": 1025,
+   "sides": {
+    "f_west": -1,
+    "f_east": -1
+   },
+   "gx": {
+    "f_west": -1,
+    "f_east": -1
+   },
+   "inside_tip": {},
+   "region": "strat",
+   "interval": [
+    3,
+    3
+   ],
+   "parent": 1020,
+   "cut": "horizon strat 0.8 [f_west-,f_east-]"
+  },
+  "1026": {
+   "ref": 1026,
+   "sides": {
+    "f_west": -1,
+    "f_east": -1
+   },
+   "gx": {
+    "f_west": -1,
+    "f_east": -1
+   },
+   "inside_tip": {},
+   "region": "strat",
+   "interval": [
+    4,
+    4
+   ],
+   "parent": 1020,
+   "cut": "horizon strat 0.8 [f_west-,f_east-]"
+  },
+  "1027": {
+   "ref": 1027,
+   "sides": {
+    "f_west": -1,
+    "f_east": 1
+   },
+   "gx": {
+    "f_west": -1,
+    "f_east": 1
+   },
+   "inside_tip": {},
+   "region": "strat",
+   "interval": [
+    3,
+    3
+   ],
+   "parent": 1022,
+   "cut": "horizon strat 0.8 [f_west-,f_east+]"
+  },
+  "1028": {
+   "ref": 1028,
+   "sides": {
+    "f_west": -1,
+    "f_east": 1
+   },
+   "gx": {
+    "f_west": -1,
+    "f_east": 1
+   },
+   "inside_tip": {},
+   "region": "strat",
+   "interval": [
+    4,
+    4
+   ],
+   "parent": 1022,
+   "cut": "horizon strat 0.8 [f_west-,f_east+]"
+  },
+  "1029": {
+   "ref": 1029,
+   "sides": {
+    "f_west": 1,
+    "f_east": -1
+   },
+   "gx": {
+    "f_west": 1,
+    "f_east": -1
+   },
+   "inside_tip": {},
+   "region": "strat",
+   "interval": [
+    3,
+    3
+   ],
+   "parent": 1024,
+   "cut": "horizon strat 0.8 [f_west+,f_east-]"
+  },
+  "1030": {
+   "ref": 1030,
+   "sides": {
+    "f_west": 1,
+    "f_east": -1
+   },
+   "gx": {
+    "f_west": 1,
+    "f_east": -1
+   },
+   "inside_tip": {},
+   "region": "strat",
+   "interval": [
+    4,
+    4
+   ],
+   "parent": 1024,
+   "cut": "horizon strat 0.8 [f_west+,f_east-]"
+  }
+ }
+}

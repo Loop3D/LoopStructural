@@ -1,0 +1,955 @@
+{
+ "units": [
+  {
+   "unit": 0,
+   "series": "strat",
+   "lower": null,
+   "upper": 0.2
+  },
+  {
+   "unit": 1,
+   "series": "strat",
+   "lower": 0.2,
+   "upper": 0.45
+  },
+  {
+   "unit": 2,
+   "series": "strat",
+   "lower": 0.45,
+   "upper": 0.6
+  },
+  {
+   "unit": 3,
+   "series": "strat",
+   "lower": 0.6,
+   "upper": 0.75
+  },
+  {
+   "unit": 4,
+   "series": "strat",
+   "lower": 0.75,
+   "upper": 0.9
+  },
+  {
+   "unit": 5,
+   "series": "strat",
+   "lower": 0.9,
+   "upper": null
+  }
+ ],
+ "materials": {
+  "1005": {
+   "ref": 1005,
+   "sides": {
+    "f_a": -1,
+    "f_b": 1
+   },
+   "gx": {
+    "f_a": -1,
+    "f_b": null
+   },
+   "inside_tip": {},
+   "region": "strat",
+   "interval": [
+    0,
+    0
+   ],
+   "parent": 1001,
+   "cut": "horizon strat 0.2 [f_a-,f_b+]",
+   "unit": 0,
+   "n_tets": 15528
+  },
+  "1007": {
+   "ref": 1007,
+   "sides": {
+    "f_a": 1,
+    "f_b": 1
+   },
+   "gx": {
+    "f_a": 1,
+    "f_b": 1
+   },
+   "inside_tip": {},
+   "region": "strat",
+   "interval": [
+    0,
+    0
+   ],
+   "parent": 1004,
+   "cut": "horizon strat 0.2 [f_a+,f_b+]",
+   "unit": 0,
+   "n_tets": 1766
+  },
+  "1009": {
+   "ref": 1009,
+   "sides": {
+    "f_a": -1,
+    "f_b": 1
+   },
+   "gx": {
+    "f_a": -1,
+    "f_b": null
+   },
+   "inside_tip": {},
+   "region": "strat",
+   "interval": [
+    1,
+    1
+   ],
+   "parent": 1006,
+   "cut": "horizon strat 0.45 [f_a-,f_b+]",
+   "unit": 1,
+   "n_tets": 15728
+  },
+  "1011": {
+   "ref": 1011,
+   "sides": {
+    "f_a": 1,
+    "f_b": 1
+   },
+   "gx": {
+    "f_a": 1,
+    "f_b": 1
+   },
+   "inside_tip": {},
+   "region": "strat",
+   "interval": [
+    1,
+    1
+   ],
+   "parent": 1008,
+   "cut": "horizon strat 0.45 [f_a+,f_b+]",
+   "unit": 1,
+   "n_tets": 9195
+  },
+  "1013": {
+   "ref": 1013,
+   "sides": {
+    "f_a": 1,
+    "f_b": -1
+   },
+   "gx": {
+    "f_a": 1,
+    "f_b": -1
+   },
+   "inside_tip": {},
+   "region": "strat",
+   "interval": [
+    2,
+    2
+   ],
+   "parent": 1003,
+   "cut": "horizon strat 0.6 [f_a+,f_b-]",
+   "unit": 2,
+   "n_tets": 1242
+  },
+  "1015": {
+   "ref": 1015,
+   "sides": {
+    "f_a": -1,
+    "f_b": 1
+   },
+   "gx": {
+    "f_a": -1,
+    "f_b": null
+   },
+   "inside_tip": {},
+   "region": "strat",
+   "interval": [
+    2,
+    2
+   ],
+   "parent": 1010,
+   "cut": "horizon strat 0.6 [f_a-,f_b+]",
+   "unit": 2,
+   "n_tets": 7166
+  },
+  "1017": {
+   "ref": 1017,
+   "sides": {
+    "f_a": 1,
+    "f_b": 1
+   },
+   "gx": {
+    "f_a": 1,
+    "f_b": 1
+   },
+   "inside_tip": {},
+   "region": "strat",
+   "interval": [
+    2,
+    2
+   ],
+   "parent": 1012,
+   "cut": "horizon strat 0.6 [f_a+,f_b+]",
+   "unit": 2,
+   "n_tets": 7829
+  },
+  "1019": {
+   "ref": 1019,
+   "sides": {
+    "f_a": 1,
+    "f_b": -1
+   },
+   "gx": {
+    "f_a": 1,
+    "f_b": -1
+   },
+   "inside_tip": {},
+   "region": "strat",
+   "interval": [
+    3,
+    3
+   ],
+   "parent": 1014,
+   "cut": "horizon strat 0.75 [f_a+,f_b-]",
+   "unit": 3,
+   "n_tets": 1785
+  },
+  "1021": {
+   "ref": 1021,
+   "sides": {
+    "f_a": -1,
+    "f_b": 1
+   },
+   "gx": {
+    "f_a": -1,
+    "f_b": null
+   },
+   "inside_tip": {},
+   "region": "strat",
+   "interval": [
+    3,
+    3
+   ],
+   "parent": 1016,
+   "cut": "horizon strat 0.75 [f_a-,f_b+]",
+   "unit": 3,
+   "n_tets": 5512
+  },
+  "1023": {
+   "ref": 1023,
+   "sides": {
+    "f_a": 1,
+    "f_b": 1
+   },
+   "gx": {
+    "f_a": 1,
+    "f_b": 1
+   },
+   "inside_tip": {},
+   "region": "strat",
+   "interval": [
+    3,
+    3
+   ],
+   "parent": 1018,
+   "cut": "horizon strat 0.75 [f_a+,f_b+]",
+   "unit": 3,
+   "n_tets": 8673
+  },
+  "1025": {
+   "ref": 1025,
+   "sides": {
+    "f_a": 1,
+    "f_b": -1
+   },
+   "gx": {
+    "f_a": 1,
+    "f_b": -1
+   },
+   "inside_tip": {},
+   "region": "strat",
+   "interval": [
+    4,
+    4
+   ],
+   "parent": 1020,
+   "cut": "horizon strat 0.9 [f_a+,f_b-]",
+   "unit": 4,
+   "n_tets": 2884
+  },
+  "1026": {
+   "ref": 1026,
+   "sides": {
+    "f_a": 1,
+    "f_b": -1
+   },
+   "gx": {
+    "f_a": 1,
+    "f_b": -1
+   },
+   "inside_tip": {},
+   "region": "strat",
+   "interval": [
+    5,
+    5
+   ],
+   "parent": 1020,
+   "cut": "horizon strat 0.9 [f_a+,f_b-]",
+   "unit": 5,
+   "n_tets": 4610
+  },
+  "1027": {
+   "ref": 1027,
+   "sides": {
+    "f_a": -1,
+    "f_b": 1
+   },
+   "gx": {
+    "f_a": -1,
+    "f_b": null
+   },
+   "inside_tip": {},
+   "region": "strat",
+   "interval": [
+    4,
+    4
+   ],
+   "parent": 1022,
+   "cut": "horizon strat 0.9 [f_a-,f_b+]",
+   "unit": 4,
+   "n_tets": 3921
+  },
+  "1028": {
+   "ref": 1028,
+   "sides": {
+    "f_a": -1,
+    "f_b": 1
+   },
+   "gx": {
+    "f_a": -1,
+    "f_b": null
+   },
+   "inside_tip": {},
+   "region": "strat",
+   "interval": [
+    5,
+    5
+   ],
+   "parent": 1022,
+   "cut": "horizon strat 0.9 [f_a-,f_b+]",
+   "unit": 5,
+   "n_tets": 1668
+  },
+  "1029": {
+   "ref": 1029,
+   "sides": {
+    "f_a": 1,
+    "f_b": 1
+   },
+   "gx": {
+    "f_a": 1,
+    "f_b": 1
+   },
+   "inside_tip": {},
+   "region": "strat",
+   "interval": [
+    4,
+    4
+   ],
+   "parent": 1024,
+   "cut": "horizon strat 0.9 [f_a+,f_b+]",
+   "unit": 4,
+   "n_tets": 9441
+  },
+  "1030": {
+   "ref": 1030,
+   "sides": {
+    "f_a": 1,
+    "f_b": 1
+   },
+   "gx": {
+    "f_a": 1,
+    "f_b": 1
+   },
+   "inside_tip": {},
+   "region": "strat",
+   "interval": [
+    5,
+    5
+   ],
+   "parent": 1024,
+   "cut": "horizon strat 0.9 [f_a+,f_b+]",
+   "unit": 5,
+   "n_tets": 15211
+  }
+ },
+ "lineage": {
+  "1": {
+   "ref": 1,
+   "sides": {},
+   "gx": {},
+   "inside_tip": {},
+   "region": null,
+   "interval": null,
+   "parent": null,
+   "cut": null
+  },
+  "1001": {
+   "ref": 1001,
+   "sides": {
+    "f_a": -1,
+    "f_b": 1
+   },
+   "gx": {
+    "f_a": -1,
+    "f_b": null
+   },
+   "inside_tip": {},
+   "region": "strat",
+   "interval": [
+    0,
+    5
+   ],
+   "parent": 1,
+   "cut": "fault f_a [all]"
+  },
+  "1002": {
+   "ref": 1002,
+   "sides": {
+    "f_a": 1
+   },
+   "gx": {
+    "f_a": 1
+   },
+   "inside_tip": {},
+   "region": null,
+   "interval": null,
+   "parent": 1,
+   "cut": "fault f_a [all]"
+  },
+  "1003": {
+   "ref": 1003,
+   "sides": {
+    "f_a": 1,
+    "f_b": -1
+   },
+   "gx": {
+    "f_a": 1,
+    "f_b": -1
+   },
+   "inside_tip": {},
+   "region": "strat",
+   "interval": [
+    2,
+    5
+   ],
+   "parent": 1002,
+   "cut": "horizon strat 0.45 [f_a+,f_b-]"
+  },
+  "1004": {
+   "ref": 1004,
+   "sides": {
+    "f_a": 1,
+    "f_b": 1
+   },
+   "gx": {
+    "f_a": 1,
+    "f_b": 1
+   },
+   "inside_tip": {},
+   "region": "strat",
+   "interval": [
+    0,
+    5
+   ],
+   "parent": 1002,
+   "cut": "fault f_b [all]"
+  },
+  "1005": {
+   "ref": 1005,
+   "sides": {
+    "f_a": -1,
+    "f_b": 1
+   },
+   "gx": {
+    "f_a": -1,
+    "f_b": null
+   },
+   "inside_tip": {},
+   "region": "strat",
+   "interval": [
+    0,
+    0
+   ],
+   "parent": 1001,
+   "cut": "horizon strat 0.2 [f_a-,f_b+]"
+  },
+  "1006": {
+   "ref": 1006,
+   "sides": {
+    "f_a": -1,
+    "f_b": 1
+   },
+   "gx": {
+    "f_a": -1,
+    "f_b": null
+   },
+   "inside_tip": {},
+   "region": "strat",
+   "interval": [
+    1,
+    5
+   ],
+   "parent": 1001,
+   "cut": "horizon strat 0.2 [f_a-,f_b+]"
+  },
+  "1007": {
+   "ref": 1007,
+   "sides": {
+    "f_a": 1,
+    "f_b": 1
+   },
+   "gx": {
+    "f_a": 1,
+    "f_b": 1
+   },
+   "inside_tip": {},
+   "region": "strat",
+   "interval": [
+    0,
+    0
+   ],
+   "parent": 1004,
+   "cut": "horizon strat 0.2 [f_a+,f_b+]"
+  },
+  "1008": {
+   "ref": 1008,
+   "sides": {
+    "f_a": 1,
+    "f_b": 1
+   },
+   "gx": {
+    "f_a": 1,
+    "f_b": 1
+   },
+   "inside_tip": {},
+   "region": "strat",
+   "interval": [
+    1,
+    5
+   ],
+   "parent": 1004,
+   "cut": "horizon strat 0.2 [f_a+,f_b+]"
+  },
+  "1009": {
+   "ref": 1009,
+   "sides": {
+    "f_a": -1,
+    "f_b": 1
+   },
+   "gx": {
+    "f_a": -1,
+    "f_b": null
+   },
+   "inside_tip": {},
+   "region": "strat",
+   "interval": [
+    1,
+    1
+   ],
+   "parent": 1006,
+   "cut": "horizon strat 0.45 [f_a-,f_b+]"
+  },
+  "1010": {
+   "ref": 1010,
+   "sides": {
+    "f_a": -1,
+    "f_b": 1
+   },
+   "gx": {
+    "f_a": -1,
+    "f_b": null
+   },
+   "inside_tip": {},
+   "region": "strat",
+   "interval": [
+    2,
+    5
+   ],
+   "parent": 1006,
+   "cut": "horizon strat 0.45 [f_a-,f_b+]"
+  },
+  "1011": {
+   "ref": 1011,
+   "sides": {
+    "f_a": 1,
+    "f_b": 1
+   },
+   "gx": {
+    "f_a": 1,
+    "f_b": 1
+   },
+   "inside_tip": {},
+   "region": "strat",
+   "interval": [
+    1,
+    1
+   ],
+   "parent": 1008,
+   "cut": "horizon strat 0.45 [f_a+,f_b+]"
+  },
+  "1012": {
+   "ref": 1012,
+   "sides": {
+    "f_a": 1,
+    "f_b": 1
+   },
+   "gx": {
+    "f_a": 1,
+    "f_b": 1
+   },
+   "inside_tip": {},
+   "region": "strat",
+   "interval": [
+    2,
+    5
+   ],
+   "parent": 1008,
+   "cut": "horizon strat 0.45 [f_a+,f_b+]"
+  },
+  "1013": {
+   "ref": 1013,
+   "sides": {
+    "f_a": 1,
+    "f_b": -1
+   },
+   "gx": {
+    "f_a": 1,
+    "f_b": -1
+   },
+   "inside_tip": {},
+   "region": "strat",
+   "interval": [
+    2,
+    2
+   ],
+   "parent": 1003,
+   "cut": "horizon strat 0.6 [f_a+,f_b-]"
+  },
+  "1014": {
+   "ref": 1014,
+   "sides": {
+    "f_a": 1,
+    "f_b": -1
+   },
+   "gx": {
+    "f_a": 1,
+    "f_b": -1
+   },
+   "inside_tip": {},
+   "region": "strat",
+   "interval": [
+    3,
+    5
+   ],
+   "parent": 1003,
+   "cut": "horizon strat 0.6 [f_a+,f_b-]"
+  },
+  "1015": {
+   "ref": 1015,
+   "sides": {
+    "f_a": -1,
+    "f_b": 1
+   },
+   "gx": {
+    "f_a": -1,
+    "f_b": null
+   },
+   "inside_tip": {},
+   "region": "strat",
+   "interval": [
+    2,
+    2
+   ],
+   "parent": 1010,
+   "cut": "horizon strat 0.6 [f_a-,f_b+]"
+  },
+  "1016": {
+   "ref": 1016,
+   "sides": {
+    "f_a": -1,
+    "f_b": 1
+   },
+   "gx": {
+    "f_a": -1,
+    "f_b": null
+   },
+   "inside_tip": {},
+   "region": "strat",
+   "interval": [
+    3,
+    5
+   ],
+   "parent": 1010,
+   "cut": "horizon strat 0.6 [f_a-,f_b+]"
+  },
+  "1017": {
+   "ref": 1017,
+   "sides": {
+    "f_a": 1,
+    "f_b": 1
+   },
+   "gx": {
+    "f_a": 1,
+    "f_b": 1
+   },
+   "inside_tip": {},
+   "region": "strat",
+   "interval": [
+    2,
+    2
+   ],
+   "parent": 1012,
+   "cut": "horizon strat 0.6 [f_a+,f_b+]"
+  },
+  "1018": {
+   "ref": 1018,
+   "sides": {
+    "f_a": 1,
+    "f_b": 1
+   },
+   "gx": {
+    "f_a": 1,
+    "f_b": 1
+   },
+   "inside_tip": {},
+   "region": "strat",
+   "interval": [
+    3,
+    5
+   ],
+   "parent": 1012,
+   "cut": "horizon strat 0.6 [f_a+,f_b+]"
+  },
+  "1019": {
+   "ref": 1019,
+   "sides": {
+    "f_a": 1,
+    "f_b": -1
+   },
+   "gx": {
+    "f_a": 1,
+    "f_b": -1
+   },
+   "inside_tip": {},
+   "region": "strat",
+   "interval": [
+    3,
+    3
+   ],
+   "parent": 1014,
+   "cut": "horizon strat 0.75 [f_a+,f_b-]"
+  },
+  "1020": {
+   "ref": 1020,
+   "sides": {
+    "f_a": 1,
+    "f_b": -1
+   },
+   "gx": {
+    "f_a": 1,
+    "f_b": -1
+   },
+   "inside_tip": {},
+   "region": "strat",
+   "interval": [
+    4,
+    5
+   ],
+   "parent": 1014,
+   "cut": "horizon strat 0.75 [f_a+,f_b-]"
+  },
+  "1021": {
+   "ref": 1021,
+   "sides": {
+    "f_a": -1,
+    "f_b": 1
+   },
+   "gx": {
+    "f_a": -1,
+    "f_b": null
+   },
+   "inside_tip": {},
+   "region": "strat",
+   "interval": [
+    3,
+    3
+   ],
+   "parent": 1016,
+   "cut": "horizon strat 0.75 [f_a-,f_b+]"
+  },
+  "1022": {
+   "ref": 1022,
+   "sides": {
+    "f_a": -1,
+    "f_b": 1
+   },
+   "gx": {
+    "f_a": -1,
+    "f_b": null
+   },
+   "inside_tip": {},
+   "region": "strat",
+   "interval": [
+    4,
+    5
+   ],
+   "parent": 1016,
+   "cut": "horizon strat 0.75 [f_a-,f_b+]"
+  },
+  "1023": {
+   "ref": 1023,
+   "sides": {
+    "f_a": 1,
+    "f_b": 1
+   },
+   "gx": {
+    "f_a": 1,
+    "f_b": 1
+   },
+   "inside_tip": {},
+   "region": "strat",
+   "interval": [
+    3,
+    3
+   ],
+   "parent": 1018,
+   "cut": "horizon strat 0.75 [f_a+,f_b+]"
+  },
+  "1024": {
+   "ref": 1024,
+   "sides": {
+    "f_a": 1,
+    "f_b": 1
+   },
+   "gx": {
+    "f_a": 1,
+    "f_b": 1
+   },
+   "inside_tip": {},
+   "region": "strat",
+   "interval": [
+    4,
+    5
+   ],
+   "parent": 1018,
+   "cut": "horizon strat 0.75 [f_a+,f_b+]"
+  },
+  "1025": {
+   "ref": 1025,
+   "sides": {
+    "f_a": 1,
+    "f_b": -1
+   },
+   "gx": {
+    "f_a": 1,
+    "f_b": -1
+   },
+   "inside_tip": {},
+   "region": "strat",
+   "interval": [
+    4,
+    4
+   ],
+   "parent": 1020,
+   "cut": "horizon strat 0.9 [f_a+,f_b-]"
+  },
+  "1026": {
+   "ref": 1026,
+   "sides": {
+    "f_a": 1,
+    "f_b": -1
+   },
+   "gx": {
+    "f_a": 1,
+    "f_b": -1
+   },
+   "inside_tip": {},
+   "region": "strat",
+   "interval": [
+    5,
+    5
+   ],
+   "parent": 1020,
+   "cut": "horizon strat 0.9 [f_a+,f_b-]"
+  },
+  "1027": {
+   "ref": 1027,
+   "sides": {
+    "f_a": -1,
+    "f_b": 1
+   },
+   "gx": {
+    "f_a": -1,
+    "f_b": null
+   },
+   "inside_tip": {},
+   "region": "strat",
+   "interval": [
+    4,
+    4
+   ],
+   "parent": 1022,
+   "cut": "horizon strat 0.9 [f_a-,f_b+]"
+  },
+  "1028": {
+   "ref": 1028,
+   "sides": {
+    "f_a": -1,
+    "f_b": 1
+   },
+   "gx": {
+    "f_a": -1,
+    "f_b": null
+   },
+   "inside_tip": {},
+   "region": "strat",
+   "interval": [
+    5,
+    5
+   ],
+   "parent": 1022,
+   "cut": "horizon strat 0.9 [f_a-,f_b+]"
+  },
+  "1029": {
+   "ref": 1029,
+   "sides": {
+    "f_a": 1,
+    "f_b": 1
+   },
+   "gx": {
+    "f_a": 1,
+    "f_b": 1
+   },
+   "inside_tip": {},
+   "region": "strat",
+   "interval": [
+    4,
+    4
+   ],
+   "parent": 1024,
+   "cut": "horizon strat 0.9 [f_a+,f_b+]"
+  },
+  "1030": {
+   "ref": 1030,
+   "sides": {
+    "f_a": 1,
+    "f_b": 1
+   },
+   "gx": {
+    "f_a": 1,
+    "f_b": 1
+   },
+   "inside_tip": {},
+   "region": "strat",
+   "interval": [
+    5,
+    5
+   ],
+   "parent": 1024,
+   "cut": "horizon strat 0.9 [f_a+,f_b+]"
+  }
+ }
+}
