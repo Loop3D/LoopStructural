@@ -195,6 +195,24 @@ exposed:
   - `getLogger` itself is promoted to enforced-**stable** (see below) as
     part of this work — its signature/behavior are unchanged, only
     tracked by the registry now.
+- Fault blocks: evaluation of a feature as it is in one fault block. A block
+  maps fault names to `+1` (hanging wall), `-1` (footwall) or `0` (absent);
+  each fault it names restores every point as if the point were on that side,
+  so the result has no jump across those faults. The block is an argument
+  only: no state changes, so calls with different blocks can run in parallel.
+  - `GeologicalModel.evaluate_feature_block_value(feature_name, xyz, block, *, ignore_regions=True)` /
+    `GeologicalModel.evaluate_feature_block_gradient(...)`.
+  - `FaultSegment.evaluate_frame_value(points, coordinate=0, *, block=None)` /
+    `FaultSegment.evaluate_frame_gradient(...)` — one fault frame coordinate
+    without the fault regions, optionally in a block of the younger faults.
+  - `FaultSegment.evaluate_tip_value(points, *, block=None)` /
+    `FaultSegment.evaluate_tip_gradient(...)` — `min(1 - |g|)` over the
+    frame coordinates whose displacement profile is zero at `|g| = 1`.
+  - The keyword `block` on `GeologicalFeature.evaluate_value` /
+    `evaluate_gradient` and on `FaultSegment.apply_to_points` /
+    `evaluate_value` / `evaluate_displacement` (both unregistered; the
+    keyword is new and optional, so existing calls are unchanged).
+  - See `tests/unit/modelling/test_fault_block_fields.py`.
 
 ## Known internal-path consumers
 
