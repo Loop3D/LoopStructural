@@ -569,6 +569,9 @@ class FaultSegment(StructuralFrame):
             if self.faultfunction is not None:
                 d[mask2] = self.faultfunction(gx[mask2], gy[mask2], gz[mask2])
             d *= self.displacement
+            if reverse:
+                # forward (geological) movement: the opposite of the restoration
+                d *= -1.0
             # normalise when length is >0
             g_mag = np.zeros(g.shape[0])
             g_mag[mask2] = np.linalg.norm(g[mask2], axis=1)
