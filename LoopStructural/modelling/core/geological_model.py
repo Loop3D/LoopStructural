@@ -1480,6 +1480,32 @@ class GeologicalModel:
             block=self._check_fault_block(block),
         )
 
+    @public_api(tier="provisional")
+    def get_feature_relations(self) -> dict:
+        """Return the relations between the features of the model.
+
+        For each fault: the faults that displace it, the faults it abuts on
+        and on which side, the unconformities that truncate it. For each
+        other feature: the faults that displace it (restore order) and the
+        unconformities that truncate it. For each unconformity: its series,
+        value and what it truncates. And the order in which the features were
+        added (the event order). The result is a plain dictionary, valid
+        before and after :meth:`update`; nothing is changed. See
+        :meth:`FeatureRelationshipManager.relations` for the keys.
+
+        Returns
+        -------
+        dict
+            keys ``events``, ``faults``, ``features``, ``unconformities``
+
+        Examples
+        --------
+        >>> rel = model.get_feature_relations()
+        >>> rel["faults"]["f_pre"]["displaced_by"]
+        ['f_post']
+        """
+        return FeatureRelationshipManager.relations(self)
+
     def _check_fault_block(self, block) -> dict:
         """Check that a fault block names only faults of this model."""
         block = check_block(block)
