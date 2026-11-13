@@ -10,105 +10,28 @@ the faults are the only source of a jump.
 from concurrent.futures import ThreadPoolExecutor
 
 import numpy as np
-import pandas as pd
 import pytest
 
 from LoopStructural import GeologicalModel
-from LoopStructural.modelling.features.fault._fault_function import (
-    Composite,
-    FaultDisplacement,
-    Ones,
-    Zeros,
+from tests.fixtures.fault_models import (
+    OLD,
+    YOUNG,
+    add_fault,
+    add_layers,
+    dip_vectors,
+    interior_points,
+    plane_points,
+    young_forward,
+    young_side,
 )
-
-COLUMNS = ["X", "Y", "Z", "val", "nx", "ny", "nz", "coord", "feature_name"]
-
-
-def _dip_vectors(dip_deg, dip_azimuth_deg):
-    """Unit normal (up), down-dip and strike vectors of a plane."""
-    d, a = np.radians(dip_deg), np.radians(dip_azimuth_deg)
-    horizontal = np.array([np.sin(a), np.cos(a), 0.0])
-    down_dip = np.cos(d) * horizontal + np.array([0.0, 0.0, -np.sin(d)])
-    normal = np.sin(d) * horizontal + np.array([0.0, 0.0, np.cos(d)])
-    return normal, down_dip, np.cross(normal, down_dip)
-
-
-def _constant_profile():
-    """The hanging wall moves rigidly, the footwall does not move."""
-    return FaultDisplacement(gx=Composite(Ones(), Zeros()), gy=Ones(), gz=Ones(), scale=1.0)
-
-
-def _plane_points(center, dip, dip_azimuth, n=11, half=0.9):
-    normal, down_dip, strike = _dip_vectors(dip, dip_azimuth)
-    u, v = np.meshgrid(np.linspace(-1, 1, n), np.linspace(-1, 1, n), indexing="ij")
-    pts = (
-        np.asarray(center)
-        + u.ravel()[:, None] * half * strike
-        + v.ravel()[:, None] * half * down_dip
-    )
-    return pts, normal, down_dip
-
-
-def _add_fault(model, name, center, dip, dip_azimuth, displacement, *, points=None,
-               profile=None, axes=(4.0, 4.0, 4.0), faults=None, steps=1, nelements=4000):
-    plane, normal, down_dip = _plane_points(center, dip, dip_azimuth)
-    if points is None:
-        points = plane
-    inside = np.all((points > -0.1) & (points < 1.1), axis=1)
-    points = points[inside]
-    df = pd.DataFrame(
-        {
-            "X": points[:, 0], "Y": points[:, 1], "Z": points[:, 2], "val": 0.0,
-            "nx": normal[0], "ny": normal[1], "nz": normal[2], "coord": 0,
-            "feature_name": name,
-        }
-    )[COLUMNS]
-    fault = model.create_and_add_fault(
-        name,
-        displacement,
-        data=df,
-        fault_slip_vector=-down_dip,  # restoration direction: normal fault
-        fault_normal_vector=normal,
-        fault_center=np.asarray(center, dtype=float),
-        major_axis=axes[0],
-        intermediate_axis=axes[1],
-        minor_axis=axes[2],
-        faultfunction=profile if profile is not None else _constant_profile(),
-        faults=faults or [],
-        nelements=nelements,
-        fault_buffer=0.5,
-    )
-    fault.steps = steps
-    return fault
-
-
-def _add_layers(model, faults_oldest_first, n=800, seed=7, nelements=8000):
-    rng = np.random.default_rng(seed)
-    pts = rng.uniform(0.0, 1.0, size=(n, 3))
-    restored = pts.copy()
-    for f in reversed(faults_oldest_first):
-        restored = f.apply_to_points(restored)
-    df = pd.DataFrame(
-        {
-            "X": pts[:, 0], "Y": pts[:, 1], "Z": pts[:, 2], "val": restored[:, 2],
-            "nx": np.nan, "ny": np.nan, "nz": np.nan, "coord": np.nan, "feature_name": "strat",
-        }
-    )[COLUMNS]
-    return model.create_and_add_foliation(
-        "strat", data=df, faults=faults_oldest_first, nelements=nelements, buffer=0.3
-    )
-
-
-def _interior_points(n=400, seed=3, lo=0.15, hi=0.85):
-    return np.random.default_rng(seed).uniform(lo, hi, size=(n, 3))
 
 
 @pytest.fixture(scope="module")
 def planar():
     """Planar normal fault, dip 60 toward +x, constant slip 0.15 down dip."""
     model = GeologicalModel(np.zeros(3), np.ones(3))
-    fault = _add_fault(model, "f1", (0.5, 0.5, 0.5), 60, 90, 0.15)
-    _add_layers(model, [fault])
+    fault = add_fault(model, "f1", (0.5, 0.5, 0.5), 60, 90, 0.15)
+    add_layers(model, [fault])
     return model
 
 
@@ -116,49 +39,31 @@ def planar():
 def finite():
     """Finite fault (BaseFault3D) with a tip loop inside the model."""
     model = GeologicalModel(np.zeros(3), np.ones(3))
-    fault = _add_fault(
+    fault = add_fault(
         model, "f1", (0.5, 0.5, 0.5), 70, 90, 0.2,
         profile="BaseFault3D", axes=(0.35, 0.3, 0.5), steps=10,
     )
-    _add_layers(model, [fault])
+    add_layers(model, [fault])
     return model
-
-
-YOUNG = dict(center=(0.65, 0.5, 0.5), dip=65, dip_azimuth=270, displacement=0.12)
-OLD = dict(center=(0.3, 0.5, 0.4), dip=55, dip_azimuth=90, displacement=0.1)
-
-
-def _young_side(points):
-    normal, _, _ = _dip_vectors(YOUNG["dip"], YOUNG["dip_azimuth"])
-    return (np.asarray(points) - np.asarray(YOUNG["center"])) @ normal
-
-
-def _young_forward(points):
-    """Move restored points forward through the young fault (exact: a translation)."""
-    _, down_dip, _ = _dip_vectors(YOUNG["dip"], YOUNG["dip_azimuth"])
-    points = np.array(points, dtype=float)
-    hanging = _young_side(points) > 0
-    points[hanging] += YOUNG["displacement"] * down_dip
-    return points
 
 
 @pytest.fixture(scope="module")
 def displaced():
     """An old fault displaced by a young fault (both constant slip)."""
     model = GeologicalModel(np.zeros(3), np.ones(3))
-    young = _add_fault(model, "young", YOUNG["center"], YOUNG["dip"], YOUNG["dip_azimuth"],
+    young = add_fault(model, "young", YOUNG["center"], YOUNG["dip"], YOUNG["dip_azimuth"],
                        YOUNG["displacement"])
-    plane, _, _ = _plane_points(OLD["center"], OLD["dip"], OLD["dip_azimuth"], n=15)
-    present = _young_forward(plane)
-    keep = np.abs(_young_side(plane)) > 0.04
-    center = _young_forward(np.asarray([OLD["center"]]))[0]
-    _add_fault(model, "old", center, OLD["dip"], OLD["dip_azimuth"], OLD["displacement"],
+    plane, _, _ = plane_points(OLD["center"], OLD["dip"], OLD["dip_azimuth"], n=15)
+    present = young_forward(plane)
+    keep = np.abs(young_side(plane)) > 0.04
+    center = young_forward(np.asarray([OLD["center"]]))[0]
+    add_fault(model, "old", center, OLD["dip"], OLD["dip_azimuth"], OLD["displacement"],
                points=present[keep], faults=[young])
     return model
 
 
 def test_planar_block_values_differ_by_the_analytic_offset(planar):
-    pts = _interior_points()
+    pts = interior_points()
     hanging = planar.evaluate_feature_block_value("strat", pts, {"f1": 1})
     footwall = planar.evaluate_feature_block_value("strat", pts, {"f1": -1})
     # Restoring the hanging wall moves a point 0.15 up dip: z grows by 0.15 sin(60).
@@ -167,7 +72,7 @@ def test_planar_block_values_differ_by_the_analytic_offset(planar):
 
 
 def test_planar_block_value_equals_the_field_inside_its_block(planar):
-    pts = _interior_points()
+    pts = interior_points()
     fault = planar["f1"]
     gx = fault.evaluate_frame_value(pts)
     value = planar.evaluate_feature_value("strat", pts)
@@ -178,20 +83,20 @@ def test_planar_block_value_equals_the_field_inside_its_block(planar):
 
 
 def test_planar_block_gradient_is_smooth_across_the_fault(planar):
-    pts = _interior_points(n=100)
+    pts = interior_points(n=100)
     for side in (1, -1):
         grad = planar.evaluate_feature_block_gradient("strat", pts, {"f1": side})
         np.testing.assert_allclose(grad, np.tile([0.0, 0.0, 1.0], (len(pts), 1)), atol=2e-2)
 
 
 def test_block_absent_fault_does_not_move_points(planar):
-    pts = _interior_points()
+    pts = interior_points()
     absent = planar.evaluate_feature_block_value("strat", pts, {"f1": 0})
     np.testing.assert_allclose(absent, pts[:, 2], atol=2e-3)
 
 
 def test_block_calls_leave_no_state(planar):
-    pts = _interior_points()
+    pts = interior_points()
     before = planar.evaluate_feature_value("strat", pts)
     first = planar.evaluate_feature_block_value("strat", pts, {"f1": 1})
     planar.evaluate_feature_block_value("strat", pts, {"f1": -1})
@@ -201,7 +106,7 @@ def test_block_calls_leave_no_state(planar):
 
 
 def test_block_calls_in_threads_match_sequential_calls(planar):
-    pts = _interior_points(n=2000)
+    pts = interior_points(n=2000)
     blocks = [{"f1": 1}, {"f1": -1}] * 4
     expected = [planar.evaluate_feature_block_value("strat", pts, b) for b in blocks]
     with ThreadPoolExecutor(max_workers=4) as pool:
@@ -211,7 +116,7 @@ def test_block_calls_in_threads_match_sequential_calls(planar):
 
 
 def test_block_is_checked(planar):
-    pts = _interior_points(n=5)
+    pts = interior_points(n=5)
     with pytest.raises(ValueError, match="not in the model"):
         planar.evaluate_feature_block_value("strat", pts, {"nofault": 1})
     with pytest.raises(ValueError, match="must be"):
@@ -221,7 +126,7 @@ def test_block_is_checked(planar):
 
 
 def test_fault_object_can_be_a_block_key(planar):
-    pts = _interior_points(n=50)
+    pts = interior_points(n=50)
     by_name = planar.evaluate_feature_block_value("strat", pts, {"f1": 1})
     by_fault = planar.evaluate_feature_block_value("strat", pts, {planar["f1"]: 1})
     np.testing.assert_array_equal(by_name, by_fault)
@@ -229,8 +134,8 @@ def test_fault_object_can_be_a_block_key(planar):
 
 def test_frame_value_is_a_signed_distance_near_the_fault(planar):
     fault = planar["f1"]
-    normal, _, _ = _dip_vectors(60, 90)
-    pts = _interior_points(n=200, lo=0.3, hi=0.7)
+    normal, _, _ = dip_vectors(60, 90)
+    pts = interior_points(n=200, lo=0.3, hi=0.7)
     distance = (pts - 0.5) @ normal
     gx = fault.evaluate_frame_value(pts)
     grad = fault.evaluate_frame_gradient(pts)
@@ -240,7 +145,7 @@ def test_frame_value_is_a_signed_distance_near_the_fault(planar):
 
 
 def test_constant_fault_has_no_tip(planar):
-    pts = _interior_points(n=10)
+    pts = interior_points(n=10)
     assert np.all(np.isinf(planar["f1"].evaluate_tip_value(pts)))
     np.testing.assert_array_equal(planar["f1"].evaluate_tip_gradient(pts), 0.0)
 
@@ -263,7 +168,7 @@ def test_finite_fault_block_fields_are_equal_beyond_the_tip(finite):
 
 def test_finite_fault_displacement_goes_to_zero_at_the_tip(finite):
     fault = finite["f1"]
-    normal, down_dip, strike = _dip_vectors(70, 90)
+    normal, down_dip, strike = dip_vectors(70, 90)
     # A line on the fault along strike, from the centre past the tip.
     s = np.linspace(0.0, 0.48, 241)
     line = np.asarray([0.5, 0.5, 0.5]) + s[:, None] * strike
@@ -299,8 +204,8 @@ def test_finite_fault_tip_gradient_matches_finite_differences(finite):
 
 def test_displaced_fault_block_frames_match_the_undisplaced_fault(displaced):
     old = displaced["old"]
-    plane, _, _ = _plane_points(OLD["center"], OLD["dip"], OLD["dip_azimuth"], n=25, half=0.5)
-    _, down_dip, _ = _dip_vectors(YOUNG["dip"], YOUNG["dip_azimuth"])
+    plane, _, _ = plane_points(OLD["center"], OLD["dip"], OLD["dip_azimuth"], n=25, half=0.5)
+    _, down_dip, _ = dip_vectors(YOUNG["dip"], YOUNG["dip_azimuth"])
     # Footwall block of young: the old fault where it was. Hanging wall block:
     # the old fault moved forward by the slip of young, on both sides of young.
     for side, points in ((-1, plane), (1, plane + YOUNG["displacement"] * down_dip)):
@@ -315,15 +220,15 @@ def test_displaced_fault_block_frames_match_the_undisplaced_fault(displaced):
 def abutting():
     """A fault that abuts on the hanging wall of a main fault (a Y junction)."""
     model = GeologicalModel(np.zeros(3), np.ones(3))
-    main = _add_fault(model, "main", (0.4, 0.5, 0.5), 60, 90, 0.1)
-    splay = _add_fault(model, "splay", (0.7, 0.5, 0.6), 60, 270, 0.08)
+    main = add_fault(model, "main", (0.4, 0.5, 0.5), 60, 90, 0.1)
+    splay = add_fault(model, "splay", (0.7, 0.5, 0.6), 60, 270, 0.08)
     splay.add_abutting_fault(main, positive=True)
-    _add_layers(model, [splay, main])
+    add_layers(model, [splay, main])
     return model
 
 
 def test_abutting_fault_is_absent_in_the_footwall_block_of_its_host(abutting):
-    pts = _interior_points(n=2000, lo=0.05, hi=0.95)
+    pts = interior_points(n=2000, lo=0.05, hi=0.95)
     values = {
         (m, s): abutting.evaluate_feature_block_value("strat", pts, {"main": m, "splay": s})
         for m in (1, -1)
