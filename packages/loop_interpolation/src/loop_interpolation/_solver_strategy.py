@@ -48,6 +48,20 @@ def solve_with_callable(
     return np.asarray(c), True
 
 
+def _set_cg_tolerances(solver_kwargs: dict, tol: float | None) -> None:
+    """Fill in the CG stopping tolerances that the caller did not give.
+
+    scipy's cg stops at ``max(rtol * |b|, atol)``. A ``tol`` sets ``atol``;
+    without an ``rtol`` scipy would use its own default 1e-5, which then
+    decides the stop and makes ``tol`` meaningless. So ``rtol`` defaults to
+    ``DEFAULT_CG_RTOL`` in both cases.
+    """
+    if tol is not None and "atol" not in solver_kwargs:
+        solver_kwargs["atol"] = tol
+    if "rtol" not in solver_kwargs and (tol is not None or "atol" not in solver_kwargs):
+        solver_kwargs["rtol"] = DEFAULT_CG_RTOL
+
+
 def solve_with_cg(
     A: sparse.spmatrix,
     b: np.ndarray,
@@ -60,10 +74,7 @@ def solve_with_cg(
     from time import perf_counter
 
     logger.info("Solving using cg")
-    if ("atol" not in solver_kwargs or "rtol" not in solver_kwargs) and tol is not None:
-        solver_kwargs["atol"] = tol
-    elif tol is None and "rtol" not in solver_kwargs and "atol" not in solver_kwargs:
-        solver_kwargs["rtol"] = DEFAULT_CG_RTOL
+    _set_cg_tolerances(solver_kwargs, tol)
 
     logger.info(f"Solver kwargs: {solver_kwargs}")
     solve_step_started = perf_counter()
@@ -97,10 +108,7 @@ def solve_with_cg_normal_equations(
     from time import perf_counter
 
     logger.info("Solving using cg (matrix-free fused regularisation normal equations)")
-    if ("atol" not in solver_kwargs or "rtol" not in solver_kwargs) and tol is not None:
-        solver_kwargs["atol"] = tol
-    elif tol is None and "rtol" not in solver_kwargs and "atol" not in solver_kwargs:
-        solver_kwargs["rtol"] = DEFAULT_CG_RTOL
+    _set_cg_tolerances(solver_kwargs, tol)
 
     logger.info(f"Solver kwargs: {solver_kwargs}")
     solve_step_started = perf_counter()
