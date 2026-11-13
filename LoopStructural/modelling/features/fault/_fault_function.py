@@ -16,6 +16,10 @@ def smooth_peak(x):
     return v
 
 
+# smooth_peak is zero for |x| >= 1: a tip at both ends (see FaultDisplacement.tip_ends).
+smooth_peak.tip_ends = (1, -1)
+
+
 class FaultProfileFunction(metaclass=ABCMeta):
     def __init__(self):
         self.lim = [-1, 1]
@@ -27,6 +31,16 @@ class FaultProfileFunction(metaclass=ABCMeta):
     @abstractmethod
     def __call__(self, v: np.ndarray) -> np.ndarray:
         pass
+
+    @property
+    def tip_ends(self) -> tuple | None:
+        """The ends (+1, -1) of the coordinate beyond which the profile is zero.
+
+        A tip at +1 means the profile is exactly zero for v >= 1. The default
+        is None: not declared (``FaultDisplacement.tip_ends`` then tests the
+        profile numerically).
+        """
+        return None
 
     def plot(self, ax=None):
         if ax is None:
@@ -128,21 +142,33 @@ class CubicFunction(FaultProfileFunction):
         self.w = np.linalg.lstsq(ATA, ATB, rcond=None)[0]
         self.up_to_date = True
 
+    @property
+    def tip_ends(self) -> tuple:
+        """The limits at +-1 where the cubic is zero; it is clamped beyond them."""
+        self.solve()
+        ends = []
+        for end, lim in ((1, self.lim[1]), (-1, self.lim[0])):
+            value = self._limit_value(lim)
+            if lim == end and min(max(value, self.min_v), self.max_v) == 0.0:
+                ends.append(end)
+        return tuple(ends)
+
+    def _limit_value(self, x: float) -> float:
+        """Value at a limit: the value constraint there if there is one, else the cubic.
+
+        The least squares fit leaves about 1e-14 where a constraint asks for 0;
+        using the constraint makes a profile that ends at 0 exactly 0 beyond it.
+        """
+        for cx, cy in self.value_points:
+            if cx == x:
+                return float(cy)
+        return self.w[0] * x**3 + self.w[1] * x**2 + self.w[2] * x + self.w[3]
+
     def __call__(self, v):
         self.solve()
         eva = self.w[0] * v**3 + self.w[1] * v**2 + self.w[2] * v + self.w[3]
-        eva[v > self.lim[1]] = (
-            self.w[0] * self.lim[1] ** 3
-            + self.w[1] * self.lim[1] ** 2
-            + self.w[2] * self.lim[1]
-            + self.w[3]
-        )
-        eva[v < self.lim[0]] = (
-            self.w[0] * self.lim[0] ** 3
-            + self.w[1] * self.lim[0] ** 2
-            + self.w[2] * self.lim[0]
-            + self.w[3]
-        )
+        eva[v >= self.lim[1]] = self._limit_value(self.lim[1])
+        eva[v <= self.lim[0]] = self._limit_value(self.lim[0])
         eva[eva > self.max_v] = self.max_v
         eva[eva < self.min_v] = self.min_v
 
@@ -203,6 +229,8 @@ class Composite(FaultProfileFunction):
     def __init__(self, positive: FaultProfileFunction, negative: FaultProfileFunction):
         self.positive = positive
         self.negative = negative
+
+    tip_ends = ()
 
     def __call__(self, v: np.ndarray) -> np.ndarray:
         """calculate the displacement for the input coordinate
@@ -270,6 +298,8 @@ class Ones(FaultProfileFunction):
         v = np.array(v)
         return np.ones(v.shape)
 
+    tip_ends = ()
+
     def to_dict(self) -> dict:
         return {}
 
@@ -298,6 +328,8 @@ class Zeros(FaultProfileFunction):
         """
         v = np.array(v)
         return np.zeros(v.shape)
+
+    tip_ends = ()
 
     def to_dict(self) -> dict:
         return {}
@@ -361,6 +393,24 @@ class FaultDisplacement:
 
         return self.scale * self.gx(gx) * self.gy(gy) * self.gz(gz)
 
+    @property
+    def tip_ends(self) -> dict:
+        """The tip of the fault: for gy (1) and gz (2), the ends where the profile is zero.
+
+        A tip at end e of coordinate c means the displacement is exactly zero
+        where ``e * g_c >= 1``; ``FaultSegment.evaluate_tip_value`` is built
+        from it. A profile declares its ends with an attribute ``tip_ends``
+        (the library profiles and ``smooth_peak`` do). For a profile that does
+        not, the ends are found by testing that the profile is zero at
+        ``|g| = 1, 1.5, 2, 10``.
+
+        Returns
+        -------
+        dict of int to tuple of int
+            ``{1: ends of gy, 2: ends of gz}``; an empty tuple: no tip
+        """
+        return {1: _profile_tip_ends(self.gy), 2: _profile_tip_ends(self.gz)}
+
     def to_dict(self) -> dict:
         return {
             "gx": self.gx.to_dict(),
@@ -392,6 +442,19 @@ class FaultDisplacement:
         except ImportError:
             logger.warning("matplotlib not installed, not plotting")
             return
+
+
+def _profile_tip_ends(profile) -> tuple:
+    """The declared tip ends of a profile, or ends found by testing it."""
+    ends = getattr(profile, "tip_ends", None)
+    if ends is not None:
+        return tuple(ends)
+    found = []
+    for end in (1, -1):
+        beyond = end * np.array([1.0, 1.5, 2.0, 10.0])
+        if np.all(np.asarray(profile(beyond), dtype=float) == 0.0):
+            found.append(end)
+    return tuple(found)
 
 
 class BaseFault:

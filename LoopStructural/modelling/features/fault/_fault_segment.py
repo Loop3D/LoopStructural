@@ -428,17 +428,10 @@ class FaultSegment(StructuralFrame):
             For coordinate 1 and 2, the ends (+1 and/or -1) where the profile
             is zero at |g| >= 1. An empty list means no tip on that coordinate.
         """
-        ends = {}
-        for coordinate, name in ((1, "gy"), (2, "gz")):
-            profile = getattr(self.faultfunction, name, None)
-            ends[coordinate] = []
-            if profile is None:
-                continue
-            for end in (1, -1):
-                beyond = end * np.array([1.0, 1.5, 2.0, 10.0])
-                if np.all(np.asarray(profile(beyond), dtype=float) == 0.0):
-                    ends[coordinate].append(end)
-        return ends
+        if isinstance(self.faultfunction, FaultDisplacement):
+            return {c: list(e) for c, e in self.faultfunction.tip_ends.items()}
+        # A plain function of (gx, gy, gz): its tip is not known.
+        return {1: [], 2: []}
 
     def _evaluate_tip(self, points, block, gradient: bool):
         """Evaluate the tip function and, if asked, its gradient."""
