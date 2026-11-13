@@ -213,6 +213,15 @@ exposed:
     `evaluate_value` / `evaluate_displacement` (both unregistered; the
     keyword is new and optional, so existing calls are unchanged).
   - See `tests/unit/modelling/test_fault_block_fields.py`.
+- `GeologicalModel.get_feature_relations()` — the relations of a model as a
+  plain dict (event order, displaced-by, abutment with side, truncation by
+  unconformities); reads the builders, same before and after `update()`.
+- `FaultDisplacement.tip_ends` (property) and the `tip_ends` attribute of
+  the profiles — which frame coordinates carry a tip (unregistered).
+- The keyword `restored_through` on `FaultSegment.apply_to_points` /
+  `apply_to_vectors` and `GeologicalFeature.evaluate_value` /
+  `evaluate_gradient` — faults the points have already been restored
+  through (a displaced fault is applied once; unregistered).
 
 ## Known internal-path consumers
 
