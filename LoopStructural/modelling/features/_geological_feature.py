@@ -127,7 +127,8 @@ class GeologicalFeature(BaseFeature):
         self.model = model
 
     def evaluate_value(
-        self, pos: np.ndarray, ignore_regions=False, fillnan=None, *, block=None
+        self, pos: np.ndarray, ignore_regions=False, fillnan=None, *, block=None,
+        restored_through=(),
     ) -> np.ndarray:
         """
         Evaluate the scalar field value of the geological feature at the locations
@@ -145,6 +146,11 @@ class GeologicalFeature(BaseFeature):
             across those faults. Faults that the block does not name keep the
             side of each point. The call changes no state. See
             :meth:`GeologicalModel.evaluate_feature_block_value`.
+        restored_through : sequence of FaultSegment, optional
+            faults whose restoration the points already have: they are not
+            applied again. A fault uses this to evaluate its frame at points
+            that a feature has already restored through the younger faults
+            that displace the fault.
 
         Returns
         -------
@@ -166,7 +172,9 @@ class GeologicalFeature(BaseFeature):
         v = np.zeros(evaluation_points.shape[0])
         v[:] = np.nan
         mask = self._calculate_mask(pos, ignore_regions=ignore_regions, block=block)
-        evaluation_points = self._apply_faults(evaluation_points, block=block)
+        evaluation_points = self._apply_faults(
+            evaluation_points, block=block, restored_through=restored_through
+        )
         if mask.dtype not in [int, bool]:
             logger.error(f"Unable to evaluate value for {self.name}")
         else:
@@ -181,7 +189,8 @@ class GeologicalFeature(BaseFeature):
         return v
 
     def evaluate_gradient(
-        self, pos: np.ndarray, ignore_regions=False, element_scale_parameter=None, *, block=None
+        self, pos: np.ndarray, ignore_regions=False, element_scale_parameter=None, *, block=None,
+        restored_through=(),
     ) -> np.ndarray:
         """
 
@@ -192,6 +201,8 @@ class GeologicalFeature(BaseFeature):
         block : dict, optional
             fault block, see :meth:`evaluate_value`. The gradient is the
             gradient of the block field.
+        restored_through : sequence of FaultSegment, optional
+            see :meth:`evaluate_value`
 
         Returns
         -------
@@ -222,14 +233,15 @@ class GeologicalFeature(BaseFeature):
         mask = self._calculate_mask(pos, ignore_regions=ignore_regions, block=block)
         # evaluate the faults on the nodes of the faulted feature support
         # then evaluate the gradient at these points
-        if len(self.faults) > 0:
+        faults = self._unrestored_faults(restored_through)
+        if len(faults) > 0:
             # generate a regular tetrahedron for each point
             # we will then move these points by the fault and then recalculate the gradient.
             # this should work...
             resolved = False
             tetrahedron = regular_tetraherdron_for_points(pos, element_scale_parameter)
             # A fault that the block names has no jump, so a tetrahedron may cross it.
-            jumping = [f for f in self.faults if not block or f.name not in block]
+            jumping = [f for f in faults if not block or f.name not in block]
 
             while not resolved:
                 resolved = True
@@ -251,7 +263,7 @@ class GeologicalFeature(BaseFeature):
                         resolved = False
 
             tetrahedron_faulted = self._apply_faults(
-                np.array(tetrahedron.reshape(-1, 3)), block=block
+                np.array(tetrahedron.reshape(-1, 3)), block=block, restored_through=restored_through
             ).reshape(tetrahedron.shape)
 
             values = self.interpolator.evaluate_value(tetrahedron_faulted.reshape(-1, 3)).reshape(
@@ -260,7 +272,7 @@ class GeologicalFeature(BaseFeature):
             v[mask, :] = gradient_from_tetrahedron(tetrahedron[mask, :, :], values[mask])
 
             return v
-        pos = self._apply_faults(pos, block=block)
+        pos = self._apply_faults(pos, block=block, restored_through=restored_through)
         if mask.dtype not in [int, bool]:
             logger.error(f"Unable to evaluate gradient for {self.name}")
         else:

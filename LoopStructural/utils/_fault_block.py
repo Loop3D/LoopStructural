@@ -102,3 +102,47 @@ def block_kwargs(block: Mapping[str, int] | None) -> dict:
     signatures as before.
     """
     return {} if block is None else {"block": block}
+
+
+def is_in(fault, faults) -> bool:
+    """True if ``fault`` is one of ``faults`` (by identity)."""
+    return any(fault is f for f in faults)
+
+
+def restore_through(points, faults, *, reverse=False, block=None, restored_through=()):
+    """Restore points through a list of faults, each fault once.
+
+    The faults are applied in the order of the list (a feature keeps its
+    faults youngest first). Each fault is told which faults the points have
+    already been restored through, so that its frame, which was built in the
+    space restored by the younger faults that displace it, is evaluated at the
+    points as they are and does not apply those younger faults a second time.
+
+    Parameters
+    ----------
+    points : np.ndarray
+        Nx3 locations
+    faults : list of FaultSegment
+        faults in the order to apply them
+    reverse : bool
+        move the points forward instead of restoring them
+    block : dict, optional
+        checked fault block
+    restored_through : sequence of FaultSegment
+        faults whose restoration the points already have; they are skipped
+
+    Returns
+    -------
+    np.ndarray
+        the restored points
+    """
+    done = list(restored_through)
+    for fault in faults:
+        if is_in(fault, done):
+            continue
+        kwargs = block_kwargs(block)
+        if done:
+            kwargs["restored_through"] = tuple(done)
+        points = fault.apply_to_points(points, reverse=reverse, **kwargs)
+        done.append(fault)
+    return points

@@ -287,7 +287,7 @@ class FaultSegment(StructuralFrame):
         v[mask, :] *= scale[:, None] * self.displacement
         return v
 
-    def _evaluate_frame(self, points, block=None, precomputed_gx=None):
+    def _evaluate_frame(self, points, block=None, precomputed_gx=None, restored_through=()):
         """Evaluate the three fault frame coordinates at the points.
 
         Parameters
@@ -300,6 +300,9 @@ class FaultSegment(StructuralFrame):
             faults that displace this fault
         precomputed_gx : np.ndarray, optional
             gx already evaluated at the same points
+        restored_through : sequence of FaultSegment
+            faults whose restoration the points already have; the frame does
+            not apply them again
 
         Returns
         -------
@@ -307,6 +310,8 @@ class FaultSegment(StructuralFrame):
             gx, gy, gz
         """
         kwargs = block_kwargs(block)
+        if restored_through:
+            kwargs["restored_through"] = tuple(restored_through)
         if precomputed_gx is not None:
             gx = precomputed_gx
             gy = self.__getitem__(1).evaluate_value(points, **kwargs)
@@ -495,7 +500,9 @@ class FaultSegment(StructuralFrame):
         """
         return self._evaluate_tip(points, check_block(block), gradient=True)[1]
 
-    def apply_to_points(self, points, reverse=False, precomputed_gx=None, *, block=None):
+    def apply_to_points(
+        self, points, reverse=False, precomputed_gx=None, *, block=None, restored_through=()
+    ):
         """
         Unfault the array of points
 
@@ -510,6 +517,11 @@ class FaultSegment(StructuralFrame):
             is also used to evaluate the frame of this fault, so a fault that
             younger faults displace is evaluated in the block of those faults.
             The call changes no state.
+        restored_through : sequence of FaultSegment, optional
+            faults whose restoration the points already have. The frame of
+            this fault was built in the space restored by the younger faults
+            that displace it, so it is evaluated at the points as they are,
+            without applying those faults a second time.
 
         Returns
         -------
@@ -520,12 +532,16 @@ class FaultSegment(StructuralFrame):
         if block_side(block, self.name) == 0:
             return np.copy(points).astype(float)
         kwargs = block_kwargs(block)
+        if restored_through:
+            kwargs["restored_through"] = tuple(restored_through)
         steps = self.steps
         newp = np.copy(points).astype(float)
         # evaluate fault function for all points
         # then define mask for only points affected by fault
         # gx may be supplied by caller to avoid re-evaluation (precomputed from region check)
-        gx, gy, gz = self._evaluate_frame(newp, block, precomputed_gx=precomputed_gx)
+        gx, gy, gz = self._evaluate_frame(
+            newp, block, precomputed_gx=precomputed_gx, restored_through=restored_through
+        )
         d = np.zeros(gx.shape)
         mask = np.logical_and(~np.isnan(gx), ~np.isnan(gy))
         mask = np.logical_and(mask, ~np.isnan(gz))
@@ -550,7 +566,9 @@ class FaultSegment(StructuralFrame):
                 gy_m = gy[mask]
                 gz_m = gz[mask]
             else:
-                gx_m, gy_m, gz_m = self._evaluate_frame(newp[mask, :], block)
+                gx_m, gy_m, gz_m = self._evaluate_frame(
+                    newp[mask, :], block, restored_through=restored_through
+                )
             g = self.__getitem__(1).evaluate_gradient(newp[mask, :], ignore_regions=True, **kwargs)
             gx, gy, gz = gx_m, gy_m, gz_m  # alias for block below
             # # get the fault frame val/grad for the points
@@ -587,7 +605,9 @@ class FaultSegment(StructuralFrame):
 
         return newp
 
-    def apply_to_vectors(self, vector: np.ndarray, scale_parameter: float = 1.0) -> np.ndarray:
+    def apply_to_vectors(
+        self, vector: np.ndarray, scale_parameter: float = 1.0, *, restored_through=()
+    ) -> np.ndarray:
         """Rotates the vector through the fault displacement field
 
         Parameters
@@ -608,7 +628,8 @@ class FaultSegment(StructuralFrame):
         tetrahedron = regular_tetraherdron_for_points(vector[:, :3], scale_parameter)
         corners = np.einsum('ikj,ij->ik', tetrahedron - vector[:, None, :3], vector[:, 3:])
 
-        tetrahedron = self.apply_to_points(tetrahedron.reshape(-1, 3)).reshape(-1, 4, 3)
+        kwargs = {"restored_through": tuple(restored_through)} if restored_through else {}
+        tetrahedron = self.apply_to_points(tetrahedron.reshape(-1, 3), **kwargs).reshape(-1, 4, 3)
         v = gradient_from_tetrahedron(tetrahedron, corners)
 
         return v

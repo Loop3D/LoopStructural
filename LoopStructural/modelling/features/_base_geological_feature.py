@@ -7,7 +7,7 @@ import numpy as np
 from LoopStructural.geometry import VectorPoints
 from LoopStructural.modelling.features import FeatureType
 from LoopStructural.utils import LoopIsosurfacer, LoopValueError, getLogger, surface_list
-from LoopStructural.utils._fault_block import block_kwargs
+from LoopStructural.utils._fault_block import block_kwargs, is_in, restore_through
 from LoopStructural.utils.regions import BaseRegion
 from LoopStructural.utils.typing import NumericInput
 
@@ -259,7 +259,8 @@ class BaseFeature(metaclass=ABCMeta):
         return mask
 
     def _apply_faults(
-        self, evaluation_points: np.ndarray, reverse: bool = False, block=None
+        self, evaluation_points: np.ndarray, reverse: bool = False, block=None,
+        restored_through=(),
     ) -> np.ndarray:
         """Calculate the restored location of the points given any faults if faults are enabled
 
@@ -269,6 +270,8 @@ class BaseFeature(metaclass=ABCMeta):
             location to be evaluated, Nx3 array
         block : dict, optional
             fault block, see :meth:`FaultSegment.apply_to_points`
+        restored_through : sequence of FaultSegment
+            faults whose restoration the points already have (skipped)
 
         Returns
         -------
@@ -277,12 +280,20 @@ class BaseFeature(metaclass=ABCMeta):
         """
 
         if self.faults_enabled:
-            # check faults
-            for f in self.faults:
-                evaluation_points = f.apply_to_points(
-                    evaluation_points, reverse=reverse, **block_kwargs(block)
-                )
+            evaluation_points = restore_through(
+                evaluation_points,
+                self.faults,
+                reverse=reverse,
+                block=block,
+                restored_through=restored_through,
+            )
         return evaluation_points
+
+    def _unrestored_faults(self, restored_through=()) -> list:
+        """The faults of the feature that the points have not been restored through."""
+        if not self.faults_enabled:
+            return []
+        return [f for f in self.faults if not is_in(f, restored_through)]
 
     @abstractmethod
     def evaluate_gradient(self, pos, ignore_regions=False):
