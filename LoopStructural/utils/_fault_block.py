@@ -140,9 +140,13 @@ def restore_through(points, faults, *, reverse=False, block=None, restored_throu
     for fault in faults:
         if is_in(fault, done):
             continue
+        # Pass only the keywords that are needed, so a fault-like object with
+        # the plain apply_to_points(points) signature still works.
         kwargs = block_kwargs(block)
+        if reverse:
+            kwargs["reverse"] = True
         if done:
             kwargs["restored_through"] = tuple(done)
-        points = fault.apply_to_points(points, reverse=reverse, **kwargs)
+        points = fault.apply_to_points(points, **kwargs)
         done.append(fault)
     return points
