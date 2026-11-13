@@ -21,6 +21,7 @@ from ...modelling.features import (
 from ...modelling.features.fault import FaultSegment
 from ...modelling.features.fold import FoldFrame
 from ...utils import LoopValueError, getLogger, public_api, strikedip2vector, timed_stage
+from ...utils._fault_block import check_block
 from ...utils.helper import (
     all_heading,
     gradient_vec_names,
@@ -1404,6 +1405,90 @@ class GeologicalModel:
             return feature.evaluate_gradient(xyz)
         else:
             return np.zeros(xyz.shape[0])
+
+    @public_api(tier="provisional")
+    def evaluate_feature_block_value(
+        self, feature_name: str, xyz: np.ndarray, block: dict, *, ignore_regions: bool = True
+    ) -> np.ndarray:
+        """Evaluate a feature as it is in one fault block.
+
+        A fault block gives, for faults that displace the feature, the side of
+        the fault that every point is taken to be on: ``+1`` the hanging wall
+        (fault frame coordinate gx > 0), ``-1`` the footwall, ``0`` the fault
+        is absent (it moves no point). The result is the field of that block,
+        extended smoothly over the whole model: it has no jump across the
+        faults that the block names, and it equals
+        :meth:`evaluate_feature_value` wherever the points are in that block.
+        A fault that the block does not name keeps the side of each point.
+
+        The block is also used for the faults that displace the faults of the
+        feature, and for the regions of the faults (for example, a fault that
+        abuts on the hanging wall of another fault is absent in a block that
+        puts the points on the footwall of that fault).
+
+        The call changes no state, so calls with different blocks can run at
+        the same time.
+
+        Parameters
+        ----------
+        feature_name : str
+            name of the feature
+        xyz : np.ndarray
+            Nx3 locations, world coordinates
+        block : dict
+            maps fault names (or faults) to +1, -1 or 0
+        ignore_regions : bool, optional
+            do not apply the regions of the feature itself (for example a
+            younger unconformity), by default True: the block field covers the
+            whole support of the feature
+
+        Returns
+        -------
+        np.ndarray
+            N values, NaN where the feature has no support
+
+        Examples
+        --------
+        >>> hanging_wall = model.evaluate_feature_block_value("strat", xyz, {"fault": 1})
+        >>> footwall = model.evaluate_feature_block_value("strat", xyz, {"fault": -1})
+        """
+        feature = self.get_feature_by_name(feature_name)
+        return feature.evaluate_value(
+            np.asarray(xyz, dtype=float),
+            ignore_regions=ignore_regions,
+            block=self._check_fault_block(block),
+        )
+
+    @public_api(tier="provisional")
+    def evaluate_feature_block_gradient(
+        self, feature_name: str, xyz: np.ndarray, block: dict, *, ignore_regions: bool = True
+    ) -> np.ndarray:
+        """Evaluate the gradient of a feature as it is in one fault block.
+
+        See :meth:`evaluate_feature_block_value` for the block and the
+        parameters.
+
+        Returns
+        -------
+        np.ndarray
+            Nx3 gradients, NaN where the feature has no support
+        """
+        feature = self.get_feature_by_name(feature_name)
+        return feature.evaluate_gradient(
+            np.asarray(xyz, dtype=float),
+            ignore_regions=ignore_regions,
+            block=self._check_fault_block(block),
+        )
+
+    def _check_fault_block(self, block) -> dict:
+        """Check that a fault block names only faults of this model."""
+        block = check_block(block)
+        if block is None:
+            raise ValueError("block must map fault names to +1, -1 or 0")
+        unknown = sorted(set(block) - set(self.fault_names()))
+        if unknown:
+            raise ValueError(f"block names faults that are not in the model: {unknown}")
+        return block
 
     @public_api(tier="stable")
     def update(self, verbose=False, progressbar=True):
