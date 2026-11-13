@@ -59,13 +59,15 @@ class UnconformityFeature(GeologicalFeature):
         uc.name = self.name + "_inverse"
         return uc
 
-    def evaluate(self, pos: np.ndarray) -> np.ndarray:
+    def evaluate(self, pos: np.ndarray, *, block=None) -> np.ndarray:
         """
 
         Parameters
         ----------
         pos : numpy array
             locations to evaluate whether below or above unconformity
+        block : dict, optional
+            fault block in which the unconformity is evaluated
 
         Returns
         -------
@@ -73,9 +75,9 @@ class UnconformityFeature(GeologicalFeature):
             true if above the unconformity, false if below
         """
         if self.sign:
-            return self.evaluate_value(pos) <= self.value
+            return self.evaluate_value(pos, block=block) <= self.value
         if not self.sign:
-            return self.evaluate_value(pos) >= self.value
+            return self.evaluate_value(pos, block=block) >= self.value
 
-    def __call__(self, pos) -> np.ndarray:
-        return self.evaluate(pos)
+    def __call__(self, pos, *, block=None) -> np.ndarray:
+        return self.evaluate(pos, block=block)

@@ -23,6 +23,7 @@ from LoopStructural.utils.maths import gradient_from_tetrahedron, regular_tetrah
 
 from ...geometry import ValuePoints, VectorPoints
 from ...utils import LoopValueError, getLogger
+from ...utils._fault_block import block_kwargs, check_block
 from . import FeatureType
 from ._base_geological_feature import BaseFeature
 
@@ -125,7 +126,9 @@ class GeologicalFeature(BaseFeature):
     def set_model(self, model):
         self.model = model
 
-    def evaluate_value(self, pos: np.ndarray, ignore_regions=False, fillnan=None) -> np.ndarray:
+    def evaluate_value(
+        self, pos: np.ndarray, ignore_regions=False, fillnan=None, *, block=None
+    ) -> np.ndarray:
         """
         Evaluate the scalar field value of the geological feature at the locations
         specified
@@ -134,6 +137,14 @@ class GeologicalFeature(BaseFeature):
         ----------
         pos : np.ndarray
             location to evaluate the scalar value
+        block : dict, optional
+            fault block: maps fault names to +1 (hanging wall), -1 (footwall) or
+            0 (absent). Each fault that the block names restores every point
+            as if the point were on that side, so the result is the smooth
+            extension of that fault block over the whole support, with no jump
+            across those faults. Faults that the block does not name keep the
+            side of each point. The call changes no state. See
+            :meth:`GeologicalModel.evaluate_feature_block_value`.
 
         Returns
         -------
@@ -143,6 +154,7 @@ class GeologicalFeature(BaseFeature):
         """
         if pos.shape[1] != 3:
             raise LoopValueError("Need Nx3 array of xyz points to evaluate value")
+        block = check_block(block)
         # TODO need to add a generic type checker for all methods
         # if evaluation_points is not a numpy array try and convert
         # otherwise error
@@ -153,8 +165,8 @@ class GeologicalFeature(BaseFeature):
         # check if the points are within the display region
         v = np.zeros(evaluation_points.shape[0])
         v[:] = np.nan
-        mask = self._calculate_mask(pos, ignore_regions=ignore_regions)
-        evaluation_points = self._apply_faults(evaluation_points)
+        mask = self._calculate_mask(pos, ignore_regions=ignore_regions, block=block)
+        evaluation_points = self._apply_faults(evaluation_points, block=block)
         if mask.dtype not in [int, bool]:
             logger.error(f"Unable to evaluate value for {self.name}")
         else:
@@ -169,7 +181,7 @@ class GeologicalFeature(BaseFeature):
         return v
 
     def evaluate_gradient(
-        self, pos: np.ndarray, ignore_regions=False, element_scale_parameter=None
+        self, pos: np.ndarray, ignore_regions=False, element_scale_parameter=None, *, block=None
     ) -> np.ndarray:
         """
 
@@ -177,6 +189,9 @@ class GeologicalFeature(BaseFeature):
         ----------
         locations : numpy array
             location where the gradient is being evaluated
+        block : dict, optional
+            fault block, see :meth:`evaluate_value`. The gradient is the
+            gradient of the block field.
 
         Returns
         -------
@@ -185,6 +200,7 @@ class GeologicalFeature(BaseFeature):
         """
         if pos.shape[1] != 3:
             raise LoopValueError("Need Nx3 array of xyz points to evaluate gradient")
+        block = check_block(block)
         logger.info(f'Calculating gradient for {self.name}')
         if element_scale_parameter is None:
             if self.model is not None:
@@ -203,7 +219,7 @@ class GeologicalFeature(BaseFeature):
 
         v = np.zeros(pos.shape)
         v[:] = np.nan
-        mask = self._calculate_mask(pos, ignore_regions=ignore_regions)
+        mask = self._calculate_mask(pos, ignore_regions=ignore_regions, block=block)
         # evaluate the faults on the nodes of the faulted feature support
         # then evaluate the gradient at these points
         if len(self.faults) > 0:
@@ -212,13 +228,17 @@ class GeologicalFeature(BaseFeature):
             # this should work...
             resolved = False
             tetrahedron = regular_tetraherdron_for_points(pos, element_scale_parameter)
+            # A fault that the block names has no jump, so a tetrahedron may cross it.
+            jumping = [f for f in self.faults if not block or f.name not in block]
 
             while not resolved:
                 resolved = True
-                for f in self.faults:
+                for f in jumping:
                     side = (
                         f[0]
-                        .evaluate_value(tetrahedron.reshape(-1, 3), fillnan='nearest')
+                        .evaluate_value(
+                            tetrahedron.reshape(-1, 3), fillnan='nearest', **block_kwargs(block)
+                        )
                         .reshape(tetrahedron.shape[0], 4)
                     )
                     flag = np.logical_or(np.all(side > 0, axis=1), np.all(side < 0, axis=1))
@@ -230,9 +250,9 @@ class GeologicalFeature(BaseFeature):
                         tetrahedron = regular_tetraherdron_for_points(pos, element_scale_parameter)
                         resolved = False
 
-            tetrahedron_faulted = self._apply_faults(np.array(tetrahedron.reshape(-1, 3))).reshape(
-                tetrahedron.shape
-            )
+            tetrahedron_faulted = self._apply_faults(
+                np.array(tetrahedron.reshape(-1, 3)), block=block
+            ).reshape(tetrahedron.shape)
 
             values = self.interpolator.evaluate_value(tetrahedron_faulted.reshape(-1, 3)).reshape(
                 (-1, 4)
@@ -240,7 +260,7 @@ class GeologicalFeature(BaseFeature):
             v[mask, :] = gradient_from_tetrahedron(tetrahedron[mask, :, :], values[mask])
 
             return v
-        pos = self._apply_faults(pos)
+        pos = self._apply_faults(pos, block=block)
         if mask.dtype not in [int, bool]:
             logger.error(f"Unable to evaluate gradient for {self.name}")
         else:

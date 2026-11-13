@@ -7,6 +7,8 @@ import numpy as np
 from LoopStructural.geometry import VectorPoints
 from LoopStructural.modelling.features import FeatureType
 from LoopStructural.utils import LoopIsosurfacer, LoopValueError, getLogger, surface_list
+from LoopStructural.utils._fault_block import block_kwargs
+from LoopStructural.utils.regions import BaseRegion
 from LoopStructural.utils.typing import NumericInput
 
 logger = getLogger(__name__)
@@ -193,20 +195,22 @@ class BaseFeature(metaclass=ABCMeta):
         """
         self.regions.append(region)
 
-    def __call__(self, xyz):
+    def __call__(self, xyz, *, block=None):
         """Calls evaluate_value method
 
         Parameters
         ----------
         xyz : np.ndarray
             location to evaluate feature
+        block : dict, optional
+            fault block, passed to evaluate_value if given
 
         Returns
         -------
         np.ndarray
             the value of the feature at the locations
         """
-        return self.evaluate_value(xyz)
+        return self.evaluate_value(xyz, **block_kwargs(block))
 
     @abstractmethod
     def evaluate_value(self, pos, ignore_regions=False):
@@ -226,13 +230,18 @@ class BaseFeature(metaclass=ABCMeta):
         value = self.evaluate_value(pos)
         return (value - self.min()) / (self.max() - self.min())
 
-    def _calculate_mask(self, evaluation_points: np.ndarray, ignore_regions=False) -> np.ndarray:
+    def _calculate_mask(
+        self, evaluation_points: np.ndarray, ignore_regions=False, block=None
+    ) -> np.ndarray:
         """Calculate the mask for which evaluation points need to be calculated
 
         Parameters
         ----------
         evaluation_points : np.ndarray
             location to be evaluated, Nx3 array
+        block : dict, optional
+            fault block, passed on to the regions that are features or
+            region objects (a plain function region is called without it)
 
         Returns
         -------
@@ -245,17 +254,21 @@ class BaseFeature(metaclass=ABCMeta):
         if not ignore_regions:
             # check regions
             for r in self.regions:
-                # try:
-                mask = np.logical_and(mask, r(evaluation_points))
+                kwargs = block_kwargs(block) if isinstance(r, (BaseRegion, BaseFeature)) else {}
+                mask = np.logical_and(mask, r(evaluation_points, **kwargs))
         return mask
 
-    def _apply_faults(self, evaluation_points: np.ndarray, reverse: bool = False) -> np.ndarray:
+    def _apply_faults(
+        self, evaluation_points: np.ndarray, reverse: bool = False, block=None
+    ) -> np.ndarray:
         """Calculate the restored location of the points given any faults if faults are enabled
 
         Parameters
         ----------
         evaluation_points : np.ndarray
             location to be evaluated, Nx3 array
+        block : dict, optional
+            fault block, see :meth:`FaultSegment.apply_to_points`
 
         Returns
         -------
@@ -266,7 +279,9 @@ class BaseFeature(metaclass=ABCMeta):
         if self.faults_enabled:
             # check faults
             for f in self.faults:
-                evaluation_points = f.apply_to_points(evaluation_points, reverse=reverse)
+                evaluation_points = f.apply_to_points(
+                    evaluation_points, reverse=reverse, **block_kwargs(block)
+                )
         return evaluation_points
 
     @abstractmethod
