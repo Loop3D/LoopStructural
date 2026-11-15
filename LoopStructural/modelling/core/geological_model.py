@@ -61,6 +61,17 @@ class GeologicalModel:
         the origin of the model box
     parameters : dict
         a dictionary tracking the parameters used to build the model
+    tol : float
+        absolute tolerance of the residual of the solver, 1e-10 of the
+        longest side of the model. It has no length meaning.
+    position_tolerance : float or None
+        how far the isosurfaces of a cg-solved feature may be from the
+        isosurfaces of the fully converged field, as a length in the units
+        of the model (for example 1.0 for 1 m). It is an estimate, not a
+        bound: see ``DiscreteInterpolator.solve_system``. None (default)
+        keeps the stop on the solver residual. Set it before the features
+        are built; a feature can have its own value with the keyword
+        ``position_tolerance`` of the ``create_and_add_*`` methods.
 
 
     """
@@ -135,6 +146,7 @@ class GeologicalModel:
         self._stratigraphic_column = StratigraphicColumn()
 
         self.tol = 1e-10 * np.max(self.bounding_box.maximum - self.bounding_box.origin)
+        self.position_tolerance = None
         self._dtm = None
 
     @public_api(tier="stable")

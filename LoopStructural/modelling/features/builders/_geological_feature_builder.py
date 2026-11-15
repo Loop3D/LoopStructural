@@ -618,10 +618,29 @@ class GeologicalFeatureBuilder(BaseBuilder):
         self.install_equality_constraints()
         logger.info(f'running interpolation for {self.name}')
 
+        solve_kwargs = {}
+        # A position tolerance of the feature, else the one of the model.
+        # It is passed only when set: other interpolators do not take it.
+        position_tolerance = kwargs.get(
+            'position_tolerance', getattr(self.model, 'position_tolerance', None)
+        )
+        if position_tolerance is not None:
+            import inspect
+
+            if 'position_tolerance' in inspect.signature(
+                self.interpolator.solve_system
+            ).parameters:
+                solve_kwargs['position_tolerance'] = position_tolerance
+            else:
+                logger.warning(
+                    f'{type(self.interpolator).__name__} has no position_tolerance; '
+                    f'{self.name} is solved with tol'
+                )
         self.interpolator.solve_system(
             solver=kwargs.get('solver', 'cg'),
             tol=kwargs.get('tol', None),
             solver_kwargs=kwargs.get('solver_kwargs', {}),
+            **solve_kwargs,
         )
         logger.info(f'Finished building  {self.name}')
         self._up_to_date = True
