@@ -174,9 +174,134 @@ class FeatureRelationshipManager:
                 continue
             else:
                 f.add_region(uc_feature)
+        # the faults that are older than the unconformity end on it
+        for f in list(model.features):
+            if f.type not in (FeatureType.FAULT, FeatureType.INACTIVEFAULT):
+                continue
+            if FeatureRelationshipManager.fault_is_older_than(model, f, feature):
+                FeatureRelationshipManager.truncate_fault(model, f, uc_feature)
         # now add the unconformity to the feature list
         model._add_feature(uc_feature, index=index)
         return uc_feature
+
+    @staticmethod
+    def _displaced_by(feature: GeologicalFeature) -> list:
+        """The faults that displace a feature (read from its builder)."""
+        builder = getattr(feature, "builder", None)
+        builders = getattr(builder, "builders", None)
+        if builders is not None:
+            # a structural frame: the three coordinates have the same faults
+            builder = builders[0]
+        faults = getattr(builder, "faults", None)
+        if faults is None:
+            faults = getattr(feature, "faults", [])
+        return list(faults)
+
+    @staticmethod
+    def fault_is_older_than(
+        model: GeologicalModel, fault: GeologicalFeature, feature: GeologicalFeature
+    ) -> bool:
+        """Whether a fault is older than the unconformity at the base of a feature.
+
+        Call it before the unconformity is added to the model.
+
+        The features of a model are in the order in which they were added,
+        and a new feature is displaced by every fault that the model has at
+        that moment, unless its ``faults`` argument gives another list. An
+        unconformity truncates the features that the model has back to the
+        last unconformity or domain fault; the features before that one lie
+        above an earlier unconformity and are younger. So the rule is:
+
+        A fault is **younger** than the unconformity if it displaces
+        ``feature`` (the series whose isovalue is the unconformity), or a
+        feature that lies above an earlier unconformity. Every other fault
+        is **older**: a fault added after ``feature``, and a fault added
+        before it that the ``faults`` argument of ``feature`` leaves out.
+
+        Parameters
+        ----------
+        model : GeologicalModel
+        fault : FaultSegment
+        feature : GeologicalFeature
+            the series that defines the unconformity
+
+        Returns
+        -------
+        bool
+        """
+        displaced_by = FeatureRelationshipManager._displaced_by
+        if any(d is fault for d in displaced_by(feature)):
+            return False
+        # the features that this unconformity does not truncate: all that
+        # are before the last unconformity or domain fault
+        boundary = None
+        for i in reversed(range(len(model.features))):
+            if model.features[i].type in (FeatureType.UNCONFORMITY, FeatureType.DOMAINFAULT):
+                boundary = i
+                break
+        if boundary is None:
+            return True
+        skip = (
+            FeatureType.FAULT,
+            FeatureType.INACTIVEFAULT,
+            FeatureType.UNCONFORMITY,
+            FeatureType.ONLAPUNCONFORMITY,
+        )
+        for f in model.features[:boundary]:
+            if f.type not in skip and any(d is fault for d in displaced_by(f)):
+                return False
+        return True
+
+    @staticmethod
+    def truncate_fault(
+        model: GeologicalModel, fault: GeologicalFeature, unconformity: UnconformityFeature
+    ) -> bool:
+        """Limit a fault to the region below an unconformity.
+
+        The fault frame gets the region of the unconformity: the frame, the
+        fault surface and the displacement exist only where the series of
+        the unconformity is below its value. A point above the unconformity
+        is not moved by the fault, so the fault does not displace the
+        features above it. The features that the fault displaces are marked
+        to be built again.
+
+        Returns
+        -------
+        bool
+            False if the fault already has this region.
+        """
+        for r in fault.regions:
+            if (
+                isinstance(r, UnconformityFeature)
+                and r.parent is unconformity.parent
+                and r.value == unconformity.value
+                and r.sign == unconformity.sign
+            ):
+                return False
+        logger.info(f"Adding {unconformity.name} as unconformity to fault {fault.name}")
+        fault.add_region(unconformity)
+        for f in model.features:
+            if any(d is fault for d in FeatureRelationshipManager._displaced_by(f)):
+                builder = getattr(f, "builder", None)
+                if builder is not None:
+                    builder.set_not_up_to_date(fault)
+        return True
+
+    @staticmethod
+    def add_unconformities_above_fault(
+        model: GeologicalModel, fault: GeologicalFeature, index: int | None = None
+    ) -> None:
+        """Truncate a new fault by the unconformities that are younger than it.
+
+        A fault that is added after an unconformity is older than it. The
+        fault takes the region of every erosional unconformity that is
+        before its place in the model (``index``, or the end of the list).
+        Onlap unconformities are not used.
+        """
+        features = model.features if index is None else model.features[:index]
+        for f in reversed(features):
+            if f.type == FeatureType.UNCONFORMITY:
+                FeatureRelationshipManager.truncate_fault(model, fault, f)
 
     @staticmethod
     def add_onlap_unconformity(

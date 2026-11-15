@@ -31,6 +31,7 @@ from ...modelling.features.fault import FaultSegment
 from ...modelling.features.fold import FoldEvent, FoldFrame
 from ...modelling.intrusions import IntrusionBuilder, IntrusionFeature, IntrusionFrameBuilder
 from ...utils import getLogger
+from ._model_relationships import FeatureRelationshipManager
 
 if TYPE_CHECKING:
     from numpy.typing import ArrayLike
@@ -775,10 +776,7 @@ class ModelFeatureFactory:
         fault.displacement = displacement_scaled
         fault.faultfunction = faultfunction
 
-        for f in reversed(model.features):
-            if f.type == FeatureType.UNCONFORMITY:
-                fault.add_region(f)
-                break
+        FeatureRelationshipManager.add_unconformities_above_fault(model, fault, index=index)
         if displacement == 0:
             fault.type = FeatureType.INACTIVEFAULT
         model._add_feature(fault, index=index)

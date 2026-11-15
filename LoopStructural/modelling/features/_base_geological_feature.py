@@ -231,7 +231,8 @@ class BaseFeature(metaclass=ABCMeta):
         return (value - self.min()) / (self.max() - self.min())
 
     def _calculate_mask(
-        self, evaluation_points: np.ndarray, ignore_regions=False, block=None
+        self, evaluation_points: np.ndarray, ignore_regions=False, block=None,
+        restored_through=(),
     ) -> np.ndarray:
         """Calculate the mask for which evaluation points need to be calculated
 
@@ -242,6 +243,11 @@ class BaseFeature(metaclass=ABCMeta):
         block : dict, optional
             fault block, passed on to the regions that are features or
             region objects (a plain function region is called without it)
+        restored_through : sequence of FaultSegment
+            faults whose restoration the points already have. A region that
+            is an unconformity is read without applying them again: the
+            frame of a fault that younger faults displace is built in the
+            restored space, and it ends on the unconformity in that space.
 
         Returns
         -------
@@ -255,6 +261,8 @@ class BaseFeature(metaclass=ABCMeta):
             # check regions
             for r in self.regions:
                 kwargs = block_kwargs(block) if isinstance(r, (BaseRegion, BaseFeature)) else {}
+                if restored_through and getattr(r, "takes_restored_through", False):
+                    kwargs["restored_through"] = tuple(restored_through)
                 mask = np.logical_and(mask, r(evaluation_points, **kwargs))
         return mask
 

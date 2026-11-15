@@ -59,7 +59,10 @@ class UnconformityFeature(GeologicalFeature):
         uc.name = self.name + "_inverse"
         return uc
 
-    def evaluate(self, pos: np.ndarray, *, block=None) -> np.ndarray:
+    # _calculate_mask passes restored_through to a region with this flag
+    takes_restored_through = True
+
+    def evaluate(self, pos: np.ndarray, *, block=None, restored_through=()) -> np.ndarray:
         """
 
         Parameters
@@ -68,16 +71,20 @@ class UnconformityFeature(GeologicalFeature):
             locations to evaluate whether below or above unconformity
         block : dict, optional
             fault block in which the unconformity is evaluated
+        restored_through : sequence of FaultSegment, optional
+            faults whose restoration the points already have: the series of
+            the unconformity does not apply them again
 
         Returns
         -------
         np.ndarray.dtype(bool)
             true if above the unconformity, false if below
         """
+        kwargs = {"restored_through": tuple(restored_through)} if restored_through else {}
         if self.sign:
-            return self.evaluate_value(pos, block=block) <= self.value
+            return self.evaluate_value(pos, block=block, **kwargs) <= self.value
         if not self.sign:
-            return self.evaluate_value(pos, block=block) >= self.value
+            return self.evaluate_value(pos, block=block, **kwargs) >= self.value
 
-    def __call__(self, pos, *, block=None) -> np.ndarray:
-        return self.evaluate(pos, block=block)
+    def __call__(self, pos, *, block=None, restored_through=()) -> np.ndarray:
+        return self.evaluate(pos, block=block, restored_through=restored_through)

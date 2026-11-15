@@ -933,6 +933,32 @@ class GeologicalModel:
         """
         Use an existing feature to add an unconformity to the model.
 
+        The unconformity is erosional. ``feature`` exists only above it. The
+        other features of the model back to the last unconformity, and the
+        features that are added later, exist only below it.
+
+        The unconformity also truncates the faults that are older than it:
+        such a fault takes the region of the unconformity, so its frame and
+        its surface exist only below the unconformity and it moves no point
+        above it (it does not displace ``feature``).
+
+        **Which faults are older.** The features of a model are in the order
+        in which they were added, and a new feature is displaced by every
+        fault that the model has at that moment, unless its ``faults``
+        argument gives another list. A fault is *younger* than the
+        unconformity if it displaces ``feature``, or a feature that lies
+        above an earlier unconformity (a feature that this unconformity does
+        not truncate); it then cuts the unconformity and is not changed.
+        Every other fault is *older*:
+
+        * a fault that is added after ``feature`` (before or after this
+          call),
+        * a fault that was added before ``feature`` and that the ``faults``
+          argument of ``feature`` leaves out.
+
+        A fault that is added after several unconformities is truncated by
+        each of them.
+
         Parameters
         ----------
         feature : GeologicalFeature
@@ -954,6 +980,10 @@ class GeologicalModel:
     ) -> GeologicalFeature:
         """
         Use an existing feature to add an unconformity to the model.
+
+        An onlap unconformity does not truncate faults: no fault takes its
+        region, whether the fault is added before or after this call. Only
+        :meth:`add_unconformity` (erosional) truncates the older faults.
 
         Parameters
         ----------

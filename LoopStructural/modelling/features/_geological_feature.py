@@ -171,7 +171,9 @@ class GeologicalFeature(BaseFeature):
         # check if the points are within the display region
         v = np.zeros(evaluation_points.shape[0])
         v[:] = np.nan
-        mask = self._calculate_mask(pos, ignore_regions=ignore_regions, block=block)
+        mask = self._calculate_mask(
+            pos, ignore_regions=ignore_regions, block=block, restored_through=restored_through
+        )
         evaluation_points = self._apply_faults(
             evaluation_points, block=block, restored_through=restored_through
         )
@@ -230,7 +232,9 @@ class GeologicalFeature(BaseFeature):
 
         v = np.zeros(pos.shape)
         v[:] = np.nan
-        mask = self._calculate_mask(pos, ignore_regions=ignore_regions, block=block)
+        mask = self._calculate_mask(
+            pos, ignore_regions=ignore_regions, block=block, restored_through=restored_through
+        )
         # evaluate the faults on the nodes of the faulted feature support
         # then evaluate the gradient at these points
         faults = self._unrestored_faults(restored_through)
