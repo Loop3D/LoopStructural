@@ -5,7 +5,12 @@ import numpy as np
 from LoopStructural.utils.maths import gradient_from_tetrahedron, regular_tetraherdron_for_points
 
 from ....modelling.features import FeatureType, StructuralFrame
-from ....modelling.features.fault._fault_function import BaseFault, BaseFault3D, FaultDisplacement
+from ....modelling.features.fault._fault_function import (
+    BaseFault,
+    BaseFault3D,
+    FaultDisplacement,
+    block_displacement,
+)
 from ....modelling.features.fault._fault_function_feature import (
     FaultDisplacementFeature,
 )
@@ -330,10 +335,44 @@ class FaultSegment(StructuralFrame):
             gx = self.__getitem__(0).evaluate_value(points, **kwargs)
             gy = self.__getitem__(1).evaluate_value(points, **kwargs)
             gz = self.__getitem__(2).evaluate_value(points, **kwargs)
-        side = block_side(block, self.name)
-        if side in (-1, 1):
-            gx = force_side(gx, side)
         return gx, gy, gz
+
+    def _displacement_fraction(self, gx, gy, gz, block=None, offset=0.0):
+        """The displacement at the frame coordinates, as a fraction of the displacement.
+
+        Parameters
+        ----------
+        gx, gy, gz : np.ndarray
+            fault frame coordinates (:meth:`_evaluate_frame`), NaN where the
+            fault has no frame
+        block : dict, optional
+            checked fault block. If it gives a side for this fault, every
+            point takes the displacement of that side: the profile itself on
+            that side and its smooth continuation across the fault on the
+            other side (see ``_fault_function.block_displacement``).
+        offset : float
+            added to gx in the profile
+
+        Returns
+        -------
+        np.ndarray
+            zero where a frame coordinate is NaN
+        """
+        side = block_side(block, self.name)
+        forced = force_side(gx, side) if side in (-1, 1) else gx
+        d = np.zeros(gx.shape)
+        mask = np.logical_and(~np.isnan(forced), ~np.isnan(gy))
+        mask = np.logical_and(mask, ~np.isnan(gz))
+        d[~mask] = 0
+        gx_mask = np.zeros_like(mask, dtype=bool)
+        gx_mask[mask] = forced[mask] > 0
+        d[gx_mask] = 1.0
+        if self.faultfunction is not None:
+            d[mask] = block_displacement(
+                self.faultfunction, gx[mask] + offset, forced[mask] + offset, gy[mask], gz[mask],
+                side,
+            )
+        return d
 
     def evaluate_displacement(self, points, *, block=None):
         """Evaluate the displacement magnitude of the fault at the points.
@@ -357,15 +396,7 @@ class FaultSegment(StructuralFrame):
         # evaluate fault function for all
         # points then define mask for only points affected by fault
         gx, gy, gz = self._evaluate_frame(newp, block)
-        d = np.zeros(gx.shape)
-        mask = np.logical_and(~np.isnan(gx), ~np.isnan(gy))
-        mask = np.logical_and(mask, ~np.isnan(gz))
-        d[~mask] = 0
-        gx_mask = np.zeros_like(mask, dtype=bool)
-        gx_mask[mask] = gx[mask] > 0
-        d[gx_mask] = 1.0
-        if self.faultfunction is not None:
-            d[mask] = self.faultfunction(gx[mask] + self.fault_offset, gy[mask], gz[mask])
+        d = self._displacement_fraction(gx, gy, gz, block, offset=self.fault_offset)
         return d * self.displacement
 
     @public_api(tier="provisional")
@@ -506,7 +537,11 @@ class FaultSegment(StructuralFrame):
         block : dict, optional
             fault block: maps fault names to +1 (hanging wall), -1 (footwall)
             or 0 (absent). If it names this fault, every point is restored as
-            if it were on that side (0: the points are not moved). The block
+            if it were on that side (0: the points are not moved). A point on
+            the other side takes the smooth continuation of the displacement
+            profile of that side across the fault, so the restored field is
+            C2 across the fault surface (see
+            ``_fault_function.block_displacement``). The block
             is also used to evaluate the frame of this fault, so a fault that
             younger faults displace is evaluated in the block of those faults.
             The call changes no state.
@@ -535,15 +570,7 @@ class FaultSegment(StructuralFrame):
         gx, gy, gz = self._evaluate_frame(
             newp, block, precomputed_gx=precomputed_gx, restored_through=restored_through
         )
-        d = np.zeros(gx.shape)
-        mask = np.logical_and(~np.isnan(gx), ~np.isnan(gy))
-        mask = np.logical_and(mask, ~np.isnan(gz))
-        d[~mask] = 0
-        gx_mask = np.zeros_like(mask, dtype=bool)
-        gx_mask[mask] = gx[mask] > 0
-        d[gx_mask] = 1.0
-        if self.faultfunction is not None:
-            d[mask] = self.faultfunction(gx[mask], gy[mask], gz[mask])
+        d = self._displacement_fraction(gx, gy, gz, block)
         mask = np.abs(d) > 0.0
 
         d *= self.displacement
@@ -567,18 +594,9 @@ class FaultSegment(StructuralFrame):
             # # get the fault frame val/grad for the points
             # determine displacement magnitude, for constant displacement
             # hanging wall should be > 0
-            d = np.zeros(gx.shape)
             mask2 = np.logical_and(~np.isnan(gx), ~np.isnan(gy))
             mask2 = np.logical_and(mask2, ~np.isnan(gz))
-            d[~mask2] = 0
-            gx_mask2 = np.zeros_like(mask2, dtype=bool)
-            gx_mask2[mask2] = gx[mask2] > 0
-            # d[~np.isnan(gx)][gx[~np.isnan(gx)]>0] = 1
-            d[gx_mask2] = 1.0
-            # d[mask2][gx[mask2] < 0] = 0.
-            # d[gx < 0] = 0.
-            if self.faultfunction is not None:
-                d[mask2] = self.faultfunction(gx[mask2], gy[mask2], gz[mask2])
+            d = self._displacement_fraction(gx, gy, gz, block)
             d *= self.displacement
             if reverse:
                 # forward (geological) movement: the opposite of the restoration

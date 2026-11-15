@@ -10,6 +10,16 @@ is taken to be on:
 A fault that the block does not name keeps the side of each point. The block
 is passed down the evaluation as an argument. No object is changed, so two
 evaluations with different blocks can run at the same time.
+
+**The block on the other side of its fault.** A block field is also evaluated
+at points on the other side of the fault. There the displacement of the fault
+is the smooth continuation of the displacement profile of the block's own
+side across gx = 0 (``BLOCK_EXTENSION = "smooth"``, see
+``LoopStructural.modelling.features.fault._fault_function.block_displacement``):
+the value, the slope and the curvature of the profile at the fault are kept,
+so the block field is C2 across the fault surface and has no sharp change of
+gradient there. The continuation has no geological meaning; a mesher needs
+it only within a few cells of the fault.
 """
 
 from __future__ import annotations
@@ -24,6 +34,31 @@ BLOCK_SIDE_EPSILON = 1e-9
 A point exactly on the fault (gx = 0) is moved to this distance on the
 forced side, so that the displacement profile takes the value of that side.
 """
+
+
+BLOCK_EXTENSION = "smooth"
+"""How the displacement of a block continues on the other side of its fault.
+
+``"smooth"`` (default): the continuation of the profile of the block's side.
+``"mirror"``: the mirror image, gx becomes ``side * |gx|`` (the first draft
+and the fault benchmark study data). The mirror image has a kink where the
+profile has a slope at the fault. It is kept only to compare with data made
+with it. This is a module setting, read at each evaluation: do not change it
+while other threads evaluate.
+"""
+
+BLOCK_EXTENSION_EXACT = 0.25
+"""Distance from the fault, in units of gx, up to which the continuation is
+the exact continuation of the profile."""
+
+BLOCK_EXTENSION_LIMIT = 0.5
+"""Distance from the fault, in units of gx, beyond which the continuation is
+constant. Between the two distances it is blended (C2), so the continuation
+cannot grow without limit. The library profiles decay over |gx| = 1."""
+
+BLOCK_EXTENSION_STEP = 1e-3
+"""Step in gx of the one-sided finite differences that give the slope and
+the curvature at the fault of a profile that is not a polynomial."""
 
 
 def check_block(block) -> dict[str, int] | None:
@@ -74,6 +109,10 @@ def force_side(values: np.ndarray, side: int | None) -> np.ndarray:
     The value v becomes ``side * max(|v|, BLOCK_SIDE_EPSILON)``: the mirror
     image of the field on the other side. The result is continuous across the
     fault. NaN values (no support, or outside a region of the fault) stay NaN.
+
+    This decides the side of a point (regions, abutting faults). The
+    displacement of a block on the other side of its fault does not use the
+    mirror image, see ``BLOCK_EXTENSION``.
 
     Parameters
     ----------
