@@ -200,6 +200,12 @@ exposed:
   each fault it names restores every point as if the point were on that side,
   so the result has no jump across those faults. The block is an argument
   only: no state changes, so calls with different blocks can run in parallel.
+  On the other side of its fault a block takes the smooth continuation of the
+  displacement profile of its side (C2 at the fault; exact up to 0.25 in gx,
+  constant beyond 0.5), not the mirror image; the module setting
+  `LoopStructural.utils._fault_block.BLOCK_EXTENSION = "mirror"` gives the
+  mirror image for comparisons. See
+  `tests/unit/modelling/test_fault_block_extension.py`.
   - `GeologicalModel.evaluate_feature_block_value(feature_name, xyz, block, *, ignore_regions=True)` /
     `GeologicalModel.evaluate_feature_block_gradient(...)`.
   - `FaultSegment.evaluate_frame_value(points, coordinate=0, *, block=None)` /
@@ -222,6 +228,15 @@ exposed:
   `apply_to_vectors` and `GeologicalFeature.evaluate_value` /
   `evaluate_gradient` — faults the points have already been restored
   through (a displaced fault is applied once; unregistered).
+- `GeologicalModel.add_unconformity` truncates the faults that are older
+  than the unconformity (signature unchanged; the rule for "older" is in its
+  doc string and the changed results are in `COMPAT.md`). The keyword
+  `restored_through` is also on `UnconformityFeature.evaluate` / `__call__`.
+- `GeologicalModel.position_tolerance` (attribute, default None), the keyword
+  `position_tolerance` of the `create_and_add_*` methods and of
+  `DiscreteInterpolator.solve_system` — a cg stop on an estimate of the
+  position error of the isosurfaces, in model length units (an estimate, not
+  a guarantee; unregistered).
 
 ## Known internal-path consumers
 
