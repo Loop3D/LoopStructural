@@ -9,6 +9,7 @@ from ....interpolators import DiscreteInterpolator, GeologicalInterpolator, Inte
 from ....modelling.features import GeologicalFeature
 from ....utils import getLogger
 from ....utils._api_registry import public_api
+from ....utils._fault_block import restore_through
 from ....utils.helper import (
     get_data_bounding_box_map as get_data_bounding_box,
 )
@@ -217,8 +218,11 @@ class GeologicalFeatureBuilder(BaseBuilder):
                         data.loc[mask_tangent, xyz_names() + tangent_vec_names()].to_numpy(float)
                     )
 
-        for f in self.faults:
-            data.loc[:, xyz_names()] = f.apply_to_points(data.loc[:, xyz_names()])
+        # Each fault once: a fault displaced by a younger fault of this list
+        # evaluates its frame at the points already restored by that fault.
+        data.loc[:, xyz_names()] = restore_through(
+            data.loc[:, xyz_names()].to_numpy(float), self.faults
+        )
 
         # self.check_interpolation_geometry(data.loc[:,xyz_names()].to_numpy())
         # Now check whether there are enough constraints for the
@@ -534,8 +538,7 @@ class GeologicalFeatureBuilder(BaseBuilder):
             logger.info(f"Checking interpolation geometry for {self.name}")
             # The grid and the fault restoration are in world coordinates.
             pts = self.model.bounding_box.with_buffer(buffer).regular_grid(local=False)
-            for f in self.faults:
-                pts = f.apply_to_points(pts)
+            pts = restore_through(pts, self.faults)
             pts = self.interpolator.world_to_local_points(pts)
             # Use copies. Do not change the support arrays in place.
             origin = np.minimum(self.interpolator.support.origin.copy(), np.min(pts, axis=0))
@@ -615,10 +618,29 @@ class GeologicalFeatureBuilder(BaseBuilder):
         self.install_equality_constraints()
         logger.info(f'running interpolation for {self.name}')
 
+        solve_kwargs = {}
+        # A position tolerance of the feature, else the one of the model.
+        # It is passed only when set: other interpolators do not take it.
+        position_tolerance = kwargs.get(
+            'position_tolerance', getattr(self.model, 'position_tolerance', None)
+        )
+        if position_tolerance is not None:
+            import inspect
+
+            if 'position_tolerance' in inspect.signature(
+                self.interpolator.solve_system
+            ).parameters:
+                solve_kwargs['position_tolerance'] = position_tolerance
+            else:
+                logger.warning(
+                    f'{type(self.interpolator).__name__} has no position_tolerance; '
+                    f'{self.name} is solved with tol'
+                )
         self.interpolator.solve_system(
             solver=kwargs.get('solver', 'cg'),
             tol=kwargs.get('tol', None),
             solver_kwargs=kwargs.get('solver_kwargs', {}),
+            **solve_kwargs,
         )
         logger.info(f'Finished building  {self.name}')
         self._up_to_date = True

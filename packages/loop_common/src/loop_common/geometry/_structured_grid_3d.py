@@ -235,19 +235,25 @@ class StructuredGrid3DGeometry:
             outside the grid is (0, 0, 0): use the mask, not the index, to detect them.
         """
         pos = self.check_position(pos)
+        # Read the geometry once: each property is computed on access.
+        origin = self.origin
+        ncells = self.nsteps_cells
         inside = self.inside(pos)
         cell_indexes = np.zeros((pos.shape[0], 3), dtype=int)
-        for axis in range(3):
-            cell = np.floor((pos[inside, axis] - self.origin[axis]) / self.step_vector[axis])
-            cell_indexes[inside, axis] = np.clip(cell.astype(int), 0, self.nsteps_cells[axis] - 1)
+        cell = np.floor((pos[inside] - origin) / self.step_vector)
+        cell_indexes[inside] = np.clip(cell.astype(int), 0, ncells - 1)
         return cell_indexes, inside
 
     def inside(self, pos: np.ndarray) -> np.ndarray:
         """Boolean mask of the points inside the grid, boundary included (to a small tolerance)."""
         pos = self.check_position(pos)
-        extent = np.maximum(np.abs(self.maximum - self.origin), 1.0)
+        return self._inside(pos, self.origin, self.maximum)
+
+    @staticmethod
+    def _inside(pos: np.ndarray, origin: np.ndarray, maximum: np.ndarray) -> np.ndarray:
+        extent = np.maximum(np.abs(maximum - origin), 1.0)
         tol = np.finfo(float).eps * 32.0 * extent
-        return np.all((pos >= (self.origin - tol)) & (pos <= (self.maximum + tol)), axis=1)
+        return np.all((pos >= (origin - tol)) & (pos <= (maximum + tol)), axis=1)
 
     def check_position(self, pos: np.ndarray) -> np.ndarray:
         if len(pos.shape) == 1:
