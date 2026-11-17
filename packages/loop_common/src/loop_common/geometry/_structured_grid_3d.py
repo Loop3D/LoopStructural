@@ -1,4 +1,4 @@
-﻿"""Pure 3D regular grid geometry: origin/nsteps/step_vector indexing."""
+"""Pure 3D regular grid geometry: origin/nsteps/step_vector indexing."""
 
 from typing import Optional
 
