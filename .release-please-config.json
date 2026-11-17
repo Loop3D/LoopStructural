@@ -11,6 +11,7 @@
         "packages/loop_interpolation",
         "packages/loop_interpolation_core",
         "packages/map2loop",
+        "packages/loop_link",
         "packages/loopstructural_visualisation"
       ]
     },
@@ -40,6 +41,10 @@
     "packages/loopstructural_visualisation": {
       "release-type": "python",
       "component": "loopstructuralvisualisation"
+    },
+    "packages/loop_link": {
+      "release-type": "python",
+      "component": "loop-link"
     }
   }
 }

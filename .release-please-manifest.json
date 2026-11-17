@@ -4,5 +4,6 @@
   "packages/loop_interpolation": "0.2.0",
   "packages/loop_interpolation_core": "0.1.0",
   "packages/map2loop": "3.5.1",
-  "packages/loopstructural_visualisation": "0.2.2"
+  "packages/loopstructural_visualisation": "0.2.2",
+  "packages/loop_link": "0.1.0"
 }

@@ -1,0 +1,166 @@
+"""Push many objects to GeoViewer in one call.
+
+The module has no Qt code and no module state. The progress callback runs on the
+calling thread.
+"""
+
+from __future__ import annotations
+
+import threading
+from collections.abc import Callable, Iterable
+from dataclasses import dataclass, field
+from typing import TYPE_CHECKING, Any
+
+from loop_link.errors import InvalidInputError, ObjectTooLargeError, Refusal
+
+if TYPE_CHECKING:
+    from loop_link.viewer import Viewer
+
+
+_OPTION_KEYS = ("name", "parent")
+
+
+def _read_options(options: Any) -> dict[str, Any]:  # noqa: ANN401
+    """Check the options of one item and return them.
+
+    Parameters
+    ----------
+    options : Any
+        The third part of an item. It must be a dict with the keys ``name`` and
+        ``parent`` only.
+
+    Returns
+    -------
+    dict
+        The same options as a new dict.
+
+    Raises
+    ------
+    InvalidInputError
+        If ``options`` is not a dict or it has an unknown key.
+    """
+    if not isinstance(options, dict):
+        raise InvalidInputError("The options of an object must be a dict.")
+    unknown = sorted(str(key) for key in options if key not in _OPTION_KEYS)
+    if unknown:
+        raise InvalidInputError(
+            f"Unknown options: {', '.join(unknown)}. Use only 'name' and 'parent'."
+        )
+    return dict(options)
+
+
+@dataclass
+class PushResult:
+    """Result of one call to `push_objects`.
+
+    Attributes
+    ----------
+    sent : int
+        Number of objects sent to the viewer.
+    removed : int
+        Number of old objects removed from the viewer.
+    refused : list of Refusal
+        Messages that the viewer refused.
+    skipped : list of tuple of str
+        Pairs of object id and reason for each object that was not sent.
+    cancelled : bool
+        True when the cancel event stopped the push.
+    """
+
+    sent: int = 0
+    removed: int = 0
+    refused: list[Refusal] = field(default_factory=list)
+    skipped: list[tuple[str, str]] = field(default_factory=list)
+    cancelled: bool = False
+
+    def summary(self) -> str:
+        """Return a short text that describes the result.
+
+        Returns
+        -------
+        str
+            The summary text.
+        """
+        text = f"{self.sent} objects sent to GeoViewer"
+        if self.removed:
+            text += f", {self.removed} old objects removed"
+        if self.skipped:
+            text += f", {len(self.skipped)} objects skipped"
+        text += "."
+        if self.refused:
+            text += f" The viewer refused {len(self.refused)} messages."
+        return text
+
+
+def push_objects(
+    viewer: Viewer,
+    objects: Iterable[tuple[Any, ...]],
+    *,
+    replace_prefix: str | None = None,
+    progress: Callable[[str], None] | None = None,
+    cancel: threading.Event | None = None,
+) -> PushResult:
+    """Send objects to the viewer and report the result.
+
+    Parameters
+    ----------
+    viewer : Viewer
+        The viewer connection. The function connects it when it is not connected.
+    objects : iterable of tuple
+        Items of the form ``(id, obj)`` or ``(id, obj, options)``. ``options`` is a
+        dict with the optional keys ``name`` (display name) and ``parent`` (id of a
+        group). An unknown key, or an ``options`` value that is not a dict, skips
+        the item.
+    replace_prefix : str, optional
+        When given, the function removes each old object in the viewer inventory
+        whose id starts with this prefix and that this call did not send or skip.
+        The function never removes a group (an entry with the type ``Group``).
+        The function does not remove old objects when the push is cancelled.
+    progress : callable, optional
+        Called with a text before each object is sent. It runs on the calling thread.
+    cancel : threading.Event, optional
+        When this event is set, the push stops before the next object.
+
+    Returns
+    -------
+    PushResult
+        Counts, skipped objects and refusals.
+
+    Raises
+    ------
+    ViewerClosedError
+        If the viewer closes during the push.
+    BusyError
+        If the viewer is busy.
+    """
+    result = PushResult()
+    if not viewer.connected:
+        viewer.connect()
+    kept_ids: set[str] = set()
+    for item in objects:
+        object_id, obj = item[0], item[1]
+        if cancel is not None and cancel.is_set():
+            result.cancelled = True
+            break
+        if progress is not None:
+            progress(f"Sending {object_id}...")
+        try:
+            options = _read_options(item[2]) if len(item) > 2 else {}
+            viewer.send(obj, id=object_id, **options)
+        except (InvalidInputError, ObjectTooLargeError) as error:
+            result.skipped.append((object_id, str(error)))
+            kept_ids.add(object_id)
+            continue
+        kept_ids.add(object_id)
+        result.sent += 1
+    if replace_prefix and not result.cancelled:
+        for entry in viewer.inventory():
+            if (
+                entry.id.startswith(replace_prefix)
+                and entry.id not in kept_ids
+                and entry.object_type != "Group"
+            ):
+                viewer.remove(entry.id)
+                result.removed += 1
+    result.refused = viewer.flush(raise_on_refusal=False)
+    return result

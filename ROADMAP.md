@@ -631,6 +631,11 @@ deferred. The notice is in `COMPAT.md`.
   Phase A-C status notes. Phase D remains the open item for the dedicated
   discussion.
 
+- [ ] **Stage 7 — `loop_link`: Python link to geoviewer.** New package
+  `packages/loop_link` (spec `specs/006-loop-link`). It gives Python a way to
+  send data to geoviewer: send, adapters and the plugin push API. Stage S5 (select, read the selection
+  and fetch; geoviewer spec 067) is done. Stage S4 (filter and colour) is done.
+
 ## Status log
 
 - **2026-07-24:** Stage 0 done in worktree `~/dev/LoopStructural-roadmap`
@@ -917,3 +922,7 @@ deferred. The notice is in `COMPAT.md`.
 - **2026-11-05:** Spec 005 stage S4 implemented: display, export and intrusion classification use stored world locations; rescale and scale deprecated.
 - **2026-11-05:** Spec 005 stage S5 implemented: resize paths keep the extent, cell-centre guard tests, non-mutating world-correct misfit diagnostics, residual and exclusion report.
 - **2026-11-06:** Spec 005 complete: stages S1 to S6 implemented; the auxiliary transformation, the R2 displacement validation, the backend matrix and the golden review are done. Gate result: root pytest 2781 passed, 30 skipped (every skip names its dependency in `specs/005-coordinate-frame-correctness/verification.md`).
+- **2026-11-06:** Stage 7 started. The spec and the plan for
+  `packages/loop_link` exist (`specs/006-loop-link`). The package is new.
+- **2026-11-07:** Stage 7 stage S5 implemented: tool connection, select, read selection, fetch and round trip in `packages/loop_link`.
+- **2026-11-09:** Stage 7 stage S4 implemented: filter and colour calls, colour in `send` and the fake commands endpoint in `packages/loop_link`.
