@@ -31,6 +31,7 @@ from loop_link.errors import (
     BusyError,
     InvalidInputError,
     MissingFeatureError,
+    NoViewerError,
     Refusal,
     ViewerClosedError,
     ViewerRefusedError,
@@ -116,7 +117,12 @@ class Viewer:
         self._shared: dict[str, Any] = {"client": None, "stop": self._stop}
         weakref.finalize(self, _release_shared, self._shared)
         self._thread: threading.Thread | None = None
+        # _dead: the data connection failed. A later send opens a new connection.
+        # _closed: close() was called. Only connect() opens the viewer again.
         self._dead = False
+        self._closed = False
+        self._address_lock = threading.Lock()
+        self._address: discovery.ViewerAddress | None = None
         self._last_send = 0.0
         self._seq = 0
         self._tool_lock = threading.Lock()
@@ -157,7 +163,7 @@ class Viewer:
     def tool_connected(self) -> bool:
         """True while the tool connection is open."""
         tool = self._tool_connection
-        return tool is not None and tool.connected and not self._dead
+        return tool is not None and tool.connected and not self._closed
 
     # -- context manager ------------------------------------------------------
 
@@ -204,17 +210,21 @@ class Viewer:
 
         if self.connected:
             return self
+        self._closed = False
         self._stop_thread()
         self._drop_client()
-        address = discovery.find_viewer(
-            port=self._port,
-            token=self._token,
-            host=self._host,
-            settings=self._settings_dir,
-        )
-        client = WebSocketClient.connect(
-            address.host, address.port, token=address.token, timeout=self._timeout, path="/"
-        )
+        address = self._resolve_address()
+        try:
+            client = WebSocketClient.connect(
+                address.host, address.port, token=address.token, timeout=self._timeout, path="/"
+            )
+        except NoViewerError:
+            # The viewer at the known address is gone. Search again.
+            self._forget_address()
+            address = self._resolve_address()
+            client = WebSocketClient.connect(
+                address.host, address.port, token=address.token, timeout=self._timeout, path="/"
+            )
         try:
             _read_early(client)
             client.send_binary(encode.hello_frame(self._crs, self._proposed_origin, __version__))
@@ -1168,7 +1178,8 @@ class Viewer:
         """Close the connection so another client can own the scene.
 
         A later ``send`` opens a new connection. The revision numbers stay. The
-        tool connection stays open.
+        tool connection stays open. A later ``send`` also opens a new connection
+        after the connection fails.
         """
         self._stop_thread()
         self._drop_client()
@@ -1179,7 +1190,7 @@ class Viewer:
         for watcher in watchers:
             watcher.stop()
         with self._tool_lock:
-            self._dead = True
+            self._closed = True
             tool, self._tool_connection = self._tool_connection, None
             self._colour_map_names = None
         if tool is not None:
@@ -1187,30 +1198,60 @@ class Viewer:
         self._stop_thread()
         self._drop_client()
         self._dead = True
+        with self._address_lock:
+            self._address = None
 
     # -- helpers --------------------------------------------------------------
 
     def _tool(self) -> ToolConnection:
         """Return the tool connection. Make it at the first call."""
-        if self._dead:
+        if self._closed:
             raise ViewerClosedError
         with self._tool_lock:
-            if self._dead:
+            if self._closed:
                 raise ViewerClosedError
             if self._tool_connection is None:
                 self._tool_connection = ToolConnection(
-                    port=self._port,
-                    token=self._token,
-                    host=self._host,
-                    settings_dir=self._settings_dir,
-                    timeout=self._timeout,
+                    timeout=self._timeout, resolve=self._resolve_address
                 )
             return self._tool_connection
 
+    def _resolve_address(self) -> discovery.ViewerAddress:
+        """Return the address of the viewer.
+
+        While the data connection or the tool connection is open, the known address
+        is used again, so that both connections go to the same viewer. Otherwise the
+        viewer is found again.
+        """
+        with self._address_lock:
+            tool = self._tool_connection
+            in_use = (self._client is not None and not self._dead) or (
+                tool is not None and tool.connected
+            )
+            if self._address is None or not in_use:
+                self._address = discovery.find_viewer(
+                    port=self._port,
+                    token=self._token,
+                    host=self._host,
+                    settings=self._settings_dir,
+                )
+            return self._address
+
+    def _forget_address(self) -> None:
+        """Forget the known address and close the tool connection that uses it."""
+        with self._tool_lock:
+            tool = self._tool_connection
+            self._colour_map_names = None
+        if tool is not None:
+            tool.close()
+        with self._address_lock:
+            self._address = None
+
     def _ensure_connected(self) -> None:
-        if self._dead:
+        if self._closed:
             raise ViewerClosedError
-        if self._client is None:
+        if self._client is None or self._dead:
+            # No connection yet, or the last one failed: open a new one.
             self.connect()
 
     def _drop_client(self) -> None:

@@ -2,8 +2,6 @@
 
 from __future__ import annotations
 
-__version__ = "0.1.0"
-
 from .commands import ColourSettings, FilterResult
 from .errors import (
     BusyError,
@@ -25,6 +23,7 @@ from .fetch import FetchResult
 from .objects import BlockModel, Categorical, Drillhole, Lines, Points, Surface, TetraMesh, Vectors
 from .push import PushResult, push_objects
 from .selection import Selection, SelectionWatcher
+from .version import __version__
 from .viewer import InventoryEntry, Viewer
 
 __all__ = [

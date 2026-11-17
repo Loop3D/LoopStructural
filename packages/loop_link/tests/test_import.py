@@ -56,3 +56,12 @@ def test_adapters_import_loads_no_qt_or_optional_extras() -> None:
     assert result.returncode == 0, result.stderr
     loaded = ast.literal_eval(result.stdout.strip())
     assert loaded == [], result.stderr
+
+
+def test_version_comes_from_the_installed_metadata() -> None:
+    """__version__ follows pyproject.toml, which release-please changes."""
+    from importlib.metadata import version
+
+    import loop_link
+
+    assert loop_link.__version__ == version("loop-link")

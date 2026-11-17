@@ -38,6 +38,10 @@ def _column_array(values: pd.Series, name: str) -> np.ndarray:
             f"The column '{name}' has missing values. "
             "Fill or remove the missing values, then try again."
         )
+    if str(values.dtype) == "category":
+        # A category column, for example a lithology log: use the values of the
+        # categories. A string column then becomes a Categorical in the viewer.
+        return _column_array(values.astype(values.cat.categories.dtype), name)
     if values.dtype.kind in "biuf" and values.dtype != object:
         return values.to_numpy()
     if values.dtype.kind in "US":

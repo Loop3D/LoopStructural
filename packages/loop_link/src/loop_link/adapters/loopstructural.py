@@ -5,6 +5,8 @@ from __future__ import annotations
 import sys
 from typing import Any
 
+import numpy as np
+
 from loop_link.errors import InvalidInputError, MissingExtraError
 from loop_link.objects import BlockModel, SceneObject, Surface
 
@@ -51,7 +53,31 @@ def from_loopstructural(obj: Any) -> SceneObject:  # noqa: ANN401
             origin=obj.origin,
             cell_sizes=obj.step_vector,
             cells=obj.nsteps_cells,
-            properties=dict(obj.properties or {}),
-            cell_properties=dict(obj.cell_properties or {}),
+            properties=_flatten(obj.properties),
+            cell_properties=_flatten(obj.cell_properties),
         )
     raise InvalidInputError(_ACCEPTED_INPUTS)
+
+
+def _flatten(properties: dict[str, Any] | None) -> dict[str, Any]:
+    """Return the grid properties as 1-D arrays in x-fastest order.
+
+    ``StructuredGrid.vtk()`` reshapes each property to ``(n, -1)`` with ``order="F"``,
+    so a property can be a grid of shape ``(nx, ny, nz)`` or have more than one value
+    for each node, for example a vector of shape ``(n, 3)``. A grid is flattened in
+    x-fastest order. Each column of a 2-D array becomes one property with the name
+    ``"<name>_<column>"``. A 2-D array with one column keeps its name.
+    """
+    result: dict[str, Any] = {}
+    for name, values in (properties or {}).items():
+        array = np.asarray(values)
+        if array.ndim == 3:
+            array = array.ravel(order="F")
+        if array.ndim == 2 and array.shape[1] == 1:
+            array = array[:, 0]
+        if array.ndim == 2:
+            for column in range(array.shape[1]):
+                result[f"{name}_{column}"] = array[:, column]
+            continue
+        result[name] = array
+    return result

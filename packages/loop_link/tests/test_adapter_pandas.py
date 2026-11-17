@@ -211,3 +211,11 @@ def test_string_column_with_missing_values(collar, survey, logs):
     bad["lith"] = pd.Series(["granite", None, "chert"], dtype=object)
     with pytest.raises(InvalidInputError, match="lith.*missing values"):
         drillholes_from_pandas(collar, survey, bad)
+
+
+def test_category_column_is_accepted(collar, survey, logs):
+    """A 'category' column, common for lithology logs, gives the same values as a string column."""
+    logs["lith"] = logs["lith"].astype("category")
+    result = drillholes_from_pandas(collar, survey, logs)
+    assert result["DH1"].interval_properties["lith"].tolist() == ["granite", "basalt"]
+    assert result["DH2"].interval_properties["lith"].tolist() == ["chert"]

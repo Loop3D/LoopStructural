@@ -521,3 +521,31 @@ def test_close_stops_watchers(selector: Any, watchers: list[SelectionWatcher]) -
     assert _wait_for(lambda: _poll_threads() == [])
     with pytest.raises(ViewerClosedError):
         selector.selection()
+
+
+def test_parse_selection_result_gives_writeable_copies() -> None:
+    """The index arrays are writeable and do not share memory with the frame buffers."""
+    buffer = np.array([4, 5], dtype=np.uint32)
+    buffer.flags.writeable = False
+    selection = parse_selection_result(
+        _result([{"kind": "cells", "count": 2, "indices": "c"}], {"c": buffer})
+    )
+    selection.cells.sort()
+    selection.cells[0] = 9
+    assert buffer.tolist() == [4, 5]
+
+
+def test_tool_connection_uses_the_address_of_the_data_connection(
+    viewer: Any, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """While the data connection is open, select does not search for a viewer again.
+
+    A second search could find another viewer, so select would change a different scene.
+    """
+    from loop_link import discovery
+
+    def no_search(**kwargs: Any) -> Any:
+        raise AssertionError("The viewer was searched for again.")
+
+    monkeypatch.setattr(discovery, "find_viewer", no_search)
+    assert viewer.select("grid", cells=[1]) == {"cell": 1, "vertex": 0}

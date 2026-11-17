@@ -83,6 +83,10 @@ class ToolConnection:
         The settings folder of the viewer.
     timeout : float
         The time in seconds to wait for the connection and for each reply frame.
+    resolve : callable, optional
+        Returns the address of the viewer. When it is given, the connection uses it in
+        place of its own search, so that it connects to the same viewer as another
+        connection. The other address parameters are then not used.
     """
 
     def __init__(
@@ -93,7 +97,9 @@ class ToolConnection:
         host: str = "127.0.0.1",
         settings_dir: Path | None = None,
         timeout: float = 5.0,
+        resolve: Callable[[], discovery.ViewerAddress] | None = None,
     ) -> None:
+        self._resolve = resolve
         self._port = port
         self._token = token
         self._host = host
@@ -243,12 +249,15 @@ class ToolConnection:
         """Return the open client, or open one. The caller holds the lock."""
         if self._client is not None:
             return self._client
-        address = discovery.find_viewer(
-            port=self._port,
-            token=self._token,
-            host=self._host,
-            settings=self._settings_dir,
-        )
+        if self._resolve is not None:
+            address = self._resolve()
+        else:
+            address = discovery.find_viewer(
+                port=self._port,
+                token=self._token,
+                host=self._host,
+                settings=self._settings_dir,
+            )
         self._client = WebSocketClient.connect(
             address.host, address.port, token=address.token, timeout=self._timeout, path="/tool"
         )
@@ -312,7 +321,14 @@ class ToolConnection:
                     progress(float(fraction))
                 continue
             if on_frame is not None:
-                on_frame(frame)
+                try:
+                    on_frame(frame)
+                except BaseException:
+                    # The viewer can continue to send the frames of this request. Close
+                    # the connection so that they stop and a later request does not
+                    # read them.
+                    self._drop_locked()
+                    raise
             if kind in until:
                 return frame
 

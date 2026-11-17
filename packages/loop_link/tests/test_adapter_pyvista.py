@@ -272,3 +272,24 @@ def test_polygons_mixed_with_vertices_are_refused() -> None:
     m.verts = np.array([1, 3])
     with pytest.raises(InvalidInputError):
         from_pyvista(m)
+
+
+def test_lines_mixed_with_polygons_are_refused() -> None:
+    """A PolyData with lines and polygons gives InvalidInputError. No polygon is dropped."""
+    m = pv.PolyData(POINTS.copy(), faces=np.array([3, 0, 1, 2]))
+    m.lines = np.array([2, 2, 3])
+    with pytest.raises(InvalidInputError):
+        from_pyvista(m)
+
+
+def test_many_polylines_give_segments_and_owners() -> None:
+    """Polylines of different lengths, also a line with one point, give the correct segments."""
+    m = pv.PolyData(
+        np.random.default_rng(1).random((8, 3)),
+        lines=np.array([3, 0, 1, 2, 1, 3, 2, 4, 5, 3, 5, 6, 7]),
+    )
+    m.cell_data["c"] = np.array([10, 20, 30, 40])
+    result = from_pyvista(m)
+    assert isinstance(result, Lines)
+    np.testing.assert_array_equal(result.segments, [[0, 1], [1, 2], [4, 5], [5, 6], [6, 7]])
+    assert result.cell_properties["c"].tolist() == [10, 10, 30, 40, 40]

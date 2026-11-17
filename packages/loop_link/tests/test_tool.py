@@ -755,3 +755,32 @@ def test_tool_post_after_close_gives_viewer_closed_error(
                 time.sleep(0.1)
     finally:
         viewer.close()
+
+
+def test_error_in_on_frame_closes_the_connection(
+    scripted: Callable[..., _ScriptedViewer], direct: Callable[..., ToolConnection]
+) -> None:
+    """An error in on_frame closes the connection, so the rest of the stream stops."""
+    viewer = scripted(part_bytes=16)
+    viewer.objects["pts"] = _points()
+    tool = direct(viewer)
+
+    def fail(frame: Frame) -> None:
+        raise RuntimeError("stop")
+
+    with pytest.raises(RuntimeError):
+        tool.request(
+            lambda request: encode.fetch_frame(request, "pts"),
+            until=("object.end",),
+            feature="fetch",
+            object_id="pts",
+            on_frame=fail,
+        )
+    assert not tool.connected
+    frame = tool.request(
+        lambda request: encode.fetch_frame(request, "pts"),
+        until=("object.end",),
+        feature="fetch",
+        object_id="pts",
+    )
+    assert frame.header["type"] == "object.end"

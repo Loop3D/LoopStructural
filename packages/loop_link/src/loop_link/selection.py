@@ -117,7 +117,8 @@ def parse_selection_result(frame: Frame) -> Selection:
                 f"The selection indices '{name}' have shape {array.shape}. "
                 f"The entry count is {count}."
             )
-        arrays[field] = array
+        # Copy, so the array is writeable and does not keep the frame bytes in memory.
+        arrays[field] = array.copy()
     return Selection(
         header.get("object"), header.get("revision"), arrays["cells"], arrays["vertices"]
     )

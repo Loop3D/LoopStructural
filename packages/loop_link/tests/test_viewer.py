@@ -587,7 +587,10 @@ def test_dropped_viewer_frees_the_data_slot(fake_viewer: Any, viewer_factory: FA
 def test_bad_incoming_frame_closes_the_viewer(
     fake_viewer: Any, viewer_factory: FACTORY, monkeypatch: pytest.MonkeyPatch
 ) -> None:
-    """A frame that cannot be decoded gives ViewerClosedError and marks the viewer closed."""
+    """A frame that cannot be decoded gives ViewerClosedError and closes the connection.
+
+    The next send opens a new connection.
+    """
     from loop_link import viewer as viewer_module
     from loop_link.protocol import ProtocolError
 
@@ -609,5 +612,16 @@ def test_bad_incoming_frame_closes_the_viewer(
         viewer.send(small_points(), id="bad")
         viewer.flush()
     assert not viewer.connected
-    with pytest.raises(ViewerClosedError):
-        viewer.send(small_points(), id="again")
+    viewer.send(small_points(), id="again")
+    assert viewer.connected
+    assert viewer.flush() == []
+
+
+def test_send_after_heartbeat_failure_reconnects(fake_viewer: Any, viewer_factory: FACTORY) -> None:
+    """After a failed heartbeat marks the connection dead, the next send opens a new one."""
+    viewer = viewer_factory()
+    viewer.connect()
+    viewer._dead = True  # the state that a failed heartbeat or send leaves
+    viewer.send(small_points(), id="after")
+    assert viewer.connected
+    assert viewer.flush() == []

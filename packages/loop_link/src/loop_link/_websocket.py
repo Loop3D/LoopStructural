@@ -77,7 +77,8 @@ def _mask(data: bytes | bytearray, key: bytes) -> bytes | bytearray:
     target = np.frombuffer(result, dtype=np.uint8)
     key_array = np.frombuffer(key, dtype=np.uint8)
     # The chunk size is a multiple of 4, so the key stays aligned between chunks.
-    pattern = np.tile(key_array, _MASK_CHUNK_BYTES // 4)
+    # Make the pattern only as long as the data needs, so small frames stay cheap.
+    pattern = np.tile(key_array, (min(size, _MASK_CHUNK_BYTES) + 3) // 4)
     for start in range(0, size, _MASK_CHUNK_BYTES):
         end = min(start + _MASK_CHUNK_BYTES, size)
         np.bitwise_xor(source[start:end], pattern[: end - start], out=target[start:end])

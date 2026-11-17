@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-import itertools
 from typing import Any
 
 import numpy as np
@@ -75,20 +74,22 @@ def _collect(data: Any, where: str) -> dict[str, np.ndarray]:  # noqa: ANN401
 
 def _polydata_lines(mesh: Any) -> tuple[np.ndarray, np.ndarray]:  # noqa: ANN401
     """Return the segments of a PolyData and the source line of each segment."""
-    flat = np.asarray(mesh.lines)
-    segments: list[list[int]] = []
-    owners: list[int] = []
-    position = 0
-    line = 0
-    while position < len(flat):
-        count = int(flat[position])
-        ids = flat[position + 1 : position + 1 + count]
-        for first, second in itertools.pairwise(ids):
-            segments.append([int(first), int(second)])
-            owners.append(line)
-        position += count + 1
-        line += 1
-    return np.array(segments, dtype=np.int64).reshape(-1, 2), np.array(owners, dtype=np.int64)
+    from vtkmodules.util.numpy_support import vtk_to_numpy
+
+    cells = mesh.GetLines()
+    offsets = vtk_to_numpy(cells.GetOffsetsArray()).astype(np.int64)
+    connectivity = vtk_to_numpy(cells.GetConnectivityArray()).astype(np.int64)
+    counts = np.diff(offsets)
+    if connectivity.size < 2:
+        return np.empty((0, 2), dtype=np.int64), np.empty(0, dtype=np.int64)
+    # Each point of a line, except the last one, starts a segment.
+    starts = np.ones(connectivity.size - 1, dtype=bool)
+    ends = offsets[1:] - 1
+    starts[ends[(ends >= 0) & (ends < connectivity.size - 1)]] = False
+    first = np.flatnonzero(starts)
+    segments = np.column_stack((connectivity[first], connectivity[first + 1]))
+    owners = np.repeat(np.arange(counts.size, dtype=np.int64), np.maximum(counts - 1, 0))
+    return segments, owners
 
 
 def _convert_polydata(
@@ -98,6 +99,11 @@ def _convert_polydata(
 ) -> SceneObject:
     """Convert a PolyData to Lines, Surface, Points or Vectors."""
     if mesh.n_lines > 0:
+        if len(mesh.faces) > 0 or mesh.n_strips > 0:
+            raise InvalidInputError(
+                "The PolyData mixes lines with polygons or strips. "
+                "Split the mesh into one mesh for each kind of cell."
+            )
         segments, owners = _polydata_lines(mesh)
         # Cell data is ordered: vertices, lines, polygons, strips.
         first = int(mesh.n_verts)

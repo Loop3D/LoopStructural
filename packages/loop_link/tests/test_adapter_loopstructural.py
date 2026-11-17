@@ -156,3 +156,22 @@ def test_send_other_loop_common_class_is_refused(
     viewer = viewer_factory()
     with pytest.raises(InvalidInputError, match="Accepted inputs:"):
         viewer.send(points, id="pts")
+
+
+def test_grid_properties_are_flattened_in_x_fastest_order() -> None:
+    """A property of shape (nx, ny, nz) is flattened with order='F'; a vector is split."""
+    nsteps = np.array([3, 4, 5])
+    values = np.arange(60, dtype=float).reshape(nsteps, order="F")
+    vector = np.arange(180, dtype=float).reshape(60, 3)
+    grid = geometry.StructuredGrid(
+        origin=[0, 0, 0],
+        step_vector=[1, 1, 1],
+        nsteps=nsteps,
+        properties={"v": values, "column": values.reshape(-1, 1, order="F"), "g": vector},
+    )
+    result = from_loopstructural(grid)
+    np.testing.assert_array_equal(result.properties["v"], np.arange(60, dtype=float))
+    np.testing.assert_array_equal(result.properties["column"], np.arange(60, dtype=float))
+    assert "g" not in result.properties
+    for column in range(3):
+        np.testing.assert_array_equal(result.properties[f"g_{column}"], vector[:, column])
