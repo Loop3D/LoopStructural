@@ -81,6 +81,43 @@ jobs:
           user: ${{ secrets.PYPI_USERNAME }}
           password: ${{ secrets.PYPI_PASSWORD }}
 
+  # loop-link is not a dependency of LoopStructural, so no other job waits
+  # for it. Trusted publishing (OIDC): no password. PyPI must list this
+  # repository and the workflow file pypi.yml as a trusted publisher of
+  # the project loop-link.
+  make_sdist_loop_link:
+    name: Make SDist (loop_link)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build SDist
+        working-directory: packages/loop_link
+        run: |
+          pip install build
+          python -m build
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: dist-loop_link
+          path: packages/loop_link/dist/
+
+  upload_loop_link_to_pypi:
+    name: Upload loop-link to PyPI
+    needs: ["make_sdist_loop_link"]
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: dist-loop_link
+          path: dist
+      - uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          skip-existing: true
+          verbose: true
+
   make_sdist:
     name: Make SDist
     runs-on: ubuntu-latest
