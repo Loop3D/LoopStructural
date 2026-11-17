@@ -1250,9 +1250,18 @@ class Viewer:
     def _ensure_connected(self) -> None:
         if self._closed:
             raise ViewerClosedError
-        if self._client is None or self._dead:
-            # No connection yet, or the last one failed: open a new one.
+        if self._client is None:
             self.connect()
+        elif self._dead:
+            # The last connection failed: open a new one. If the viewer is gone, give
+            # the error of a closed viewer, as the failed send did.
+            try:
+                self.connect()
+            except NoViewerError as error:
+                raise ViewerClosedError(
+                    "The viewer closed the connection and no viewer was found again. "
+                    "Start geoviewer and turn the link on, then send again."
+                ) from error
 
     def _drop_client(self) -> None:
         """Close the socket, if there is one."""

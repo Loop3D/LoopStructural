@@ -151,18 +151,20 @@ def test_main_thread_is_not_blocked_by_slow_push(tmp_path: Path, monkeypatch: An
             worker.start()
             ticks = 0
             tick_times = [start]
+            alive_at_tick: list[bool] = []
             for _ in range(20):
                 time.sleep(0.01)
                 ticks += 1
                 tick_times.append(time.monotonic())
-            elapsed = time.monotonic() - start
-            push_running = worker.is_alive()
+                alive_at_tick.append(worker.is_alive())
             worker.join(timeout=10.0)
             assert not worker.is_alive()
             assert ticks == 20
             largest_gap = max(b - a for a, b in itertools.pairwise(tick_times))
             assert largest_gap < 0.5
-            assert push_running or elapsed < 0.5
+            # The main thread ran while the push ran. Do not check the time: CI
+            # runners can be slow.
+            assert any(alive_at_tick)
             assert results[0].sent == 5
     finally:
         slow.close()
