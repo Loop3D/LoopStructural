@@ -9,6 +9,7 @@ wrappers and the memory sampler then cannot change the timings.
 from __future__ import annotations
 
 import argparse
+import copy
 import hashlib
 import json
 import os
@@ -30,6 +31,12 @@ SHORT_CASE_ROUNDS = 5
 ROOT = Path(__file__).parents[2]
 SUITE = Path(__file__).with_name("bench_cases.py")
 PASS_KINDS = ("timing", "counters", "rss")
+# Point counts that the standard suite runs in each pass. None means all cases.
+PASS_POINTS: dict[str, tuple[int, ...] | None] = {
+    "timing": None,
+    "counters": (5_000, 20_000),
+    "rss": (5_000,),
+}
 OPERATIONS = (
     "oldest_value",
     "all_group_values",
@@ -40,7 +47,7 @@ OPERATIONS = (
 SIZES = (5_000, 50_000, 100_000, 500_000)
 EXTRA_SIZE = 20_000
 EXTRA_MODELS = ("plugin", "f1_u0")
-STATES = ("cold", "warm")
+STATES = ("cold",)
 _now = time.monotonic  # tests replace the clock
 
 COUNTER_FIELDS = (
@@ -95,43 +102,37 @@ def enumerate_cases() -> list[dict[str, Any]]:
     ]
 
 
-# The 24 large cases of the standard suite (plan D2). They were drawn once with
-# numpy.random.default_rng(2003). The pool for each size was the cases of f0_u0..f0_u3,
+# The 16 large cases of the standard suite (plan D9). The draw of 2026-11-02 chose 24 ids
+# with numpy.random.default_rng(2003). The pool for each size was the cases of f0_u0..f0_u3,
 # f1_u0..f1_u3, stopped_fault, onlap_domain and faulted_fold (five operations, cold and
 # warm), sorted by case id. For each size, in the order 50,000 then 100,000 and with one
-# generator, rng.choice(len(pool), size=12, replace=False) chose the cases. The ids are
-# sorted in the order of the full list. Do not draw them again: the text is the source.
+# generator, rng.choice(len(pool), size=12, replace=False) chose the cases. Rule of C-016:
+# the 24 old ids are merged without the state (a cold id and a warm id of one case are one
+# case), and the 5 gradient cases at 100,000 points are removed. The ids are sorted in the
+# order of the full list. Do not draw them again: the text is the source.
 STANDARD_LARGE_CASES: tuple[str, ...] = (
-    "f0_u0:all_group_values:100000:warm",
-    "f0_u0:oldest_gradient:100000:warm",
-    "f0_u1:oldest_value:100000:warm",
-    "f0_u1:model_ids:50000:warm",
-    "f0_u1:model_gradient:100000:cold",
-    "f0_u2:oldest_value:50000:warm",
-    "f0_u3:model_ids:100000:warm",
-    "f1_u0:all_group_values:100000:warm",
+    "f0_u0:all_group_values:100000:cold",
+    "f0_u1:oldest_value:100000:cold",
+    "f0_u1:model_ids:50000:cold",
+    "f0_u2:oldest_value:50000:cold",
+    "f0_u3:model_ids:100000:cold",
+    "f1_u0:all_group_values:100000:cold",
     "f1_u1:oldest_value:50000:cold",
-    "f1_u1:model_gradient:100000:cold",
-    "f1_u2:oldest_value:100000:warm",
-    "f1_u2:oldest_gradient:50000:warm",
+    "f1_u2:oldest_value:100000:cold",
+    "f1_u2:oldest_gradient:50000:cold",
     "f1_u3:oldest_value:50000:cold",
-    "f1_u3:all_group_values:100000:warm",
+    "f1_u3:all_group_values:100000:cold",
     "stopped_fault:model_ids:50000:cold",
-    "stopped_fault:model_ids:50000:warm",
     "stopped_fault:oldest_gradient:50000:cold",
-    "stopped_fault:oldest_gradient:50000:warm",
     "onlap_domain:model_ids:50000:cold",
-    "onlap_domain:model_ids:50000:warm",
-    "onlap_domain:oldest_gradient:100000:cold",
-    "onlap_domain:model_gradient:100000:warm",
-    "faulted_fold:oldest_value:50000:warm",
+    "faulted_fold:oldest_value:50000:cold",
     "faulted_fold:all_group_values:100000:cold",
 )
 SUITE_NAMES = ("standard", "full")
 
 
 def standard_cases() -> list[dict[str, Any]]:
-    """Return the standard suite: all small cases and the 24 large cases, in full-list order."""
+    """Return the standard suite: all small cases and the 16 large cases, in full-list order."""
     large = set(STANDARD_LARGE_CASES)
     return [
         case
@@ -149,8 +150,52 @@ def select_cases(suite: str) -> list[dict[str, Any]]:
     raise ValueError(f"Unknown suite {suite!r}. Use one of {SUITE_NAMES}.")
 
 
+def pass_cases(cases: list[dict[str, Any]], pass_kind: str, suite: str) -> list[dict[str, Any]]:
+    """Return the cases that one pass runs in the named suite.
+
+    The full suite runs every case in every pass. The standard suite runs the
+    cases with the point counts of ``PASS_POINTS``. Raise ValueError for an
+    unknown pass or suite.
+    """
+    if pass_kind not in PASS_KINDS:
+        raise ValueError(f"Unknown pass kind {pass_kind!r}")
+    if suite not in SUITE_NAMES:
+        raise ValueError(f"Unknown suite {suite!r}. Use one of {SUITE_NAMES}.")
+    points = PASS_POINTS[pass_kind]
+    if suite == "full" or points is None:
+        return cases
+    return [case for case in cases if case["points"] in points]
+
+
+def cold_view(document: dict[str, Any]) -> dict[str, Any]:
+    """Return a copy of a result where each case has only a cold row.
+
+    Use it only on a file of the code before this feature (T011). That code had
+    no cache and the runner skipped the priming call, so its warm case was one cold
+    call (C-016). A ``:warm`` row with no ``:cold`` row of the same case becomes a
+    ``:cold`` row (``case_id`` and ``state``). Other ``:warm`` rows go.
+    """
+    view = copy.deepcopy(document)
+    ids = {row["case_id"] for row in view["cases"]}
+    rows = []
+    for row in view["cases"]:
+        if row["case_id"].endswith(":warm"):
+            cold_id = row["case_id"][: -len(":warm")] + ":cold"
+            if cold_id in ids:
+                continue
+            row["case_id"] = cold_id
+            row["state"] = "cold"
+        rows.append(row)
+    view["cases"] = rows
+    return view
+
+
 def validate_result(result: dict[str, Any]) -> None:
-    """Raise ValueError if a result does not follow schema v1."""
+    """Raise ValueError if a result does not follow schema v1.
+
+    A counter field or ``peak_extra_rss_bytes`` can be None: the pass did not
+    measure the case (D10). The median, the rounds and the input hash need a value.
+    """
     if result.get("schema_version") != SCHEMA_VERSION:
         raise ValueError(f"Unsupported schema_version {result.get('schema_version')!r}")
     provenance = result.get("provenance")
@@ -166,6 +211,9 @@ def validate_result(result: dict[str, Any]) -> None:
         for field in CASE_FIELDS:
             if field not in case:
                 raise ValueError(f"Case {case.get('case_id')!r} is missing field {field}")
+        for field in ("median_seconds", "rounds", "input_hash"):
+            if case[field] is None:
+                raise ValueError(f"Case {case['case_id']!r} has no value for field {field}")
         if case["case_id"] in seen:
             raise ValueError(f"Duplicate case_id {case['case_id']!r}")
         seen.add(case["case_id"])
@@ -428,7 +476,9 @@ def _run_fresh_process_pass(
 
 
 def _merge(
-    passes: dict[str, dict[str, Any]], suite_wall_seconds: float | None = None
+    passes: dict[str, dict[str, Any]],
+    suite_wall_seconds: float | None = None,
+    suite: str | None = None,
 ) -> dict[str, Any]:
     """Combine the timing, counter and memory passes by case id."""
     counters = {row["case_id"]: row for row in passes["counters"]["cases"]}
@@ -436,10 +486,15 @@ def _merge(
     rows = []
     for row in passes["timing"]["cases"]:
         merged = dict(row)
+        # A pass that did not run the case gives None (D10).
+        counter_row = counters.get(row["case_id"])
         for field in COUNTER_FIELDS:
-            merged[field] = counters[row["case_id"]][field]
-        for field in RSS_FIELDS:
-            merged[field] = memory[row["case_id"]][field]
+            merged[field] = None if counter_row is None else counter_row[field]
+        memory_row = memory.get(row["case_id"])
+        merged["peak_extra_rss_bytes"] = (
+            None if memory_row is None else memory_row["peak_extra_rss_bytes"]
+        )
+        merged["rss_unit"] = "bytes" if memory_row is None else memory_row["rss_unit"]
         rows.append(merged)
     result = {
         "schema_version": SCHEMA_VERSION,
@@ -449,6 +504,8 @@ def _merge(
     }
     if suite_wall_seconds is not None:
         result["suite_wall_seconds"] = suite_wall_seconds
+    if suite is not None:
+        result["suite"] = suite
     return result
 
 
@@ -535,13 +592,20 @@ def main(argv: list[str] | None = None) -> int:
         started = _now()
         try:
             passes[pass_kind] = _run_fresh_process_pass(
-                pass_kind, cases, output_path=output_path, rounds=options.rounds
+                pass_kind,
+                pass_cases(cases, pass_kind, options.suite),
+                output_path=output_path,
+                rounds=options.rounds,
             )
         finally:
             # A failed or stopped pass also adds its time.
             meta["wall_seconds"][pass_kind] += _now() - started
             (work_dir / "meta.json").write_text(json.dumps(meta, indent=2), encoding="utf8")
-    result = _merge(passes, suite_wall_seconds=float(sum(meta["wall_seconds"].values())))
+    result = _merge(
+        passes,
+        suite_wall_seconds=float(sum(meta["wall_seconds"].values())),
+        suite=options.suite,
+    )
     validate_result(result)
     options.output.parent.mkdir(parents=True, exist_ok=True)
     options.output.write_text(json.dumps(result, indent=2), encoding="utf8")

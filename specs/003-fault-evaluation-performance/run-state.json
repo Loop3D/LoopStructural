@@ -99,7 +99,16 @@
       "tasks": [
         "T048"
       ],
-      "base": "cf7af167e55aea9aeab642ef58f71d22b18b4a02"
+      "base": "cf7af167e55aea9aeab642ef58f71d22b18b4a02",
+      "commit": "28d88a7318703bd944666ba3f18ffec39daedc4d",
+      "review": "pass (sonnet), 1 minor"
+    },
+    {
+      "wave": 35,
+      "tasks": [
+        "T050"
+      ],
+      "base": "28d88a7318703bd944666ba3f18ffec39daedc4d"
     }
   ],
   "runs": {
@@ -171,6 +180,10 @@
       {
         "model": "sonnet",
         "result": "pass: 30 red, all new or changed tests, for absent D9/D10 names and rules; 59 pass"
+      },
+      {
+        "model": "sonnet",
+        "result": "fix: SC-006 allowance test baseline 100 MB -> 50 MB"
       }
     ],
     "T048": [
@@ -178,10 +191,16 @@
         "model": "sonnet",
         "result": "pass: 11 T047 red tests green; fault_evaluation + unit/modelling + API contract 491 passed; golden 23 passed in 28 s; master diff of 3 files empty; grep clean; no new Ruff finding"
       }
+    ],
+    "T050": [
+      {
+        "model": "sonnet",
+        "result": "blocked: 1 wrong T049 test (SC-006 allowance with a 100 MB baseline) and a grep gate too strict; orchestrator answers; T049 test fixed by a sonnet run; then 336 passed"
+      }
     ]
   },
   "findings": {
-    "found": 11,
+    "found": 12,
     "rejected": 2,
     "dropped": 0,
     "fixed": 1,
@@ -194,7 +213,8 @@
       "T046 _structured_grid_3d.py: Black rewrapped lines that T046 does not touch (rotation matrix, resize errors, corner indexes, global_index_to_cell_index)",
       "T049 None on the base side is not tested in compare_results or _sc006",
       "T049 validate_result has no negative test for rss_unit None; no test that _memory_worker and _cache_fields lose their cache lines",
-      "T047 test_memory.py has no peak-memory bound test for one evaluate_model call (FR-010)"
+      "T047 test_memory.py has no peak-memory bound test for one evaluate_model call (FR-010)",
+      "T048 _evaluation.py module docstring: one long, slightly redundant line after the reword"
     ]
   },
   "resumed": "2026-11-04: resumed after the D4b replan (465688ec). tests/fault_evaluation baseline: 550 passed in 89 s.",
