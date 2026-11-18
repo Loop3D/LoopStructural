@@ -266,6 +266,41 @@ def test_missing_case_is_an_explicit_failure():
     assert result["criteria"]["SC-002"]["passed"] is False
 
 
+def _standard_extra_pair(monkeypatch, suite: str) -> tuple[dict, dict, str]:
+    """Return a base with an extra gradient id, a candidate of the given suite, and the extra id."""
+    run = importlib.import_module("benchmarks.fault_evaluation.run")
+    base, new = _compliant_pair()
+    extra = "x:oldest_gradient:100000:cold"
+    base["cases"].append(
+        _case(("x", "oldest_gradient", 100000, "cold", 1.0, 2, 1, 1), "baseline-rev")
+    )
+    new["suite"] = suite
+    monkeypatch.setattr(
+        run, "standard_cases", lambda: [{"case_id": row["case_id"]} for row in new["cases"]]
+    )
+    return base, new, extra
+
+
+def test_standard_candidate_ignores_base_cases_outside_the_standard_suite(monkeypatch):
+    """A base case that the standard suite removes (C-016) is not missing from a standard candidate."""
+    check_acceptance = _check_acceptance()
+    base, new, extra = _standard_extra_pair(monkeypatch, "standard")
+    result = check_acceptance(base, new)
+    assert result["cases"]["passed"] is True
+    assert not any(extra in text for text in result["cases"]["problems"])
+    assert extra not in repr(result)
+
+
+def test_full_candidate_still_misses_the_extra_base_case(monkeypatch):
+    """The same base and a full candidate still fail and name the extra id."""
+    check_acceptance = _check_acceptance()
+    base, new, extra = _standard_extra_pair(monkeypatch, "full")
+    result = check_acceptance(base, new)
+    assert result["passed"] is False
+    assert result["cases"]["passed"] is False
+    assert any(extra in text for text in result["cases"]["problems"])
+
+
 class _Fault:
     def __init__(self, name):
         self.name = name

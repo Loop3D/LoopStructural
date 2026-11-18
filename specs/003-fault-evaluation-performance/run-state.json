@@ -108,7 +108,9 @@
       "tasks": [
         "T050"
       ],
-      "base": "28d88a7318703bd944666ba3f18ffec39daedc4d"
+      "base": "28d88a7318703bd944666ba3f18ffec39daedc4d",
+      "commit": "15d095ff8ced0eafcbaa43bed58f932456892692",
+      "review": "changes needed (sonnet): 1 blocker fixed (standard_view for the 5 baseline-only gradient ids), 1 minor"
     }
   ],
   "runs": {
@@ -200,10 +202,10 @@
     ]
   },
   "findings": {
-    "found": 12,
+    "found": 14,
     "rejected": 2,
     "dropped": 0,
-    "fixed": 1,
+    "fixed": 2,
     "open_minor": [
       "T040 test_fault_set_key.py:188 publish-guard result equality is weak; retained_bytes == 0 is the real check",
       "T040 test_fault_set_key.py: no test for the b'Nbox;' branch (interpolator with no bounding box)",
@@ -214,7 +216,8 @@
       "T049 None on the base side is not tested in compare_results or _sc006",
       "T049 validate_result has no negative test for rss_unit None; no test that _memory_worker and _cache_fields lose their cache lines",
       "T047 test_memory.py has no peak-memory bound test for one evaluate_model call (FR-010)",
-      "T048 _evaluation.py module docstring: one long, slightly redundant line after the reword"
+      "T048 _evaluation.py module docstring: one long, slightly redundant line after the reword",
+      "T050 cold_view lives in run.py, which imports tests.fault_evaluation.models; acceptance and compare (warm base) need the tests package on the path"
     ]
   },
   "resumed": "2026-11-04: resumed after the D4b replan (465688ec). tests/fault_evaluation baseline: 550 passed in 89 s.",

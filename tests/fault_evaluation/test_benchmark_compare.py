@@ -229,6 +229,34 @@ def test_warm_ids_of_a_base_go_through_cold_view():
     assert _row(result, "tiny:oldest_value:5000:cold")["ratio"] == pytest.approx(1.5)
 
 
+def _standard_extra_pair(monkeypatch, suite: str) -> tuple[dict, dict, str]:
+    """Return a base with an extra gradient id, a candidate of the given suite, and the extra id."""
+    run = importlib.import_module("benchmarks.fault_evaluation.run")
+    extra = "x:oldest_gradient:100000:cold"
+    base = _result([_case("tiny:oldest_value:5000:cold"), _case(extra)])
+    new = _result([_case("tiny:oldest_value:5000:cold")])
+    new["suite"] = suite
+    monkeypatch.setattr(run, "standard_cases", lambda: [{"case_id": "tiny:oldest_value:5000:cold"}])
+    return base, new, extra
+
+
+def test_standard_candidate_ignores_base_cases_outside_the_standard_suite(monkeypatch):
+    """A base case that the standard suite removes (C-016) is no error and has no row."""
+    compare_results = _api("benchmarks.fault_evaluation.compare", "compare_results")
+    base, new, extra = _standard_extra_pair(monkeypatch, "standard")
+    result = compare_results(base, new)
+    assert [row["case_id"] for row in result["cases"]] == ["tiny:oldest_value:5000:cold"]
+    assert extra not in repr(result)
+
+
+def test_full_candidate_still_misses_the_extra_base_case(monkeypatch):
+    """The same base and a full candidate still raise ValueError."""
+    compare_results = _api("benchmarks.fault_evaluation.compare", "compare_results")
+    base, new, _extra = _standard_extra_pair(monkeypatch, "full")
+    with pytest.raises(ValueError, match="missing from the new result"):
+        compare_results(base, new)
+
+
 def test_a_value_of_none_gives_not_measured_without_failure_or_noise_mark():
     """A count that a pass did not measure gives the ratio text "not measured" (D10)."""
     compare_results = _api("benchmarks.fault_evaluation.compare", "compare_results")

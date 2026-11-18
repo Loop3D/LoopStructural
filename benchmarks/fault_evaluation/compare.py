@@ -182,7 +182,7 @@ def compare_results(base: dict[str, Any], new: dict[str, Any]) -> dict[str, Any]
 
     Notes
     -----
-    A base with warm ids goes through ``run.cold_view`` first. A value of None
+    A base with warm ids goes through ``run.cold_view`` first. When the new result has "suite" equal to "standard", ``run.standard_view`` then removes the base cases that the standard suite does not have. A value of None
     gives the ratio text "not measured", never a failure or a slower mark.
     """
     _check_schema(base, "base")
@@ -193,6 +193,11 @@ def compare_results(base: dict[str, Any], new: dict[str, Any]) -> dict[str, Any]
         from benchmarks.fault_evaluation.run import cold_view
 
         base = cold_view(base)
+    if new.get("suite") == "standard":
+        # The standard suite has fewer cases than the base (C-016).
+        from benchmarks.fault_evaluation.run import standard_view
+
+        base = standard_view(base)
     base_cases = _index_cases(base, "base")
     new_cases = _index_cases(new, "new")
     for case_id in base_cases:

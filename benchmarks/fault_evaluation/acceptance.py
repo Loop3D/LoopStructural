@@ -27,6 +27,7 @@ from collections import Counter
 from pathlib import Path
 from typing import Any
 
+from benchmarks.fault_evaluation import run
 from benchmarks.fault_evaluation.run import cold_view
 
 SCHEMA_VERSION = 1
@@ -307,11 +308,14 @@ def _sc009(base: dict[str, dict[str, Any]], new: dict[str, dict[str, Any]]) -> d
 def check_acceptance(base: dict[str, Any], new: dict[str, Any]) -> dict[str, Any]:
     """Check SC-002 to SC-009 for a baseline and a candidate result.
 
-    A baseline with warm ids goes through ``run.cold_view`` first. The candidate holds ``repeat``, ``suite_wall_seconds`` and ``gradient_decision``.
+    A baseline with warm ids goes through ``run.cold_view`` first. For a standard candidate, ``run.standard_view`` then removes the base cases that the standard suite does not have. The candidate holds ``repeat``, ``suite_wall_seconds`` and ``gradient_decision``.
     The result is passed only if the case check, the provenance check, the
     gradient decision and every criterion pass.
     """
     base = cold_view(base)
+    if new.get("suite") == "standard":
+        # The standard suite has fewer cases than the base (C-016).
+        base = run.standard_view(base)
     base_cases, base_duplicates = _index(base)
     new_cases, new_duplicates = _index(new)
     cases = _check_cases(base_cases, new_cases, base_duplicates, new_duplicates)

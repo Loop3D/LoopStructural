@@ -190,6 +190,19 @@ def cold_view(document: dict[str, Any]) -> dict[str, Any]:
     return view
 
 
+def standard_view(document: dict[str, Any]) -> dict[str, Any]:
+    """Return a copy of a result with only the rows of the standard suite.
+
+    Use it on a base of the full suite when the candidate is a standard run.
+    The standard suite has no gradient case at 100,000 points (C-016). A row
+    stays only if its ``case_id`` is in the ids of ``standard_cases()``.
+    """
+    view = copy.deepcopy(document)
+    ids = {case["case_id"] for case in standard_cases()}
+    view["cases"] = [row for row in view["cases"] if row["case_id"] in ids]
+    return view
+
+
 def validate_result(result: dict[str, Any]) -> None:
     """Raise ValueError if a result does not follow schema v1.
 

@@ -1262,3 +1262,13 @@ at T046.
   50,000,000 bytes. The D10 rule does not change. (2) The `git grep` gate of
   T050 over `tests` allows the test lines that assert that `evaluation_cache`
   is absent or never read: they name the removed attribute on purpose.
+- 2026-11-18, review of wave 35 (orchestrator, blocker): `cold_view` of
+  `baseline.json` has 136 ids; the standard suite has 131. The 5 extra ids are
+  the gradient cases at 100,000 points that C-016 removes from the standard
+  suite. Without a rule, `check_acceptance` and `compare_results` report them
+  as missing, so a real T030 run always fails. Rule: new
+  `run.standard_view(document) -> dict` returns a copy with only the rows whose
+  `case_id` is in `standard_cases()`. When the candidate document has
+  `"suite": "standard"`, `check_acceptance` and `compare_results` apply
+  `standard_view` to the base after `cold_view`. For a full candidate, or a
+  candidate with no `"suite"`, a missing base case still fails.
