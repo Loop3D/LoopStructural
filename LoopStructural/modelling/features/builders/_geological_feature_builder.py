@@ -7,7 +7,6 @@ import pandas as pd
 
 from ....interpolators import DiscreteInterpolator, GeologicalInterpolator, InterpolatorFactory
 from ....modelling.features import GeologicalFeature
-from .._evaluation_cache import bump_revision
 from ._base_builder import BaseBuilder
 from ....utils import getLogger
 from ....utils._api_registry import public_api
@@ -65,8 +64,6 @@ class GeologicalFeatureBuilder(BaseBuilder):
             )
         self._interpolator = interpolator
         self._up_to_date = self._interpolator.up_to_date
-        # The interpolator tells the model about a new solve (revision hook).
-        self._interpolator._revision_hook = lambda: bump_revision(self)
         header = (
             xyz_names()
             + val_name()
@@ -94,7 +91,6 @@ class GeologicalFeatureBuilder(BaseBuilder):
         )
         self._up_to_date = False
         self._interpolator.up_to_date = False
-        bump_revision(self)
 
     @property
     def interpolator(self):
@@ -121,7 +117,6 @@ class GeologicalFeatureBuilder(BaseBuilder):
 
         """
         self.data = data_frame.copy()
-        bump_revision(self)
 
     def add_orthogonal_feature(
         self, feature, w=1.0, region=None, step=1, B=0, sample_rule=None
@@ -163,7 +158,6 @@ class GeologicalFeatureBuilder(BaseBuilder):
 
         logger.info(f"Adding orthogonal constraint {feature.name} to {self.name}")
         self._up_to_date = False
-        bump_revision(self)
 
     def add_data_to_interpolator(self, constrained=False, force_constrained=False, **kwargs):
         """
@@ -529,7 +523,6 @@ class GeologicalFeatureBuilder(BaseBuilder):
 
         """
         logger.info(f'Building {self.name}')
-        bump_revision(self)
         # self.get_interpolator(**kwargs)
         for f in self.faults:
             f.builder.update()
