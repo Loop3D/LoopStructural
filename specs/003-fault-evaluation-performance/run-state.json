@@ -129,7 +129,16 @@
       "tasks": [
         "T053"
       ],
-      "base": "d0ffb0993beb65508990fe2916488076bc36490f"
+      "base": "d0ffb0993beb65508990fe2916488076bc36490f",
+      "commit": "c692fbcfc2cc5e1516e8e785a587eb39fcc3d430",
+      "review": "pass (sonnet), 1 minor"
+    },
+    {
+      "wave": 38,
+      "tasks": [
+        "T030"
+      ],
+      "base": null
     }
   ],
   "runs": {
@@ -243,7 +252,7 @@
     ]
   },
   "findings": {
-    "found": 16,
+    "found": 17,
     "rejected": 2,
     "dropped": 0,
     "fixed": 2,
@@ -260,7 +269,8 @@
       "T048 _evaluation.py module docstring: one long, slightly redundant line after the reword",
       "T050 cold_view lives in run.py, which imports tests.fault_evaluation.models; acceptance and compare (warm base) need the tests package on the path",
       "T052 test_acceptance.py:55 base f4_u0 model_ids is 1.2 s (real 0.48 s) to stay out of the SC-007 short set",
-      "T052 no test of a model_ids count of 3"
+      "T052 no test of a model_ids count of 3",
+      "T053 acceptance.py:47 ALL_F4U0 is unused now"
     ]
   },
   "resumed": "2026-11-04: resumed after the D4b replan (465688ec). tests/fault_evaluation baseline: 550 passed in 89 s.",
