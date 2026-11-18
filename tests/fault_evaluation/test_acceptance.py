@@ -39,6 +39,9 @@ LIMITS = {
 OLD_F4U3 = "f4_u3:oldest_value:5000:cold"
 ALL_F4U3 = "f4_u3:all_group_values:5000:cold"
 ALL_F4U0 = "f4_u0:all_group_values:5000:cold"
+# SC-003 count and SC-004 use one evaluate_model call with model_ids (spec C-017).
+IDS_F4U3 = "f4_u3:model_ids:5000:cold"
+IDS_F4U0 = "f4_u0:model_ids:5000:cold"
 PLUGIN_OLD = "plugin:oldest_value:20000:cold"
 SINGLE_F1U0 = "f1_u0:oldest_value:20000:cold"
 
@@ -48,6 +51,10 @@ BASE_ROWS = [
     ("f4_u3", "oldest_value", 5000, "cold", 2.5, 16, 5000, 1_000_000),
     ("f4_u3", "all_group_values", 5000, "cold", 8.65, 52, 5000, 1_000_000),
     ("f4_u0", "all_group_values", 5000, "cold", 0.67, 12, 5000, 1_000_000),
+    # The model_ids rows have no memory value, so SC-006 does not compare them.
+    # The f4_u0 baseline time is 1.2 s, so SC-007 checks it and it is not a short case.
+    ("f4_u3", "model_ids", 5000, "cold", 6.34, 52, 5000, None),
+    ("f4_u0", "model_ids", 5000, "cold", 1.2, 12, 5000, None),
     ("plugin", "oldest_value", 20000, "cold", 8.2, 6, 20000, 1_000_000),
     ("f1_u0", "oldest_value", 20000, "cold", 0.68, 2, 20000, 500_000),
 ]
@@ -55,6 +62,8 @@ NEW_ROWS = [
     ("f4_u3", "oldest_value", 5000, "cold", 1.0, 4, 5000, 1_000_000),
     ("f4_u3", "all_group_values", 5000, "cold", 1.0, 4, 5000, 1_000_000),
     ("f4_u0", "all_group_values", 5000, "cold", 0.8, 4, 5000, 1_000_000),
+    ("f4_u3", "model_ids", 5000, "cold", 0.2, 4, 5000, None),
+    ("f4_u0", "model_ids", 5000, "cold", 0.2, 4, 5000, None),
     ("plugin", "oldest_value", 20000, "cold", 3.0, 6, 20000, 1_000_000),
     ("f1_u0", "oldest_value", 20000, "cold", 0.2, 2, 20000, 500_000),
 ]
@@ -195,12 +204,12 @@ def test_compliant_pair_passes_every_target():
         ),
         pytest.param(
             "SC-003",
-            lambda base, new: _set(new, ALL_F4U3, fault_calls_total=5),
+            lambda base, new: _set(new, IDS_F4U3, fault_calls_total=5),
             id="SC-003-calls-not-four",
         ),
         pytest.param(
             "SC-004",
-            lambda base, new: _set(new, ALL_F4U0, median_seconds=0.6),
+            lambda base, new: _set(new, IDS_F4U0, median_seconds=0.1),
             id="SC-004-ratio-over-limit",
         ),
         pytest.param(
@@ -642,7 +651,7 @@ def test_candidate_without_memory_value_is_not_a_failure():
     "case_id,field,pass_name",
     [
         pytest.param(OLD_F4U3, "fault_calls_total", "counters", id="SC-002-calls"),
-        pytest.param(ALL_F4U3, "fault_calls_total", "counters", id="SC-003-calls"),
+        pytest.param(IDS_F4U3, "fault_calls_total", "counters", id="SC-003-calls"),
         pytest.param(SINGLE_F1U0, "fault_points_total", "counters", id="SC-009-points"),
     ],
 )
@@ -676,3 +685,76 @@ def test_baseline_with_warm_ids_goes_through_cold_view():
     result = check_acceptance(base, new)
     assert result["cases"]["problems"] == []
     assert result["passed"] is True
+
+
+def test_sc_003_count_reads_the_model_ids_case_not_all_group_values():
+    """An all_group_values count of 16 does not fail SC-003 when the model_ids count is 4."""
+    check_acceptance = _check_acceptance()
+    base, new = _compliant_pair()
+    _set(new, ALL_F4U3, fault_calls_total=16)
+    row = check_acceptance(base, new)["criteria"]["SC-003"]
+    assert row["passed"] is True
+    assert row["reason"] is None
+
+
+def test_sc_003_value_stays_the_time_ratio_of_all_group_values():
+    """The SC-003 value is the time ratio of the all_group_values case (1.0 s over 8.65 s)."""
+    check_acceptance = _check_acceptance()
+    base, new = _compliant_pair()
+    row = check_acceptance(base, new)["criteria"]["SC-003"]
+    assert row["value"] == pytest.approx(1.0 / 8.65)
+
+
+def test_sc_003_model_ids_count_of_five_fails_and_names_the_id():
+    """A model_ids count of 5 fails SC-003. The reason names the model_ids id."""
+    check_acceptance = _check_acceptance()
+    base, new = _compliant_pair()
+    _set(new, IDS_F4U3, fault_calls_total=5)
+    result = check_acceptance(base, new)
+    row = result["criteria"]["SC-003"]
+    assert row["passed"] is False
+    assert IDS_F4U3 in row["reason"]
+    assert result["passed"] is False
+
+
+def test_sc_004_ignores_a_slow_all_group_values_case():
+    """A slow f4_u3 all_group_values case does not fail SC-004. SC-004 uses the model_ids times."""
+    check_acceptance = _check_acceptance()
+    base, new = _compliant_pair()
+    _set(new, ALL_F4U3, median_seconds=1.3)
+    row = check_acceptance(base, new)["criteria"]["SC-004"]
+    assert row["passed"] is True
+    assert row["value"] == pytest.approx(1.0)
+
+
+def test_sc_004_model_ids_ratio_over_limit_fails():
+    """A model_ids ratio above 1.5 fails SC-004. A ratio of exactly 1.5 passes."""
+    check_acceptance = _check_acceptance()
+    base, new = _compliant_pair()
+    _set(new, IDS_F4U3, median_seconds=0.31)
+    row = check_acceptance(base, new)["criteria"]["SC-004"]
+    assert row["passed"] is False
+    assert row["value"] == pytest.approx(1.55)
+    assert row["reason"]
+    _set(new, IDS_F4U3, median_seconds=0.3)
+    assert check_acceptance(base, new)["criteria"]["SC-004"]["passed"] is True
+
+
+@pytest.mark.parametrize(
+    "missing,criteria",
+    [
+        pytest.param(IDS_F4U3, ("SC-003", "SC-004"), id="f4_u3-ids-absent"),
+        pytest.param(IDS_F4U0, ("SC-004",), id="f4_u0-ids-absent"),
+    ],
+)
+def test_model_ids_case_absent_from_the_candidate_fails_with_the_id(missing, criteria):
+    """A model_ids case that is absent from the candidate fails its targets. The reason names it."""
+    check_acceptance = _check_acceptance()
+    base, new = _compliant_pair()
+    new["cases"] = [row for row in new["cases"] if row["case_id"] != missing]
+    result = check_acceptance(base, new)
+    for criterion in criteria:
+        row = result["criteria"][criterion]
+        assert row["passed"] is False, criterion
+        assert missing in row["reason"], criterion
+    assert result["passed"] is False

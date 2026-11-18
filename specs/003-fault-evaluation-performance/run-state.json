@@ -119,7 +119,8 @@
         "T051",
         "T052"
       ],
-      "base": "3865c80b722dcf7ac8f3b9449ef76723bf8e246f"
+      "base": "3865c80b722dcf7ac8f3b9449ef76723bf8e246f",
+      "commit_T051": "f446cbf0a1b8f6b566fb607fca2f65265426b3b9"
     }
   ],
   "runs": {
@@ -217,6 +218,12 @@
       {
         "model": "sonnet",
         "result": "pass at 808b4911: G1 model_ids 4 calls; all_group_values 16 (info); G2 0.2067 s <= 0.2429 s; G5 0.5380 s; 340 tests pass in 60 s"
+      }
+    ],
+    "T052": [
+      {
+        "model": "sonnet",
+        "result": "pass: 9 red (3 changed, 6 new SC-003/SC-004 tests) for the expected reason; 46 pass"
       }
     ]
   },
