@@ -559,8 +559,8 @@ def test_sc_006_allowance_limit_is_inclusive_and_a_zero_baseline_uses_only_it():
     allowance = _api(ACCEPTANCE_MODULE, "MEMORY_ALLOWANCE_BYTES")
     assert _sc006(0, allowance)["passed"] is True
     assert _sc006(0, allowance + 1)["passed"] is False
-    assert _sc006(100_000_000, 100_000_000 + allowance)["passed"] is True
-    assert _sc006(100_000_000, 100_000_000 + allowance + 1)["passed"] is False
+    assert _sc006(50_000_000, 50_000_000 + allowance)["passed"] is True
+    assert _sc006(50_000_000, 50_000_000 + allowance + 1)["passed"] is False
 
 
 def test_sc_006_row_reports_worst_ratio_failing_cases_and_compared_count():

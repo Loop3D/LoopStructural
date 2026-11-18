@@ -1254,3 +1254,11 @@ at T046.
   checks it, with the worst ratio and the failing cases in the reason. The
   T047 red check has 8 more red tests than D7 says: the tests that lost their
   cache-off lines see cache hits until T048. They must pass after T048.
+- 2026-11-18, T050 (orchestrator): (1) the T049 test
+  `test_sc_006_allowance_limit_is_inclusive_and_a_zero_baseline_uses_only_it`
+  used a 100,000,000-byte baseline. There, baseline + allowance + 1 byte is
+  1.168 times the baseline and passes by the ratio, so the test was wrong. The
+  allowance alone decides only below about 83.9 MB. The test now uses
+  50,000,000 bytes. The D10 rule does not change. (2) The `git grep` gate of
+  T050 over `tests` allows the test lines that assert that `evaluation_cache`
+  is absent or never read: they name the removed attribute on purpose.
