@@ -98,6 +98,8 @@ model.data = data
 # add a foliation using the `create_and_add_foliation` method.
 
 # Define stratigraphic column with scalar field ranges for each unit
+# the default column ends in an empty 'Basement' group; start from an empty column
+model.stratigraphic_column.clear(basement=False)
 vals = [0, 60, 250, 330, 600]
 for i in range(len(vals) - 1):
     model.stratigraphic_column.add_unit(

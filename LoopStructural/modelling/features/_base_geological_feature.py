@@ -4,13 +4,12 @@ from abc import ABCMeta, abstractmethod
 
 import numpy as np
 
-from LoopStructural.geometry import StructuredGrid, VectorPoints
+from LoopStructural.geometry import VectorPoints
 from LoopStructural.modelling.features import FeatureType
 from LoopStructural.utils import LoopIsosurfacer, LoopValueError, getLogger, surface_list
 from LoopStructural.utils.typing import NumericInput
 
 from ._evaluation import evaluation_scope
-from ._evaluation_cache import bump_revision
 
 logger = getLogger(__name__)
 
@@ -115,18 +114,6 @@ class BaseFeature(metaclass=ABCMeta):
                 )
 
         self._faults = _faults
-        bump_revision(self)
-
-    @property
-    def faults_enabled(self):
-        return self._faults_enabled
-
-    @faults_enabled.setter
-    def faults_enabled(self, value):
-        changed = getattr(self, "_faults_enabled", None) != value
-        self._faults_enabled = value
-        if changed:
-            bump_revision(self)
 
     def to_json(self):
         """
@@ -207,7 +194,6 @@ class BaseFeature(metaclass=ABCMeta):
 
         """
         self.regions.append(region)
-        bump_revision(self)
 
     def __call__(self, xyz):
         """Calls evaluate_value method
@@ -401,15 +387,7 @@ class BaseFeature(metaclass=ABCMeta):
             if self.model is None:
                 raise ValueError("Must specify bounding box")
             bounding_box = self.model.bounding_box
-        # NOTE: bounding_box.structured_grid() returns loop_common's
-        # interpolation-support StructuredGrid (no properties dict); use
-        # LoopStructural's own geometry StructuredGrid for storing values.
-        grid = StructuredGrid(
-            origin=bounding_box.origin,
-            step_vector=bounding_box.step_vector,
-            nsteps=bounding_box.nsteps,
-            name=self.name,
-        )
+        grid = bounding_box.structured_grid(name=self.name)
         value = self.evaluate_value(bounding_box.regular_grid(local=False, order='F'))
         grid.properties[self.name] = value
 
@@ -434,12 +412,7 @@ class BaseFeature(metaclass=ABCMeta):
             if self.model is None:
                 raise ValueError("Must specify bounding box")
             bounding_box = self.model.bounding_box
-        grid = StructuredGrid(
-            origin=bounding_box.origin,
-            step_vector=bounding_box.step_vector,
-            nsteps=bounding_box.nsteps,
-            name=self.name,
-        )
+        grid = bounding_box.structured_grid(name=self.name)
         value = np.linalg.norm(
             self.evaluate_gradient(bounding_box.regular_grid(local=False, order='F')),
             axis=1,

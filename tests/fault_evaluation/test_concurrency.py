@@ -1,26 +1,22 @@
-"""Tests for simultaneous evaluation calls on models (D4, D5, FR-010a, T022).
+"""Tests for simultaneous evaluation calls on models (D4, D5, FR-010a, T022, T047).
 
-The plugin evaluates in background threads. These tests define the behaviour that T023
-must give.
+The plugin evaluates in background threads. These tests define the behaviour of
+evaluation calls that run at the same time.
 
 * Two threads that evaluate one model give the results of serial calls.
-* A lazy build of a dirty builder happens exactly once, also when two threads start.
-* One model serializes its evaluations, its builds and its changes under the lock
-  ``model.evaluation_cache.lock``. Different models do not share a lock.
+* Two calls on one model run at the same time. No lock of the model serializes them.
 * The scope of one thread is not visible in another thread.
-* An exception in one thread releases the lock and the scope, and it publishes nothing.
-* A change through a public setter, while another thread evaluates, waits for the
-  evaluation. No call gives a mixed result.
+* An exception in one thread releases the scope of that thread.
 
-No test uses a sleep to synchronize. Events and barriers do the synchronization. Some
-tests wait for an event that must NOT be set. That wait is short and it cannot fail a
-correct implementation. Every join has a time limit, so a deadlock fails the test.
+No test uses a sleep to synchronize. Events and barriers do the synchronization. Every
+join has a time limit, so a deadlock fails the test.
 """
 
 from __future__ import annotations
 
 import threading
 from collections.abc import Callable
+from pathlib import Path
 from typing import Any
 
 import numpy as np
@@ -28,24 +24,21 @@ import pytest
 
 from LoopStructural import GeologicalModel
 from LoopStructural.modelling.features import _evaluation
-from LoopStructural.modelling.features.builders._geological_feature_builder import (
-    GeologicalFeatureBuilder,
-)
 from LoopStructural.modelling.features.fault._fault_segment import FaultSegment
 from tests.fault_evaluation.models import build_model
-from tests.fault_evaluation.test_invalidation import (
-    _evaluate_disabled,
-    _fault,
-    _group,
-    _install_counters,
-    _points,
-    _tiny_model,
-    _tiny_points,
-)
 
+DATA = Path(__file__).parent / "data"
 JOIN_SECONDS = 60
-# Time to wait for an event that a correct implementation must not set.
-ABSENT_SECONDS = 0.5
+
+
+def _points(name: str) -> np.ndarray:
+    """Return the stored golden points of a model."""
+    with np.load(DATA / f"{name}.npz", allow_pickle=False) as archive:
+        return archive["points"].copy()
+
+
+def _group(model: GeologicalModel, index: int):
+    return model.get_feature_by_name(f"group_{index}")
 
 
 class _Worker(threading.Thread):
@@ -76,11 +69,6 @@ def _join_all(*workers: _Worker) -> None:
         worker.finish()
 
 
-def _lock(model: GeologicalModel):
-    """Return the lock of the model (the lock of its evaluation cache)."""
-    return model.evaluation_cache.lock
-
-
 def _hook_fault_calls(monkeypatch, before: Callable[[], None]) -> None:
     """Call ``before()`` at the start of each fault call, then run the real call."""
     original = FaultSegment.apply_to_points
@@ -103,11 +91,10 @@ def test_two_threads_on_one_model_match_serial_references(name, group_index):
     model = build_model(name)
     points = _points(name)
     group = _group(model, group_index)
-    # Make the references first. A cache-disabled call clears all entries of the model.
-    model_reference, _ = _evaluate_disabled(model, lambda: model.evaluate_model(points))
-    value_reference, _ = _evaluate_disabled(model, lambda: group.evaluate_value(points))
+    # Make the serial references first.
+    model_reference = model.evaluate_model(points)
+    value_reference = group.evaluate_value(points)
     for _ in range(3):
-        model.evaluation_cache.clear()
         barrier = threading.Barrier(2, timeout=JOIN_SECONDS)
 
         def run_model(barrier=barrier):
@@ -130,7 +117,7 @@ def test_two_threads_with_the_same_call_match_the_serial_reference():
     """Two equal calls at the same time both give the serial result."""
     model = build_model("f4_u3")
     points = _points("f4_u3")
-    reference, _ = _evaluate_disabled(model, lambda: model.evaluate_model(points))
+    reference = model.evaluate_model(points)
     barrier = threading.Barrier(2, timeout=JOIN_SECONDS)
 
     def run():
@@ -145,132 +132,48 @@ def test_two_threads_with_the_same_call_match_the_serial_reference():
         np.testing.assert_array_equal(worker.result, reference)
 
 
-def test_first_lazy_build_happens_once_with_two_threads(monkeypatch):
-    """Two threads on a model with dirty builders build each builder exactly once.
+def test_two_calls_on_one_model_run_at_the_same_time(monkeypatch):
+    """Two threads are inside a fault call of one model at the same time.
 
-    The first build waits until a second build could enter. Without a lock, the second
-    thread enters the same builder while it is still dirty, and the build runs twice.
+    Each thread waits at a barrier for the other thread, inside its first fault call.
+    A lock of the model would keep the second thread out, and the barrier would break.
     """
-    builds, solves = _install_counters(monkeypatch)
-    counted_build = GeologicalFeatureBuilder.build  # the counting wrapper
-    state = {"first": True}
-    in_build, release, second_entered = threading.Event(), threading.Event(), threading.Event()
+    points = _points("f1_u0")
+    reference = build_model("f1_u0").evaluate_model(points)  # a second model: no warm state
+    model = build_model("f1_u0")
+    barrier = threading.Barrier(2, timeout=10)
+    waited: set[int] = set()
     guard = threading.Lock()
+    original = FaultSegment.apply_to_points
 
-    def gated_build(self, *args, **kwargs):
+    def apply_to_points(fault, pts, *args, **kwargs):
         with guard:
-            is_first = state["first"]
-            state["first"] = False
-        if is_first:
-            in_build.set()
-            release.wait(JOIN_SECONDS)
-        else:
-            second_entered.set()
-        return counted_build(self, *args, **kwargs)
+            first = threading.get_ident() not in waited
+            waited.add(threading.get_ident())
+        if first:
+            barrier.wait()  # raises threading.BrokenBarrierError when no second thread comes
+        return original(fault, pts, *args, **kwargs)
 
-    monkeypatch.setattr(GeologicalFeatureBuilder, "build", gated_build)
-    model = _tiny_model()
-    group, fault, points = _group(model, 0), _fault(model, 0), _tiny_points()
-    assert group.faults == [], "the model must start with dirty builders"
-    first = _Worker(lambda: group.evaluate_value(points), "builder-1")
-    second = _Worker(lambda: group.evaluate_value(points), "builder-2")
-    first.start()
-    assert in_build.wait(JOIN_SECONDS), "the first build did not start"
-    second.start()
-    # A second build in the other thread while the first one runs is the failure.
-    concurrent = second_entered.wait(ABSENT_SECONDS)
-    release.set()
-    for worker in (first, second):
-        worker.join(JOIN_SECONDS)
-        assert not worker.is_alive(), f"thread {worker.name!r} did not finish: deadlock"
-    # Check the overlap first. A racing build can also raise in a worker.
-    assert not concurrent, "a second thread built a builder that is already being built"
-    _join_all(first, second)
-    assert set(builds.values()) == {1}, f"a builder was built more than once: {builds}"
-    expected = {id(group.builder)} | {id(builder) for builder in fault.builder.builders}
-    assert set(builds) == expected
-    assert solves[0] == len(expected)
-    np.testing.assert_array_equal(first.result, second.result)
-
-
-# ---------------------------------------------------------------------------
-# The lock of one model
-# ---------------------------------------------------------------------------
-
-
-def test_held_lock_blocks_evaluation_also_with_the_cache_disabled(monkeypatch):
-    """While one thread holds the lock of a model, an evaluation of the model waits.
-
-    The cache is off, so the evaluation uses no persistent entry. The full outer
-    evaluation must still take the lock of the model. This test passes before T023 only
-    because reading ``cache.enabled`` takes the same lock. It guards the rule after T023.
-    """
-    model = build_model("f1_u0")
-    points = _points("f1_u0")
-    reference, _ = _evaluate_disabled(model, lambda: model.evaluate_model(points))
-    model.evaluation_cache.enabled = False
-    entered = threading.Event()
-    _hook_fault_calls(monkeypatch, entered.set)
-    with _lock(model):
-        worker = _Worker(lambda: model.evaluate_model(points), "blocked")
+    monkeypatch.setattr(FaultSegment, "apply_to_points", apply_to_points)
+    workers = [_Worker(lambda: model.evaluate_model(points.copy()), f"same-{i}") for i in range(2)]
+    for worker in workers:
         worker.start()
-        started = entered.wait(ABSENT_SECONDS)
-    assert not started, "the evaluation ran while another thread held the lock of the model"
-    worker.finish()
-    assert entered.is_set()
-    np.testing.assert_array_equal(worker.result, reference)
+    _join_all(*workers)
+    assert len(waited) == 2, "both threads must reach the fault call"
+    for worker in workers:
+        np.testing.assert_array_equal(worker.result, reference)
 
 
-def test_nested_and_repeated_calls_reuse_the_lock_in_one_thread():
-    """A thread that holds the lock can evaluate the model. The lock is re-entrant."""
-    model = build_model("f1_u0")
-    points = _points("f1_u0")
-    group = _group(model, 0)
-    reference, _ = _evaluate_disabled(model, lambda: model.evaluate_model(points))
-
-    def run():
-        with _lock(model), _lock(model):
-            return model.evaluate_model(points), group.evaluate_value(points)
-
-    worker = _Worker(run, "reentrant")
-    worker.start()
-    worker.finish()
-    np.testing.assert_array_equal(worker.result[0], reference)
-
-
-def test_thread_holding_the_lock_of_one_model_does_not_block_another_model():
-    """There is no global lock. A held lock of model A leaves model B free."""
-    first_model, second_model = build_model("f1_u0"), build_model("f1_u0")
-    assert _lock(first_model) is not _lock(second_model)
-    points = _points("f1_u0")
-    reference, _ = _evaluate_disabled(second_model, lambda: second_model.evaluate_model(points))
-    held, release = threading.Event(), threading.Event()
-
-    def hold():
-        with _lock(first_model):
-            held.set()
-            assert release.wait(JOIN_SECONDS)
-
-    holder = _Worker(hold, "holder")
-    holder.start()
-    assert held.wait(JOIN_SECONDS)
-    other = _Worker(lambda: second_model.evaluate_model(points), "other-model")
-    try:
-        other.start()
-        other.finish()
-    finally:
-        release.set()
-    holder.finish()
-    np.testing.assert_array_equal(other.result, reference)
-    assert first_model.evaluation_cache.retained_bytes == 0
-    assert second_model.evaluation_cache.retained_bytes > 0
+# ---------------------------------------------------------------------------
+# Two models
+# ---------------------------------------------------------------------------
 
 
 def test_evaluation_in_progress_on_one_model_does_not_block_another_model(monkeypatch):
     """Model B evaluates to the end while a thread is inside an evaluation of model A."""
     first_model, second_model = build_model("f1_u0"), build_model("f1_u0")
     points = _points("f1_u0")
-    reference, _ = _evaluate_disabled(second_model, lambda: second_model.evaluate_model(points))
+    reference = second_model.evaluate_model(points)
     inside, release = threading.Event(), threading.Event()
 
     def before():
@@ -291,10 +194,6 @@ def test_evaluation_in_progress_on_one_model_does_not_block_another_model(monkey
     first.finish()
     np.testing.assert_array_equal(second.result, reference)
     np.testing.assert_array_equal(first.result, reference)
-    # Each model keeps its own entries.
-    first_cache, second_cache = first_model.evaluation_cache, second_model.evaluation_cache
-    assert first_cache is not second_cache
-    assert first_cache.retained_bytes == second_cache.retained_bytes == points.nbytes
 
 
 # ---------------------------------------------------------------------------
@@ -371,11 +270,11 @@ class _Boom(RuntimeError):
     """Error that the test raises on purpose."""
 
 
-def test_exception_in_one_thread_releases_lock_and_scope(monkeypatch):
-    """A failing thread leaves no lock and no scope. Others and later calls work."""
+def test_exception_in_one_thread_releases_the_scope(monkeypatch):
+    """A failing thread leaves no scope. Other threads and later calls work."""
     model = build_model("f4_u3")
     points = _points("f4_u3")
-    reference, _ = _evaluate_disabled(model, lambda: model.evaluate_model(points))
+    reference = build_model("f4_u3").evaluate_model(points)  # a second model: no warm state
     inside, release = threading.Event(), threading.Event()
 
     def before():
@@ -405,155 +304,7 @@ def test_exception_in_one_thread_releases_lock_and_scope(monkeypatch):
     assert scope_after_failure == [None], "the scope was not reset after the exception"
     good.finish()
     np.testing.assert_array_equal(good.result, reference)
-    # The lock is free for a new thread. A lock that a dead thread still owns would block.
-    acquired: list[bool] = []
-
-    def try_lock():
-        got = _lock(model).acquire(timeout=JOIN_SECONDS)
-        acquired.append(got)
-        if got:
-            _lock(model).release()
-
-    prober = _Worker(try_lock, "prober")
-    prober.start()
-    prober.finish()
-    assert acquired == [True], "the lock of the model stayed held after the exception"
     assert _evaluation._ACTIVE.get() is None
     again = _Worker(lambda: model.evaluate_model(points), "again")
     again.start()
     np.testing.assert_array_equal(again.finish(), reference)
-
-
-def test_failed_call_publishes_no_entry(monkeypatch):
-    """An exception in the middle of a call leaves no entry of that call in the cache."""
-    model = build_model("f4_u3")
-    points = _points("f4_u3")
-    reference, _ = _evaluate_disabled(model, lambda: model.evaluate_model(points))
-    cache = model.evaluation_cache
-    cache.clear()
-    count = [0]
-    guard = threading.Lock()
-
-    def before():
-        with guard:
-            count[0] += 1
-            number = count[0]
-        if number == 3:
-            raise _Boom("on purpose")
-
-    _hook_fault_calls(monkeypatch, before)
-    worker = _Worker(lambda: model.evaluate_model(points), "partial")
-    worker.start()
-    worker.join(JOIN_SECONDS)
-    assert not worker.is_alive()
-    assert isinstance(worker.error, _Boom)
-    assert cache.retained_bytes == 0, "a failed call published a restoration"
-    monkeypatch.undo()
-    after = _Worker(lambda: model.evaluate_model(points), "after-failure")
-    after.start()
-    np.testing.assert_array_equal(after.finish(), reference)
-
-
-# ---------------------------------------------------------------------------
-# Changes while another thread evaluates
-# ---------------------------------------------------------------------------
-
-
-def _set_displacement(model):
-    _fault(model, 0).displacement = 20.0
-
-
-def _set_steps(model):
-    _fault(model, 2).steps = 2
-
-
-@pytest.mark.parametrize("change", [_set_displacement, _set_steps], ids=["displacement", "steps"])
-def test_change_during_evaluation_gives_no_mixed_result_and_no_stale_entry(monkeypatch, change):
-    """A change during an evaluation gives a whole result and leaves no stale cache entry.
-
-    The evaluating thread stops inside its first fault call. A second thread then calls
-    a public setter. The setter can finish at once or wait for the evaluation. The test
-    does not decide which. The result of the evaluation must be the old reference or the
-    new reference. It must not be a mix and it must not raise. A new evaluation after
-    both threads end must give the new reference. Thus the cache must not keep a stale
-    entry from the evaluation that overlapped with the change.
-    """
-    model = build_model("f4_u3")
-    points = _points("f4_u3")
-    old_reference, _ = _evaluate_disabled(model, lambda: model.evaluate_model(points))
-    inside, release = threading.Event(), threading.Event()
-    changed = threading.Event()
-
-    def before():
-        if threading.current_thread().name == "evaluating":
-            inside.set()
-            assert release.wait(JOIN_SECONDS)
-
-    _hook_fault_calls(monkeypatch, before)
-
-    def mutate():
-        change(model)
-        changed.set()
-
-    evaluating = _Worker(lambda: model.evaluate_model(points), "evaluating")
-    mutator = _Worker(mutate, "mutator")
-    try:
-        evaluating.start()
-        assert inside.wait(JOIN_SECONDS)
-        mutator.start()
-        # The setter can finish at once or wait. Both are valid.
-        changed.wait(ABSENT_SECONDS)
-    finally:
-        # Always open the gate so that no thread hangs.
-        release.set()
-    _join_all(evaluating, mutator)
-    monkeypatch.undo()
-    new_reference, _ = _evaluate_disabled(model, lambda: model.evaluate_model(points))
-    # A change of steps does not change the output on this model. Thus the effect check
-    # applies to the displacement change only.
-    if change is _set_displacement:
-        assert not np.array_equal(new_reference, old_reference, equal_nan=True), "no effect"
-    # No mixed result: the evaluation equals the old state or the new state.
-    assert np.array_equal(evaluating.result, old_reference, equal_nan=True) or np.array_equal(
-        evaluating.result, new_reference, equal_nan=True
-    ), "the result is neither the old nor the new state"
-    # The evaluation that overlapped with the change must leave no stale entry.
-    later = _Worker(lambda: model.evaluate_model(points), "later")
-    later.start()
-    np.testing.assert_array_equal(later.finish(), new_reference)
-
-
-def test_repeated_changes_and_evaluations_never_give_a_mixed_result():
-    """A changing thread and an evaluating thread: every result equals one known state."""
-    model = build_model("f4_u3")
-    points = _points("f4_u3")
-    fault = _fault(model, 0)
-    old, new = fault.displacement, 20.0
-    old_reference, _ = _evaluate_disabled(model, lambda: model.evaluate_model(points))
-    fault.displacement = new
-    new_reference, _ = _evaluate_disabled(model, lambda: model.evaluate_model(points))
-    fault.displacement = old
-    assert not np.array_equal(old_reference, new_reference, equal_nan=True)
-    barrier = threading.Barrier(2, timeout=JOIN_SECONDS)
-
-    def flip():
-        barrier.wait()
-        for index in range(6):
-            fault.displacement = new if index % 2 == 0 else old
-
-    def evaluate():
-        barrier.wait()
-        return [model.evaluate_model(points) for _ in range(6)]
-
-    flipper, evaluator = _Worker(flip, "flipper"), _Worker(evaluate, "evaluator")
-    flipper.start()
-    evaluator.start()
-    _join_all(flipper, evaluator)
-    for result in evaluator.result:
-        assert np.array_equal(result, old_reference, equal_nan=True) or np.array_equal(
-            result, new_reference, equal_nan=True
-        ), "a result is neither the old nor the new state"
-    # The last change (index 5) set the old value.
-    final = _Worker(lambda: model.evaluate_model(points), "final")
-    final.start()
-    np.testing.assert_array_equal(final.finish(), old_reference)

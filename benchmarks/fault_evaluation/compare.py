@@ -38,8 +38,14 @@ _CASE_PROVENANCE_FIELDS = (
 _MISSING = object()
 
 
-def _ratio(base: float, new: float) -> tuple[float | None, str]:
-    """Return the new/base ratio and its status. A zero baseline has no ratio."""
+def _ratio(base: float | None, new: float | None) -> tuple[float | None, str]:
+    """Return the new/base ratio and its status.
+
+    A value of None (a pass did not measure it) gives "not measured". A zero
+    baseline has no ratio.
+    """
+    if base is None or new is None:
+        return None, "not measured"
     if base == 0:
         return None, "undefined_zero_baseline"
     return new / base, "ok"
@@ -173,9 +179,25 @@ def compare_results(base: dict[str, Any], new: dict[str, Any]) -> dict[str, Any]
     ValueError
         If a case is missing, duplicated, has a different point count, or has
         a different cold/warm state in the two results.
+
+    Notes
+    -----
+    A base with warm ids goes through ``run.cold_view`` first. When the new result has "suite" equal to "standard", ``run.standard_view`` then removes the base cases that the standard suite does not have. A value of None
+    gives the ratio text "not measured", never a failure or a slower mark.
     """
     _check_schema(base, "base")
     _check_schema(new, "new")
+    if any(case["case_id"].endswith(":warm") for case in base["cases"]):
+        # A base of the code before this feature has warm ids (C-016). The import is
+        # here so that the module needs only the standard library otherwise.
+        from benchmarks.fault_evaluation.run import cold_view
+
+        base = cold_view(base)
+    if new.get("suite") == "standard":
+        # The standard suite has fewer cases than the base (C-016).
+        from benchmarks.fault_evaluation.run import standard_view
+
+        base = standard_view(base)
     base_cases = _index_cases(base, "base")
     new_cases = _index_cases(new, "new")
     for case_id in base_cases:

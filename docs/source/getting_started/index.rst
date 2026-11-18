@@ -9,4 +9,3 @@ Getting Started
    about
    contributors_guide
    loopstructural_design
-   CHANGELOG

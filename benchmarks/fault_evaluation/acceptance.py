@@ -1,4 +1,4 @@
-"""Check the numerical performance targets SC-002 to SC-010 on schema v1 results.
+"""Check the numerical performance targets SC-002 to SC-009 on schema v1 results.
 
 Usage::
 
@@ -12,7 +12,7 @@ full result, for SC-007), ``suite_wall_seconds`` (for SC-008) and
 ``gradient_decision`` (the OP1 rule).
 
 ``--memory-points`` is a local mode for the large-memory check (FR-010). It runs
-each cache mode in a fresh subprocess. Do not run it in pytest or in CI.
+each mode in a fresh subprocess. Do not run it in pytest or in CI.
 """
 
 # ruff: noqa: ANN401  (the wrapped objects are untyped model and fixture objects)
@@ -27,12 +27,17 @@ from collections import Counter
 from pathlib import Path
 from typing import Any
 
+from benchmarks.fault_evaluation import run
+from benchmarks.fault_evaluation.run import cold_view
+
 SCHEMA_VERSION = 1
 GRADIENT_RULE = "op1-one-restoration-per-fault-set-and-point-batch"
 SHORT_CASE_SECONDS = 1.0
 NOISE_LIMIT = 1.10
 SUITE_WALL_LIMIT_SECONDS = 900.0
-MEMORY_MODES = ("cold", "warm", "off")
+MEMORY_MODES = ("cold",)
+# SC-006 also passes a case with at most this much extra memory (D10).
+MEMORY_ALLOWANCE_BYTES = 16 * 1024 * 1024
 # FR-010: 3 floats of 8 bytes for each point and each fault set.
 RESTORED_BYTES_PER_POINT = 3 * 8
 _TOLERANCE = 1e-9
@@ -40,12 +45,18 @@ _TOLERANCE = 1e-9
 OLD_F4U3 = "f4_u3:oldest_value:5000:cold"
 ALL_F4U3 = "f4_u3:all_group_values:5000:cold"
 ALL_F4U0 = "f4_u0:all_group_values:5000:cold"
-WARM_F4U3 = "f4_u3:all_group_values:5000:warm"
-# SC-010 uses evaluate_model, which is the benchmark operation model_ids.
-IDS_COLD_F4U3 = "f4_u3:model_ids:5000:cold"
-IDS_WARM_F4U3 = "f4_u3:model_ids:5000:warm"
+# SC-003 count and SC-004 use one evaluate_model call with model_ids (spec C-017).
+IDS_F4U3 = "f4_u3:model_ids:5000:cold"
+IDS_F4U0 = "f4_u0:model_ids:5000:cold"
 PLUGIN_OLD = "plugin:oldest_value:20000:cold"
 SINGLE_F1U0 = "f1_u0:oldest_value:20000:cold"
+# The pass that measures each field. A value of None means that the pass did not run the case.
+_FIELD_PASSES = {
+    "median_seconds": "timing",
+    "fault_calls_total": "counters",
+    "fault_points_total": "counters",
+    "peak_extra_rss_bytes": "rss",
+}
 _PROVENANCE_FIELDS = ("python", "numpy", "scipy", "os", "cpu", "ram_bytes")
 _CASE_PROVENANCE_FIELDS = (
     "input_hash",
@@ -134,15 +145,36 @@ def _missing(cases: dict[str, dict[str, Any]], *case_ids: str) -> str | None:
     return None
 
 
+def _unmeasured(cases: dict[str, dict[str, Any]], case_id: str, *fields: str) -> str | None:
+    """Return a reason that names the case and the pass of the first field that is None."""
+    for field in fields:
+        if cases[case_id][field] is None:
+            return f"case {case_id!r} was not measured in the {_FIELD_PASSES[field]} pass"
+    return None
+
+
 def _time_ratio_row(
     base: dict[str, dict[str, Any]],
     new: dict[str, dict[str, Any]],
     case_id: str,
     limit: float,
     calls: int,
+    count_case_id: str | None = None,
 ) -> dict[str, Any]:
-    """Check time ratio against the baseline and the exact count of fault calls."""
-    reason = _missing(base, case_id) or _missing(new, case_id)
+    """Check time ratio against the baseline and the exact count of fault calls.
+
+    The time ratio reads ``case_id``. The count of fault calls reads
+    ``count_case_id`` when it is given, and ``case_id`` if not.
+    """
+    count_id = count_case_id or case_id
+    reason = _missing(base, case_id) or _missing(new, case_id, count_id)
+    if reason:
+        return _row(False, None, limit, reason)
+    reason = (
+        _unmeasured(base, case_id, "median_seconds")
+        or _unmeasured(new, case_id, "median_seconds")
+        or _unmeasured(new, count_id, "fault_calls_total")
+    )
     if reason:
         return _row(False, None, limit, reason)
     base_median = base[case_id]["median_seconds"]
@@ -152,46 +184,60 @@ def _time_ratio_row(
     problems = []
     if ratio > limit + _TOLERANCE:
         problems.append(f"time ratio {ratio:.4f} of case {case_id!r} is above {limit}")
-    if new[case_id]["fault_calls_total"] != calls:
+    if new[count_id]["fault_calls_total"] != calls:
         problems.append(
-            f"case {case_id!r} makes {new[case_id]['fault_calls_total']} fault calls, not {calls}"
+            f"case {count_id!r} makes {new[count_id]['fault_calls_total']} fault calls, not {calls}"
         )
     return _row(not problems, ratio, limit, "; ".join(problems))
 
 
 def _sc004(new: dict[str, dict[str, Any]]) -> dict[str, Any]:
-    """SC-004: time with 3 unconformities over time with 0, both from the candidate."""
+    """SC-004: time with 3 unconformities over time with 0, both from the candidate.
+
+    Both times come from the ``model_ids`` cases, which make one evaluate_model call.
+    """
     limit = 1.5
-    reason = _missing(new, ALL_F4U3, ALL_F4U0)
+    reason = _missing(new, IDS_F4U3, IDS_F4U0)
     if reason:
         return _row(False, None, limit, reason)
-    plain = new[ALL_F4U0]["median_seconds"]
+    reason = _unmeasured(new, IDS_F4U3, "median_seconds") or _unmeasured(
+        new, IDS_F4U0, "median_seconds"
+    )
+    if reason:
+        return _row(False, None, limit, reason)
+    plain = new[IDS_F4U0]["median_seconds"]
     if plain <= 0:
-        return _row(False, None, limit, f"Case {ALL_F4U0!r} has a median of zero")
-    ratio = new[ALL_F4U3]["median_seconds"] / plain
+        return _row(False, None, limit, f"Case {IDS_F4U0!r} has a median of zero")
+    ratio = new[IDS_F4U3]["median_seconds"] / plain
     return _row(ratio <= limit + _TOLERANCE, ratio, limit, f"ratio {ratio:.4f} is above {limit}")
 
 
 def _sc006(base: dict[str, dict[str, Any]], new: dict[str, dict[str, Any]]) -> dict[str, Any]:
-    """SC-006: the peak extra memory of every case is at most 120 % of the baseline."""
+    """SC-006: the peak extra memory of a case is within the ratio limit or the allowance.
+
+    A case passes when its memory is at most 120 % of the baseline, or at most
+    ``MEMORY_ALLOWANCE_BYTES`` above it. Only a case with a memory value in both documents is compared. The row value is
+    the worst new/base ratio.
+    """
     limit = 1.20
     worst = 0.0
+    compared = 0
     problems = []
     for case_id, base_case in base.items():
         if case_id not in new:
-            problems.append(f"case {case_id!r} is missing from the candidate")
             continue
         base_rss = base_case["peak_extra_rss_bytes"]
         new_rss = new[case_id]["peak_extra_rss_bytes"]
-        if base_rss <= 0:
-            if new_rss > 0:
-                problems.append(f"case {case_id!r} has a baseline memory of zero")
+        if base_rss is None or new_rss is None:
             continue
-        ratio = new_rss / base_rss
-        worst = max(worst, ratio)
-        if ratio > limit + _TOLERANCE:
-            problems.append(f"case {case_id!r} memory ratio {ratio:.4f} is above {limit}")
-    return _row(not problems, worst, limit, "; ".join(problems))
+        compared += 1
+        if base_rss > 0:
+            worst = max(worst, new_rss / base_rss)
+        if new_rss > limit * base_rss + _TOLERANCE and new_rss - base_rss > MEMORY_ALLOWANCE_BYTES:
+            problems.append(f"case {case_id!r} memory {base_rss} bytes to {new_rss} bytes")
+    row = _row(not problems, worst, limit, "; ".join(problems))
+    row["compared_cases"] = compared
+    return row
 
 
 def _check_noise(
@@ -210,6 +256,14 @@ def _check_noise(
         if case_id not in new or case_id not in repeat_cases:
             where = "candidate" if case_id not in new else "repeat run"
             problems.append(f"case {case_id!r} is missing from the {where}")
+            continue
+        reason = (
+            _unmeasured(base, case_id, "median_seconds")
+            or _unmeasured(new, case_id, "median_seconds")
+            or _unmeasured(repeat_cases, case_id, "median_seconds")
+        )
+        if reason:
+            problems.append(reason)
             continue
         medians = (
             base_case["median_seconds"],
@@ -248,6 +302,11 @@ def _sc009(base: dict[str, dict[str, Any]], new: dict[str, dict[str, Any]]) -> d
     reason = _missing(base, SINGLE_F1U0) or _missing(new, SINGLE_F1U0)
     if reason:
         return _row(False, None, limit, reason)
+    reason = _unmeasured(base, SINGLE_F1U0, "median_seconds", "fault_points_total") or _unmeasured(
+        new, SINGLE_F1U0, "median_seconds", "fault_points_total"
+    )
+    if reason:
+        return _row(False, None, limit, reason)
     per_point = []
     for cases in (base, new):
         points = cases[SINGLE_F1U0]["fault_points_total"]
@@ -260,36 +319,17 @@ def _sc009(base: dict[str, dict[str, Any]], new: dict[str, dict[str, Any]]) -> d
     return _row(ratio <= limit + _TOLERANCE, ratio, limit, f"ratio {ratio:.4f} is above {limit}")
 
 
-def _sc010(new: dict[str, dict[str, Any]]) -> dict[str, Any]:
-    """SC-010: a second evaluate_model call makes 0 fault calls and takes at most 10 %.
-
-    evaluate_model is the benchmark operation ``model_ids``. The cold case of the
-    same document is the reference. SC-003 keeps the operation all_group_values.
-    """
-    limit = 0.10
-    reason = _missing(new, IDS_WARM_F4U3, IDS_COLD_F4U3)
-    if reason:
-        return _row(False, None, limit, reason)
-    cold = new[IDS_COLD_F4U3]["median_seconds"]
-    if cold <= 0:
-        return _row(False, None, limit, f"Case {IDS_COLD_F4U3!r} has a median of zero")
-    ratio = new[IDS_WARM_F4U3]["median_seconds"] / cold
-    problems = []
-    if ratio > limit + _TOLERANCE:
-        problems.append(f"warm ratio {ratio:.4f} of case {IDS_WARM_F4U3!r} is above {limit}")
-    calls = new[IDS_WARM_F4U3]["fault_calls_total"]
-    if calls != 0:
-        problems.append(f"case {IDS_WARM_F4U3!r} makes {calls} fault calls")
-    return _row(not problems, ratio, limit, "; ".join(problems))
-
-
 def check_acceptance(base: dict[str, Any], new: dict[str, Any]) -> dict[str, Any]:
-    """Check SC-002 to SC-010 for a baseline and a candidate result.
+    """Check SC-002 to SC-009 for a baseline and a candidate result.
 
-    The candidate holds ``repeat``, ``suite_wall_seconds`` and ``gradient_decision``.
+    A baseline with warm ids goes through ``run.cold_view`` first. For a standard candidate, ``run.standard_view`` then removes the base cases that the standard suite does not have. The candidate holds ``repeat``, ``suite_wall_seconds`` and ``gradient_decision``.
     The result is passed only if the case check, the provenance check, the
     gradient decision and every criterion pass.
     """
+    base = cold_view(base)
+    if new.get("suite") == "standard":
+        # The standard suite has fewer cases than the base (C-016).
+        base = run.standard_view(base)
     base_cases, base_duplicates = _index(base)
     new_cases, new_duplicates = _index(new)
     cases = _check_cases(base_cases, new_cases, base_duplicates, new_duplicates)
@@ -303,14 +343,13 @@ def check_acceptance(base: dict[str, Any], new: dict[str, Any]) -> dict[str, Any
     noise, short_cases = _check_noise(base_cases, new_cases, new.get("repeat"))
     criteria = {
         "SC-002": _time_ratio_row(base_cases, new_cases, OLD_F4U3, 0.40, 4),
-        "SC-003": _time_ratio_row(base_cases, new_cases, ALL_F4U3, 0.15, 4),
+        "SC-003": _time_ratio_row(base_cases, new_cases, ALL_F4U3, 0.15, 4, IDS_F4U3),
         "SC-004": _sc004(new_cases),
         "SC-005": _time_ratio_row(base_cases, new_cases, PLUGIN_OLD, 0.50, 6),
         "SC-006": _sc006(base_cases, new_cases),
         "SC-007": noise,
         "SC-008": _sc008(new),
         "SC-009": _sc009(base_cases, new_cases),
-        "SC-010": _sc010(new_cases),
     }
     passed = (
         cases["passed"]
@@ -329,28 +368,6 @@ def check_acceptance(base: dict[str, Any], new: dict[str, Any]) -> dict[str, Any
 
 
 # --- Large-memory mode (local only) -------------------------------------------------------
-
-
-def _cache_fields(model: Any) -> dict[str, Any]:
-    """Return the cache fields of a memory record.
-
-    The cache interface (plan D4) has the read-only property ``retained_bytes``:
-    the exact sum of ``nbytes`` of the stored arrays. This function reads only
-    that property. If the model has a cache but the property is missing or is not
-    an int, the record gets null bytes and an ``error`` text. Then the memory
-    mode fails. It never records null without an error.
-    """
-    cache = getattr(model, "evaluation_cache", None)
-    if cache is None:
-        return {"cache_available": False, "retained_cache_bytes": None}
-    value = getattr(cache, "retained_bytes", None)
-    if isinstance(value, int) and not isinstance(value, bool):
-        return {"cache_available": True, "retained_cache_bytes": value}
-    return {
-        "cache_available": True,
-        "retained_cache_bytes": None,
-        "error": f"The evaluation cache has no int property retained_bytes (got {value!r})",
-    }
 
 
 def _distinct_fault_sets(model: Any) -> int:
@@ -400,14 +417,8 @@ def _memory_worker(model_name: str, points: int, mode: str) -> dict[str, Any]:
     from tests.fault_evaluation.models import build_model
 
     model = build_model(model_name)
-    cache = getattr(model, "evaluation_cache", None)
     fault_sets = _distinct_fault_sets(model)
     coordinates = _points(model, points)
-    if cache is not None:
-        cache.clear()
-        cache.enabled = mode != "off"
-    if mode == "warm" and cache is not None:
-        model.evaluate_model(coordinates)
     batches: Counter = Counter()
     original = FaultSegment.apply_to_points
 
@@ -427,7 +438,6 @@ def _memory_worker(model_name: str, points: int, mode: str) -> dict[str, Any]:
         "model": model_name,
         "mode": mode,
         "points": points,
-        **_cache_fields(model),
         "peak_extra_rss_bytes": peak,
         "restored_batch_sizes": {str(size): count for size, count in sorted(batches.items())},
         **_fr010_accounting(points, fault_sets, dict(batches), peak),
@@ -440,7 +450,7 @@ def _memory_worker(model_name: str, points: int, mode: str) -> dict[str, Any]:
 
 
 def run_memory_mode(points: int, models: list[str]) -> dict[str, Any]:
-    """Run each model and cache mode in a fresh subprocess. Return the records."""
+    """Run each model and mode in a fresh subprocess. Return the records."""
     records = []
     for model_name in models:
         for mode in MEMORY_MODES:

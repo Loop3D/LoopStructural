@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import copy
 import importlib
 import json
 import subprocess
@@ -70,7 +71,7 @@ def _tiny_result(pass_kind: str, cases: list[dict]) -> dict:
 
 
 def test_enumeration_is_stable_and_covers_full_matrix_and_addons():
-    """All required models/operations/sizes have cold and warm stable cases."""
+    """All required models/operations/sizes have stable cold cases (D9)."""
     enumerate_cases = _api("benchmarks.fault_evaluation.run", "enumerate_cases")
     cases = enumerate_cases()
     repeated = enumerate_cases()
@@ -92,16 +93,17 @@ def test_enumeration_is_stable_and_covers_full_matrix_and_addons():
         for model in models
         for operation in operations
         for count in sizes
-        for state in ("cold", "warm")
+        for state in ("cold",)
     }
     observed = {(item["model"], item["operation"], item["points"], item["state"]) for item in cases}
     assert required <= observed
     assert {item["model"] for item in cases} == models
 
     for operation in operations:
-        for state in ("cold", "warm"):
-            assert ("plugin", operation, 20_000, state) in observed
-            assert ("f1_u0", operation, 20_000, state) in observed
+        assert ("plugin", operation, 20_000, "cold") in observed
+        assert ("f1_u0", operation, 20_000, "cold") in observed
+    assert {item["state"] for item in cases} == {"cold"}
+    assert len(cases) == 430
 
 
 def test_instrumentation_counts_nested_faults_and_local_fields_and_restores(monkeypatch):
@@ -318,27 +320,25 @@ def test_launcher_builds_fresh_python_pytest_command_without_child_process(monke
     assert "--benchmark-json" in command and "raw.json" in command
 
 
-def test_runner_separates_passes_and_writes_merged_case_metrics(monkeypatch, tmp_path):
-    """Three mocked passes merge into schema output with timing raw statistics."""
+def _tiny_cases(*points: int) -> list[dict]:
+    """Return one cold case for each point count."""
+    return [
+        {
+            "case_id": f"tiny:oldest_value:{count}:cold",
+            "model": "tiny",
+            "operation": "oldest_value",
+            "points": count,
+            "state": "cold",
+        }
+        for count in points
+    ]
+
+
+def _run_main_with_fake_passes(monkeypatch, tmp_path, argv, cases, *, patch="enumerate_cases"):
+    """Run main with fake passes. Return the calls and the merged document."""
     run_main = _api("benchmarks.fault_evaluation.run", "main")
     run_module = importlib.import_module(run_main.__module__)
-    cases = [
-        {
-            "case_id": "tiny:cold",
-            "model": "tiny",
-            "operation": "oldest_value",
-            "points": 2,
-            "state": "cold",
-        },
-        {
-            "case_id": "tiny:warm",
-            "model": "tiny",
-            "operation": "oldest_value",
-            "points": 2,
-            "state": "warm",
-        },
-    ]
-    monkeypatch.setattr(run_module, "enumerate_cases", lambda: cases)
+    monkeypatch.setattr(run_module, patch, lambda: cases)
     calls = []
 
     def fake_pass(pass_kind, selected_cases, *, output_path, rounds):
@@ -350,90 +350,172 @@ def test_runner_separates_passes_and_writes_merged_case_metrics(monkeypatch, tmp
     monkeypatch.setattr(run_module, "_run_fresh_process_pass", fake_pass)
     monkeypatch.setattr(run_module, "_launch_pytest", lambda *args: 0)
     output = tmp_path / "merged.json"
-    assert run_main(["--output", str(output), "--rounds", "2", "--suite", "full"]) == 0
+    assert run_main(["--output", str(output), *argv]) == 0
+    return calls, json.loads(output.read_text(encoding="utf8"))
+
+
+def test_runner_separates_passes_and_writes_merged_case_metrics(monkeypatch, tmp_path):
+    """Three mocked passes merge into schema output with timing raw statistics."""
+    cases = _tiny_cases(2, 3)
+    calls, merged = _run_main_with_fake_passes(
+        monkeypatch, tmp_path, ["--rounds", "2", "--suite", "full"], cases
+    )
+    ids = [case["case_id"] for case in cases]
     assert [call[0] for call in calls] == ["timing", "counters", "rss"]
-    assert all(call[1] == ["tiny:cold", "tiny:warm"] and call[2] == 2 for call in calls)
-    merged = json.loads(output.read_text(encoding="utf8"))
+    assert all(call[1] == ids and call[2] == 2 for call in calls)
     assert merged["schema_version"] == 1
-    assert [row["case_id"] for row in merged["cases"]] == ["tiny:cold", "tiny:warm"]
+    assert merged["suite"] == "full"
+    assert [row["case_id"] for row in merged["cases"]] == ids
     assert all(row["fault_calls_total"] == 2 for row in merged["cases"])
     assert all(row["field_points_total"] == 7 for row in merged["cases"])
     assert all(row["peak_extra_rss_bytes"] == 4096 for row in merged["cases"])
     assert merged["pytest_benchmark"]["raw"]["stats"]["mean"] == 0.015
 
 
-@pytest.mark.parametrize("state,expected_hits,expected_misses", [("cold", 0, 2), ("warm", 2, 0)])
-def test_suite_run_case_controls_warmup_and_cold_cache(state, expected_hits, expected_misses):
-    """The suite case owns pedantic warmup and untimed cache preparation."""
+def test_standard_run_gives_each_pass_its_own_cases_and_merges_missing_as_none(
+    monkeypatch, tmp_path
+):
+    """The counter and memory passes run fewer cases. The merge writes None for the rest (D10)."""
+    cases = _tiny_cases(5_000, 20_000, 50_000, 100_000)
+    calls, merged = _run_main_with_fake_passes(
+        monkeypatch, tmp_path, ["--suite", "standard"], cases, patch="standard_cases"
+    )
+    ids = [case["case_id"] for case in cases]
+    assert [call[:2] for call in calls] == [
+        ("timing", ids),
+        ("counters", ids[:2]),
+        ("rss", ids[:1]),
+    ]
+    assert merged["suite"] == "standard"
+    rows = {row["case_id"]: row for row in merged["cases"]}
+    assert list(rows) == ids
+    counter_fields = _api("benchmarks.fault_evaluation.run", "COUNTER_FIELDS")
+    for case_id in ids[2:]:
+        assert all(rows[case_id][field] is None for field in counter_fields)
+    for case_id in ids[:2]:
+        assert all(rows[case_id][field] is not None for field in counter_fields)
+    for case_id in ids[1:]:
+        assert rows[case_id]["peak_extra_rss_bytes"] is None
+        assert rows[case_id]["rss_unit"] == "bytes"
+    assert rows[ids[0]]["peak_extra_rss_bytes"] == 4096
+
+
+def _valid_cold_result() -> dict:
+    """Return a valid result with one cold case."""
+    tiny = _tiny_result("timing", _tiny_cases(2))
+    tiny.pop("pass")
+    return tiny
+
+
+def test_result_validation_accepts_none_only_for_counters_and_memory():
+    """A case that a pass did not measure has None counters or None memory (D10)."""
+    validate_result = _api("benchmarks.fault_evaluation.run", "validate_result")
+    counter_fields = _api("benchmarks.fault_evaluation.run", "COUNTER_FIELDS")
+    result = _valid_cold_result()
+    validate_result(result)
+    for field in counter_fields:
+        changed = copy.deepcopy(result)
+        changed["cases"][0][field] = None
+        validate_result(changed)
+    changed = copy.deepcopy(result)
+    changed["cases"][0]["peak_extra_rss_bytes"] = None
+    validate_result(changed)
+    changed = copy.deepcopy(result)
+    changed["suite"] = "standard"
+    validate_result(changed)
+    for field in ("median_seconds", "rounds", "input_hash"):
+        changed = copy.deepcopy(result)
+        changed["cases"][0][field] = None
+        with pytest.raises(ValueError, match=field):
+            validate_result(changed)
+
+
+def test_schema_version_and_states_after_d9():
+    """The schema version stays 1. Only the cold state remains."""
+    assert _api("benchmarks.fault_evaluation.run", "SCHEMA_VERSION") == 1
+    assert _api("benchmarks.fault_evaluation.run", "STATES") == ("cold",)
+
+
+def _row_of(case_id: str, **fields) -> dict:
+    """Return a case row that has only the fields that cold_view reads."""
+    model, operation, points, state = case_id.split(":")
+    return {
+        "case_id": case_id,
+        "model": model,
+        "operation": operation,
+        "points": int(points),
+        "state": state,
+        **fields,
+    }
+
+
+def test_cold_view_turns_a_lone_warm_row_into_a_cold_row_and_drops_other_warm_rows():
+    """A warm row with no cold row of the same case becomes cold. Other warm rows go (C-016)."""
+    cold_view = _api("benchmarks.fault_evaluation.run", "cold_view")
+    document = {
+        "schema_version": 1,
+        "cases": [
+            _row_of("a:oldest_value:5000:cold", median_seconds=1.0),
+            _row_of("a:oldest_value:5000:warm", median_seconds=9.0),
+            _row_of("b:oldest_value:5000:warm", median_seconds=2.0),
+            _row_of("c:model_ids:5000:cold", median_seconds=3.0),
+        ],
+        "provenance": {"python": "3.x"},
+    }
+    original = copy.deepcopy(document)
+    view = cold_view(document)
+    assert document == original, "cold_view must return a copy"
+    assert view["provenance"] == document["provenance"]
+    by_id = {row["case_id"]: row for row in view["cases"]}
+    assert set(by_id) == {
+        "a:oldest_value:5000:cold",
+        "b:oldest_value:5000:cold",
+        "c:model_ids:5000:cold",
+    }
+    assert by_id["a:oldest_value:5000:cold"]["median_seconds"] == 1.0
+    assert by_id["b:oldest_value:5000:cold"]["median_seconds"] == 2.0
+    assert {row["state"] for row in view["cases"]} == {"cold"}
+
+
+def test_suite_run_case_makes_only_the_timed_call_and_never_reads_the_cache():
+    """The suite case runs no priming call and no cache clear (D9). Warmup stays 0."""
     run_case = _api("benchmarks.fault_evaluation.bench_cases", "run_case")
-    benchmark = None
+    bench_module = importlib.import_module("benchmarks.fault_evaluation.bench_cases")
+    events = []
 
     class FakeModel:
-        def __init__(self):
-            self.cached = False
-            self.hits = 0
-            self.misses = 0
-            self.warm_primes = 0
-            self.evaluation_cache = FakeCache(self)
-
-        def evaluate_model(self, points):
-            return self._evaluate(points)
-
-        def _evaluate(self, points):
-            if not benchmark.in_timing:
-                assert state == "warm", "cold targets must not receive untimed warmup calls"
-                assert self.warm_primes < 2, "warm setup should prime once before each timed round"
-                self.warm_primes += 1
-            else:
-                if self.cached:
-                    self.hits += 1
-                else:
-                    self.misses += 1
-            self.cached = True
-            return np.zeros(len(points))
-
-    class FakeCache:
-        def __init__(self, model):
-            self.model = model
-
-        def clear(self):
-            assert not benchmark.in_timing
-            self.model.cached = False
-
-    model = FakeModel()
-    points = np.zeros((2, 3))
+        @property
+        def evaluation_cache(self):
+            raise AssertionError("run_case must not read evaluation_cache")
 
     class TinyBenchmark:
         def __init__(self):
-            self.in_timing = False
             self.extra_info = {}
 
         def pedantic(self, function, *, setup, rounds, warmup_rounds):
-            benchmark.in_timing = False
             self.warmup_rounds = warmup_rounds
             self.rounds = rounds
             for _ in range(rounds):
                 setup()
-                self.in_timing = True
-                try:
-                    function()
-                finally:
-                    self.in_timing = False
+                function()
 
-    benchmark = TinyBenchmark()
-    case = {
-        "case_id": f"tiny:{state}",
-        "model": "tiny",
-        "state": state,
-        "operation": "model_ids",
-        "points": 2,
-    }
-    run_case(benchmark, model, points, case, rounds=2)
+    original = bench_module._OPERATIONS["model_ids"]
+    bench_module._OPERATIONS["model_ids"] = lambda model, points: events.append("timed")
+    try:
+        benchmark = TinyBenchmark()
+        case = {
+            "case_id": "tiny:model_ids:2:cold",
+            "model": "tiny",
+            "state": "cold",
+            "operation": "model_ids",
+            "points": 2,
+        }
+        run_case(benchmark, FakeModel(), np.zeros((2, 3)), case, rounds=2)
+    finally:
+        bench_module._OPERATIONS["model_ids"] = original
     assert benchmark.warmup_rounds == 0
     assert benchmark.rounds == 2
-    assert model.warm_primes == (2 if state == "warm" else 0)
-    assert model.hits == expected_hits
-    assert model.misses == expected_misses
+    assert events == ["timed", "timed"]
 
 
 def test_rss_conversion_normalizes_supported_native_units_to_bytes():

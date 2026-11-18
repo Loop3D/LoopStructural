@@ -33,7 +33,7 @@ classifiers = [
     'Programming Language :: Python :: 3.12',
 ]
 dependencies = [
-    "loop-common>=0.1.0,<0.2.0",
+    "loop-common>=0.1.1,<0.2.0",
     "loop-interpolation>=0.2.0,<0.3.0",
     "numpy>=1.18",
     "pandas",
@@ -68,6 +68,9 @@ docs = [
     "sphinxcontrib-bibtex",
     "myst-parser",
     "sphinx-design",
+    "trame",
+    "trame-vtk",
+    "trame-vuetify",
 ]
 [project.urls]
 Documentation = 'https://Loop3d.org/LoopStructural/'

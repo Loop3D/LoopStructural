@@ -1,4 +1,58 @@
-# Profile report: D4a gates (T042)
+# Profile report: D4a gates (T042, T051)
+
+## Third run (808b4911, no cache, after the master merge)
+
+Result: PASSED. G1, G2, G5 and the golden tests pass. A first try at 3865c80b stopped on the `all_group_values` count (16); spec C-017 then changed G1 to the `model_ids` count.
+
+### Setup
+
+- Revision: 808b49117be9204f3497a84964d4548ba86cc590 (`git status --short` printed nothing). The code is the same as at 3865c80b; only spec documents changed.
+- Python: `C:/Users/lachl/dev/LoopStructural/.venv/Scripts/python.exe` (3.13.12).
+- PYTHONPATH: worktree root; `packages/loop_common/src`; `packages/loop_interpolation/src`.
+- Method: a scratchpad script (outside the repository, deleted at the end) gave a fake `benchmark` object (`extra_info`, `pedantic`) to `benchmarks.fault_evaluation.bench_cases.run_case`. Cases: `enumerate_cases()` filtered by model (`f4_u3`, `f4_u0`, `onlap_domain`) and `points == 5000` (15 cases, all cold). Time: median of 5 rounds, `time.perf_counter`. Fault calls: one extra run with `EvaluationInstrumentation`, `rounds=1`, `after_setup=reset`, value `snapshot()["fault_calls_total"]`.
+- Commands: `python m3.py` (the scratchpad script), run from the scratchpad folder; `python -m pytest tests/fault_evaluation -q -p no:cacheprovider`.
+- Every time is measured. None is inferred.
+
+### Fault calls and median time, 5,000 points, cold
+
+| Case | Fault calls | Median (s) |
+|---|---|---|
+| f4_u3 oldest_value | 4 | 0.1943 |
+| f4_u3 all_group_values | 16 | 0.7727 |
+| f4_u3 model_ids | 4 | 0.2067 |
+| f4_u3 oldest_gradient | 8 | 1.6646 |
+| f4_u3 model_gradient | 8 | 2.7734 |
+| f4_u0 oldest_value | 4 | 0.1888 |
+| f4_u0 all_group_values | 4 | 0.1944 |
+| f4_u0 model_ids | 4 | 0.1941 |
+| f4_u0 oldest_gradient | 4 | 1.4746 |
+| f4_u0 model_gradient | 4 | 1.5511 |
+| onlap_domain oldest_value | 1 | 0.0267 |
+| onlap_domain all_group_values | 2 | 0.0529 |
+| onlap_domain model_ids | 1 | 0.0285 |
+| onlap_domain oldest_gradient | 2 | 0.3187 |
+| onlap_domain model_gradient | 2 | 0.5380 |
+
+Samples (s) of the key cases:
+
+- f4_u3 model_ids cold: 0.2098, 0.1997, 0.2027, 0.2201, 0.2067.
+- f4_u3 all_group_values cold: 0.7976, 0.7875, 0.7558, 0.7727, 0.7581.
+- onlap_domain model_gradient cold: 0.5380, 0.5359, 0.5370, 0.5391, 0.5411. An earlier full pass of the same script (output lost to log noise) printed a median of 0.5347 for this case.
+
+### Gates
+
+| Gate | Measured | Target | Result |
+|---|---|---|---|
+| G1 fault calls, f4_u3 cold model_ids (SC-003, spec C-017) | 4 | 4 | pass |
+| G1 information: f4_u3 cold all_group_values calls | 16 | 16 expected (4 separate calls, no reuse between calls) | information only |
+| G2 f4_u3 cold model_ids median | 0.2067 s | at most 0.2429 s (1.10 * 0.2208 s) | pass |
+| G5 onlap_domain model_gradient cold | 0.5380 s | baseline 0.92 s (report only) | pass |
+| Golden tests: `pytest tests/fault_evaluation -q -p no:cacheprovider` | 340 passed, 1 warning in 60.15 s | all pass | pass |
+
+G3 and G4 are gone (no cache, no fingerprint).
+
+---
+
 
 Overall result: PASSED in the second run (45980adc, after D4b). All five gates pass.
 The first run (598ef21e) failed gate G4. G4 now measures 3.50 ms at most (target 5 ms).

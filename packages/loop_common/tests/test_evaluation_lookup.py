@@ -14,7 +14,8 @@ exactly equal.
 
 import numpy as np
 import pytest
-from loop_common.supports import StructuredGrid
+from loop_common.geometry import StructuredGrid3DGeometry
+from loop_common.supports import RectilinearGrid, StructuredGrid
 
 RTOL = 1e-13
 ATOL = 1e-14
@@ -421,13 +422,13 @@ def test_evaluate_in_tolerance_band_matches_reference(clip_grid):
 @pytest.fixture
 def cell_index_counter(monkeypatch):
     calls = []
-    original = StructuredGrid.position_to_cell_index
+    original = StructuredGrid3DGeometry.position_to_cell_index
 
     def counting(self, pos):
         calls.append(np.shape(pos))
         return original(self, pos)
 
-    monkeypatch.setattr(StructuredGrid, "position_to_cell_index", counting)
+    monkeypatch.setattr(StructuredGrid3DGeometry, "position_to_cell_index", counting)
     return calls
 
 
@@ -453,3 +454,23 @@ def test_lookup_points_uses_one_cell_index_lookup(cell_index_counter):
     grid = _make_grid("non_unit")
     grid._lookup_points(_points(grid)["mixed"])
     assert len(cell_index_counter) == 1
+
+
+def test_lookup_value_matches_master_path_for_multi_column_property(grid, pts):
+    # A (n_nodes, 3) property array gives the same values on the fast path
+    # and on the master path (cell corners and DOF coefficients).
+    rng = np.random.default_rng(7)
+    property_array = rng.random((int(grid.n_nodes), 3))
+    fast = grid.evaluate_value(pts, property_array)
+    idc, inside = grid.position_to_cell_corners(pts)
+    coefs = grid.position_to_dof_coefs(pts[inside, :])
+    master = grid._values_from_coefficients(idc, inside, coefs, property_array)
+    assert fast.shape == (pts.shape[0], 3)
+    np.testing.assert_allclose(fast, master, rtol=RTOL, atol=ATOL, equal_nan=True)
+
+
+def test_rectilinear_grid_uses_the_master_path():
+    grid = RectilinearGrid(
+        np.array([0.0, 1.0, 3.0]), np.array([0.0, 2.0, 3.0]), np.array([0.0, 1.0, 5.0])
+    )
+    assert grid._has_uniform_lookup() is False

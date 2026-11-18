@@ -86,80 +86,6 @@ class StructuredGrid(BaseStructuredSupport):
             + self.step_vector[None, :] * 0.5
         )
 
-    def trilinear(self, local_coords):
-        """
-        Returns the trilinear interpolation for the local coordinates
-
-        Parameters
-        ----------
-        x - double, array of doubles
-        y - double, array of doubles
-        z - double, array of doubles
-
-        Returns
-        -------
-        array of interpolation coefficients
-
-        """
-        interpolant = np.zeros((local_coords.shape[0], 8), dtype=np.float64)
-        # interpolant[:,0] = (1 - local_coords[:, 0])* (1 - local_coords[:, 1])* (1 - local_coords[:, 2])
-        # interpolant[:,1] = local_coords[:, 0]* (1 - local_coords[:, 1])* (1 - local_coords[:, 2])
-        # interpolant[:,2] = (1 - local_coords[:, 0])* local_coords[:, 1]* (1 - local_coords[:, 2])
-        # interpolant[:,3] = (1 - local_coords[:, 0])* (1 - local_coords[:, 1])* local_coords[:, 2]
-        # interpolant[:,4] = local_coords[:, 0] * (1 - local_coords[:, 1]) * local_coords[:, 2]
-        # interpolant[:,5] = (1 - local_coords[:, 0]) * local_coords[:, 1] * local_coords[:, 2]
-        # interpolant[:,6] = local_coords[:, 0] * local_coords[:, 1] * (1 - local_coords[:, 2])
-        # interpolant[:,7] =  local_coords[:, 0] * local_coords[:, 1] * local_coords[:, 2]
-        interpolant[:, 0] = (
-            (1 - local_coords[:, 0]) * (1 - local_coords[:, 1]) * (1 - local_coords[:, 2])
-        )
-        interpolant[:, 1] = local_coords[:, 0] * (1 - local_coords[:, 1]) * (1 - local_coords[:, 2])
-        interpolant[:, 2] = (1 - local_coords[:, 0]) * local_coords[:, 1] * (1 - local_coords[:, 2])
-        interpolant[:, 4] = (1 - local_coords[:, 0]) * (1 - local_coords[:, 1]) * local_coords[:, 2]
-        interpolant[:, 5] = local_coords[:, 0] * (1 - local_coords[:, 1]) * local_coords[:, 2]
-        interpolant[:, 6] = (1 - local_coords[:, 0]) * local_coords[:, 1] * local_coords[:, 2]
-        interpolant[:, 3] = local_coords[:, 0] * local_coords[:, 1] * (1 - local_coords[:, 2])
-        interpolant[:, 7] = local_coords[:, 0] * local_coords[:, 1] * local_coords[:, 2]
-        return interpolant
-
-    def position_to_local_coordinates(self, pos):
-        """
-        Convert from global to local coordinates within a cel
-
-        Parameters
-        ----------
-        pos - array of positions inside
-
-        Returns
-        -------
-        localx, localy, localz
-
-        """
-        pos = self.check_position(pos)
-        cell_indexes, _inside = self.position_to_cell_index(pos)
-
-        # Use cell origin (not modulo) so points on max faces/vertices map to local=1.
-        cell_origin = self.origin[None, :] + self.step_vector[None, :] * cell_indexes
-        local_coords = (pos - cell_origin) / self.step_vector[None, :]
-        local_coords = np.clip(local_coords, 0.0, 1.0)
-        return local_coords
-
-    def position_to_dof_coefs(self, pos):
-        """
-        Global posotion to interpolation coefficients
-
-        Parameters
-        ----------
-        pos
-
-        Returns
-        -------
-
-        """
-        local_coords = self.position_to_local_coordinates(pos)
-        weights = self.trilinear(local_coords)
-        return weights
-
     def neighbour_global_indexes(self, mask=None, **kwargs):
         """
         Get neighbour indexes
@@ -291,69 +217,6 @@ class StructuredGrid(BaseStructuredSupport):
             + self.nsteps[0, None, None] * self.nsteps[1, None, None] * neighbours[2, :, :]
         ).astype(np.int64)
 
-    def evaluate_value(self, evaluation_points, property_array):
-        """
-        Evaluate the value of of the property at the locations.
-        Trilinear interpolation dot corner values
-
-        Parameters
-        ----------
-        evaluation_points np array of locations
-        property_name string of property name
-
-        Returns
-        -------
-
-        """
-        if property_array.shape[0] != self.n_nodes:
-            logger.error("Property array does not match grid")
-            raise ValueError(
-                f"cannot assign {property_array.shape[0]} vlaues to array of shape {self.n_nodes}"
-            )
-        if self._has_uniform_lookup():
-            idc, inside, local_coords = self._lookup_points(evaluation_points)
-            coefs = self.trilinear(local_coords[inside, :])
-        else:
-            idc, inside = self.position_to_cell_corners(evaluation_points)
-            coefs = self.position_to_dof_coefs(evaluation_points[inside, :])
-        return self._values_from_coefficients(idc, inside, coefs, property_array)
-
-    @staticmethod
-    def _values_from_coefficients(idc, inside, coefs, property_array):
-        """Sum the corner values of the cells, weighted by the coefficients.
-
-        Parameters
-        ----------
-        idc : np.array((N,8),dtype=int)
-            corner node indexes of the cells
-        inside : np.array((N,),dtype=bool)
-            true for each point that is inside the grid
-        coefs : np.array((M,8),dtype=float)
-            trilinear coefficients of the M points that are inside
-        property_array : np.array
-            node values
-
-        Returns
-        -------
-        np.array((N,),dtype=float)
-            values, NaN for the points that are outside
-        """
-        v = np.zeros(idc.shape)
-        v[:, :] = np.nan
-        v[inside, :] = coefs
-        v[inside, :] *= property_array[idc[inside, :]]
-        return np.sum(v, axis=1)
-
-    def _evaluate_value_from_lookup(self, lookup, property_array):
-        """Get the values from the result of _lookup_points.
-
-        The result is the same as the result of evaluate_value for the
-        points of the lookup. The cell search is not repeated.
-        """
-        idc, inside, local_coords = lookup
-        coefs = self.trilinear(local_coords[inside, :])
-        return self._values_from_coefficients(idc, inside, coefs, property_array)
-
     def _evaluate_gradient_from_lookup(self, lookup, property_array):
         """Get the gradients from the result of _lookup_points.
 
@@ -452,53 +315,22 @@ class StructuredGrid(BaseStructuredSupport):
             ]
         ).T
 
-    def _has_uniform_lookup(self):
+    def _has_uniform_lookup(self) -> bool:
         """Check that the cell geometry is the uniform geometry of this class.
 
         A subclass with its own local coordinates (for example a grid with
         different cell sizes) cannot use _lookup_points and _gradient_weights.
-        """
-        cls = type(self)
-        return (
-            cls.position_to_local_coordinates is StructuredGrid.position_to_local_coordinates
-            and cls.get_element_gradient_for_location
-            is StructuredGrid.get_element_gradient_for_location
-            and cls.position_to_cell_corners is StructuredGrid.position_to_cell_corners
-        )
-
-    def _lookup_points(self, pos):
-        """Find the cell, the corner nodes and the local coordinates of points.
-
-        The cell index is found one time for all points.
-
-        Parameters
-        ----------
-        pos : np.array((N,3),dtype=float)
-            locations
 
         Returns
         -------
-        corners, inside, local_coords
-            corners is an integer (N,8) array of node indexes, with -1 in each
-            row of a point that is outside. inside is a boolean (N,) array.
-            local_coords is a float (N,3) array in the range 0 to 1. Rows of
-            points that are outside use the cell with index 0.
+        bool
+            True when the value lookup and the gradient weights are not overridden.
         """
-        pos = self.check_position(pos)
-        cell_indexes, inside = self.position_to_cell_index(pos)
-        nx, ny = self.nsteps[0], self.nsteps[1]
-        offsets = np.array(
-            [0, 1, nx, nx + 1, nx * ny, nx * ny + 1, nx * ny + nx, nx * ny + nx + 1],
-            dtype=np.intp,
+        return (
+            super()._has_uniform_lookup()
+            and type(self).get_element_gradient_for_location
+            is StructuredGrid.get_element_gradient_for_location
         )
-        g = cell_indexes[:, 0] + nx * cell_indexes[:, 1] + nx * ny * cell_indexes[:, 2]
-        corners = g[:, None] + offsets[None, :]
-        corners[~inside] = -1
-        # Use cell origin (not modulo) so points on max faces/vertices map to local=1.
-        cell_origin = self.origin[None, :] + self.step_vector[None, :] * cell_indexes
-        local_coords = (pos - cell_origin) / self.step_vector[None, :]
-        local_coords = np.clip(local_coords, 0.0, 1.0)
-        return corners, inside, local_coords
 
     def _gradient_weights(self, local_coords):
         """Get the gradient weights of the 8 corner nodes of a cell.

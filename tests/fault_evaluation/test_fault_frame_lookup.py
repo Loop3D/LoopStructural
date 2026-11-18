@@ -67,11 +67,8 @@ def _fault_by_name(model, name):
 
 
 def _build(name="f1_u0", fault_name=None):
-    """Return a model and one of its faults. The persistent cache is off."""
+    """Return a model and one of its faults."""
     model = build_model(name)
-    cache = getattr(model, "evaluation_cache", None)
-    if cache is not None:
-        cache.enabled = False
     fault = _fault_by_name(model, fault_name) if fault_name else _fault_of(model)
     return model, fault
 

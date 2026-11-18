@@ -1,4 +1,4 @@
-"""Tests for the standard and full benchmark suites and the warm priming rule.
+"""Tests for the standard and full benchmark suites and the pass case rules (D9, D10).
 
 No test runs a real model or a real benchmark.
 """
@@ -6,7 +6,6 @@ No test runs a real model or a real benchmark.
 from __future__ import annotations
 
 import importlib
-from types import SimpleNamespace
 
 import pytest
 
@@ -46,22 +45,23 @@ def _ids(cases: list[dict]) -> list[str]:
     return [case["case_id"] for case in cases]
 
 
-def test_full_suite_has_860_cases():
-    """enumerate_cases keeps its name and returns the full suite."""
+def test_full_suite_has_430_cold_cases():
+    """enumerate_cases keeps its name and returns the full suite. Only the cold state remains."""
     cases = run_module.enumerate_cases()
-    assert len(cases) == 860
+    assert len(cases) == 430
+    assert {case["state"] for case in cases} == {"cold"}
     assert {case["points"] for case in cases} == {5_000, 20_000, 50_000, 100_000, 500_000}
 
 
 def test_standard_suite_counts():
-    """The standard suite has 254 cases: 210 small, 20 extra and 24 large."""
+    """The standard suite has 131 cases: 105 small, 10 extra and 16 large."""
     cases = _api("standard_cases")()
-    assert len(cases) == 254
+    assert len(cases) == 131
     by_size = {}
     for case in cases:
         by_size[case["points"]] = by_size.get(case["points"], 0) + 1
-    assert by_size == {5_000: 210, 20_000: 20, 50_000: 12, 100_000: 12}
-    assert len(_api("STANDARD_LARGE_CASES")) == 24
+    assert by_size == {5_000: 105, 20_000: 10, 50_000: 9, 100_000: 7}
+    assert len(_api("STANDARD_LARGE_CASES")) == 16
 
 
 def test_standard_ids_are_in_full_list_in_same_order():
@@ -78,7 +78,7 @@ def test_standard_ids_are_in_full_list_in_same_order():
 
 
 def test_large_cases_use_only_the_allowed_models_and_literal_ids():
-    """The 24 large ids use the 11 chosen models and are stored as literal text."""
+    """The 16 large ids use the 11 chosen models and are stored as literal text."""
     large = list(_api("STANDARD_LARGE_CASES"))
     assert all(isinstance(case_id, str) for case_id in large)
     full = {case["case_id"]: case for case in run_module.enumerate_cases()}
@@ -99,7 +99,7 @@ def test_standard_suite_contains_the_acceptance_cases():
         f"{model}:{operation}:{points}:{state}"
         for model, points in targets
         for operation in OPERATIONS
-        for state in ("cold", "warm")
+        for state in ("cold",)
     }
     assert wanted <= standard
 
@@ -111,6 +111,84 @@ def test_select_cases_names():
     assert _ids(select_cases("full")) == _ids(run_module.enumerate_cases())
     with pytest.raises(ValueError):
         select_cases("other")
+
+
+EXPECTED_LARGE_CASES = (
+    "f0_u0:all_group_values:100000:cold",
+    "f0_u1:oldest_value:100000:cold",
+    "f0_u1:model_ids:50000:cold",
+    "f0_u2:oldest_value:50000:cold",
+    "f0_u3:model_ids:100000:cold",
+    "f1_u0:all_group_values:100000:cold",
+    "f1_u1:oldest_value:50000:cold",
+    "f1_u2:oldest_value:100000:cold",
+    "f1_u2:oldest_gradient:50000:cold",
+    "f1_u3:oldest_value:50000:cold",
+    "f1_u3:all_group_values:100000:cold",
+    "stopped_fault:model_ids:50000:cold",
+    "stopped_fault:oldest_gradient:50000:cold",
+    "onlap_domain:model_ids:50000:cold",
+    "faulted_fold:oldest_value:50000:cold",
+    "faulted_fold:all_group_values:100000:cold",
+)
+
+
+def test_states_are_only_cold():
+    """The benchmark has no warm state (D9)."""
+    assert _api("STATES") == ("cold",)
+
+
+def test_large_cases_are_the_16_ids_of_plan_d9_in_order():
+    """STANDARD_LARGE_CASES is the literal list of plan D9."""
+    assert tuple(_api("STANDARD_LARGE_CASES")) == EXPECTED_LARGE_CASES
+
+
+def test_standard_suite_has_no_onlap_gradient_case_at_100000_points():
+    """The five gradient cases at 100,000 points are not in the standard list."""
+    standard = _ids(_api("standard_cases")())
+    assert not [
+        case_id
+        for case_id in standard
+        if case_id.startswith("onlap_domain:") and ":100000:" in case_id and "gradient" in case_id
+    ]
+
+
+def test_pass_points_table():
+    """Timing runs all cases. Counters run 5,000 and 20,000 points. Memory runs 5,000."""
+    assert _api("PASS_POINTS") == {"timing": None, "counters": (5_000, 20_000), "rss": (5_000,)}
+
+
+def _sized_cases() -> list[dict]:
+    return [
+        {"case_id": f"m:oldest_value:{points}:cold", "points": points}
+        for points in (5_000, 20_000, 50_000, 100_000, 500_000)
+    ]
+
+
+def test_pass_cases_full_gives_all_cases_for_every_pass():
+    """The full suite runs each pass on every case."""
+    pass_cases = _api("pass_cases")
+    cases = _sized_cases()
+    for pass_kind in ("timing", "counters", "rss"):
+        assert pass_cases(cases, pass_kind, "full") == cases
+
+
+def test_pass_cases_standard_filters_by_points():
+    """The standard suite filters the counter and memory passes by point count."""
+    pass_cases = _api("pass_cases")
+    cases = _sized_cases()
+    assert pass_cases(cases, "timing", "standard") == cases
+    assert [case["points"] for case in pass_cases(cases, "counters", "standard")] == [5_000, 20_000]
+    assert [case["points"] for case in pass_cases(cases, "rss", "standard")] == [5_000]
+
+
+def test_pass_cases_rejects_unknown_pass_and_suite():
+    """An unknown pass or suite name raises ValueError."""
+    pass_cases = _api("pass_cases")
+    with pytest.raises(ValueError):
+        pass_cases(_sized_cases(), "other", "standard")
+    with pytest.raises(ValueError):
+        pass_cases(_sized_cases(), "timing", "other")
 
 
 def _first_pass_ids(monkeypatch, tmp_path, extra_argv):
@@ -170,40 +248,22 @@ class _FakeBenchmark:
             call()
 
 
-class _FakeCache:
-    def __init__(self, events):
-        self.events = events
+class _NoCacheRead:
+    """A model that fails the test if run_case reads its evaluation cache."""
 
-    def clear(self):
-        self.events.append("clear")
+    @property
+    def evaluation_cache(self):
+        raise AssertionError("run_case must not read evaluation_cache (D9)")
 
 
-def _run_fake_case(monkeypatch, state, *, with_cache, rounds=3):
-    """Run one fake case. Return the list of cache clears and operation calls."""
+def test_run_case_never_primes_and_never_reads_the_cache(monkeypatch):
+    """A case makes one timed call in each round. It never clears or primes a cache."""
     events = []
-    model = SimpleNamespace()
-    if with_cache:
-        model.evaluation_cache = _FakeCache(events)
     monkeypatch.setitem(
         bench_module._OPERATIONS, "oldest_value", lambda model, points: events.append("call")
     )
-    case = {"operation": "oldest_value", "state": state}
-    bench_module.run_case(_FakeBenchmark(), model, None, case, rounds=rounds)
-    return events
-
-
-def test_warm_case_without_cache_makes_no_priming_call(monkeypatch):
-    """A model with no evaluation_cache has nothing to fill: one call in each round."""
-    assert _run_fake_case(monkeypatch, "warm", with_cache=False) == ["call"] * 3
-
-
-def test_warm_case_with_cache_primes_after_each_clear(monkeypatch):
-    """A model with a cache is cleared and primed once in each round, then timed."""
-    events = _run_fake_case(monkeypatch, "warm", with_cache=True)
-    assert events == ["clear", "call", "call"] * 3
-
-
-def test_cold_case_clears_the_cache_and_never_primes(monkeypatch):
-    """A cold case clears the cache in each round and makes only the timed call."""
-    assert _run_fake_case(monkeypatch, "cold", with_cache=True) == ["clear", "call"] * 3
-    assert _run_fake_case(monkeypatch, "cold", with_cache=False) == ["call"] * 3
+    for state in ("cold", "warm"):
+        events.clear()
+        case = {"operation": "oldest_value", "state": state}
+        bench_module.run_case(_FakeBenchmark(), _NoCacheRead(), None, case, rounds=3)
+        assert events == ["call"] * 3, state
