@@ -45,6 +45,9 @@ _TOLERANCE = 1e-9
 OLD_F4U3 = "f4_u3:oldest_value:5000:cold"
 ALL_F4U3 = "f4_u3:all_group_values:5000:cold"
 ALL_F4U0 = "f4_u0:all_group_values:5000:cold"
+# SC-003 count and SC-004 use one evaluate_model call with model_ids (spec C-017).
+IDS_F4U3 = "f4_u3:model_ids:5000:cold"
+IDS_F4U0 = "f4_u0:model_ids:5000:cold"
 PLUGIN_OLD = "plugin:oldest_value:20000:cold"
 SINGLE_F1U0 = "f1_u0:oldest_value:20000:cold"
 # The pass that measures each field. A value of None means that the pass did not run the case.
@@ -156,13 +159,21 @@ def _time_ratio_row(
     case_id: str,
     limit: float,
     calls: int,
+    count_case_id: str | None = None,
 ) -> dict[str, Any]:
-    """Check time ratio against the baseline and the exact count of fault calls."""
-    reason = _missing(base, case_id) or _missing(new, case_id)
+    """Check time ratio against the baseline and the exact count of fault calls.
+
+    The time ratio reads ``case_id``. The count of fault calls reads
+    ``count_case_id`` when it is given, and ``case_id`` if not.
+    """
+    count_id = count_case_id or case_id
+    reason = _missing(base, case_id) or _missing(new, case_id, count_id)
     if reason:
         return _row(False, None, limit, reason)
-    reason = _unmeasured(base, case_id, "median_seconds") or _unmeasured(
-        new, case_id, "median_seconds", "fault_calls_total"
+    reason = (
+        _unmeasured(base, case_id, "median_seconds")
+        or _unmeasured(new, case_id, "median_seconds")
+        or _unmeasured(new, count_id, "fault_calls_total")
     )
     if reason:
         return _row(False, None, limit, reason)
@@ -173,28 +184,31 @@ def _time_ratio_row(
     problems = []
     if ratio > limit + _TOLERANCE:
         problems.append(f"time ratio {ratio:.4f} of case {case_id!r} is above {limit}")
-    if new[case_id]["fault_calls_total"] != calls:
+    if new[count_id]["fault_calls_total"] != calls:
         problems.append(
-            f"case {case_id!r} makes {new[case_id]['fault_calls_total']} fault calls, not {calls}"
+            f"case {count_id!r} makes {new[count_id]['fault_calls_total']} fault calls, not {calls}"
         )
     return _row(not problems, ratio, limit, "; ".join(problems))
 
 
 def _sc004(new: dict[str, dict[str, Any]]) -> dict[str, Any]:
-    """SC-004: time with 3 unconformities over time with 0, both from the candidate."""
+    """SC-004: time with 3 unconformities over time with 0, both from the candidate.
+
+    Both times come from the ``model_ids`` cases, which make one evaluate_model call.
+    """
     limit = 1.5
-    reason = _missing(new, ALL_F4U3, ALL_F4U0)
+    reason = _missing(new, IDS_F4U3, IDS_F4U0)
     if reason:
         return _row(False, None, limit, reason)
-    reason = _unmeasured(new, ALL_F4U3, "median_seconds") or _unmeasured(
-        new, ALL_F4U0, "median_seconds"
+    reason = _unmeasured(new, IDS_F4U3, "median_seconds") or _unmeasured(
+        new, IDS_F4U0, "median_seconds"
     )
     if reason:
         return _row(False, None, limit, reason)
-    plain = new[ALL_F4U0]["median_seconds"]
+    plain = new[IDS_F4U0]["median_seconds"]
     if plain <= 0:
-        return _row(False, None, limit, f"Case {ALL_F4U0!r} has a median of zero")
-    ratio = new[ALL_F4U3]["median_seconds"] / plain
+        return _row(False, None, limit, f"Case {IDS_F4U0!r} has a median of zero")
+    ratio = new[IDS_F4U3]["median_seconds"] / plain
     return _row(ratio <= limit + _TOLERANCE, ratio, limit, f"ratio {ratio:.4f} is above {limit}")
 
 
@@ -329,7 +343,7 @@ def check_acceptance(base: dict[str, Any], new: dict[str, Any]) -> dict[str, Any
     noise, short_cases = _check_noise(base_cases, new_cases, new.get("repeat"))
     criteria = {
         "SC-002": _time_ratio_row(base_cases, new_cases, OLD_F4U3, 0.40, 4),
-        "SC-003": _time_ratio_row(base_cases, new_cases, ALL_F4U3, 0.15, 4),
+        "SC-003": _time_ratio_row(base_cases, new_cases, ALL_F4U3, 0.15, 4, IDS_F4U3),
         "SC-004": _sc004(new_cases),
         "SC-005": _time_ratio_row(base_cases, new_cases, PLUGIN_OLD, 0.50, 6),
         "SC-006": _sc006(base_cases, new_cases),

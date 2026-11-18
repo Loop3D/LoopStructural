@@ -120,7 +120,16 @@
         "T052"
       ],
       "base": "3865c80b722dcf7ac8f3b9449ef76723bf8e246f",
-      "commit_T051": "f446cbf0a1b8f6b566fb607fca2f65265426b3b9"
+      "commit_T051": "f446cbf0a1b8f6b566fb607fca2f65265426b3b9",
+      "commit": "d0ffb0993beb65508990fe2916488076bc36490f",
+      "review": "pass (sonnet), 2 minor"
+    },
+    {
+      "wave": 37,
+      "tasks": [
+        "T053"
+      ],
+      "base": "d0ffb0993beb65508990fe2916488076bc36490f"
     }
   ],
   "runs": {
@@ -225,10 +234,16 @@
         "model": "sonnet",
         "result": "pass: 9 red (3 changed, 6 new SC-003/SC-004 tests) for the expected reason; 46 pass"
       }
+    ],
+    "T053": [
+      {
+        "model": "sonnet",
+        "result": "pass: 347 passed in 64 s; ruff clean"
+      }
     ]
   },
   "findings": {
-    "found": 14,
+    "found": 16,
     "rejected": 2,
     "dropped": 0,
     "fixed": 2,
@@ -243,7 +258,9 @@
       "T049 validate_result has no negative test for rss_unit None; no test that _memory_worker and _cache_fields lose their cache lines",
       "T047 test_memory.py has no peak-memory bound test for one evaluate_model call (FR-010)",
       "T048 _evaluation.py module docstring: one long, slightly redundant line after the reword",
-      "T050 cold_view lives in run.py, which imports tests.fault_evaluation.models; acceptance and compare (warm base) need the tests package on the path"
+      "T050 cold_view lives in run.py, which imports tests.fault_evaluation.models; acceptance and compare (warm base) need the tests package on the path",
+      "T052 test_acceptance.py:55 base f4_u0 model_ids is 1.2 s (real 0.48 s) to stay out of the SC-007 short set",
+      "T052 no test of a model_ids count of 3"
     ]
   },
   "resumed": "2026-11-04: resumed after the D4b replan (465688ec). tests/fault_evaluation baseline: 550 passed in 89 s.",
