@@ -1,7 +1,7 @@
 # Tasks: Faster evaluation of faulted models
 
 **Input**: spec.md and plan.md in `specs/003-fault-evaluation-performance/`
-**State**: Replanned 2026-11-18 for the reduced scope (spec C-012 to C-016, plan D7 to D11). T001-T029 and T033-T045 are done. Next: T046 (merge master), then T047 and T049, then T048, T050, T051. T030 then runs again, with no block.
+**State**: Replanned 2026-11-18 for the reduced scope (spec C-012 to C-017, plan D7 to D11). T001-T029 and T033-T053 are done. T030 is parked (OP6: it needs a quiet computer); T031 and T032 wait for it.
 
 ## Orchestrator notes
 
@@ -291,6 +291,7 @@
   - Files: `specs/003-fault-evaluation-performance/candidate.json`, `specs/003-fault-evaluation-performance/candidate_repeat.json`, `specs/003-fault-evaluation-performance/acceptance.json`, `specs/003-fault-evaluation-performance/measurements.md`
   - Needs: T027, T029, T042, T043, T051, T053
   - Wave: 38
+  - Blocked by: OP6
   - Done when: The acceptance command exits 0 for every SC, all golden tests pass under 120 seconds, and measurements.md records the 10-million-point memory result.
 
 - [ ] T031 [Finish] [M] Document cache controls, benchmark workflow and achieved limits.
@@ -587,4 +588,4 @@ unaffected baselines fixed; compare equivalent correctness and run provenance.
 
 T001 -> T033 -> T034 -> T002 -> T003 -> T004 -> T005 -> T006 -> T007 -> T008 -> T010 -> T035 -> T036 -> T037 -> T038 -> T011 -> T012 -> T013 -> T014 -> T015 -> T016 -> T017 -> T018 -> T019 -> T020 -> T021 -> T023 -> T040 -> T041 -> T044 -> T045 -> T046 -> T047 -> T048 -> T050 -> T052 -> T053 -> T030 -> T031 -> T032
 
-40 sequential waves. T001-T029 and T033-T050 are complete. T051 failed its first try on the SC-003 count (spec C-017 answers it); T052 and T053 move the SC-003 count and SC-004 to `model_ids`. No task is blocked.
+40 sequential waves. T001-T029 and T033-T050 are complete. T051 failed its first try on the SC-003 count (spec C-017 answers it); T052 and T053 move the SC-003 count and SC-004 to `model_ids`. T030 is parked: it is blocked by OP6 (a quiet computer is necessary). T031 and T032 wait for T030.

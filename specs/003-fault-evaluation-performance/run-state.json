@@ -138,7 +138,8 @@
       "tasks": [
         "T030"
       ],
-      "base": null
+      "base": "b6ff1a86c2ffc07baf9bc2573f52a9cd688442b1",
+      "review": "none: parked"
     }
   ],
   "runs": {
@@ -249,6 +250,12 @@
         "model": "sonnet",
         "result": "pass: 347 passed in 64 s; ruff clean"
       }
+    ],
+    "T030": [
+      {
+        "model": "orchestrator (commands)",
+        "result": "measured at b6ff1a86 with Python 3.13.12: SC-002/003/004/006/008/009 pass; SC-005 0.520 fail; SC-007 2.02 fail (noise in both directions, low system memory); memory check stopped by low memory. Raw files: C:/Users/lachl/dev/ls-bench-003/cand2/"
+      }
     ]
   },
   "findings": {
@@ -274,5 +281,6 @@
     ]
   },
   "resumed": "2026-11-04: resumed after the D4b replan (465688ec). tests/fault_evaluation baseline: 550 passed in 89 s.",
-  "resumed_2": "2026-11-18: resumed after the reduced-scope replan (fe2ee9f1). Baseline before the merge: tests/fault_evaluation + packages/loop_common/tests 846 passed in 172 s; Ruff 474 findings. Merge of master started with --no-commit; spec.md conflict resolved by the orchestrator (our side, master had the older 003 text)."
+  "resumed_2": "2026-11-18: resumed after the reduced-scope replan (fe2ee9f1). Baseline before the merge: tests/fault_evaluation + packages/loop_common/tests 846 passed in 172 s; Ruff 474 findings. Merge of master started with --no-commit; spec.md conflict resolved by the orchestrator (our side, master had the older 003 text).",
+  "paused": "2026-11-18: T030 parked by the user (OP6: needs a quiet computer). Resume: run the script C:/Users/lachl/dev/ls-bench-003/cand2/go.sh steps in a new folder, without the memory step; then the memory step alone. Then T031, T032 and the end review."
 }
