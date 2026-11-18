@@ -1272,3 +1272,11 @@ at T046.
   `"suite": "standard"`, `check_acceptance` and `compare_results` apply
   `standard_view` to the base after `cold_view`. For a full candidate, or a
   candidate with no `"suite"`, a missing base case still fails.
+- 2026-11-18, T051 blocked, user answer (spec C-017): T051 measured
+  `f4_u3:all_group_values:5000:cold` at 16 fault calls (4 separate public
+  calls, no reuse between calls after C-012) and SC-004 at 3.8 with
+  `all_group_values`. `model_ids` gives 4 calls and 1.03. The user chose:
+  the SC-003 count and the SC-004 ratio use `model_ids`; the SC-003 time ratio
+  stays on `all_group_values`. New tasks T052 (tests, red first) and T053
+  (`acceptance.py`). T051 measures G1 on `f4_u3:model_ids` (4 calls) and
+  reports the `all_group_values` count (16) for information.

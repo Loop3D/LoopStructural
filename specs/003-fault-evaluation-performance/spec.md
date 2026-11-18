@@ -376,12 +376,14 @@ the golden tests.
   5 000 points, `evaluate_value` of the oldest group makes 4 fault
   applications (baseline: 16) and takes at most 40 % of the baseline time
   (baseline: 1.96 s in the baseline file of FR-016; C-015).
-- **SC-003**: For the same model, evaluating all groups makes 4 fault
-  applications (baseline: 52) and takes at most 15 % of the baseline time
-  (baseline: 6.48 s in the baseline file of FR-016; C-015).
+- **SC-003**: For the same model, one `evaluate_model` call, which evaluates
+  all groups, makes 4 fault applications (baseline: 52). Evaluating all groups
+  one by one takes at most 15 % of the baseline time (baseline: 6.48 s in the
+  baseline file of FR-016; C-015, C-017).
 - **SC-004**: For the golden models with 4 faults and 5 000 points, the time
-  to evaluate all groups with 3 unconformities is at most 1.5 times the time
-  with 0 unconformities (baseline: 12.9 times).
+  of one `evaluate_model` call with 3 unconformities is at most 1.5 times the
+  time with 0 unconformities (baseline: 13.3 times in the baseline file of
+  FR-016; C-017).
 - **SC-005**: For the plugin model of `research.md`, the evaluation of the
   group at 20 000 points takes at most 50 % of the baseline (baseline: 8.2 s).
 - **SC-006**: For each case of the memory pass of the standard suite, the peak
@@ -540,3 +542,15 @@ failed acceptance run T030 (`t030-diagnosis.md`, `profile-d4a.md`).
   file has a measured value for each of them: the code before this feature
   has no cache, so its warm case was one cold call. No new baseline run is
   necessary.
+- **C-017 Count and ratio of "all groups" without reuse between calls.**
+  SC-003 and SC-004 measured the evaluation of all groups one by one (one
+  `evaluate_value` call for each group). After C-012, each call applies its
+  faults again: T051 measured 16 fault applications for `f4_u3` (4 for each
+  call) and a ratio of 3.8 between `f4_u3` and `f4_u0`. One `evaluate_model`
+  call gives 4 applications and a ratio of 1.03. Which call do SC-003 and
+  SC-004 measure?
+  **Answer** (2026-11-18): the count of SC-003 (4) and the ratio of SC-004
+  (at most 1.5) use one `evaluate_model` call (benchmark case `model_ids`).
+  The time limit of SC-003 (at most 15 % of the baseline) stays on the
+  evaluation of all groups one by one (case `all_group_values`). The limits
+  do not change.

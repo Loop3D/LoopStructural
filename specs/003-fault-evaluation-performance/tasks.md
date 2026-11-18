@@ -7,7 +7,7 @@
 
 - Run this file with the spec-orchestrator skill. It has the rules for the
   worktree, the sub agents, the checks and the commits.
-- Waves: 39. Tiers: [S] = simple model, [M] = standard model.
+- Waves: 40. Tiers: [S] = simple model, [M] = standard model.
 - Do not start a task with "Blocked by".
 - **Merge (T046)**: before you send T046, run `git merge --no-commit master`
   in the worktree. Do not rebase. The sub agent resolves the conflict only in
@@ -21,11 +21,11 @@
   change only Files; do not commit, change branches or run competing checks.
   The orchestrator runs tests and records the expected failure before the next
   implementation task. Use ASD-STE100 comments and docs.
-- **Tiers**: 4 [S], 47 [M]. Resolve the actual worker models from
+- **Tiers**: 4 [S], 49 [M]. Resolve the actual worker models from
   `.agents/model-policy.json` and available runtime tools. Codex workers use
   gpt-6-luna (low effort for S; medium for M). Limit is 5 workers, capped by
   runtime slots (currently 3 besides the orchestrator). Report unavailable models.
-- **Waves**: 39. Use parallel workers only for ready tasks with disjoint Files.
+- **Waves**: 40. Use parallel workers only for ready tasks with disjoint Files.
 - **Correctness and performance epochs**: if a future analytic correction
   changes references, append provenance for the reviewed affected results.
   Keep current references and manifests as valid historical records. Preserve
@@ -289,22 +289,22 @@
 - [ ] T030 [US3] [M] Measure full before/after results and all success criteria.
   - Do: SECOND RUN, after the replan of 2026-11-18 (plan D7 to D11). The first run (revision c8e3f9f1, 2026-11-03) failed SC-003, SC-004, SC-006, SC-007, SC-008 and SC-010; its raw files stay in `C:/Users/lachl/dev/ls-bench-003/cand/`. Use a new output folder. Do not change `acceptance.py`: T050 made it apply the D10 rules (`cold_view` of the baseline, SC-006 passes at 1.20 times the baseline or at most `MEMORY_ALLOWANCE_BYTES` = 16 MiB more, no SC-010 row, time ratios on `baseline.json`, C-015). The standard suite now has 131 cold cases (D9, C-014, C-016); the counter pass runs only the 5,000 and 20,000-point cases, the memory pass only the 5,000-point cases. SC-010 is removed (C-012); write that in measurements.md, and put the T051 numbers there. Run the STANDARD D2 suite twice with identical baseline case ids and machine/environment, in the way the notes on long runs say (outside the repository, clean tree, `suite_wall_seconds` recorded for SC-008). The full suite is not required. Run D5 large-memory cases (cold mode only) and acceptance CLI. Include gradients and total recursive counts. Record raw provenance, peak memory and complete elapsed times. A target miss is a failed task, not permission to remove a case or alter golden references. OP2 requires a user decision only if runtime/noise targets fail; it does not block starting measurement.
   - Files: `specs/003-fault-evaluation-performance/candidate.json`, `specs/003-fault-evaluation-performance/candidate_repeat.json`, `specs/003-fault-evaluation-performance/acceptance.json`, `specs/003-fault-evaluation-performance/measurements.md`
-  - Needs: T027, T029, T042, T043, T051
-  - Wave: 37
+  - Needs: T027, T029, T042, T043, T051, T053
+  - Wave: 38
   - Done when: The acceptance command exits 0 for every SC, all golden tests pass under 120 seconds, and measurements.md records the 10-million-point memory result.
 
 - [ ] T031 [Finish] [M] Document cache controls, benchmark workflow and achieved limits.
   - Do: Document D1 regeneration/review, D2 run/compare/acceptance (including `--suite standard|full`, `--work-dir`, `--resume`, and why the work directory and outputs belong outside the repository), and the state after the replan of 2026-11-18: no cache between calls and no lock (C-012; two calls on one model run at the same time); the per-call scope of D3 (restored points are shared inside one call and released at its end); the standard suite of D9 with its pass point sets (`PASS_POINTS`: timing all cases, counters 5,000 and 20,000 points, memory 5,000 points) and the 16 large ids (C-016); the SC-006 rule of D10 (120 % or +16 MiB, C-013); time ratios on `baseline.json` (C-015); call-only memory accounting and measured limits. Do not document `evaluation_cache`, `evaluation_revision` or the fault-set key: T048 removed them. Update ROADMAP only for stages actually complete. Map every FR and SC to exact test node or measured case and acceptance result. Do not create specs/README.md because no index exists.
   - Files: `doc/advanced/fault_evaluation.rst`, `ROADMAP.md`, `specs/003-fault-evaluation-performance/coverage.md`
   - Needs: T030
-  - Wave: 38
+  - Wave: 39
   - Done when: Documentation contains runnable commands, all cache controls, accepted decision text, measured results and a requirement-to-test/measurement table with no unproved pass.
 
 - [ ] T032 [Finish] [M] Run final project and package checks and record the result.
   - Do: Run python -m black --check LoopStructural tests/fault_evaluation benchmarks/fault_evaluation packages/loop_common/src/loop_common/supports/_3d_structured_grid.py; python -m ruff check LoopStructural packages; python -m pytest; python -m pytest packages/loop_common/tests; python -m pytest packages/loop_interpolation/tests. Use the prepared development environment. Record failures exactly. No Cargo command is needed. Do not claim done with any failed task or unresolved acceptance gate.
   - Files: `specs/003-fault-evaluation-performance/validation.md`
-  - Needs: T001, T002, T003, T004, T005, T006, T007, T008, T009, T010, T011, T012, T013, T014, T015, T016, T017, T018, T019, T020, T021, T022, T023, T024, T025, T026, T027, T028, T029, T030, T031, T033, T034, T035, T036, T037, T038, T039, T040, T041, T042, T043, T044, T045, T046, T047, T048, T049, T050, T051
-  - Wave: 39
+  - Needs: T001, T002, T003, T004, T005, T006, T007, T008, T009, T010, T011, T012, T013, T014, T015, T016, T017, T018, T019, T020, T021, T022, T023, T024, T025, T026, T027, T028, T029, T030, T031, T033, T034, T035, T036, T037, T038, T039, T040, T041, T042, T043, T044, T045, T046, T047, T048, T049, T050, T051, T052, T053
+  - Wave: 40
   - Done when: Black, Ruff, root pytest, loop_common pytest and loop_interpolation pytest all exit 0; validation.md records commands, revisions, golden runtime and acceptance status.
 
 ## Added foundation prerequisite (execute before T002)
@@ -488,12 +488,28 @@ shows no finding that the baseline of 474 findings does not have.
   - Context: `run.py`: `STATES = ("cold",)` (ids keep `:cold`; `state` stays in schema v1); the 16 `STANDARD_LARGE_CASES` ids of plan D9 (also in the Context of T049), in the order of the full list; `PASS_POINTS: dict[str, tuple[int, ...] | None] = {"timing": None, "counters": (5_000, 20_000), "rss": (5_000,)}`; `pass_cases(cases: list[dict[str, Any]], pass_kind: str, suite: str) -> list[dict[str, Any]]`; `main` calls `_run_fresh_process_pass(pass_kind, pass_cases(cases, pass_kind, options.suite), ...)`; `_merge` gives None for each of `COUNTER_FIELDS` of a case that the counter pass did not run, None for `peak_extra_rss_bytes` (with `rss_unit` `"bytes"`) of a case that the memory pass did not run, and the top-level key `"suite"`; `validate_result` accepts None only for those fields, and an optional `"suite"`; `SCHEMA_VERSION` stays 1; `cold_view(document: dict[str, Any]) -> dict[str, Any]`. `bench_cases.py`: remove the warm path of `run_case` (cache clear, priming call, `evaluation_cache`); keep `warmup_rounds=0`. `acceptance.py`: `check_acceptance` applies `run.cold_view` to `base`; remove `_sc010`, `IDS_COLD_F4U3`, `IDS_WARM_F4U3`, `WARM_F4U3`, the `"SC-010"` row, `_cache_fields`, the cache lines of `_memory_worker`; `MEMORY_MODES = ("cold",)`; `MEMORY_ALLOWANCE_BYTES = 16 * 1024 * 1024`; `_sc006(base, new)`: compare cases where both peaks are not None; pass at `new <= 1.20 * base` or `new - base <= MEMORY_ALLOWANCE_BYTES`; the row value is the worst ratio, the reason lists each failing case with both values and the row gives the number of compared cases as the integer key `"compared_cases"` (cases with a memory value in both documents; plan.md, Answers, 2026-11-18, review of wave 33); `_check_cases` accepts None counter and memory fields when the criterion does not read them; a needed None value fails with "case X was not measured in the Y pass". `compare.py`: apply `run.cold_view` to a base with `:warm` ids; None on either side gives "not measured", never a failure or a noise mark. Rules: stdlib only in `compare.py`; NumPy docstrings and type hints (Ruff `D`, `ANN`); Python 3.9 target. Environment: as in the orchestrator notes.
 
 - [ ] T051 [US3] [M] Measure the gates on the merged tree with no cache (D11 step 4).
-  - Do: Read-only for tracked code. On the clean committed tree after T048 and T050, measure `f4_u3`, `f4_u0` and `onlap_domain` at 5,000 points, cold, all five operations, with the D2 tools. Put any script in the scratchpad, outside the repository, and delete it at the end. Add a new top section to `profile-d4a.md` ("Third run (<revision>, no cache, after the master merge)"), above the second run, and keep the old sections. Report: G1, fault calls of `f4_u3` cold `all_group_values` and `model_ids` (target 4 each, SC-003); G2 (new), the cold `f4_u3` `model_ids` median time (target at most 1.10 times 0.2208 s, the cache-on time of the second run of T042); G5, the `onlap_domain` `model_gradient` cold time against the baseline 0.92 s (report only); the fault calls and median times of every measured case; and that `pytest tests/fault_evaluation` (the golden tests) passes on this tree, with its time. G3 and G4 are gone (no cache, no fingerprint). Give the revision, the Python path and the commands. Mark each gate pass or fail. A miss is a failed task. If the SC-003 count is not 4, stop and report: the plan must change.
+  - Do: Read-only for tracked code. On the clean committed tree after T048 and T050, measure `f4_u3`, `f4_u0` and `onlap_domain` at 5,000 points, cold, all five operations, with the D2 tools. Put any script in the scratchpad, outside the repository, and delete it at the end. Add a new top section to `profile-d4a.md` ("Third run (<revision>, no cache, after the master merge)"), above the second run, and keep the old sections. Report: G1, fault calls of `f4_u3` cold `model_ids` (target 4, SC-003 after spec C-017), and the `all_group_values` count for information (16 expected: 4 separate calls, no reuse between calls); G2 (new), the cold `f4_u3` `model_ids` median time (target at most 1.10 times 0.2208 s, the cache-on time of the second run of T042); G5, the `onlap_domain` `model_gradient` cold time against the baseline 0.92 s (report only); the fault calls and median times of every measured case; and that `pytest tests/fault_evaluation` (the golden tests) passes on this tree, with its time. G3 and G4 are gone (no cache, no fingerprint). Give the revision, the Python path and the commands. Mark each gate pass or fail. A miss is a failed task. If the `model_ids` count is not 4, stop and report: the plan must change. The first try (2026-11-18, revision 3865c80b) stopped on the `all_group_values` count of 16; the user then chose spec C-017 (plan.md, Answers).
   - Files: `specs/003-fault-evaluation-performance/profile-d4a.md`
   - Needs: T048, T050
   - Wave: 36
-  - Done when: `profile-d4a.md` has the third-run section with the revision, G1 (4 and 4), G2 at most 0.2429 s, the G5 time, and the golden test result, each marked pass or fail.
+  - Done when: `profile-d4a.md` has the third-run section with the revision, G1 (4 for `model_ids`), G2 at most 0.2429 s, the G5 time, and the golden test result, each marked pass or fail.
   - Context: Case ids are `"{model}:{operation}:{points}:cold"`; operations `oldest_value`, `all_group_values`, `model_ids`, `oldest_gradient`, `model_gradient`. `benchmarks.fault_evaluation.run.enumerate_cases()` gives the full case list; filter it by model and `points == 5000`. `benchmarks.fault_evaluation.bench_cases.run_case(benchmark, model, points, case, rounds=...)` times one call; the points come from `bench_cases._points(model, count)`. Count calls with `benchmarks.fault_evaluation.instrumentation.EvaluationInstrumentation` (`snapshot()["fault_calls_total"]`). The runner has no case filter: do not change it. Use `time.perf_counter` and the median of 5 rounds for each time. Rule: every time is measured, none is inferred (plan.md, Answers 2026-11-02). Environment: as in the orchestrator notes.
+
+- [ ] T052 [US3] [M] Test SC-003 and SC-004 on one evaluate_model call (spec C-017, red first).
+  - Do: In `tests/fault_evaluation/test_acceptance.py`, change the fixtures and tests of SC-003 and SC-004 for spec C-017 (Context). Add the rows of `f4_u3:model_ids:5000:cold` and `f4_u0:model_ids:5000:cold` to the base and candidate fixtures if they are absent. Keep the SC-003 time test on `all_group_values`. Change the SC-003 count test so that it sets the count of the `model_ids` case. Add: an `all_group_values` count of 16 does not fail SC-003 when the `model_ids` count is 4; a `model_ids` count of 5 fails SC-003 and the reason names the `model_ids` id; SC-004 uses the `model_ids` times (a slow `f4_u3:all_group_values` does not fail SC-004; a `model_ids` ratio above 1.5 fails it); a `model_ids` case absent from the candidate fails SC-003 and SC-004 with the id in the reason. Do not change other tests or production code.
+  - Files: `tests/fault_evaluation/test_acceptance.py`
+  - Needs: T050
+  - Wave: 36
+  - Done when: `pytest tests/fault_evaluation/test_acceptance.py -q` fails only in the new or changed SC-003 and SC-004 tests, because `acceptance.py` still reads `all_group_values` for the count and for SC-004; then all pass after T053.
+  - Context: `benchmarks/fault_evaluation/acceptance.py` has `ALL_F4U3 = "f4_u3:all_group_values:5000:cold"`, `ALL_F4U0 = "f4_u0:all_group_values:5000:cold"`, `_time_ratio_row(base, new, case_id, limit, calls)` (time ratio and exact count on one case) and `_sc004(new)` (ratio of the two `all_group_values` medians, limit 1.5). After T053: new constants `IDS_F4U3 = "f4_u3:model_ids:5000:cold"` and `IDS_F4U0 = "f4_u0:model_ids:5000:cold"`; SC-003 = time ratio of `ALL_F4U3` at most 0.15 of the baseline AND `fault_calls_total` of `IDS_F4U3` equal to 4; SC-004 = median of `IDS_F4U3` / median of `IDS_F4U0` at most 1.5. Measured values for realistic fixtures (T051 first try, 2026-11-18): `model_ids` f4_u3 0.192 s and 4 calls, f4_u0 0.186 s and 4 calls; `all_group_values` f4_u3 0.733 s and 16 calls. Baseline (`baseline.json`): `model_ids` f4_u3 6.34 s and 52 calls, f4_u0 0.48 s. Use the helpers of the file (`_set`, `_row`, the base and candidate fixtures). Rules: pytest; NumPy docstrings and type hints (Ruff `D`, `ANN`); Python 3.9 target. Environment: as in the orchestrator notes.
+
+- [ ] T053 [US3] [M] Measure the SC-003 count and SC-004 on one evaluate_model call (spec C-017).
+  - Do: In `acceptance.py`, add `IDS_F4U3` and `IDS_F4U0` (Context of T052). Change the SC-003 row so that the time ratio stays on `ALL_F4U3` and the count check reads `IDS_F4U3`; a missing or unmeasured `IDS_F4U3` fails with its id in the reason (the existing "was not measured in the counters pass" form). Change `_sc004` to the two `model_ids` cases. Change the docstrings. Do not change tests or other files.
+  - Files: `benchmarks/fault_evaluation/acceptance.py`
+  - Needs: T052
+  - Wave: 37
+  - Done when: `pytest tests/fault_evaluation -q` passes; `ruff check benchmarks/fault_evaluation` is clean.
+  - Context: see the Context of T052. Keep the limits (0.15, 4 calls, 1.5) and the row form `_row(passed, value, limit, reason)`. The value of the SC-003 row stays the time ratio. Rules: NumPy docstrings and type hints (Ruff `D`, `ANN`); Python 3.9 target; ASD-STE100 comments. Environment: as in the orchestrator notes.
 
 ## Dependencies
 
@@ -513,7 +529,8 @@ T044 -> T045 make the frame digest faster (D4b), and T042 then measures D4a; T04
 cause and can run at any time after T029. The replan of 2026-11-18 adds
 T046 (merge master, D8), then T047 -> T048 (remove the cache, D7) beside
 T049 -> T050 (shorter suite, acceptance rules, D9, D10; T050 also needs T048),
-then T051 (gates on the merged tree). T030 joins T042, T043 and T051; OP3 and
+then T051 (gates on the merged tree). T052 -> T053 move the SC-003 count and
+SC-004 to `model_ids` (spec C-017). T030 joins T042, T043, T051 and T053; OP3 and
 OP4 are resolved, so it has no block. T031 documents passing
 results, and T032 is the final scheduled task and depends on every other task.
 Spec 005 owns frame/world-local repairs; its planning gate waits for these documentation amendments only, so no implementation dependency on 005 is
@@ -560,13 +577,14 @@ unaffected baselines fixed; compare equivalent correctness and run provenance.
 | 33 | T047, T049 | 0 | 2 |
 | 34 | T048 | 0 | 1 |
 | 35 | T050 | 0 | 1 |
-| 36 | T051 | 0 | 1 |
-| 37 | T030 | 0 | 1 |
-| 38 | T031 | 0 | 1 |
-| 39 | T032 | 0 | 1 |
+| 36 | T051, T052 | 0 | 2 |
+| 37 | T053 | 0 | 1 |
+| 38 | T030 | 0 | 1 |
+| 39 | T031 | 0 | 1 |
+| 40 | T032 | 0 | 1 |
 
 ## Critical path
 
-T001 -> T033 -> T034 -> T002 -> T003 -> T004 -> T005 -> T006 -> T007 -> T008 -> T010 -> T035 -> T036 -> T037 -> T038 -> T011 -> T012 -> T013 -> T014 -> T015 -> T016 -> T017 -> T018 -> T019 -> T020 -> T021 -> T023 -> T040 -> T041 -> T044 -> T045 -> T046 -> T047 -> T048 -> T050 -> T051 -> T030 -> T031 -> T032
+T001 -> T033 -> T034 -> T002 -> T003 -> T004 -> T005 -> T006 -> T007 -> T008 -> T010 -> T035 -> T036 -> T037 -> T038 -> T011 -> T012 -> T013 -> T014 -> T015 -> T016 -> T017 -> T018 -> T019 -> T020 -> T021 -> T023 -> T040 -> T041 -> T044 -> T045 -> T046 -> T047 -> T048 -> T050 -> T052 -> T053 -> T030 -> T031 -> T032
 
-39 sequential waves. T001-T029 and T033-T045 are complete. T046 is next. No task is blocked.
+40 sequential waves. T001-T029 and T033-T050 are complete. T051 failed its first try on the SC-003 count (spec C-017 answers it); T052 and T053 move the SC-003 count and SC-004 to `model_ids`. No task is blocked.

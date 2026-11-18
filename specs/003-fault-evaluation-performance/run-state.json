@@ -116,9 +116,10 @@
     {
       "wave": 36,
       "tasks": [
-        "T051"
+        "T051",
+        "T052"
       ],
-      "base": null
+      "base": "3865c80b722dcf7ac8f3b9449ef76723bf8e246f"
     }
   ],
   "runs": {
@@ -206,6 +207,12 @@
       {
         "model": "sonnet",
         "result": "blocked: 1 wrong T049 test (SC-006 allowance with a 100 MB baseline) and a grep gate too strict; orchestrator answers; T049 test fixed by a sonnet run; then 336 passed"
+      }
+    ],
+    "T051": [
+      {
+        "model": "sonnet",
+        "result": "blocked: f4_u3 all_group_values 16 fault calls (SC-003 target 4); G2 0.1919 s pass; G5 0.5143 s; 340 tests pass. User answer: spec C-017 (count and SC-004 on model_ids); new tasks T052, T053"
       }
     ]
   },
