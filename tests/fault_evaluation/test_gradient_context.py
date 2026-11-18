@@ -69,10 +69,8 @@ def _assert_golden(name: str, actual: dict[str, np.ndarray]) -> None:
 
 
 def _model(name: str):
-    """Build a golden model with the persistent cache off (only scope sharing is measured)."""
-    model = build_model(name)
-    model.evaluation_cache.enabled = False
-    return model
+    """Build a golden model (only scope sharing is measured)."""
+    return build_model(name)
 
 
 def _group(model, index: int) -> GeologicalFeature:
@@ -321,7 +319,6 @@ def test_model_gradient_priority_with_overlapping_groups():
             return np.broadcast_to(self.gradient, points.shape).copy()
 
     model = GeologicalModel([0.0, 0.0, 0.0], [1.0, 1.0, 1.0])
-    model.evaluation_cache.enabled = False
     young = GeologicalFeature(
         "young", None, regions=[lambda p: p[:, 0] > 0.5], faults=[], interpolator=Field([1, 0, 0])
     )

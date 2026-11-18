@@ -202,3 +202,55 @@ def test_identical_provenance_produces_no_provenance_warning():
     new = copy.deepcopy(base)
     result = compare_results(base, new)
     assert not [text for text in result["warnings"] if "provenance" in text.lower()]
+
+
+def test_warm_ids_of_a_base_go_through_cold_view():
+    """A base of the code before this feature has warm ids. Its lone warm row is a cold row (C-016)."""
+    compare_results = _api("benchmarks.fault_evaluation.compare", "compare_results")
+    base = _result(
+        [
+            _case("tiny:oldest_value:5000:cold", median=2.0),
+            _case("tiny:oldest_value:5000:warm", median=9.0, state="warm"),
+            _case("lone:oldest_value:5000:warm", median=2.0, state="warm"),
+        ]
+    )
+    new = _result(
+        [
+            _case("tiny:oldest_value:5000:cold", median=3.0),
+            _case("lone:oldest_value:5000:cold", median=3.0),
+        ]
+    )
+    result = compare_results(base, new)
+    assert [row["case_id"] for row in result["cases"]] == [
+        "tiny:oldest_value:5000:cold",
+        "lone:oldest_value:5000:cold",
+    ]
+    assert {row["state"] for row in result["cases"]} == {"cold"}
+    assert _row(result, "tiny:oldest_value:5000:cold")["ratio"] == pytest.approx(1.5)
+
+
+def test_a_value_of_none_gives_not_measured_without_failure_or_noise_mark():
+    """A count that a pass did not measure gives the ratio text "not measured" (D10)."""
+    compare_results = _api("benchmarks.fault_evaluation.compare", "compare_results")
+    base_case = _case("tiny:cold", median=2.0)
+    new_case = _case("tiny:cold", median=2.0)
+    new_case["fault_calls_total"] = None
+    result = compare_results(_result([base_case]), _result([new_case]))
+    row = _row(result, "tiny:cold")
+    count = row["counts"]["fault_calls_total"]
+    assert count["ratio"] is None
+    assert count["ratio_status"] == "not measured"
+    assert row["slower"] is False
+    assert row["counts"]["field_calls_total"]["ratio_status"] == "ok"
+
+
+def test_a_median_of_none_gives_not_measured_without_noise_mark():
+    """A median of None gives no ratio, the text "not measured" and no slower mark."""
+    compare_results = _api("benchmarks.fault_evaluation.compare", "compare_results")
+    new_case = _case("tiny:cold", median=2.0)
+    new_case["median_seconds"] = None
+    result = compare_results(_result([_case("tiny:cold")]), _result([new_case]))
+    row = _row(result, "tiny:cold")
+    assert row["ratio"] is None
+    assert row["ratio_status"] == "not measured"
+    assert row["slower"] is False

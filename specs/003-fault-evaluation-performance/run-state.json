@@ -80,7 +80,16 @@
         "T046"
       ],
       "base": "fe2ee9f16dc6bcc831017a6fa7307418b55ec440",
-      "review": "pending"
+      "review": "pass (sonnet), 1 minor",
+      "commit": "12a7385d7a0c2e3fade08d18f59eac5809563b61"
+    },
+    {
+      "wave": 33,
+      "tasks": [
+        "T047",
+        "T049"
+      ],
+      "base": "12a7385d7a0c2e3fade08d18f59eac5809563b61"
     }
   ],
   "runs": {
@@ -141,10 +150,22 @@
         "model": "sonnet",
         "result": "pass: conflict resolved, 2 new lookup tests; fixture cell_index_counter now patches StructuredGrid3DGeometry; loop_common 424 passed, fault_evaluation 561 passed"
       }
+    ],
+    "T047": [
+      {
+        "model": "sonnet",
+        "result": "pass: 11 red (the 3 named + 8 scope/frame tests that see cache hits after the cache-off lines were removed, as D7 says; they must pass after T048); 110 pass"
+      }
+    ],
+    "T049": [
+      {
+        "model": "sonnet",
+        "result": "pass: 30 red, all new or changed tests, for absent D9/D10 names and rules; 59 pass"
+      }
     ]
   },
   "findings": {
-    "found": 6,
+    "found": 7,
     "rejected": 2,
     "dropped": 0,
     "fixed": 0,
@@ -153,7 +174,8 @@
       "T040 test_fault_set_key.py: no test for the b'Nbox;' branch (interpolator with no bounding box)",
       "T040 test_fault_set_key.py:93-112: no fingerprint-level test for one fault edit (covered through the cache in test_invalidation.py)",
       "T040 fix test_persistent.py:550 helper _evaluation_fingerprint has no caller now",
-      "T041 stale docs: _evaluation.py restore comment and module docstring, _evaluation_cache.py 'Invalidation' section, _StateHasher.node docstring still describe the old key (fix in T031 or a follow-up)"
+      "T041 stale docs: _evaluation.py restore comment and module docstring, _evaluation_cache.py 'Invalidation' section, _StateHasher.node docstring still describe the old key (fix in T031 or a follow-up)",
+      "T046 _structured_grid_3d.py: Black rewrapped lines that T046 does not touch (rotation matrix, resize errors, corner indexes, global_index_to_cell_index)"
     ]
   },
   "resumed": "2026-11-04: resumed after the D4b replan (465688ec). tests/fault_evaluation baseline: 550 passed in 89 s.",
