@@ -213,6 +213,10 @@
       {
         "model": "sonnet",
         "result": "blocked: f4_u3 all_group_values 16 fault calls (SC-003 target 4); G2 0.1919 s pass; G5 0.5143 s; 340 tests pass. User answer: spec C-017 (count and SC-004 on model_ids); new tasks T052, T053"
+      },
+      {
+        "model": "sonnet",
+        "result": "pass at 808b4911: G1 model_ids 4 calls; all_group_values 16 (info); G2 0.2067 s <= 0.2429 s; G5 0.5380 s; 340 tests pass in 60 s"
       }
     ]
   },
