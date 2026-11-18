@@ -447,7 +447,7 @@ these tasks, "Environment" means the Python environment of the orchestrator
 notes, and "Ruff finds nothing new" means `ruff check LoopStructural packages`
 shows no finding that the baseline of 474 findings does not have.
 
-- [ ] T046 [Found] [M] Resolve the master merge and move the value lookup to the geometry class (D8).
+- [x] T046 [Found] [M] Resolve the master merge and move the value lookup to the geometry class (D8).
   - Do: The orchestrator has started `git merge --no-commit master`. The only conflict is in `packages/loop_common/src/loop_common/supports/_3d_structured_grid.py`. Master (#367, #369) moved `evaluate_value`, `trilinear`, `position_to_local_coordinates`, `position_to_dof_coefs` and `position_to_cell_corners` into `StructuredGrid3DGeometry` in `packages/loop_common/src/loop_common/geometry/_structured_grid_3d.py`; master's `evaluate_value` also accepts a property array of shape `(n_nodes, k)`. Resolve it as in Context. Add two tests to `test_evaluation_lookup.py`: `test_lookup_value_matches_master_path_for_multi_column_property` (a `(n_nodes, 3)` property array; the fast path gives the same values as the master path) and `test_rectilinear_grid_uses_the_master_path` (a `RectilinearGrid` returns False from `_has_uniform_lookup`). Do not change other files of the merge, and do not commit, abort or reset the merge. If a golden test fails, stop and report: only C-006 can change a reference.
   - Files: `packages/loop_common/src/loop_common/geometry/_structured_grid_3d.py`, `packages/loop_common/src/loop_common/supports/_3d_structured_grid.py`, `packages/loop_common/tests/test_evaluation_lookup.py`
   - Needs: T045

@@ -1,0 +1,31 @@
+# Specification index
+
+Updated: 2026-11-04. This index records document and workflow state. It does
+not certify that an implementation or a numerical acceptance gate passed.
+
+| Spec | State | Next step or existing open point |
+|---|---|---|
+| [001-low-memory-interpolator](001-low-memory-interpolator/spec.md) | Spec declares ready for plan, reviewed 2026-10-27 | Follow its existing plan and task workflow. This cascade did not reassess it. |
+| [002-rbf-interpolator](002-rbf-interpolator/spec.md) | Draft, not reviewed | Continue its existing review and clarification workflow. This cascade did not change it. |
+| [003-fault-evaluation-performance](003-fault-evaluation-performance/spec.md) | Implementation in progress; 005 contract cascade applied; scope reduced 2026-11-18 (C-012 to C-014: no cache between calls, new SC-006 rule, shorter standard suite) | Run spec-planner, then spec-tasks, in the LoopStructural-native worktree: remove the cache code, move the grid lookup onto `StructuredGrid3DGeometry` from master, then run T030 again. C-014 answers OP3 and C-013 answers OP4. |
+| [004-matrix-free-directional-constraints](004-matrix-free-directional-constraints/spec.md) | Draft; 005 contract cascade applied; task graph checked | Review the updated plan and tasks. OP1 still requires the quadrature measurements before a default is chosen. |
+| [005-coordinate-frame-correctness](005-coordinate-frame-correctness/spec.md) | Staged plan and S1 tasks written 2026-11-04 ([plan.md](005-coordinate-frame-correctness/plan.md), [tasks.md](005-coordinate-frame-correctness/tasks.md): 17 tasks, 7 waves); SC-019 confirmed | Run spec-orchestrator for S1. OP1: plan S2 to S6 in later planner runs. OP2: decide where the R2/R5 matrix runs. |
+
+## Cascade of 005
+
+The accepted coordinate contract keeps modelling observations, reference
+geometry, masks, and public queries in world coordinates. Local assembly
+and low-level core inputs use the computational frame. Each boundary
+converts points and directions once.
+
+Analytic evidence and explicit review may justify corrections to affected
+golden results and fingerprints. Unaffected references, numeric bounds,
+acceptance tolerances, and performance targets remain unchanged.
+
+The cascade changes documents only. It does not update golden files,
+benchmark data, solver code, or the run-state of an implementation.
+
+The matching 003 spec copies in the main checkout and its active worktree
+are kept in sync. Its plan and tasks are not copied into the main checkout.
+The documentation changes create no whole-spec implementation dependency
+between 005 and either target.

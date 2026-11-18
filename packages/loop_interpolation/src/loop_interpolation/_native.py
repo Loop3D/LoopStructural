@@ -94,6 +94,9 @@ _PAIR_MAX_ROWS = 100_000
 _PAIR_SEED = 0
 _PAIR_CHUNK = 100_000
 
+# Iteration limit for each node when solver_kwargs has no maxiter (as cg)
+MAXITER_PER_NODE = 10
+
 _REGULARISATION_KEYS = ("dxx", "dyy", "dzz", "dxy", "dxz", "dyz")
 _BORDER_KEYS = ("dx", "dy", "dz")
 
@@ -207,9 +210,16 @@ def check_supported(interpolator, setup_kwargs, solver_kwargs) -> None:
         logger.info("solver='native': column scaling (apply_scaling_matrix) is skipped.")
 
 
-def _core_settings(tol, solver_kwargs) -> dict:
-    """Make the settings dict of the core from ``tol`` and ``solver_kwargs``."""
+def _core_settings(tol, solver_kwargs, n_nodes=None) -> dict:
+    """Make the settings dict of the core from ``tol`` and ``solver_kwargs``.
+
+    Without ``maxiter``, the limit is ``MAXITER_PER_NODE`` x ``n_nodes``, as the
+    ``cg`` matrix solver (scipy: 10 x the number of unknowns). The default of
+    the core (5000) stops too early on a large grid.
+    """
     settings = {}
+    if n_nodes and solver_kwargs.get("maxiter") is None:
+        settings["max_iter"] = int(MAXITER_PER_NODE * n_nodes)
     if tol is not None:
         settings["tol"] = float(tol)
     for key, value in solver_kwargs.items():
@@ -311,6 +321,21 @@ def _add_data(problem, interpolator) -> None:
             w,
             drop_zero_norm=True,
             name="tangent",
+        )
+
+    # gradient orthogonal constraints of a native setup (for example the
+    # orthogonal coordinates of a structural frame): the same rows as tangents
+    orthogonal = getattr(interpolator, "_native_orthogonal", None)
+    if not isinstance(orthogonal, dict):
+        orthogonal = {}
+    for name, (points, vectors, w) in orthogonal.items():
+        _add_weighted(
+            problem.add_tangent,
+            points,
+            vectors,
+            _weights(w, points.shape[0]),
+            drop_zero_norm=True,
+            name=name,
         )
 
     # interface: one weight (ipw)
@@ -486,16 +511,17 @@ def solve(interpolator, tol, solver_kwargs, x0=None, ridge_factor=None) -> bool:
 
     Notes
     -----
-    ``interpolator.c`` changes only when the solve converged. When the solve
-    does not converge, ``c`` keeps its old value. The partial field is in
-    ``interpolator.latest_native_report["field"]``. A converged report has no
-    ``field`` key. The matrix solvers (for example ``cg``) differ here. They
+    ``interpolator.c`` changes when the solve converged. When the solve does
+    not converge, ``c`` keeps its old value, if it is a field of this grid.
+    The partial field is in ``interpolator.latest_native_report["field"]``.
+    A converged report has no ``field`` key. If the old ``c`` is missing or
+    has another size (the grid changed since the last solve), ``c`` gets the
+    partial field, as with the matrix solvers (for example ``cg``), which
     write the last iterate to ``c`` also when they do not converge.
 
-    The defaults of the core are ``tol=1e-8`` and ``maxiter=5000``. The
-    ``cg`` matrix solver uses ``rtol=1e-8``. Its ``maxiter`` is the scipy
-    default, 10 times the number of nodes. So the native solver can stop
-    earlier on large grids. Set ``maxiter`` to get the same limit.
+    The default of the core is ``tol=1e-8``. The ``cg`` matrix solver uses
+    ``rtol=1e-8``. Without ``maxiter`` in ``solver_kwargs``, the limit is 10
+    times the number of nodes, the scipy default of ``cg``.
     """
     started = perf_counter()
     solver_kwargs = dict(solver_kwargs or {})
@@ -524,7 +550,7 @@ def solve(interpolator, tol, solver_kwargs, x0=None, ridge_factor=None) -> bool:
         problem.set_start(np.ascontiguousarray(x0, dtype=np.float64))
 
     # tol: the solver_kwargs value wins over the tol argument.
-    settings = _core_settings(solver_kwargs.get("tol", tol), solver_kwargs)
+    settings = _core_settings(solver_kwargs.get("tol", tol), solver_kwargs, support.n_nodes)
     field, report = problem.solve(settings)
 
     # The core can return float32. ``c`` is always float64.
@@ -541,6 +567,11 @@ def solve(interpolator, tol, solver_kwargs, x0=None, ridge_factor=None) -> bool:
     else:
         # Keep the old ``c``. Give the partial field in the report.
         report["field"] = field
+        old = getattr(interpolator, "c", None)
+        if old is None or np.shape(old) != (support.n_nodes,) or not np.any(np.isfinite(old)):
+            # There is no old field of this grid (a first solve, or the grid
+            # changed since the last solve), so a caller cannot use the old c.
+            interpolator.c = field
     interpolator.latest_native_report = report
     if not converged:
         logger.warning(

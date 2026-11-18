@@ -6,7 +6,9 @@
   "start_commit": "21616db7d1c2fa09f823092dd1b3d6dff880eec2",
   "baseline": {
     "ruff_findings": 474,
-    "pytest": "1283 passed, 4 skipped, 1 deselected (test_p2fold_save_load hangs: pickle defect) in 660 s, at 89f797d3"
+    "pytest": "1283 passed, 4 skipped, 1 deselected (test_p2fold_save_load hangs: pickle defect) in 660 s, at 89f797d3",
+    "ruff_findings_after_merge": 475,
+    "ruff_note": "+1 from master #365 (dtm_creator.py FA100), not from 003"
   },
   "waves": [
     {
@@ -71,6 +73,14 @@
       "base": "45980adc34cbe13acb6a00ab4889860ed572a942",
       "review": "none: report only",
       "commit": "31e056f6808fff1df147f3e1951bbb877842f28e"
+    },
+    {
+      "wave": 32,
+      "tasks": [
+        "T046"
+      ],
+      "base": "fe2ee9f16dc6bcc831017a6fa7307418b55ec440",
+      "review": "pending"
     }
   ],
   "runs": {
@@ -125,6 +135,12 @@
         "model": "haiku",
         "result": "pass: loop form from user answer; 561 passed, golden 19 s, ruff clean"
       }
+    ],
+    "T046": [
+      {
+        "model": "sonnet",
+        "result": "pass: conflict resolved, 2 new lookup tests; fixture cell_index_counter now patches StructuredGrid3DGeometry; loop_common 424 passed, fault_evaluation 561 passed"
+      }
     ]
   },
   "findings": {
@@ -141,5 +157,5 @@
     ]
   },
   "resumed": "2026-11-04: resumed after the D4b replan (465688ec). tests/fault_evaluation baseline: 550 passed in 89 s.",
-  "paused": "2026-11-04: T030 is blocked by OP3 (SC-008) and OP4 (SC-006). They need a spec decision (spec-interview or spec-reviewer, then spec-cascade). onlap_domain OP5 ratio 0.254 goes to T030 (SC-010)."
+  "resumed_2": "2026-11-18: resumed after the reduced-scope replan (fe2ee9f1). Baseline before the merge: tests/fault_evaluation + packages/loop_common/tests 846 passed in 172 s; Ruff 474 findings. Merge of master started with --no-commit; spec.md conflict resolved by the orchestrator (our side, master had the older 003 text)."
 }
