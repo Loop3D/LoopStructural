@@ -370,7 +370,7 @@ population (FR-020).
 |---|---|---|---|
 | S1 | Shared transform boundary, reference relationships for FDI and PLI, fault frame, buffer and forced geometry, rotation check, resize stability (this design) | New S1 tests pass for FDI and PLI; `pytest`; `ruff check LoopStructural packages`; `pytest packages/loop_common/tests packages/loop_interpolation/tests` | Revert the S1 commits to master `ebc7c699`. Check: the existing `tests/unit/modelling/test__fault_builder.py` and `packages/loop_common/tests/test_bounding_box.py` pass on the reverted tree. No saved format changed. |
 | S2 | Fold geometry, directional regularisation, quadrature, masks, sign alignment for FDI-fold, PLI discrete fold, P2 and P2-fold; constant-norm variants (FR-008; R3 for P2; R4) | SC-007, SC-008, SC-013 for every mandatory fold and P2 cell | Revert to the S1 merge. Check: S1 tests still pass. |
-| S3 | Persistence format version, transform and coordinate-space metadata; no second projection at load; copies keep the frame; legacy load requires a transform or identity declaration; transform change policy and restored-point cache invalidation (FR-016 to FR-020); ROADMAP.md decision for FR-019; `COMPAT.md` migration note | SC-006, SC-012, SC-016, SC-017 | Revert to the S2 merge. Check: old-format R1 files load through their documented path; a new-format file fails with 1 actionable error and 0 state changes on the old reader (SC-017). |
+| S3 | Persistence format version, transform and coordinate-space metadata; no second projection at load; copies keep the frame; legacy load requires a transform or identity declaration; transform change policy and restored-point cache invalidation, if a cache exists (spec 003 has none after its C-012) (FR-016 to FR-020); ROADMAP.md decision for FR-019; `COMPAT.md` migration note | SC-006, SC-012, SC-016, SC-017 | Revert to the S2 merge. Check: old-format R1 files load through their documented path; a new-format file fails with 1 actionable error and 0 state changes on the old reader (SC-017). |
 | S4 | Display, export of observation geometry, fault-centre geometry and intrusion classification use stored world locations (FR-022) | World-location comparison within `Tp` (U3.4, U3.5) | Revert to the S3 merge. Check: viewer import paths unchanged. |
 | S5 | Cell-centre sampling, remaining resize paths, non-mutating diagnostics, residual and exclusion report (FR-014 remainder, FR-015, FR-023, FR-024) | SC-009, SC-011 | Revert to the S4 merge. Check: diagnostics report fields unchanged for callers. |
 | S6 | Auxiliary point transformations and duplicate entry points (FR-025); displacement validation R2 (FR-026, FR-027); backend matrix incl. native and Surfe (FR-030); golden review (FR-029); 005 completion line in ROADMAP.md | SC-004, SC-010, SC-014, SC-015, SC-018 | Revert to the S5 merge. Check: `LoopStructural.utils` and `loop_common.math` import paths unchanged. |
@@ -606,7 +606,7 @@ grep survey on 2026-11-04 and are not final.
 | SC-016 | S3 | S3 | OP1 |
 | SC-017 | Rollback column; format part S3 | `verification.md` | OP1 |
 | SC-018 | S1 cells; matrix S6 | `verification.md` backend matrix | OP1 |
-| SC-019 | Gate checked on 2026-11-04: 003 spec (C-006, main and native worktree copies identical) and 004 spec (2026-11-03 source-005 entries) contain the amendments | Document check | None |
+| SC-019 | Gate checked on 2026-11-04: 003 spec (C-006, main and native worktree copies identical) and 004 spec (2026-11-03 source-005 entries) contain the amendments. Checked again on 2026-11-18 after the 003 change C-012 to C-014: the copies are identical, and 003 has no cache between calls | Document check | None |
 
 ## Handover
 
@@ -629,8 +629,8 @@ grep survey on 2026-11-04 and are not final.
 - **Fault geometry**: an explicit `fault_center` is a world point; the
   generated centre extent row is `coord=2` with `strike_unit / major_axis`.
   Spec 003 golden fault models can change only under C-006/C-004 with a
-  record in `verification.md`. Spec 003 cache invalidation for transform
-  changes is S3.
+  record in `verification.md`. Spec 003 keeps no restored points between
+  calls (003 C-012), so S3 has no 003 cache to invalidate.
 - **Shared files**: `_geological_interpolator.py`, `_discrete_interpolator.py`
   and `_fault_builder.py` are also in the scope of specs 003 and 004.
   Coordinate the merge order with the active 003 worktree

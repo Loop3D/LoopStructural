@@ -99,7 +99,7 @@ A modeller saves an interpolator, reloads it, copies its configuration, or displ
 6. **Given** a legacy file with no recoverable transform or explicit caller declaration, **when** loading is requested, **then** loading fails. The error identifies the missing transform and the required caller action. No partial field is published.
 7. **Given** that legacy file and a caller-supplied transform or explicit identity declaration, **when** loading is retried, **then** its world evaluations satisfy SC-006. The loader does not silently guess identity.
 8. **Given** a newly saved interpolator, **when** its payload is inspected, **then** it declares its format version, transform, and constraint coordinate space. These declarations survive 2 save/load cycles.
-9. **Given** a populated interpolator, **when** its transform is changed, **then** the documented FR-020 policy applies. Rejection preserves prior state. Acceptance preserves world evaluation after rebuilding. Existing restoration caches are populated before a separate check for stale use.
+9. **Given** a populated interpolator, **when** its transform is changed, **then** the documented FR-020 policy applies. Rejection preserves prior state. Acceptance preserves world evaluation after rebuilding. If restoration caches exist, they are populated before a separate check for stale use.
 10. **Given** a completed stage and its documented rollback target, **when** the stage is reversed, **then** old-format R1 fields remain usable. An unsupported new-format field fails without changing valid state.
 
 ### User story 4: Trust support geometry and diagnostics (priority: P2)
@@ -223,7 +223,7 @@ No unfinished solver implementation is a prerequisite for the existing Python co
 |---|---|
 | 001-low-memory-interpolator | The low-level core accepts an unrotated computational grid. Its caller continues to own external coordinate conversion. This spec must make that ownership explicit at the integration boundary. |
 | 002-rbf-interpolator | Its public value/gradient integration must preserve world coordinates. Internal RBF conditioning remains the RBF solver's responsibility and must not be applied twice. The new solver is not a dependency. |
-| 003-fault-evaluation-performance | Before planning 005, amend FR-006 and its dependent preservation criteria with C-004's reviewed correctness exception. Keep performance targets and unaffected baselines unchanged. Include transform changes in restored-point cache invalidation. |
+| 003-fault-evaluation-performance | Before planning 005, amend FR-006 and its dependent preservation criteria with C-004's reviewed correctness exception. Keep performance targets and unaffected baselines unchanged. Spec 003 keeps no restored points between evaluation calls (its C-012, FR-009), so a transform change cannot give a stale restoration. |
 | 004-matrix-free-directional-constraints | Before planning 005, amend AC-009 and AC-010 with C-004's reviewed correctness exception for affected results and fingerprints. Keep bounds and unaffected fingerprints unchanged. Clarify conversion of world directions into the computational basis without changing the low-level core contract. |
 
 This review changes only spec 005. It does not perform the required cascade. The cascade must apply the accepted exception and resolve the conflicts before planning starts. C-004 is settled and does not need another policy decision.
