@@ -320,16 +320,19 @@ the golden tests.
   - all the 5 000-point cases (every golden model, every function);
   - the 20 000-point cases of the plugin model and of the model with one fault
     and no unconformity;
-  - 12 cases at 50 000 points and 12 cases at 100 000 points. A fixed random
-    choice (fixed seed) picks them from the cases of the models with 0 or 1
-    faults and of the stopped-fault, onlap-domain and faulted-fold models.
-    The models that cost the most (the models with 2 or 4 faults, the
-    cutting-faults model and the plugin model) are not in this choice, because
-    they are measured at 5 000 and 20 000 points. The choice is the same in
-    every run, so two result files have the same cases. The gradient cases at
-    100 000 points are not in the standard suite (C-014).
-  The time pass runs all the cases of the standard suite. The count pass and
-  the memory pass run only its 5 000-point cases (C-014). The full suite is
+  - 9 cases at 50 000 points and 7 cases at 100 000 points (C-016). They come
+    from the fixed random choice of 2026-11-02 (fixed seed), which picked
+    12 cases at each size from the models with 0 or 1 faults and from the
+    stopped-fault, onlap-domain and faulted-fold models. The models that cost
+    the most (the models with 2 or 4 faults, the cutting-faults model and the
+    plugin model) are not in this choice, because they are measured at 5 000
+    and 20 000 points. The choice is the same in every run, so two result
+    files have the same cases. The gradient cases at 100 000 points are not in
+    the standard suite (C-014).
+  The time pass runs all the cases of the standard suite. The count pass runs
+  only its 5 000-point and 20 000-point cases, because SC-009 reads the count
+  of a 20 000-point case. The memory pass runs only its 5 000-point cases
+  (C-014). The full suite is
   not limited in time. It is the standard suite plus all the other cases of
   the full suite (FR-012), with all the passes.
 - **FR-012b**: The command that runs the suite MUST run the standard suite by
@@ -372,10 +375,10 @@ the golden tests.
 - **SC-002**: For the golden model with 4 faults and 3 unconformities and
   5 000 points, `evaluate_value` of the oldest group makes 4 fault
   applications (baseline: 16) and takes at most 40 % of the baseline time
-  (baseline: 2.55 s on the computer in `research.md`).
+  (baseline: 1.96 s in the baseline file of FR-016; C-015).
 - **SC-003**: For the same model, evaluating all groups makes 4 fault
   applications (baseline: 52) and takes at most 15 % of the baseline time
-  (baseline: 8.65 s).
+  (baseline: 6.48 s in the baseline file of FR-016; C-015).
 - **SC-004**: For the golden models with 4 faults and 5 000 points, the time
   to evaluate all groups with 3 unconformities is at most 1.5 times the time
   with 0 unconformities (baseline: 12.9 times).
@@ -519,4 +522,21 @@ failed acceptance run T030 (`t030-diagnosis.md`, `profile-d4a.md`).
   **Answer**: keep the limit of 15 minutes, and make the standard suite
   shorter: no warm state (C-012), the count and memory passes run only the
   5 000-point cases, and the gradient cases at 100 000 points move to the
-  full suite (FR-012a).
+  full suite (FR-012a). The planner added the 20 000-point cases to the count
+  pass on 2026-11-18, because SC-009 needs their counts.
+- **C-015 Baseline of the time ratios.** SC-002 and SC-003 gave the baselines
+  of `research.md` (2.55 s and 8.65 s, from a different script). The baseline
+  file of FR-016 has 1.96 s and 6.48 s for the same golden-model cases. Which
+  baseline do the time ratios use?
+  **Answer**: all the time ratios use the baseline file of FR-016 (the ratios
+  of SC-002, SC-003, SC-005 and SC-009). The numbers of `research.md` are for
+  information only. The ratio limits do not change.
+- **C-016 Large cases without the warm state.** The fixed choice of
+  2026-11-02 has 24 large case ids with a cold or a warm state. How does the
+  standard suite pick its large cases now?
+  **Answer**: use the same 24 ids without the state. Merge the ids that
+  become equal, and remove the 5 gradient cases at 100 000 points. This
+  gives 9 cases at 50 000 points and 7 cases at 100 000 points. The baseline
+  file has a measured value for each of them: the code before this feature
+  has no cache, so its warm case was one cold call. No new baseline run is
+  necessary.

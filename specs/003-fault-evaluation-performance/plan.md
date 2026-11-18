@@ -1,7 +1,7 @@
 # Implementation plan: Faster evaluation of faulted models
 
 **Feature**: `003-fault-evaluation-performance` | **Date**: 2026-11-01
-**Spec**: [spec.md](spec.md) | **State**: Replanned 2026-11-04 for a faster frame digest (D4b, T044-T045) after the failed key-time gate of T042; T001-T029, T033-T041 and T043 are done; T030 is blocked by OP3 and OP4
+**Spec**: [spec.md](spec.md) | **State**: Replanned 2026-11-18 for the reduced scope (spec C-012 to C-016): remove the cache between calls (D7), merge master and move the value lookup (D8), shorter suite and new acceptance rules (D9, D10); new tasks T046-T051; T001-T029 and T033-T045 are done; T030 waits for T051
 
 ## Open points
 
@@ -9,17 +9,19 @@
 |---|---|---|---|
 | OP1 (resolved) | Gradient and nested-fault count/memory interpretation. | The user accepted one restoration per distinct ordered fault set and distinct point batch on 2026-11-01. Count recursive frame batches separately and memory per actual restored point, including corners. See Answers. | none |
 | OP2 | Can the standard suite meet its time budget (about 1 hour before this feature, SC-008 15 minutes after it) and the SC-007 noise limit? The first run of the 860-case full matrix did not finish in 4 hours and was stopped on 2026-11-02. 500,000-point cases were 90 % of the time measured. | The spec now defines a standard suite (C-006 to C-010). T011 measures the standard suite twice before any performance edit. T030 measures it again after. If the baseline run of the standard suite takes more than 90 minutes, or if SC-007 or SC-008 fail, report the measured result and ask for a spec decision. Never remove cases from the standard suite to claim success. | T031, T032, if measurement fails |
-| OP3 | SC-008 (15 minutes for the standard suite). T030 measured 3,017 s (baseline 3,271 s). The sum of the candidate medians is only 334 s. About 2,000 s is work that is not evaluation: counters pass, memory pass, warm priming and process starts. Faster faults cannot reach 900 s. | Needs a spec decision. Options: (a) change the SC-008 target to a measured value; (b) cut the fixed cost of the passes (for example, fewer process starts); (c) make the standard suite smaller. (b) and (c) change FR-012a. T043 splits the wall time by pass, so the user decides with numbers. Recommendation: (b), then (a) for the part that stays. Never remove cases to claim success. | T030, T031 |
-| OP4 | SC-006 (peak memory at most 120 % of the baseline). T030 shows many cases above 1.2. Several have a very small baseline memory, so a few MB of cache or hash workspace gives a large ratio. | T043 lists each failing case with the baseline bytes, the candidate bytes, and the cause (cache retention, hash workspace, or other). The user then decides whether the rule needs an absolute allowance for small baselines. This is a spec change. Do not change the 1.20 limit in code without that answer. | T030 |
-| OP5 | Can SC-010 (warm `evaluate_model` at most 10 % of the cold call) be met? T030 diagnosis: a warm call with no fault calls and no tokens takes about 0.017 s. The cold call is about 0.22 s after the fix of D4a. The limit is then about 0.022 s, so the key work may use about 5 ms. | T042 measures the key time and the warm and cold times. If the ratio is above 0.10 after D4a, report the numbers and ask the user. Do not cache the key per revision: that hides in-place edits (D4). T042 at 598ef21e: about 8 ms and a ratio of 0.109 for `f4_u3`. D4b (T044, T045) makes the frame digest cheaper; a prototype gave 2.7 ms. T042 then measures again. | T042, T030 |
+| OP3 (resolved 2026-11-18 by spec C-014; design D9) | SC-008 (15 minutes for the standard suite). T030 measured 3,017 s (baseline 3,271 s). The sum of the candidate medians is only 334 s. About 2,000 s is work that is not evaluation: counters pass, memory pass, warm priming and process starts. Faster faults cannot reach 900 s. | Needs a spec decision. Options: (a) change the SC-008 target to a measured value; (b) cut the fixed cost of the passes (for example, fewer process starts); (c) make the standard suite smaller. (b) and (c) change FR-012a. T043 splits the wall time by pass, so the user decides with numbers. Recommendation: (b), then (a) for the part that stays. Never remove cases to claim success. | T030, T031 |
+| OP4 (resolved 2026-11-18 by spec C-013; design D10) | SC-006 (peak memory at most 120 % of the baseline). T030 shows many cases above 1.2. Several have a very small baseline memory, so a few MB of cache or hash workspace gives a large ratio. | T043 lists each failing case with the baseline bytes, the candidate bytes, and the cause (cache retention, hash workspace, or other). The user then decides whether the rule needs an absolute allowance for small baselines. This is a spec change. Do not change the 1.20 limit in code without that answer. | T030 |
+| OP5 (closed 2026-11-18: spec C-012 removes SC-010) | Can SC-010 (warm `evaluate_model` at most 10 % of the cold call) be met? T030 diagnosis: a warm call with no fault calls and no tokens takes about 0.017 s. The cold call is about 0.22 s after the fix of D4a. The limit is then about 0.022 s, so the key work may use about 5 ms. | T042 measures the key time and the warm and cold times. If the ratio is above 0.10 after D4a, report the numbers and ask the user. Do not cache the key per revision: that hides in-place edits (D4). T042 at 598ef21e: about 8 ms and a ratio of 0.109 for `f4_u3`. D4b (T044, T045) makes the frame digest cheaper; a prototype gave 2.7 ms. T042 then measures again. | T042, T030 |
 
 ## Summary
 
 First test and repair the existing gradient output-array defect in a separate
 correctness commit (T033, T034). Then freeze solved fields, golden outputs and
 the benchmark baseline before any performance change. Next share restored
-points within an evaluation and between calls. Last, reduce repeated
-structured-grid lookup work inside one fault application. Do not change the solver, displacement law,
+points within one evaluation call. Last, reduce repeated
+structured-grid lookup work inside one fault application. The replan of
+2026-11-18 removes the cache between calls and its lock (spec C-012), merges
+master into the branch, and makes the standard suite shorter (D7 to D10). Do not change the solver, displacement law,
 fault order, integration step count, or surface extraction algorithm.
 
 ## Technical context
@@ -95,8 +97,8 @@ at the same time. This plan uses its own golden fixture directory.
 | pytest and Ruff before merge | Pass | T032 runs both; do not waive existing failures. Report baseline failures separately. |
 | NumPy docstrings, type hints, Python 3.9 lint target | Pass | New interfaces use compatible typing and local style; no new runtime dependency. |
 | ROADMAP.md is the architecture source | Pass | T031 records the completed evaluation stage and its limits. |
-| Independently testable, reversible stages | Pass | Golden tests, benchmark tools, call sharing, persistent cache and grid changes have separate checkpoints. |
-| GeologicalModel public API boundary | Pass | Preserve all existing signatures and results; cache controls are additive. Run API contract tests. |
+| Independently testable, reversible stages | Pass | Golden tests, benchmark tools, call sharing and grid changes have separate checkpoints. D7 removes the cache stage in its own commit. |
+| GeologicalModel public API boundary | Pass | Preserve all existing signatures and results. D7 removes the additive `evaluation_cache` and `evaluation_revision` properties; they were never released, so the released API is unchanged. Run API contract tests. |
 | QGIS plugin stays separate | Pass | Use the stored plugin model without QGIS; do not edit the plugin. |
 | Spec, plan and task documents | Pass | This plan and tasks accompany the clarified spec. OP1 changes need a spec decision. |
 | Scoped package releases | Pass | No new package; commit root and loop_common changes with their correct scopes. |
@@ -356,7 +358,15 @@ before the first cache lookup, preserving first-use lazy building. If a build
 or solve occurs during a scope, discard its state and restart lookup with the
 new revision. Keep cycle checks in the faults setter.
 
+> **Changed on 2026-11-18 by D7.** The scope stays. It has no persistent
+> key, no revision and no lock. The scope key stays as it is in
+> `EvaluationContext.restore` today: point digest, shape, dtype, the
+> `(id, displacement, steps)` token of each fault, `reverse`.
+
 ### D4. Persistent cache and invalidation
+
+> **Superseded on 2026-11-18 by D7 (spec C-012).** D4, D4a and D4b stay as a
+> record of the done tasks. Do not build on them. D7 removes their code.
 
 `_evaluation_cache.py` defines `RestorationCache` with `enabled: bool`,
 `max_bytes: int`, `clear() -> None`, `invalidate() -> None`,
@@ -402,6 +412,8 @@ revision change to avoid retained obsolete data. Never cache masks or geology
 outputs: only restored coordinates.
 
 ### D4a. Cache key from the fault set (replan of 2026-11-03)
+
+> **Superseded on 2026-11-18 by D7.**
 
 This section corrects D4. D4 puts the fingerprint of the whole feature and the
 state of the whole model in the key. T030 shows two defects. The 4 groups of
@@ -490,6 +502,8 @@ Measured gates for T042 (report them; a miss is a failed task):
   uses it; the number goes into measurements.md.
 
 ### D4b. Faster frame digest (replan of 2026-11-04)
+
+> **Superseded on 2026-11-18 by D7.**
 
 This section corrects only `_update_frame` of D4a. T042 measured about 8 ms for
 `fault_set_fingerprint` of the 4 faults of `f4_u3` (gate: 5 ms). The cause is
@@ -602,6 +616,10 @@ Concurrent tests compare two same-model calls with serial references, first
 build happens once, independent models remain independent, and an exception
 cleans scope state and releases locks.
 
+> **Changed on 2026-11-18 by D7.** No persistent retention exists, so FR-010
+> has one mode (call-only memory). No lock exists. The concurrency tests
+> prove that two calls on one model run at the same time (D7, T047).
+
 ### D6. Cheaper structured-grid evaluation
 
 After the baseline gate, add private StructuredGrid
@@ -623,6 +641,258 @@ child faults, fillnan behavior or incompatible regions. No cached step lookup
 survives a point movement. Test fallback as well as the fast path. Measure the
 SC-009 target; if it fails, report the measured shortfall and replan, rather than
 changing steps, tolerances or displacements to obtain a passing result.
+
+> **Changed on 2026-11-18 by D8.** On master the value lookup is in
+> `StructuredGrid3DGeometry`. D8 moves the value part of D6 there.
+
+### D7. Remove the cache between calls (replan of 2026-11-18, spec C-012)
+
+Remove all code that keeps restored points after an evaluation call, and the
+lock for each model. Keep the scope for each call (D3), the gradient batch
+sharing (D5) and the fault-frame lookup (D6).
+
+Production changes (one commit, T048):
+
+- Delete `LoopStructural/modelling/features/_evaluation_cache.py`.
+- `LoopStructural/modelling/features/_evaluation.py`:
+  - Remove the import of `fault_set_fingerprint` and the `RestorationCache`
+    type import.
+  - `EvaluationContext.__init__(self, model=None)` keeps `self.model` and
+    `self._restorations: dict`. Remove `_fingerprints`, `_published` and
+    `_opaque`.
+  - `EvaluationContext.restore(feature, points, reverse=False)` keeps: the
+    `faults_enabled` check, the read-only view for no faults, the loop that
+    calls `builder.up_to_date()` on each fault, `_digest`, the scope key
+    `(digest, points.shape, points.dtype.str, tuple(_fault_state(f) for f in
+    faults), bool(reverse))`, the scope lookup, the fault loop, the copy when
+    the result shares memory with `points`, `flags.writeable = False`, and the
+    store in `self._restorations` after all faults. Remove the persistent
+    cache path (`_persistent_cache`, `_fingerprint`, `persistent_key`,
+    `revision`, `cache.put`, `cache.get`). Remove the literal `True` that was
+    the last key item.
+  - Remove `_persistent_cache`, `_fingerprint` and `_withdraw`.
+  - `evaluation_scope(model=None)`: keep the nested-scope rule (reuse the
+    active context when `model` is None or is the model of the active
+    context). Remove the lock. The function becomes:
+    `context = EvaluationContext(model); token = _ACTIVE.set(context); try:
+    yield context; finally: _ACTIVE.reset(token)`. A failed call keeps
+    nothing, because the context ends with the scope.
+  - Change the module docstring: the scope keeps entries for one call only.
+- `LoopStructural/modelling/core/geological_model.py`: remove the import of
+  `RestorationCache`, `self._evaluation_revision`, `self._evaluation_cache`,
+  the properties `evaluation_revision` and `evaluation_cache`, the method
+  `_bump_evaluation_revision`, and each `self._bump_evaluation_revision()`
+  call. Keep each `with evaluation_scope(self):` block.
+- `LoopStructural/modelling/features/_base_geological_feature.py`: remove the
+  import and the calls of `bump_revision`. Remove the `faults_enabled`
+  property and setter that this branch added; restore the plain attribute of
+  master (`self.faults_enabled = True` in `__init__`). Keep the
+  `evaluation_scope` import and its use in `evaluate_normalised_value`.
+- `LoopStructural/modelling/features/builders/_base_builder.py` and
+  `builders/_geological_feature_builder.py`: remove the import and the calls
+  of `bump_revision`, and the `_revision_hook` assignment. After T048,
+  `git diff master -- <these two files>` must be empty.
+- `LoopStructural/modelling/features/fault/_fault_segment.py`: remove the
+  import of `bump_revision` and `values_differ`, the `displacement` and
+  `steps` properties (restore the plain attributes), the `bump_revision`
+  calls in `set_displacement`, and the `try`/`finally` in the
+  `faultfunction` setter (restore the master body). Keep
+  `_shared_frame_members`, `_evaluate_frame`, `_evaluate_frame_legacy` and
+  the changed `apply_to_points`.
+- `packages/loop_interpolation/src/loop_interpolation/_discrete_interpolator.py`:
+  remove the class attribute `_revision_hook` and its call in `solve_system`. After T048,
+  `git diff master -- <this file>` must be empty.
+
+The scope key uses `id(fault)`. This is safe because the scope holds no entry
+after the call, and the faults live for the whole call.
+
+Test changes (T047, red first):
+
+- Delete `tests/fault_evaluation/test_cache_storage.py`,
+  `test_persistent.py`, `test_invalidation.py`, `test_fault_set_key.py` and
+  `test_fingerprint_cycle.py`. Each of them tests only removed code.
+- `test_concurrency.py`: remove the tests of the model lock and of the cache.
+  Keep the tests that compare two threads with serial references. Add
+  `test_two_calls_on_one_model_run_at_the_same_time`: patch
+  `FaultSegment.apply_to_points` with a wrapper that calls
+  `threading.Barrier(2, timeout=10).wait()` once for each thread and then
+  calls the original. Two threads call `model.evaluate_model(points)` on the
+  `f1_u0` golden model. The test fails if the barrier breaks (a lock makes
+  the second thread wait for the first). Both results equal the serial
+  result.
+- `test_memory.py`: remove the retained-bytes and cache-mode tests. Keep the
+  call-only FR-010 accounting. Add
+  `test_no_restoration_stays_after_the_call`: after `evaluate_model`,
+  `_evaluation._ACTIVE.get()` is None, and `gc` finds no `EvaluationContext`
+  object (use `gc.get_objects()` after `gc.collect()`).
+- `test_context.py`, `test_gradient_context.py`, `test_fault_frame_lookup.py`:
+  remove the lines that set or read `evaluation_cache` (for example the
+  `enabled = False` setup). Do not change the asserted counts.
+- New `tests/fault_evaluation/test_no_retention.py` (FR-009, user story 2
+  scenario 6). For each change below: evaluate `evaluate_model(points)` on a
+  golden model, make the change, evaluate again, build a second model with
+  the same change from the start, and assert equal results within FR-004.
+  The changes are: `fault.displacement *= 1.5` on the first fault of `f1_u0`;
+  `group.faults_enabled = False` on the oldest group of `f1_u1`; and
+  `fault.steps = 5` on the first fault of `f1_u0`. A transform change is not
+  tested here: spec 005 owns the transform policy (its SC-016).
+  Add `test_repeat_call_applies_the_faults_again`: two equal
+  `evaluate_model(points)` calls on `f1_u0` with no change make the same
+  number of fault applications (count with `EvaluationInstrumentation`), and
+  give equal results. Add `test_model_has_no_cache_attributes`:
+  `GeologicalModel` has no attribute `evaluation_cache` or
+  `evaluation_revision`.
+- Red check of T047 (before T048): these tests must fail, and only these:
+  `test_two_calls_on_one_model_run_at_the_same_time` (the lock serialises the
+  calls, so the barrier breaks), `test_repeat_call_applies_the_faults_again`
+  (the cache gives 0 fault applications in the second call) and
+  `test_model_has_no_cache_attributes`. The three change tests pass already.
+
+### D8. Merge master and move the value lookup (replan of 2026-11-18)
+
+Merge `master` into `spec/003-fault-evaluation-performance` with a merge
+commit. Do not rebase: the result files, the manifest and `run-state.json`
+name the commits of this branch, and a rebase changes them.
+
+The test merge of 2026-11-18 gives one conflict, in
+`packages/loop_common/src/loop_common/supports/_3d_structured_grid.py`.
+Master (#367, #369) moved `evaluate_value`, `trilinear`,
+`position_to_local_coordinates`, `position_to_dof_coefs` and
+`position_to_cell_corners` into
+`packages/loop_common/src/loop_common/geometry/_structured_grid_3d.py`
+(`StructuredGrid3DGeometry`). Master's `evaluate_value` also accepts a
+property array of shape `(n_nodes, k)`.
+
+Resolve the conflict like this:
+
+- `StructuredGrid3DGeometry` (geometry file) gets these private methods:
+  - `_has_uniform_lookup(self) -> bool`: True when `type(self)` does not
+    override `position_to_cell_index`, `position_to_local_coordinates` or
+    `position_to_cell_corners` of `StructuredGrid3DGeometry`.
+  - `_lookup_points(self, pos) -> tuple[np.ndarray, np.ndarray, np.ndarray]`:
+    the branch body (one `position_to_cell_index` call; corners with -1 for
+    outside rows; local coordinates clipped to 0..1).
+  - `_values_from_coefficients(idc, inside, coefs, property_array)`
+    (staticmethod): the master body of the weighted sum, for 1-D and
+    `(n_nodes, k)` property arrays.
+  - `_evaluate_value_from_lookup(self, lookup, property_array) -> np.ndarray`.
+  - `evaluate_value` uses `_lookup_points` and `trilinear` when
+    `_has_uniform_lookup()` is True, else the master path. Keep the master
+    checks of the property array shape.
+- `StructuredGrid` (support file) keeps the master text, plus the branch
+  gradient methods: `_gradient_weights`, `_evaluate_gradient_from_lookup`,
+  the fast path in `evaluate_gradient`, and `get_element_gradient_for_location`
+  through `_gradient_weights`. Its `_has_uniform_lookup` overrides the
+  geometry method and also requires that `get_element_gradient_for_location`
+  is the method of `StructuredGrid`.
+- `_fault_segment._shared_frame_members` stays: it checks
+  `isinstance(support, StructuredGrid)` and `support._has_uniform_lookup()`.
+- Tests: `packages/loop_common/tests/test_evaluation_lookup.py` (branch) and
+  the master reference tests `test_structured_support_reference.py`,
+  `test_property_grid.py` and `test_bounding_box_structured_grid.py` must
+  all pass. Add to `test_evaluation_lookup.py`:
+  `test_lookup_value_matches_master_path_for_multi_column_property` (a
+  `(n_nodes, 3)` property array, fast path equal to the master path) and
+  `test_rectilinear_grid_uses_the_master_path` (a `RectilinearGrid` returns
+  False from `_has_uniform_lookup`).
+
+After the merge, run `tests/fault_evaluation` and the golden tests. Master
+changed `geological_model.py` and `_base_geological_feature.py` in parts that
+merge without conflict; the golden tests show any change of results. If a
+golden result changes, stop and report it: only C-006 can change a reference.
+
+### D9. Shorter standard suite (replan of 2026-11-18, spec C-014, C-016)
+
+`benchmarks/fault_evaluation/run.py`:
+
+- `STATES = ("cold",)`. Case ids keep the suffix `:cold`, so the ids of the
+  baseline file still match. The `state` field stays in schema v1 and is
+  always `"cold"`.
+- `STANDARD_LARGE_CASES` becomes these 16 ids, in the order of the full list
+  (spec C-016):
+  `f0_u0:all_group_values:100000:cold`, `f0_u1:oldest_value:100000:cold`,
+  `f0_u1:model_ids:50000:cold`, `f0_u2:oldest_value:50000:cold`,
+  `f0_u3:model_ids:100000:cold`, `f1_u0:all_group_values:100000:cold`,
+  `f1_u1:oldest_value:50000:cold`, `f1_u2:oldest_value:100000:cold`,
+  `f1_u2:oldest_gradient:50000:cold`, `f1_u3:oldest_value:50000:cold`,
+  `f1_u3:all_group_values:100000:cold`, `stopped_fault:model_ids:50000:cold`,
+  `stopped_fault:oldest_gradient:50000:cold`,
+  `onlap_domain:model_ids:50000:cold`, `faulted_fold:oldest_value:50000:cold`,
+  `faulted_fold:all_group_values:100000:cold`.
+  Keep the comment on the draw of 2026-11-02 and add the rule of C-016.
+- New `PASS_POINTS: dict[str, tuple[int, ...] | None] = {"timing": None,
+  "counters": (5_000, 20_000), "rss": (5_000,)}`. None means all points.
+- New `pass_cases(cases: list[dict[str, Any]], pass_kind: str, suite: str)
+  -> list[dict[str, Any]]`: for `suite == "full"` return `cases`; else return
+  the cases whose `points` is in `PASS_POINTS[pass_kind]` (or all cases for
+  None). Raise ValueError for an unknown pass or suite.
+- `main` calls `_run_fresh_process_pass(pass_kind, pass_cases(cases,
+  pass_kind, options.suite), ...)`.
+- `_merge`: a case that the counter pass did not run gets `None` for each of
+  `COUNTER_FIELDS`. A case that the memory pass did not run gets `None` for
+  `peak_extra_rss_bytes`; `rss_unit` stays `"bytes"`. Add the top-level key
+  `"suite"` with the suite name.
+- `validate_result` accepts `None` only for `COUNTER_FIELDS` and
+  `peak_extra_rss_bytes`, and accepts an optional top-level `"suite"`.
+  `SCHEMA_VERSION` stays 1: old files have no `None` and stay valid.
+- New `cold_view(document: dict[str, Any]) -> dict[str, Any]`: return a copy
+  in which each `:warm` row whose `:cold` id is absent becomes a `:cold` row
+  (change `case_id` and `state`), and each other `:warm` row is removed. Use
+  it only on a file made by the code before this feature (T011). This is
+  valid because that code had no cache and the runner skipped the priming
+  call, so its warm case was one cold call (C-016). Record this in the
+  docstring.
+
+`benchmarks/fault_evaluation/bench_cases.py`: remove the warm path of
+`run_case` (the cache clear, the priming call and `evaluation_cache`). Keep
+`warmup_rounds=0`.
+
+The 100,000-point gradient cases leave the standard suite (spec C-014), so
+`onlap_domain:oldest_gradient:100000` and
+`onlap_domain:model_gradient:100000` are only in the full suite.
+
+### D10. Acceptance and comparison (replan of 2026-11-18, spec C-013, C-015)
+
+`benchmarks/fault_evaluation/acceptance.py`:
+
+- `check_acceptance(base, new)` applies `run.cold_view` to `base` first.
+- Remove `_sc010`, `IDS_COLD_F4U3`, `IDS_WARM_F4U3`, `WARM_F4U3`, the
+  `"SC-010"` row, `_cache_fields`, the `"warm"` memory mode
+  (`MEMORY_MODES = ("cold",)`) and the cache lines of `_memory_worker`.
+  Remove `"off"` too: with no cache, cold and off are the same.
+- New constant `MEMORY_ALLOWANCE_BYTES = 16 * 1024 * 1024`.
+- `_sc006(base, new)`: for each case where both peak values are not None,
+  the case passes when `new <= 1.20 * base` or
+  `new - base <= MEMORY_ALLOWANCE_BYTES`. A baseline of 0 uses only the
+  allowance. A case where the candidate value is None, but the baseline has a
+  value, is not a failure when the case is not in the memory pass of the
+  candidate suite; the row lists the number of compared cases. The row value
+  is the worst ratio; the reason lists each failing case with both values.
+- SC-002, SC-003, SC-005 and SC-009 keep `_time_ratio_row` and `_sc009` on
+  the baseline file (spec C-015). Change no limit.
+- `_check_cases` must accept `None` counter and memory fields when the
+  criterion does not read them. A criterion that needs a value that is None
+  fails with the reason "case X was not measured in the Y pass".
+
+`benchmarks/fault_evaluation/compare.py`: apply `run.cold_view` to the base
+document when it has `:warm` ids. A `None` value on either side gives the
+ratio text "not measured", never a failure and never a noise mark.
+
+### D11. Order of work and run of T030 (replan of 2026-11-18)
+
+1. T046 (D8) first: the other tasks must start from the merged tree. The
+   orchestrator runs `git merge --no-commit master`, the sub agent resolves
+   the conflict, and the orchestrator makes the merge commit.
+2. T047 (tests, red) and T049 (tests, red) after T046. They change different
+   files, so they can run in the same wave.
+3. T048 (D7) after T047. T050 (D9, D10) after T049.
+4. T051 (measure): run the D4a gates G1, G2 (cache on and off are now the same
+   code; replace G2 by "cold `model_ids` time at most 1.10 of T042"), G5,
+   and the D8 check that the golden tests pass, on the merged tree. Write a
+   new section of `profile-d4a.md`. Needs T048 and T050.
+5. T030 runs again (unchanged text; its result must use D9 and D10). Then
+   T031 (documents: no cache, the per-call scope, the suite and its passes)
+   and T032.
 
 ## Test strategy and checkpoints
 
@@ -658,37 +928,53 @@ fix must add no lint findings. Do not mix unrelated lint cleanup into D0.
 | FR-002, FR-003, FR-004 | T033, T034, T003, T004, T005, T006; D0 separates the correctness fix from capture; C-006 permits only reviewed affected-reference changes and requires separate correctness provenance |
 | FR-005, SC-001 | T033, T034, T003-T006, T030, T032; pre-performance baseline as defined in D0; C-006 records correctness and performance epochs separately and requires comparable provenance |
 | FR-006 | T033, T034, T006, T015, T021, T027, T032; C-006 keeps correctness and performance epochs distinct and preserves unaffected results and numeric limits |
-| FR-007 | T014, T015, T018, T019, T040, T041 |
-| FR-008 | T014, T015, T020, T021, T040, T041; apply the accepted OP1 batch rule |
-| FR-009 | T016, T017, T018, T019, T022, T023, T040, T041, T044, T045 (the coordinate owner controls accepted/rejected transform mutation; D4a fingerprints the current transform and prevents stale cache reuse) |
-| FR-010 | T012, T013, T018, T019, T022, T023, T030; accepted OP1 actual-point budget |
-| FR-010a | T022, T023 |
-| FR-011 | T014, T015, T019, T032 |
-| FR-012, FR-013, FR-014, FR-015 | T007, T008, T009, T010, T011 |
-| FR-012a, FR-012b | T035, T036, T037, T038, T011 |
-| FR-016 | T011 |
-| SC-002, SC-003, SC-004, SC-005 | T028, T029, T040, T041, T042, T030 |
-| SC-006 | T022, T023, T028, T039, T029, T043, T030; OP4 |
-| SC-007, SC-008 | T011, T028, T037, T038, T039, T029, T043, T030; OP2 measurement gate; OP3 gap (no plan can reach 900 s without a spec decision) |
-| SC-009 | T024, T025, T026, T027, T030 |
-| SC-010 | T016, T017, T018, T019, T028, T029, T040, T041, T044, T045, T042, T030; OP5 |
+| FR-007 | T014, T015, T047, T048 (D3 scope kept by D7) |
+| FR-008 | T014, T015, T020, T021, T047, T048; apply the accepted OP1 batch rule |
+| FR-009 | T047, T048 (D7: no restored points after the call; `test_no_retention.py`). Spec 005 owns the transform policy. |
+| FR-010 | T022, T047, T048, T030; call-only memory, accepted OP1 actual-point budget |
+| FR-010a | T022, T047, T048 (two threads run at the same time, no lock) |
+| FR-011 | T014, T015, T032, T048 |
+| FR-012, FR-013, FR-014, FR-015 | T007, T008, T009, T010, T011, T049, T050 |
+| FR-012a, FR-012b | T035, T036, T037, T038, T011, T049, T050 (D9: 16 large cases, pass point sets) |
+| FR-016 | T011; T050 `cold_view` reads it (C-016) |
+| SC-001 | T006, T046 (golden tests after the merge), T030, T032 |
+| SC-002, SC-003, SC-004, SC-005 | T028, T029, T051, T030 (time ratios on the baseline file, C-015) |
+| SC-006 | T049, T050 (D10 rule: 120 % or +16 MiB), T030 |
+| SC-007 | T011, T028, T037, T038, T039, T029, T030; OP2 |
+| SC-008 | T049, T050 (D9 shorter passes), T030 |
+| SC-009 | T024, T025, T026, T027, T046 (D8 keeps the lookup), T030 |
+| SC-010 | Removed by spec C-012. T050 removes its check. |
 
 ## Handover and release
 
 Spec 005 owns frame construction defects, shared world/local conversion
 repairs, and mutation policy for coordinate-owner state, including persistence
-metadata and copy behavior. This spec owns world-coordinate evaluation outputs
-and fingerprinting restoration transforms so the cache cannot reuse a stale
-result. Record separate correctness and performance epochs only when a future
+metadata and copy behavior. This spec owns world-coordinate evaluation outputs.
+After D7 it keeps no restored points between calls, so a transform change
+cannot give a stale restoration, and spec 005 has no 003 cache to invalidate. Record separate correctness and performance epochs only when a future
 reviewed correction changes references; preserve current manifest and reference
 records. Keep benchmark comparisons within a matching correctness epoch. Preserve existing timing, memory, count and numeric limits;
 report actual failures without claiming a gate passed.
 
-Private names added by D4a: `fault_set_fingerprint`,
-`RestorationCache.sync_revision`, the test field `Mutation.touches_faults`. No
-public name changes. `dependency_fingerprint` stays and keeps its tests.
-D4b adds one private constant, `_SMALL_FRAME_CELLS`, and changes only the body
-of the private `_update_frame`. Other specs use neither name.
+D7 removes all names of D4, D4a and D4b (`RestorationCache`,
+`fault_set_fingerprint`, `dependency_fingerprint`, `bump_revision`,
+`values_differ`, `_SMALL_FRAME_CELLS`, `GeologicalModel.evaluation_cache`,
+`GeologicalModel.evaluation_revision`, `DiscreteInterpolator._revision_hook`).
+None of them was released, and no other spec uses them.
+
+Names that stay or move, all private: `evaluation_scope`,
+`EvaluationContext`, `restore` (`_evaluation.py`);
+`FaultSegment._shared_frame_members`, `_evaluate_frame`,
+`_evaluate_frame_legacy`; `StructuredGrid3DGeometry._has_uniform_lookup`,
+`_lookup_points`, `_values_from_coefficients`, `_evaluate_value_from_lookup`
+(D8); `StructuredGrid._gradient_weights`, `_evaluate_gradient_from_lookup`.
+Spec 005 changes the grid and transform code too: its tasks must keep these
+private methods or change their callers in the same commit.
+
+Benchmark names added by D9 and D10: `run.PASS_POINTS`, `run.pass_cases`,
+`run.cold_view`, `acceptance.MEMORY_ALLOWANCE_BYTES`. Result files keep schema
+version 1, with `None` allowed for counter and memory fields of cases that a
+pass did not run, and an optional top-level `"suite"`.
 
 No protocol, schema, generated solver fixtures or Rust package changes.
 The loop_common change is a separate package release concern. Run its tests
@@ -790,6 +1076,34 @@ Order:
 Constitution check for this replan: every row of the "Constitution check"
 table stays Pass. The change is in one private module and one test file. It
 adds no dependency and no public name, and it keeps the existing results.
+
+## Replan of 2026-11-18 (reduced scope)
+
+Cause: a review of the implementation and of T030 (see Answers,
+"2026-11-18"). The spec changed: C-012 (no cache between calls, no lock),
+C-013 (SC-006 rule), C-014 (shorter suite), C-015 (time ratios on the
+baseline file), C-016 (16 large cases). D7 to D11 give the design.
+
+New task ids T046-T051 are appended; no id is reused. All done tasks keep
+their `[x]`; their code is removed by T048, not by an edit of the done tasks.
+T030 changes from blocked to `[ ]` and needs T051. T031 and T032 keep their
+text, with the new needs below.
+
+| Task | Tier | Kind | Files | Needs | Done when |
+|---|---|---|---|---|---|
+| T046 | M | code (merge) | merge commit; `packages/loop_common/src/loop_common/geometry/_structured_grid_3d.py`, `packages/loop_common/src/loop_common/supports/_3d_structured_grid.py`, `packages/loop_common/tests/test_evaluation_lookup.py` | T045 | D8 is done; `pytest packages/loop_common/tests`, `pytest tests/fault_evaluation` and the golden tests pass; the two new lookup tests pass; no golden reference changes. |
+| T047 | M | tests (red) | delete `tests/fault_evaluation/test_cache_storage.py`, `test_persistent.py`, `test_invalidation.py`, `test_fault_set_key.py`, `test_fingerprint_cycle.py`; change `test_concurrency.py`, `test_memory.py`, `test_context.py`, `test_gradient_context.py`, `test_fault_frame_lookup.py`; new `test_no_retention.py` | T046 | The red tests of D7, and only those, fail for the reasons in D7. |
+| T048 | M | code | the production files of D7 | T047 | `pytest tests/fault_evaluation` (without the four T049 test files, which are red until T050) and the golden tests pass; `git diff master` of the two builder files and of `_discrete_interpolator.py` is empty; `git grep` of each removed name of the Handover finds nothing in `LoopStructural` and `packages` (T050 checks `benchmarks` and `tests`, because T049 and T050 change those files); Ruff finds nothing new. |
+| T049 | M | tests (red) | `tests/fault_evaluation/test_benchmark_run.py`, `test_benchmark_suites.py`, `test_acceptance.py`, `test_benchmark_compare.py` | T046 | Tests for D9 and D10 fail for the expected reasons: the 16 large ids, `STATES`, `pass_cases`, `None` fields and `"suite"` in `_merge` and `validate_result`, `cold_view`, the SC-006 allowance (one case at 1.5 × a 1 MB baseline passes; one at 1.5 × a 100 MB baseline fails), no SC-010 row, and "not measured" in compare. |
+| T050 | M | code | `benchmarks/fault_evaluation/run.py`, `bench_cases.py`, `acceptance.py`, `compare.py` | T049, T048 | `pytest tests/fault_evaluation` passes; `git grep` of each removed name of the Handover finds nothing in `LoopStructural`, `packages`, `benchmarks` and `tests`; Ruff finds nothing new. |
+| T051 | M | measure (no code) | `specs/003-fault-evaluation-performance/profile-d4a.md` | T048, T050 | D11 step 4 is written as a new section, with the revision and the measured values. |
+
+New needs: T030 needs T051. T031 needs T030. T032 needs T031. T031 must
+document: no cache between calls (C-012), the per-call scope, the suite and
+its pass point sets, and the SC-006 rule.
+
+The run-state of the orchestrator keeps its old waves. The next wave starts
+at T046.
 
 ## Answers
 
@@ -920,3 +1234,16 @@ adds no dependency and no public name, and it keeps the existing results.
   `_SMALL_FRAME_CELLS`: `for item in frame.items():` and then
   `column = item[1]`. It keeps the behavior, also for duplicate column
   names, and it uses no `iloc`. Do not add `noqa`.
+- 2026-11-18, review and replan: a review of the branch found that sharing in
+  one call gives most of the gain (`f4_u3` `model_ids`, 5,000 points: 6.34 s
+  baseline, 0.22 s first call), and the cache between calls gives a second
+  call of 0.02 s with large cost (revision hooks, a state hash in each call, a
+  lock for each model, most SC-006 failures). The user chose (spec C-012 to
+  C-016): remove the cache and the lock; SC-006 passes at 120 % or +16 MiB;
+  shorter standard suite with the 15-minute limit; time ratios use
+  `baseline.json`; the 24 large ids become 16 cold ids. OP3 and OP4 are
+  resolved and OP5 is closed. The planner added the 20,000-point cases to the
+  count pass, because SC-009 reads their counts (spec FR-012a). The planner
+  chose a merge, not a rebase, of master (D8), because recorded files name
+  the commits of this branch. A test merge on 2026-11-18 gave one conflict
+  (`_3d_structured_grid.py`).
