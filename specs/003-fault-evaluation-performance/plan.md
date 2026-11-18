@@ -1247,3 +1247,10 @@ at T046.
   chose a merge, not a rebase, of master (D8), because recorded files name
   the commits of this branch. A test merge on 2026-11-18 gave one conflict
   (`_3d_structured_grid.py`).
+- 2026-11-18, review of wave 33 (orchestrator): the SC-006 row of D10 gives
+  the number of compared cases as the integer key `"compared_cases"` (cases
+  with a memory value in both documents; a None value is not counted). The
+  test `test_sc_006_row_reports_worst_ratio_failing_cases_and_compared_count`
+  checks it, with the worst ratio and the failing cases in the reason. The
+  T047 red check has 8 more red tests than D7 says: the tests that lost their
+  cache-off lines see cache hits until T048. They must pass after T048.

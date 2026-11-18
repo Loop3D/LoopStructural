@@ -563,6 +563,36 @@ def test_sc_006_allowance_limit_is_inclusive_and_a_zero_baseline_uses_only_it():
     assert _sc006(100_000_000, 100_000_000 + allowance + 1)["passed"] is False
 
 
+def test_sc_006_row_reports_worst_ratio_failing_cases_and_compared_count():
+    """The SC-006 row gives the worst ratio, each failing case and the compared count (D10).
+
+    Two cases fail both limits. One case passes. The two other cases have no
+    memory value in either document, so they are not compared.
+    """
+    check_acceptance = _check_acceptance()
+    base, new = _compliant_pair()
+    for case_id in (PLUGIN_OLD, SINGLE_F1U0):
+        _set(base, case_id, peak_extra_rss_bytes=None)
+        _set(new, case_id, peak_extra_rss_bytes=None)
+    _set(base, OLD_F4U3, peak_extra_rss_bytes=100_000_000)
+    _set(new, OLD_F4U3, peak_extra_rss_bytes=150_000_000)
+    _set(base, ALL_F4U3, peak_extra_rss_bytes=200_000_000)
+    _set(new, ALL_F4U3, peak_extra_rss_bytes=260_000_000)
+    row = check_acceptance(base, new)["criteria"]["SC-006"]
+    assert row["passed"] is False
+    assert row["value"] == pytest.approx(1.5)
+    reason = row["reason"]
+    for case_id, base_bytes, new_bytes in (
+        (OLD_F4U3, 100_000_000, 150_000_000),
+        (ALL_F4U3, 200_000_000, 260_000_000),
+    ):
+        assert case_id in reason
+        assert str(base_bytes) in reason
+        assert str(new_bytes) in reason
+    assert ALL_F4U0 not in reason
+    assert row["compared_cases"] == 3
+
+
 def test_candidate_without_memory_value_is_not_a_failure():
     """A candidate case that the memory pass did not run (None) does not fail SC-006."""
     check_acceptance = _check_acceptance()
