@@ -14,7 +14,7 @@ import pytest
 
 pytest.importorskip("loop_interpolation_core")
 
-from loop_interpolation import InterpolatorBuilder, InterpolatorType, StructuredGrid  # noqa: E402
+from loop_interpolation import InterpolatorBuilder, InterpolatorType, StructuredGrid
 
 # Number of nodes on each axis (30 x 30 x 30 = 27000 nodes).
 N_NODES = 30
@@ -123,7 +123,7 @@ def _assert_parity(data: dict, setup_kwargs: dict) -> None:
 
 
 def _background_regularisation(**overrides) -> dict:
-    kwargs = {name: BACKGROUND for name in ALL_REGULARISATION}
+    kwargs = dict.fromkeys(ALL_REGULARISATION, BACKGROUND)
     kwargs.update(overrides)
     return kwargs
 
@@ -133,7 +133,9 @@ def test_native_matches_cg_for_constraint_family(family):
     # Default regularisation, one data family (plus the value data that fixes the level).
     weights = {**ZERO_DATA_WEIGHTS, "cpw": 1.0}
     if family != "value":
-        weights[{"gradient": "gpw", "normal": "npw", "tangent": "tpw", "interface": "ipw"}[family]] = 1.0
+        weights[
+            {"gradient": "gpw", "normal": "npw", "tangent": "tpw", "interface": "ipw"}[family]
+        ] = 1.0
     _assert_parity(_data(family), weights)
 
 
@@ -174,7 +176,7 @@ def test_native_node_order_matches_matrix_solver():
     data = np.column_stack([nodes, expected, np.full(len(nodes), 1.0)])
     setup = {**ZERO_DATA_WEIGHTS, "cpw": 1.0, **_background_regularisation()}
     # Weak regularisation: the data fixes the field.
-    setup.update({name: 1e-4 for name in ALL_REGULARISATION})
+    setup.update(dict.fromkeys(ALL_REGULARISATION, 0.0001))
 
     results = {}
     for solver in ("cg", "native"):

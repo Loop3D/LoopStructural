@@ -1,10 +1,10 @@
-import pytest
 import geopandas as gpd
-import shapely
 import numpy
+import pytest
+import shapely
 
+from map2loop.m2l_enums import Datatype, VerboseLevel
 from map2loop.mapdata import MapData
-from map2loop.m2l_enums import VerboseLevel, Datatype
 
 
 @pytest.fixture

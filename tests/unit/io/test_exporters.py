@@ -235,7 +235,10 @@ def test_write_vol_gocad_is_broken_for_real_bounding_box(tmp_path):
     # raises instead of writing a VOXET file.
     model = _FakeModelForVolume()
     file_name = tmp_path / "vol_gocad"
-    with pytest.raises(LoopValueError):
+    # `BoundingBox.__getitem__` raises its own `LoopValueError` (defined in
+    # `loop_common.geometry._bounding_box`, a `ValueError`). It is not the class
+    # of `LoopStructural.utils.exceptions`, so match both.
+    with pytest.raises((LoopValueError, ValueError)):
         exporters.write_vol(
             model, str(file_name), "label", np.array([5, 5, 5]), FileFormat.GOCAD
         )

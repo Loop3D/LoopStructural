@@ -1,38 +1,41 @@
 # internal imports
+from __future__ import annotations
+
+from .interpolators import DipDipDirectionInterpolator
+from .logging import getLogger
 from .utils import (
-    create_points,
-    rebuild_sampled_basal_contacts,
     calculate_endpoints,
-    multiline_to_line,
+    clean_line_geometry,
+    create_points,
     find_segment_strike_from_pt,
+    iter_line_segments,
+    multiline_to_line,
+    nearest_orientation_to_line,
+    rebuild_sampled_basal_contacts,
+    segment_measure_range,
     set_z_values_from_raster_df,
     value_from_raster,
-    segment_measure_range,
-    clean_line_geometry,
-    nearest_orientation_to_line,
-    iter_line_segments
 )
-from .interpolators import DipDipDirectionInterpolator
 
-from .logging import getLogger
-logger = getLogger(__name__)  
+logger = getLogger(__name__)
 
 # external imports
-from abc import ABC, abstractmethod
-from typing import Optional, List
-from collections import defaultdict
-import scipy.interpolate
-import beartype
-import numpy
-import scipy
-from scipy.spatial import cKDTree
-import pandas
-import geopandas
-import shapely
-from shapely.geometry import LineString
 import math
+from abc import ABC, abstractmethod
+from collections import defaultdict
+from typing import List, Optional
+
+import beartype
+import geopandas
+import numpy
+import pandas
+import scipy
+import scipy.interpolate
+import shapely
 from osgeo import gdal
+from scipy.spatial import cKDTree
 from shapely.errors import UnsupportedGEOSVersionError
+from shapely.geometry import LineString
 
 
 def _angular_difference(angle_a: float, angle_b: float) -> float:
@@ -53,12 +56,12 @@ class ThicknessCalculator(ABC):
     """
 
     def __init__(
-        self, 
-        dtm_data: Optional[gdal.Dataset] = None, 
-        bounding_box: Optional[dict] = None, 
+        self,
+        dtm_data: Optional[gdal.Dataset] = None,
+        bounding_box: Optional[dict] = None,
         max_line_length: Optional[float] = None,
         is_strike: Optional[bool] = False,
-        ):
+    ):
         """
         Initialiser of for ThicknessCalculator
         """
@@ -124,8 +127,10 @@ class ThicknessCalculator(ABC):
                 f"have a calculated thickness of -1. This may indicate that {self.thickness_calculator_label} "
                 f"is not suitable for this dataset."
             )
+
     def __call__(self, **kwargs):
         return self.compute(**kwargs)
+
 
 class ThicknessCalculatorAlpha(ThicknessCalculator):
     """
@@ -220,7 +225,7 @@ class ThicknessCalculatorAlpha(ThicknessCalculator):
             thicknesses.loc[idx, "ThicknessMean"] = val
 
         self._check_thickness_percentage_calculations(thicknesses)
-        
+
         return thicknesses
 
 
@@ -245,7 +250,7 @@ class InterpolatedStructure(ThicknessCalculator):
         max_line_length: Optional[float] = None,
         is_strike: Optional[bool] = False,
         local_interpolation_neighbors: Optional[int] = None,
-        ):
+    ):
         """
         Initialiser for interpolated structure version of the thickness calculator
 
@@ -325,7 +330,11 @@ class InterpolatedStructure(ThicknessCalculator):
             )
         else:
             contacts["geometry"] = contacts.apply(
-                lambda row: shapely.geometry.Point(row.geometry.x, row.geometry.y,), axis=1
+                lambda row: shapely.geometry.Point(
+                    row.geometry.x,
+                    row.geometry.y,
+                ),
+                axis=1,
             )
         # spatial join the contact points with the basal contacts to get the unit for each contact point
         contacts = contacts.sjoin(basal_contacts, how="inner", predicate="intersects")
@@ -343,7 +352,9 @@ class InterpolatedStructure(ThicknessCalculator):
                 self.bounding_box, structure_data, interpolator=scipy.interpolate.RBFInterpolator
             )
         else:
-            dip = interpolator(self.bounding_box, structure_data, interpolator=scipy.interpolate.Rbf)
+            dip = interpolator(
+                self.bounding_box, structure_data, interpolator=scipy.interpolate.Rbf
+            )
         # create a GeoDataFrame of the interpolated orientations
         interpolated_orientations = geopandas.GeoDataFrame()
         # add the dip and dip direction to the GeoDataFrame
@@ -359,7 +370,9 @@ class InterpolatedStructure(ThicknessCalculator):
         interpolated_orientations = interpolated_orientations.set_crs(crs=basal_contacts.crs)
         if self.dtm_data is not None:
             # get the elevation Z of the interpolated points
-            interpolated_orientations = set_z_values_from_raster_df(self.dtm_data, interpolated_orientations)
+            interpolated_orientations = set_z_values_from_raster_df(
+                self.dtm_data, interpolated_orientations
+            )
             # update the geometry of the interpolated points to include the Z value
             interpolated_orientations["geometry"] = interpolated_orientations.apply(
                 lambda row: shapely.geometry.Point(row.geometry.x, row.geometry.y, row["Z"]), axis=1
@@ -377,7 +390,7 @@ class InterpolatedStructure(ThicknessCalculator):
         _dips = []
         _location_tracking = []
 
-        for i in range(0, len(stratigraphic_order) - 1):
+        for i in range(len(stratigraphic_order) - 1):
             if (
                 stratigraphic_order[i] in basal_unit_list
                 and stratigraphic_order[i + 1] in basal_unit_list
@@ -396,7 +409,8 @@ class InterpolatedStructure(ThicknessCalculator):
                     # (stratigraphic_order[i + 1], bounded above by basal_contact and
                     # below by top_contact), not from the overlying unit.
                     interp_points = interpolated_orientations.loc[
-                        interpolated_orientations["UNITNAME"] == stratigraphic_order[i + 1], "geometry"
+                        interpolated_orientations["UNITNAME"] == stratigraphic_order[i + 1],
+                        "geometry",
                     ].copy()
                     dip = interpolated_orientations.loc[
                         interpolated_orientations["UNITNAME"] == stratigraphic_order[i + 1], "dip"
@@ -417,7 +431,10 @@ class InterpolatedStructure(ThicknessCalculator):
                             numpy.argmin(shapely.length(short_line_candidates))
                         ]
                         # check if the short line is
-                        if self.max_line_length is not None and short_line.length > self.max_line_length:
+                        if (
+                            self.max_line_length is not None
+                            and short_line.length > self.max_line_length
+                        ):
                             continue
                         if self.dtm_data is not None:
                             inv_geotransform = gdal.InvGeoTransform(self.dtm_data.GetGeoTransform())
@@ -444,11 +461,16 @@ class InterpolatedStructure(ThicknessCalculator):
                             # GEOS 3.10.0+
                             indices = shapely.dwithin(short_line, interp_points, line_length * 0.25)
                         except UnsupportedGEOSVersionError:
-                            indices= numpy.array([shapely.distance(short_line,point)<= (line_length * 0.25) for point in interp_points])
+                            indices = numpy.array(
+                                [
+                                    shapely.distance(short_line, point) <= (line_length * 0.25)
+                                    for point in interp_points
+                                ]
+                            )
                         # get the dip of the points that are within
                         _dip = numpy.deg2rad(dip[indices])
                         if len(_dip) > 0:
-                            _lines.extend([short_line]*len(_dip))
+                            _lines.extend([short_line] * len(_dip))
                             _dips.extend(_dip)
                         # calculate the true thickness t = L * sin(dip)
                         thickness = line_length * numpy.sin(_dip)
@@ -456,10 +478,14 @@ class InterpolatedStructure(ThicknessCalculator):
                         # add location tracking
                         location_tracking = pandas.DataFrame(
                             {
-                                "p1_x": [p1[0]], "p1_y": [p1[1]], "p1_z": [p1[2]],
-                                "p2_x": [p2[0]], "p2_y": [p2[1]], "p2_z": [p2[2]],
+                                "p1_x": [p1[0]],
+                                "p1_y": [p1[1]],
+                                "p1_z": [p1[2]],
+                                "p2_x": [p2[0]],
+                                "p2_y": [p2[1]],
+                                "p2_z": [p2[2]],
                                 "thickness": [thickness],
-                                "unit": [stratigraphic_order[i]]
+                                "unit": [stratigraphic_order[i]],
                             }
                         )
                         _location_tracking.append(location_tracking)
@@ -507,11 +533,26 @@ class InterpolatedStructure(ThicknessCalculator):
 
         # Convert to GeoDataFrame and set CRS to match basal_contacts
         if not combined_location_tracking.empty:
-            self.location_tracking = geopandas.GeoDataFrame(combined_location_tracking, geometry='geometry', crs=basal_contacts.crs)
+            self.location_tracking = geopandas.GeoDataFrame(
+                combined_location_tracking, geometry='geometry', crs=basal_contacts.crs
+            )
         else:
-            self.location_tracking = geopandas.GeoDataFrame(columns=['p1_x', 'p1_y', 'p1_z', 'p2_x', 'p2_y', 'p2_z', 'thickness', 'unit', 'geometry'], crs=basal_contacts.crs)
+            self.location_tracking = geopandas.GeoDataFrame(
+                columns=[
+                    'p1_x',
+                    'p1_y',
+                    'p1_z',
+                    'p2_x',
+                    'p2_y',
+                    'p2_z',
+                    'thickness',
+                    'unit',
+                    'geometry',
+                ],
+                crs=basal_contacts.crs,
+            )
         # Create GeoDataFrame for lines
-   
+
         self.lines = geopandas.GeoDataFrame(geometry=_lines, crs=basal_contacts.crs)
         self.lines['dip'] = _dips
 
@@ -519,6 +560,7 @@ class InterpolatedStructure(ThicknessCalculator):
         self._check_thickness_percentage_calculations(thicknesses)
 
         return thicknesses
+
 
 class StructuralPoint(ThicknessCalculator):
     '''
@@ -535,12 +577,12 @@ class StructuralPoint(ThicknessCalculator):
     '''
 
     def __init__(
-        self, 
-        dtm_data: Optional[gdal.Dataset] = None, 
-        bounding_box: Optional[dict] = None, 
+        self,
+        dtm_data: Optional[gdal.Dataset] = None,
+        bounding_box: Optional[dict] = None,
         max_line_length: Optional[float] = None,
-        is_strike: Optional[bool] = False
-        ):
+        is_strike: Optional[bool] = False,
+    ):
         super().__init__(dtm_data, bounding_box, max_line_length, is_strike)
         self.thickness_calculator_label = "StructuralPoint"
         self.strike_allowance = 30
@@ -619,9 +661,7 @@ class StructuralPoint(ThicknessCalculator):
         sampled_structures = sampled_structures.dropna(subset=['unit_name'])
 
         # rebuild basal contacts lines based on sampled dataset
-        sampled_basal_contacts = rebuild_sampled_basal_contacts(
-            basal_contacts, sampled_contacts
-        )
+        sampled_basal_contacts = rebuild_sampled_basal_contacts(basal_contacts, sampled_contacts)
 
         # calculate map dimensions
         map_dx = geology.total_bounds[2] - geology.total_bounds[0]
@@ -634,7 +674,7 @@ class StructuralPoint(ThicknessCalculator):
         _dip = []
 
         # loop over each sampled structural measurement
-        for s in range(0, len(sampled_structures)):
+        for s in range(len(sampled_structures)):
 
             # make a shapely point from the measurement
             measurement = sampled_structures.iloc[s]
@@ -668,7 +708,9 @@ class StructuralPoint(ThicknessCalculator):
             # draw orthogonal line to the strike (default value 10Km), and clip it by the bounding box of the lithology
             if self.max_line_length is None:
                 self.max_line_length = 10000
-            B = calculate_endpoints(measurement_pt, float(strike), float(self.max_line_length), bbox_poly)
+            B = calculate_endpoints(
+                measurement_pt, float(strike), float(self.max_line_length), bbox_poly
+            )
             b = geopandas.GeoDataFrame({'geometry': [B]}).set_crs(basal_contacts.crs)
 
             # find all intersections
@@ -747,7 +789,7 @@ class StructuralPoint(ThicknessCalculator):
             # build the debug info
             line = shapely.geometry.LineString([int_pt1, int_pt2])
             _lines.append(line)
-            _dip.append(measurement['DIP'])  
+            _dip.append(measurement['DIP'])
 
             # find the lenght of the segment
             L = math.sqrt(((int_pt1.x - int_pt2.x) ** 2) + ((int_pt1.y - int_pt2.y) ** 2))
@@ -802,11 +844,9 @@ class StructuralPoint(ThicknessCalculator):
                 idx = stratigraphic_order.index(unit)
                 # throw warning to user
                 logger.warning(
-                    'Thickness Calculator StructuralPoint: Cannot calculate thickness between',
+                    "Thickness Calculator StructuralPoint: Cannot calculate thickness between %s and %s",
                     unit,
-                    "and ",
                     stratigraphic_order[idx + 1],
-                    "\n",
                 )
                 # assign -1 as thickness
                 output_units.loc[output_units["name"] == unit, "ThicknessMedian"] = -1
@@ -835,14 +875,22 @@ class AlongSection(ThicknessCalculator):
         max_line_length: Optional[float] = None,
         is_strike: Optional[bool] = False,
     ):
-        super().__init__(dtm_data, bounding_box, max_line_length, is_strike)  # initialise base calculator bits
-        self.thickness_calculator_label = "AlongSection"  # label used externally to identify this strategy
+        super().__init__(
+            dtm_data, bounding_box, max_line_length, is_strike
+        )  # initialise base calculator bits
+        self.thickness_calculator_label = (
+            "AlongSection"  # label used externally to identify this strategy
+        )
         self.sections = (
             sections.copy()  # keep a copy so editing outside does not mutate our internal state
             if sections is not None
-            else geopandas.GeoDataFrame({"geometry": []}, geometry="geometry")  # ensure predictable structure when no sections supplied
+            else geopandas.GeoDataFrame(
+                {"geometry": []}, geometry="geometry"
+            )  # ensure predictable structure when no sections supplied
         )
-        self.section_thickness_records: geopandas.GeoDataFrame = geopandas.GeoDataFrame()  # populated as GeoDataFrame during compute
+        self.section_thickness_records: geopandas.GeoDataFrame = (
+            geopandas.GeoDataFrame()
+        )  # populated as GeoDataFrame during compute
         self.section_intersection_points: dict = {}
 
     def type(self):
@@ -935,8 +983,8 @@ class AlongSection(ThicknessCalculator):
 
         try:
             geology_sindex = geology.sindex
-        except Exception as e:
-            logger.error("Failed to create spatial index for geology data: %s", e, exc_info=True)
+        except Exception:
+            logger.exception("Failed to create spatial index for geology data")
             geology_sindex = None
 
         sections_bounds = sections.total_bounds
@@ -947,7 +995,9 @@ class AlongSection(ThicknessCalculator):
             or sections_bounds[3] < geology_bounds[1]
             or sections_bounds[1] > geology_bounds[3]
         ):
-            logger.warning("AlongSection: Sections do not overlap geology extent; skipping thickness calculation.")
+            logger.warning(
+                "AlongSection: Sections do not overlap geology extent; skipping thickness calculation."
+            )
             return units
 
         if geology_sindex is None:
@@ -959,7 +1009,9 @@ class AlongSection(ThicknessCalculator):
                     overlaps = True
                     break
             if not overlaps:
-                logger.warning("AlongSection: Sections do not overlap geology; skipping thickness calculation.")
+                logger.warning(
+                    "AlongSection: Sections do not overlap geology; skipping thickness calculation."
+                )
                 return units
         else:
             overlaps = False
@@ -973,10 +1025,14 @@ class AlongSection(ThicknessCalculator):
                     overlaps = True
                     break
             if not overlaps:
-                logger.warning("AlongSection: Sections do not overlap geology; skipping thickness calculation.")
+                logger.warning(
+                    "AlongSection: Sections do not overlap geology; skipping thickness calculation."
+                )
                 return units
 
-        dip_column = next((col for col in ("DIP", "dip", "Dip") if col in structure_data.columns), None)
+        dip_column = next(
+            (col for col in ("DIP", "dip", "Dip") if col in structure_data.columns), None
+        )
         orientation_tree = None
         orientation_dips = None
         orientation_coords = None
@@ -992,7 +1048,7 @@ class AlongSection(ThicknessCalculator):
                         logger.debug(
                             "Failed to convert orientation coordinates to float for %d rows. Data quality issue likely. Example rows: %s",
                             len(orient_df),
-                            orient_df[["X", "Y"]].head(3).to_dict(orient="records")
+                            orient_df[["X", "Y"]].head(3).to_dict(orient="records"),
                         )
                         orientation_coords = numpy.empty((0, 2))
                     if orientation_coords.size:
@@ -1005,7 +1061,7 @@ class AlongSection(ThicknessCalculator):
         default_dip_warning_emitted = False
 
         units_lookup = dict(zip(units["name"], units.index))
-        thickness_by_unit = {name: [] for name in units_lookup.keys()}
+        thickness_by_unit = {name: [] for name in units_lookup}
         thickness_records: List[dict] = []
         split_segments_by_section: dict = defaultdict(list)
 
@@ -1069,10 +1125,7 @@ class AlongSection(ThicknessCalculator):
                     continue
 
                 dip_value, orientation_idx, orientation_distance = nearest_orientation_to_line(
-                    orientation_tree, 
-                    orientation_dips,
-                    orientation_coords,
-                    segment["geometry"]
+                    orientation_tree, orientation_dips, orientation_coords, segment["geometry"]
                 )
                 if numpy.isnan(dip_value):
                     dip_value = 90.0

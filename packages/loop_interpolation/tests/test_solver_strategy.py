@@ -185,8 +185,8 @@ def test_solve_system_warm_start_uses_previous_solution(monkeypatch):
         name = "solve_with_cg" if solver == "cg" else "solve_with_lsmr"
         original = getattr(strategy, name)
 
-        def spy(*args, x0=None, _original=original, **kwargs):
-            captured["x0"] = x0
+        def spy(*args, x0=None, _original=original, _captured=captured, **kwargs):
+            _captured["x0"] = x0
             return _original(*args, x0=x0, **kwargs)
 
         monkeypatch.setattr(strategy, name, spy)

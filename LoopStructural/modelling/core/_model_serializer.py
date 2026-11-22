@@ -10,8 +10,11 @@ stable API surface (``tests/unit/test_public_api_contract.py``) -- and just
 delegate to the staticmethods here.
 """
 
+from __future__ import annotations
+
 import json
 import pathlib
+from typing import TYPE_CHECKING
 
 import pandas as pd
 
@@ -21,12 +24,17 @@ from ..features import GeologicalFeature, StructuralFrame, UnconformityFeature
 from ..features.fault import FaultSegment
 from .stratigraphic_column import StratigraphicColumn
 
+if TYPE_CHECKING:
+    from .geological_model import GeologicalModel
+
 logger = getLogger(__name__)
 
 
 class ModelSerializer:
     @staticmethod
-    def feature_recipe_kind(feature):
+    def feature_recipe_kind(
+        feature: GeologicalFeature | StructuralFrame | UnconformityFeature | FaultSegment,
+    ) -> str:
         if isinstance(feature, GeologicalFeature):
             return "foliation"
         if isinstance(feature, StructuralFrame):
@@ -38,7 +46,7 @@ class ModelSerializer:
         return feature.__class__.__name__.lower()
 
     @staticmethod
-    def to_dict(model):
+    def to_dict(model: GeologicalModel) -> dict[str, object]:
         result = {}
         result["model"] = {}
         result["model"]["features"] = [f.name for f in model.features]
@@ -47,7 +55,9 @@ class ModelSerializer:
         return result
 
     @staticmethod
-    def to_recipe_dict(model, data_reference=None):
+    def to_recipe_dict(
+        model: GeologicalModel, data_reference: str | pathlib.Path | None = None
+    ) -> dict[str, object]:
         recipe = {
             "schema": "LoopStructural.GeologicalModelRecipe",
             "version": 1,
@@ -83,7 +93,7 @@ class ModelSerializer:
         return recipe
 
     @staticmethod
-    def from_recipe_dict(cls, recipe):
+    def from_recipe_dict(model_class: type[GeologicalModel], recipe: object) -> GeologicalModel:
         if not isinstance(recipe, dict):
             raise TypeError("recipe must be a dictionary")
 
@@ -94,7 +104,7 @@ class ModelSerializer:
         if not isinstance(bounding_box, BoundingBox):
             raise TypeError("recipe must include a bounding_box dictionary")
 
-        model = cls(bounding_box)
+        model = model_class(bounding_box)
 
         data_source = model_data.get("data_source")
         if isinstance(data_source, dict):
@@ -152,22 +162,28 @@ class ModelSerializer:
         return model
 
     @staticmethod
-    def to_recipe_json(model, data_reference=None, indent=2):
+    def to_recipe_json(
+        model: GeologicalModel, data_reference: str | pathlib.Path | None = None, indent: int = 2
+    ) -> str:
         recipe = ModelSerializer.to_recipe_dict(model, data_reference=data_reference)
         return json.dumps(recipe, indent=indent)
 
     @staticmethod
-    def from_recipe_json(cls, json_str):
+    def from_recipe_json(model_class: type[GeologicalModel], json_str: str) -> GeologicalModel:
         if not isinstance(json_str, str):
             raise TypeError("json_str must be a string")
         try:
             recipe = json.loads(json_str)
         except json.JSONDecodeError as e:
             raise TypeError(f"json_str is not valid JSON: {e}")
-        return ModelSerializer.from_recipe_dict(cls, recipe)
+        return ModelSerializer.from_recipe_dict(model_class, recipe)
 
     @staticmethod
-    def save_recipe(model, filename, data_reference=None):
+    def save_recipe(
+        model: GeologicalModel,
+        filename: str | pathlib.Path,
+        data_reference: str | pathlib.Path | None = None,
+    ) -> None:
         filename = pathlib.Path(filename)
         recipe = ModelSerializer.to_recipe_dict(model, data_reference=data_reference)
         with open(filename, "w") as f:
@@ -175,17 +191,19 @@ class ModelSerializer:
         logger.info(f"Recipe saved to {filename}")
 
     @staticmethod
-    def load_recipe(cls, filename):
+    def load_recipe(
+        model_class: type[GeologicalModel], filename: str | pathlib.Path
+    ) -> GeologicalModel:
         filename = pathlib.Path(filename)
         if not filename.exists():
             raise FileNotFoundError(f"Recipe file not found: {filename}")
         with open(filename, "r") as f:
             recipe = json.load(f)
         logger.info(f"Recipe loaded from {filename}")
-        return ModelSerializer.from_recipe_dict(cls, recipe)
+        return ModelSerializer.from_recipe_dict(model_class, recipe)
 
     @staticmethod
-    def to_file(model, file):
+    def to_file(model: GeologicalModel, file: str | pathlib.Path) -> None:
         try:
             import dill as pickle
         except ImportError:
@@ -199,7 +217,9 @@ class ModelSerializer:
             logger.error("Error saving file")
 
     @staticmethod
-    def from_file(cls, file, allow_pickle: bool = True):
+    def from_file(
+        model_class: type[GeologicalModel], file: str | pathlib.Path, allow_pickle: bool = True
+    ) -> GeologicalModel | None:
         if not allow_pickle:
             raise LoopValueError(
                 "Pickle-based loading is disabled (allow_pickle=False). "
@@ -232,7 +252,7 @@ class ModelSerializer:
         except Exception as e:
             logger.error(f"Failed to load model from {file}: {e}")
             raise LoopValueError(f"Failed to load model from {file}: {e}") from e
-        if isinstance(model, cls):
+        if isinstance(model, model_class):
             logger.info("GeologicalModel initialised from file")
             return model
         else:

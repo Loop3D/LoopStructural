@@ -1,16 +1,18 @@
+from __future__ import annotations
+
 from abc import ABC, abstractmethod
 from typing import Any, Optional, Union
+
 import beartype
 import numpy
-from numpy import ndarray
-from scipy.interpolate import Rbf, LinearNDInterpolator, RBFInterpolator
-from sklearn.cluster import DBSCAN
 import pandas
-
-
-from .utils import strike_dip_vector, generate_grid
+from numpy import ndarray
+from scipy.interpolate import LinearNDInterpolator, Rbf, RBFInterpolator
+from sklearn.cluster import DBSCAN
 
 from .logging import getLogger
+from .utils import generate_grid, strike_dip_vector
+
 logger = getLogger(__name__)
 
 
@@ -59,7 +61,6 @@ class Interpolator(ABC):
         Args:
             structure_data (pandas.DataFrame): sampled structural data
         """
-        pass
 
     @beartype.beartype
     @abstractmethod
@@ -76,7 +77,6 @@ class Interpolator(ABC):
                 "maxy": value,
             }
         """
-        pass
 
     @beartype.beartype
     @abstractmethod
@@ -92,8 +92,6 @@ class Interpolator(ABC):
         Returns:
             float: interpolated value
         """
-
-        pass
 
     @beartype.beartype
     @abstractmethod
@@ -112,7 +110,6 @@ class Interpolator(ABC):
             list: sorted list of unit names
 
         """
-        pass
 
 
 class NormalVectorInterpolator(Interpolator):
@@ -373,7 +370,7 @@ class DipDipDirectionInterpolator(Interpolator):
         if not collocated_clusters.empty:
             # Log a warning if collocated points are detected
             logger.warning(
-                f"Detected {len(collocated_clusters)} collocated point clusters. Aggregating these points.\n " 
+                f"Detected {len(collocated_clusters)} collocated point clusters. Aggregating these points.\n "
             )
 
         # Aggregate data for collocated points by taking the mean of X, Y and DIP, and the
@@ -440,7 +437,9 @@ class DipDipDirectionInterpolator(Interpolator):
             # neighbors=None (the RBFInterpolator default) fits one global surface,
             # equivalent in spirit to Rbf; a finite value restricts each query point's
             # fit to its nearest neighbours, keeping the interpolation local.
-            neighbors = self.neighbors if self.neighbors is None else min(self.neighbors, len(self.x))
+            neighbors = (
+                self.neighbors if self.neighbors is None else min(self.neighbors, len(self.x))
+            )
             rbf = RBFInterpolator(points, numpy.asarray(ni), neighbors=neighbors, kernel="linear")
             return rbf(query_points)
 

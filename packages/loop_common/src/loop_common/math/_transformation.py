@@ -2,9 +2,31 @@ from __future__ import annotations
 
 import numpy as np
 
-from . import getLogger
+from loop_common.logging import get_logger
 
-logger = getLogger(__name__)
+logger = get_logger(__name__)
+
+
+def _import_decomposition():
+    """Import the scikit-learn decomposition module.
+
+    Returns
+    -------
+    module
+        The module ``sklearn.decomposition``.
+
+    Raises
+    ------
+    ImportError
+        If scikit-learn is not installed.
+    """
+    try:
+        from sklearn import decomposition
+    except ImportError as error:
+        raise ImportError(
+            "scikit-learn is required for this function. Install it with: pip install scikit-learn"
+        ) from error
+    return decomposition
 
 
 class EuclideanTransformation:
@@ -34,37 +56,71 @@ class EuclideanTransformation:
         self.angle = angle
         self.fit_rotation = fit_rotation
 
-    def fit(self, points: np.ndarray):
-        """Fit the transformation to a point cloud
-        This function will find the main eigenvector of the point cloud
-        and rotate the point cloud so that this is aligned with x
+    def _check_points(self, points) -> np.ndarray:
+        """Check the points and return a float copy.
 
+        Parameters
+        ----------
+        points : array_like
+            Points with shape (N, d).
+
+        Returns
+        -------
+        np.ndarray
+            A copy of the points as a float array.
+
+        Raises
+        ------
+        ValueError
+            If the array is not 2D, or has fewer columns than ``dimensions``.
+        """
+        array = np.array(points, dtype=float)
+        if array.ndim != 2:
+            raise ValueError("points must be a 2D array with shape (N, d)")
+        if array.shape[1] < self.dimensions:
+            raise ValueError(f"Points must have at least {self.dimensions} dimensions")
+        return array
+
+    def fit(self, points: np.ndarray):
+        """Fit the transformation to a point cloud.
+
+        Find the centre of the points. If ``fit_rotation`` is true, find the
+        main axis of the points in the xy plane and set the angle so that
+        this axis is aligned with x. With fewer than 2 rows, the angle is 0
+        and scikit-learn is not used. The object does not change if this
+        method raises an error.
 
         Parameters
         ----------
         points : np.ndarray
-            xyz points as as numpy array
+            Points with shape (N, d). d must be at least ``dimensions``.
+
+        Returns
+        -------
+        EuclideanTransformation
+            The fitted object (self).
+
+        Raises
+        ------
+        ValueError
+            If the points are not valid.
+        ImportError
+            If ``fit_rotation`` is true, N is 2 or more, and scikit-learn
+            is not installed.
         """
-        try:
-            from sklearn import decomposition
-        except ImportError:
-            logger.error("scikit-learn is required for this function")
-            return
-        points = np.array(points)
-        if points.shape[1] < self.dimensions:
-            raise ValueError(f"Points must have at least {self.dimensions} dimensions")
-        # standardise the points so that centre is 0
-        # self.translation = np.zeros(3)
-        self.translation = np.mean(points[:, : self.dimensions], axis=0)
-        # find main eigenvector and and calculate the angle of this with x
-        if self.fit_rotation:
-            pca = decomposition.PCA(n_components=self.dimensions).fit(
-                points[:, : self.dimensions] - self.translation[None, : self.dimensions]
-            )
-            coeffs = pca.components_
-            self.angle = -np.arccos(np.dot(coeffs[0, :], [1, 0]))
-        else:
-            self.angle = 0
+        array = self._check_points(points)
+        d = self.dimensions
+        translation = np.mean(array[:, :d], axis=0)
+        angle = 0
+        # PCA needs at least 2 rows. With 1 row the angle stays 0.
+        if self.fit_rotation and array.shape[0] >= 2:
+            decomposition = _import_decomposition()
+            centred = array[:, :2] - translation[None, :2]
+            axis = decomposition.PCA(n_components=2).fit(centred).components_[0]
+            angle = -np.arctan2(axis[1], axis[0])
+        self.translation = translation
+        self.angle = angle
+        logger.debug(f"Fitted transformation: translation {translation}, angle {angle}")
         return self
 
     @property
@@ -80,7 +136,7 @@ class EuclideanTransformation:
             [
                 [np.cos(angle), -np.sin(angle), 0],
                 [np.sin(angle), np.cos(angle), 0],
-                [0, 0, -1],
+                [0, 0, 1],
             ]
         )
 
@@ -103,18 +159,11 @@ class EuclideanTransformation:
         np.ndarray
             xyz points in the transformed coordinate system
         """
-        points = np.array(points)
-        if points.shape[1] < self.dimensions:
-            raise ValueError(f"Points must have at least {self.dimensions} dimensions")
-        centred = points[:, : self.dimensions] - self.translation[None, :]
-        rotated = np.einsum(
-            "ik,jk->ij",
-            centred,
-            self.rotation[: self.dimensions, : self.dimensions],
-        )
-        transformed_points = np.copy(points)
-        transformed_points[:, : self.dimensions] = rotated
-        return transformed_points
+        array = self._check_points(points)
+        d = self.dimensions
+        centred = array[:, :d] - self.translation[None, :]
+        array[:, :d] = np.einsum("ik,jk->ij", centred, self.rotation[:d, :d])
+        return array
 
     def inverse_transform(self, points: np.ndarray) -> np.ndarray:
         """
@@ -130,20 +179,13 @@ class EuclideanTransformation:
         np.ndarray
             xyz points in the original coordinate system
         """
-        inversed = (
-            np.einsum(
-                "ik,jk->ij",
-                points[: self.dimensions],
-                self.inverse_rotation[: self.dimensions, : self.dimensions],
-            )
-            + self.translation
+        array = self._check_points(points)
+        d = self.dimensions
+        array[:, :d] = (
+            np.einsum("ik,jk->ij", array[:, :d], self.inverse_rotation[:d, :d])
+            + self.translation[None, :]
         )
-        inversed = (
-            np.vstack([inversed, points[self.dimensions :]])
-            if points.shape[1] > self.dimensions
-            else inversed
-        )
-        return inversed
+        return array
 
     def __call__(self, points: np.ndarray) -> np.ndarray:
         """

@@ -89,7 +89,6 @@ def write_feat_surfs(
                 model.bounding_box.bb[1, 2],
             ]
         )
-        model.rescale(verts)
         surf = Surface(
             vertices=verts,
             triangles=faces,
@@ -362,8 +361,6 @@ def _write_cubeface_evtk(model, file_name, data_label, nsteps, real_coords=True)
     # Evaluate model at points
     points, tri = create_box(model.bounding_box, nsteps)
     val = model.evaluate_model(points, scale=False)
-    if real_coords:
-        model.rescale(points)
 
     # Define vertices
     x = np.zeros(points.shape[0])
@@ -427,8 +424,6 @@ def _write_vol_evtk(model, file_name, data_label, nsteps, real_coords=True):
     # project world -> local internally)
     xyz = model.bounding_box.regular_grid(nsteps=nsteps, local=False)
     vals = model.evaluate_model(xyz, scale=False)
-    if real_coords:
-        model.rescale(xyz)
 
     # Define vertices - xyz.shape[0] is length of vector array
     x = np.zeros(xyz.shape[0])
@@ -474,10 +469,6 @@ def _write_vol_gocad(model, file_name, data_label, nsteps, real_coords=True):
     # Use FORTRAN style indexing for GOCAD VOXET
     vol_vals = np.reshape(vals, nsteps, order="F")
     bbox = model.bounding_box[:]
-
-    # Convert bounding box to real world scale coords
-    if real_coords:
-        model.rescale(bbox)
 
     # If integer values
     if type(vals[0]) is np.int64:

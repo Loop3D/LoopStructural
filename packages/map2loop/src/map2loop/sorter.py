@@ -1,15 +1,20 @@
-from abc import ABC, abstractmethod
-import beartype
-import pandas
-import numpy as np
+from __future__ import annotations
+
 import math
-from typing import Union, Optional, List
-from map2loop.topology import Topology
+from abc import ABC, abstractmethod
+from typing import ClassVar, List, Optional
+
+import beartype
 import geopandas
-from osgeo import gdal
-from map2loop.utils import value_from_raster
-from .logging import getLogger
 import networkx as nx
+import numpy as np
+import pandas
+from osgeo import gdal
+
+from map2loop.topology import Topology
+from map2loop.utils import value_from_raster
+
+from .logging import getLogger
 
 logger = getLogger(__name__)
 
@@ -56,7 +61,6 @@ class Sorter(ABC):
         Returns:
             list: sorted list of unit names
         """
-        pass
 
     def __call__(self, **kwargs):
         return self.sort(**kwargs)
@@ -67,7 +71,7 @@ class SorterUseNetworkX(Sorter):
     Sorter class which returns a sorted list of units based on the unit relationships using a topological graph sorting algorithm
     """
 
-    required_arguments: List[str] = ['geology_data', 'unit_name_column']
+    required_arguments: ClassVar[List[str]] = ['geology_data', 'unit_name_column']
 
     def __init__(
         self,
@@ -138,11 +142,11 @@ class SorterUseNetworkX(Sorter):
             graph.add_edge(name_to_index[row[1]["UNITNAME_1"]], name_to_index[row[1]["UNITNAME_2"]])
 
         cycles = list(nx.simple_cycles(graph))
-        for i in range(0, len(cycles)):
+        for i in range(len(cycles)):
             if graph.has_edge(cycles[i][0], cycles[i][1]):
                 graph.remove_edge(cycles[i][0], cycles[i][1])
                 logger.warning(
-                    " SorterUseNetworkX: Cycle found and contact edge removed:",
+                    "SorterUseNetworkX: Cycle found and contact edge removed: %s -> %s",
                     units["name"][cycles[i][0]],
                     units["name"][cycles[i][1]],
                 )
@@ -155,7 +159,7 @@ class SorterUseNetworkX(Sorter):
 
 
 class SorterUseHint(SorterUseNetworkX):
-    required_arguments: List[str] = ['unit_relationships']
+    required_arguments: ClassVar[List[str]] = ['unit_relationships']
 
     def __init__(self, *, geology_data: Optional[geopandas.GeoDataFrame] = None):
         logger.warning("SorterUseHint is deprecated in v3.2. Using SorterUseNetworkX instead")
@@ -167,7 +171,11 @@ class SorterAgeBased(Sorter):
     Sorter class which returns a sorted list of units based on the min and max ages of the units
     """
 
-    required_arguments = ['min_age_column', 'max_age_column', 'unit_name_column']
+    required_arguments: ClassVar[List[str]] = [
+        'min_age_column',
+        'max_age_column',
+        'unit_name_column',
+    ]
 
     def __init__(
         self,
@@ -230,7 +238,12 @@ class SorterAlpha(Sorter):
     prioritising the units with lower number of contacting units
     """
 
-    required_arguments = ['contacts', 'unit_name_column', 'unitname1_column', 'unitname2_column']
+    required_arguments: ClassVar[List[str]] = [
+        'contacts',
+        'unit_name_column',
+        'unitname1_column',
+        'unitname2_column',
+    ]
 
     def __init__(
         self,
@@ -337,7 +350,12 @@ class SorterMaximiseContacts(Sorter):
     prioritising the maximum length of each contact
     """
 
-    required_arguments = ['contacts', 'unit_name_column', 'unitname1_column', 'unitname2_column']
+    required_arguments: ClassVar[List[str]] = [
+        'contacts',
+        'unit_name_column',
+        'unitname1_column',
+        'unitname2_column',
+    ]
 
     def __init__(
         self,
@@ -426,7 +444,7 @@ class SorterMaximiseContacts(Sorter):
             reversed(
                 list(
                     nx.dfs_preorder_nodes(
-                        self.directed_graph, source=list(self.directed_graph.nodes())[0]
+                        self.directed_graph, source=next(iter(self.directed_graph.nodes()))
                     )
                 )
             )
@@ -442,7 +460,7 @@ class SorterObservationProjections(Sorter):
     using the direction of observations to predict which unit is adjacent to the current one
     """
 
-    required_arguments = [
+    required_arguments: ClassVar[List[str]] = [
         'contacts',
         'geology_data',
         'structure_data',
@@ -462,7 +480,7 @@ class SorterObservationProjections(Sorter):
         geology_data: Optional[geopandas.GeoDataFrame] = None,
         structure_data: Optional[geopandas.GeoDataFrame] = None,
         dtm_data: Optional[gdal.Dataset] = None,
-        length: Union[float, int] = 1000,
+        length: float = 1000,
     ):
         """
         Initialiser for adjacency based sorter
@@ -614,8 +632,7 @@ class SorterObservationProjections(Sorter):
                         g.add_edge(unit2, unit1, weight=max_value - weight)
                     if df.loc[unit1, unit2] > 0 and df.loc[unit2, unit1] > 0 and weight == 0:
                         # if both units have the same weight add a bidirectional edge
-                        pass
-                        print('')
+                        print()
                         g.add_edge(unit2, unit1, weight=max_value)
                         g.add_edge(unit1, unit2, weight=max_value)
         self.G = g
@@ -644,6 +661,6 @@ class SorterObservationProjections(Sorter):
                 dd.add_edge(edge[0], edge[1])
         self.directed = dd
         logger.info("Stratigraphic order calculated using observation based sorting")
-        order = list(nx.dfs_preorder_nodes(dd, source=list(dd.nodes())[0]))
+        order = list(nx.dfs_preorder_nodes(dd, source=next(iter(dd.nodes()))))
         logger.info(','.join(order))
         return order

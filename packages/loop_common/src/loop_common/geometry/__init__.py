@@ -1,5 +1,6 @@
 from ._bounding_box import BoundingBox
 from ._point import ValuePoints, VectorPoints
+from ._rigid import RigidRotationError, validate_rigid_rotation
 from ._structured_grid import PropertyGrid, StructuredGrid
 from ._structured_grid_2d import StructuredGrid2DGeometry
 from ._structured_grid_3d import StructuredGrid3DGeometry
@@ -9,6 +10,7 @@ from ._unstructured_mesh import UnstructuredMesh2DGeometry, UnstructuredMeshGeom
 __all__ = [
     "BoundingBox",
     "PropertyGrid",
+    "RigidRotationError",
     "StructuredGrid",
     "StructuredGrid2DGeometry",
     "StructuredGrid3DGeometry",
@@ -17,4 +19,5 @@ __all__ = [
     "UnstructuredMeshGeometry",
     "ValuePoints",
     "VectorPoints",
+    "validate_rigid_rotation",
 ]

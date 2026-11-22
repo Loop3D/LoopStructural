@@ -16,6 +16,10 @@ def smooth_peak(x):
     return v
 
 
+# smooth_peak is zero for |x| >= 1: a tip at both ends (see FaultDisplacement.tip_ends).
+smooth_peak.tip_ends = (1, -1)
+
+
 class FaultProfileFunction(metaclass=ABCMeta):
     def __init__(self):
         self.lim = [-1, 1]
@@ -27,6 +31,16 @@ class FaultProfileFunction(metaclass=ABCMeta):
     @abstractmethod
     def __call__(self, v: np.ndarray) -> np.ndarray:
         pass
+
+    @property
+    def tip_ends(self) -> tuple | None:
+        """The ends (+1, -1) of the coordinate beyond which the profile is zero.
+
+        A tip at +1 means the profile is exactly zero for v >= 1. The default
+        is None: not declared (``FaultDisplacement.tip_ends`` then tests the
+        profile numerically).
+        """
+        return None
 
     def plot(self, ax=None):
         if ax is None:
@@ -128,21 +142,33 @@ class CubicFunction(FaultProfileFunction):
         self.w = np.linalg.lstsq(ATA, ATB, rcond=None)[0]
         self.up_to_date = True
 
+    @property
+    def tip_ends(self) -> tuple:
+        """The limits at +-1 where the cubic is zero; it is clamped beyond them."""
+        self.solve()
+        ends = []
+        for end, lim in ((1, self.lim[1]), (-1, self.lim[0])):
+            value = self._limit_value(lim)
+            if lim == end and min(max(value, self.min_v), self.max_v) == 0.0:
+                ends.append(end)
+        return tuple(ends)
+
+    def _limit_value(self, x: float) -> float:
+        """Value at a limit: the value constraint there if there is one, else the cubic.
+
+        The least squares fit leaves about 1e-14 where a constraint asks for 0;
+        using the constraint makes a profile that ends at 0 exactly 0 beyond it.
+        """
+        for cx, cy in self.value_points:
+            if cx == x:
+                return float(cy)
+        return self.w[0] * x**3 + self.w[1] * x**2 + self.w[2] * x + self.w[3]
+
     def __call__(self, v):
         self.solve()
         eva = self.w[0] * v**3 + self.w[1] * v**2 + self.w[2] * v + self.w[3]
-        eva[v > self.lim[1]] = (
-            self.w[0] * self.lim[1] ** 3
-            + self.w[1] * self.lim[1] ** 2
-            + self.w[2] * self.lim[1]
-            + self.w[3]
-        )
-        eva[v < self.lim[0]] = (
-            self.w[0] * self.lim[0] ** 3
-            + self.w[1] * self.lim[0] ** 2
-            + self.w[2] * self.lim[0]
-            + self.w[3]
-        )
+        eva[v >= self.lim[1]] = self._limit_value(self.lim[1])
+        eva[v <= self.lim[0]] = self._limit_value(self.lim[0])
         eva[eva > self.max_v] = self.max_v
         eva[eva < self.min_v] = self.min_v
 
@@ -203,6 +229,8 @@ class Composite(FaultProfileFunction):
     def __init__(self, positive: FaultProfileFunction, negative: FaultProfileFunction):
         self.positive = positive
         self.negative = negative
+
+    tip_ends = ()
 
     def __call__(self, v: np.ndarray) -> np.ndarray:
         """calculate the displacement for the input coordinate
@@ -270,6 +298,8 @@ class Ones(FaultProfileFunction):
         v = np.array(v)
         return np.ones(v.shape)
 
+    tip_ends = ()
+
     def to_dict(self) -> dict:
         return {}
 
@@ -298,6 +328,8 @@ class Zeros(FaultProfileFunction):
         """
         v = np.array(v)
         return np.zeros(v.shape)
+
+    tip_ends = ()
 
     def to_dict(self) -> dict:
         return {}
@@ -361,6 +393,24 @@ class FaultDisplacement:
 
         return self.scale * self.gx(gx) * self.gy(gy) * self.gz(gz)
 
+    @property
+    def tip_ends(self) -> dict:
+        """The tip of the fault: for gy (1) and gz (2), the ends where the profile is zero.
+
+        A tip at end e of coordinate c means the displacement is exactly zero
+        where ``e * g_c >= 1``; ``FaultSegment.evaluate_tip_value`` is built
+        from it. A profile declares its ends with an attribute ``tip_ends``
+        (the library profiles and ``smooth_peak`` do). For a profile that does
+        not, the ends are found by testing that the profile is zero at
+        ``|g| = 1, 1.5, 2, 10``.
+
+        Returns
+        -------
+        dict of int to tuple of int
+            ``{1: ends of gy, 2: ends of gz}``; an empty tuple: no tip
+        """
+        return {1: _profile_tip_ends(self.gy), 2: _profile_tip_ends(self.gz)}
+
     def to_dict(self) -> dict:
         return {
             "gx": self.gx.to_dict(),
@@ -392,6 +442,172 @@ class FaultDisplacement:
         except ImportError:
             logger.warning("matplotlib not installed, not plotting")
             return
+
+
+def _saturate(distance: np.ndarray) -> np.ndarray:
+    """Limit a distance from the fault: the identity up to BLOCK_EXTENSION_EXACT,
+    constant beyond BLOCK_EXTENSION_LIMIT, and C2 in between."""
+    from ....utils import _fault_block
+
+    exact, limit = _fault_block.BLOCK_EXTENSION_EXACT, _fault_block.BLOCK_EXTENSION_LIMIT
+    length = limit - exact
+    t = np.clip((distance - exact) / length, 0.0, 1.0)
+    # q(0) = 0, q'(0) = 1, q''(0) = 0, q'(1) = 0, q''(1) = 0
+    return np.minimum(distance, exact) + length * (t - t**3 + 0.5 * t**4)
+
+
+def _taylor(function, x: np.ndarray, side: int) -> np.ndarray:
+    """Second-order expansion of ``function`` at the fault, from the side ``side``.
+
+    ``d(x0) + d'(x0) (x - x0) + 0.5 d''(x0) (x - x0)**2`` about
+    ``x0 = side * BLOCK_SIDE_EPSILON``, the place of a point on the fault in
+    the block, with one-sided finite differences of fourth order on six
+    points with the step ``BLOCK_EXTENSION_STEP`` (their error is of the
+    order of the step to the fourth power times the fifth and sixth
+    derivative of the profile; the rounding error of the curvature is about
+    1e-9 for a profile of size 1).
+    """
+    from ....utils import _fault_block
+
+    h = _fault_block.BLOCK_EXTENSION_STEP
+    x0 = side * _fault_block.BLOCK_SIDE_EPSILON
+    f0, f1, f2, f3, f4, f5 = (function(x0 + side * k * h) for k in range(6))
+    slope = side * (-25.0 * f0 + 48.0 * f1 - 36.0 * f2 + 16.0 * f3 - 3.0 * f4) / (12.0 * h)
+    curvature = (
+        45.0 * f0 - 154.0 * f1 + 214.0 * f2 - 156.0 * f3 + 61.0 * f4 - 10.0 * f5
+    ) / (12.0 * h**2)
+    return f0 + slope * (x - x0) + 0.5 * curvature * (x - x0) ** 2
+
+
+def continue_profile(profile, x: np.ndarray, side: int) -> np.ndarray:
+    """A gx profile of the side ``side`` continued to the other side of the fault.
+
+    Parameters
+    ----------
+    profile : callable
+        the profile of the block's side: the positive or negative part of a
+        :class:`Composite`, or the whole gx profile
+    x : np.ndarray
+        fault frame coordinate gx of points on the other side
+        (``side * x < 0``)
+    side : int
+        +1 or -1
+
+    Returns
+    -------
+    np.ndarray
+        * :class:`Ones`, :class:`Zeros`: the constant.
+        * :class:`CubicFunction`: its own cubic at the signed coordinate
+          (without its limits and its floor and ceiling). This is the
+          natural continuation, smooth to all orders at the fault.
+        * any other callable: the second-order expansion at the fault
+          (:func:`_taylor`), so the value, the slope and the curvature are
+          continuous (C2) and the third derivative is not.
+
+        Beyond ``BLOCK_EXTENSION_EXACT`` from the fault the coordinate is
+        limited (:func:`_saturate`), so the continuation is constant beyond
+        ``BLOCK_EXTENSION_LIMIT``.
+    """
+    from ....utils import _fault_block
+
+    x = np.asarray(x, dtype=float)
+    if isinstance(profile, (Ones, Zeros)):
+        return np.asarray(profile(x), dtype=float)
+    x = -side * _saturate(np.abs(x))
+    if isinstance(profile, CubicFunction):
+        profile.solve()
+        w = profile.w
+
+        def cubic(v):
+            return w[0] * v**3 + w[1] * v**2 + w[2] * v + w[3]
+
+        # the cubic is the profile at the fault unless a limit, a floor or a
+        # ceiling acts there
+        near = side * np.array([_fault_block.BLOCK_SIDE_EPSILON, _fault_block.BLOCK_EXTENSION_STEP])
+        if np.allclose(profile(near), cubic(near), rtol=0.0, atol=1e-12):
+            return cubic(x)
+
+    def scalar(v):
+        return float(np.asarray(profile(np.array([v], dtype=float)), dtype=float)[0])
+
+    return _taylor(scalar, x, side)
+
+
+def block_displacement(faultfunction, gx, forced_gx, gy, gz, side) -> np.ndarray:
+    """The displacement profile of a fault in the block that has the side ``side``.
+
+    On the block's own side (``side * gx >= 0``) this is the profile itself.
+    On the other side it is the smooth continuation of the profile of the
+    block's side across gx = 0 (``_fault_block.BLOCK_EXTENSION == "smooth"``):
+
+    * a :class:`FaultDisplacement`: its gx profile is continued
+      (:func:`continue_profile`); the gy and gz profiles are not changed.
+    * any other ``faultfunction(gx, gy, gz)``: the second-order expansion
+      in gx at the fault, at the gy and gz of each point.
+
+    The value, the slope and the curvature in gx are continuous at the fault
+    (C2), so a field restored with this displacement has a continuous
+    gradient across the fault surface. With ``BLOCK_EXTENSION == "mirror"``
+    the other side takes the mirror image (the profile at ``side * |gx|``),
+    which has a kink where the profile has a slope at the fault.
+
+    Parameters
+    ----------
+    faultfunction : callable
+        ``faultfunction(gx, gy, gz)``
+    gx : np.ndarray
+        fault frame coordinate of the points
+    forced_gx : np.ndarray
+        ``force_side(gx, side)``: gx on the block's side
+    gy, gz : np.ndarray
+    side : int or None
+        +1, -1, or None (no block side: the profile at gx)
+
+    Returns
+    -------
+    np.ndarray
+    """
+    from ....utils import _fault_block
+
+    out = faultfunction(forced_gx, gy, gz)
+    if side not in (-1, 1) or _fault_block.BLOCK_EXTENSION != "smooth":
+        return out
+    other = side * gx < 0
+    if not np.any(other):
+        return out
+    out = np.array(out, dtype=float, copy=True)
+    x, y, z = gx[other], gy[other], gz[other]
+    if isinstance(faultfunction, FaultDisplacement):
+        profile = faultfunction.gx
+        if isinstance(profile, Composite):
+            profile = profile.positive if side > 0 else profile.negative
+        out[other] = (
+            faultfunction.scale
+            * continue_profile(profile, x, side)
+            * faultfunction.gy(y)
+            * faultfunction.gz(z)
+        )
+    else:
+        x = -side * _saturate(np.abs(x))
+
+        def at(v):
+            return np.asarray(faultfunction(np.full(x.shape, v), y, z), dtype=float)
+
+        out[other] = _taylor(at, x, side)
+    return out
+
+
+def _profile_tip_ends(profile) -> tuple:
+    """The declared tip ends of a profile, or ends found by testing it."""
+    ends = getattr(profile, "tip_ends", None)
+    if ends is not None:
+        return tuple(ends)
+    found = []
+    for end in (1, -1):
+        beyond = end * np.array([1.0, 1.5, 2.0, 10.0])
+        if np.all(np.asarray(profile(beyond), dtype=float) == 0.0):
+            found.append(end)
+    return tuple(found)
 
 
 class BaseFault:

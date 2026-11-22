@@ -1,0 +1,940 @@
+{
+  "spec": "006-loop-link",
+  "worktree": "C:/Users/lachl/dev/LoopStructural-006",
+  "branch": "feat/006-loop-link",
+  "review_mode": "wave",
+  "start_commit": "d4157a3e37f945f8b1570cc9b2eef9278c1ae086",
+  "waves": [
+    {
+      "wave": 1,
+      "base": "4ed44583f45bd5073ed61bd04d164b6d538b915c",
+      "commit": "5a8b9f4b0108473ed887d73dae990698d19f600c",
+      "review": "pass"
+    },
+    {
+      "wave": 2,
+      "base": "ece3030f98abc65ee2f61f9c9738d0933bda0bc9",
+      "commit": "0e969185e7026700323902cc536fb5e933a08753",
+      "review": "pass"
+    },
+    {
+      "wave": 3,
+      "base": "23e3f1fbd1abe4c34da4dfdd4d0284ef268d2929",
+      "commit": "98d77a5cb0ed9551d30b553c553ce6dd3fc9ce75",
+      "review": "pass (after one fix round)"
+    },
+    {
+      "wave": 4,
+      "base": "d95d114a2ea06215f42c0fecb061a53f0838d1c3",
+      "commit": "c585652f419f22701d5649b41c8e76386ca97169",
+      "review": "pass (2 fix rounds; last fix verified by orchestrator)",
+      "fix_round": true
+    },
+    {
+      "wave": 5,
+      "base": "c585652f419f22701d5649b41c8e76386ca97169",
+      "commit": "fix commits after a3646378 (last: collar shape fix)",
+      "review": "pass (2 fix rounds; last fix verified by orchestrator with the real fixture)",
+      "fix_round": true
+    },
+    {
+      "wave": 6,
+      "base": "da01e309b89fb5d348df611afd6cb9442ad8d2a9",
+      "commit": "464241849a8758a95aaea7fd2a4a27212cbc37ef + test strengthening",
+      "review": "pass"
+    },
+    {
+      "wave": 7,
+      "base": "c200f6745253dc7bfe196eca1bd88ba14273093c",
+      "commit": "0590c43f + fix commit",
+      "review": "pass (one fix round; fixes verified by orchestrator)"
+    },
+    {
+      "wave": 8,
+      "base": "10e6d9b308286938801e30b47ce61c7394ad6d3f",
+      "commit": "2ab8b97b4ca6f18476eae4f2594306135c9ad21a",
+      "review": "pass (one fix round; fixes verified by orchestrator: 3 full runs)"
+    },
+    {
+      "wave": 9,
+      "base": "2ab8b97b4ca6f18476eae4f2594306135c9ad21a",
+      "commit": "dd11d8d1",
+      "review": "pass (one fix round; fixes verified by orchestrator)"
+    },
+    {
+      "wave": 10,
+      "base": "dd11d8d10998046df4c111abcbc85a5fe1d637db",
+      "commit": "133c19b9",
+      "review": "pass (one fix round; fixes verified by orchestrator)"
+    },
+    {
+      "wave": 11,
+      "base": "133c19b9567cda3ec31f4bb4bc6db9765a2205bb",
+      "commit": "0210cfb0 + fix commit",
+      "review": "pass (one fix round; fixes verified by orchestrator, 433 tests x3)",
+      "note": "VERIFY lists fake_viewer.py, test_adapter_pandas.py, test_viewer.py as outside Files: orchestrator-ordered fix of a FakeViewer text-array bug found by T033/T032 tests"
+    },
+    {
+      "wave": 12,
+      "base": "acf0db0d9006b08b0e9e022b5d0350a35f2485cb",
+      "commit": null,
+      "review": "pending"
+    },
+    {
+      "wave": 13,
+      "base": "c3b1a73e",
+      "commit": "ebbf9854 + final record",
+      "review": "end review: round 1 changes needed (1 blocker verified, 5 major), fix commit ebbf9854, round 2 pass"
+    },
+    {
+      "wave": "S4d (10-23)",
+      "base": "4ea89a7d",
+      "commit": "fd6d3ca3",
+      "review": "one batched review of waves 10-20 (code-reviewer-wave, sonnet): 1 major fixed (post tests), 3 minor open; fix verified by orchestrator, no second review round"
+    }
+  ],
+  "runs": {
+    "T001": [
+      {
+        "model": "sonnet",
+        "result": "pass"
+      }
+    ],
+    "T002": [
+      {
+        "model": "haiku",
+        "result": "pass"
+      }
+    ],
+    "T004": [
+      {
+        "model": "haiku",
+        "result": "pass"
+      }
+    ],
+    "T005": [
+      {
+        "model": "sonnet",
+        "result": "pass"
+      }
+    ],
+    "T003": [
+      {
+        "model": "sonnet",
+        "result": "pass (OP5 fallback)"
+      }
+    ],
+    "T006": [
+      {
+        "model": "haiku",
+        "result": "pass"
+      }
+    ],
+    "T007": [
+      {
+        "model": "sonnet",
+        "result": "pass"
+      }
+    ],
+    "T009": [
+      {
+        "model": "sonnet",
+        "result": "pass"
+      }
+    ],
+    "T011": [
+      {
+        "model": "sonnet",
+        "result": "pass"
+      }
+    ],
+    "T016": [
+      {
+        "model": "sonnet",
+        "result": "pass"
+      }
+    ],
+    "T008": [
+      {
+        "model": "sonnet",
+        "result": "pass"
+      }
+    ],
+    "T010": [
+      {
+        "model": "sonnet",
+        "result": "pass"
+      }
+    ],
+    "T017": [
+      {
+        "model": "sonnet",
+        "result": "pass"
+      }
+    ],
+    "T012": [
+      {
+        "model": "sonnet",
+        "result": "pass"
+      }
+    ],
+    "T015": [
+      {
+        "model": "sonnet",
+        "result": "pass"
+      }
+    ],
+    "T019": [
+      {
+        "model": "sonnet",
+        "result": "pass"
+      }
+    ],
+    "T013": [
+      {
+        "model": "sonnet",
+        "result": "pass"
+      }
+    ],
+    "T018": [
+      {
+        "model": "sonnet",
+        "result": "pass"
+      }
+    ],
+    "T014": [
+      {
+        "model": "sonnet",
+        "result": "pass"
+      }
+    ],
+    "T020": [
+      {
+        "model": "sonnet",
+        "result": "pass"
+      }
+    ],
+    "T021": [
+      {
+        "model": "sonnet",
+        "result": "pass"
+      }
+    ],
+    "T023": [
+      {
+        "model": "haiku",
+        "result": "pass"
+      }
+    ],
+    "T024": [
+      {
+        "model": "haiku",
+        "result": "pass"
+      }
+    ],
+    "T025": [
+      {
+        "model": "sonnet",
+        "result": "pass"
+      }
+    ],
+    "T027": [
+      {
+        "model": "sonnet",
+        "result": "pass"
+      }
+    ],
+    "T034": [
+      {
+        "model": "sonnet",
+        "result": "pass"
+      }
+    ],
+    "T037": [
+      {
+        "model": "haiku",
+        "result": "pass"
+      }
+    ],
+    "T028": [
+      {
+        "model": "sonnet",
+        "result": "pass"
+      }
+    ],
+    "T030": [
+      {
+        "model": "sonnet",
+        "result": "pass"
+      }
+    ],
+    "T032": [
+      {
+        "model": "sonnet",
+        "result": "pass"
+      },
+      {
+        "model": "sonnet",
+        "result": "test fix (async read)"
+      }
+    ],
+    "T035": [
+      {
+        "model": "sonnet",
+        "result": "pass"
+      }
+    ],
+    "T029": [
+      {
+        "model": "sonnet",
+        "result": "pass"
+      }
+    ],
+    "T031": [
+      {
+        "model": "sonnet",
+        "result": "pass"
+      }
+    ],
+    "T033": [
+      {
+        "model": "sonnet",
+        "result": "pass"
+      }
+    ],
+    "T036": [
+      {
+        "model": "haiku",
+        "result": "pass"
+      }
+    ],
+    "T022": [
+      {
+        "model": "haiku",
+        "result": "pass"
+      }
+    ],
+    "T038": [
+      {
+        "model": "sonnet",
+        "result": "pass (root pytest 2200 passed, 10 skipped, run separately by the orchestrator)"
+      }
+    ]
+  },
+  "findings": {
+    "found": 82,
+    "rejected": 0,
+    "dropped": 0,
+    "fixed": 59,
+    "open_minor": [
+      "W1 T004: loop-link CI job fails between wave 1 and wave 2 (fixed by T003/T006); do not merge wave 1 alone",
+      "W2 T006: errors with formatted message are not picklable",
+      "W2 T006: ViewerRefusedError text shows only the count",
+      "W6 T013: no test of value_map byte sum over the 2 GiB limit",
+      "W7 T014: size pre-check counts vertices at 8 bytes/value even for f32, so a very large f32 object (> about 125 MiB real) is refused early",
+      "W7 T020: viewer.inventory test retries BusyError (timing)",
+      "W8 T021: a single frame write longer than 15 s could still hit the viewer idle timeout (heartbeat cannot send while a send holds the lock)",
+      "W9 T034/T035: replace_prefix only removes ids reported at hello time; objects the same Viewer object sent earlier are not covered unless the Viewer reconnects",
+      "W9 T037: M2 step 6 expected type names are user-facing names; the viewer reports Lines as Curve and Vectors as Points",
+      "W11 T031: from_loopstructural raises MissingExtraError (not InvalidInputError) when loop_common is not importable (accepted)",
+      "W11 T033: pandas adapter speed 20000 holes x 5 survey rows ~4.6 s before the sort-once change",
+      "End review: vertex and cell properties with the same name collide (buffer data/<name>): pyvista meshes often have this, push skips the object",
+      "End review: clear() empties the local inventory while the real viewer keeps scene-owned objects; remove(group) keeps children in the local inventory",
+      "End review: SC-004 second half (library frames accepted by the geoviewer codec) has no repo test; reviewer proved it with a scratch Rust checker. Fake viewer now mirrors the main codec rules",
+      "End review: test_push gap check timing on a loaded CI machine loosened to 0.5 s",
+      "End review: loopstructural-test job does not wait for loop-link-test in CI",
+      "End recheck: push_objects item of length 1 raises IndexError and items of 4 or more parts drop extra parts silently (item[0], item[1] outside the try)",
+      "End recheck: Viewer.connect adds a fixed 50 ms read before hello; weakref.finalize atexit may close sockets without the lock (harmless)",
+      "End recheck: CI job could use ./.venv-loop-link to remove any doubt about path parsing",
+      "S4d T081: wait=False skips feature/refusal check; cancel and timeout ignored for the posted edit (docstring)",
+      "S4d T081: filter_enable and filter_remove also take wait/cancel/timeout/progress (no task names it)",
+      "S4d T089: fake _filter_counts raises TypeError for set_on with no range (raw requests only)"
+    ]
+  },
+  "merged_origin_master": "7497982b (ruff baseline fixed upstream by #395)",
+  "end_review": {
+    "round1": "changes needed: 1 blocker (verified), 5 major, 7 minor",
+    "fix_commit": "ebbf9854197fd9f31bcb9252e9ec99279b609c6d"
+  },
+  "s5": {
+    "start_commit": "6108d264360ec52a699e363de022575c75a4dc86",
+    "review_mode": "wave",
+    "note": "S5 waves use the wave numbers of tasks.md (19 waves in all). ruff and black run with uvx.",
+    "waves": [
+      {
+        "wave": 1,
+        "base": "6108d264360ec52a699e363de022575c75a4dc86",
+        "commit": "3c71e335",
+        "review": "pass"
+      },
+      {
+        "wave": 2,
+        "base": "3c71e335140837db198ef4abd971d6e1374742c7",
+        "commit": "b0918ffa",
+        "review": "pass (3 minor)",
+        "note": "test tasks fail as expected; ruff I001 on test_fetch.py is caused by the missing loop_link.fetch module and ends after T052"
+      },
+      {
+        "wave": 3,
+        "base": "b0918ffa",
+        "commit": "378331ef",
+        "review": "pass (3 minor)"
+      },
+      {
+        "wave": 4,
+        "base": "378331ef",
+        "commit": "577e38b7 + fix 63ae62ad",
+        "review": "pass (round 2)",
+        "note": "T043: 19 new tests fail as planned until T044/T045; one fix round for protocol dtype names (orchestrator finding)"
+      },
+      {
+        "wave": 5,
+        "base": "63ae62ad",
+        "commit": "228fa831",
+        "review": "pass (5 minor)"
+      },
+      {
+        "wave": 6,
+        "base": "228fa831",
+        "commit": "6dfd2047",
+        "review": "pass (3 minor)",
+        "note": "T045: fake also reads for command.cancel after object.header (the cancel test fetches blk, a BlockModel with no buffers, so it has no parts); accepted by orchestrator"
+      },
+      {
+        "wave": 7,
+        "base": "6dfd2047",
+        "commit": "94f41176 + fix 1b292cb9",
+        "review": "pass (round 2)"
+      },
+      {
+        "wave": 8,
+        "base": "1b292cb9",
+        "commit": "77aea501",
+        "review": "pass (5 minor)"
+      },
+      {
+        "wave": 9,
+        "base": "77aea501",
+        "commit": "9b62e733 + fix 13b7b822",
+        "review": "pass (round 2 done by orchestrator: the fix is two renames, verified by diff)"
+      },
+      {
+        "wave": 10,
+        "base": "13b7b822",
+        "commit": "c86aee99",
+        "review": "pass (4 minor)"
+      },
+      {
+        "wave": 11,
+        "base": "c86aee99",
+        "commit": "27c19aa8..6c6f4956",
+        "review": "pass (5 minor)"
+      },
+      {
+        "wave": 12,
+        "base": "6c6f4956",
+        "commit": "a2ee8417 + fix fbace3a1",
+        "review": "pass (round 2)"
+      },
+      {
+        "wave": 13,
+        "base": "fbace3a1",
+        "commit": "2de35984 + fix 313d5b86",
+        "review": "pass (round 2)"
+      },
+      {
+        "wave": 14,
+        "base": "313d5b86",
+        "commit": "4a6afd2c",
+        "review": "pass (no findings)"
+      },
+      {
+        "wave": 15,
+        "base": "4a6afd2c",
+        "commit": "b8b404d8",
+        "review": "pass (3 minor)"
+      },
+      {
+        "wave": 17,
+        "base": "b8b404d8",
+        "commit": "6c9583bc",
+        "review": "orchestrator check (docs only)"
+      },
+      {
+        "wave": 18,
+        "base": "6c9583bc",
+        "commit": null,
+        "review": "orchestrator check (docs only)"
+      },
+      {
+        "wave": 19,
+        "base": "b0e6bbc7",
+        "commit": null,
+        "review": "n/a (gates)",
+        "note": "T063 [!]: root pytest has no result (slow fold integration tests; tests/unit run stopped for low memory)"
+      }
+    ],
+    "runs": {
+      "T039": [
+        {
+          "model": "haiku",
+          "result": "pass"
+        }
+      ],
+      "T040": [
+        {
+          "model": "haiku",
+          "result": "pass"
+        }
+      ],
+      "T060": [
+        {
+          "model": "haiku",
+          "result": "pass"
+        }
+      ],
+      "T041": [
+        {
+          "model": "sonnet",
+          "result": "pass"
+        }
+      ],
+      "T051": [
+        {
+          "model": "sonnet",
+          "result": "pass"
+        }
+      ],
+      "T042": [
+        {
+          "model": "sonnet",
+          "result": "pass"
+        }
+      ],
+      "T052": [
+        {
+          "model": "sonnet",
+          "result": "pass"
+        }
+      ],
+      "T043": [
+        {
+          "model": "sonnet",
+          "result": "pass (1 retry for dtype names)"
+        }
+      ],
+      "T058": [
+        {
+          "model": "sonnet",
+          "result": "pass"
+        }
+      ],
+      "T059": [
+        {
+          "model": "sonnet",
+          "result": "pass"
+        }
+      ],
+      "T044": [
+        {
+          "model": "sonnet",
+          "result": "pass"
+        }
+      ],
+      "T045": [
+        {
+          "model": "sonnet",
+          "result": "pass"
+        }
+      ],
+      "T046": [
+        {
+          "model": "sonnet",
+          "result": "pass"
+        }
+      ],
+      "T047": [
+        {
+          "model": "sonnet",
+          "result": "pass"
+        }
+      ],
+      "T048": [
+        {
+          "model": "sonnet",
+          "result": "pass"
+        }
+      ],
+      "T049": [
+        {
+          "model": "sonnet",
+          "result": "pass"
+        }
+      ],
+      "T050": [
+        {
+          "model": "sonnet",
+          "result": "pass"
+        }
+      ],
+      "T053": [
+        {
+          "model": "sonnet",
+          "result": "pass"
+        }
+      ],
+      "T054": [
+        {
+          "model": "sonnet",
+          "result": "pass (1 fix round)"
+        }
+      ],
+      "T055": [
+        {
+          "model": "sonnet",
+          "result": "pass"
+        }
+      ],
+      "T056": [
+        {
+          "model": "sonnet",
+          "result": "pass"
+        }
+      ],
+      "T057": [
+        {
+          "model": "haiku",
+          "result": "pass"
+        }
+      ],
+      "T061": [
+        {
+          "model": "haiku",
+          "result": "pass"
+        }
+      ],
+      "T062": [
+        {
+          "model": "haiku",
+          "result": "pass"
+        }
+      ],
+      "T063": [
+        {
+          "model": "sonnet",
+          "result": "blocked (root pytest)"
+        }
+      ]
+    },
+    "open_minor": [
+      "S5 W2 T051: only Points tests decode_object with an origin different from the encode origin (Drillhole collar, Surface not covered)",
+      "S5 W2 T051: dropped-property tests use Points only (no Drillhole or Surface case, warning reason text not checked)",
+      "S5 W2 T051: no referenced test with ids 0..n-1 listed out of order in value_map",
+      "S5 W3 T052: decode_object does not check the origin shape (origin=[1.0] broadcasts)",
+      "S5 W3 T052: desc[\"name\"]/desc[\"id\"] KeyError on a malformed header (check in T054 or raise InvalidInputError)",
+      "S5 W3 T052: duplicate ids in value_map are not rejected",
+      "S5 W4 T043: no negative test for command.cancel with another request number; no check that no frame follows the cancelled error",
+      "S5 W4 T043: fetch origin test uses zero origin; header[object] not compared with the stored header",
+      "S5 W4 T043: untested rules: headless fetch works, selection.set without revision, refused selection.set keeps old selection, set_user_selection invalid index, version on request.error, progress fractions rise to 1.0",
+      "S5 W5 T044: _selection_set checks buffers before the object (unknown object + bad buffer gives field indices)",
+      "S5 W5 T044: unhashable or repeated entry kind in selection.set is not rejected cleanly (TypeError would end the tool thread)",
+      "S5 W5 T044: a selection keeps its old revision after a new upsert and is not cleared by scene.remove (check with M3)",
+      "S5 W5 T044: replies keep version 1.18 when protocol_minor < 18",
+      "S5 W6 T043/T045: cancel test fetches blk (no parts), so a cancel between parts is not tested",
+      "S5 W6 T045: a late command.cancel with no fetch running gets an unknown_message error frame (no request) and can be read as the reply of the next call",
+      "S5 W6 T045: the 0.001 s cancel read can time out inside a frame and lose stream sync (rare on localhost)",
+      "S5 W6 T045: a non-cancel message sent during a fetch is dropped without a reply",
+      "S5 W7 T046: needs_window tests do not check the feature text",
+      "S5 W7 T046: progress test does not check that progress frames are not passed to on_frame, non-number fraction, or request numbers after reconnect",
+      "S5 W7 T046: T047 must keep the unsupported_version feature text \"protocol <supported>\" (task text updated)",
+      "S5 W7 T045: FakeViewer does not record command.cancel in tool_requests (test uses a subclass tap)",
+      "S5 W7 T046: _scripted_request ends its last loop at 50 ms of silence, not at client close (possible flake on a slow runner)",
+      "S5 W8 T047: a handshake failure that is not 401 (for example HTTP 404 on /tool of an old viewer) raises a bare WebSocketError instead of a loop_link error",
+      "S5 W8 T047: ToolConnection.close() takes the request lock, so it waits for a running request (matters for Viewer.close with a long fetch)",
+      "S5 W8 T047: a non-mapping `error` field in request.error gives AttributeError",
+      "S5 W8 T047: a callback exception leaves the socket open with the rest of the frames; `until` given as a str is a substring test",
+      "S5 W9 T048: negative-cell case can pass without a local index check (add: no new selection.set frame)",
+      "S5 W9 T048: test_select_largest_index_is_accepted cannot tell sending 2**32-1 from refusing it locally",
+      "S5 W9 T048: _put_grid builds the grid by hand (revision 1) while other tests use the real client",
+      "S5 W10 T049: a poll error caused by stop()/close() can be stored in SelectionWatcher.error (race)",
+      "S5 W10 T049: parse_selection_result can raise ValueError/AttributeError for a malformed entry instead of ProtocolError",
+      "S5 W10 T049: Selection arrays are not read-only; start() docstring lacks Raises",
+      "S5 W11 T050: race between Viewer._tool() and close() can leave a tool connection open (check _dead again under _tool_lock)",
+      "S5 W11 T050: weakref.finalize does not close the tool connection of a dropped Viewer",
+      "S5 W11 T050: Raises sections of select/selection/watch_selection are incomplete",
+      "S5 W11 T050: _indices: [[]] gives the dtype error, [1, True] passes",
+      "S5 W11 T050: _watchers keeps stopped watchers",
+      "S5 W12 T053: no test proves the assembler allocates nothing before the 2 GiB check (monkeypatch numpy.empty)",
+      "S5 W12 T053: header rules of T054 untested: duplicate array name, bad dtype, bad shape, part bytes != buffer length, frame after object.end",
+      "S5 W12 T053: tests are the only check for the stream rules; positive control passes after T054 (not T055)",
+      "S5 W13 T054: ObjectTooLargeError raised from feed mid-stream does not close the tool connection (viewer keeps sending parts for the dead request)",
+      "S5 W13 T054: no regression test for malformed header fields (revision Infinity etc.): test file not in T054 Files; checked with a scratch script",
+      "S5 W15 T056: int64 property comes back as int32 by design (wire type); no value above 2**31 tested",
+      "S5 W15 T056: rtol 1e-6 on far-origin coordinates is loose (guarded by an absolute check and the dtype check)",
+      "S5 end review: the real selection.get returns object/revision with entries [] for an open table with no selection; the fake returns no object (Selection.object_id may be set for an empty selection)",
+      "S5 end review: tool.py maps the error frame code busy (ninth tool connection) to ViewerRefusedError, not BusyError",
+      "S5 end review: ToolConnection.request holds a non-re-entrant lock while it calls progress/on_frame (a callback that calls the viewer would deadlock)",
+      "S5 end review: Viewer._dead is shared by the data and tool connections (a broken data socket makes tool calls raise ViewerClosedError)",
+      "S5 end recheck: decode_object drops the optional polarity member of an orientation group without a warning"
+    ],
+    "findings": {
+      "found": 31,
+      "fixed": 14
+    },
+    "end_review": {
+      "round1": "changes needed: 1 blocker (verified by the orchestrator against geoviewer header.rs and the upsert_points fixture, and by the regression tests failing on the old code), 4 minor",
+      "fix": "null offsets/value_map/colour_map accepted in fetch.py, fake header writes the null fields, 4 regression tests",
+      "round2": "pass: no findings; 10 real viewer fixtures fed through _Assembler, 90 tests passed in the review worktree"
+    }
+  },
+  "s4": {
+    "start_commit": "88ca4475236f4686ba510472b5fbca6a3be38603",
+    "review_mode": "wave",
+    "note": "S4 waves use the wave numbers of tasks.md. ruff and black run with uvx.",
+    "waves": [
+      {
+        "wave": 2,
+        "base": "88ca4475",
+        "commit": "see git log",
+        "review": "orchestrator check (2 tiny tasks, diff read)"
+      },
+      {
+        "wave": 3,
+        "base": "a1d16349",
+        "commit": "see git log",
+        "review": "orchestrator check (test file read; one test task)"
+      },
+      {
+        "wave": 4,
+        "base": "2fa32b26",
+        "commit": "see git log",
+        "review": "orchestrator check (diff read, tests pass)"
+      },
+      {
+        "wave": 5,
+        "base": "57bf0fc0",
+        "commit": "10c82b76",
+        "review": "pass (4 minor)"
+      },
+      {
+        "wave": 6,
+        "base": "10c82b76",
+        "commit": "pending",
+        "review": "pass (1 minor, waves 6 and 7 reviewed together)"
+      },
+      {
+        "wave": 7,
+        "base": "c70fdb20",
+        "commit": "pending",
+        "review": "pass (1 minor, waves 6 and 7 reviewed together)"
+      },
+      {
+        "wave": 8,
+        "base": "9f925ce9",
+        "commit": "pending",
+        "review": "pass (2 minor, waves 8 and 9 reviewed together)"
+      },
+      {
+        "wave": 9,
+        "base": "9e0b77ee",
+        "commit": "pending",
+        "review": "pass (2 minor, waves 8 and 9 reviewed together)"
+      },
+      {
+        "wave": 10,
+        "base": "a39aa8ea",
+        "commit": "pending",
+        "review": "pass (3 minor)"
+      },
+      {
+        "wave": 16,
+        "base": "b959c483",
+        "commit": "pending",
+        "review": "pass (2 minor, waves 16 and 17 reviewed together)"
+      },
+      {
+        "wave": 17,
+        "base": "caf2c5aa",
+        "commit": "pending",
+        "review": "pass (2 minor, waves 16 and 17 reviewed together)"
+      },
+      {
+        "wave": 18,
+        "base": "609dde54",
+        "commit": "pending",
+        "review": "pass (no findings, waves 18 and 19 reviewed together)"
+      },
+      {
+        "wave": 19,
+        "base": "5748ead2",
+        "commit": "pending",
+        "review": "pass (no findings, waves 18 and 19 reviewed together)"
+      },
+      {
+        "wave": 20,
+        "base": "f9ea0423",
+        "commit": "pending",
+        "review": "see end review"
+      }
+    ],
+    "runs": {
+      "T064": [
+        {
+          "model": "haiku",
+          "result": "pass"
+        }
+      ],
+      "T084": [
+        {
+          "model": "haiku",
+          "result": "pass"
+        }
+      ],
+      "T065": [
+        {
+          "model": "haiku",
+          "result": "pass"
+        }
+      ],
+      "T066": [
+        {
+          "model": "haiku",
+          "result": "pass"
+        }
+      ],
+      "T067": [
+        {
+          "model": "sonnet",
+          "result": "pass"
+        }
+      ],
+      "T069": [
+        {
+          "model": "sonnet",
+          "result": "pass"
+        }
+      ],
+      "T082": [
+        {
+          "model": "sonnet",
+          "result": "pass"
+        }
+      ],
+      "T083": [
+        {
+          "model": "haiku",
+          "result": "pass"
+        }
+      ],
+      "T068": [
+        {
+          "model": "sonnet",
+          "result": "pass"
+        }
+      ],
+      "T078": [
+        {
+          "model": "haiku",
+          "result": "pass"
+        }
+      ],
+      "T070": [
+        {
+          "model": "sonnet",
+          "result": "pass (colour-stay test needs T071)"
+        }
+      ],
+      "T071": [
+        {
+          "model": "sonnet",
+          "result": "pass"
+        }
+      ],
+      "T072": [
+        {
+          "model": "sonnet",
+          "result": "pass"
+        }
+      ],
+      "T073": [
+        {
+          "model": "sonnet",
+          "result": "pass"
+        }
+      ],
+      "T074": [
+        {
+          "model": "sonnet",
+          "result": "pass"
+        }
+      ],
+      "T075": [
+        {
+          "model": "sonnet",
+          "result": "pass"
+        }
+      ],
+      "T076": [
+        {
+          "model": "sonnet",
+          "result": "pass"
+        }
+      ],
+      "T077": [
+        {
+          "model": "sonnet",
+          "result": "pass"
+        }
+      ],
+      "T079": [
+        {
+          "model": "sonnet",
+          "result": "pass"
+        }
+      ],
+      "T085": [
+        {
+          "model": "haiku",
+          "result": "pass"
+        }
+      ]
+    },
+    "open_minor": [
+      "S4 W5 T069: no test for a filter on an object-association array (the fake rejects that association at upsert)",
+      "S4 W5 T069: wrong-type rule for nested filter.edit fields, values not u32, keep_nan not bool and colour not 3 ints is not tested",
+      "S4 W5 T069: busy test uses 40 ms real-time margins (possible flake on a loaded machine)",
+      "S4 W5 T067: np.bool_ and a non-list commands value are not tested",
+      "S4 W6 T068: check_number(10**400) raises OverflowError instead of InvalidInputError",
+      "S4 W9 T071: the fake add sets kind by array type (range or values) not None as the T071 Context says; the T069 test needs it; the refusal by kind is a fake assumption (M4 checks)",
+      "S4 W9 T071: a second add replaces the filter; set_values does not check ids against value_map; set_range accepts nan/inf texts",
+      "S4 W10 T073: no test for apply_colour with a non-ColourSettings value or its colour map name check",
+      "S4 W10 T072: data-unchanged test does not compare with the sent buffers",
+      "S4 W10 T072: argument checks (timeout <= 0, non-bool flags, empty ids) are untested",
+      "S4 W17 T075: a None result of colour map names (viewer below 1.18) is not cached, so each set_colour_map sends commands.list again",
+      "S4 W17 T075: apply_colour checks the colour map name only at set_map, so colour.set_active may go out first (partial apply)",
+      "S4 end review: README example grid has no grade or unit property",
+      "S4 end review: fake .filters docstring still says kind can be None; refused add leaves an empty object entry in .filters",
+      "S4 recheck T076: the new regression test does not check that the refusal of the other object stays for the next flush",
+      "S4 recheck T077: self._refusals = others + self._refusals runs without self._lock (tiny race with the heartbeat thread)",
+      "S4 recheck T077: a late refusal of an earlier revision of the same id stops the colour of a later accepted revision"
+    ],
+    "findings": {
+      "found": 21,
+      "fixed": 2
+    },
+    "end_review": {
+      "round1": "changes needed: 2 major (send colour= flush raised for a refusal of another object; SC-007 test used 64 cells), 4 minor",
+      "fix": "fix commit: send keeps refusals of other objects; SC-007 test with 1,000,000 cells; 2 regression tests",
+      "round2": "pass: no blocker or major; 3 minor"
+    },
+    "blocked": [
+      "T080",
+      "T081",
+      "T086",
+      "T087 (OP15)"
+    ]
+  },
+  "blocked": [
+    "T087: root pytest 7 failed (pre-existing, outside loop_link); 2 RUF100 in loop_common"
+  ]
+}

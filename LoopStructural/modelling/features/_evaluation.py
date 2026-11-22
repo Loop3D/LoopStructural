@@ -21,6 +21,8 @@ from typing import TYPE_CHECKING
 
 import numpy as np
 
+from LoopStructural.utils._fault_block import restore_through
+
 if TYPE_CHECKING:
     from LoopStructural import GeologicalModel
     from LoopStructural.modelling.features._base_geological_feature import BaseFeature
@@ -117,10 +119,7 @@ class EvaluationContext:
         restored = self._restorations.get(key)
         if restored is not None:
             return restored
-        restored = points
-        for fault in faults:
-            restored = fault.apply_to_points(restored, reverse=reverse)
-        restored = np.asarray(restored)
+        restored = np.asarray(restore_through(points, faults, reverse=reverse))
         if restored is points or np.shares_memory(restored, points):
             restored = restored.copy()
         restored.flags.writeable = False

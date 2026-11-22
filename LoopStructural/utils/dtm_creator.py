@@ -1,12 +1,13 @@
+from __future__ import annotations
+
 from pathlib import Path
-from typing import Union
 
 from .logging import getLogger
 
 logger = getLogger(__name__)
 
 
-def create_dtm_with_rasterio(dtm_path: Union[str, Path]):
+def create_dtm_with_rasterio(dtm_path: str | Path):
     try:
         import rasterio
     except ImportError:

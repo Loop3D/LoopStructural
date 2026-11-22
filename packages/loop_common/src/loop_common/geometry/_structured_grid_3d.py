@@ -1,9 +1,13 @@
 """Pure 3D regular grid geometry: origin/nsteps/step_vector indexing."""
 
+from typing import Optional
+
 import numpy as np
 
 from loop_common.logging import get_logger as getLogger
 from loop_common.utils import LoopException
+
+from ._rigid import validate_rigid_rotation
 
 logger = getLogger(__name__)
 
@@ -50,7 +54,8 @@ class StructuredGrid3DGeometry:
         ele_vol = box_vol / nelements
         step_vector = np.zeros(3)
         step_vector[:] = ele_vol ** (1.0 / 3.0)
-        nsteps = np.ceil((self.maximum - self.origin) / step_vector).astype(int)
+        # Keep the extent. Use at least 2 nodes on each axis.
+        nsteps = np.maximum(np.ceil((self.maximum - self.origin) / step_vector).astype(int), 2)
         self.nsteps = nsteps
         return self.n_elements
 
@@ -68,9 +73,16 @@ class StructuredGrid3DGeometry:
 
     @nsteps.setter
     def nsteps(self, nsteps):
-        change_factor = nsteps / self.nsteps
-        self._step_vector /= change_factor
-        self._nsteps = nsteps
+        nsteps = np.broadcast_to(np.asarray(nsteps), self._nsteps.shape)
+        if not np.all(np.isfinite(nsteps)) or np.any(nsteps != np.round(nsteps)):
+            raise ValueError("Cannot resize the grid. nsteps must be whole numbers.")
+        nsteps = nsteps.astype(int)
+        if np.any(nsteps < 2):
+            raise ValueError("Cannot resize the grid. nsteps must be at least 2.")
+        # Keep the extent: the new step is the extent divided by the new cell count.
+        extent = self.nsteps_cells * self._step_vector
+        self._step_vector = extent / (nsteps - 1)
+        self._nsteps = np.array(nsteps)
         self._on_geometry_change()
 
     @property
@@ -93,10 +105,40 @@ class StructuredGrid3DGeometry:
                     [0, 0, 1],
                 ]
             )
-        rotation_xy = np.array(rotation_xy)
-        if rotation_xy.shape != (3, 3):
-            raise ValueError(f"Rotation matrix should be 3x3, not {rotation_xy.shape}")
-        self._rotation_xy = rotation_xy
+        self._rotation_xy = validate_rigid_rotation(rotation_xy, 3)
+
+    def _cells_for_length(
+        self, length: np.ndarray, step_vector: Optional[np.ndarray] = None  # noqa: FA100
+    ) -> np.ndarray:
+        """Return cell counts that cover the requested axis lengths.
+
+        Parameters
+        ----------
+        length : np.ndarray
+            Requested support length along each grid axis.
+        step_vector : Optional[np.ndarray]
+            Step to use along each axis. The default is the current step.
+
+        Returns
+        -------
+        np.ndarray
+            Number of cells required along each axis.
+
+        Raises
+        ------
+        ValueError
+            If any requested cell count is negative.
+        """
+        if step_vector is None:
+            step_vector = self.step_vector
+        cells = np.ceil(length / step_vector - 1e-9).astype(np.int64)
+        cells[cells == 0] = 2
+        if np.any(cells < 0):
+            logger.error(
+                f"Cannot resize the grid. The proposed number of cells is {cells}, these must be all >= 0"
+            )
+            raise ValueError("Cannot resize the grid.")
+        return cells
 
     @property
     def step_vector(self):
@@ -104,9 +146,11 @@ class StructuredGrid3DGeometry:
 
     @step_vector.setter
     def step_vector(self, step_vector):
-        change_factor = step_vector / self._step_vector
-        newsteps = self._nsteps / change_factor
-        self._nsteps = np.ceil(newsteps).astype(int)
+        step_vector = np.array(step_vector, dtype=float)
+        # Keep the extent: the new cell count covers the old extent with the new step.
+        extent = self.nsteps_cells * self._step_vector
+        cells = self._cells_for_length(extent, step_vector=step_vector)
+        self._nsteps = cells + 1
         self._step_vector = step_vector
         self._on_geometry_change()
 
@@ -117,15 +161,8 @@ class StructuredGrid3DGeometry:
     @origin.setter
     def origin(self, origin):
         origin = np.array(origin)
-        length = self.maximum - origin
-        length /= self.step_vector
-        self._nsteps = np.ceil(length).astype(np.int64)
-        self._nsteps[self._nsteps == 0] = 3
-        if np.any(~(self._nsteps > 0)):
-            logger.error(
-                f"Cannot resize the grid. The proposed number of steps is {self._nsteps}, these must be all > 0"
-            )
-            raise ValueError("Cannot resize the grid.")
+        maximum = self.maximum
+        self._nsteps = self._cells_for_length(maximum - origin) + 1
         self._origin = origin
         self._on_geometry_change()
 
@@ -136,15 +173,7 @@ class StructuredGrid3DGeometry:
     @maximum.setter
     def maximum(self, maximum):
         maximum = np.array(maximum, dtype=float)
-        length = maximum - self.origin
-        length /= self.step_vector
-        self._nsteps = np.ceil(length).astype(np.int64)
-        self._nsteps[self._nsteps == 0] = 3
-        if np.any(~(self._nsteps > 0)):
-            logger.error(
-                f"Cannot resize the grid. The proposed number of steps is {self._nsteps}, these must be all > 0"
-            )
-            raise ValueError("Cannot resize the grid.")
+        self._nsteps = self._cells_for_length(maximum - self.origin) + 1
         self._on_geometry_change()
 
     @property
@@ -206,19 +235,25 @@ class StructuredGrid3DGeometry:
             outside the grid is (0, 0, 0): use the mask, not the index, to detect them.
         """
         pos = self.check_position(pos)
+        # Read the geometry once: each property is computed on access.
+        origin = self.origin
+        ncells = self.nsteps_cells
         inside = self.inside(pos)
         cell_indexes = np.zeros((pos.shape[0], 3), dtype=int)
-        for axis in range(3):
-            cell = np.floor((pos[inside, axis] - self.origin[axis]) / self.step_vector[axis])
-            cell_indexes[inside, axis] = np.clip(cell.astype(int), 0, self.nsteps_cells[axis] - 1)
+        cell = np.floor((pos[inside] - origin) / self.step_vector)
+        cell_indexes[inside] = np.clip(cell.astype(int), 0, ncells - 1)
         return cell_indexes, inside
 
     def inside(self, pos: np.ndarray) -> np.ndarray:
         """Boolean mask of the points inside the grid, boundary included (to a small tolerance)."""
         pos = self.check_position(pos)
-        extent = np.maximum(np.abs(self.maximum - self.origin), 1.0)
+        return self._inside(pos, self.origin, self.maximum)
+
+    @staticmethod
+    def _inside(pos: np.ndarray, origin: np.ndarray, maximum: np.ndarray) -> np.ndarray:
+        extent = np.maximum(np.abs(maximum - origin), 1.0)
         tol = np.finfo(float).eps * 32.0 * extent
-        return np.all((pos >= (self.origin - tol)) & (pos <= (self.maximum + tol)), axis=1)
+        return np.all((pos >= (origin - tol)) & (pos <= (maximum + tol)), axis=1)
 
     def check_position(self, pos: np.ndarray) -> np.ndarray:
         if len(pos.shape) == 1:

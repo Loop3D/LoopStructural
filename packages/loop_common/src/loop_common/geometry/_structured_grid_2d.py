@@ -1,6 +1,5 @@
 """Pure 2D regular grid geometry: origin/nsteps/step_vector indexing."""
 
-
 import numpy as np
 
 from loop_common.logging import get_logger as getLogger
@@ -20,14 +19,55 @@ class StructuredGrid2DGeometry:
             nsteps = np.array([10, 10])
         if step_vector is None:
             step_vector = np.ones(2)
-        self.nsteps = np.ceil(np.array(nsteps)).astype(int)
+        self.nsteps = nsteps
         self.step_vector = np.array(step_vector)
         self.origin = np.array(origin)
-        self.maximum = origin + self.nsteps * self.step_vector
         self.dim = 2
-        self.nsteps_cells = self.nsteps - 1
-        self.n_cell_x = self.nsteps[0] - 1
-        self.n_cell_y = self.nsteps[1] - 1
+
+    @property
+    def nsteps(self) -> np.ndarray:
+        """Number of nodes on each axis.
+
+        Returns
+        -------
+        np.ndarray
+            Integer array of node counts.
+        """
+        return self._nsteps
+
+    @nsteps.setter
+    def nsteps(self, nsteps) -> None:
+        # Round up to whole nodes. All counts come from this value.
+        self._nsteps = np.ceil(np.asarray(nsteps)).astype(int)
+
+    @property
+    def nsteps_cells(self) -> np.ndarray:
+        """Number of cells on each axis (`nsteps - 1`)."""
+        return self.nsteps - 1
+
+    @property
+    def n_cell_x(self):
+        """Number of cells on the x axis."""
+        return self.nsteps[0] - 1
+
+    @property
+    def n_cell_y(self):
+        """Number of cells on the y axis."""
+        return self.nsteps[1] - 1
+
+    @property
+    def maximum(self) -> np.ndarray:
+        """Legacy maximum corner (FR-028).
+
+        Returns
+        -------
+        np.ndarray
+            `origin + nsteps * step_vector`.
+        """
+        # Legacy value (FR-028). It counts nodes as cells, so it is one
+        # step beyond the last node. `nodes` uses `nsteps_cells`.
+        # Do not change it.
+        return self.origin + self.nsteps * self.step_vector
 
     @property
     def nodes(self):
@@ -88,7 +128,10 @@ class StructuredGrid2DGeometry:
         inside = np.ones(pos.shape[0]).astype(bool)
         for i in range(self.dim):
             inside *= pos[:, i] > self.origin[None, i]
-            inside *= pos[:, i] < self.origin[None, i] + self.step_vector[None, i] * self.nsteps_cells[None, i]
+            inside *= (
+                pos[:, i]
+                < self.origin[None, i] + self.step_vector[None, i] * self.nsteps_cells[None, i]
+            )
         return inside
 
     def check_position(self, pos: np.ndarray) -> np.ndarray:
@@ -118,14 +161,20 @@ class StructuredGrid2DGeometry:
         if mask is None:
             mask = np.array([[-1, 0, 1, -1, 0, 1, -1, 0, 1], [1, 1, 1, 0, 0, 0, -1, -1, -1]])
         neighbours = indexes[:, None, :] + mask[:, :, None]
-        return (neighbours[0, :, :] + self.nsteps[0, None, None] * neighbours[1, :, :]).astype(np.int64)
+        return (neighbours[0, :, :] + self.nsteps[0, None, None] * neighbours[1, :, :]).astype(
+            np.int64
+        )
 
     def cell_corner_indexes(self, cell_indexes: np.ndarray) -> np.ndarray:
         corner_indexes = np.zeros((cell_indexes.shape[0], 4, 2), dtype=np.int64)
         xcorner = np.array([0, 1, 0, 1])
         ycorner = np.array([0, 0, 1, 1])
-        corner_indexes[:, :, 0] = cell_indexes[:, None, 0] + corner_indexes[:, :, 0] + xcorner[None, :]
-        corner_indexes[:, :, 1] = cell_indexes[:, None, 1] + corner_indexes[:, :, 1] + ycorner[None, :]
+        corner_indexes[:, :, 0] = (
+            cell_indexes[:, None, 0] + corner_indexes[:, :, 0] + xcorner[None, :]
+        )
+        corner_indexes[:, :, 1] = (
+            cell_indexes[:, None, 1] + corner_indexes[:, :, 1] + ycorner[None, :]
+        )
         return corner_indexes
 
     def global_index_to_cell_index(self, global_index):

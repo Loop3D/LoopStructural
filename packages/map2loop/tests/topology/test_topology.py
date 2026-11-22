@@ -1,8 +1,7 @@
 import geopandas as gpd
-from shapely.geometry import Polygon, LineString
+from shapely.geometry import LineString, Polygon
 
 from map2loop.topology import Topology
-
 
 
 def simple_geology():

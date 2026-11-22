@@ -1,12 +1,19 @@
-import geopandas
-import map2loop
 import pathlib
+
+import geopandas
 from osgeo import gdal
+
+import map2loop
+
 gdal.UseExceptions()
-def map2loop_dir(folder)-> pathlib.Path:
+
+
+def map2loop_dir(folder) -> pathlib.Path:
     path = pathlib.Path(map2loop.__file__).parent
-    path = path / "_datasets"/"geodata_files"/f'{folder}'
+    path = path / "_datasets" / "geodata_files" / f'{folder}'
     return path
+
+
 def load_hamersley_geology():
     """
     Loads Hamersley geology data from a shapefile
@@ -18,7 +25,7 @@ def load_hamersley_geology():
     Returns:
         geopandas.GeoDataFrame: The geology data
     """
-    
+
     path = map2loop_dir('hamersley') / "geology.geojson"
     return geopandas.read_file(str(path))
 

@@ -92,6 +92,86 @@ same-release removal. `.github/workflows/qgis-compat.yml` checks this out
 against the plugin's own test/import suite on every PR/push to `master`, not
 just at release time.
 
+### Legacy interpolator payloads (spec 005, FR-019)
+Decision date: 2026-11-03 (spec 005, decision C-003, user decision). Amended on 2026-11-05 (C-018, user decision).
+
+A legacy interpolator payload has no recoverable transform. The payload
+does not store the local origin or the local rotation. The loader cannot
+find them from the data.
+
+On the 1.x line, the loader keeps the old behaviour. A call with no choice
+loads the payload with the identity frame. It emits one `FutureWarning`.
+The warning names the choices and says that the next major release raises
+an error.
+
+The caller can choose now:
+- `local_origin` and `local_rotation` (both). The caller states the
+  transform.
+- `declare_identity=True`. The caller states that the transform is the
+  identity.
+
+A partial transform (only one of `local_origin` and `local_rotation`)
+raises `InterpolatorFormatError`.
+
+At the next major release, the loader raises `InterpolatorFormatError` for
+a call with no choice. The code carries a note to remove the fallback
+(`_STRICT_LEGACY` in `loop_interpolation._frame_persistence`).
+
+New payloads carry `format_version: 2`. A reader from before S3 fails on
+such a payload with a `TypeError` that names `format_version`.
+
+No stage of spec 005 breaks the 1.x public API (FR-028).
+
+The policy for a transform change, after constraints exist, is "reject at
+use" (decided 2026-11-05). The interpolator raises `StaleFrameError` at the
+next `set`, `evaluate` or `save` call. The interpolator changes no state.
+
+### Deprecation of GeologicalModel.rescale and scale (spec 005, S4)
+Decision date: 2026-11-05 (spec 005, decisions C-013 and C-016).
+
+`rescale` (local to world) and `scale` (world to local) keep their behaviour
+and their signature. Each one emits a `DeprecationWarning`. The warning names
+`bounding_box.reproject` and `bounding_box.project`.
+
+This replaces the status-log entry "2c-3". That entry said that both methods
+stay as signature-stable pass-throughs. The tier stays "stable" until removal.
+
+Removal is not before 2 minor releases after the first release that warns.
+Removal is also not before the known callers (the QGIS plugin) have moved.
+The library no longer calls either method.
+
+### Misfit diagnostics of GeologicalFeature (spec 005, S5)
+Decision date: 2026-11-05 (spec 005, S5, Q2).
+
+The misfit methods `evaluate_gradient_misfit` and `evaluate_value_misfit`
+keep their names and their public shape. The gradient value is now a cosine
+in world coordinates.
+
+A stale model gives a `UserWarning` and NaN. The model is not rebuilt.
+
+The new methods `evaluate_gradient_cosines` and `evaluate_value_residuals`
+give the 1-D result. The notice is in `COMPAT.md`.
+
+### Residuals of faulted features (spec 005, S6)
+Decision date: 2026-11-06 (spec 005, S6).
+
+The residual diagnostics of a faulted feature evaluate the interpolator at
+the restored positions. S5 decision 8 changes for the two private methods
+`_value_residuals_fresh` and `_gradient_cosines_fresh`. The notice is in
+`COMPAT.md`.
+
+### EuclideanTransformation (spec 005, S6)
+Decision date: 2026-11-06 (spec 005, S6).
+
+This is a behaviour change. The class had four defects: the 3D `fit`, the
+sign of the fitted angle, the reversed z axis, and the silent need for
+scikit-learn. The physical effect was a mirrored z axis and a wrong rotation
+of the map view for some lines.
+
+One class now lives in `loop_common`. `LoopStructural.utils` re-exports
+it. This reverses item 2c-5 of the stage sequence, which was closed as
+deferred. The notice is in `COMPAT.md`.
+
 ## Stage sequence
 
 - [x] **Stage 0 — Planning infra.** This file, release/versioning/compat
@@ -371,6 +451,8 @@ just at release time.
     (`translation: np.ndarray = np.zeros(3)`) as part of the merge.
     Closed as deferred: local class remains the runtime source for now;
     mutable-default regression was already eliminated in LoopStructural.
+    Spec 005 S6 reverses this closure: the one class in `loop_common` is now
+    the runtime source (see the S6 decision in `## Decisions`).
   - [x] **2c-6.** Resolve `loop_common`'s reverse dependency on
     `LoopStructural.export.*`: move `LoopStructural/export/geoh5.py`,
     `gocad.py`, `omf_wrapper.py`, `exporters.py` into `loop_common/io/`
@@ -548,6 +630,11 @@ just at release time.
   mechanical patch. Full detail in `INTRUSIONS.md`'s finding 1 and its
   Phase A-C status notes. Phase D remains the open item for the dedicated
   discussion.
+
+- [ ] **Stage 7 — `loop_link`: Python link to geoviewer.** New package
+  `packages/loop_link` (spec `specs/006-loop-link`). It gives Python a way to
+  send data to geoviewer: send, adapters and the plugin push API. Stage S5 (select, read the selection
+  and fetch; geoviewer spec 067) is done. Stage S4 (filter and colour) is done.
 
 ## Status log
 
@@ -831,3 +918,11 @@ just at release time.
   `loopstructuralvisualisation`, none warranted in `map2loop`), and the
   release-please/PyPI/ruff wiring. `tests/unit`: 695 passed/4 skipped, zero
   regressions.
+- **2026-11-05:** Spec 005 stage S3 implemented: saved interpolator frame, legacy-load rule, frame-keeping copies, stale-frame check. Gate result: root pytest 1978 passed, 5 skipped.
+- **2026-11-05:** Spec 005 stage S4 implemented: display, export and intrusion classification use stored world locations; rescale and scale deprecated.
+- **2026-11-05:** Spec 005 stage S5 implemented: resize paths keep the extent, cell-centre guard tests, non-mutating world-correct misfit diagnostics, residual and exclusion report.
+- **2026-11-06:** Spec 005 complete: stages S1 to S6 implemented; the auxiliary transformation, the R2 displacement validation, the backend matrix and the golden review are done. Gate result: root pytest 2781 passed, 30 skipped (every skip names its dependency in `specs/005-coordinate-frame-correctness/verification.md`).
+- **2026-11-06:** Stage 7 started. The spec and the plan for
+  `packages/loop_link` exist (`specs/006-loop-link`). The package is new.
+- **2026-11-07:** Stage 7 stage S5 implemented: tool connection, select, read selection, fetch and round trip in `packages/loop_link`.
+- **2026-11-09:** Stage 7 stage S4 implemented: filter and colour calls, colour in `send` and the fake commands endpoint in `packages/loop_link`.

@@ -2,8 +2,8 @@ try:
     from trame_pyvista.ui import UI_TITLE, get_viewer
 except ImportError:
     from pyvista.trame.ui import UI_TITLE, get_viewer
-from .ui.vuetify3 import LoopViewer as Viewer
 from .. import Loop3DView
+from .ui.vuetify3 import LoopViewer as Viewer
 
 
 def initialize(

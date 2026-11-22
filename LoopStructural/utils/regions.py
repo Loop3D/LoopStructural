@@ -2,6 +2,8 @@ from abc import ABC, abstractmethod
 
 import numpy as np
 
+from ._fault_block import block_kwargs, block_side, force_side
+
 
 class BaseRegion(ABC):
     @abstractmethod
@@ -13,8 +15,12 @@ class BaseRegion(ABC):
         self.parent = None
 
     @abstractmethod
-    def __call__(self, xyz) -> np.ndarray:
-        """Evaluate the region based on the input coordinates."""
+    def __call__(self, xyz, *, block=None) -> np.ndarray:
+        """Evaluate the region based on the input coordinates.
+
+        ``block`` is a fault block (see ``LoopStructural.utils._fault_block``);
+        a region that depends on a faulted feature evaluates it in that block.
+        """
 
 
 class RegionEverywhere(BaseRegion):
@@ -22,7 +28,7 @@ class RegionEverywhere(BaseRegion):
         super().__init__()
         self.type = "RegionEverywhere"
 
-    def __call__(self, xyz):
+    def __call__(self, xyz, *, block=None):
         return np.ones(xyz.shape[0], dtype="bool")
 
 
@@ -31,7 +37,7 @@ class RegionFunction(BaseRegion):
         super().__init__()
         self.function = function
 
-    def __call__(self, xyz):
+    def __call__(self, xyz, *, block=None):
         return self.function(xyz)
 
 class BaseSignRegion(BaseRegion):
@@ -45,8 +51,13 @@ class BaseSignRegion(BaseRegion):
         self.name = 'PositiveRegion'
         self.parent = feature
 
-    def _calculate_value_and_distance(self, xyz, precomputed_val=None)-> tuple[np.ndarray, np.ndarray]:
-        val = precomputed_val if precomputed_val is not None else self.feature.evaluate_value(xyz)
+    def _calculate_value_and_distance(
+        self, xyz, precomputed_val=None, block=None
+    ) -> tuple[np.ndarray, np.ndarray]:
+        if precomputed_val is not None:
+            val = precomputed_val
+        else:
+            val = self.feature.evaluate_value(xyz, **block_kwargs(block))
         # find a point on/near 0 isosurface — compute once and cache on self
         if self.point is None:
             mask = np.zeros(xyz.shape[0], dtype="bool")
@@ -65,6 +76,9 @@ class BaseSignRegion(BaseRegion):
         distance = np.einsum(
             "ij,j->i", centre[None, :] - xyz, average_gradient.reshape(-1, 3)[0, :]
         )
+        # Where the feature has no support the distance decides the side, so a
+        # fault block that fixes the side of this fault fixes it here too.
+        distance = force_side(distance, block_side(block, getattr(self.feature, "name", None)))
         return val, distance
 
 
@@ -79,8 +93,10 @@ class PositiveRegion(BaseSignRegion):
         self.name = 'PositiveRegion'
         self.parent = feature
 
-    def __call__(self, xyz, precomputed_val=None) -> np.ndarray:
-        val, distance = self._calculate_value_and_distance(xyz, precomputed_val=precomputed_val)
+    def __call__(self, xyz, precomputed_val=None, *, block=None) -> np.ndarray:
+        val, distance = self._calculate_value_and_distance(
+            xyz, precomputed_val=precomputed_val, block=block
+        )
         return np.logical_or(
             np.logical_and(~np.isnan(val), val > 0),
             np.logical_and(np.isnan(val), distance > 0),
@@ -98,8 +114,10 @@ class NegativeRegion(BaseSignRegion):
         self.name = 'NegativeRegion'
         self.parent = feature
 
-    def __call__(self, xyz, precomputed_val=None) -> np.ndarray:
-        val, distance = self._calculate_value_and_distance(xyz, precomputed_val=precomputed_val)
+    def __call__(self, xyz, precomputed_val=None, *, block=None) -> np.ndarray:
+        val, distance = self._calculate_value_and_distance(
+            xyz, precomputed_val=precomputed_val, block=block
+        )
         return np.logical_or(
             np.logical_and(~np.isnan(val), val < 0),
             np.logical_and(np.isnan(val), distance < 0),

@@ -56,3 +56,10 @@ include = ["map2loop", "map2loop.*"]
 
 [tool.setuptools.package-data]
 map2loop = ["_datasets/geodata_files/hamersley/*"]
+
+[tool.ruff]
+extend = "../../pyproject.toml"
+target-version = "py38"
+
+[tool.ruff.lint.pyupgrade]
+keep-runtime-typing = true
