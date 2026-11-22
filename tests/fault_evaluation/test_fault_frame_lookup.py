@@ -1,6 +1,6 @@
 """Tests for the shared grid lookup of the fault frame (plan D6, task T026).
 
-The private method ``FaultSegment._evaluate_frame(points, need_gradient=False)``
+The private method ``FaultSegment._evaluate_frame(points, block=None, ..., need_gradient=False)``
 gives the three frame values and, if asked, the gradient of coordinate 1.
 It is a fast path for frames with equal StructuredGrid supports. The fast path
 makes one grid lookup for the three frame members. Every other frame uses the
@@ -137,8 +137,10 @@ def _legacy_restore(fault, points, reverse=False, precomputed_gx=None):
             gy_m = fault[1].evaluate_value(newp[mask, :])
             gz_m = fault[2].evaluate_value(newp[mask, :])
         g = fault[1].evaluate_gradient(newp[mask, :], ignore_regions=True)
-        # The legacy loop does not apply ``reverse`` to the step displacement.
+        # Since spec 005 (master) ``reverse`` applies to the displacement of every step.
         d, valid = _displacement(fault, gx_m, gy_m, gz_m)
+        if reverse:
+            d = -d
         magnitude = np.zeros(g.shape[0])
         magnitude[valid] = np.linalg.norm(g[valid], axis=1)
         g[magnitude > 0.0] /= magnitude[magnitude > 0, None]
@@ -168,7 +170,7 @@ def test_frame_values_and_coordinate_one_gradient_match_feature_calls(need_gradi
     points = _points(model)
     expected = _reference_frame(fault, points, need_gradient)
 
-    gx, gy, gz, gradient = _unpack(fault._evaluate_frame(points, need_gradient), need_gradient)
+    gx, gy, gz, gradient = _unpack(fault._evaluate_frame(points, need_gradient=need_gradient), need_gradient)
 
     for actual, wanted in zip((gx, gy, gz), expected[:3]):
         assert actual.shape == (len(points),)
@@ -191,7 +193,7 @@ def test_frame_default_does_not_return_a_gradient():
 def test_frame_accepts_empty_points():
     """No points give empty arrays."""
     _, fault = _build()
-    gx, gy, gz, gradient = _unpack(fault._evaluate_frame(np.empty((0, 3)), True), True)
+    gx, gy, gz, gradient = _unpack(fault._evaluate_frame(np.empty((0, 3)), need_gradient=True), True)
     assert gx.shape == gy.shape == gz.shape == (0,)
     assert gradient.shape == (0, 3)
 
@@ -210,7 +212,7 @@ def test_frame_makes_one_lookup_for_all_members(lookups, need_gradient, legacy_l
     assert lookups.count == legacy_lookups
 
     lookups.reset()
-    fault._evaluate_frame(points, need_gradient)
+    fault._evaluate_frame(points, need_gradient=need_gradient)
     assert lookups.count == 1
 
 
@@ -447,7 +449,7 @@ def test_fallback_frame_equals_legacy_with_legacy_lookup_count(
     legacy_count = lookups.count
 
     lookups.reset()
-    gx, gy, gz, gradient = _unpack(fault._evaluate_frame(points, need_gradient), need_gradient)
+    gx, gy, gz, gradient = _unpack(fault._evaluate_frame(points, need_gradient=need_gradient), need_gradient)
 
     for actual, wanted in zip((gx, gy, gz), expected[:3]):
         _assert_close(actual, wanted, atol=1e-12)

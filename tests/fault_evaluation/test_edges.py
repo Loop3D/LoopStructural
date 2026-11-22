@@ -47,11 +47,12 @@ def test_reverse_fault_and_fault_toggles_match_legacy_references():
     feature = model["group_0"]
     points = np.array([[450.0, 500.0, -500.0], [550.0, 500.0, -450.0]])
 
-    # Frozen at ddc333ea; this checks the legacy reverse path on real faults.
+    # Frozen from master 790036d2 (spec 005 corrected the fault frame, which changed these
+    # values from the ddc333ea ones); this checks the reverse path on real faults.
     reverse_expected = np.array(
         [
-            [450.00012670148914, 498.9067023889334, -519.6971159034398],
-            [550.0000403813251, 501.0925651557694, -430.2937116988142],
+            [449.99986049755563, 501.0930534680464, -480.302857700829],
+            [549.9999717550921, 498.90707222676485, -469.70625323565577],
         ]
     )
     reverse = feature._apply_faults(points.copy(), reverse=True)

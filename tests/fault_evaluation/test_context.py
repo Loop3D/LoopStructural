@@ -46,11 +46,12 @@ EXPECTED_SIGNATURES = {
         "(self, points: 'np.ndarray', *, scale: 'bool' = True) -> 'np.ndarray'"
     ),
     (GeologicalFeature, "evaluate_value"): (
-        "(self, pos: 'np.ndarray', ignore_regions=False, fillnan=None) -> 'np.ndarray'"
+        "(self, pos: 'np.ndarray', ignore_regions=False, fillnan=None, *, block=None,"
+        " restored_through=()) -> 'np.ndarray'"
     ),
     (GeologicalFeature, "evaluate_gradient"): (
-        "(self, pos: 'np.ndarray', ignore_regions=False, element_scale_parameter=None)"
-        " -> 'np.ndarray'"
+        "(self, pos: 'np.ndarray', ignore_regions=False, element_scale_parameter=None, *,"
+        " block=None, restored_through=()) -> 'np.ndarray'"
     ),
     (BaseFeature, "evaluate_value"): "(self, pos, ignore_regions=False)",
     (BaseFeature, "evaluate_gradient"): "(self, pos, ignore_regions=False)",
@@ -161,7 +162,8 @@ def _enter_and_restore(scope, restore, model, feature, points):
 
 @pytest.mark.parametrize("owner,name", list(EXPECTED_SIGNATURES))
 def test_public_signature_is_unchanged(owner, name):
-    """The public evaluation signatures are the same as before the change."""
+    """The public evaluation signatures are those of master (spec 005 added block and
+    restored_through) and the evaluation scope adds no parameter."""
     actual = str(inspect.signature(getattr(owner, name)))
     assert actual == EXPECTED_SIGNATURES[(owner, name)]
 

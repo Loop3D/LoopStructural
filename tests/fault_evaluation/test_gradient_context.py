@@ -581,15 +581,11 @@ def test_disabled_group_faults_leave_only_the_region_batches(record_property):
 
     assert diagnostics["calls_by_batch_size"] == {len(points): 4}
     assert diagnostics["fault_calls_total"] == 4
-    expected = _legacy_gradient_no_faults(_group(_model("f4_u3"), 3), points)
-    np.testing.assert_allclose(gradient, expected, rtol=0.0, atol=1e-10, equal_nan=True)
-
-
-def _legacy_gradient_no_faults(feature, points: np.ndarray) -> np.ndarray:
-    """Legacy gradient of a feature whose own faults are off (regions keep their faults)."""
-    feature.faults_enabled = False
-    scale = _default_scale(feature.model)
-    return _legacy_gradient(feature, points, scale)
+    # Frozen from master 790036d2 (spec 005 changed how the faults of the regions are
+    # restored, so the in-file legacy gradient no longer matches for this case).
+    frozen = np.load(Path(__file__).parent / "data" / "f4_u3_group_disabled_gradient.npz")
+    np.testing.assert_array_equal(frozen["points"], points)
+    np.testing.assert_allclose(gradient, frozen["gradient"], rtol=0.0, atol=1e-10, equal_nan=True)
 
 
 def test_all_faults_disabled_make_no_call():
@@ -687,7 +683,7 @@ class _IdentityFault(BaseFeature):
         assert key == 0
         return self
 
-    def apply_to_points(self, points, reverse=False):
+    def apply_to_points(self, points, reverse=False, **kwargs):
         return points
 
     def copy(self, name=None):
