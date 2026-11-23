@@ -1,0 +1,258 @@
+{
+ "schema": "loop-fault-snapshot",
+ "version": 1,
+ "node_order": "x fastest: index = i + (ncells[0]+1) * (j + (ncells[1]+1) * k)",
+ "float_format": "little-endian float64, C order, no header",
+ "constants": {
+  "BLOCK_SIDE_EPSILON": 1e-09,
+  "BLOCK_EXTENSION": "smooth",
+  "BLOCK_EXTENSION_EXACT": 0.25,
+  "BLOCK_EXTENSION_LIMIT": 0.5,
+  "BLOCK_EXTENSION_STEP": 0.001
+ },
+ "gradient": {
+  "method": "regular_tetrahedron",
+  "scale": 0.004545454545454545
+ },
+ "domain": {
+  "min": [
+   0.0,
+   0.0,
+   0.0
+  ],
+  "max": [
+   1.0,
+   1.0,
+   1.0
+  ]
+ },
+ "faults": [
+  {
+   "name": "f1",
+   "displacement": 0.15,
+   "steps": 10,
+   "profile": {
+    "scale": 1.0,
+    "gx": {
+     "type": "composite",
+     "positive": {
+      "type": "ones"
+     },
+     "negative": {
+      "type": "zeros"
+     }
+    },
+    "gy": {
+     "type": "ones"
+    },
+    "gz": {
+     "type": "ones"
+    }
+   },
+   "frame": [
+    {
+     "origin": [
+      -0.8999999999999999,
+      -0.8999999999999999,
+      -0.8999999999999999
+     ],
+     "step": [
+      0.18666666666666665,
+      0.18666666666666665,
+      0.18666666666666665
+     ],
+     "ncells": [
+      15,
+      15,
+      15
+     ],
+     "local_from_world": {
+      "A": [
+       1.0,
+       0.0,
+       0.0,
+       0.0,
+       1.0,
+       0.0,
+       0.0,
+       0.0,
+       1.0
+      ],
+      "b": [
+       0.0,
+       0.0,
+       0.0
+      ]
+     },
+     "world_vector_from_local": [
+      1.0,
+      0.0,
+      0.0,
+      0.0,
+      1.0,
+      0.0,
+      0.0,
+      0.0,
+      1.0
+     ],
+     "nodes": "data/fault_f1_gx.bin"
+    },
+    {
+     "origin": [
+      -0.8999999999999999,
+      -0.8999999999999999,
+      -0.8999999999999999
+     ],
+     "step": [
+      0.18666666666666665,
+      0.18666666666666665,
+      0.18666666666666665
+     ],
+     "ncells": [
+      15,
+      15,
+      15
+     ],
+     "local_from_world": {
+      "A": [
+       1.0,
+       0.0,
+       0.0,
+       0.0,
+       1.0,
+       0.0,
+       0.0,
+       0.0,
+       1.0
+      ],
+      "b": [
+       0.0,
+       0.0,
+       0.0
+      ]
+     },
+     "world_vector_from_local": [
+      1.0,
+      0.0,
+      0.0,
+      0.0,
+      1.0,
+      0.0,
+      0.0,
+      0.0,
+      1.0
+     ],
+     "nodes": "data/fault_f1_gy.bin"
+    },
+    {
+     "origin": [
+      -0.8999999999999999,
+      -0.8999999999999999,
+      -0.8999999999999999
+     ],
+     "step": [
+      0.18666666666666665,
+      0.18666666666666665,
+      0.18666666666666665
+     ],
+     "ncells": [
+      15,
+      15,
+      15
+     ],
+     "local_from_world": {
+      "A": [
+       1.0,
+       0.0,
+       0.0,
+       0.0,
+       1.0,
+       0.0,
+       0.0,
+       0.0,
+       1.0
+      ],
+      "b": [
+       0.0,
+       0.0,
+       0.0
+      ]
+     },
+     "world_vector_from_local": [
+      1.0,
+      0.0,
+      0.0,
+      0.0,
+      1.0,
+      0.0,
+      0.0,
+      0.0,
+      1.0
+     ],
+     "nodes": "data/fault_f1_gz.bin"
+    }
+   ],
+   "frame_faults": [],
+   "has_tip": false,
+   "tip_ends": {
+    "1": [],
+    "2": []
+   }
+  }
+ ],
+ "series": [
+  {
+   "name": "strat",
+   "faults": [
+    "f1"
+   ],
+   "grid": {
+    "origin": [
+     -0.3,
+     -0.30000000003082594,
+     -0.3
+    ],
+    "step": [
+     0.08,
+     0.08,
+     0.08
+    ],
+    "ncells": [
+     20,
+     20,
+     22
+    ],
+    "local_from_world": {
+     "A": [
+      1.0,
+      0.0,
+      0.0,
+      0.0,
+      1.0,
+      0.0,
+      0.0,
+      0.0,
+      1.0
+     ],
+     "b": [
+      0.0,
+      0.0,
+      0.0
+     ]
+    },
+    "world_vector_from_local": [
+     1.0,
+     0.0,
+     0.0,
+     0.0,
+     1.0,
+     0.0,
+     0.0,
+     0.0,
+     1.0
+    ],
+    "nodes": "data/series_strat.bin"
+   }
+  }
+ ]
+}

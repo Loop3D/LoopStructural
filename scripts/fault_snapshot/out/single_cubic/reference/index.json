@@ -1,0 +1,167 @@
+{
+ "points": {
+  "file": "points.bin",
+  "shape": [
+   1900,
+   3
+  ],
+  "description": "test points, world coordinates (N,3)"
+ },
+ "fault_f1_frame_gx": {
+  "file": "fault_f1_frame_gx.bin",
+  "shape": [
+   1900
+  ],
+  "description": "evaluate_frame_value(points, 0), NaN outside the grid"
+ },
+ "fault_f1_frame_grad_gx": {
+  "file": "fault_f1_frame_grad_gx.bin",
+  "shape": [
+   1900,
+   3
+  ],
+  "description": "evaluate_frame_gradient(points, 0), world frame (N,3)"
+ },
+ "fault_f1_frame_gy": {
+  "file": "fault_f1_frame_gy.bin",
+  "shape": [
+   1900
+  ],
+  "description": "evaluate_frame_value(points, 1), NaN outside the grid"
+ },
+ "fault_f1_frame_grad_gy": {
+  "file": "fault_f1_frame_grad_gy.bin",
+  "shape": [
+   1900,
+   3
+  ],
+  "description": "evaluate_frame_gradient(points, 1), world frame (N,3)"
+ },
+ "fault_f1_frame_gz": {
+  "file": "fault_f1_frame_gz.bin",
+  "shape": [
+   1900
+  ],
+  "description": "evaluate_frame_value(points, 2), NaN outside the grid"
+ },
+ "fault_f1_frame_grad_gz": {
+  "file": "fault_f1_frame_grad_gz.bin",
+  "shape": [
+   1900,
+   3
+  ],
+  "description": "evaluate_frame_gradient(points, 2), world frame (N,3)"
+ },
+ "fault_f1_distance": {
+  "file": "fault_f1_distance.bin",
+  "shape": [
+   1900
+  ],
+  "description": "gx / |grad gx| (LoopOracle.fault_distance)"
+ },
+ "fault_f1_tip": {
+  "file": "fault_f1_tip.bin",
+  "shape": [
+   1900
+  ],
+  "description": "evaluate_tip_value; inf = no tip"
+ },
+ "fault_f1_apply": {
+  "file": "fault_f1_apply.bin",
+  "shape": [
+   1900,
+   3
+  ],
+  "description": "apply_to_points(points) with no block, no restored_through"
+ },
+ "fault_f1_apply_reverse": {
+  "file": "fault_f1_apply_reverse.bin",
+  "shape": [
+   1900,
+   3
+  ],
+  "description": "apply_to_points(points, reverse=True)"
+ },
+ "series_strat_value": {
+  "file": "series_strat_value.bin",
+  "shape": [
+   1900
+  ],
+  "description": "evaluate_feature_value, no block"
+ },
+ "series_strat_restored_after_0": {
+  "file": "series_strat_restored_after_0.bin",
+  "shape": [
+   1900,
+   3
+  ],
+  "description": "points restored through faults ['f1'] (youngest first)"
+ },
+ "series_strat_block_f1m_value": {
+  "file": "series_strat_block_f1m_value.bin",
+  "shape": [
+   1900
+  ],
+  "description": "evaluate_feature_block_value, block {'f1': -1}"
+ },
+ "series_strat_block_f1m_gradient": {
+  "file": "series_strat_block_f1m_gradient.bin",
+  "shape": [
+   1900,
+   3
+  ],
+  "description": "evaluate_feature_block_gradient, block {'f1': -1} (N,3)"
+ },
+ "series_strat_block_f1z_value": {
+  "file": "series_strat_block_f1z_value.bin",
+  "shape": [
+   1900
+  ],
+  "description": "evaluate_feature_block_value, block {'f1': 0}"
+ },
+ "series_strat_block_f1z_gradient": {
+  "file": "series_strat_block_f1z_gradient.bin",
+  "shape": [
+   1900,
+   3
+  ],
+  "description": "evaluate_feature_block_gradient, block {'f1': 0} (N,3)"
+ },
+ "series_strat_block_f1p_value": {
+  "file": "series_strat_block_f1p_value.bin",
+  "shape": [
+   1900
+  ],
+  "description": "evaluate_feature_block_value, block {'f1': 1}"
+ },
+ "series_strat_block_f1p_gradient": {
+  "file": "series_strat_block_f1p_gradient.bin",
+  "shape": [
+   1900,
+   3
+  ],
+  "description": "evaluate_feature_block_gradient, block {'f1': 1} (N,3)"
+ },
+ "series_strat_blocks": {
+  "blocks": [
+   {
+    "key": "f1m",
+    "block": {
+     "f1": -1
+    }
+   },
+   {
+    "key": "f1z",
+    "block": {
+     "f1": 0
+    }
+   },
+   {
+    "key": "f1p",
+    "block": {
+     "f1": 1
+    }
+   }
+  ]
+ }
+}
