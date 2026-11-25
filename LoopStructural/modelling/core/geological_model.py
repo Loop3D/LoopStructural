@@ -482,7 +482,7 @@ class GeologicalModel:
     def intrusions(self):
         intrusions = []
         for f in self.features:
-            if f.type == "intrusion":
+            if f.type == FeatureType.INTRUSION:
                 intrusions.append(f)
         return intrusions
 
