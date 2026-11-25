@@ -304,3 +304,15 @@ def test_truncated_fault_that_a_younger_fault_displaces():
     )
     assert far.sum() > 500
     np.testing.assert_allclose(value[far], basement_field(exact[far]), atol=5e-3)
+
+
+def test_onlap_unconformity_keeps_the_regions_the_feature_already_has():
+    """An onlap unconformity on a series must not remove the erosional region of an older one."""
+    model = new_model()
+    old = series(model, "old", basement_field, faults=[])
+    model.add_unconformity(old, 0.0)
+    young = series(model, "young", cover_field, faults=[], seed=6)
+    before = [r.name for r in young.regions]
+    assert before
+    model.add_onlap_unconformity(young, 0.0)
+    assert set(before) <= {r.name for r in young.regions}
