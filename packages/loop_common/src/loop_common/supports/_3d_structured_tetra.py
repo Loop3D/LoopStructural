@@ -264,16 +264,6 @@ class TetMesh(BaseStructuredSupport):
         # values[inside,:] /= length[:,None]
         return values
 
-    def inside(self, pos: np.ndarray):
-        inside = np.ones(pos.shape[0]).astype(bool)
-        for i in range(3):
-            inside *= pos[:, i] > self.origin[None, i]
-            inside *= (
-                pos[:, i]
-                < self.origin[None, i] + self.step_vector[None, i] * self.nsteps_cells[None, i]
-            )
-        return inside
-
     def get_element_for_location(self, pos: np.ndarray):
         """
         Determine the tetrahedron from a numpy array of points
