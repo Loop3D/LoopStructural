@@ -822,7 +822,8 @@ class StratigraphicColumn(Observable['StratigraphicColumn']):
                     data.append((u.id, u.colour))
                     colours.append(u.colour)
                     boundaries.append(u.id)
-            # print(u,v)
+            # order by unit id: evaluate_model gives unit.id and viewers map it to colour in order
+            colours = [c for _, c in sorted(data, key=lambda d: d[0])]
             cmap = colors.ListedColormap(colours)
         except ImportError:
             logger.warning("Cannot use predefined colours as I can't import matplotlib")
