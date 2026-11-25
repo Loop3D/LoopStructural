@@ -667,7 +667,8 @@ class GeologicalModel:
         # if the colour for a unit hasn't been specified we can just sample from
         # a colour map e.g. tab20
         logger.info("Adding stratigraphic column to model")
-        for i, g in enumerate(stratigraphic_column.keys()):
+        groups = []
+        for g in stratigraphic_column:
             if g == 'faults':
                 logger.info('Not adding faults to stratigraphic column')
                 continue
@@ -692,6 +693,12 @@ class GeologicalModel:
             self.stratigraphic_column.add_unconformity(
                 name=f"{g}unconformity",
             )
+            if stratigraphic_column[g]:
+                groups.append(g)
+        # each dict group is added on top, so the first group ends at the bottom of the
+        # column; get_groups() and evaluate_model depend on this order
+        # get_groups() numbers groups from the top of the column, the last group added
+        for i, g in enumerate(reversed(groups)):
             self.stratigraphic_column.group_mapping[f'Group_{i}'] = g
 
     @public_api(tier="provisional")
@@ -1235,7 +1242,7 @@ class GeologicalModel:
         Returns
         -------
         stratigraphic_id : np.array(N,dtype=int)
-            the stratigraphic index for locations
+            unit id (StratigraphicUnit.id), -1 if unassigned
 
         Examples
         --------
@@ -1283,14 +1290,12 @@ class GeologicalModel:
             logger.warning("No stratigraphic column defined")
             return strat_id
 
-        s_id = 0
         for g in reversed(self.stratigraphic_column.get_groups()):
             feature_id = self.feature_name_index.get(g.name, -1)
             if feature_id >= 0:
                 vals = self.features[feature_id].evaluate_value(xyz)
                 for u in g.units:
-                    strat_id[np.logical_and(vals < u.max(), vals > u.min())] = s_id
-                    s_id += 1
+                    strat_id[np.logical_and(vals < u.max(), vals > u.min())] = u.id
             if feature_id == -1:
                 logger.error(f"Model does not contain {g.name}")
 

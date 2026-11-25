@@ -624,6 +624,16 @@ class TestMiscellaneous:
         assert isinstance(unit.colour, str)
         assert unit.colour.startswith("#")
 
+    def test_cmap_colours_are_in_unit_id_order(self):
+        # evaluate_model gives unit.id, and the viewers map values to colours in order
+        column = StratigraphicColumn()
+        column.clear(basement=False)
+        for i, colour in enumerate(["#ff0000", "#00ff00", "#0000ff"]):
+            column.add_unit(f"u{i}", thickness=1.0, id=i, colour=colour)
+        cmap = column.cmap()
+        for i in range(3):
+            assert cmap.colors[i] == column.get_unit_by_name(f"u{i}").colour
+
     def test_plot_returns_figure_when_no_axis_given(self):
         import matplotlib
 

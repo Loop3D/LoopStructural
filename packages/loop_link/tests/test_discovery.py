@@ -290,3 +290,46 @@ def test_non_finite_focused_counts_as_zero(tmp_path, listeners):
     (tmp_path / "instances" / "222.json").write_text(text, encoding="utf-8")
     address = find_viewer(settings=tmp_path)
     assert address.port == good_port
+
+
+# A host that is not loopback
+
+
+REMOTE = "203.0.113.5"
+
+
+def test_remote_host_does_not_get_the_saved_token(tmp_path):
+    write_link(tmp_path)
+    with pytest.warns(UserWarning, match="not encrypted"), pytest.raises(TokenError):
+        find_viewer(port=4321, host=REMOTE, settings=tmp_path)
+
+
+def test_remote_host_uses_explicit_or_env_token(tmp_path, monkeypatch):
+    write_link(tmp_path)
+    with pytest.warns(UserWarning, match="not encrypted"):
+        assert find_viewer(port=1, token="given", host=REMOTE, settings=tmp_path).token == "given"
+    monkeypatch.setenv("GEOVIEWER_TOKEN", "env-token")
+    with pytest.warns(UserWarning, match="not encrypted"):
+        assert find_viewer(port=1, host=REMOTE, settings=tmp_path).token == "env-token"
+
+
+def test_remote_host_skips_instance_files(tmp_path, monkeypatch):
+    write_instance(tmp_path, 111, 5555)
+    probed: list[tuple[str, int]] = []
+    monkeypatch.setattr(
+        discovery, "_is_alive", lambda host, port, timeout: probed.append((host, port)) or False
+    )
+    with pytest.warns(UserWarning), pytest.raises(NoViewerError):
+        find_viewer(token="given", host=REMOTE, settings=tmp_path)
+    assert probed == [(REMOTE, DEFAULT_PORT)]
+
+
+@pytest.mark.parametrize("host", ["localhost", "127.0.0.1", "127.1.2.3", "::1"])
+def test_loopback_host_uses_saved_token_without_warning(tmp_path, host, recwarn):
+    write_link(tmp_path)
+    assert find_viewer(port=1, host=host, settings=tmp_path).token == "file-token"
+    assert not recwarn.list
+
+
+def test_viewer_address_repr_hides_the_token():
+    assert "secret" not in repr(ViewerAddress(host="h", port=1, token="secret"))
