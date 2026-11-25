@@ -27,7 +27,7 @@ class IdentityFault(BaseFeature):
         assert key == 0
         return self.coordinate
 
-    def apply_to_points(self, points, reverse=False):
+    def apply_to_points(self, points, reverse=False, **kwargs):
         return points
 
     def copy(self, name=None):

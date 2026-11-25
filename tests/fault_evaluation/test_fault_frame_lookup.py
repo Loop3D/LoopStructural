@@ -456,3 +456,61 @@ def test_fallback_frame_equals_legacy_with_legacy_lookup_count(
     if need_gradient:
         _assert_close(gradient, expected[3], atol=1e-12)
     _assert_lookup_count(fallback_name, lookups.count, legacy_count)
+
+
+def _unconformity_over_old_fault_model():
+    """Give a model where an old fault has the region of a faulted unconformity.
+
+    The fault added last is applied first, so it is the younger fault. The
+    unconformity series is faulted by the younger fault only. The older fault
+    gets the unconformity region and has no faults of its own, so its frame
+    takes the fast path.
+    """
+    from LoopStructural import GeologicalModel
+    from tests.fault_evaluation.models import _rows
+
+    model = GeologicalModel([0, 0, -1000], [1000, 1000, 0])
+    model.data = _rows(2, 1)
+    old = model.create_and_add_fault("fault_0", 200, nelements=2000)
+    young = model.create_and_add_fault("fault_1", 200, nelements=2000)
+    top = model.create_and_add_foliation("group_0", nelements=2000, faults=[young])
+    model.add_unconformity(top, 100.0)
+    model.create_and_add_foliation("group_1", nelements=2000)
+    model.update()
+    return model, old
+
+
+def test_fast_path_mask_uses_the_restored_faults(monkeypatch):
+    """The fast-path mask must not apply the younger fault again (review of 003)."""
+    from LoopStructural.modelling.features.fault._fault_segment import FaultSegment
+
+    model, old = _unconformity_over_old_fault_model()
+    assert len(old[0].faults) == 0 and len(old.regions) > 0
+    assert old._shared_frame_members() is not None
+    assert [f.name for f in model["group_1"].faults] == ["fault_1", "fault_0"]
+    xyz = model.regular_grid(nsteps=(25, 25, 25), shuffle=False, rescale=False)
+    fast = model["group_1"].evaluate_value(xyz)
+    monkeypatch.setattr(FaultSegment, "_shared_frame_members", lambda self: None)
+    legacy = model["group_1"].evaluate_value(xyz)
+    np.testing.assert_array_equal(fast, legacy)
+
+
+def test_fast_path_keeps_the_stale_frame_check():
+    """A moved bounding box must raise on the fast path as on the legacy path."""
+    from loop_interpolation import StaleFrameError
+
+    from LoopStructural import GeologicalModel
+    from tests.fault_evaluation.models import _rows
+
+    model = GeologicalModel([0, 0, -1000], [1000, 1000, 0])
+    model.data = _rows(1, 0)
+    fault = model.create_and_add_fault("fault_0", 200, nelements=2000)
+    model.update()
+    assert fault._shared_frame_members() is not None
+    box = fault[0].interpolator.bounding_box
+    box.set_local_transform(local_origin=np.array([10.0, 0.0, 0.0]))
+    xyz = np.array([[500.0, 500.0, -500.0]])
+    with pytest.raises(StaleFrameError):
+        fault[1].evaluate_value(xyz)
+    with pytest.raises(StaleFrameError):
+        fault._evaluate_frame(xyz)

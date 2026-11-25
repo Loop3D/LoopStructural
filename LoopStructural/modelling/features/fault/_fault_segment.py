@@ -365,9 +365,10 @@ class FaultSegment(StructuralFrame):
 
         If the three members have equal StructuredGrid supports and no faults,
         one grid lookup gives the values of all members and the gradient of
-        coordinate 1 (the block and the restored faults have no effect on a
-        member without faults). Other frames use the calls of the members (the
-        legacy path). The lookup is not kept after this call.
+        coordinate 1. The block and the restored faults have no effect on the
+        values of a member without faults, but they go to the regions of the
+        members. Other frames use the calls of the members (the legacy path).
+        The lookup is not kept after this call.
 
         Parameters
         ----------
@@ -411,13 +412,17 @@ class FaultSegment(StructuralFrame):
                 member.builder.up_to_date()
         interpolators = [member.interpolator for member in members]
         for interpolator in interpolators:
+            # the same stale-frame check as GeologicalInterpolator.evaluate_value
+            interpolator._check_frame()
             interpolator.update()
         support = interpolators[0].support
         local = interpolators[0]._project_points(points)
         lookup = support._lookup_points(local)
         values = [None, None, None]
         if need_values:
-            mask = members[0]._calculate_mask(points)
+            mask = members[0]._calculate_mask(
+                points, block=block, restored_through=restored_through
+            )
             nan_rows = np.any(np.isnan(np.asarray(local)), axis=1)
             idc, inside, local_coords = lookup
             # one set of trilinear weights serves the three members
