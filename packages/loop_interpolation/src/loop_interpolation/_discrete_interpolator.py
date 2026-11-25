@@ -1657,7 +1657,7 @@ class DiscreteInterpolator(GeologicalInterpolator):
         """
         self.update()
         locations = np.asarray(locations)
-        gradient = np.full((locations.shape[0], 3), np.nan)
+        gradient = np.full(locations.shape, np.nan)
         mask = np.any(np.isnan(locations), axis=1)
         if np.any(~mask):
             gradient[~mask] = self.support.evaluate_gradient(locations[~mask], self.c)
