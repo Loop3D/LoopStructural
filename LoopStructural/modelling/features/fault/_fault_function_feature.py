@@ -108,29 +108,6 @@ class FaultDisplacementFeature(BaseFeature):
         d = self.displacement(fault_suface, fault_displacement, fault_strike)
         return d
 
-    def evaluate_on_surface(self, location):
-        """Evaluate displacement specifically on the fault surface.
-
-        Parameters
-        ----------
-        location : np.ndarray
-            Array of xyz coordinates on the fault surface
-
-        Returns
-        -------
-        np.ndarray
-            Fault displacement values on the surface
-
-        Notes
-        -----
-        This method evaluates displacement only considering the fault displacement
-        and strike components, not the fault surface component.
-        """
-        fault_displacement = self.fault_frame.features[1].evaluate_value(location)
-        fault_strike = self.fault_frame.features[2].evaluate_value(location)
-        d = self.displacement.evaluate(fault_displacement, fault_strike)
-        return d
-
     def get_data(self, value_map: dict | None = None):
         """Get data associated with this fault displacement feature.
 

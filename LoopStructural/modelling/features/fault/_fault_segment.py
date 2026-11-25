@@ -250,9 +250,6 @@ class FaultSegment(StructuralFrame):
         )
         return force_side(v, block_side(block, self.name))
 
-    def ellipsoid(self):
-        pass
-
     def mean(self):
         return self.__getitem__(0).mean()
 
@@ -363,15 +360,10 @@ class FaultSegment(StructuralFrame):
         d = np.zeros(gx.shape)
         mask = np.logical_and(~np.isnan(forced), ~np.isnan(gy))
         mask = np.logical_and(mask, ~np.isnan(gz))
-        d[~mask] = 0
-        gx_mask = np.zeros_like(mask, dtype=bool)
-        gx_mask[mask] = forced[mask] > 0
-        d[gx_mask] = 1.0
-        if self.faultfunction is not None:
-            d[mask] = block_displacement(
-                self.faultfunction, gx[mask] + offset, forced[mask] + offset, gy[mask], gz[mask],
-                side,
-            )
+        d[mask] = block_displacement(
+            self.faultfunction, gx[mask] + offset, forced[mask] + offset, gy[mask], gz[mask],
+            side,
+        )
         return d
 
     def evaluate_displacement(self, points, *, block=None):
