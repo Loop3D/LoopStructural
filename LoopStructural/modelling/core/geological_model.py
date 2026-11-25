@@ -1242,7 +1242,7 @@ class GeologicalModel:
         Returns
         -------
         stratigraphic_id : np.array(N,dtype=int)
-            the stratigraphic index for locations
+            unit id (StratigraphicUnit.id), -1 if unassigned
 
         Examples
         --------
