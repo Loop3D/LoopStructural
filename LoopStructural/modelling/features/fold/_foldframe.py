@@ -82,6 +82,8 @@ class FoldFrame(StructuralFrame):
         # project s0 onto axis plane B X A X B
         projected_l1 = np.cross(s1g, np.cross(l1, s1g, axisa=1, axisb=1), axisa=1, axisb=1)
         projected_s1gyg = np.cross(s1g, np.cross(s1gyg, s1g, axisa=1, axisb=1), axisa=1, axisb=1)
+        projected_l1 /= np.linalg.norm(projected_l1, axis=1)[:, None]
+        projected_s1gyg /= np.linalg.norm(projected_s1gyg, axis=1)[:, None]
 
         # einsum dot product
         far = np.einsum("ij,ij->i", projected_l1, projected_s1gyg)
