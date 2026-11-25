@@ -22,8 +22,12 @@ def test_lsmr_at_iteration_limit_is_not_a_success():
 
 
 def test_admm_without_inequalities_falls_back_to_lsmr():
-    interpolator = _interpolator()
-    assert interpolator.solve_system("admm") is True
+    lsmr = _interpolator()
+    assert lsmr.solve_system("lsmr") is True
+    for kwargs in ({}, {"admm_abs_tol": 1e-5}):
+        admm = _interpolator()
+        assert admm.solve_system("admm", solver_kwargs=kwargs) is True
+        assert np.allclose(admm.c, lsmr.c)
 
 
 def test_update_reuses_the_solver_and_kwargs_of_the_last_solve(monkeypatch):

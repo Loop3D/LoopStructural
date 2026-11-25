@@ -1294,10 +1294,6 @@ class DiscreteInterpolator(GeologicalInterpolator):
 
         # the polish re-solves must use the same ridge options as this solve
         constant_norm_solver_kwargs = {**solver_kwargs, **(ridge_kwargs or {})}
-        if Q.shape[0] == 0:
-            logger.warning("No inequality constraints, using lsmr")
-            return self.solve_system("lsmr", solver_kwargs=solver_kwargs)
-
         try:
             c, history, ok = _solver_strategy.solve_with_admm(
                 A,
@@ -1416,6 +1412,7 @@ class DiscreteInterpolator(GeologicalInterpolator):
         solver_choice = self._normalise_solver_choice(solver)
         # update() repeats this solve; copy now because the solve pops keys from solver_kwargs
         last_solve = {"tol": tol, "solver_kwargs": dict(solver_kwargs or {})}
+        requested_solver = solver_choice
         if position_tolerance is not None:
             last_solve["position_tolerance"] = position_tolerance
         if position_tolerance is not None:
@@ -1482,7 +1479,7 @@ class DiscreteInterpolator(GeologicalInterpolator):
             timing_native.setdefault("total", perf_counter() - solve_started)
             timing_native["up_to_date"] = self.up_to_date
             self.latest_solve_timing = timing_native
-            self.solver, self._last_solve_kwargs = solver_choice, last_solve
+            self.solver, self._last_solve_kwargs = requested_solver, last_solve
             return self.up_to_date
         constant_norm_iterations, constant_norm_weight, constant_norm_target = (
             _solver_pipeline.extract_constant_norm_options(solver_kwargs, logger)
@@ -1502,6 +1499,13 @@ class DiscreteInterpolator(GeologicalInterpolator):
             self._materialise_matrix_free_regularisation_blocks()
 
         Q, bounds = self._assemble_inequality_system(timing)
+        if solver_choice == "admm" and Q.shape[0] == 0:
+            from .loopsolver import admm_solve
+
+            logger.warning("No inequality constraints, using lsmr")
+            solver_choice = timing["solver"] = "lsmr"
+            # lsmr does not take the ADMM keys
+            self._extract_admm_kwargs(solver_kwargs, admm_solve)
         # Legacy compatibility: ignore deprecated backend switch.
         solver_kwargs.pop("backend", None)
 
@@ -1574,7 +1578,7 @@ class DiscreteInterpolator(GeologicalInterpolator):
             up_to_date=bool(self.up_to_date),
         )
         # set at the end, so a nested solve (ADMM polish or fallback) does not replace it
-        self.solver, self._last_solve_kwargs = solver_choice, last_solve
+        self.solver, self._last_solve_kwargs = requested_solver, last_solve
         return self.up_to_date
 
     def update(self) -> bool:
