@@ -262,7 +262,6 @@ allow-dict-calls-with-keyword-arguments = true
 "LoopStructural/modelling/features/_structural_frame.py" = ["D", "ANN"]
 "LoopStructural/modelling/features/_unconformity_feature.py" = ["D", "ANN"]
 "LoopStructural/modelling/features/builders/__init__.py" = ["D", "ANN"]
-"LoopStructural/modelling/features/builders/_analytical_fold_builder.py" = ["D", "ANN"]
 "LoopStructural/modelling/features/builders/_base_builder.py" = ["D", "ANN"]
 "LoopStructural/modelling/features/builders/_fault_builder.py" = ["D", "ANN"]
 "LoopStructural/modelling/features/builders/_folded_feature_builder.py" = ["D", "ANN"]
