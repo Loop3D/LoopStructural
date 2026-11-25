@@ -157,7 +157,8 @@ class Viewer:
     @property
     def connected(self) -> bool:
         """True while the connection is open."""
-        return self._client is not None and not self._dead
+        client = self._client
+        return client is not None and not client.closed and not self._dead
 
     @property
     def tool_connected(self) -> bool:
@@ -1252,8 +1253,8 @@ class Viewer:
             raise ViewerClosedError
         if self._client is None:
             self.connect()
-        elif self._dead:
-            # The last connection failed: open a new one. If the viewer is gone, give
+        elif self._dead or self._client.closed:
+            # The last connection failed (a client closes itself after a broken send): open a new one. If the viewer is gone, give
             # the error of a closed viewer, as the failed send did.
             try:
                 self.connect()
