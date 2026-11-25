@@ -128,3 +128,24 @@ def test_structured_grid_local_coordinates_accounts_for_rotation():
     # not just the two corners obtained by projecting origin/maximum alone.
     assert np.all(grid.origin <= projected_corners.min(axis=0) + 1e-8)
     assert np.all(grid.maximum >= projected_corners.max(axis=0) - 1e-8)
+
+
+def test_support_factory_local_frame_encloses_rotated_box():
+    from loop_common.supports import SupportFactory
+
+    bbox = BoundingBox(origin=[0.0, 0.0, 0.0], maximum=[10.0, 10.0, 10.0], nsteps=[5, 5, 5])
+    angle = np.radians(45.0)
+    rotation = np.array(
+        [
+            [np.cos(angle), -np.sin(angle), 0.0],
+            [np.sin(angle), np.cos(angle), 0.0],
+            [0.0, 0.0, 1.0],
+        ]
+    )
+    bbox.set_local_transform(local_origin=[0.0, 0.0, 0.0], rotation_matrix=rotation)
+    projected_corners = bbox.project(bbox.corners)
+
+    support = SupportFactory.create_support_from_bbox("StructuredGrid", bbox, nelements=None)
+
+    assert np.all(support.origin <= projected_corners.min(axis=0) + 1e-8)
+    assert np.all(support.maximum >= projected_corners.max(axis=0) - 1e-8)

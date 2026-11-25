@@ -55,14 +55,9 @@ class SupportFactory:
         if local_coordinates:
             # Build the mesh in the bounding box's local (interpolation) frame
             # rather than raw world coordinates -- keeps node coordinates
-            # numerically well-conditioned. Project origin/maximum directly
-            # (rather than all corners, which BoundingBox.corners only
-            # supports in 3D) -- exact for translation-only transforms, which
-            # is the only kind in use today (no code sets a non-identity
-            # rotation on a bounding box).
-            local_points = bounding_box.project(np.array([bounding_box.origin, bounding_box.maximum]))
-            origin = np.min(local_points, axis=0)
-            local_maximum = np.max(local_points, axis=0)
+            # numerically well-conditioned. The local box encloses every
+            # projected corner, so a rotated frame gives a full support.
+            origin, local_maximum = bounding_box.local_enclosure()
             step_vector = (local_maximum - origin) / bounding_box.nsteps
         else:
             origin = bounding_box.origin
