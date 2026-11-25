@@ -14,3 +14,34 @@ def test_create_processor():
         contacts=df, stratigraphic_order=stratigraphic_order, thicknesses=thicknesses
     )
     assert (processor.data["val"].unique() == np.array([0.5, 0])).all()
+
+
+def test_from_processor_unit_ranges_match_processor_values():
+    """
+    Regression test: the basal unit (min=-inf, max=0) gave an infinite
+    thickness, so every unit above it got the range (inf, inf).
+    """
+    import warnings
+
+    from LoopStructural import GeologicalModel
+    from LoopStructural.datasets import load_geological_map_data
+
+    contacts, orientations, thickness, order, bbox, *_ = load_geological_map_data()
+    processor = ProcessInputData(
+        contacts=contacts,
+        contact_orientations=orientations.rename({"formation": "name"}, axis=1),
+        thicknesses=dict(zip(thickness["name"], thickness["thickness"])),
+        stratigraphic_order=[("supergroup_0", list(order["unit name"]))],
+        origin=bbox.loc["origin"].to_numpy(),
+        maximum=bbox.loc["maximum"].to_numpy(),
+    )
+    with warnings.catch_warnings():
+        warnings.simplefilter("ignore", DeprecationWarning)
+        model = GeologicalModel.from_processor(processor)
+
+    expected = processor.stratigraphic_column["supergroup_0"]
+    isovalues = model.stratigraphic_column.get_isovalues()
+    for name, values in expected.items():
+        unit = model.stratigraphic_column.get_unit_by_name(name)
+        assert (unit.min(), unit.max()) == (values["min"], values["max"])
+        assert isovalues[name]["value"] == values["min"]

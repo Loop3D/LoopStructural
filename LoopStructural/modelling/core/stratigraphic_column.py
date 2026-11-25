@@ -693,8 +693,9 @@ class StratigraphicColumn(Observable['StratigraphicColumn']):
         for g in reversed(self.get_groups()):
             v = 0
             for u in reversed(g.units):
-                base = v
-                v += u.thickness
+                # min_value/max_value are None for a column built with add_element (from_dict)
+                base = v if u.min_value is None else u.min_value
+                v = base + u.thickness if u.max_value is None else u.max_value
                 surface_values[u.name] = {
                     'value': v if where == 'top' else base,
                     'group': g.name,

@@ -667,7 +667,9 @@ class GeologicalModel:
         # if the colour for a unit hasn't been specified we can just sample from
         # a colour map e.g. tab20
         logger.info("Adding stratigraphic column to model")
-        for i, g in enumerate(stratigraphic_column.keys()):
+        ranges = []
+        groups = []
+        for g in stratigraphic_column:
             if g == 'faults':
                 logger.info('Not adding faults to stratigraphic column')
                 continue
@@ -677,6 +679,7 @@ class GeologicalModel:
                     min_val = stratigraphic_column[g][u]["min"]
                     max_val = stratigraphic_column[g][u].get("max", None)
                     thickness = max_val - min_val if max_val is not None else None
+                    ranges.append((u, min_val, max_val))
                 logger.info(
                     f"""
                                model.stratigraphic_column.add_unit({u},
@@ -692,7 +695,15 @@ class GeologicalModel:
             self.stratigraphic_column.add_unconformity(
                 name=f"{g}unconformity",
             )
+            if stratigraphic_column[g]:
+                groups.append(g)
+        # get_groups() numbers groups from the top of the column, the last group added
+        for i, g in enumerate(reversed(groups)):
             self.stratigraphic_column.group_mapping[f'Group_{i}'] = g
+        # use the given values: stacking thicknesses from 0 fails for an infinite basal unit
+        for u, min_val, max_val in ranges:
+            unit = self.stratigraphic_column.get_unit_by_name(u)
+            unit.min_value, unit.max_value = min_val, max_val
 
     @public_api(tier="provisional")
     def create_and_add_feature(self, feature_type: str, name: str, **params):
