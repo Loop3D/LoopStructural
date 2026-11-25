@@ -1254,8 +1254,9 @@ class Viewer:
         if self._client is None:
             self.connect()
         elif self._dead or self._client.closed:
-            # The last connection failed (a client closes itself after a broken send): open a new one. If the viewer is gone, give
-            # the error of a closed viewer, as the failed send did.
+            # The last connection failed, or the client closed itself after a broken send:
+            # open a new one. If the viewer is gone, give the error of a closed viewer, as
+            # the failed send did.
             try:
                 self.connect()
             except NoViewerError as error:

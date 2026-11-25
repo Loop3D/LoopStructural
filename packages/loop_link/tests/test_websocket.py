@@ -56,3 +56,32 @@ def test_interrupt_during_send_closes_the_client() -> None:
     with pytest.raises(KeyboardInterrupt):
         client.send_binary(b"x" * 1000)
     assert client.closed and sock.closed
+
+
+def test_interrupt_while_waiting_for_a_frame_keeps_the_client() -> None:
+    # No byte of the frame was read, so the stream is still aligned.
+    ours, theirs = socket.socketpair()
+    real = ours
+
+    class InterruptedOnce:
+        interrupted = False
+
+        def __getattr__(self, name: str) -> object:
+            return getattr(real, name)
+
+        def recv(self, size: int) -> bytes:
+            if not InterruptedOnce.interrupted:
+                InterruptedOnce.interrupted = True
+                raise KeyboardInterrupt
+            return real.recv(size)
+
+    client = WebSocketClient(InterruptedOnce())  # type: ignore[arg-type]
+    try:
+        with pytest.raises(KeyboardInterrupt):
+            client.receive(1.0)
+        assert not client.closed
+        theirs.sendall(bytes([0x80 | OP_BINARY, 5]) + b"hello")
+        assert client.receive(1.0) == b"hello"
+    finally:
+        ours.close()
+        theirs.close()

@@ -443,6 +443,36 @@ def test_socket_closed_in_the_middle_of_a_request(
     assert viewer.tool_connections == 2
 
 
+def test_post_after_interrupted_post_reconnects(
+    connection: ToolConnection, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """A Ctrl-C in the middle of a frame closes the client, so the next post opens a new one."""
+    connection.connect()
+    first = connection._client
+    real = first._sock
+
+    class Interrupted:
+        # The second sendall of a frame is the body: stop there, after the head went out.
+        calls = 0
+
+        def __getattr__(self, name: str) -> Any:
+            return getattr(real, name)
+
+        def sendall(self, data: bytes) -> None:
+            Interrupted.calls += 1
+            if Interrupted.calls == 2:
+                raise KeyboardInterrupt
+            real.sendall(data)
+
+    monkeypatch.setattr(first, "_sock", Interrupted())
+    with pytest.raises(KeyboardInterrupt):
+        connection.post(encode.selection_get_frame)
+    assert not connection.connected
+    connection.post(encode.selection_get_frame)
+    assert connection._client is not first
+    assert connection.connected
+
+
 def test_wrong_token_gives_token_error(direct: Callable[..., ToolConnection]) -> None:
     with FakeViewer() as viewer:
         tool = direct(viewer, token="wrong")
