@@ -14,6 +14,8 @@ logger = getLogger(__name__)
 
 # Tolerance of the point-in-tetrahedron test, in barycentric units.
 _BARYCENTRIC_TOLERANCE = 1e-10
+# Points located per block: the lookup holds (n, 5, 4, 3) arrays, about 2.7 KB a point.
+_LOCATION_CHUNK_SIZE = int(1e4)
 
 
 class TetMesh(BaseStructuredSupport):
@@ -280,6 +282,15 @@ class TetMesh(BaseStructuredSupport):
         """
         pos = np.array(pos)
         pos = pos[:, : self.dimension]
+        if pos.shape[0] <= _LOCATION_CHUNK_SIZE:
+            return self._get_element_for_location_block(pos)
+        blocks = [
+            self._get_element_for_location_block(pos[start : start + _LOCATION_CHUNK_SIZE])
+            for start in range(0, pos.shape[0], _LOCATION_CHUNK_SIZE)
+        ]
+        return tuple(np.concatenate(parts) for parts in zip(*blocks))
+
+    def _get_element_for_location_block(self, pos: np.ndarray):
         inside = self.inside(pos)
         # initialise array for tetrahedron vertices
         vertices = np.zeros((pos.shape[0], 5, 4, 3))

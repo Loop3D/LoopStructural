@@ -72,3 +72,18 @@ def test_points_on_the_mesh_boundary_are_inside(name):
     points = np.array([[0, 0, 0], [4, 4, 4], [4, 1.5, 1.5], [0, 1.5, 1.5]], dtype=float)
     values = mesh.evaluate_value(points, mesh.nodes.sum(axis=1))
     np.testing.assert_allclose(values, points.sum(axis=1), atol=1e-12)
+
+
+def test_tetmesh_location_lookup_in_chunks_gives_the_same_result(monkeypatch):
+    from loop_common.supports import _3d_structured_tetra
+
+    meshes, origin, extent = _meshes()
+    mesh = meshes["TetMesh"]
+    rng = np.random.default_rng(2)
+    # some points outside, so the inside mask is mixed
+    points = origin + rng.uniform(-0.1, 1.1, size=(101, 3)) * extent
+    expected = mesh.get_element_for_location(points)
+    monkeypatch.setattr(_3d_structured_tetra, "_LOCATION_CHUNK_SIZE", 7)
+    chunked = mesh.get_element_for_location(points)
+    for a, b in zip(expected, chunked):
+        np.testing.assert_array_equal(a, b)
