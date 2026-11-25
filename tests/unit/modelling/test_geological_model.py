@@ -281,5 +281,26 @@ def test_set_stratigraphic_column_keeps_group_names():
     assert column.get_group_for_unit_name("b1").name == "B"
 
 
+def test_evaluate_model_returns_unit_ids():
+    """Regression test: evaluate_model gave a running counter, not unit.id."""
+    from LoopStructural.modelling.features._analytical_feature import (
+        AnalyticalGeologicalFeature,
+    )
+
+    model = GeologicalModel([0, 0, 0], [10, 10, 10])
+    column = model.stratigraphic_column
+    column.clear(basement=False)
+    for i in (1, 2, 3):
+        column.add_unit(f"u{i}", thickness=1.0, id=i)
+    column.group_mapping["Group_0"] = "strati"
+    model._add_feature(
+        AnalyticalGeologicalFeature(
+            name="strati", vector=np.array([0.0, 0.0, 1.0]), origin=np.zeros(3)
+        )
+    )
+    points = np.array([[1.0, 1.0, z] for z in (0.5, 1.5, 2.5)])
+    assert model.evaluate_model(points).tolist() == [1, 2, 3]
+
+
 if __name__ == "__main__":
     test_prepare_data_keeps_world_coordinates()

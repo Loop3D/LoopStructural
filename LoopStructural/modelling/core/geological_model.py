@@ -1294,14 +1294,12 @@ class GeologicalModel:
             logger.warning("No stratigraphic column defined")
             return strat_id
 
-        s_id = 0
         for g in reversed(self.stratigraphic_column.get_groups()):
             feature_id = self.feature_name_index.get(g.name, -1)
             if feature_id >= 0:
                 vals = self.features[feature_id].evaluate_value(xyz)
                 for u in g.units:
-                    strat_id[np.logical_and(vals < u.max(), vals > u.min())] = s_id
-                    s_id += 1
+                    strat_id[np.logical_and(vals < u.max(), vals > u.min())] = u.id
             if feature_id == -1:
                 logger.error(f"Model does not contain {g.name}")
 
