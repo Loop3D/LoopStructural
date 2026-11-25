@@ -313,7 +313,6 @@ allow-dict-calls-with-keyword-arguments = true
 "LoopStructural/utils/json_encoder.py" = ["D", "ANN"]
 "LoopStructural/utils/linalg.py" = ["D", "ANN"]
 "LoopStructural/utils/logging.py" = ["D", "ANN"]
-"LoopStructural/utils/maths.py" = ["D", "ANN"]
 "LoopStructural/utils/observer.py" = ["D", "ANN"]
 "LoopStructural/utils/regions.py" = ["D", "ANN"]
 "LoopStructural/utils/typing.py" = ["D", "ANN"]
