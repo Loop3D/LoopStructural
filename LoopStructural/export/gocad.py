@@ -235,35 +235,3 @@ TFACE
                 fd.write(f"TRGL {v_map[face[0]]} {v_map[face[1]]} {v_map[face[2]]} \n")
         fd.write("END\n")
     return True
-
-
-# def _write_pointset(points, file_name):
-#     """
-#     Write out a GOCAD VS file for a pointset
-
-#     Parameters
-#     ----------
-#     points: SimpleNamespace()
-#         Details of the points, as a SimpleNamespace() object. Fields are:
-#             locations: locations, numpy ndarray with dtype = float64 & shape = (N,3)
-#             vectors: vectors, numpy ndarray with dtype = float64 & shape = (N,3)
-#             name: name of feature e.g. fault or supergroup, string
-
-#     file_name: string
-#         Desired filename
-
-#     Returns
-#     -------
-#     True if successful
-
-#     """
-#     file_name = Path(file_name).with_suffix(".vs")
-#     with open(f"{file_name}", "w") as fd:
-#         fd.write(
-#             f"""GOCAD VSet 1
-# HEADER {{
-# name: {points.name}
-# }}
-# GOCAD_ORIGINAL_COORDINATE_SYSTEM
-# NAME Default
-# PROJECTION Unknown
