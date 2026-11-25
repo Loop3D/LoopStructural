@@ -39,9 +39,20 @@ def test_from_processor_unit_ranges_match_processor_values():
         warnings.simplefilter("ignore", DeprecationWarning)
         model = GeologicalModel.from_processor(processor)
 
+    column = model.stratigraphic_column
     expected = processor.stratigraphic_column["supergroup_0"]
-    isovalues = model.stratigraphic_column.get_isovalues()
-    for name, values in expected.items():
-        unit = model.stratigraphic_column.get_unit_by_name(name)
-        assert (unit.min(), unit.max()) == (values["min"], values["max"])
-        assert isovalues[name]["value"] == values["min"]
+
+    def check():
+        isovalues = column.get_isovalues()
+        for name, values in expected.items():
+            unit = column.get_unit_by_name(name)
+            assert (unit.min(), unit.max()) == (values["min"], values["max"])
+            assert isovalues[name]["value"] == values["min"]
+
+    check()
+    # a later recompute of the column must keep the same ranges
+    column.add_unit("new_top", thickness=10)
+    check()
+    unit = column.get_unit_by_name("Bunjinah_Formation")
+    unit.thickness = unit.thickness
+    check()
