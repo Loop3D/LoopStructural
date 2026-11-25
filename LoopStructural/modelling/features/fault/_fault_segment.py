@@ -419,10 +419,15 @@ class FaultSegment(StructuralFrame):
         if need_values:
             mask = members[0]._calculate_mask(points)
             nan_rows = np.any(np.isnan(np.asarray(local)), axis=1)
+            idc, inside, local_coords = lookup
+            # one set of trilinear weights serves the three members
+            coefs = support.trilinear(local_coords[inside, :])
             for i in range(3):
                 if i == 0 and not need_gx:
                     continue
-                v = support._evaluate_value_from_lookup(lookup, interpolators[i].c)
+                v = support._values_from_coefficients(
+                    idc, inside, coefs, np.asarray(interpolators[i].c)
+                )
                 # The interpolator gives 0 for points that are not finite.
                 v[nan_rows] = 0.0
                 v[~mask] = np.nan

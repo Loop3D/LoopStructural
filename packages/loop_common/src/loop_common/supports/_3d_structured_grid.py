@@ -224,21 +224,17 @@ class StructuredGrid(BaseStructuredSupport):
         points of the lookup. The cell search is not repeated.
         """
         idc, inside, local_coords = lookup
-        weights = self._gradient_weights(local_coords[inside, :])
-        T = np.zeros((idc.shape[0], 3, 8))
-        T[inside, :, :] = weights
-        if np.any(inside) and np.max(idc[inside, :]) > property_array.shape[0]:
+        gradient = np.zeros((idc.shape[0], 3))
+        if not np.any(inside):
+            return gradient
+        corners = idc[inside, :]
+        if np.max(corners) > property_array.shape[0]:
             raise ValueError("index does not match number of nodes")
-        T[inside, 0, :] *= property_array[idc[inside, :]]
-        T[inside, 1, :] *= property_array[idc[inside, :]]
-        T[inside, 2, :] *= property_array[idc[inside, :]]
-        return np.array(
-            [
-                np.sum(T[:, 0, :], axis=1),
-                np.sum(T[:, 1, :], axis=1),
-                np.sum(T[:, 2, :], axis=1),
-            ]
-        ).T
+        weights = self._gradient_weights(local_coords[inside, :])
+        # gather the corner values once for the three axes
+        weights *= property_array[corners][:, None, :]
+        gradient[inside, :] = np.sum(weights, axis=2)
+        return gradient
 
     def evaluate_gradient(self, evaluation_points, property_array) -> np.ndarray:
         """Evaluate the gradient at a location given node values
