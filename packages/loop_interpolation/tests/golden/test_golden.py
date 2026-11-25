@@ -253,9 +253,6 @@ def test_p2_mesh_stores_its_geometry():
     assert hasattr(mesh, "origin")  # inside() and the setup diagnostics need it
 
 
-@pytest.mark.xfail(
-    strict=True, reason="new finding F2: P1/DFI return NaN for points on the lower x/y/z faces"
-)
 @pytest.mark.parametrize("engine", ["P1", "DFI"])
 def test_known_points_on_lower_boundary_are_finite(engine):
     case = "fold_sparse"
