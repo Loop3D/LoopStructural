@@ -46,6 +46,27 @@ def test_update_reuses_the_solver_and_kwargs_of_the_last_solve(monkeypatch):
     assert calls == [("lsmr", {"tol": 1e-9, "solver_kwargs": {"maxiter": 5000}})]
 
 
+def test_failed_solve_is_not_repeated_at_each_evaluation(monkeypatch):
+    interpolator = _interpolator()
+    assert interpolator.solve_system("lsmr", solver_kwargs={"maxiter": 2}) is False
+    calls = []
+    original = interpolator.solve_system
+
+    def spy(*args, **kwargs):
+        calls.append(args)
+        return original(*args, **kwargs)
+
+    monkeypatch.setattr(interpolator, "solve_system", spy)
+    points = np.array([[5.0, 5.0, 5.0]])
+    for _ in range(3):
+        interpolator.evaluate_value(points)
+    assert len(calls) == 1
+    # a change to the constraints lets update() solve again
+    interpolator.set_value_constraints(np.array([[2.0, 2.0, 2.0, 0.0, 1.0]]))
+    interpolator.evaluate_value(points)
+    assert len(calls) == 2
+
+
 def test_nan_point_evaluates_to_nan():
     interpolator = _interpolator()
     interpolator.solve_system("lsmr")

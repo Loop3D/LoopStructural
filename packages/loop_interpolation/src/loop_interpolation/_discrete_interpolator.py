@@ -46,6 +46,16 @@ def _drop_nan_rows(A, B, idc, w, name):
 class DiscreteInterpolator(GeologicalInterpolator):
     """ """
 
+    @property
+    def up_to_date(self):
+        return self._up_to_date
+
+    @up_to_date.setter
+    def up_to_date(self, value):
+        self._up_to_date = value
+        # a solve or a change to the constraints lets update() solve again
+        self._update_failed = False
+
     def __init__(self, support, data=None, c=None, up_to_date=False):
         """
         Base class for a discrete interpolator e.g. piecewise linear or finite difference which is
@@ -1596,15 +1606,17 @@ class DiscreteInterpolator(GeologicalInterpolator):
         if self.solver is None:
             logger.debug("Cannot rerun interpolator")
             return False
-        if not self.up_to_date:
+        if not self.up_to_date and not self._update_failed:
             self.setup_interpolator(**self._setup_kwargs)
             self.up_to_date = self.solve_system(
                 self.solver, **getattr(self, "_last_solve_kwargs", {})
             )
             if not self.up_to_date:
+                # do not solve again at each evaluation: nothing changed since this solve
+                self._update_failed = True
                 logger.warning(
-                    "The solve did not converge. It runs again at each evaluation until it "
-                    "converges: change the solver or solver_kwargs, then call solve_system"
+                    "The solve did not converge; the field is the last iteration. Change the "
+                    "solver or solver_kwargs, then call solve_system"
                 )
             return self.up_to_date
         return bool(self.up_to_date)
