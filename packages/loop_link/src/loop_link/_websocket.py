@@ -101,7 +101,7 @@ class WebSocketClient:
 
     def __init__(self, sock: socket.socket) -> None:
         self._sock = sock
-        self._buffer = b""
+        self._buffer = bytearray()
         self._partial = False
         self._fragmenting = False
         self._fragment_opcode = OP_BINARY
@@ -198,7 +198,7 @@ class WebSocketClient:
         except OSError as error:
             raise WebSocketError(f"The handshake failed: {error}") from error
         head, _, rest = data.partition(b"\r\n\r\n")
-        self._buffer = rest
+        self._buffer = bytearray(rest)
         status_line, *header_lines = head.decode("latin-1").split("\r\n")
         parts = status_line.split(" ", 2)
         status = parts[1] if len(parts) > 1 else ""
@@ -245,6 +245,10 @@ class WebSocketClient:
             # This includes a timeout: part of the frame can be sent, so the stream is broken.
             self._abort()
             raise WebSocketError(f"Cannot send to the viewer: {error}") from error
+        except BaseException:
+            # For example Ctrl-C: part of the frame can be sent, so the stream is broken.
+            self._abort()
+            raise
 
     def send_binary(self, data: bytes) -> None:
         """Send one binary message.
@@ -284,8 +288,10 @@ class WebSocketClient:
             if not chunk:
                 self.closed = True
                 raise WebSocketClosed("The viewer closed the connection.")
+            # A bytearray grows in place: bytes concatenation made large frames quadratic.
             self._buffer += chunk
-        data, self._buffer = self._buffer[:count], self._buffer[count:]
+        data = bytes(self._buffer[:count])
+        del self._buffer[:count]
         return data
 
     def _read_frame(self, wait: float | None) -> tuple[bool, int, bytes]:
@@ -401,6 +407,11 @@ class WebSocketClient:
         except OSError as error:
             self._abort()
             raise WebSocketError(f"Cannot read from the viewer: {error}") from error
+        except BaseException:
+            # For example Ctrl-C in the middle of a frame: the next read would be misaligned.
+            if self._partial:
+                self._abort()
+            raise
 
     def _check_open(self) -> None:
         """Raise ``WebSocketClosed`` if the connection is closed."""

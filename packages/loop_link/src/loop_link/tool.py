@@ -112,7 +112,8 @@ class ToolConnection:
     @property
     def connected(self) -> bool:
         """True while the connection is open."""
-        return self._client is not None
+        client = self._client
+        return client is not None and not client.closed
 
     def connect(self) -> ToolConnection:
         """Connect to the ``/tool`` path of the viewer. No ``hello`` is sent.
@@ -247,8 +248,10 @@ class ToolConnection:
 
     def _connect_locked(self) -> WebSocketClient:
         """Return the open client, or open one. The caller holds the lock."""
-        if self._client is not None:
+        if self._client is not None and not self._client.closed:
             return self._client
+        # A client closes itself after a broken send: drop it and open a new one.
+        self._drop_locked()
         if self._resolve is not None:
             address = self._resolve()
         else:
