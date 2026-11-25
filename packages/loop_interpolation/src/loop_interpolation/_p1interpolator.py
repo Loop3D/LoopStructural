@@ -67,18 +67,13 @@ class P1Interpolator(DiscreteInterpolator):
             sigma=sigma,
         )
 
-    def add_gradient_constraints(self, w=1.0):
-        pass
-
     def add_norm_constraints(self, w=1.0):
         points = self.get_norm_constraints()
         if points.shape[0] > 0:
             grad, elements, inside = self.support.evaluate_shape_derivatives(
                 points[:, : self.dimensions]
             )
-            size = self.support.element_scale[elements[inside]]
-            wt = np.ones(size.shape[0])
-            wt *= w  # s* size
+            wt = w * points[inside, self.dimensions * 2]
             elements = np.tile(self.support.elements[elements[inside]], (self.dimensions, 1, 1))
 
             elements = elements.swapaxes(0, 1)
@@ -99,10 +94,7 @@ class P1Interpolator(DiscreteInterpolator):
         points = self.get_value_constraints()
         if points.shape[0] > 0:
             N, elements, inside = self.support.evaluate_shape(points[:, : self.dimensions])
-            size = self.support.element_size[elements[inside]]
-
-            wt = np.ones(size.shape[0])
-            wt *= w  # * size
+            wt = w * points[inside, self.dimensions + 1]
             self.add_constraints_to_least_squares(
                 N[inside, :],
                 points[inside, self.dimensions],
@@ -243,8 +235,12 @@ class P1Interpolator(DiscreteInterpolator):
         self.add_value_constraints(self.interpolation_weights["cpw"])
         self.add_tangent_constraints(self.interpolation_weights["tpw"])
         self.add_value_inequality_constraints()
-        self.add_inequality_pairs_constraints()
-        # self.add_interface_constraints(self.interpolation_weights["ipw"])
+        self.add_inequality_pairs_constraints(
+            pairs=kwargs.get("inequality_pairs", None),
+            upper_bound=kwargs.get("inequality_pair_upper_bound", np.finfo(float).eps),
+            lower_bound=kwargs.get("inequality_pair_lower_bound", -np.inf),
+        )
+        self._warn_ignored_data(("interface",))
         return self.finalize_setup_diagnostics_report()
 
     def add_gradient_orthogonal_constraints(
@@ -276,8 +272,7 @@ class P1Interpolator(DiscreteInterpolator):
                 points[:, : self.dimensions]
             )
             size = self.support.element_size[elements[inside]]
-            wt = np.ones(size.shape[0])
-            wt *= w * size
+            wt = np.broadcast_to(np.asarray(w, dtype=float), (points.shape[0],))[inside] * size
             elements = self.support.elements[elements[inside], :]
             # elements = np.tile(self.support.elements[elements[inside]], (3, 1, 1))
 

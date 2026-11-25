@@ -408,9 +408,10 @@ class FiniteDifferenceInterpolator(DiscreteInterpolator):
             )
             A = np.einsum("ij,ijk->ik", strike_vector.T, T)
             B = np.zeros(points[inside, :].shape[0])
-            self.add_constraints_to_least_squares(A, B, idc[inside, :], w=w, name="gradient")
+            wt = w * points[inside, 2 * self.support.dimension]
+            self.add_constraints_to_least_squares(A, B, idc[inside, :], w=wt, name="gradient")
             A = np.einsum("ij,ijk->ik", dip_vector.T, T)
-            self.add_constraints_to_least_squares(A, B, idc[inside, :], w=w, name="gradient")
+            self.add_constraints_to_least_squares(A, B, idc[inside, :], w=wt, name="gradient")
             # self.regularisation_scale += compute_weighting(
             #     self.support.nodes,
             #     points[inside, : self.support.dimension],
@@ -564,7 +565,8 @@ class FiniteDifferenceInterpolator(DiscreteInterpolator):
             # dot product of vector and element gradient = 0
             A = np.einsum("ij,ijk->ik", vectors[inside, : self.support.dimension], T)
             b_ = np.zeros(np.sum(inside)) + b
-            self.add_constraints_to_least_squares(A, b_, idc[inside, :], w=w, name=name)
+            wt = np.broadcast_to(np.asarray(w, dtype=float), (points.shape[0],))[inside]
+            self.add_constraints_to_least_squares(A, b_, idc[inside, :], w=wt, name=name)
 
             if np.sum(inside) <= 0:
                 logger.warning(
