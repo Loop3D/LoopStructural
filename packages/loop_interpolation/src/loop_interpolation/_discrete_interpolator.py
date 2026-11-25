@@ -320,6 +320,8 @@ class DiscreteInterpolator(GeologicalInterpolator):
         """
         self.constraints = {}
         self.ineq_constraints = {}
+        self._native_orthogonal = {}
+        self._native_equality = {}
 
     def reset(self):
         """
