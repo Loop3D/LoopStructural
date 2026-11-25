@@ -1294,7 +1294,7 @@ class DiscreteInterpolator(GeologicalInterpolator):
 
         # the polish re-solves must use the same ridge options as this solve
         constant_norm_solver_kwargs = {**solver_kwargs, **(ridge_kwargs or {})}
-        if Q is None:
+        if Q.shape[0] == 0:
             logger.warning("No inequality constraints, using lsmr")
             return self.solve_system("lsmr", solver_kwargs=solver_kwargs)
 
@@ -1414,6 +1414,10 @@ class DiscreteInterpolator(GeologicalInterpolator):
 
         """
         solver_choice = self._normalise_solver_choice(solver)
+        # update() repeats this solve; copy now because the solve pops keys from solver_kwargs
+        last_solve = {"tol": tol, "solver_kwargs": dict(solver_kwargs or {})}
+        if position_tolerance is not None:
+            last_solve["position_tolerance"] = position_tolerance
         if position_tolerance is not None:
             position_tolerance = float(position_tolerance)
             if not position_tolerance > 0:
@@ -1478,6 +1482,7 @@ class DiscreteInterpolator(GeologicalInterpolator):
             timing_native.setdefault("total", perf_counter() - solve_started)
             timing_native["up_to_date"] = self.up_to_date
             self.latest_solve_timing = timing_native
+            self.solver, self._last_solve_kwargs = solver_choice, last_solve
             return self.up_to_date
         constant_norm_iterations, constant_norm_weight, constant_norm_target = (
             _solver_pipeline.extract_constant_norm_options(solver_kwargs, logger)
@@ -1568,6 +1573,8 @@ class DiscreteInterpolator(GeologicalInterpolator):
             solve_started=solve_started,
             up_to_date=bool(self.up_to_date),
         )
+        # set at the end, so a nested solve (ADMM polish or fallback) does not replace it
+        self.solver, self._last_solve_kwargs = solver_choice, last_solve
         return self.up_to_date
 
     def update(self) -> bool:
@@ -1587,7 +1594,14 @@ class DiscreteInterpolator(GeologicalInterpolator):
             return False
         if not self.up_to_date:
             self.setup_interpolator(**self._setup_kwargs)
-            self.up_to_date = self.solve_system(self.solver)
+            self.up_to_date = self.solve_system(
+                self.solver, **getattr(self, "_last_solve_kwargs", {})
+            )
+            if not self.up_to_date:
+                logger.warning(
+                    "The solve did not converge. It runs again at each evaluation until it "
+                    "converges: change the solver or solver_kwargs, then call solve_system"
+                )
             return self.up_to_date
         return bool(self.up_to_date)
 
@@ -1606,7 +1620,7 @@ class DiscreteInterpolator(GeologicalInterpolator):
         """
         self.update()
         evaluation_points = np.array(locations)
-        evaluated = np.zeros(evaluation_points.shape[0])
+        evaluated = np.full(evaluation_points.shape[0], np.nan)
         mask = np.any(np.isnan(evaluation_points), axis=1)
 
         if evaluation_points[~mask, :].shape[0] > 0:
@@ -1626,9 +1640,12 @@ class DiscreteInterpolator(GeologicalInterpolator):
 
         """
         self.update()
-        if locations.shape[0] > 0:
-            return self.support.evaluate_gradient(locations, self.c)
-        return np.zeros((0, 3))
+        locations = np.asarray(locations)
+        gradient = np.full((locations.shape[0], 3), np.nan)
+        mask = np.any(np.isnan(locations), axis=1)
+        if np.any(~mask):
+            gradient[~mask] = self.support.evaluate_gradient(locations[~mask], self.c)
+        return gradient
 
     def to_dict(self):
         return {

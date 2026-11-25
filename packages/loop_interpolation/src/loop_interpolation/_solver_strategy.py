@@ -373,15 +373,13 @@ def solve_with_lsmr(
     res = sparse.linalg.lsmr(A, b, **solver_kwargs)
     timing["solve_seconds"] = perf_counter() - solve_step_started
 
-    if res[1] in (1, 2, 4, 5, 7):
-        return np.asarray(res[0]), True
     if res[1] == 0:
         logger.warning("Solution to least squares problem is all zeros, check input data")
-        return np.asarray(res[0]), True
-    if res[1] in (3, 6):
+    elif res[1] in (3, 6):
         logger.warning("COND(A) seems to be greater than CONLIM, check input data")
-        return np.asarray(res[0]), True
-    return np.asarray(res[0]), True
+    elif res[1] == 7:
+        logger.warning("LSMR reached iteration limit (maxiter) and did not converge")
+    return np.asarray(res[0]), res[1] != 7
 
 
 def extract_admm_kwargs(solver_kwargs: dict, admm_solve) -> tuple[str, dict]:

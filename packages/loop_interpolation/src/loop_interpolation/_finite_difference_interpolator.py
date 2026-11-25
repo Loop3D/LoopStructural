@@ -455,15 +455,16 @@ class FiniteDifferenceInterpolator(DiscreteInterpolator):
                 points[inside, : self.support.dimension]
             )
 
-            sigma = self.regularisation_weight_sigma
-            if sigma is None:
-                sigma = self.support.nsteps[0] * 10
+            if self.use_regularisation_weight_scale:
+                sigma = self.regularisation_weight_sigma
+                if sigma is None:
+                    sigma = self.support.nsteps[0] * 10
 
-            self.regularisation_scale += compute_weighting(
-                self.support.nodes,
-                points[inside, : self.support.dimension],
-                sigma=sigma,
-            )
+                self.regularisation_scale += compute_weighting(
+                    self.support.nodes,
+                    points[inside, : self.support.dimension],
+                    sigma=sigma,
+                )
             # Apply optional per-constraint weights from the points array.
             # For normal constraints, row format is xyz|nx ny nz|w.
             point_weights = np.ones(np.sum(inside), dtype=float)
