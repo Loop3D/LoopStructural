@@ -253,3 +253,10 @@ def test_displaced_fault_block_frame_equals_the_frame_on_its_side(displaced):
         inside = side * young_gx > 1e-6
         block_gx = old.evaluate_frame_value(pts, block={"young": side})
         np.testing.assert_array_equal(block_gx[inside], gx[inside])
+
+
+def test_restoring_points_on_a_younger_fault_gives_finite_points(displaced):
+    # Points on the young fault get a NaN young-fault gradient; the old fault must not spread it.
+    on_young, _, _ = plane_points(YOUNG["center"], YOUNG["dip"], YOUNG["dip_azimuth"], n=7, half=0.3)
+    restored = displaced["old"].apply_to_points(on_young)
+    assert np.isfinite(restored).all()

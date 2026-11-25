@@ -292,7 +292,9 @@ class FaultBuilder(StructuralFrameBuilder):
         fault_dip_anisotropy : float, default=1.0
             Anisotropy factor for the fault dip.
         fault_pitch : float, optional
-            Pitch angle of the fault.
+            Angle in degrees, in the fault plane, of the slip vector from the strike
+            direction (down_dip x normal). 90 gives the down-dip slip vector, which
+            with a positive displacement is a reverse fault.
         """
         # Suspend automatic rebuilds while we populate internal attributes to avoid recursion
         self._fault_buffer = fault_buffer
