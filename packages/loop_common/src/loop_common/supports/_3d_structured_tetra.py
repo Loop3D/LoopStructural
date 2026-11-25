@@ -291,7 +291,6 @@ class TetMesh(BaseStructuredSupport):
         return tuple(np.concatenate(parts) for parts in zip(*blocks))
 
     def _get_element_for_location_block(self, pos: np.ndarray):
-        inside = self.inside(pos)
         # initialise array for tetrahedron vertices
         vertices = np.zeros((pos.shape[0], 5, 4, 3))
         vertices[:] = np.nan
