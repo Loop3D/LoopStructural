@@ -150,3 +150,13 @@ def test_to_dict_from_dict_round_trip(topology):
     assert restored.get_fault_relationship("f1", "f2") == FaultRelationshipType.ABUTTING
     assert restored.get_fault_relationship("f2", "f3") == FaultRelationshipType.FAULTED
     assert restored.get_fault_stratigraphic_relationship("unitA", "f1") is True
+
+
+def test_fault_stratigraphic_unit_relationships_matrix():
+    sc = StratigraphicColumn()
+    sc.add_unit("u1", thickness=1.0)
+    topo = FaultTopology(sc)
+    topo.add_fault("f1")
+    topo.add_stratigraphy_fault_relationship("u1", "f1")
+    # columns follow get_group_unit_pairs(): (Group_0, u1), (Group_1, Basement)
+    assert topo.get_fault_stratigraphic_unit_relationships().tolist() == [[1, 0]]
