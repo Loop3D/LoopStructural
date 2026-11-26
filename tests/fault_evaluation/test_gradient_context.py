@@ -47,7 +47,9 @@ MANIFEST = json.loads((DATA / "manifest.json").read_text(encoding="utf8"))
 # Counts that the accepted OP1 rule gives for the golden points (see the report of T020).
 F4_U3_GROUP_GRADIENT_CALLS = 8  # 4 faults on N points + 4 faults on 4N points
 F4_U3_GROUP_GRADIENT_FAULT_POINTS_FACTOR = 20  # 4 * N + 4 * 4N
-CUTTING_FAULTS_GROUP_0_GRADIENT_CALLS = 25  # distinct (fault, batch) pairs, frames included
+# Distinct (fault, batch) pairs, frames included. 25 before master #421; since #421 each
+# refinement probes only the tetrahedra that still cross a fault, a new batch each time.
+CUTTING_FAULTS_GROUP_0_GRADIENT_CALLS = 29
 
 
 # ---------------------------------------------------------------------------
@@ -157,25 +159,37 @@ def _corners(model, points: np.ndarray, scale: float | None = None) -> np.ndarra
     return np.array(regular_tetraherdron_for_points(points, scale).reshape(-1, 3))
 
 
-def _final_scale(feature, points: np.ndarray, scale: float) -> float:
-    """Replay the refinement loop of ``evaluate_gradient`` and return the final scale."""
-    resolved = False
+def _refined_tetrahedra(feature, points: np.ndarray, scale: float):
+    """Replay the refinement of ``evaluate_gradient`` (master #421).
+
+    Only the tetrahedra that cross a fault are made smaller, at most 10 times.
+    Returns the final tetrahedra and the mask of the points whose tetrahedron
+    still crosses a fault (their gradient is NaN).
+    """
     tetrahedron = regular_tetraherdron_for_points(points, scale)
-    while not resolved:
-        resolved = True
+
+    def straddles(tet):
+        out = np.zeros(tet.shape[0], dtype=bool)
         for fault in feature.faults:
-            values = fault[0].evaluate_value(tetrahedron.reshape(-1, 3), fillnan="nearest")
-            values = values.reshape(tetrahedron.shape[0], 4)
-            if np.any(~(np.all(values > 0, axis=1) | np.all(values < 0, axis=1))):
-                scale *= 0.5
-                tetrahedron = regular_tetraherdron_for_points(points, scale)
-                resolved = False
-    return scale
+            side = fault[0].evaluate_value(tet.reshape(-1, 3), fillnan="nearest")
+            side = side.reshape(tet.shape[0], 4)
+            out |= ~(np.all(side > 0, axis=1) | np.all(side < 0, axis=1))
+        return out
+
+    straddle = straddles(tetrahedron)
+    for _ in range(10):
+        if not np.any(straddle):
+            break
+        scale *= 0.5
+        tetrahedron[straddle] = regular_tetraherdron_for_points(points[straddle], scale)
+        straddle[straddle] = straddles(tetrahedron[straddle])
+    return tetrahedron, straddle
 
 
 def _final_corners(model, feature, points: np.ndarray) -> np.ndarray:
     """Return the 4N corners that the refinement loop gives for the default scale."""
-    return _corners(model, points, _final_scale(feature, points, _default_scale(model)))
+    tetrahedron, _ = _refined_tetrahedra(feature, points, _default_scale(model))
+    return np.array(tetrahedron.reshape(-1, 3))
 
 
 def _legacy_gradient(feature, points: np.ndarray, scale: float) -> np.ndarray:
@@ -183,15 +197,17 @@ def _legacy_gradient(feature, points: np.ndarray, scale: float) -> np.ndarray:
 
     ``scale`` is the start scale. The refinement loop is replayed first.
     The mask uses the original points. The corners are restored by the ordered faults.
+    A point whose tetrahedron still crosses a fault stays NaN (master #421).
     """
     result = np.full(points.shape, np.nan)
     mask = feature._calculate_mask(points)
-    tetrahedron = regular_tetraherdron_for_points(points, _final_scale(feature, points, scale))
+    tetrahedron, straddle = _refined_tetrahedra(feature, points, scale)
     restored = np.array(tetrahedron.reshape(-1, 3))
     for fault in feature.faults if feature.faults_enabled else []:
         restored = fault.apply_to_points(restored)
     values = feature.interpolator.evaluate_value(restored).reshape(-1, 4)
-    result[mask, :] = gradient_from_tetrahedron(tetrahedron[mask, :, :], values[mask])
+    ok = mask & ~straddle
+    result[ok, :] = gradient_from_tetrahedron(tetrahedron[ok, :, :], values[ok])
     return result
 
 
@@ -414,25 +430,27 @@ def test_different_element_scales_make_different_corner_batches(record_property)
 def test_tetrahedron_refinement_restores_only_the_final_corners(caplog, record_property):
     """A refined tetrahedron is restored once, at the final scale. No stale batch is restored.
 
-    At the default scale the corners of the golden points touch the fault frames, so the loop
-    halves the scale (the log shows the warning). The final scale comes from an independent
-    replay of the loop. Only the corners of the final scale are restored, and the gradient equals
-    the legacy gradient at that scale.
+    At the default scale some corners of the golden points touch the fault frames, so the loop
+    makes those tetrahedra smaller (the log shows the warning; master #421 refines only them).
+    The final corners come from an independent replay of the loop. Only the final corners are
+    restored, and the gradient equals the legacy gradient of those corners.
     """
     model, golden = _model("f4_u3"), _golden("f4_u3")
     points = golden["points"]
     n = len(points)
     feature = _group(model, 3)
     start = _default_scale(model)
-    final = _final_scale(feature, points, start)
-    assert final < start, "these points must need a refinement"
+    final = _final_corners(model, feature, points)
+    assert not np.array_equal(final, _corners(model, points, start)), (
+        "these points must need a refinement"
+    )
     with caplog.at_level(logging.WARNING), _Recorder() as recorder:
         gradient = feature.evaluate_gradient(points)
     diagnostics = _record("f4_u3_refinement", recorder, record_property)
 
     assert any("Refining the tetrahedron" in message for message in caplog.messages)
     assert recorder.batch_calls(_digest(_corners(model, points, start))) == 0
-    assert recorder.batch_calls(_digest(_corners(model, points, final))) == 1
+    assert recorder.batch_calls(_digest(final)) == 1
     assert diagnostics["calls_by_batch_size"] == {n: 4, 4 * n: 4}
     assert diagnostics["fault_calls_total"] == 8
     np.testing.assert_allclose(
@@ -514,8 +532,8 @@ def test_child_fault_frame_batches_are_counted_separately(record_property):
 
     group_0 uses [fault_1, fault_0]. The frame of fault_1 uses [fault_0] and restores its
     own nested batches, for N points and for the corners. Every nested batch counts
-    on its own (OP1). With one restoration per distinct batch there are 25 calls
-    (legacy: 46), and none repeats an earlier fault and batch.
+    on its own (OP1). With one restoration per distinct batch there are 29 calls
+    (25 before master #421), and none repeats an earlier fault and batch.
     """
     model, golden = _model("cutting_faults"), _golden("cutting_faults")
     points = golden["points"]

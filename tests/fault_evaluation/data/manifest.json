@@ -17,7 +17,7 @@
         "unit_boundaries": 8
       },
       "point_count": 158,
-      "sha256": "cae20ee89052b75e3d4fd145618974863eef645d09aa737eb553188f826f4690",
+      "sha256": "d39d5ce9e1339cef04e9c4df49ae1a025f9393d64156a433c3cb469b7a81ebfc",
       "summary": {
         "feature::fault_0::gradient": {
           "dtype": "float64",
@@ -122,8 +122,8 @@
         "feature::fault_1::gradient": {
           "dtype": "float64",
           "finite_count": 474,
-          "finite_max": 19.79329142918824,
-          "finite_min": -19.891708700927662,
+          "finite_max": 19.793339681119324,
+          "finite_min": -19.891769246923246,
           "nan_count": 0,
           "neginf_count": 0,
           "posinf_count": 0,
@@ -147,8 +147,8 @@
         "feature::fault_1__0::gradient": {
           "dtype": "float64",
           "finite_count": 474,
-          "finite_max": 0.0009456526517056529,
-          "finite_min": -1.3757120396307165e-05,
+          "finite_max": 0.0009413972449615667,
+          "finite_min": -1.3751280264174062e-05,
           "nan_count": 0,
           "neginf_count": 0,
           "posinf_count": 0,
@@ -172,8 +172,8 @@
         "feature::fault_1__1::gradient": {
           "dtype": "float64",
           "finite_count": 474,
-          "finite_max": 3.665452956003179e-05,
-          "finite_min": -0.0012496677880058371,
+          "finite_max": 3.656005727580014e-05,
+          "finite_min": -0.0012496698712873844,
           "nan_count": 0,
           "neginf_count": 0,
           "posinf_count": 0,
@@ -197,8 +197,8 @@
         "feature::fault_1__2::gradient": {
           "dtype": "float64",
           "finite_count": 474,
-          "finite_max": 0.0012760345172653231,
-          "finite_min": -4.7258674355621366e-05,
+          "finite_max": 0.0012756543351747363,
+          "finite_min": -4.725992524803185e-05,
           "nan_count": 0,
           "neginf_count": 0,
           "posinf_count": 0,
@@ -221,10 +221,10 @@
         },
         "feature::group_0::gradient": {
           "dtype": "float64",
-          "finite_count": 474,
-          "finite_max": 343.87291004380313,
-          "finite_min": -77.14536898957749,
-          "nan_count": 0,
+          "finite_count": 468,
+          "finite_max": 220.90244264073203,
+          "finite_min": -77.14536940161088,
+          "nan_count": 6,
           "neginf_count": 0,
           "posinf_count": 0,
           "shape": [
@@ -234,10 +234,10 @@
         },
         "feature::group_0::value": {
           "dtype": "float64",
-          "finite_count": 158,
-          "finite_max": 900.7032215283277,
-          "finite_min": -95.27177873167759,
-          "nan_count": 0,
+          "finite_count": 157,
+          "finite_max": 900.7032391569327,
+          "finite_min": -95.27176772638938,
+          "nan_count": 1,
           "neginf_count": 0,
           "posinf_count": 0,
           "shape": [
@@ -248,10 +248,11 @@
           "dtype": "int64",
           "finite_count": 158,
           "finite_max": 1.0,
-          "finite_min": 0.0,
+          "finite_min": -1.0,
           "histogram": {
+            "-1": 1,
             "0": 26,
-            "1": 132
+            "1": 131
           },
           "nan_count": 0,
           "neginf_count": 0,
@@ -288,10 +289,10 @@
         },
         "restored::fault_1>fault_0": {
           "dtype": "float64",
-          "finite_count": 474,
-          "finite_max": 1000.2461654243815,
-          "finite_min": -999.2187794682751,
-          "nan_count": 0,
+          "finite_count": 471,
+          "finite_max": 1000.2458686411725,
+          "finite_min": -999.2187649187291,
+          "nan_count": 3,
           "neginf_count": 0,
           "posinf_count": 0,
           "shape": [
@@ -466,12 +467,12 @@
         },
         "unit_boundary_distances": {
           "dtype": "float64",
-          "finite_count": 632,
-          "finite_max": 2400.703221528328,
-          "finite_min": 0.09530150564771844,
+          "finite_count": 628,
+          "finite_max": 2400.703239156933,
+          "finite_min": 0.09540450760016483,
           "nan_count": 0,
           "neginf_count": 0,
-          "posinf_count": 0,
+          "posinf_count": 4,
           "shape": [
             158,
             4
@@ -2933,7 +2934,7 @@
         "unit_boundaries": 8
       },
       "point_count": 150,
-      "sha256": "fc4daafc06e10e6c754612713c3c036ef79eef3464e758b9b622d43357b619ef",
+      "sha256": "aa25dc979ead1708d3e1a68529520fa607b899f55937735900ab7656207e4a4d",
       "summary": {
         "feature::fault_0::gradient": {
           "dtype": "float64",
@@ -3038,8 +3039,8 @@
         "feature::group_0::gradient": {
           "dtype": "float64",
           "finite_count": 450,
-          "finite_max": 1.008398155116538,
-          "finite_min": -0.28616848831890707,
+          "finite_max": 1.0083882125495407,
+          "finite_min": -0.2899274340210396,
           "nan_count": 0,
           "neginf_count": 0,
           "posinf_count": 0,
@@ -3323,13 +3324,13 @@
         "unit_boundaries": 16
       },
       "point_count": 166,
-      "sha256": "390fb02020cab3c7ac49a1484a4eddb2c0d27be4eaff64b0d0313c13a27a7c83",
+      "sha256": "6c7968cdff8eb3f2bd72d7e5f310d5a878594ee318d87237bb2965b7f7418af2",
       "summary": {
         "feature::__group_0_unconformity::gradient": {
           "dtype": "float64",
           "finite_count": 498,
-          "finite_max": 1.008398155116538,
-          "finite_min": -0.28616848831890707,
+          "finite_max": 1.0083882125495407,
+          "finite_min": -0.2899274340210396,
           "nan_count": 0,
           "neginf_count": 0,
           "posinf_count": 0,
@@ -3453,8 +3454,8 @@
         "feature::group_0::gradient": {
           "dtype": "float64",
           "finite_count": 381,
-          "finite_max": 1.008398155116538,
-          "finite_min": -0.10157528484728573,
+          "finite_max": 1.0083882125495407,
+          "finite_min": -0.10070306026084097,
           "nan_count": 117,
           "neginf_count": 0,
           "posinf_count": 0,
@@ -3478,8 +3479,8 @@
         "feature::group_1::gradient": {
           "dtype": "float64",
           "finite_count": 117,
-          "finite_max": 0.988250671654896,
-          "finite_min": -0.16924884227057646,
+          "finite_max": 0.988062503317785,
+          "finite_min": -0.1689227878013515,
           "nan_count": 381,
           "neginf_count": 0,
           "posinf_count": 0,
@@ -3932,13 +3933,13 @@
         "unit_boundaries": 16
       },
       "point_count": 174,
-      "sha256": "fb5a7186c0aae1458c0f17f3d5972a33461f0a61346ec26b04e0c16a7abc1a16",
+      "sha256": "aab7cfbbd68d0681033215972c9f169cdcf85fb4e5f239ab9536fb91a223decc",
       "summary": {
         "feature::__group_0_unconformity::gradient": {
           "dtype": "float64",
           "finite_count": 522,
-          "finite_max": 1.012026441890157,
-          "finite_min": -0.28616848831890707,
+          "finite_max": 1.0117971614591679,
+          "finite_min": -0.2899274340210396,
           "nan_count": 0,
           "neginf_count": 0,
           "posinf_count": 0,
@@ -3962,8 +3963,8 @@
         "feature::__group_1_unconformity::gradient": {
           "dtype": "float64",
           "finite_count": 522,
-          "finite_max": 0.9893414719474549,
-          "finite_min": -0.20552998104256304,
+          "finite_max": 0.9894440094928001,
+          "finite_min": -0.2081433734557136,
           "nan_count": 0,
           "neginf_count": 0,
           "posinf_count": 0,
@@ -4087,8 +4088,8 @@
         "feature::group_0::gradient": {
           "dtype": "float64",
           "finite_count": 405,
-          "finite_max": 1.008398155116538,
-          "finite_min": -0.10157528484728573,
+          "finite_max": 1.0083882125495407,
+          "finite_min": -0.10070306026084097,
           "nan_count": 117,
           "neginf_count": 0,
           "posinf_count": 0,
@@ -4137,8 +4138,8 @@
         "feature::group_2::gradient": {
           "dtype": "float64",
           "finite_count": 117,
-          "finite_max": 0.9511714167260834,
-          "finite_min": -0.18680140349124486,
+          "finite_max": 0.953195829910193,
+          "finite_min": -0.18672639297235705,
           "nan_count": 405,
           "neginf_count": 0,
           "posinf_count": 0,
@@ -4757,13 +4758,13 @@
         "unit_boundaries": 16
       },
       "point_count": 182,
-      "sha256": "83af25e020f6d4f125f0ab2a472faa1c55ca4657ffea316f2afaadf64b0ad92d",
+      "sha256": "746df7029bed8f3a3cc12bc5366ee1ac42c5b73832967443105822a634a9fbd8",
       "summary": {
         "feature::__group_0_unconformity::gradient": {
           "dtype": "float64",
           "finite_count": 546,
-          "finite_max": 1.008398155116538,
-          "finite_min": -0.28616848831890707,
+          "finite_max": 1.0083882125495407,
+          "finite_min": -0.2899274340210396,
           "nan_count": 0,
           "neginf_count": 0,
           "posinf_count": 0,
@@ -4787,8 +4788,8 @@
         "feature::__group_1_unconformity::gradient": {
           "dtype": "float64",
           "finite_count": 546,
-          "finite_max": 0.9893414719474549,
-          "finite_min": -0.20552998104256304,
+          "finite_max": 0.9894440094928001,
+          "finite_min": -0.2081433734557136,
           "nan_count": 0,
           "neginf_count": 0,
           "posinf_count": 0,
@@ -4812,8 +4813,8 @@
         "feature::__group_2_unconformity::gradient": {
           "dtype": "float64",
           "finite_count": 546,
-          "finite_max": 0.9762949281116562,
-          "finite_min": -0.3688749107298577,
+          "finite_max": 0.9752697204528786,
+          "finite_min": -0.36886777046174757,
           "nan_count": 0,
           "neginf_count": 0,
           "posinf_count": 0,
@@ -4937,8 +4938,8 @@
         "feature::group_0::gradient": {
           "dtype": "float64",
           "finite_count": 429,
-          "finite_max": 1.008398155116538,
-          "finite_min": -0.10157528484728573,
+          "finite_max": 1.0083882125495407,
+          "finite_min": -0.10070306026084097,
           "nan_count": 117,
           "neginf_count": 0,
           "posinf_count": 0,
@@ -5012,8 +5013,8 @@
         "feature::group_3::gradient": {
           "dtype": "float64",
           "finite_count": 117,
-          "finite_max": 0.9710649314652073,
-          "finite_min": -0.2160732714974074,
+          "finite_max": 0.9718340181797913,
+          "finite_min": -0.21587060039878025,
           "nan_count": 429,
           "neginf_count": 0,
           "posinf_count": 0,
@@ -5798,7 +5799,7 @@
         "unit_boundaries": 8
       },
       "point_count": 158,
-      "sha256": "672c1209f72b0db0837f6081da7dec73976aae9bae7c14af27802b5fe0ac5466",
+      "sha256": "6561f148771c3a6c5203341d4bcaa39c62c3f0c0d88d23c7ec96e399161816fa",
       "summary": {
         "feature::fault_0::gradient": {
           "dtype": "float64",
@@ -6288,7 +6289,7 @@
         "unit_boundaries": 16
       },
       "point_count": 174,
-      "sha256": "a67c5a69eb66ff341130757460a9a9f549ab688ea26eae99aa01c05dba274c0b",
+      "sha256": "108d8a3b9d17e0e2ddb5aec24b65ade153e780e9d636f96d052aeab2b5a93722",
       "summary": {
         "feature::__group_0_unconformity::gradient": {
           "dtype": "float64",
@@ -6543,8 +6544,8 @@
         "feature::group_1::gradient": {
           "dtype": "float64",
           "finite_count": 120,
-          "finite_max": 1.048578937918137,
-          "finite_min": -0.15009995440635748,
+          "finite_max": 1.0525458151515537,
+          "finite_min": -36.4065636357374,
           "nan_count": 402,
           "neginf_count": 0,
           "posinf_count": 0,
@@ -6997,7 +6998,7 @@
         "unit_boundaries": 16
       },
       "point_count": 182,
-      "sha256": "9cd8b7fbd44f75c502f80be572a398716cacebaa8959d855e4afca75479bf18c",
+      "sha256": "199ad74061329ea590fb54478cb915a38e850e165c4455300e34bf8d5cb7e0d5",
       "summary": {
         "feature::__group_0_unconformity::gradient": {
           "dtype": "float64",
@@ -7302,8 +7303,8 @@
         "feature::group_2::gradient": {
           "dtype": "float64",
           "finite_count": 120,
-          "finite_max": 0.9656801691025976,
-          "finite_min": -0.13298547495264756,
+          "finite_max": 0.9661213679154201,
+          "finite_min": -35.00865029386307,
           "nan_count": 426,
           "neginf_count": 0,
           "posinf_count": 0,
@@ -7922,7 +7923,7 @@
         "unit_boundaries": 16
       },
       "point_count": 190,
-      "sha256": "ff1a82c71cd01662ed09be667ebbada7bc2c7586eee993ab750a26ef935203b4",
+      "sha256": "336779002d4cf16d1c71f642d229b2b0aa7c76d8e7c8caab811617fdf10f8c97",
       "summary": {
         "feature::__group_0_unconformity::gradient": {
           "dtype": "float64",
@@ -8277,8 +8278,8 @@
         "feature::group_3::gradient": {
           "dtype": "float64",
           "finite_count": 120,
-          "finite_max": 0.9701639057711873,
-          "finite_min": -0.17244671909793396,
+          "finite_max": 0.9699763450868204,
+          "finite_min": -35.30304381022688,
           "nan_count": 450,
           "neginf_count": 0,
           "posinf_count": 0,
@@ -9063,7 +9064,7 @@
         "unit_boundaries": 8
       },
       "point_count": 174,
-      "sha256": "7e924dd9ff4ee9381fb261bd71be5eb02fe779779c964cc61f81fabe385ccdae",
+      "sha256": "14e15ea3cdc94aa76f28d54937ec97755161e879830ec6422da0cccb86df4041",
       "summary": {
         "feature::fault_0::gradient": {
           "dtype": "float64",
@@ -9469,7 +9470,7 @@
           "dtype": "float64",
           "finite_count": 522,
           "finite_max": 239.40810647854585,
-          "finite_min": -201.46542262270304,
+          "finite_min": -174.70666765106893,
           "nan_count": 0,
           "neginf_count": 0,
           "posinf_count": 0,
@@ -9753,13 +9754,13 @@
         "unit_boundaries": 16
       },
       "point_count": 190,
-      "sha256": "96319aed08fc1fa5f5357a38f63069b88cd1f4fffdbea2592841cc69b91603a2",
+      "sha256": "2a9c4e664965f9323911f55b9f44b28bb0fbb5a0f1ae1142eaf13998a8568f3f",
       "summary": {
         "feature::__group_0_unconformity::gradient": {
           "dtype": "float64",
           "finite_count": 570,
           "finite_max": 239.40810647854585,
-          "finite_min": -201.46542262270304,
+          "finite_min": -174.70666765106893,
           "nan_count": 0,
           "neginf_count": 0,
           "posinf_count": 0,
@@ -10184,7 +10185,7 @@
           "dtype": "float64",
           "finite_count": 423,
           "finite_max": 208.19454478825423,
-          "finite_min": -201.46542262270304,
+          "finite_min": -121.37779949517756,
           "nan_count": 147,
           "neginf_count": 0,
           "posinf_count": 0,
@@ -10209,7 +10210,7 @@
           "dtype": "float64",
           "finite_count": 147,
           "finite_max": 255.57307349949815,
-          "finite_min": -0.08395739349134601,
+          "finite_min": -178.67927741250617,
           "nan_count": 423,
           "neginf_count": 0,
           "posinf_count": 0,
@@ -10662,13 +10663,13 @@
         "unit_boundaries": 16
       },
       "point_count": 198,
-      "sha256": "ed11437c10d05700a75497c0207b57b059ffb6a3662f363dca8f19cc1d5a174e",
+      "sha256": "4093be472070e5d9b076e02bd9aa07ef7345f7ef1ed277b2b4c9858b1bad203d",
       "summary": {
         "feature::__group_0_unconformity::gradient": {
           "dtype": "float64",
           "finite_count": 594,
           "finite_max": 239.40810647854585,
-          "finite_min": -201.46542262270304,
+          "finite_min": -174.70666765106893,
           "nan_count": 0,
           "neginf_count": 0,
           "posinf_count": 0,
@@ -10693,7 +10694,7 @@
           "dtype": "float64",
           "finite_count": 594,
           "finite_max": 255.57307349949815,
-          "finite_min": -210.83126233726745,
+          "finite_min": -178.67927741250617,
           "nan_count": 0,
           "neginf_count": 0,
           "posinf_count": 0,
@@ -11118,7 +11119,7 @@
           "dtype": "float64",
           "finite_count": 447,
           "finite_max": 208.19454478825423,
-          "finite_min": -201.46542262270304,
+          "finite_min": -121.37779949517756,
           "nan_count": 147,
           "neginf_count": 0,
           "posinf_count": 0,
@@ -11168,7 +11169,7 @@
           "dtype": "float64",
           "finite_count": 147,
           "finite_max": 256.9808547296634,
-          "finite_min": -0.11263999294305904,
+          "finite_min": -184.9201450560597,
           "nan_count": 447,
           "neginf_count": 0,
           "posinf_count": 0,
@@ -11787,13 +11788,13 @@
         "unit_boundaries": 16
       },
       "point_count": 206,
-      "sha256": "2499838dca60818647c7e9b7ba2e49f6af5a50785dab9ea47b4f77518896ca94",
+      "sha256": "ca4b2cb82112035dbdc7a3cda5ca0041dbfce4d2087801b7d72a04de8a3bbdc4",
       "summary": {
         "feature::__group_0_unconformity::gradient": {
           "dtype": "float64",
           "finite_count": 618,
           "finite_max": 239.40810647854585,
-          "finite_min": -201.46542262270304,
+          "finite_min": -174.70666765106893,
           "nan_count": 0,
           "neginf_count": 0,
           "posinf_count": 0,
@@ -11818,7 +11819,7 @@
           "dtype": "float64",
           "finite_count": 618,
           "finite_max": 255.57307349949815,
-          "finite_min": -210.83126233726745,
+          "finite_min": -178.67927741250617,
           "nan_count": 0,
           "neginf_count": 0,
           "posinf_count": 0,
@@ -11843,7 +11844,7 @@
           "dtype": "float64",
           "finite_count": 618,
           "finite_max": 256.9808547296634,
-          "finite_min": -205.9893123670522,
+          "finite_min": -184.9201450560597,
           "nan_count": 0,
           "neginf_count": 0,
           "posinf_count": 0,
@@ -12268,7 +12269,7 @@
           "dtype": "float64",
           "finite_count": 471,
           "finite_max": 208.19454478825423,
-          "finite_min": -201.46542262270304,
+          "finite_min": -121.37779949517756,
           "nan_count": 147,
           "neginf_count": 0,
           "posinf_count": 0,
@@ -12343,7 +12344,7 @@
           "dtype": "float64",
           "finite_count": 147,
           "finite_max": 256.48919042391617,
-          "finite_min": -0.15509116979319515,
+          "finite_min": -182.84823556611695,
           "nan_count": 471,
           "neginf_count": 0,
           "posinf_count": 0,
@@ -13128,7 +13129,7 @@
         "unit_boundaries": 16
       },
       "point_count": 158,
-      "sha256": "b17443c7417671c6b0f07809e38e5b1e8f40d7474e0f3b6aff09da1def4f235a",
+      "sha256": "ad79eeda8b926050a7ace0f32146deb965cef15733c7018c5687766290b3312d",
       "summary": {
         "feature::fault_0::gradient": {
           "dtype": "float64",
@@ -13258,8 +13259,8 @@
         "feature::fold_frame__0::gradient": {
           "dtype": "float64",
           "finite_count": 474,
-          "finite_max": 1.0000003088046014,
-          "finite_min": -2.3121295384953555e-06,
+          "finite_max": 1.000001114923844,
+          "finite_min": -5.9337249707080986e-06,
           "nan_count": 0,
           "neginf_count": 0,
           "posinf_count": 0,
@@ -13283,8 +13284,8 @@
         "feature::fold_frame__1::gradient": {
           "dtype": "float64",
           "finite_count": 474,
-          "finite_max": 5.15124144726542e-05,
-          "finite_min": -1.0000571366442728,
+          "finite_max": 5.1501246719043436e-05,
+          "finite_min": -1.0000571378452463,
           "nan_count": 0,
           "neginf_count": 0,
           "posinf_count": 0,
@@ -13308,8 +13309,8 @@
         "feature::fold_frame__2::gradient": {
           "dtype": "float64",
           "finite_count": 474,
-          "finite_max": 2.0749511230231603e-06,
-          "finite_min": -1.0000571106786371,
+          "finite_max": 2.4020644764206587e-06,
+          "finite_min": -1.0000571121039241,
           "nan_count": 0,
           "neginf_count": 0,
           "posinf_count": 0,
@@ -13333,8 +13334,8 @@
         "feature::folded_unit::gradient": {
           "dtype": "float64",
           "finite_count": 474,
-          "finite_max": 0.03729319925663965,
-          "finite_min": -0.048496484213025326,
+          "finite_max": 0.03729324724924776,
+          "finite_min": -0.04849642654482378,
           "nan_count": 0,
           "neginf_count": 0,
           "posinf_count": 0,
@@ -13358,8 +13359,8 @@
         "feature::group_0::gradient": {
           "dtype": "float64",
           "finite_count": 474,
-          "finite_max": 1.0011378872389969,
-          "finite_min": -0.07877087275705463,
+          "finite_max": 1.000980345140917,
+          "finite_min": -0.07891454392245367,
           "nan_count": 0,
           "neginf_count": 0,
           "posinf_count": 0,
@@ -13644,13 +13645,13 @@
         "unit_boundaries": 16
       },
       "point_count": 166,
-      "sha256": "e12e0ef68c36c85b7519d230b6f61557844d1f55e9ac90df9473a1b5b53d5298",
+      "sha256": "aa4237e72b6478feddb22fdb0ad13f7e60bacfb0c27150ca234e35aa04194096",
       "summary": {
         "feature::__group_0_unconformity_inverse::gradient": {
           "dtype": "float64",
           "finite_count": 201,
-          "finite_max": 1.001696233230632,
-          "finite_min": -0.28671210307092565,
+          "finite_max": 0.9983850289606231,
+          "finite_min": -0.2847872954084951,
           "nan_count": 297,
           "neginf_count": 0,
           "posinf_count": 0,
@@ -13799,8 +13800,8 @@
         "feature::group_0::gradient": {
           "dtype": "float64",
           "finite_count": 159,
-          "finite_max": 0.9982908491367652,
-          "finite_min": -0.28671210307092565,
+          "finite_max": 0.9983850289606231,
+          "finite_min": -0.2847872954084951,
           "nan_count": 339,
           "neginf_count": 0,
           "posinf_count": 0,
@@ -13824,8 +13825,8 @@
         "feature::group_1::gradient": {
           "dtype": "float64",
           "finite_count": 159,
-          "finite_max": 1.0414998135051974,
-          "finite_min": -0.1529826804072627,
+          "finite_max": 1.041720294370844,
+          "finite_min": -0.15273968216633094,
           "nan_count": 339,
           "neginf_count": 0,
           "posinf_count": 0,
@@ -14276,7 +14277,7 @@
         "unit_boundaries": 0
       },
       "point_count": 190,
-      "sha256": "e0e6f5e543de07e5e194851a765d61e94e310574490ba143ae1b34dd00a716c6",
+      "sha256": "b2d90ff0b55e12f99744ed2b85b8580b8c28335bc45f10f40b4c4f5d5d828e6e",
       "summary": {
         "feature::12647::gradient": {
           "dtype": "float64",
@@ -14881,8 +14882,8 @@
         "feature::Group_0::gradient": {
           "dtype": "float64",
           "finite_count": 474,
-          "finite_max": 7.289889700188496,
-          "finite_min": -5.475637159237209,
+          "finite_max": 6.701739238866217,
+          "finite_min": -7.3607291833923085,
           "nan_count": 96,
           "neginf_count": 0,
           "posinf_count": 0,
@@ -14906,7 +14907,7 @@
         "feature::__Group_0_unconformity::gradient": {
           "dtype": "float64",
           "finite_count": 570,
-          "finite_max": 7.289889700188496,
+          "finite_max": 7.172449274923281,
           "finite_min": -19.925084432120805,
           "nan_count": 0,
           "neginf_count": 0,
@@ -15079,7 +15080,7 @@
         "unit_boundaries": 16
       },
       "point_count": 166,
-      "sha256": "7d59683cda43a79363ce0f597aa8a7b2e69fd35b811e414848a1b8fddb11224d",
+      "sha256": "58dea3f2a6e581f2b27bd32a59d86733a48d98e6ed169b1da048f9a414d760f9",
       "summary": {
         "feature::__group_0_unconformity::gradient": {
           "dtype": "float64",
@@ -15234,8 +15235,8 @@
         "feature::group_1::gradient": {
           "dtype": "float64",
           "finite_count": 141,
-          "finite_max": 1.0021612387781715,
-          "finite_min": -0.08737332622968097,
+          "finite_max": 3.8870278900139414,
+          "finite_min": -0.10232324954503191,
           "nan_count": 357,
           "neginf_count": 0,
           "posinf_count": 0,
@@ -15712,6 +15713,111 @@
     },
     "prerequisite_fix_revision": "e9b72293de32344b7fe486bb24338c4efcd37cc8",
     "prerequisite_parent_revision": "b22517f984971b98f6d039f3dd3cde0b31b7600d",
+    "reference_updates": [
+      {
+        "changed_keys": {
+          "cutting_faults": [
+            "feature::fault_1::gradient",
+            "feature::fault_1__0::gradient",
+            "feature::fault_1__1::gradient",
+            "feature::fault_1__2::gradient",
+            "feature::group_0::gradient",
+            "feature::group_0::value",
+            "model_ids",
+            "restored::fault_1>fault_0",
+            "unit_boundary_distances"
+          ],
+          "f1_u0": [
+            "feature::group_0::gradient"
+          ],
+          "f1_u1": [
+            "feature::__group_0_unconformity::gradient",
+            "feature::group_0::gradient",
+            "feature::group_1::gradient"
+          ],
+          "f1_u2": [
+            "feature::__group_0_unconformity::gradient",
+            "feature::__group_1_unconformity::gradient",
+            "feature::group_0::gradient",
+            "feature::group_2::gradient"
+          ],
+          "f1_u3": [
+            "feature::__group_0_unconformity::gradient",
+            "feature::__group_1_unconformity::gradient",
+            "feature::__group_2_unconformity::gradient",
+            "feature::group_0::gradient",
+            "feature::group_3::gradient"
+          ],
+          "f2_u0": [
+            "feature::group_0::gradient"
+          ],
+          "f2_u1": [
+            "feature::__group_0_unconformity::gradient",
+            "feature::group_0::gradient",
+            "feature::group_1::gradient"
+          ],
+          "f2_u2": [
+            "feature::__group_0_unconformity::gradient",
+            "feature::__group_1_unconformity::gradient",
+            "feature::group_0::gradient",
+            "feature::group_2::gradient"
+          ],
+          "f2_u3": [
+            "feature::__group_0_unconformity::gradient",
+            "feature::__group_1_unconformity::gradient",
+            "feature::__group_2_unconformity::gradient",
+            "feature::group_0::gradient",
+            "feature::group_3::gradient"
+          ],
+          "f4_u0": [
+            "feature::group_0::gradient"
+          ],
+          "f4_u1": [
+            "feature::__group_0_unconformity::gradient",
+            "feature::group_0::gradient",
+            "feature::group_1::gradient"
+          ],
+          "f4_u2": [
+            "feature::__group_0_unconformity::gradient",
+            "feature::__group_1_unconformity::gradient",
+            "feature::group_0::gradient",
+            "feature::group_2::gradient"
+          ],
+          "f4_u3": [
+            "feature::__group_0_unconformity::gradient",
+            "feature::__group_1_unconformity::gradient",
+            "feature::__group_2_unconformity::gradient",
+            "feature::group_0::gradient",
+            "feature::group_3::gradient"
+          ],
+          "faulted_fold": [
+            "feature::fault_0::gradient",
+            "feature::fold_frame__0::gradient",
+            "feature::fold_frame__1::gradient",
+            "feature::fold_frame__2::gradient",
+            "feature::folded_unit::gradient",
+            "feature::group_0::gradient"
+          ],
+          "onlap_domain": [
+            "feature::__group_0_unconformity_inverse::gradient",
+            "feature::group_0::gradient",
+            "feature::group_1::gradient"
+          ],
+          "plugin": [
+            "feature::Group_0::gradient",
+            "feature::__Group_0_unconformity::gradient"
+          ],
+          "stopped_fault": [
+            "feature::group_1::gradient"
+          ]
+        },
+        "clarification": "C-021",
+        "code": "origin/master a942177b (#421) with 6dec7371 (#424)",
+        "date": "2026-11-26",
+        "evidence": "spec 003 branch output is bit-identical to this code for all 970 arrays of the 21 golden models; unchanged arrays of each model are bit-identical to the old reference",
+        "reason": "master #421 changes fault gradients, fault_pitch and fold rotation angles; #424 fixes fillnan nearest for NaN points"
+      }
+    ],
     "source_hashes": {
       "LoopStructural/__init__.py": "7b5bdd2a0e31d59fc16a68cc804c28f8cca96ca5b52550d3f42d449a12259ef2",
       "LoopStructural/datasets/__init__.py": "471c4042fcc62442eaa4a5eec272d2ef4e58f3c83d784e70060c8ebea1f5cb34",
