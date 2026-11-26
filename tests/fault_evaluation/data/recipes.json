@@ -1,0 +1,26 @@
+{
+  "synthetic": {
+    "origin": [0.0, 0.0, -1000.0],
+    "maximum": [1000.0, 1000.0, 0.0],
+    "seed": 0,
+    "point_seed": 1,
+    "nelements": 3000,
+    "faults": [0, 1, 2, 4],
+    "unconformities": [0, 1, 2, 3],
+    "fault_displacement": 40.0,
+    "stratigraphic_column": {
+      "default": [-1500.0, 50.0, 1500.0],
+      "erosional_youngest": [100.0, 500.0, 1500.0],
+      "onlap_youngest": [-1500.0, 50.0, 1500.0],
+      "older_outer": [-1500.0, 1500.0],
+      "older_contact_origin": 0.0,
+      "older_contact_per_index": -175.0
+    }
+  },
+  "special": {
+    "stopped_fault": {"faults": 1, "unconformities": 1, "stop_at": "group_1"},
+    "cutting_faults": {"faults": 2, "unconformities": 0, "cuts": ["fault_1", "fault_0"], "local_origin": [0.0, 0.0, 0.0]},
+    "onlap_domain": {"faults": 1, "unconformities": 1, "onlap": true, "domain_fault": true},
+    "faulted_fold": {"fold_frame": "fold_frame", "folded_feature": "folded_unit", "faults": 1, "local_origin": [0.0, 0.0, 0.0], "fold_axis": [-6.51626577e-06, -5.00013645e-01, -8.66017526e-01], "fault_x": 5137.0, "fault_center": [5137.0, 3500.0, 7500.0], "limb_wavelength": 1.0, "calculate_wavelength": false}
+  }
+}
