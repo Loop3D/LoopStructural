@@ -204,20 +204,28 @@ class GeologicalFeatureBuilder(BaseBuilder):
         mask_tangent = np.all(~np.isnan(data.loc[:, tangent_vec_names()].to_numpy(float)), axis=1)
         mask_vector = mask_gradient | mask_normal | mask_tangent
         if np.sum(mask_vector) > 0:
-            # the same faults and order as restore_through below
+            # Rotate each vector by each fault at its position restored so far, youngest
+            # fault first, as restore_through below moves the points. Each fault is told
+            # which faults are already restored, so a fault frame displaced by a younger
+            # fault is read at the restored position and does not restore it again
+            # (rotating at the present-day position made every fault restore through its
+            # whole chain of cutting faults at each step).
+            xyz = data.loc[:, xyz_names()].to_numpy(float)
+            done = ()
             for f in cutters_first(with_cutters(self.faults)):
-                if np.sum(mask_normal) > 0:
-                    data.loc[mask_normal, normal_vec_names()] = f.apply_to_vectors(
-                        data.loc[mask_normal, xyz_names() + normal_vec_names()].to_numpy(float)
-                    )
-                if np.sum(mask_gradient) > 0:
-                    data.loc[mask_gradient, gradient_vec_names()] = f.apply_to_vectors(
-                        data.loc[mask_gradient, xyz_names() + gradient_vec_names()].to_numpy(float)
-                    )
-                if np.sum(mask_tangent) > 0:
-                    data.loc[mask_tangent, tangent_vec_names()] = f.apply_to_vectors(
-                        data.loc[mask_tangent, xyz_names() + tangent_vec_names()].to_numpy(float)
-                    )
+                kwargs = {"restored_through": done} if done else {}
+                for mask, names in (
+                    (mask_normal, normal_vec_names()),
+                    (mask_gradient, gradient_vec_names()),
+                    (mask_tangent, tangent_vec_names()),
+                ):
+                    if np.sum(mask) > 0:
+                        data.loc[mask, names] = f.apply_to_vectors(
+                            np.hstack((xyz[mask], data.loc[mask, names].to_numpy(float))),
+                            **kwargs,
+                        )
+                xyz = f.apply_to_points(xyz, **kwargs)
+                done = done + (f,)
 
         # Each fault once: a fault displaced by a younger fault of this list
         # evaluates its frame at the points already restored by that fault.
