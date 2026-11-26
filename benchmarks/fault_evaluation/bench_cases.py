@@ -18,7 +18,7 @@ from typing import Any, Callable
 import numpy as np
 import pytest
 
-from benchmarks.fault_evaluation.instrumentation import EvaluationInstrumentation, RssSampler
+from benchmarks.fault_evaluation.instrumentation import EvaluationInstrumentation, PeakMemory
 from LoopStructural.modelling.features._geological_feature import GeologicalFeature
 from tests.fault_evaluation.models import build_model
 
@@ -133,7 +133,7 @@ def test_fault_evaluation(benchmark: Any, case: dict[str, Any]) -> None:
             run_case(benchmark, model, points, case, rounds=1, after_setup=counters.reset)
         benchmark.extra_info["counters"] = counters.snapshot()
     elif pass_kind == "rss":
-        sampler = RssSampler()
+        sampler = PeakMemory()
         try:
             run_case(benchmark, model, points, case, rounds=1, after_setup=sampler.start)
         finally:

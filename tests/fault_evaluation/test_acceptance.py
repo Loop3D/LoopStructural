@@ -97,6 +97,7 @@ def _provenance(**overrides) -> dict:
         "os": "test",
         "cpu": "test cpu",
         "ram_bytes": 1_000_000,
+        "memory_method": "tracemalloc",
     }
     provenance.update(overrides)
     return provenance
@@ -379,6 +380,11 @@ def test_duplicate_case_in_new_fails_the_case_check():
         pytest.param(
             lambda base, new: new.update(schema_version=2),
             id="schema-version-differs",
+        ),
+        pytest.param(
+            # A baseline from before the tracemalloc meter has no memory_method.
+            lambda base, new: base["provenance"].pop("memory_method"),
+            id="memory-method-differs",
         ),
         pytest.param(
             lambda base, new: _set(new, OLD_F4U3, input_hash="1" * 64),

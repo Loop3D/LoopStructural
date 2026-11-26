@@ -57,7 +57,7 @@ _FIELD_PASSES = {
     "fault_points_total": "counters",
     "peak_extra_rss_bytes": "rss",
 }
-_PROVENANCE_FIELDS = ("python", "numpy", "scipy", "os", "cpu", "ram_bytes")
+_PROVENANCE_FIELDS = ("python", "numpy", "scipy", "os", "cpu", "ram_bytes", "memory_method")
 _CASE_PROVENANCE_FIELDS = (
     "input_hash",
     "baseline_revision",
@@ -423,7 +423,7 @@ def _fr010_accounting(
 def _memory_worker(model_name: str, points: int, mode: str) -> dict[str, Any]:
     """Run one large evaluation in this process and return its memory record."""
     from benchmarks.fault_evaluation.bench_cases import _points
-    from benchmarks.fault_evaluation.instrumentation import RssSampler
+    from benchmarks.fault_evaluation.instrumentation import PeakMemory
     from LoopStructural.modelling.features.fault import FaultSegment
     from tests.fault_evaluation.models import build_model
 
@@ -438,7 +438,7 @@ def _memory_worker(model_name: str, points: int, mode: str) -> dict[str, Any]:
         return original(fault, locations, *args, **kwargs)
 
     FaultSegment.apply_to_points = apply_to_points
-    sampler = RssSampler()
+    sampler = PeakMemory()
     sampler.start()
     try:
         model.evaluate_model(coordinates)
@@ -450,6 +450,7 @@ def _memory_worker(model_name: str, points: int, mode: str) -> dict[str, Any]:
         "mode": mode,
         "points": points,
         "peak_extra_rss_bytes": peak,
+        "memory_method": PeakMemory.METHOD,
         "restored_batch_sizes": {str(size): count for size, count in sorted(batches.items())},
         **_fr010_accounting(points, fault_sets, dict(batches), peak),
         "input_bytes": coordinates.nbytes,

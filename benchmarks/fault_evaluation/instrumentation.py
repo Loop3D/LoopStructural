@@ -1,4 +1,4 @@
-"""Opt-in call counters and memory sampling for fault evaluation benchmarks.
+"""Opt-in call counters and memory measurement for fault evaluation benchmarks.
 
 Nothing in this module changes production code at import time. The counters
 patch methods only while an ``EvaluationInstrumentation`` context is active.
@@ -8,8 +8,7 @@ patch methods only while an ``EvaluationInstrumentation`` context is active.
 
 from __future__ import annotations
 
-import sys
-import threading
+import tracemalloc
 from typing import Any, Callable
 
 from loop_interpolation._discrete_interpolator import DiscreteInterpolator
@@ -103,85 +102,37 @@ class EvaluationInstrumentation:
         self._restore()
 
 
-def _current_rss_bytes() -> int:
-    """Return the resident memory of this process in bytes."""
-    if sys.platform == "win32":
-        import ctypes
-        from ctypes import wintypes
+class PeakMemory:
+    """Measure the peak memory that Python and NumPy allocate during a call.
 
-        class _MemoryCounters(ctypes.Structure):
-            _fields_ = [
-                ("cb", wintypes.DWORD),
-                ("PageFaultCount", wintypes.DWORD),
-                ("PeakWorkingSetSize", ctypes.c_size_t),
-                ("WorkingSetSize", ctypes.c_size_t),
-                ("QuotaPeakPagedPoolUsage", ctypes.c_size_t),
-                ("QuotaPagedPoolUsage", ctypes.c_size_t),
-                ("QuotaPeakNonPagedPoolUsage", ctypes.c_size_t),
-                ("QuotaNonPagedPoolUsage", ctypes.c_size_t),
-                ("PagefileUsage", ctypes.c_size_t),
-                ("PeakPagefileUsage", ctypes.c_size_t),
-            ]
+    The meter uses ``tracemalloc``. NumPy reports its array memory to it. The
+    peak is the highest traced memory above the value at ``start``. Memory that
+    the process freed before ``start`` cannot hide an allocation, so the order
+    of the cases does not change the result (a process RSS can reuse freed
+    pages and show no growth). The meter does not see memory that a C library
+    allocates outside Python and NumPy.
+    """
 
-        kernel32 = ctypes.WinDLL("kernel32")
-        psapi = ctypes.WinDLL("psapi")
-        kernel32.GetCurrentProcess.restype = wintypes.HANDLE
-        psapi.GetProcessMemoryInfo.argtypes = [
-            wintypes.HANDLE,
-            ctypes.POINTER(_MemoryCounters),
-            wintypes.DWORD,
-        ]
-        counters = _MemoryCounters()
-        counters.cb = ctypes.sizeof(_MemoryCounters)
-        if not psapi.GetProcessMemoryInfo(
-            kernel32.GetCurrentProcess(), ctypes.byref(counters), counters.cb
-        ):
-            raise OSError("GetProcessMemoryInfo failed")
-        return rss_to_bytes(counters.WorkingSetSize, "bytes")
-    try:
-        import os
+    METHOD = "tracemalloc"
 
-        with open("/proc/self/statm", encoding="utf8") as handle:
-            pages = int(handle.read().split()[1])
-        return rss_to_bytes(pages * os.sysconf("SC_PAGE_SIZE"), "bytes")
-    except (OSError, ValueError, IndexError):
-        import resource
-
-        # Without /proc only the process high-water mark is available.
-        unit = "bytes" if sys.platform == "darwin" else "kibibytes"
-        return rss_to_bytes(resource.getrusage(resource.RUSAGE_SELF).ru_maxrss, unit)
-
-
-class RssSampler:
-    """Sample process memory in a thread and report the peak above the idle value."""
-
-    def __init__(self, interval_seconds: float = 0.002) -> None:
-        self._interval = interval_seconds
-        self._stop = threading.Event()
-        self._thread: threading.Thread | None = None
+    def __init__(self) -> None:
         self._idle = 0
-        self._peak = 0
-
-    def _sample(self) -> None:
-        self._peak = max(self._peak, _current_rss_bytes())
-
-    def _run(self) -> None:
-        while not self._stop.wait(self._interval):
-            self._sample()
+        self._own_trace = False
 
     def start(self) -> None:
-        """Record the idle value and start sampling."""
-        self._stop.clear()
-        self._idle = self._peak = _current_rss_bytes()
-        self._thread = threading.Thread(target=self._run, daemon=True)
-        self._thread.start()
+        """Start tracing if needed, and record the present traced memory."""
+        if not tracemalloc.is_tracing():
+            tracemalloc.start()
+            self._own_trace = True
+        tracemalloc.reset_peak()
+        self._idle = tracemalloc.get_traced_memory()[0]
 
     def stop(self) -> int:
-        """Stop sampling. Return the peak extra memory in bytes."""
-        if self._thread is None:
+        """Return the peak extra memory in bytes, and stop a trace that start began."""
+        if not tracemalloc.is_tracing():
             return 0
-        self._stop.set()
-        self._thread.join()
-        self._thread = None
-        self._sample()
-        return max(self._peak - self._idle, 0)
+        peak = tracemalloc.get_traced_memory()[1]
+        if self._own_trace:
+            tracemalloc.stop()
+            self._own_trace = False
+        return max(peak - self._idle, 0)

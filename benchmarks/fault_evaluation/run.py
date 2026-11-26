@@ -21,7 +21,7 @@ from functools import lru_cache
 from pathlib import Path
 from typing import Any
 
-from benchmarks.fault_evaluation.instrumentation import rss_to_bytes
+from benchmarks.fault_evaluation.instrumentation import PeakMemory, rss_to_bytes
 from tests.fault_evaluation.models import model_names
 
 SCHEMA_VERSION = 1
@@ -306,6 +306,8 @@ def _provenance() -> dict[str, Any]:
         "os": platform.platform(),
         "cpu": platform.processor() or platform.machine() or "unknown",
         "ram_bytes": _ram_bytes(),
+        # A baseline and a candidate are comparable only with the same memory meter.
+        "memory_method": PeakMemory.METHOD,
     }
 
 

@@ -525,3 +525,32 @@ def test_rss_conversion_normalizes_supported_native_units_to_bytes():
     assert rss_to_bytes(2, "kibibytes") == 2048
     with pytest.raises(ValueError, match="unit"):
         rss_to_bytes(2, "pages")
+
+
+def test_peak_memory_is_not_hidden_by_memory_freed_before_the_case():
+    """Memory freed before start must not hide the allocation of the case.
+
+    A process RSS sampler reused the freed pages and gave 4096 bytes here.
+    """
+    peak_memory = _api("benchmarks.fault_evaluation.instrumentation", "PeakMemory")
+    large = np.ones(50_000_000 // 8)
+    del large
+    meter = peak_memory()
+    meter.start()
+    case_array = np.ones(1_000_000)
+    peak = meter.stop()
+    assert case_array.nbytes <= peak < case_array.nbytes + 1_000_000
+
+
+def test_peak_memory_counts_only_the_growth_after_start():
+    """Memory that exists at start is not part of the peak, and the meter can repeat."""
+    peak_memory = _api("benchmarks.fault_evaluation.instrumentation", "PeakMemory")
+    meter = peak_memory()
+    meter.start()
+    kept = np.ones(2_000_000)
+    first = meter.stop()
+    meter.start()
+    small = np.ones(1_000)
+    second = meter.stop()
+    assert first >= kept.nbytes
+    assert small.nbytes <= second < kept.nbytes
