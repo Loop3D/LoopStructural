@@ -54,3 +54,36 @@ if __name__ == "__main__":
     test_tojson()
     print("All tests passed")
     sys.exit(0)
+
+
+def test_fillnan_nearest_keeps_nan_for_points_with_a_nan_coordinate():
+    """fillnan='nearest' fills a finite point and leaves a NaN-coordinate point NaN.
+
+    Since a point with a NaN coordinate gives NaN, the KD-tree query got NaN
+    points and raised "'x' must be finite" (seen in fault gradients near faults).
+    """
+
+    class LinearInterpolator:
+        def evaluate_value(self, points):
+            return points[:, 0] + 2.0 * points[:, 1]
+
+    feature = GeologicalFeature(
+        "field",
+        builder=None,
+        # The region removes x > 0.5, so that point needs a nearest value.
+        regions=[lambda points: ~(points[:, 0] > 0.5)],
+        interpolator=LinearInterpolator(),
+    )
+    points = np.array([[0.0, 1.0, 0.0], [0.6, 1.0, 0.0], [np.nan, 1.0, 0.0]])
+    values = feature.evaluate_value(points, fillnan="nearest")
+    np.testing.assert_allclose(values, [2.0, 2.0, np.nan], equal_nan=True)
+
+
+def test_fillnan_nearest_without_known_values_gives_nan():
+    class NanInterpolator:
+        def evaluate_value(self, points):
+            return np.full(points.shape[0], np.nan)
+
+    feature = GeologicalFeature("field", builder=None, regions=[], interpolator=NanInterpolator())
+    values = feature.evaluate_value(np.zeros((3, 3)), fillnan="nearest")
+    assert np.all(np.isnan(values))
