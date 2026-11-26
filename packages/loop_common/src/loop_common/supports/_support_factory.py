@@ -58,10 +58,15 @@ class SupportFactory:
             # numerically well-conditioned. The local box encloses every
             # projected corner, so a rotated frame gives a full support.
             origin, local_maximum = bounding_box.local_enclosure()
-            step_vector = (local_maximum - origin) / bounding_box.nsteps
+            # A rotated enclosure is longer than the world box: add cells so each
+            # axis keeps the world cell size (an unrotated box keeps its nsteps).
+            ratio = (local_maximum - origin) / (bounding_box.maximum - bounding_box.origin)
+            nsteps = np.maximum(np.ceil(bounding_box.nsteps * ratio - 1e-9).astype(int), 1)
+            step_vector = (local_maximum - origin) / nsteps
         else:
             origin = bounding_box.origin
             step_vector = bounding_box.step_vector
+            nsteps = bounding_box.nsteps
 
         nsteps_kwarg = (
             "nsteps_cells" if support_type in SupportFactory._CELL_COUNT_SUPPORT_TYPES else "nsteps"
@@ -69,5 +74,5 @@ class SupportFactory:
         return support_map[support_type](
             origin=origin,
             step_vector=step_vector,
-            **{nsteps_kwarg: bounding_box.nsteps},
+            **{nsteps_kwarg: nsteps},
         )
