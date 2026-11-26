@@ -157,10 +157,8 @@ def _cutters(fault: object) -> list:
     found = []
     builder = getattr(fault, "builder", None)
     sources = [getattr(b, "faults", None) or [] for b in getattr(builder, "builders", None) or []]
-    try:
-        sources += [getattr(fault[i], "faults", None) or [] for i in range(3)]
-    except (IndexError, KeyError, TypeError):
-        pass
+    # The frame members (a StructuralFrame keeps them in ``features``).
+    sources += [getattr(m, "faults", None) or [] for m in getattr(fault, "features", None) or []]
     for source in sources:
         for cutter in source:
             if not is_in(cutter, found):
