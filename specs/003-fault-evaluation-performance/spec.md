@@ -1,6 +1,6 @@
 # Feature spec: Faster evaluation of faulted models
 
-**Feature**: `003-fault-evaluation-performance` | **Created**: 2026-11-01 | **Status**: Clarified 2026-11-18 (scope reduced: no cache between calls; SC-006 and SC-008 changed)
+**Feature**: `003-fault-evaluation-performance` | **Created**: 2026-11-01 | **Status**: Clarified 2026-11-26 (C-018 to C-020: batch rule of FR-008 and FR-010, Linux baseline, memory meter)
 
 **Input**: The user renders models in the QGIS plugin. A model with faults and
 unconformities is slow to render, and it becomes slower with each fault and
@@ -288,15 +288,20 @@ the golden tests.
   of points at most once, also when the feature and the regions of the
   feature use the same fault set.
 - **FR-008**: In one call of `evaluate_model` or `evaluate_model_gradient`,
-  the number of fault applications MUST be at most the sum, over the
-  different fault sets of the model, of the number of faults in each fault
-  set.
+  each different fault set MUST be applied at most once to each different
+  point batch (C-018). A point batch is the evaluation points, the corners of
+  the gradient tetrahedra (4 points for each point), or the points of one step
+  of a fault frame. For `evaluate_model` on the evaluation points, the number
+  of fault applications is then at most the sum, over the different fault
+  sets of the model, of the number of faults in each fault set.
 - **FR-009**: Restored points MUST NOT be kept after the evaluation call that
   made them ends, also when the call fails (C-012). A later evaluation call
   MUST make its restored points again from the present model.
-- **FR-010**: The extra memory of one evaluation call MUST be at most the
-  restored points of each different fault set (3 floats for each point and
-  each fault set). This memory MUST be free when the call ends.
+- **FR-010**: The restored points that one evaluation call keeps MUST be at
+  most one restored batch (3 floats for each point of the batch) for each
+  different fault set and batch size (C-018). The corners of the gradient
+  tetrahedra are a batch of their own. This memory MUST be free when the call
+  ends.
 - **FR-010a**: The evaluation MUST give the same results when two threads
   evaluate the same model at the same time (the QGIS plugin evaluates in
   background threads). This feature MUST NOT add a lock that lets only one
@@ -347,7 +352,8 @@ the golden tests.
   They use `pytest-benchmark` (C-004), as a development dependency only.
 - **FR-016**: The repository MUST contain the baseline result file of the
   standard suite on the code before this feature, with the computer that made
-  it. A baseline of the full suite is not required.
+  it. A baseline of the full suite is not required. The time ratios and the
+  memory limits use `baseline_linux.json` (C-019, C-020).
 
 ### Key entities
 
@@ -387,7 +393,7 @@ the golden tests.
 - **SC-005**: For the plugin model of `research.md`, the evaluation of the
   group at 20 000 points takes at most 50 % of the baseline (baseline: 8.2 s).
 - **SC-006**: For each case of the memory pass of the standard suite, the peak
-  extra memory is at most 120 % of the baseline, or at most 16 MiB
+  extra memory (the `tracemalloc` peak of the call, C-020) is at most 120 % of the baseline, or at most 16 MiB
   (16 777 216 bytes) more than the baseline (C-013). A case passes when one
   of the two limits holds. A baseline of 0 bytes uses the 16 MiB limit only.
 - **SC-007**: Two runs of the standard suite on the same computer and the same
@@ -554,3 +560,36 @@ failed acceptance run T030 (`t030-diagnosis.md`, `profile-d4a.md`).
   The time limit of SC-003 (at most 15 % of the baseline) stays on the
   evaluation of all groups one by one (case `all_group_values`). The limits
   do not change.
+- **C-018 Batch rule of FR-008 and FR-010.** FR-008 gave one application of
+  each fault set, and FR-010 gave one restored copy of the points for each
+  fault set. The plan (OP1, accepted on 2026-11-01) counts each point batch
+  separately: a gradient restores the corners of its tetrahedra (4N points),
+  and the frame of a fault restores the points of each of its steps. Which
+  rule applies?
+  **Answer** (2026-11-26): the rule of OP1. Each different fault set is
+  applied at most once to each different point batch, and the call keeps at
+  most one restored batch for each fault set and batch size. FR-008 and FR-010
+  now say this.
+- **C-019 Baseline of the time ratios after C-015.** The baseline file
+  `baseline.json` of FR-016 was made on Windows 11 with Python 3.13. On the
+  same computer, Linux runs the code before this feature about 1.8 times
+  faster, so a Windows baseline makes the ratios of a Linux run too small.
+  T030 runs on Linux. Which baseline do the time ratios use?
+  **Answer** (2026-11-26): a new baseline of the code before this feature
+  (revision 617cfea7), measured on Linux on the same computer and Python
+  version as T030, two runs, in `baseline_linux.json` and
+  `baseline_linux_repeat.json`. All the time ratios of C-015 use
+  `baseline_linux.json`. `baseline.json` stays as the historical Windows
+  record. The ratio limits do not change.
+- **C-020 Memory meter.** The memory pass measured the growth of the process
+  RSS in one process that runs many cases. Freed pages of an earlier case hide
+  the memory of a later case: 187 of 254 values of a Linux baseline were 4096
+  bytes, and the Windows baseline has cases with 0 bytes. How is the peak
+  memory measured?
+  **Answer** (2026-11-26): with the `tracemalloc` peak of the call above the
+  value at its start (NumPy reports its arrays to `tracemalloc`). The result
+  does not depend on the order of the cases or on the operating system. The
+  provenance records the method, and the acceptance check compares only
+  results of the same method. The baseline memory is measured again with this
+  meter (C-019). The meter does not see memory that a C library allocates
+  outside Python and NumPy.

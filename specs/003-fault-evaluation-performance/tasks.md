@@ -1,7 +1,7 @@
 # Tasks: Faster evaluation of faulted models
 
 **Input**: spec.md and plan.md in `specs/003-fault-evaluation-performance/`
-**State**: Replanned 2026-11-18 for the reduced scope (spec C-012 to C-017, plan D7 to D11). T001-T029 and T033-T053 are done. T030 is parked (OP6: it needs a quiet computer); T031 and T032 wait for it.
+**State**: Replanned 2026-11-18 for the reduced scope (spec C-012 to C-017, plan D7 to D11). Review of 2026-11-26: T054-T061 are done (spec C-018 to C-020). T001-T029 and T033-T061 are done. T030 runs on Linux against a new Linux baseline (C-019, OP6 closed); T031 and T032 wait for it.
 
 ## Orchestrator notes
 
@@ -287,25 +287,24 @@
   - Done when: python -m pytest tests/fault_evaluation/test_acceptance.py -q passes.
 
 - [ ] T030 [US3] [M] Measure full before/after results and all success criteria.
-  - Do: SECOND RUN, after the replan of 2026-11-18 (plan D7 to D11). The first run (revision c8e3f9f1, 2026-11-03) failed SC-003, SC-004, SC-006, SC-007, SC-008 and SC-010; its raw files stay in `C:/Users/lachl/dev/ls-bench-003/cand/`. Use a new output folder. Do not change `acceptance.py`: T050 made it apply the D10 rules (`cold_view` of the baseline, SC-006 passes at 1.20 times the baseline or at most `MEMORY_ALLOWANCE_BYTES` = 16 MiB more, no SC-010 row, time ratios on `baseline.json`, C-015). The standard suite now has 131 cold cases (D9, C-014, C-016); the counter pass runs only the 5,000 and 20,000-point cases, the memory pass only the 5,000-point cases. SC-010 is removed (C-012); write that in measurements.md, and put the T051 numbers there. Run the STANDARD D2 suite twice with identical baseline case ids and machine/environment, in the way the notes on long runs say (outside the repository, clean tree, `suite_wall_seconds` recorded for SC-008). The full suite is not required. Run D5 large-memory cases (cold mode only) and acceptance CLI. Include gradients and total recursive counts. Record raw provenance, peak memory and complete elapsed times. A target miss is a failed task, not permission to remove a case or alter golden references. OP2 requires a user decision only if runtime/noise targets fail; it does not block starting measurement.
-  - Files: `specs/003-fault-evaluation-performance/candidate.json`, `specs/003-fault-evaluation-performance/candidate_repeat.json`, `specs/003-fault-evaluation-performance/acceptance.json`, `specs/003-fault-evaluation-performance/measurements.md`
-  - Needs: T027, T029, T042, T043, T051, T053
-  - Wave: 38
-  - Blocked by: OP6
+  - Do: THIRD RUN (2026-11-26): on Linux against `baseline_linux.json` from T062 (spec C-019), with the tracemalloc memory meter (C-020); `acceptance.py` now has the T057 and T059 changes. The rest of this text is the second-run plan. SECOND RUN, after the replan of 2026-11-18 (plan D7 to D11). The first run (revision c8e3f9f1, 2026-11-03) failed SC-003, SC-004, SC-006, SC-007, SC-008 and SC-010; its raw files stay in `C:/Users/lachl/dev/ls-bench-003/cand/`. Use a new output folder. Do not change `acceptance.py`: T050 made it apply the D10 rules (`cold_view` of the baseline, SC-006 passes at 1.20 times the baseline or at most `MEMORY_ALLOWANCE_BYTES` = 16 MiB more, no SC-010 row, time ratios on `baseline.json`, C-015). The standard suite now has 131 cold cases (D9, C-014, C-016); the counter pass runs only the 5,000 and 20,000-point cases, the memory pass only the 5,000-point cases. SC-010 is removed (C-012); write that in measurements.md, and put the T051 numbers there. Run the STANDARD D2 suite twice with identical baseline case ids and machine/environment, in the way the notes on long runs say (outside the repository, clean tree, `suite_wall_seconds` recorded for SC-008). The full suite is not required. Run D5 large-memory cases (cold mode only) and acceptance CLI. Include gradients and total recursive counts. Record raw provenance, peak memory and complete elapsed times. A target miss is a failed task, not permission to remove a case or alter golden references. OP2 requires a user decision only if runtime/noise targets fail; it does not block starting measurement.
+  - Files: `specs/003-fault-evaluation-performance/baseline_linux.json`, `specs/003-fault-evaluation-performance/baseline_linux_repeat.json`, `specs/003-fault-evaluation-performance/candidate.json`, `specs/003-fault-evaluation-performance/candidate_repeat.json`, `specs/003-fault-evaluation-performance/acceptance.json`, `specs/003-fault-evaluation-performance/measurements.md`
+  - Needs: T027, T029, T042, T043, T051, T053, T054, T055, T057, T058, T059, T060, T061, T062
+  - Wave: 40
   - Done when: The acceptance command exits 0 for every SC, all golden tests pass under 120 seconds, and measurements.md records the 10-million-point memory result.
 
-- [ ] T031 [Finish] [M] Document cache controls, benchmark workflow and achieved limits.
-  - Do: Document D1 regeneration/review, D2 run/compare/acceptance (including `--suite standard|full`, `--work-dir`, `--resume`, and why the work directory and outputs belong outside the repository), and the state after the replan of 2026-11-18: no cache between calls and no lock (C-012; two calls on one model run at the same time); the per-call scope of D3 (restored points are shared inside one call and released at its end); the standard suite of D9 with its pass point sets (`PASS_POINTS`: timing all cases, counters 5,000 and 20,000 points, memory 5,000 points) and the 16 large ids (C-016); the SC-006 rule of D10 (120 % or +16 MiB, C-013); time ratios on `baseline.json` (C-015); call-only memory accounting and measured limits. Do not document `evaluation_cache`, `evaluation_revision` or the fault-set key: T048 removed them. Update ROADMAP only for stages actually complete. Map every FR and SC to exact test node or measured case and acceptance result. Do not create specs/README.md because no index exists.
-  - Files: `doc/advanced/fault_evaluation.rst`, `ROADMAP.md`, `specs/003-fault-evaluation-performance/coverage.md`
+- [ ] T031 [Finish] [M] Document the per-call scope, benchmark workflow and achieved limits.
+  - Do: Document D1 regeneration/review, D2 run/compare/acceptance (including `--suite standard|full`, `--work-dir`, `--resume`, and why the work directory and outputs belong outside the repository), and the state after the replan of 2026-11-18: no cache between calls and no lock (C-012; two calls on one model run at the same time); the per-call scope of D3 (restored points are shared inside one call and released at its end); the standard suite of D9 with its pass point sets (`PASS_POINTS`: timing all cases, counters 5,000 and 20,000 points, memory 5,000 points) and the 16 large ids (C-016); the SC-006 rule of D10 (120 % or +16 MiB, C-013); time ratios on `baseline_linux.json` (C-015, C-019); the tracemalloc memory meter (C-020); the batch rule of FR-008 and FR-010 (C-018); call-only memory accounting and measured limits. Do not document `evaluation_cache`, `evaluation_revision` or the fault-set key: T048 removed them. Update ROADMAP only for stages actually complete. Map every FR and SC to exact test node or measured case and acceptance result. Update the 003 row of specs/README.md.
+  - Files: `doc/advanced/fault_evaluation.rst`, `ROADMAP.md`, `specs/003-fault-evaluation-performance/coverage.md`, `specs/README.md`
   - Needs: T030
-  - Wave: 39
-  - Done when: Documentation contains runnable commands, all cache controls, accepted decision text, measured results and a requirement-to-test/measurement table with no unproved pass.
+  - Wave: 41
+  - Done when: Documentation contains runnable commands, the per-call scope, accepted decision text, measured results and a requirement-to-test/measurement table with no unproved pass.
 
 - [ ] T032 [Finish] [M] Run final project and package checks and record the result.
   - Do: Run python -m black --check LoopStructural tests/fault_evaluation benchmarks/fault_evaluation packages/loop_common/src/loop_common/supports/_3d_structured_grid.py; python -m ruff check LoopStructural packages; python -m pytest; python -m pytest packages/loop_common/tests; python -m pytest packages/loop_interpolation/tests. Use the prepared development environment. Record failures exactly. No Cargo command is needed. Do not claim done with any failed task or unresolved acceptance gate.
   - Files: `specs/003-fault-evaluation-performance/validation.md`
-  - Needs: T001, T002, T003, T004, T005, T006, T007, T008, T009, T010, T011, T012, T013, T014, T015, T016, T017, T018, T019, T020, T021, T022, T023, T024, T025, T026, T027, T028, T029, T030, T031, T033, T034, T035, T036, T037, T038, T039, T040, T041, T042, T043, T044, T045, T046, T047, T048, T049, T050, T051, T052, T053
-  - Wave: 40
+  - Needs: T001, T002, T003, T004, T005, T006, T007, T008, T009, T010, T011, T012, T013, T014, T015, T016, T017, T018, T019, T020, T021, T022, T023, T024, T025, T026, T027, T028, T029, T030, T031, T033, T034, T035, T036, T037, T038, T039, T040, T041, T042, T043, T044, T045, T046, T047, T048, T049, T050, T051, T052, T053, T054, T055, T056, T057, T058, T059, T060, T061, T062
+  - Wave: 42
   - Done when: Black, Ruff, root pytest, loop_common pytest and loop_interpolation pytest all exit 0; validation.md records commands, revisions, golden runtime and acceptance status.
 
 ## Added foundation prerequisite (execute before T002)
@@ -512,6 +511,65 @@ shows no finding that the baseline of 474 findings does not have.
   - Done when: `pytest tests/fault_evaluation -q` passes; `ruff check benchmarks/fault_evaluation` is clean.
   - Context: see the Context of T052. Keep the limits (0.15, 4 calls, 1.5) and the row form `_row(passed, value, limit, reason)`. The value of the SC-003 row stays the time ratio. Rules: NumPy docstrings and type hints (Ruff `D`, `ANN`); Python 3.9 target; ASD-STE100 comments. Environment: as in the orchestrator notes.
 
+## Added review-fix tasks (review of 2026-11-26)
+
+A whole-spec review (correctness, tests, integration) of 790036d2..6c01d7e4
+found 1 blocker and 5 major findings. These tasks record the fixes. They were
+made outside the orchestrator, one commit each, on the spec branch. Spec C-018
+to C-020 record the decisions. A Linux run of T030 on 2026-11-26 (before these
+fixes) gave SC-003 0.1514, SC-006 fail (mostly the RSS meter defect of T059)
+and SC-009 0.56.
+
+- [x] T054 [US5] [M] Remove repeated work in one fault frame step. Commit `6c01d7e4`.
+  - Done: the gradient from a lookup gathers the corner values once; the three frame members use one set of trilinear weights. Bit-identical results. SC-009 case on Linux 0.189 s to 0.143 s (ratio 0.41 to a Linux baseline at 617cfea7).
+  - Files: `packages/loop_common/src/loop_common/supports/_3d_structured_grid.py`, `LoopStructural/modelling/features/fault/_fault_segment.py`
+  - Needs: T053
+  - Wave: 38
+  - Done when: the golden tests pass and the outputs are bit-identical.
+- [x] T055 [US5] [M] Keep the regions and the frame check on the shared frame path. Commit `c6065860`.
+  - Done: the fast-path mask gets `block` and `restored_through` (review blocker: a faulted unconformity region on an older fault gave 962 of 15625 wrong values); the fast path calls `_check_frame()` (spec 005 stale-frame check); the test double of `test_faulted_gradient_output.py` accepts `restored_through`. Tests: `test_fast_path_mask_uses_the_restored_faults`, `test_fast_path_keeps_the_stale_frame_check`.
+  - Files: `LoopStructural/modelling/features/fault/_fault_segment.py`, `tests/fault_evaluation/test_fault_frame_lookup.py`, `tests/unit/modelling/test_faulted_gradient_output.py`
+  - Needs: T053
+  - Wave: 38
+  - Done when: the two new tests fail before the fix and pass after it.
+- [x] T056 [Found] [S] Remove the fault snapshot exporter from this branch. Commit `eea3c69a` (reverts `6c2a3851`; no task named it).
+  - Files: `scripts/fault_snapshot/`
+  - Needs: T053
+  - Wave: 38
+  - Done when: `git ls-files scripts/fault_snapshot` is empty.
+- [x] T057 [US3] [M] Fail SC-006 when a memory-pass case has no candidate value. Commit `198388be`.
+  - Files: `benchmarks/fault_evaluation/acceptance.py`, `tests/fault_evaluation/test_acceptance.py`
+  - Needs: T053
+  - Wave: 38
+  - Done when: SC-006 fails with no compared case and with a missing memory-pass value.
+- [x] T058 [US2] [M] Keep one restoration per fault set and batch size in the scope (FR-010, C-018). Commit `24122b71`.
+  - Done: `cutting_faults`, 5000 points: `evaluate_model` holds 0.72 MB (was 6.12 MB), `evaluate_model_gradient` 2.88 MB (was 26.4 MB). Fault applications are unchanged for all 105 model and operation pairs (399 in total). Test: `test_scope_holds_at_most_one_restoration_per_fault_set`.
+  - Files: `LoopStructural/modelling/features/_evaluation.py`, `tests/fault_evaluation/test_memory.py`
+  - Needs: T053
+  - Wave: 38
+  - Done when: the FR-010 test passes and every fault-application count is unchanged.
+- [x] T059 [US3] [M] Measure peak memory with tracemalloc (C-020). Commit `8d40be4e`.
+  - Files: `benchmarks/fault_evaluation/instrumentation.py`, `benchmarks/fault_evaluation/bench_cases.py`, `benchmarks/fault_evaluation/run.py`, `benchmarks/fault_evaluation/acceptance.py`, `tests/fault_evaluation/test_benchmark_run.py`, `tests/fault_evaluation/test_acceptance.py`
+  - Needs: T053
+  - Wave: 38
+  - Done when: a case gives the same peak before and after a large case.
+- [x] T060 [US5] [S] Check the corner weights in `_has_uniform_lookup` and remove the unused `_evaluate_value_from_lookup`. Commit `30e72415`.
+  - Files: `packages/loop_common/src/loop_common/geometry/_structured_grid_3d.py`, `packages/loop_common/tests/test_evaluation_lookup.py`
+  - Needs: T053
+  - Wave: 38
+  - Done when: the new lookup test fails before the fix and passes after it.
+- [x] T061 [US2] [S] Check reordered ids, saved and loaded models and the thread switch. Commit `20ae0a14`.
+  - Files: `tests/fault_evaluation/test_context.py`, `tests/fault_evaluation/test_edges.py`
+  - Needs: T053
+  - Wave: 38
+  - Done when: the three tests pass.
+- [ ] T062 [US3] [M] Record the Linux baseline of the standard suite twice (C-019).
+  - Do: On branch `bench/003-linux-baseline` (revision 617cfea7 plus one commit with the `benchmarks/` and `tests/fault_evaluation/` of the spec branch, no library change), run the standard suite twice as in T011, with Python 3.13 on the T030 computer. Copy the result files to the spec folder and add a Linux section to baseline.md.
+  - Files: `specs/003-fault-evaluation-performance/baseline_linux.json`, `specs/003-fault-evaluation-performance/baseline_linux_repeat.json`, `specs/003-fault-evaluation-performance/baseline.md`
+  - Needs: T059
+  - Wave: 39
+  - Done when: both files have the standard-suite case ids, `memory_method` tracemalloc, and the compare command accepts them.
+
 ## Dependencies
 
 T001 is complete. T033 depends on it, proves the existing gradient output
@@ -580,12 +638,14 @@ unaffected baselines fixed; compare equivalent correctness and run provenance.
 | 35 | T050 | 0 | 1 |
 | 36 | T051, T052 | 0 | 2 |
 | 37 | T053 | 0 | 1 |
-| 38 | T030 | 0 | 1 |
-| 39 | T031 | 0 | 1 |
-| 40 | T032 | 0 | 1 |
+| 38 | T054, T055, T056, T057, T058, T059, T060, T061 | 2 | 6 |
+| 39 | T062 | 0 | 1 |
+| 40 | T030 | 0 | 1 |
+| 41 | T031 | 0 | 1 |
+| 42 | T032 | 0 | 1 |
 
 ## Critical path
 
-T001 -> T033 -> T034 -> T002 -> T003 -> T004 -> T005 -> T006 -> T007 -> T008 -> T010 -> T035 -> T036 -> T037 -> T038 -> T011 -> T012 -> T013 -> T014 -> T015 -> T016 -> T017 -> T018 -> T019 -> T020 -> T021 -> T023 -> T040 -> T041 -> T044 -> T045 -> T046 -> T047 -> T048 -> T050 -> T052 -> T053 -> T030 -> T031 -> T032
+T001 -> T033 -> T034 -> T002 -> T003 -> T004 -> T005 -> T006 -> T007 -> T008 -> T010 -> T035 -> T036 -> T037 -> T038 -> T011 -> T012 -> T013 -> T014 -> T015 -> T016 -> T017 -> T018 -> T019 -> T020 -> T021 -> T023 -> T040 -> T041 -> T044 -> T045 -> T046 -> T047 -> T048 -> T050 -> T052 -> T053 -> T054 -> T055 -> T062 -> T030 -> T031 -> T032
 
-40 sequential waves. T001-T029 and T033-T050 are complete. T051 failed its first try on the SC-003 count (spec C-017 answers it); T052 and T053 move the SC-003 count and SC-004 to `model_ids`. T030 is parked: it is blocked by OP6 (a quiet computer is necessary). T031 and T032 wait for T030.
+42 sequential waves. T001-T029, T033-T053 and T054-T061 are complete; T062 then T030. T051 failed its first try on the SC-003 count (spec C-017 answers it); T052 and T053 move the SC-003 count and SC-004 to `model_ids`. T030 is parked: it is blocked by OP6 (a quiet computer is necessary). T031 and T032 wait for T030.
