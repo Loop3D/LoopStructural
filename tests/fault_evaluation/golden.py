@@ -127,7 +127,8 @@ def legacy_model_ids(model: Any, ids: np.ndarray) -> np.ndarray:
     numbers are different. -1 (no unit) does not change.
     """
     ids = np.asarray(ids)
-    legacy = ids.copy()
+    # An id that is no unit id and not -1 becomes -2, so it cannot match a reference.
+    legacy = np.where(ids == -1, -1, -2)
     s_id = 0
     for group in reversed(model.stratigraphic_column.get_groups()):
         if model.feature_name_index.get(group.name, -1) < 0:

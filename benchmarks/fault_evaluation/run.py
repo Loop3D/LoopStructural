@@ -57,6 +57,7 @@ COUNTER_FIELDS = (
     "fault_points_total",
     "field_points_total",
 )
+# The names are from schema version 1. The value is the tracemalloc peak of the call (C-020).
 RSS_FIELDS = ("peak_extra_rss_bytes", "rss_unit")
 CASE_IDENTITY_FIELDS = ("case_id", "model", "operation", "points", "state")
 CASE_FIELDS = (

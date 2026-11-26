@@ -51,10 +51,9 @@ BASE_ROWS = [
     ("f4_u3", "oldest_value", 5000, "cold", 2.5, 16, 5000, 1_000_000),
     ("f4_u3", "all_group_values", 5000, "cold", 8.65, 52, 5000, 1_000_000),
     ("f4_u0", "all_group_values", 5000, "cold", 0.67, 12, 5000, 1_000_000),
-    # The model_ids rows have no memory value, so SC-006 does not compare them.
     # The f4_u0 baseline time is 1.2 s, so SC-007 checks it and it is not a short case.
-    ("f4_u3", "model_ids", 5000, "cold", 6.34, 52, 5000, None),
-    ("f4_u0", "model_ids", 5000, "cold", 1.2, 12, 5000, None),
+    ("f4_u3", "model_ids", 5000, "cold", 6.34, 52, 5000, 1_000_000),
+    ("f4_u0", "model_ids", 5000, "cold", 1.2, 12, 5000, 1_000_000),
     ("plugin", "oldest_value", 20000, "cold", 8.2, 6, 20000, 1_000_000),
     ("f1_u0", "oldest_value", 20000, "cold", 0.68, 2, 20000, 500_000),
 ]
@@ -62,8 +61,8 @@ NEW_ROWS = [
     ("f4_u3", "oldest_value", 5000, "cold", 1.0, 4, 5000, 1_000_000),
     ("f4_u3", "all_group_values", 5000, "cold", 1.0, 4, 5000, 1_000_000),
     ("f4_u0", "all_group_values", 5000, "cold", 0.8, 4, 5000, 1_000_000),
-    ("f4_u3", "model_ids", 5000, "cold", 0.2, 4, 5000, None),
-    ("f4_u0", "model_ids", 5000, "cold", 0.2, 4, 5000, None),
+    ("f4_u3", "model_ids", 5000, "cold", 0.2, 4, 5000, 1_000_000),
+    ("f4_u0", "model_ids", 5000, "cold", 0.2, 4, 5000, 1_000_000),
     ("plugin", "oldest_value", 20000, "cold", 3.0, 6, 20000, 1_000_000),
     ("f1_u0", "oldest_value", 20000, "cold", 0.2, 2, 20000, 500_000),
 ]
@@ -640,7 +639,7 @@ def test_sc_006_row_reports_worst_ratio_failing_cases_and_compared_count():
         assert str(base_bytes) in reason
         assert str(new_bytes) in reason
     assert ALL_F4U0 not in reason
-    assert row["compared_cases"] == 3
+    assert row["compared_cases"] == 5
 
 
 def test_candidate_without_memory_value_is_not_a_failure():
@@ -679,7 +678,19 @@ def test_sc_006_fails_a_memory_pass_case_without_a_candidate_value():
     assert row["passed"] is False
     assert OLD_F4U3 in row["reason"]
     assert "rss" in row["reason"]
-    assert row["compared_cases"] == 4
+    assert row["compared_cases"] == 6
+
+
+def test_sc_006_fails_a_memory_pass_case_without_a_baseline_value():
+    """A baseline with no value for a memory-pass case cannot shrink SC-006 (review round 2)."""
+    check_acceptance = _check_acceptance()
+    base, new = _compliant_pair()
+    new["suite"] = "standard"
+    _set(base, OLD_F4U3, peak_extra_rss_bytes=None)
+    row = check_acceptance(base, new)["criteria"]["SC-006"]
+    assert row["passed"] is False
+    assert f"baseline: case {OLD_F4U3!r}" in row["reason"]
+    assert row["compared_cases"] == 6
 
 
 @pytest.mark.parametrize(

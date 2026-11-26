@@ -3,9 +3,10 @@
 * The workspace of the digest of the points is bounded. It is far smaller than the
   arrays that are hashed.
 * No restoration stays after a call.
-* One call holds at most one restoration for each fault set (FR-010, OP1).
+* One call keeps each batch of the caller once and at most one frame-step batch for
+  each fault set and size (FR-008, FR-010, C-018).
 
-The large case with 10 million points and the peak RSS is not part of normal pytest
+The large case with 10 million points and its tracemalloc peak is not part of normal pytest
 (T029, T030).
 """
 

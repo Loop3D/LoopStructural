@@ -7,9 +7,8 @@ models such as foliations, fault planes, and fold rotation angles.
 from __future__ import annotations
 
 import dataclasses
-import warnings
-
 import functools
+import warnings
 
 import numpy as np
 from loop_interpolation import DiscreteInterpolator

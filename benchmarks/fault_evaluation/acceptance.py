@@ -232,11 +232,14 @@ def _sc006(
             continue
         base_rss = base_case["peak_extra_rss_bytes"]
         new_rss = new[case_id]["peak_extra_rss_bytes"]
-        if base_rss is None:
-            continue
-        if new_rss is None:
-            if run.pass_cases([new[case_id]], "rss", suite):
-                problems.append(_unmeasured(new, case_id, "peak_extra_rss_bytes"))
+        in_memory_pass = bool(run.pass_cases([new[case_id]], "rss", suite))
+        if base_rss is None or new_rss is None:
+            # A case of the memory pass must have a value in both results.
+            if in_memory_pass:
+                label, document = ("baseline", base) if base_rss is None else ("candidate", new)
+                problems.append(
+                    f"{label}: {_unmeasured(document, case_id, 'peak_extra_rss_bytes')}"
+                )
             continue
         compared += 1
         if base_rss > 0:
@@ -403,12 +406,12 @@ def _fr010_accounting(
     ``allowed_bytes`` is 24 bytes x points x distinct fault sets.
     ``restored_bytes_observed`` is 24 bytes x the sum of (batch size x count) over
     the batches that the FaultSegment.apply_to_points wrapper counted.
-    ``peak_over_allowed`` is the peak extra RSS over ``allowed_bytes``. It is null
+    ``peak_over_allowed`` is the peak extra memory (the tracemalloc peak, C-020) over ``allowed_bytes``. It is null
     when ``allowed_bytes`` is 0.
 
     This is a report only. The exit code does not depend on it. The accepted OP1
     rule measures each actual restored point and excludes unchanged baseline work
-    arrays. RSS cannot separate these two parts.
+    arrays. The peak of the whole call cannot separate these two parts.
     """
     allowed = RESTORED_BYTES_PER_POINT * points * fault_sets
     restored_points = sum(size * count for size, count in batches.items())
@@ -532,9 +535,9 @@ def main(argv: list[str] | None = None) -> int:
         print(f"overall {'PASS' if passed else 'FAIL'}")
     if options.memory_points is not None:
         result["memory"] = run_memory_mode(options.memory_points, options.memory_model or ["f1_u0"])
-        # Only a record with an error fails the run. Do not gate the exit code on RSS:
-        # the OP1 rule counts each actual restored point and excludes unchanged
-        # baseline work arrays, and RSS cannot separate these two parts.
+        # Only a record with an error fails the run. Do not gate the exit code on the
+        # peak: the OP1 rule counts each actual restored point and excludes unchanged
+        # baseline work arrays, and the peak of the call cannot separate these two parts.
         failed = [record for record in result["memory"]["records"] if "error" in record]
         passed = passed and not failed
     options.output.parent.mkdir(parents=True, exist_ok=True)
