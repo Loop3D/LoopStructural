@@ -109,3 +109,29 @@ def test_first_public_model_evaluation_builds_a_lazy_feature_once():
     assert builder.build_calls == 1
     np.testing.assert_array_equal(model.evaluate_model(points), [0, 0])
     assert builder.build_calls == 1
+
+
+def test_saved_and_loaded_model_evaluates_as_before(tmp_path):
+    """Spec edge case: a model saved with to_file and loaded with from_file."""
+    import pytest
+
+    pytest.importorskip("dill")
+    model = build_model("f1_u0")
+    bounds = model.bounding_box
+    points = np.random.default_rng(3).random((500, 3)) * (bounds.maximum - bounds.origin)
+    points += bounds.origin
+    before = model.evaluate_model(points)
+    path = tmp_path / "model.pkl"
+    model.to_file(str(path))
+    loaded = GeologicalModel.from_file(str(path))
+    np.testing.assert_array_equal(loaded.evaluate_model(points), before)
+    np.testing.assert_array_equal(
+        loaded.evaluate_model_gradient(points), model.evaluate_model_gradient(points)
+    )
+
+
+def test_fault_frame_threads_stay_off():
+    """Spec edge case: use_threads must give the same results or stay off as today."""
+    from LoopStructural.modelling.features.fault import _fault_segment
+
+    assert _fault_segment.use_threads is False

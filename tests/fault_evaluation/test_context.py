@@ -279,12 +279,29 @@ def _reordered_model() -> GeologicalModel:
     return model
 
 
-def test_reordered_fault_list_in_evaluate_model():
-    """The model call with sets A and B applies each ordered set once: 4 + 4 = 8."""
+def test_reordered_fault_list_in_evaluate_model(monkeypatch):
+    """The model call with sets A and B applies each ordered set once: 4 + 4 = 8.
+
+    The ids must equal the ids of a call that shares nothing, so a wrong
+    merge of the two sets cannot pass.
+    """
     model, golden = _reordered_model(), _golden("f4_u3")
     ids, counts = _counted(lambda: model.evaluate_model(golden["points"]))
     assert counts["fault_calls_total"] == 8
     assert ids.shape == (len(golden["points"]),)
+
+    evaluation = importlib.import_module("LoopStructural.modelling.features._evaluation")
+    original = evaluation.EvaluationContext.restore
+
+    def restore_without_sharing(self, *args, **kwargs):
+        self._restorations.clear()
+        self._batches.clear()
+        return original(self, *args, **kwargs)
+
+    monkeypatch.setattr(evaluation.EvaluationContext, "restore", restore_without_sharing)
+    unshared, unshared_counts = _counted(lambda: model.evaluate_model(golden["points"]))
+    assert unshared_counts["fault_calls_total"] > 8
+    np.testing.assert_array_equal(ids, unshared)
 
 
 # ---------------------------------------------------------------------------
