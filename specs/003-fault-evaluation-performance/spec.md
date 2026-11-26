@@ -1,6 +1,6 @@
 # Feature spec: Faster evaluation of faulted models
 
-**Feature**: `003-fault-evaluation-performance` | **Created**: 2026-11-01 | **Status**: Clarified 2026-11-26 (C-018 to C-020: batch rule of FR-008 and FR-010, Linux baseline, memory meter)
+**Feature**: `003-fault-evaluation-performance` | **Created**: 2026-11-01 | **Status**: Clarified 2026-11-26 (C-018 to C-021: batch rule of FR-008 and FR-010, Linux baseline, memory meter, references after master #421)
 
 **Input**: The user renders models in the QGIS plugin. A model with faults and
 unconformities is slow to render, and it becomes slower with each fault and
@@ -584,9 +584,10 @@ failed acceptance run T030 (`t030-diagnosis.md`, `profile-d4a.md`).
   faster, so a Windows baseline makes the ratios of a Linux run too small.
   T030 runs on Linux. Which baseline do the time ratios use?
   **Answer** (2026-11-26): a new baseline of the code before this feature
-  (master at 1ae507aa, which has the master changes #410 to #417 that the
-  candidate has, but not this feature; branch `bench/003-linux-baseline`
-  adds only the harness and the plugin model data), measured on Linux on the same computer and Python
+  (master at a942177b with the fix of #424, which has the master changes
+  that the candidate has, but not this feature; branch
+  `bench/003-linux-baseline` adds only the harness and the plugin model
+  data), measured on Linux on the same computer and Python
   version as T030, two runs, in `baseline_linux.json` and
   `baseline_linux_repeat.json`. All the time ratios of C-015 use
   `baseline_linux.json`. `baseline.json` stays as the historical Windows
@@ -603,3 +604,15 @@ failed acceptance run T030 (`t030-diagnosis.md`, `profile-d4a.md`).
   results of the same method. The baseline memory is measured again with this
   meter (C-019). The meter does not see memory that a C library allocates
   outside Python and NumPy.
+- **C-021 Golden references after master #421.** Master #421 changes fault
+  gradients near faults, `fault_pitch` and fold rotation angles, so 60 golden
+  outputs of 17 models no longer match the frozen references. The spec branch
+  gives the same bits as master for all of them. Do the references change?
+  **Answer** (2026-11-26): yes. The changed outputs are captured again from
+  master a942177b with the fix of #424 (which stops a crash of
+  `fillnan='nearest'` on points with a NaN coordinate), at the stored
+  reference points. Evidence: the spec branch gives the same bits as that
+  code for all 970 golden arrays, and every array that #421 does not change
+  is bit-identical to the old reference. The manifest records the code, the
+  reason and the changed keys (`provenance.reference_updates`). Tests that
+  count gradient batches follow the refinement of #421.

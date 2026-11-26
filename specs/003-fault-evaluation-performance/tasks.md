@@ -1,7 +1,7 @@
 # Tasks: Faster evaluation of faulted models
 
 **Input**: spec.md and plan.md in `specs/003-fault-evaluation-performance/`
-**State**: Replanned 2026-11-18 for the reduced scope (spec C-012 to C-017, plan D7 to D11). Review of 2026-11-26: T054-T061 and T063 are done (spec C-018 to C-020). T001-T029, T033-T061 and T063 are done. T030 runs on Linux against a new Linux baseline (C-019, OP6 closed); T031 and T032 wait for it.
+**State**: Replanned 2026-11-18 for the reduced scope (spec C-012 to C-017, plan D7 to D11). Review of 2026-11-26: T054-T061, T063 and T064 are done (spec C-018 to C-021). T001-T029, T033-T061, T063 and T064 are done. T030 runs on Linux against a new Linux baseline (C-019, OP6 closed); T031 and T032 wait for it.
 
 ## Orchestrator notes
 
@@ -303,7 +303,7 @@
 - [ ] T032 [Finish] [M] Run final project and package checks and record the result.
   - Do: Run python -m black --check LoopStructural tests/fault_evaluation benchmarks/fault_evaluation packages/loop_common/src/loop_common/supports/_3d_structured_grid.py; python -m ruff check LoopStructural packages; python -m pytest; python -m pytest packages/loop_common/tests; python -m pytest packages/loop_interpolation/tests. Use the prepared development environment. Record failures exactly. No Cargo command is needed. Do not claim done with any failed task or unresolved acceptance gate.
   - Files: `specs/003-fault-evaluation-performance/validation.md`
-  - Needs: T001, T002, T003, T004, T005, T006, T007, T008, T009, T010, T011, T012, T013, T014, T015, T016, T017, T018, T019, T020, T021, T022, T023, T024, T025, T026, T027, T028, T029, T030, T031, T033, T034, T035, T036, T037, T038, T039, T040, T041, T042, T043, T044, T045, T046, T047, T048, T049, T050, T051, T052, T053, T054, T055, T056, T057, T058, T059, T060, T061, T062, T063
+  - Needs: T001, T002, T003, T004, T005, T006, T007, T008, T009, T010, T011, T012, T013, T014, T015, T016, T017, T018, T019, T020, T021, T022, T023, T024, T025, T026, T027, T028, T029, T030, T031, T033, T034, T035, T036, T037, T038, T039, T040, T041, T042, T043, T044, T045, T046, T047, T048, T049, T050, T051, T052, T053, T054, T055, T056, T057, T058, T059, T060, T061, T062, T063, T064
   - Wave: 42
   - Done when: Black, Ruff, root pytest, loop_common pytest and loop_interpolation pytest all exit 0; validation.md records commands, revisions, golden runtime and acceptance status.
 
@@ -570,8 +570,15 @@ and SC-009 0.56.
   - Wave: 38
   - Done when: the review round 2 scratch tests pass as regression tests.
 
+- [x] T064 [Found] [M] Merge master #421 and the #424 fix; re-record the changed golden references (C-021). Commits `9262da85`, `e1a82898`, `51d8e2be`.
+  - Done: the refinement loop of #421 keeps its fault-side check in `probe_points()`; 60 outputs of 17 models re-recorded from master a942177b + #424 (branch bit-identical on all 970 arrays); gradient batch tests replay the #421 refinement.
+  - Files: `LoopStructural/modelling/features/_geological_feature.py`, `tests/fault_evaluation/data/`, `tests/fault_evaluation/test_gradient_context.py`, `tests/fault_evaluation/test_memory.py`
+  - Needs: T053
+  - Wave: 38
+  - Done when: the golden validator exits 0 and the spec tests pass.
+
 - [ ] T062 [US3] [M] Record the Linux baseline of the standard suite twice (C-019).
-  - Do: On branch `bench/003-linux-baseline` (master at 1ae507aa plus one commit with the `benchmarks/`, `tests/fault_evaluation/` and plugin model data of the spec branch, no library change; spec C-019), run the standard suite twice as in T011, with Python 3.13 on the T030 computer. Copy the result files to the spec folder and add a Linux section to baseline.md.
+  - Do: On branch `bench/003-linux-baseline` (master at a942177b with the #424 fix, plus one commit with the `benchmarks/`, `tests/fault_evaluation/` and plugin model data of the spec branch, no library change; spec C-019), run the standard suite twice as in T011, with Python 3.13 on the T030 computer. Copy the result files to the spec folder and add a Linux section to baseline.md.
   - Files: `specs/003-fault-evaluation-performance/baseline_linux.json`, `specs/003-fault-evaluation-performance/baseline_linux_repeat.json`, `specs/003-fault-evaluation-performance/baseline.md`
   - Needs: T059
   - Wave: 39
@@ -645,7 +652,7 @@ unaffected baselines fixed; compare equivalent correctness and run provenance.
 | 35 | T050 | 0 | 1 |
 | 36 | T051, T052 | 0 | 2 |
 | 37 | T053 | 0 | 1 |
-| 38 | T054, T055, T056, T057, T058, T059, T060, T061, T063 | 2 | 7 |
+| 38 | T054, T055, T056, T057, T058, T059, T060, T061, T063, T064 | 2 | 8 |
 | 39 | T062 | 0 | 1 |
 | 40 | T030 | 0 | 1 |
 | 41 | T031 | 0 | 1 |
