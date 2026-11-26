@@ -643,14 +643,3 @@ class P2TetMesh(BaseStructuredSupport):
             + self.nsteps_cells[0] * indices[:, 1] * 5
             + self.nsteps_cells[0] * self.nsteps_cells[1] * indices[:, 2] * 5
         )
-
-    def inside(self, pos: np.ndarray):
-        """Check if points are inside the mesh domain."""
-        inside = np.ones(pos.shape[0]).astype(bool)
-        for i in range(3):
-            inside *= pos[:, i] > self.origin[None, i]
-            inside *= (
-                pos[:, i]
-                < self.origin[None, i] + self.step_vector[None, i] * self.nsteps_cells[None, i]
-            )
-        return inside

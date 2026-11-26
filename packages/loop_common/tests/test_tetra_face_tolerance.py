@@ -59,3 +59,31 @@ def test_points_outside_the_mesh_stay_outside():
     )
     inside = mesh.get_element_for_location(outside)[3]
     assert not inside.any()
+
+
+@pytest.mark.parametrize("name", ["TetMesh", "P2TetMesh"])
+def test_points_on_the_mesh_boundary_are_inside(name):
+    origin, step = np.zeros(3), np.ones(3)
+    mesh = {
+        "TetMesh": TetMesh(origin=origin, nsteps_cells=[4, 4, 4], step_vector=step),
+        "P2TetMesh": P2TetMesh(origin=origin, nsteps=[4, 4, 4], step_vector=step),
+    }[name]
+    # origin corner, max corner, a point on the max face and on the min face
+    points = np.array([[0, 0, 0], [4, 4, 4], [4, 1.5, 1.5], [0, 1.5, 1.5]], dtype=float)
+    values = mesh.evaluate_value(points, mesh.nodes.sum(axis=1))
+    np.testing.assert_allclose(values, points.sum(axis=1), atol=1e-12)
+
+
+def test_tetmesh_location_lookup_in_chunks_gives_the_same_result(monkeypatch):
+    from loop_common.supports import _3d_structured_tetra
+
+    meshes, origin, extent = _meshes()
+    mesh = meshes["TetMesh"]
+    rng = np.random.default_rng(2)
+    # some points outside, so the inside mask is mixed
+    points = origin + rng.uniform(-0.1, 1.1, size=(101, 3)) * extent
+    expected = mesh.get_element_for_location(points)
+    monkeypatch.setattr(_3d_structured_tetra, "_LOCATION_CHUNK_SIZE", 7)
+    chunked = mesh.get_element_for_location(points)
+    for a, b in zip(expected, chunked):
+        np.testing.assert_array_equal(a, b)
