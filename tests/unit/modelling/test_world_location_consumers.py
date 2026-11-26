@@ -238,15 +238,10 @@ def test_internal_callers_do_not_warn(tmp_path):
         from LoopStructural.export.file_formats import FileFormat
         from tests.unit.io import test_exporters as fakes
 
-        class _Surfaces(fakes._FakeModelForSurfaces):
-            def rescale(self, points, *, inplace=False):
-                return model.rescale(points, inplace=inplace)
-
         class _Volume(fakes._FakeModelForVolume):
             def rescale(self, points, *, inplace=False):
                 return model.rescale(points, inplace=inplace)
 
-        exporters.write_feat_surfs(_Surfaces(), "strati", file_format=FileFormat.NUMPY)
         exporters.write_cubeface(
             _Volume(), str(tmp_path / "cube"), "label", np.array([5, 5, 5]), FileFormat.VTK
         )

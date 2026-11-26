@@ -8,7 +8,7 @@ from LoopStructural.export.gocad import (
     _write_feat_surfs_gocad,
     _write_structured_grid_gocad,
 )
-from LoopStructural.geometry import StructuredGrid, Surface
+from LoopStructural.geometry import StructuredGrid, Surface, ValuePoints
 
 
 def _read(path):
@@ -240,3 +240,15 @@ def test_write_feat_surfs_gocad_skips_nan_vertices_and_touching_triangles(tmp_pa
     # remains
     assert content.count("TRGL") == 1
     assert "TRGL 1 2 3" in content
+
+
+def test_surface_save_ts_and_points_save_vs(tmp_path):
+    surf = Surface(
+        vertices=np.array([[0.0, 0.0, 0.0], [1.0, 0.0, 0.0], [0.0, 1.0, 0.0]]),
+        triangles=np.array([[0, 1, 2]]),
+        name="saved",
+    )
+    surf.save(str(tmp_path / "saved.ts"))
+    assert "TRGL 1 2 3" in _read(tmp_path / "saved.ts")
+    with pytest.raises(ValueError, match="vs"):
+        ValuePoints().save(str(tmp_path / "points.vs"))

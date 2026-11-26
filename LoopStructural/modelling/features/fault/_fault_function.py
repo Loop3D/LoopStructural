@@ -25,10 +25,6 @@ class FaultProfileFunction(metaclass=ABCMeta):
         self.lim = [-1, 1]
 
     @abstractmethod
-    def to_dict(self) -> dict:
-        pass
-
-    @abstractmethod
     def __call__(self, v: np.ndarray) -> np.ndarray:
         pass
 
@@ -174,51 +170,6 @@ class CubicFunction(FaultProfileFunction):
 
         return eva
 
-    def to_dict(self) -> dict:
-        """Export the function to a dictionary
-
-
-        Returns
-        -------
-        dict
-            Keys A, B, max_v, min_v, w, up_to_date used to create a new CubicFunction
-        """
-        return {
-            "A": self.A,
-            "B": self.B,
-            "max_v": self.max_v,
-            "min_v": self.min_v,
-            "w": self.w.tolist(),
-            "value_points": self.value_points,
-            "gradient_points": self.gradient_points,
-            "up_to_date": self.up_to_date,
-        }
-
-    @classmethod
-    def from_dict(cls, data: dict) -> CubicFunction:
-        """Create a fault profile function from a json dictionary
-
-        Parameters
-        ----------
-        data : dict
-            Dictionary containing A, B, max_v, min_v, w, up_to_date
-
-        Returns
-        -------
-        CubicFunction
-            An initialised function given the dictionary parameters
-        """
-        instance = cls()
-        instance.A = data.get("A", [])
-        instance.B = data.get("B", [])
-        instance.max_v = data.get("max_v", 999999)
-        instance.min_v = data.get("min_v", 999999)
-        instance.w = np.array(data.get("w", [0, 0, 0, 0]))
-        instance.value_points = data.get("value_points", [])
-        instance.gradient_points = data.get("gradient_points", [])
-        instance.up_to_date = data.get("up_to_date", False)
-        return instance
-
 
 class Composite(FaultProfileFunction):
     """
@@ -251,31 +202,6 @@ class Composite(FaultProfileFunction):
         r[v < 0] = self.negative(v[v < 0])
         return r
 
-    def to_dict(self) -> dict:
-        return {
-            "positive": self.positive.to_dict(),
-            "negative": self.negative.to_dict(),
-        }
-
-    @classmethod
-    def from_dict(cls, data: dict) -> Composite:
-        """Create a fault profile function from a json dictionary
-
-        Parameters
-        ----------
-        data : dict
-            Dictionary containing "positive" and "negative" keys, each a dictionary
-            of CubicFunction parameters
-
-        Returns
-        -------
-        Composite
-            An initialised composite function given the dictionary parameters
-        """
-        positive = CubicFunction.from_dict(data["positive"])
-        negative = CubicFunction.from_dict(data["negative"])
-        return cls(positive, negative)
-
 
 class Ones(FaultProfileFunction):
     """
@@ -300,13 +226,6 @@ class Ones(FaultProfileFunction):
 
     tip_ends = ()
 
-    def to_dict(self) -> dict:
-        return {}
-
-    @classmethod
-    def from_dict(cls, data: dict) -> Ones:
-        return cls()
-
 
 class Zeros(FaultProfileFunction):
     """
@@ -330,13 +249,6 @@ class Zeros(FaultProfileFunction):
         return np.zeros(v.shape)
 
     tip_ends = ()
-
-    def to_dict(self) -> dict:
-        return {}
-
-    @classmethod
-    def from_dict(cls, data: dict) -> Zeros:
-        return cls()
 
 
 class FaultDisplacement:
@@ -411,20 +323,6 @@ class FaultDisplacement:
         """
         return {1: _profile_tip_ends(self.gy), 2: _profile_tip_ends(self.gz)}
 
-    def to_dict(self) -> dict:
-        return {
-            "gx": self.gx.to_dict(),
-            "gy": self.gy.to_dict(),
-            "gz": self.gz.to_dict(),
-        }
-
-    @classmethod
-    def from_dict(cls, data: dict) -> FaultDisplacement:
-        gx = CubicFunction.from_dict(data["gx"])
-        gy = CubicFunction.from_dict(data["gy"])
-        gz = CubicFunction.from_dict(data["gz"])
-        return cls(gx=gx, gy=gy, gz=gz)
-
     def plot(self, range=(-1, 1), axs: list | None = None):
         try:
             import matplotlib.pyplot as plt
@@ -473,9 +371,9 @@ def _taylor(function, x: np.ndarray, side: int) -> np.ndarray:
     x0 = side * _fault_block.BLOCK_SIDE_EPSILON
     f0, f1, f2, f3, f4, f5 = (function(x0 + side * k * h) for k in range(6))
     slope = side * (-25.0 * f0 + 48.0 * f1 - 36.0 * f2 + 16.0 * f3 - 3.0 * f4) / (12.0 * h)
-    curvature = (
-        45.0 * f0 - 154.0 * f1 + 214.0 * f2 - 156.0 * f3 + 61.0 * f4 - 10.0 * f5
-    ) / (12.0 * h**2)
+    curvature = (45.0 * f0 - 154.0 * f1 + 214.0 * f2 - 156.0 * f3 + 61.0 * f4 - 10.0 * f5) / (
+        12.0 * h**2
+    )
     return f0 + slope * (x - x0) + 0.5 * curvature * (x - x0) ** 2
 
 

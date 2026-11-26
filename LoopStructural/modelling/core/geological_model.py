@@ -1447,11 +1447,7 @@ class GeologicalModel:
         """
         # `scale` is retained for API-signature compatibility only -- see
         # evaluate_model.
-        feature = self.get_feature_by_name(feature_name)
-        if feature:
-            return feature.evaluate_gradient(xyz)
-        else:
-            return np.zeros(xyz.shape[0])
+        return self.get_feature_by_name(feature_name).evaluate_gradient(xyz)
 
     @public_api(tier="provisional")
     def evaluate_feature_block_value(
