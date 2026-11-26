@@ -1,6 +1,15 @@
+from contextvars import ContextVar
+
 from LoopStructural.utils import getLogger
 
 logger = getLogger(__name__)
+
+# The builders already checked by the outermost up_to_date call. A feature depends
+# on the builders of its faults, and a fault frame on the builders of the faults
+# that cut it; without this set every path through that graph was checked again,
+# so the check grew with the number of paths (millions in a network of cutting
+# faults) and ran on every evaluation.
+_CHECKED: ContextVar = ContextVar("loopstructural_builders_checked", default=None)
 
 
 class BaseBuilder:
@@ -89,6 +98,17 @@ class BaseBuilder:
             a function that is called when the feature is updated
 
         """
+        checked = _CHECKED.get()
+        if checked is None:
+            token = _CHECKED.set(set())
+            try:
+                return self.up_to_date(callback=callback)
+            finally:
+                _CHECKED.reset(token)
+        if id(self) in checked:
+            # this call already brought this builder up to date
+            return
+        checked.add(id(self))
         logger.info(f'Feature: {self.name} up to date: {self._up_to_date}')
         for f in self.faults:
             f.builder.up_to_date(callback=callback)
