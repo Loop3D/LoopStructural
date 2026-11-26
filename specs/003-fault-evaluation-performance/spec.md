@@ -298,10 +298,11 @@ the golden tests.
   made them ends, also when the call fails (C-012). A later evaluation call
   MUST make its restored points again from the present model.
 - **FR-010**: The restored points that one evaluation call keeps MUST be at
-  most one restored batch (3 floats for each point of the batch) for each
-  different fault set and batch size (C-018). The corners of the gradient
-  tetrahedra are a batch of their own. This memory MUST be free when the call
-  ends.
+  most the batches of the caller (the evaluation points and the corners of
+  their gradient tetrahedra, 3 floats for each point), and one batch for each
+  different fault set and batch size of the fault frame steps and of the
+  fault-side checks of a gradient (C-018). This memory MUST be free when the
+  call ends.
 - **FR-010a**: The evaluation MUST give the same results when two threads
   evaluate the same model at the same time (the QGIS plugin evaluates in
   background threads). This feature MUST NOT add a lock that lets only one
@@ -381,15 +382,17 @@ the golden tests.
 - **SC-002**: For the golden model with 4 faults and 3 unconformities and
   5 000 points, `evaluate_value` of the oldest group makes 4 fault
   applications (baseline: 16) and takes at most 40 % of the baseline time
-  (baseline: 1.96 s in the baseline file of FR-016; C-015).
+  (baseline: 1.96 s in the Windows `baseline.json`; the ratio uses
+  `baseline_linux.json`, C-015, C-019).
 - **SC-003**: For the same model, one `evaluate_model` call, which evaluates
   all groups, makes 4 fault applications (baseline: 52). Evaluating all groups
   one by one takes at most 15 % of the baseline time (baseline: 6.48 s in the
-  baseline file of FR-016; C-015, C-017).
+  Windows `baseline.json`; the ratio uses `baseline_linux.json`, C-015, C-017,
+  C-019).
 - **SC-004**: For the golden models with 4 faults and 5 000 points, the time
   of one `evaluate_model` call with 3 unconformities is at most 1.5 times the
-  time with 0 unconformities (baseline: 13.3 times in the baseline file of
-  FR-016; C-017).
+  time with 0 unconformities (baseline: 13.3 times in the Windows
+  `baseline.json`; C-017, C-019).
 - **SC-005**: For the plugin model of `research.md`, the evaluation of the
   group at 20 000 points takes at most 50 % of the baseline (baseline: 8.2 s).
 - **SC-006**: For each case of the memory pass of the standard suite, the peak
@@ -405,7 +408,8 @@ the golden tests.
   than 15 minutes on the computer in `research.md`, on the code after this
   feature (C-014).
 - **SC-009** (user story 5): the time for each point of one fault application
-  is at most 50 % of the baseline (about 34 µs for each point).
+  is at most 50 % of the baseline (about 34 µs for each point in the Windows
+  `baseline.json`; the ratio uses `baseline_linux.json`, C-019).
 - **SC-010**: Removed on 2026-11-18 (C-012). The number is not used again.
 
 ## Out of scope
@@ -567,16 +571,22 @@ failed acceptance run T030 (`t030-diagnosis.md`, `profile-d4a.md`).
   and the frame of a fault restores the points of each of its steps. Which
   rule applies?
   **Answer** (2026-11-26): the rule of OP1. Each different fault set is
-  applied at most once to each different point batch, and the call keeps at
-  most one restored batch for each fault set and batch size. FR-008 and FR-010
-  now say this.
+  applied at most once to each different point batch. The call keeps each
+  batch of the caller; the batches of the fault frame steps and of the
+  fault-side checks of a gradient (which move or change at each step) keep
+  one batch for each fault set and batch size. FR-008 and FR-010 now say
+  this. (Amended the same day after review round 2: with one batch for each
+  fault set and size for all batches, two batches of the caller of one size
+  replaced each other and the first was restored again.)
 - **C-019 Baseline of the time ratios after C-015.** The baseline file
   `baseline.json` of FR-016 was made on Windows 11 with Python 3.13. On the
   same computer, Linux runs the code before this feature about 1.8 times
   faster, so a Windows baseline makes the ratios of a Linux run too small.
   T030 runs on Linux. Which baseline do the time ratios use?
   **Answer** (2026-11-26): a new baseline of the code before this feature
-  (revision 617cfea7), measured on Linux on the same computer and Python
+  (master at 1ae507aa, which has the master changes #410 to #417 that the
+  candidate has, but not this feature; branch `bench/003-linux-baseline`
+  adds only the harness and the plugin model data), measured on Linux on the same computer and Python
   version as T030, two runs, in `baseline_linux.json` and
   `baseline_linux_repeat.json`. All the time ratios of C-015 use
   `baseline_linux.json`. `baseline.json` stays as the historical Windows

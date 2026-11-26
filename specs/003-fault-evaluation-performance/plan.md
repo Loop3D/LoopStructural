@@ -1,7 +1,7 @@
 # Implementation plan: Faster evaluation of faulted models
 
 **Feature**: `003-fault-evaluation-performance` | **Date**: 2026-11-01
-**Spec**: [spec.md](spec.md) | **State**: Replanned 2026-11-18 for the reduced scope (spec C-012 to C-016): remove the cache between calls (D7), merge master and move the value lookup (D8), shorter suite and new acceptance rules (D9, D10); new tasks T046-T051; T001-T029 and T033-T045 are done; T030 waits for T051
+**Spec**: [spec.md](spec.md) | **State**: Amended 2026-11-26 after review rounds 1 and 2 (spec C-018 to C-020; see the "Changed on 2026-11-26" notes in D1, D2, D3, D5, D6, D8 and D10). Replanned 2026-11-18 for the reduced scope (spec C-012 to C-016): remove the cache between calls (D7), merge master and move the value lookup (D8), shorter suite and new acceptance rules (D9, D10); new tasks T046-T051; T001-T029 and T033-T045 are done; T030 waits for T051
 
 ## Open points
 
@@ -227,6 +227,12 @@ Binary output hashes and readable summary diffs make regeneration reviewable.
 Capture after T034 and before any performance change. Use a scoped monkeypatch
 to perturb fault movement by 1% for the sensitivity test; leave no patch active.
 
+**Changed on 2026-11-26 (merge of master #412).** `evaluate_model` returns
+`StratigraphicUnit.id`, not a counter. The frozen references keep the counter
+numbering. `golden.legacy_model_ids` converts the new ids back with the
+stratigraphic column of the model (an unknown id becomes -2). For all 21
+golden models the new ids are a one-to-one renaming of the old ids.
+
 ### D2. Benchmark tools and baseline gate
 
 Create a developer-only package `benchmarks/fault_evaluation` with `run.py`,
@@ -320,6 +326,13 @@ planning. Run T011 from a clean committed tree, with `--output` and
 `--work-dir` outside the repository, then copy the result files into the spec
 folder. Start no other task and edit no tracked file while a run is active.
 
+**Changed on 2026-11-26 by spec C-020 (T059).** The memory pass uses
+`PeakMemory` (`instrumentation.py`, `METHOD = "tracemalloc"`): the tracemalloc
+peak of the call above the value at its start. It replaces the RSS sampler,
+whose value depended on the order of the cases. The provenance has
+`memory_method`; the acceptance check compares only results of the same
+method. The field names `peak_extra_rss_bytes` and `rss_unit` stay (schema 1).
+
 ### D2b. How the acceptance check treats noise and memory
 
 SC-006 compares the peak memory of each case of the standard suite. SC-007
@@ -363,6 +376,16 @@ new revision. Keep cycle checks in the faults setter.
 > key, no revision and no lock. The scope key stays as it is in
 > `EvaluationContext.restore` today: point digest, shape, dtype, the
 > `(id, displacement, steps)` token of each fault, `reverse`.
+
+**Changed on 2026-11-26 by spec C-018 (T058, review round 2).** The scope
+key is no longer one entry for each (digest, shape, dtype, faults, reverse).
+A restoration that starts when no other restoration runs (`_depth == 0`, the
+points of the caller) is kept for the whole call, keyed by the fault set and
+the exact points. A restoration inside another one (a fault frame step), or
+inside `probe_points()` (the fault-side check of a gradient), uses one slot
+for each fault set and shape: a new batch replaces the old batch. Points of
+dtype object and unhashable displacements are restored without sharing or
+with a byte token (c75267d4).
 
 ### D4. Persistent cache and invalidation
 
@@ -621,6 +644,9 @@ cleans scope state and releases locks.
 > has one mode (call-only memory). No lock exists. The concurrency tests
 > prove that two calls on one model run at the same time (D7, T047).
 
+**Changed on 2026-11-26 by spec C-018 and C-020.** The 10-million-point
+check uses `PeakMemory`, not RSS. The batch rule is the rule of the D3 note.
+
 ### D6. Cheaper structured-grid evaluation
 
 After the baseline gate, add private StructuredGrid
@@ -645,6 +671,15 @@ changing steps, tolerances or displacements to obtain a passing result.
 
 > **Changed on 2026-11-18 by D8.** On master the value lookup is in
 > `StructuredGrid3DGeometry`. D8 moves the value part of D6 there.
+
+**Changed on 2026-11-26.** The shared frame path reads the node values
+directly and does not call `DiscreteInterpolator._evaluate_value_local` or
+`_evaluate_gradient_local`. The field counters of FR-013 (`field_calls_total`,
+`field_points_total`) therefore do not count these frame evaluations. No SC
+reads them. The path also requires that the interpolator keeps the three
+`DiscreteInterpolator` evaluation methods, calls `_check_frame()`, passes
+`block` and `restored_through` to the mask, and gives NaN for points with a
+NaN coordinate (master #413).
 
 ### D7. Remove the cache between calls (replan of 2026-11-18, spec C-012)
 
@@ -768,15 +803,16 @@ Resolve the conflict like this:
 
 - `StructuredGrid3DGeometry` (geometry file) gets these private methods:
   - `_has_uniform_lookup(self) -> bool`: True when `type(self)` does not
-    override `position_to_cell_index`, `position_to_local_coordinates` or
-    `position_to_cell_corners` of `StructuredGrid3DGeometry`.
+    override `position_to_cell_index`, `position_to_local_coordinates`,
+    `position_to_cell_corners` or `position_to_dof_coefs` of
+    `StructuredGrid3DGeometry` (`position_to_dof_coefs` added on 2026-11-26,
+    T060).
   - `_lookup_points(self, pos) -> tuple[np.ndarray, np.ndarray, np.ndarray]`:
     the branch body (one `position_to_cell_index` call; corners with -1 for
     outside rows; local coordinates clipped to 0..1).
   - `_values_from_coefficients(idc, inside, coefs, property_array)`
     (staticmethod): the master body of the weighted sum, for 1-D and
     `(n_nodes, k)` property arrays.
-  - `_evaluate_value_from_lookup(self, lookup, property_array) -> np.ndarray`.
   - `evaluate_value` uses `_lookup_points` and `trilinear` when
     `_has_uniform_lookup()` is True, else the master path. Keep the master
     checks of the property array shape.
@@ -879,6 +915,11 @@ The 100,000-point gradient cases leave the standard suite (spec C-014), so
 document when it has `:warm` ids. A `None` value on either side gives the
 ratio text "not measured", never a failure and never a noise mark.
 
+**Changed on 2026-11-26 (T057, review round 2, spec C-019).** SC-006 fails
+when a case of the memory pass has no value in the baseline or in the
+candidate, and when no case is compared. The time ratios use
+`baseline_linux.json` (C-019).
+
 ### D11. Order of work and run of T030 (replan of 2026-11-18)
 
 1. T046 (D8) first: the other tasks must start from the merged tree. The
@@ -967,8 +1008,8 @@ Names that stay or move, all private: `evaluation_scope`,
 `EvaluationContext`, `restore` (`_evaluation.py`);
 `FaultSegment._shared_frame_members`, `_evaluate_frame`,
 `_evaluate_frame_legacy`; `StructuredGrid3DGeometry._has_uniform_lookup`,
-`_lookup_points`, `_values_from_coefficients`, `_evaluate_value_from_lookup`
-(D8); `StructuredGrid._gradient_weights`, `_evaluate_gradient_from_lookup`.
+`_lookup_points`, `_values_from_coefficients` (D8;
+`_evaluate_value_from_lookup` was removed on 2026-11-26, T060); `StructuredGrid._gradient_weights`, `_evaluate_gradient_from_lookup`.
 Spec 005 changes the grid and transform code too: its tasks must keep these
 private methods or change their callers in the same commit.
 
