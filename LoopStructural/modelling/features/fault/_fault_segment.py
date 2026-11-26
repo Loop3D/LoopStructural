@@ -713,6 +713,15 @@ class FaultSegment(StructuralFrame):
                 gx_m, gy_m, gz_m, g = self._evaluate_frame(
                     newp[mask, :], block, restored_through=restored_through, need_gradient=True
                 )
+            # A frame cut by younger faults has no single gradient on a cutting fault, so the
+            # gradient is NaN there (#421). A step only needs a direction: use the gradient
+            # of the frame without the cutting faults at that point. A frame without cutting
+            # faults keeps a NaN gradient, so its points stay NaN (spec 005).
+            missing = np.isnan(g).any(axis=1) & ~np.isnan(newp[mask, :]).any(axis=1)
+            if np.any(missing) and getattr(self.__getitem__(1), "faults", None):
+                g[missing] = self.__getitem__(1).interpolator.evaluate_gradient(
+                    newp[mask, :][missing]
+                )
             gx, gy, gz = gx_m, gy_m, gz_m  # alias for block below
             # # get the fault frame val/grad for the points
             # determine displacement magnitude, for constant displacement
