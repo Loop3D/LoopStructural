@@ -82,11 +82,12 @@ def test_equality_region_selects_world_nodes(frame_case, engine):
     field = _field(anchor)
     builder.add_equality_constraints(field, lambda p: p[:, 0] > anchor[0] + 4)
     builder.install_equality_constraints()
-    entries = builder.interpolator.equal_constraints
-    actual = np.concatenate([entry["col"] for entry in entries.values()])
+    entries = builder.interpolator.constraints
+    entry = entries["reference_equality"]
+    actual = entry["matrix"].tocoo().col
     np.testing.assert_array_equal(np.sort(actual), expected)
     np.testing.assert_allclose(
-        np.concatenate([entry["B"] for entry in entries.values()]),
+        entry["b"],
         field.evaluate_value(world[expected]),
         rtol=0,
         atol=tp(50, 50),
@@ -191,8 +192,8 @@ def test_restricted_reference_exclusion_counts(frame_case, engine):
     selected = np.all((world >= lower) & (world <= upper), axis=1)
     builder.add_equality_constraints(ref, lambda p: np.ones(len(p), dtype=bool))
     builder.install_equality_constraints()
-    equality = builder.interpolator.equal_constraints
-    equality_rows = np.concatenate([entry["col"] for entry in equality.values()])
+    equality = builder.interpolator.constraints
+    equality_rows = equality["restricted_equality"]["matrix"].tocoo().col
     np.testing.assert_array_equal(np.sort(equality_rows), np.flatnonzero(selected))
     assert len(equality_rows) == int(selected.sum())
     assert "restricted_equality" in equality

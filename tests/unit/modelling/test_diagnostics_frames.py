@@ -488,7 +488,7 @@ def test_gradient_outside_points_give_no_false_unattributed_model():
 
 
 def test_gradient_outside_points_with_pli_are_measured():
-    """For PLI, record the measured counts. PLI assembles no gradient rows."""
+    """For PLI, the gradient points inside the model go into gradient rows."""
     _, feature, _ = _build(ANCHOR, ROTATION, "PLI", select=_with_outside_gradient)
     records = feature.verification_report().exclusions
     outside = sum(r.count for r in records if (r.family, r.reason) == ("gradient", "outside_model"))
@@ -496,7 +496,7 @@ def test_gradient_outside_points_with_pli_are_measured():
         r.count for r in records if (r.family, r.reason) == ("gradient", "unattributed")
     )
     assert outside == 3
-    assert unattributed == 8
+    assert unattributed == 0
 
 
 def _faulted_built_model():
