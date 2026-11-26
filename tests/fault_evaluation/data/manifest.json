@@ -17,7 +17,7 @@
         "unit_boundaries": 8
       },
       "point_count": 158,
-      "sha256": "d39d5ce9e1339cef04e9c4df49ae1a025f9393d64156a433c3cb469b7a81ebfc",
+      "sha256": "f2c142d2245e63e77da666fd95620213076bec7e0561a627da722ee264ac6d9d",
       "summary": {
         "feature::fault_0::gradient": {
           "dtype": "float64",
@@ -221,10 +221,10 @@
         },
         "feature::group_0::gradient": {
           "dtype": "float64",
-          "finite_count": 468,
-          "finite_max": 220.90244264073203,
+          "finite_count": 474,
+          "finite_max": 343.8898159509513,
           "finite_min": -77.14536940161088,
-          "nan_count": 6,
+          "nan_count": 0,
           "neginf_count": 0,
           "posinf_count": 0,
           "shape": [
@@ -234,10 +234,10 @@
         },
         "feature::group_0::value": {
           "dtype": "float64",
-          "finite_count": 157,
+          "finite_count": 158,
           "finite_max": 900.7032391569327,
           "finite_min": -95.27176772638938,
-          "nan_count": 1,
+          "nan_count": 0,
           "neginf_count": 0,
           "posinf_count": 0,
           "shape": [
@@ -248,11 +248,10 @@
           "dtype": "int64",
           "finite_count": 158,
           "finite_max": 1.0,
-          "finite_min": -1.0,
+          "finite_min": 0.0,
           "histogram": {
-            "-1": 1,
             "0": 26,
-            "1": 131
+            "1": 132
           },
           "nan_count": 0,
           "neginf_count": 0,
@@ -289,10 +288,10 @@
         },
         "restored::fault_1>fault_0": {
           "dtype": "float64",
-          "finite_count": 471,
+          "finite_count": 474,
           "finite_max": 1000.2458686411725,
           "finite_min": -999.2187649187291,
-          "nan_count": 3,
+          "nan_count": 0,
           "neginf_count": 0,
           "posinf_count": 0,
           "shape": [
@@ -467,12 +466,12 @@
         },
         "unit_boundary_distances": {
           "dtype": "float64",
-          "finite_count": 628,
+          "finite_count": 632,
           "finite_max": 2400.703239156933,
           "finite_min": 0.09540450760016483,
           "nan_count": 0,
           "neginf_count": 0,
-          "posinf_count": 4,
+          "posinf_count": 0,
           "shape": [
             158,
             4
@@ -15816,6 +15815,22 @@
         "date": "2026-11-26",
         "evidence": "spec 003 branch output is bit-identical to this code for all 970 arrays of the 21 golden models; unchanged arrays of each model are bit-identical to the old reference",
         "reason": "master #421 changes fault gradients, fault_pitch and fold rotation angles; #424 fixes fillnan nearest for NaN points"
+      },
+      {
+        "changed_keys": {
+          "cutting_faults": [
+            "feature::group_0::gradient",
+            "feature::group_0::value",
+            "model_ids",
+            "restored::fault_1>fault_0",
+            "unit_boundary_distances"
+          ]
+        },
+        "clarification": "C-021",
+        "code": "origin/master 315dff43 (#424) with f188b172 (#425)",
+        "date": "2026-11-26",
+        "evidence": "spec 003 branch output is bit-identical to this code for all 970 arrays of the 21 golden models; only cutting_faults changes",
+        "reason": "#425 keeps a step direction where a cutting fault leaves no frame gradient; the C-021 capture had NaN restored points on a cutting fault"
       }
     ],
     "source_hashes": {

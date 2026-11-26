@@ -616,4 +616,8 @@ failed acceptance run T030 (`t030-diagnosis.md`, `profile-d4a.md`).
   code for all 970 golden arrays, and every array that #421 does not change
   is bit-identical to the old reference. The manifest records the code, the
   reason and the changed keys (`provenance.reference_updates`). Tests that
-  count gradient batches follow the refinement of #421.
+  count gradient batches follow the refinement of #421. Later the same day,
+  #425 (a step direction where a cutting fault leaves no frame gradient)
+  removed NaN restored points on a cutting fault; the 5 changed outputs of
+  `cutting_faults` were captured again from master 315dff43 with #425, with
+  the same evidence (the branch gives the same bits for all 970 arrays).

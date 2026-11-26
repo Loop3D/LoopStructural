@@ -1,7 +1,7 @@
 # Tasks: Faster evaluation of faulted models
 
 **Input**: spec.md and plan.md in `specs/003-fault-evaluation-performance/`
-**State**: Replanned 2026-11-18 for the reduced scope (spec C-012 to C-017, plan D7 to D11). Review of 2026-11-26: T054-T061, T063 and T064 are done (spec C-018 to C-021). T001-T029, T033-T061, T063 and T064 are done. T062 and T030 are done (2026-11-26: all SC pass on Linux, `measurements.md`). T031 and T032 are open.
+**State**: Replanned 2026-11-18 for the reduced scope (spec C-012 to C-017, plan D7 to D11). Review of 2026-11-26: T054-T061 and T063-T065 are done (spec C-018 to C-021). T001-T029, T033-T061 and T063-T065 are done. T062 and T030 are done (2026-11-26: all SC pass on Linux, `measurements.md`). T031 and T032 are open.
 
 ## Orchestrator notes
 
@@ -294,6 +294,12 @@
   - Wave: 40
   - Done when: The acceptance command exits 0 for every SC, all golden tests pass under 120 seconds, and measurements.md records the 10-million-point memory result.
 
+- [x] T065 [Found] [S] Merge the #425 fix and capture the 5 changed `cutting_faults` references again (C-021). Commits `9e3c14c1` and the next.
+  - Files: `LoopStructural/modelling/features/fault/_fault_segment.py`, `tests/fault_evaluation/data/cutting_faults.npz`, `tests/fault_evaluation/data/manifest.json`, `tests/unit/modelling/test_cut_fault_step_direction.py`
+  - Needs: T064
+  - Wave: 39
+  - Done when: the golden validator exits 0 and the spec tests pass.
+
 - [ ] T031 [Finish] [M] Document the per-call scope, benchmark workflow and achieved limits.
   - Do: Document D1 regeneration/review, D2 run/compare/acceptance (including `--suite standard|full`, `--work-dir`, `--resume`, and why the work directory and outputs belong outside the repository), and the state after the replan of 2026-11-18: no cache between calls and no lock (C-012; two calls on one model run at the same time); the per-call scope of D3 (restored points are shared inside one call and released at its end); the standard suite of D9 with its pass point sets (`PASS_POINTS`: timing all cases, counters 5,000 and 20,000 points, memory 5,000 points) and the 16 large ids (C-016); the SC-006 rule of D10 (120 % or +16 MiB, C-013); time ratios on `baseline_linux.json` (C-015, C-019); the tracemalloc memory meter (C-020); the batch rule of FR-008 and FR-010 (C-018); call-only memory accounting and measured limits. Do not document `evaluation_cache`, `evaluation_revision` or the fault-set key: T048 removed them. Update ROADMAP only for stages actually complete. Map every FR and SC to exact test node or measured case and acceptance result. Update the 003 row of specs/README.md.
   - Files: `doc/advanced/fault_evaluation.rst`, `ROADMAP.md`, `specs/003-fault-evaluation-performance/coverage.md`, `specs/README.md`
@@ -304,7 +310,7 @@
 - [ ] T032 [Finish] [M] Run final project and package checks and record the result.
   - Do: Run python -m black --check LoopStructural tests/fault_evaluation benchmarks/fault_evaluation packages/loop_common/src/loop_common/supports/_3d_structured_grid.py; python -m ruff check LoopStructural packages; python -m pytest; python -m pytest packages/loop_common/tests; python -m pytest packages/loop_interpolation/tests. Use the prepared development environment. Record failures exactly. No Cargo command is needed. Do not claim done with any failed task or unresolved acceptance gate.
   - Files: `specs/003-fault-evaluation-performance/validation.md`
-  - Needs: T001, T002, T003, T004, T005, T006, T007, T008, T009, T010, T011, T012, T013, T014, T015, T016, T017, T018, T019, T020, T021, T022, T023, T024, T025, T026, T027, T028, T029, T030, T031, T033, T034, T035, T036, T037, T038, T039, T040, T041, T042, T043, T044, T045, T046, T047, T048, T049, T050, T051, T052, T053, T054, T055, T056, T057, T058, T059, T060, T061, T062, T063, T064
+  - Needs: T001, T002, T003, T004, T005, T006, T007, T008, T009, T010, T011, T012, T013, T014, T015, T016, T017, T018, T019, T020, T021, T022, T023, T024, T025, T026, T027, T028, T029, T030, T031, T033, T034, T035, T036, T037, T038, T039, T040, T041, T042, T043, T044, T045, T046, T047, T048, T049, T050, T051, T052, T053, T054, T055, T056, T057, T058, T059, T060, T061, T062, T063, T064, T065
   - Wave: 42
   - Done when: Black, Ruff, root pytest, loop_common pytest and loop_interpolation pytest all exit 0; validation.md records commands, revisions, golden runtime and acceptance status.
 
@@ -654,7 +660,7 @@ unaffected baselines fixed; compare equivalent correctness and run provenance.
 | 36 | T051, T052 | 0 | 2 |
 | 37 | T053 | 0 | 1 |
 | 38 | T054, T055, T056, T057, T058, T059, T060, T061, T063, T064 | 2 | 8 |
-| 39 | T062 | 0 | 1 |
+| 39 | T062, T065 | 1 | 1 |
 | 40 | T030 | 0 | 1 |
 | 41 | T031 | 0 | 1 |
 | 42 | T032 | 0 | 1 |
