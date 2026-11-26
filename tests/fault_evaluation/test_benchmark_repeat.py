@@ -8,6 +8,7 @@ from __future__ import annotations
 import importlib
 import json
 import os
+import sys
 from pathlib import Path
 
 import pytest
@@ -15,8 +16,9 @@ import pytest
 run_module = importlib.import_module("benchmarks.fault_evaluation.run")
 
 CHECKPOINT_ENV = "FAULT_EVAL_CHECKPOINT"
-# Median of each case in seconds. Cases 0 and 1 are short. Cases 2 and 3 are not.
-MEDIANS = {0: 0.2, 1: 0.9, 2: 1.0, 3: 3.0}
+# Median of each case in seconds. Cases 0 and 1 are short. Cases 2 and 3 are long (5 s
+# or more), so only the short tier repeats them; the medium tier has its own test.
+MEDIANS = {0: 0.2, 1: 0.9, 2: 5.0, 3: 6.0}
 SHORT_IDS = ["tiny:0", "tiny:1"]
 
 
@@ -152,7 +154,7 @@ def test_short_cases_are_repeated_with_five_rounds(monkeypatch, tmp_path):
     for case_id in SHORT_IDS:
         assert rows[case_id]["rounds"] == 5
         assert len(rows[case_id]["time_samples_seconds"]) == 5
-    # A case of exactly 1.0 s or more keeps its one round.
+    # A case of exactly 5.0 s or more keeps its one round.
     for case_id in ("tiny:2", "tiny:3"):
         assert rows[case_id]["rounds"] == 1
         assert len(rows[case_id]["time_samples_seconds"]) == 1
@@ -271,3 +273,29 @@ def test_repeat_adds_its_time_to_suite_wall_seconds(monkeypatch, tmp_path):
     assert run_module.main(_argv(tmp_path)) == 0
     result = json.loads((tmp_path / "result.json").read_text(encoding="utf8"))
     assert result["suite_wall_seconds"] == pytest.approx(40.0)
+
+
+def test_medium_cases_are_repeated_with_three_rounds(monkeypatch, tmp_path):
+    """A case with a median from 1.0 s up to 5.0 s runs again with 3 rounds (C-022).
+
+    One sample of a 1 to 5 s call varies by about 10 %, the SC-007 noise limit.
+    """
+    assert run_module.MEDIUM_CASE_SECONDS == 5.0
+    assert run_module.MEDIUM_CASE_ROUNDS == 3
+    medians = {0: 0.5, 1: 1.0, 2: 3.0, 3: 5.0}
+    monkeypatch.setattr(sys.modules[__name__], "MEDIANS", medians)
+    launcher = _Launcher()
+    monkeypatch.setattr(run_module, "_launch_pytest", launcher)
+    payload = run_module._run_fresh_process_pass(
+        "timing", _cases(), output_path=tmp_path / "timing.json", rounds=1
+    )
+    assert launcher.launches == [
+        {"pass": "timing", "cases": [f"tiny:{i}" for i in medians], "rounds": 1},
+        {"pass": "timing", "cases": ["tiny:0"], "rounds": run_module.SHORT_CASE_ROUNDS},
+        {"pass": "timing", "cases": ["tiny:1", "tiny:2"], "rounds": 3},
+    ]
+    rows = _rows(payload)
+    assert rows["tiny:0"]["rounds"] == 5
+    assert rows["tiny:1"]["rounds"] == 3
+    assert rows["tiny:2"]["rounds"] == 3
+    assert rows["tiny:3"]["rounds"] == 1
