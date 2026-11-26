@@ -80,3 +80,35 @@ def test_forward_movement_keeps_the_list_order_without_relations():
         f.apply_to_points = lambda pts, f=f, **kw: seen.append(f.name) or pts
     restore_through(np.zeros((1, 3)), [a, b], reverse=True)
     assert seen == ["a", "b"]
+
+
+def test_a_chain_of_cuts_is_restored_in_one_pass(monkeypatch):
+    """oldest is cut by old, old by young: no fault restores through its cutters alone.
+
+    Restoring the frame of oldest through old alone made the frame of old restore
+    every point through young again at each step (one more level of nesting for
+    each link of the chain, so the cost multiplied). The chain is now restored in
+    one pass, youngest first, so nesting never goes deeper than 2.
+    """
+    model = GeologicalModel(np.zeros(3), np.ones(3))
+    young = add_fault(model, "young", **YOUNG, steps=3)
+    old = add_fault(model, "old", **OLD, steps=3, faults=[young])
+    oldest = add_fault(model, "oldest", center=(0.5, 0.5, 0.7), dip=70, dip_azimuth=0,
+                       displacement=0.08, steps=3, faults=[old])
+    model.update()
+
+    depth, deepest = [0], [0]
+    original = FaultSegment.apply_to_points
+
+    def tracked(self, pts, *args, **kwargs):
+        depth[0] += 1
+        deepest[0] = max(deepest[0], depth[0])
+        try:
+            return original(self, pts, *args, **kwargs)
+        finally:
+            depth[0] -= 1
+
+    monkeypatch.setattr(FaultSegment, "apply_to_points", tracked)
+    restored = oldest.apply_to_points(interior_points(n=200))
+    assert not np.isnan(restored).any()
+    assert deepest[0] == 2

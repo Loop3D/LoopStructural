@@ -166,6 +166,26 @@ def _cutters(fault: object) -> list:
     return found
 
 
+def with_cutters(faults: Iterable) -> list:
+    """Return ``faults`` and, transitively, every fault that cuts one of them.
+
+    A fault frame cut by ``B`` was built in the space restored through ``B``, and
+    ``B`` was built in the space restored through its own cutters. Restoring the
+    whole chain in one pass (each fault told what was already restored) keeps the
+    cost linear in the depth of the chain; restoring through ``B`` alone makes the
+    frame of ``B`` restore every point through its cutters again at each step.
+    Each fault appears once, in the order found.
+    """
+    result = list(faults)
+    index = 0
+    while index < len(result):
+        for cutter in _cutters(result[index]):
+            if not is_in(cutter, result):
+                result.append(cutter)
+        index += 1
+    return result
+
+
 def cutters_first(faults: Iterable) -> list:
     """Order ``faults`` so that a fault comes after every fault of the list that cuts it.
 
@@ -191,9 +211,10 @@ def restore_through(points, faults, *, reverse=False, block=None, restored_throu
     """Restore points through a list of faults, each fault once.
 
     The faults are applied in the order of the list (a feature keeps its
-    faults youngest first), except that a fault faulted by another fault of the
-    list (``faults=[...]``) comes after it; when the points move forward
-    (``reverse``) the cutting fault comes last. Each fault is told which faults the points have
+    faults youngest first), except that a fault faulted by another fault
+    (``faults=[...]``) comes after it; when the points move forward
+    (``reverse``) the cutting fault comes last. The faults that cut a fault of
+    the list, and the faults that cut those, are restored too. Each fault is told which faults the points have
     already been restored through, so that its frame, which was built in the
     space restored by the younger faults that displace it, is evaluated at the
     points as they are and does not apply those younger faults a second time.
@@ -217,10 +238,12 @@ def restore_through(points, faults, *, reverse=False, block=None, restored_throu
         the restored points
     """
     done = list(restored_through)
+    # The chain of cutting faults is restored too (see with_cutters).
+    faults = with_cutters(faults)
     if reverse:
         # Forward movement: a cutting fault moves after the faults it cuts. Without
         # such relations the order of the list does not change.
-        ordered = cutters_first(list(faults)[::-1])[::-1]
+        ordered = cutters_first(faults[::-1])[::-1]
     else:
         ordered = cutters_first(faults)
     for fault in ordered:
