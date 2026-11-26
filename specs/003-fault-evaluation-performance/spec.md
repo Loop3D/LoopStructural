@@ -227,8 +227,9 @@ the golden tests.
   work of the failed call.
 - **Very many points.** Extra memory must stay within FR-010, also for 10
   million points.
-- **Threads.** `use_threads` in `_fault_segment.py` must give the same results
-  as without threads, or stay off as today.
+- **Threads.** The fault frame is evaluated without threads. The `use_threads`
+  switch of `_fault_segment.py` (always off because of a known bug) was
+  removed on 2026-11-26.
 - **Saved and loaded models.** A model that is saved and loaded again (for
   example with `to_file` and `from_file`) must evaluate as today.
 

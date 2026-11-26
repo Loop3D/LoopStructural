@@ -1,5 +1,3 @@
-from concurrent.futures import ThreadPoolExecutor
-
 import numpy as np
 
 from LoopStructural.utils.maths import gradient_from_tetrahedron, regular_tetraherdron_for_points
@@ -19,8 +17,6 @@ from ....utils._fault_block import block_kwargs, block_side, check_block, force_
 
 logger = getLogger(__name__)
 
-use_threads = False  # there is a bug with threading causing the interpolation dictionary to change size during iterations
-# for now 19/4/24 LG is turning threading off. This will slow down evaluation of models a bit.
 
 
 class FaultSegment(StructuralFrame):
@@ -456,32 +452,13 @@ class FaultSegment(StructuralFrame):
             kwargs["restored_through"] = tuple(restored_through)
         member0, member1, member2 = (self.__getitem__(i) for i in range(3))
         gx = gy = gz = g = None
-        if use_threads:
-            with ThreadPoolExecutor(max_workers=8) as executor:
-                # all of these operations should be independent so
-                # just run as different threads
-                futures = {}
-                if need_values:
-                    if need_gx:
-                        futures["gx"] = executor.submit(member0.evaluate_value, points, **kwargs)
-                    futures["gy"] = executor.submit(member1.evaluate_value, points, **kwargs)
-                    futures["gz"] = executor.submit(member2.evaluate_value, points, **kwargs)
-                if need_gradient:
-                    futures["g"] = executor.submit(
-                        member1.evaluate_gradient, points, ignore_regions=True, **kwargs
-                    )
-                gx = futures["gx"].result() if "gx" in futures else None
-                gy = futures["gy"].result() if "gy" in futures else None
-                gz = futures["gz"].result() if "gz" in futures else None
-                g = futures["g"].result() if "g" in futures else None
-        else:
-            if need_values:
-                if need_gx:
-                    gx = member0.evaluate_value(points, **kwargs)
-                gy = member1.evaluate_value(points, **kwargs)
-                gz = member2.evaluate_value(points, **kwargs)
-            if need_gradient:
-                g = member1.evaluate_gradient(points, ignore_regions=True, **kwargs)
+        if need_values:
+            if need_gx:
+                gx = member0.evaluate_value(points, **kwargs)
+            gy = member1.evaluate_value(points, **kwargs)
+            gz = member2.evaluate_value(points, **kwargs)
+        if need_gradient:
+            g = member1.evaluate_gradient(points, ignore_regions=True, **kwargs)
         if need_gradient:
             return gx, gy, gz, g
         return gx, gy, gz

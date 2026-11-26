@@ -131,13 +131,6 @@ def test_saved_and_loaded_model_evaluates_as_before(tmp_path):
     )
 
 
-def test_fault_frame_threads_stay_off():
-    """Spec edge case: use_threads must give the same results or stay off as today."""
-    from LoopStructural.modelling.features.fault import _fault_segment
-
-    assert _fault_segment.use_threads is False
-
-
 def test_points_of_dtype_object_evaluate_as_float_points():
     """Points from a DataFrame with an object column are evaluated (review round 2)."""
     from tests.fault_evaluation.models import sample_points
