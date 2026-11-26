@@ -13,7 +13,7 @@ from __future__ import annotations
 import pathlib
 from typing import TYPE_CHECKING
 
-from ...geometry import StructuredGrid
+from ...geometry import PropertyGrid
 from ...utils import getLogger, surface_list
 
 if TYPE_CHECKING:
@@ -39,16 +39,15 @@ class ModelExporter:
     def get_stratigraphic_surfaces(
         model: GeologicalModel, units: list[str] | None = None, bottoms: bool = True
     ) -> surface_list:
-        if units is None:
-            units = []
         ## TODO change the stratigraphic column to its own class and have methods to get the relevant surfaces
         surfaces = []
-        units = []
         if model.stratigraphic_column is None:
             return []
-        units = model.stratigraphic_column.get_isovalues(where='bottom' if bottoms else 'top')
+        isovalues = model.stratigraphic_column.get_isovalues(where='bottom' if bottoms else 'top')
+        if units:
+            isovalues = {name: u for name, u in isovalues.items() if name in units}
         units_for_group = {}
-        for name, u in units.items():
+        for name, u in isovalues.items():
             if u['group'] not in model:
                 logger.warning(f"Group {u['group']} not found in model")
                 continue
@@ -70,19 +69,11 @@ class ModelExporter:
     @staticmethod
     def get_block_model(
         model: GeologicalModel, name: str = 'block model'
-    ) -> tuple[StructuredGrid, list]:
-        # NOTE: bounding_box.structured_grid() returns loop_common's
-        # interpolation-support StructuredGrid (no properties dict); use
-        # LoopStructural's own geometry StructuredGrid for storing values.
-        grid = StructuredGrid(
-            origin=model.bounding_box.origin,
-            step_vector=model.bounding_box.step_vector,
-            nsteps=model.bounding_box.nsteps,
-            name=name,
-        )
+    ) -> tuple[PropertyGrid, list]:
+        grid = model.bounding_box.structured_grid(name=name)
 
         grid.cell_properties['stratigraphy'] = model.evaluate_model(
-            model.rescale(model.bounding_box.cell_centres())
+            model.bounding_box.reproject(model.bounding_box.cell_centres())
         )
         return grid, model.stratigraphic_ids()
 
@@ -100,7 +91,6 @@ class ModelExporter:
         extension = path.suffix
         parent = path.parent
         name = path.stem
-        stratigraphic_surfaces = model.get_stratigraphic_surfaces()
         if fault_surfaces:
             for s in model.get_fault_surfaces():
                 ## geoh5 can save everything into the same file
@@ -121,19 +111,18 @@ class ModelExporter:
             else:
                 grid.save(f'{parent}/{name}_block_model{extension}')
         if stratigraphic_data and model.stratigraphic_column is not None:
-            for group in model.stratigraphic_column:
-                if group == "faults":
+            for g in model.stratigraphic_column.get_groups():
+                if g.name not in model:
                     continue
-                for data in model.__getitem__(group).get_data():
+                for data in model[g.name].get_data():
                     if extension == ".geoh5" or extension == '.omf':
                         data.save(filename)
                     else:
-                        data.save(f'{parent}/{name}_{group}_data{extension}')
+                        data.save(f'{parent}/{name}_{data.name}{extension}')
         if fault_data:
             for f in model.fault_names():
-                for d in model.__getitem__(f).get_data():
+                for d in model[f].get_data():
                     if extension == ".geoh5" or extension == '.omf':
-
                         d.save(filename)
                     else:
-                        d.save(f'{parent}/{name}_{group}{extension}')
+                        d.save(f'{parent}/{name}_{d.name}{extension}')

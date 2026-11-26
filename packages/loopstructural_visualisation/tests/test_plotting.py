@@ -18,13 +18,13 @@ from LoopStructural.geometry import ValuePoints, VectorPoints
 from LoopStructural.modelling.features import AnalyticalGeologicalFeature, StructuralFrame
 from LoopStructural.modelling.features.fault import FaultSegment
 
-
 # CI runners have no display or OpenGL context; VTK then crashes with a segfault
 # or access violation, which cannot be caught, so rendering tests are skipped there.
 requires_gl = pytest.mark.skipif(
     os.environ.get("CI") == "true",
     reason="no OpenGL context on CI runners",
 )
+
 
 @pytest.fixture
 def model():

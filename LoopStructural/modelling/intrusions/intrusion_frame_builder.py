@@ -307,6 +307,13 @@ class IntrusionFrameBuilder(StructuralFrameBuilder):
                     fault_i_std,
                 ]
 
+    def _network_model_values(self, data: pd.DataFrame) -> np.ndarray:
+        """
+        The id of the unit at each point. The model is evaluated at the world points; no conversion is applied.
+        """
+        xyz = data.loc[:, ["X", "Y", "Z"]].to_numpy(dtype=float)
+        return self.model.evaluate_model(xyz)
+
     def set_intrusion_steps_parameters(self):
         """
         Use intrusion contact data (reference contact for intrusion frame) to compute the parameters related to each step.
@@ -330,9 +337,6 @@ class IntrusionFrameBuilder(StructuralFrameBuilder):
 
         # set data
         intrusion_network_data = self.intrusion_network_data.copy()
-        intrusion_network_data_xyz = (
-            intrusion_network_data.loc[:, ["X", "Y", "Z"]].copy().to_numpy()
-        )
         std_backup = 25
 
         for step_i, step in self.intrusion_steps.items():
@@ -349,8 +353,8 @@ class IntrusionFrameBuilder(StructuralFrameBuilder):
                 "id"
             )
 
-            intrusion_network_data.loc[:, "model_values"] = self.model.evaluate_model(
-                self.model.rescale(intrusion_network_data_xyz, inplace=False)
+            intrusion_network_data.loc[:, "model_values"] = self._network_model_values(
+                intrusion_network_data
             )
 
             # -- check if step is within the same unit. If so, find clusters of data:

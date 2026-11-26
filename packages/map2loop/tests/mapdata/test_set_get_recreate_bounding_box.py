@@ -1,7 +1,8 @@
-import pytest
-from map2loop.mapdata import MapData
 import geopandas
+import pytest
 import shapely
+
+from map2loop.mapdata import MapData
 
 
 @pytest.fixture
@@ -95,7 +96,7 @@ def test_set_bounding_box_with_missing_keys(md):
     bounding_box = {
         "minx": 0,
         "maxx": 10,
-        "miny": 0
+        "miny": 0,
         # Missing "maxy", "top", "base"
     }
     with pytest.raises(KeyError):

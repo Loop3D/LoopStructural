@@ -1,6 +1,5 @@
 import numpy as np
 import pandas as pd
-from sklearn.decomposition import PCA
 
 from .logging import getLogger
 
@@ -19,11 +18,6 @@ def get_data_bounding_box_map(xyz, buffer):
     -------
 
     """
-    # find the aligned coordinates box using pca
-    modelpca = PCA(n_components=3)
-    modelpca.fit(xyz)
-    # transform the data to this new coordinate then find extents
-    # transformed_xyz = modelpca.transform(xyz)
     minx = np.min(xyz[:, 0])
     maxx = np.max(xyz[:, 0])
     miny = np.min(xyz[:, 1])
@@ -67,11 +61,6 @@ def get_data_bounding_box(xyz, buffer):
     -------
 
     """
-    # find the aligned coordinates box using pca
-    modelpca = PCA(n_components=3)
-    modelpca.fit(xyz)
-    # transform the data to this new coordinate then find extents
-    # transformed_xyz = modelpca.transform(xyz)
     minx = np.min(xyz[:, 0])
     maxx = np.max(xyz[:, 0])
     miny = np.min(xyz[:, 1])

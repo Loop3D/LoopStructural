@@ -1,8 +1,11 @@
 import sys
+
 sys.path.append('/usr/lib/python3/dist-packages')
-from map2loop.contact_extractor import ContactExtractor
 import geopandas as gpd
 from shapely.geometry import Polygon
+
+from map2loop.contact_extractor import ContactExtractor
+
 
 def simple_geology():
     poly1 = Polygon([(0, 0), (1, 0), (1, 1), (0, 1)])
@@ -18,12 +21,14 @@ def simple_geology():
         crs="EPSG:28350",
     )
 
+
 def test_extract_all_contacts():
     geology = simple_geology()
     extractor = ContactExtractor(geology, None)
     contacts = extractor.extract_all_contacts()
     assert len(contacts) == 1
     assert {contacts.loc[0, "UNITNAME_1"], contacts.loc[0, "UNITNAME_2"]} == {"A", "B"}
+
 
 def test_extract_basal_contacts():
     geology = simple_geology()

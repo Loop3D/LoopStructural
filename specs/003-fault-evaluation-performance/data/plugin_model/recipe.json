@@ -1,0 +1,250 @@
+{
+  "description": "QGIS plugin model (spec 003, research.md): 6 faults, 1 group, 1 unconformity. Calls recorded from the plugin model manager on 2026-11-01.",
+  "bounding_box": {
+    "origin": [
+      520343.18,
+      7490000.0,
+      -7000.0
+    ],
+    "maximum": [
+      550000.0,
+      7510000.0,
+      1000.0
+    ],
+    "nsteps": [
+      86,
+      58,
+      24
+    ],
+    "local_origin": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "local_rotation": [
+      [
+        1.0,
+        0.0,
+        0.0
+      ],
+      [
+        0.0,
+        1.0,
+        0.0
+      ],
+      [
+        0.0,
+        0.0,
+        1.0
+      ]
+    ]
+  },
+  "stratigraphic_column": {
+    "elements": [
+      {
+        "name": "Basement",
+        "colour": "grey",
+        "thickness": Infinity,
+        "uuid": "d13c0407-e974-4d01-8af1-cdcfdea16f1c",
+        "id": 0
+      },
+      {
+        "uuid": "05a55248-3921-41d5-984c-4bb5d108ebe8",
+        "name": "Base Unconformity",
+        "unconformity_type": "erode"
+      },
+      {
+        "name": "Pyradie_Formation",
+        "colour": "#449591",
+        "thickness": 500.0,
+        "uuid": "52b119cb-7afd-4b6e-8588-f792bf4bc6c7",
+        "id": 1
+      },
+      {
+        "name": "Bunjinah_Formation",
+        "colour": "#8bb2dd",
+        "thickness": 500.0,
+        "uuid": "731b3a57-0526-4f6e-9217-f9ca3108783f",
+        "id": 2
+      },
+      {
+        "name": "Jeerinah_Formation",
+        "colour": "#357fcf",
+        "thickness": 618.75,
+        "uuid": "0163bd33-30c4-4948-9631-5275b726f0be",
+        "id": 3
+      },
+      {
+        "name": "Marra_Mamba_Iron_Formation",
+        "colour": "#3a8dbe",
+        "thickness": 280.89,
+        "uuid": "ad50510a-ada7-4ac6-86da-f402d899be5d",
+        "id": 4
+      },
+      {
+        "name": "Wittenoom_Formation",
+        "colour": "#d3bdc0",
+        "thickness": 338.21,
+        "uuid": "09a19c11-1c9a-4882-a7c4-417d5751d358",
+        "id": 5
+      },
+      {
+        "name": "Mount_McRae_Shale_and_Mount_Sylvia_Formation",
+        "colour": "#615113",
+        "thickness": 727.6,
+        "uuid": "b92d5ee5-fd79-48a5-a152-446d41214e2e",
+        "id": 6
+      },
+      {
+        "name": "Brockman_Iron_Formation",
+        "colour": "#9477f6",
+        "thickness": 500.0,
+        "uuid": "70d4ca76-2a8c-45b3-9430-e1e85dbdfe37",
+        "id": 7
+      },
+      {
+        "name": "Weeli_Wolli_Formation",
+        "colour": "#0b58bb",
+        "thickness": 553.62,
+        "uuid": "3e873bf5-dcd3-41af-bedb-f1512d239bc7",
+        "id": 8
+      },
+      {
+        "name": "Woongarra_Rhyolite",
+        "colour": "#5ffa9e",
+        "thickness": 747.71,
+        "uuid": "d6ee8c52-325a-46ae-9e64-aa01e4d6b663",
+        "id": 9
+      },
+      {
+        "name": "Boolgeeda_Iron_Formation",
+        "colour": "#9089f1",
+        "thickness": 566.3199754275631,
+        "uuid": "bd211c49-0ad7-48d4-91df-c3350901df66",
+        "id": 10
+      },
+      {
+        "name": "Turee_Creek_Group",
+        "colour": "#cdf889",
+        "thickness": 497.0,
+        "uuid": "e1d1d4f4-6bb0-4a31-b014-d75ba59b3e8a",
+        "id": 11
+      }
+    ]
+  },
+  "steps": [
+    {
+      "call": "create_and_add_fault",
+      "name": "7439",
+      "data": "7439.csv",
+      "kwargs": {
+        "displacement": 1000.0,
+        "fault_dip": 90.0,
+        "fault_pitch": 0,
+        "faults": [],
+        "nelements": 5000,
+        "npw": 1.0,
+        "cpw": 1.0,
+        "regularisation": 1.0
+      }
+    },
+    {
+      "call": "create_and_add_fault",
+      "name": "2997",
+      "data": "2997.csv",
+      "kwargs": {
+        "displacement": 1000.0,
+        "fault_dip": 90.0,
+        "fault_pitch": 0,
+        "faults": [],
+        "nelements": 5000,
+        "npw": 1.0,
+        "cpw": 1.0,
+        "regularisation": 1.0
+      }
+    },
+    {
+      "call": "create_and_add_fault",
+      "name": "3496",
+      "data": "3496.csv",
+      "kwargs": {
+        "displacement": 1000.0,
+        "fault_dip": 90.0,
+        "fault_pitch": 0,
+        "faults": [],
+        "nelements": 5000,
+        "npw": 1.0,
+        "cpw": 1.0,
+        "regularisation": 1.0
+      }
+    },
+    {
+      "call": "create_and_add_fault",
+      "name": "3498",
+      "data": "3498.csv",
+      "kwargs": {
+        "displacement": 1000.0,
+        "fault_dip": 90.0,
+        "fault_pitch": 0,
+        "faults": [],
+        "nelements": 5000,
+        "npw": 1.0,
+        "cpw": 1.0,
+        "regularisation": 1.0
+      }
+    },
+    {
+      "call": "create_and_add_fault",
+      "name": "12647",
+      "data": "12647.csv",
+      "kwargs": {
+        "displacement": 1000.0,
+        "fault_dip": 90.0,
+        "fault_pitch": 0,
+        "faults": [],
+        "nelements": 5000,
+        "npw": 1.0,
+        "cpw": 1.0,
+        "regularisation": 1.0
+      }
+    },
+    {
+      "call": "create_and_add_fault",
+      "name": "12658",
+      "data": "12658.csv",
+      "kwargs": {
+        "displacement": 1000.0,
+        "fault_dip": 90.0,
+        "fault_pitch": 0,
+        "faults": [],
+        "nelements": 5000,
+        "npw": 1.0,
+        "cpw": 1.0,
+        "regularisation": 1.0
+      }
+    },
+    {
+      "call": "add_abutting_fault",
+      "fault": "7439",
+      "abutting_fault": "3496",
+      "positive": true
+    },
+    {
+      "call": "create_and_add_foliation",
+      "name": "Group_0",
+      "data": "Group_0.csv",
+      "kwargs": {
+        "force_constrained": true,
+        "nelements": 45000,
+        "npw": 1.0,
+        "cpw": 1.0,
+        "regularisation": 1.0
+      }
+    },
+    {
+      "call": "add_unconformity",
+      "feature": "Group_0",
+      "value": 0.0
+    }
+  ]
+}

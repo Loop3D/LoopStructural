@@ -1,8 +1,9 @@
 import pathlib
-from map2loop.project import Project
-from map2loop.m2l_enums import Datatype
-import map2loop
 from unittest.mock import patch
+
+import map2loop
+from map2loop.m2l_enums import Datatype
+from map2loop.project import Project
 
 
 # Sample test function for lithology and fault ignore codes
@@ -40,7 +41,7 @@ def test_set_get_ignore_codes():
                 / pathlib.Path('_datasets/geodata_files/hamersley/dtm_rp.tif')
             ),
             config_dictionary=config_dictionary,
-            structure_filename="", 
+            structure_filename="",
         )
 
     # Define test ignore codes for lithology and faults

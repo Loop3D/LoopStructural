@@ -1,12 +1,11 @@
-import pandas
 import geopandas
 import numpy
+import pandas
 
-from map2loop.mapdata import MapData
 from map2loop.m2l_enums import Datatype
+from map2loop.mapdata import MapData
 from map2loop.thickness_calculator import ThicknessCalculatorAlpha
 from map2loop.utils.load_map2loop_data import load_hamersley_geology
-
 
 #########################################################
 ### Define the test data for ThicknessCalculatorAlpha ###
@@ -1658,6 +1657,7 @@ def check_thickness_values(result, column, description):
 
 geology = load_hamersley_geology()
 geology.rename(columns={'unitname': 'UNITNAME', 'code': 'CODE'}, inplace=True)
+
 
 def test_calculate_thickness_thickness_calculator_alpha():
     # Run the calculation

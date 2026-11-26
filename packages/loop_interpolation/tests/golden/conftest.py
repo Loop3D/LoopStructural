@@ -1,5 +1,3 @@
-
-
 def pytest_addoption(parser):
     parser.addoption(
         "--update-golden",
@@ -16,16 +14,18 @@ def pytest_addoption(parser):
 
 
 # --------------------------------------------------------------------------- HTML test report
-import base64  # noqa: E402
-import html as _html  # noqa: E402
-import time  # noqa: E402
+import base64
+import html as _html
+import time
 
 _RECORDS: list[dict] = []
 
 _FOLD_ENGINES = [("fold_sparse", e, False) for e in ("FD", "P1", "DFI", "FDFold", "P2Fold")]
 _BY_NAME = {
     "test_fold_constraints_help": _FOLD_ENGINES,
-    "test_refolded_fold_constraints_help": [("refolded_sparse", e, False) for e in ("FD", "P1", "DFI", "FDFold", "P2Fold")],
+    "test_refolded_fold_constraints_help": [
+        ("refolded_sparse", e, False) for e in ("FD", "P1", "DFI", "FDFold", "P2Fold")
+    ],
     "test_p2_not_worse_than_p1_on_smooth_dome": [("dome", "P1", False), ("dome", "P2", False)],
     "test_known_p2_normal_weight_has_effect": [("planar_noisy", "P2", False)],
     "test_dfi_is_repeatable_with_reseed": [("fold_sparse", "DFI", False)],
@@ -42,7 +42,10 @@ def _pairs_for(item):
         return [(params["case"], params["engine"], False)]
     if name == "test_known_default_solve_is_converged":
         return [("planar_dip", params["engine"], True), ("planar_dip", params["engine"], False)]
-    if name in ("test_known_update_keeps_fold_weights", "test_known_points_on_lower_boundary_are_finite"):
+    if name in (
+        "test_known_update_keeps_fold_weights",
+        "test_known_points_on_lower_boundary_are_finite",
+    ):
         return [("fold_sparse", params["engine"], False)]
     return []
 
@@ -58,14 +61,27 @@ def pytest_runtest_makereport(item, call):
         xfail = item.get_closest_marker("xfail")
         if xfail is not None and call.excinfo.errisinstance(Exception) and call.when == "call":
             outcome, detail = "xfailed (known bug)", xfail.kwargs.get("reason", "")
-        elif call.excinfo.errisinstance(__import__("_pytest.outcomes", fromlist=["Skipped"]).Skipped):
+        elif call.excinfo.errisinstance(
+            __import__("_pytest.outcomes", fromlist=["Skipped"]).Skipped
+        ):
             outcome, detail = "skipped", str(call.excinfo.value)
         else:
             outcome, detail = "FAILED", str(call.excinfo.value)[:1500]
-    elif item.get_closest_marker("xfail") is not None and item.get_closest_marker("xfail").kwargs.get("strict"):
-        outcome, detail = "XPASS (bug fixed? remove the marker)", item.get_closest_marker("xfail").kwargs.get("reason", "")
-    _RECORDS.append({"item": item, "outcome": outcome, "detail": detail, "t": call.duration,
-                     "doc": (item.function.__doc__ or "").strip()})
+    elif item.get_closest_marker("xfail") is not None and item.get_closest_marker(
+        "xfail"
+    ).kwargs.get("strict"):
+        outcome, detail = "XPASS (bug fixed? remove the marker)", item.get_closest_marker(
+            "xfail"
+        ).kwargs.get("reason", "")
+    _RECORDS.append(
+        {
+            "item": item,
+            "outcome": outcome,
+            "detail": detail,
+            "t": call.duration,
+            "doc": (item.function.__doc__ or "").strip(),
+        }
+    )
 
 
 def _b64(data: bytes) -> str:
@@ -76,7 +92,6 @@ def pytest_sessionfinish(session, exitstatus):
     if not session.config.getoption("--report") or not _RECORDS:
         return
     import tempfile
-    from pathlib import Path
 
     from . import harness, render, test_golden
 
@@ -105,7 +120,9 @@ def pytest_sessionfinish(session, exitstatus):
         figs = ""
         for case, engine, default in _pairs_for(item):
             surf, sec, m = images(case, engine, default)
-            label = f"{case} / {engine}" + (" / package-default solver" if default else " / converged solver")
+            label = f"{case} / {engine}" + (
+                " / package-default solver" if default else " / converged solver"
+            )
             figs += (
                 f'<div class="pair"><div class="lab">{_html.escape(label)} &mdash; value rms {m["value_rms"]:.3g}, '
                 f'gradient error median {m["angle_median"]:.1f} deg</div>'
@@ -116,7 +133,8 @@ def pytest_sessionfinish(session, exitstatus):
             f'{_html.escape(item.name)} <small>{rec["t"]:.2f}s</small></h3>'
             + (f"<p>{_html.escape(rec['doc'])}</p>" if rec["doc"] else "")
             + (f'<pre>{_html.escape(rec["detail"])}</pre>' if rec["detail"] else "")
-            + figs + "</section>"
+            + figs
+            + "</section>"
         )
     summary = ", ".join(f"{v} {k}" for k, v in sorted(counts.items()))
     legend = (
@@ -134,8 +152,10 @@ def pytest_sessionfinish(session, exitstatus):
         "img.s{width:520px;vertical-align:top}img.x{width:min(1100px,calc(100% - 540px));vertical-align:top}"
         "@media(max-width:1200px){img.s,img.x{width:100%}}</style>"
         f"<h1>Interpolation golden test report</h1><p>{time.strftime('%Y-%m-%d %H:%M')} &mdash; {summary}</p>"
-        + legend + "".join(blocks)
-        + "<script>const IMG=" + __import__("json").dumps(store)
+        + legend
+        + "".join(blocks)
+        + "<script>const IMG="
+        + __import__("json").dumps(store)
         + ";document.querySelectorAll('img[data-k]').forEach(i=>i.src=IMG[i.dataset.k]);</script>"
     )
     path = harness.OUT_DIR / "test_report.html"

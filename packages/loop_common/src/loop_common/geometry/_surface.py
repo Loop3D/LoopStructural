@@ -259,7 +259,7 @@ class Surface:
                 point_data={"normals": self.normals},
             )
         elif ext == "ts" or ext == "gocad":
-            from LoopStructural.export.exporters import _write_feat_surfs_gocad
+            from LoopStructural.export.gocad import _write_feat_surfs_gocad
 
             _write_feat_surfs_gocad(self, filename)
         elif ext == "geoh5":

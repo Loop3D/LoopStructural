@@ -1,0 +1,18 @@
+{
+  "schema_version": 1,
+  "toolkit_version": "0.1.0",
+  "files": {
+    "CLAUDE.md": {
+      "kind": "block",
+      "sha256": "a61ebcbd643803f44587be7ce11f6a159374e99c607f5fdbbb8397a04416afd2"
+    },
+    "AGENTS.md": {
+      "kind": "block",
+      "sha256": "a61ebcbd643803f44587be7ce11f6a159374e99c607f5fdbbb8397a04416afd2"
+    },
+    ".github/copilot-instructions.md": {
+      "kind": "block",
+      "sha256": "a61ebcbd643803f44587be7ce11f6a159374e99c607f5fdbbb8397a04416afd2"
+    }
+  }
+}

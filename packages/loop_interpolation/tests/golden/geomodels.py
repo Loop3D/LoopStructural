@@ -5,6 +5,7 @@ The horizons are the iso-surfaces ``s = level``. Data are sampled from the
 analytic field, so the error of a solution can be measured against the truth.
 All random numbers use fixed seeds: the data are identical on every run.
 """
+
 from __future__ import annotations
 
 from dataclasses import dataclass, field
@@ -52,7 +53,7 @@ def _horizon_points(truth, xy: np.ndarray, levels=HORIZONS) -> np.ndarray:
     out = []
     for x, y in xy:
 
-        def f(z, level=None):
+        def f(z, level=None, x=x, y=y):
             return truth(np.array([[x, y, z]]))[0] - level
 
         for level in levels:
@@ -83,7 +84,10 @@ def planar_dip() -> Case:
         "Planar dipping contacts (dip 30, 3 horizons, 6 boreholes)",
         "Linear truth. Every interpolator must reproduce it. A failure here is a basic bug "
         "(sign, scaling, weights, data placement).",
-        s, g, values, np.c_[npts, g(npts)],
+        s,
+        g,
+        values,
+        np.c_[npts, g(npts)],
     )
 
 
@@ -98,7 +102,10 @@ def planar_extrapolation() -> Case:
         "Planar contacts, data only in x < 0.35",
         "Tests regularisation as an extrapolator into a data-free region (x > 0.65). "
         "The regularisation should continue the plane, not flatten or curl it.",
-        s, g, values, np.c_[npts, g(npts)],
+        s,
+        g,
+        values,
+        np.c_[npts, g(npts)],
     )
 
 
@@ -134,16 +141,28 @@ def dome() -> Case:
 
     rng = np.random.default_rng(4)
     xy = np.vstack(
-        [[0.5, 0.5], [0.35, 0.5], [0.65, 0.5], [0.5, 0.35], [0.5, 0.65], rng.uniform(0.1, 0.9, (4, 2))]
+        [
+            [0.5, 0.5],
+            [0.35, 0.5],
+            [0.65, 0.5],
+            [0.5, 0.35],
+            [0.5, 0.65],
+            rng.uniform(0.1, 0.9, (4, 2)),
+        ]
     )
     values = _horizon_points(s, xy)
-    npts = np.array([[0.4, 0.4, 0.5], [0.6, 0.6, 0.5], [0.3, 0.7, 0.6], [0.8, 0.3, 0.4], [0.5, 0.5, 0.5]])
+    npts = np.array(
+        [[0.4, 0.4, 0.5], [0.6, 0.6, 0.5], [0.3, 0.7, 0.6], [0.8, 0.3, 0.4], [0.5, 0.5, 0.5]]
+    )
     return Case(
         "dome",
         "Gaussian dome (relief 0.2, sigma 0.2, 3 horizons, 9 boreholes)",
         "Smooth curved truth. Tests whether regularisation flattens the crest and whether "
         "gradient data bend the horizons correctly.",
-        s, g, values, np.c_[npts, g(npts)],
+        s,
+        g,
+        values,
+        np.c_[npts, g(npts)],
     )
 
 
@@ -188,7 +207,11 @@ def fold_section() -> Case:
         "Plain interpolation of a fold from one cross-section. Along the axis (y) the "
         "regularisation must carry the section outward. Error far from y = 0.5 is expected; "
         "the golden file detects a change in the pattern.",
-        s, g, values, np.c_[npts, g(npts)], fold=fold,
+        s,
+        g,
+        values,
+        np.c_[npts, g(npts)],
+        fold=fold,
     )
 
 
@@ -203,7 +226,12 @@ def fold_sparse() -> Case:
         "The Bermagui situation: little data, strong fold. The fold constraints must supply the "
         "gradient direction everywhere. The FD and P1 columns have no fold constraint and show "
         "what is gained. A drop in DFI/FDFold accuracy is a fold-constraint regression.",
-        s, g, values, np.c_[p, g(p)], fold=fold, engines=("FD", "P1", "P2", "DFI", "FDFold", "P2Fold"),
+        s,
+        g,
+        values,
+        np.c_[p, g(p)],
+        fold=fold,
+        engines=("FD", "P1", "P2", "DFI", "FDFold", "P2Fold"),
     )
 
 
@@ -226,7 +254,9 @@ def refolded_sparse() -> Case:
         return p[:, 2] - a2 * np.sin(k2 * p[:, 0]) - b3 * np.sin(k3 * p[:, 1])
 
     def g(p):
-        return np.c_[-a2 * k2 * np.cos(k2 * p[:, 0]), -b3 * k3 * np.cos(k3 * p[:, 1]), np.ones(len(p))]
+        return np.c_[
+            -a2 * k2 * np.cos(k2 * p[:, 0]), -b3 * k3 * np.cos(k3 * p[:, 1]), np.ones(len(p))
+        ]
 
     def limb(gx):
         return -np.rad2deg(np.arctan(a2 * k2 * np.cos(k2 * gx)))
@@ -245,11 +275,27 @@ def refolded_sparse() -> Case:
         "The Bermagui geometry in miniature: the hinge plunge changes along the axis, so a constant "
         "axis is wrong. Tests the fold_axis_rotation path of the fold interpolators (DFI, FDFold). "
         "FD, P1 and P2 have no fold constraint and show what the fold event adds.",
-        s, g, values, np.c_[p, g(p)], fold=fold, engines=("FD", "P1", "P2", "DFI", "FDFold", "P2Fold"),
+        s,
+        g,
+        values,
+        np.c_[p, g(p)],
+        fold=fold,
+        engines=("FD", "P1", "P2", "DFI", "FDFold", "P2Fold"),
     )
 
 
-ALL = {f.__name__: f for f in (planar_dip, planar_extrapolation, planar_noisy, dome, fold_section, fold_sparse, refolded_sparse)}
+ALL = {
+    f.__name__: f
+    for f in (
+        planar_dip,
+        planar_extrapolation,
+        planar_noisy,
+        dome,
+        fold_section,
+        fold_sparse,
+        refolded_sparse,
+    )
+}
 
 
 def build(name: str) -> Case:

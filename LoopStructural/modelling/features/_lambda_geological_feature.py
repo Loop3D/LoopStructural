@@ -1,6 +1,7 @@
 """
 Geological features
 """
+
 from __future__ import annotations
 
 from typing import Callable
@@ -9,9 +10,9 @@ import numpy as np
 
 from LoopStructural.utils.maths import gradient_from_tetrahedron, regular_tetraherdron_for_points
 
-from ._base_geological_feature import BaseFeature
-from . import FeatureType
 from ...utils import LoopValueError, getLogger
+from . import FeatureType
+from ._base_geological_feature import BaseFeature
 
 logger = getLogger(__name__)
 
@@ -50,7 +51,14 @@ class LambdaGeologicalFeature(BaseFeature):
         builder : optional
             the builder used to create this feature, by default None
         """
-        BaseFeature.__init__(self, name, model, faults if faults is not None else [], regions if regions is not None else [], builder)
+        BaseFeature.__init__(
+            self,
+            name,
+            model,
+            faults if faults is not None else [],
+            regions if regions is not None else [],
+            builder,
+        )
         self.type = FeatureType.LAMBDA
         self.function = function
         self.gradient_function = gradient_function
@@ -72,33 +80,16 @@ class LambdaGeologicalFeature(BaseFeature):
         np.ndarray
             value of the feature at each location, nan where outside of the regions
         """
-        v = np.zeros(pos.shape[0])
-        v[:] = np.nan
-
-        # Precompute each fault's scalar value (gx = fault.__getitem__(0).evaluate_value)
-        # once and reuse for both the region mask check and fault application.
-        # FaultSegment.evaluate_value(pos) == self.__getitem__(0).evaluate_value(pos) == gx.
-        # apply_to_points also needs gx to determine the displacement mask — passing it
-        # avoids the duplicate evaluation on the np.copy of pos.
-        precomputed_gx = {id(f): f.evaluate_value(pos) for f in self.faults}
-
-        # Region mask: pass precomputed gx so PositiveRegion/NegativeRegion skip re-evaluation
-        mask = np.ones(pos.shape[0], dtype=bool)
-        if not ignore_regions:
-            for r in self.regions:
-                pre = precomputed_gx.get(id(getattr(r, 'feature', None)))
-                mask = np.logical_and(mask, r(pos, precomputed_val=pre))
-
-        # Apply faults: pass precomputed gx so apply_to_points skips one evaluate_value call
-        if self.faults_enabled:
-            for f in self.faults:
-                pos = f.apply_to_points(pos, precomputed_gx=precomputed_gx.get(id(f)))
-
+        v = np.full(pos.shape[0], np.nan)
+        mask = self._calculate_mask(pos, ignore_regions=ignore_regions)
+        pos = self._apply_faults(pos)
         if self.function is not None:
-            v[mask] = self.function(pos[mask,:])
+            v[mask] = self.function(pos[mask, :])
         return v
 
-    def evaluate_gradient(self, pos: np.ndarray, ignore_regions=False,element_scale_parameter=None) -> np.ndarray:
+    def evaluate_gradient(
+        self, pos: np.ndarray, ignore_regions=False, element_scale_parameter=None
+    ) -> np.ndarray:
         """Evaluate the gradient of the underlying function at locations, applying
         any faults associated with this feature
 
@@ -131,7 +122,6 @@ class LambdaGeologicalFeature(BaseFeature):
             except ValueError:
                 logger.error("element_scale_parameter must be a float")
                 element_scale_parameter = 1
-        v = np.zeros((pos.shape[0], 3))
         v = np.zeros(pos.shape)
         v[:] = np.nan
         mask = self._calculate_mask(pos, ignore_regions=ignore_regions)
@@ -141,33 +131,13 @@ class LambdaGeologicalFeature(BaseFeature):
             # generate a regular tetrahedron for each point
             # we will then move these points by the fault and then recalculate the gradient.
             # this should work...
-            resolved = False
             tetrahedron = regular_tetraherdron_for_points(pos, element_scale_parameter)
-
-            while resolved:
-                for f in self.faults:
-                    v = (
-                        f[0]
-                        .evaluate_value(tetrahedron.reshape(-1, 3), fillnan='nearest')
-                        .reshape(tetrahedron.shape[0], 4)
-                    )
-                    flag = np.logical_or(np.all(v > 0, axis=1), np.all(v < 0, axis=1))
-                    if np.any(~flag):
-                        logger.warning(
-                            f"Points are too close to fault {f[0].name}. Refining the tetrahedron"
-                        )
-                        element_scale_parameter *= 0.5
-                        tetrahedron = regular_tetraherdron_for_points(pos, element_scale_parameter)
-
-                resolved = True
 
             tetrahedron_faulted = self._apply_faults(np.array(tetrahedron.reshape(-1, 3))).reshape(
                 tetrahedron.shape
             )
 
-            values = self.function(tetrahedron_faulted.reshape(-1, 3)).reshape(
-                (-1, 4)
-            )
+            values = self.function(tetrahedron_faulted.reshape(-1, 3)).reshape((-1, 4))
             v[mask, :] = gradient_from_tetrahedron(tetrahedron[mask, :, :], values[mask])
 
             return v
@@ -190,5 +160,6 @@ class LambdaGeologicalFeature(BaseFeature):
             self.faults,
             self.builder,
         )
+
     def is_valid(self):
         return not (self.function is None and self.gradient_function is None)

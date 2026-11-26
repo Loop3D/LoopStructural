@@ -21,6 +21,7 @@ from ...modelling.features import (
 from ...modelling.features.fault import FaultSegment
 from ...modelling.features.fold import FoldFrame
 from ...utils import LoopValueError, getLogger, public_api, strikedip2vector, timed_stage
+from ...utils._fault_block import check_block
 from ...utils.helper import (
     all_heading,
     gradient_vec_names,
@@ -60,6 +61,17 @@ class GeologicalModel:
         the origin of the model box
     parameters : dict
         a dictionary tracking the parameters used to build the model
+    tol : float
+        absolute tolerance of the residual of the solver, 1e-10 of the
+        longest side of the model. It has no length meaning.
+    position_tolerance : float or None
+        how far the isosurfaces of a cg-solved feature may be from the
+        isosurfaces of the fully converged field, as a length in the units
+        of the model (for example 1.0 for 1 m). It is an estimate, not a
+        bound: see ``DiscreteInterpolator.solve_system``. None (default)
+        keeps the stop on the solver residual. Set it before the features
+        are built; a feature can have its own value with the keyword
+        ``position_tolerance`` of the ``create_and_add_*`` methods.
 
 
     """
@@ -134,6 +146,7 @@ class GeologicalModel:
         self._stratigraphic_column = StratigraphicColumn()
 
         self.tol = 1e-10 * np.max(self.bounding_box.maximum - self.bounding_box.origin)
+        self.position_tolerance = None
         self._dtm = None
 
     @public_api(tier="stable")
@@ -469,7 +482,7 @@ class GeologicalModel:
     def intrusions(self):
         intrusions = []
         for f in self.features:
-            if f.type == "intrusion":
+            if f.type == FeatureType.INTRUSION:
                 intrusions.append(f)
         return intrusions
 
@@ -636,12 +649,13 @@ class GeologicalModel:
 
         Notes
         -----
-        stratigraphic_column is a nested dictionary with the format
-        {'group':
+        stratigraphic_column is a nested dictionary with the format::
+
+            {'group':
                 {'series1':
                             {'min':0., 'max':10.,'id':0,'colour':}
                 }
-        }
+            }
 
         """
         warnings.warn(
@@ -653,7 +667,8 @@ class GeologicalModel:
         # if the colour for a unit hasn't been specified we can just sample from
         # a colour map e.g. tab20
         logger.info("Adding stratigraphic column to model")
-        for i, g in enumerate(stratigraphic_column.keys()):
+        groups = []
+        for g in stratigraphic_column:
             if g == 'faults':
                 logger.info('Not adding faults to stratigraphic column')
                 continue
@@ -678,6 +693,12 @@ class GeologicalModel:
             self.stratigraphic_column.add_unconformity(
                 name=f"{g}unconformity",
             )
+            if stratigraphic_column[g]:
+                groups.append(g)
+        # each dict group is added on top, so the first group ends at the bottom of the
+        # column; get_groups() and evaluate_model depend on this order
+        # get_groups() numbers groups from the top of the column, the last group added
+        for i, g in enumerate(reversed(groups)):
             self.stratigraphic_column.group_mapping[f'Group_{i}'] = g
 
     @public_api(tier="provisional")
@@ -919,6 +940,32 @@ class GeologicalModel:
         """
         Use an existing feature to add an unconformity to the model.
 
+        The unconformity is erosional. ``feature`` exists only above it. The
+        other features of the model back to the last unconformity, and the
+        features that are added later, exist only below it.
+
+        The unconformity also truncates the faults that are older than it:
+        such a fault takes the region of the unconformity, so its frame and
+        its surface exist only below the unconformity and it moves no point
+        above it (it does not displace ``feature``).
+
+        **Which faults are older.** The features of a model are in the order
+        in which they were added, and a new feature is displaced by every
+        fault that the model has at that moment, unless its ``faults``
+        argument gives another list. A fault is *younger* than the
+        unconformity if it displaces ``feature``, or a feature that lies
+        above an earlier unconformity (a feature that this unconformity does
+        not truncate); it then cuts the unconformity and is not changed.
+        Every other fault is *older*:
+
+        * a fault that is added after ``feature`` (before or after this
+          call),
+        * a fault that was added before ``feature`` and that the ``faults``
+          argument of ``feature`` leaves out.
+
+        A fault that is added after several unconformities is truncated by
+        each of them.
+
         Parameters
         ----------
         feature : GeologicalFeature
@@ -940,6 +987,10 @@ class GeologicalModel:
     ) -> GeologicalFeature:
         """
         Use an existing feature to add an unconformity to the model.
+
+        An onlap unconformity does not truncate faults: no fault takes its
+        region, whether the fault is added before or after this call. Only
+        :meth:`add_unconformity` (erosional) truncates the older faults.
 
         Parameters
         ----------
@@ -1106,6 +1157,10 @@ class GeologicalModel:
         Convert from model scale to real world scale - in the future this
         should also do transformations?
 
+        .. deprecated::
+            Use ``model.bounding_box.reproject`` instead.
+            Deprecated by spec 005, stage S4.
+
         Parameters
         ----------
         points : np.array((N,3),dtype=double)
@@ -1117,7 +1172,12 @@ class GeologicalModel:
         points : np.array((N,3),dtype=double)
 
         """
-
+        # stacklevel 3 skips the public_api wrapper frame
+        warnings.warn(
+            "GeologicalModel.rescale is deprecated and will be removed in a future release; use model.bounding_box.reproject(points) instead",
+            DeprecationWarning,
+            stacklevel=3,
+        )
         return self.bounding_box.reproject(points, inplace=inplace)
 
     # TODO move scale to bounding box/transformer
@@ -1125,6 +1185,10 @@ class GeologicalModel:
     def scale(self, points: np.ndarray, *, inplace: bool = False) -> np.ndarray:
         """Take points in UTM coordinates and reproject
         into scaled model space
+
+        .. deprecated::
+            Use ``model.bounding_box.project`` instead.
+            Deprecated by spec 005, stage S4.
 
         Parameters
         ----------
@@ -1137,6 +1201,12 @@ class GeologicalModel:
         points : np.a::rray((N,3),dtype=double)
 
         """
+        # stacklevel 3 skips the public_api wrapper frame
+        warnings.warn(
+            "GeologicalModel.scale is deprecated and will be removed in a future release; use model.bounding_box.project(points) instead",
+            DeprecationWarning,
+            stacklevel=3,
+        )
         return self.bounding_box.project(np.array(points).astype(float), inplace=inplace)
 
     @public_api(tier="stable")
@@ -1172,7 +1242,7 @@ class GeologicalModel:
         Returns
         -------
         stratigraphic_id : np.array(N,dtype=int)
-            the stratigraphic index for locations
+            unit id (StratigraphicUnit.id), -1 if unassigned
 
         Examples
         --------
@@ -1220,14 +1290,12 @@ class GeologicalModel:
             logger.warning("No stratigraphic column defined")
             return strat_id
 
-        s_id = 0
         for g in reversed(self.stratigraphic_column.get_groups()):
             feature_id = self.feature_name_index.get(g.name, -1)
             if feature_id >= 0:
                 vals = self.features[feature_id].evaluate_value(xyz)
                 for u in g.units:
-                    strat_id[np.logical_and(vals < u.max(), vals > u.min())] = s_id
-                    s_id += 1
+                    strat_id[np.logical_and(vals < u.max(), vals > u.min())] = u.id
             if feature_id == -1:
                 logger.error(f"Model does not contain {g.name}")
 
@@ -1379,11 +1447,117 @@ class GeologicalModel:
         """
         # `scale` is retained for API-signature compatibility only -- see
         # evaluate_model.
+        return self.get_feature_by_name(feature_name).evaluate_gradient(xyz)
+
+    @public_api(tier="provisional")
+    def evaluate_feature_block_value(
+        self, feature_name: str, xyz: np.ndarray, block: dict, *, ignore_regions: bool = True
+    ) -> np.ndarray:
+        """Evaluate a feature as it is in one fault block.
+
+        A fault block gives, for faults that displace the feature, the side of
+        the fault that every point is taken to be on: ``+1`` the hanging wall
+        (fault frame coordinate gx > 0), ``-1`` the footwall, ``0`` the fault
+        is absent (it moves no point). The result is the field of that block,
+        extended smoothly over the whole model: it has no jump across the
+        faults that the block names, and it equals
+        :meth:`evaluate_feature_value` wherever the points are in that block.
+        A fault that the block does not name keeps the side of each point.
+
+        The block is also used for the faults that displace the faults of the
+        feature, and for the regions of the faults (for example, a fault that
+        abuts on the hanging wall of another fault is absent in a block that
+        puts the points on the footwall of that fault).
+
+        The call changes no state, so calls with different blocks can run at
+        the same time.
+
+        Parameters
+        ----------
+        feature_name : str
+            name of the feature
+        xyz : np.ndarray
+            Nx3 locations, world coordinates
+        block : dict
+            maps fault names (or faults) to +1, -1 or 0
+        ignore_regions : bool, optional
+            do not apply the regions of the feature itself (for example a
+            younger unconformity), by default True: the block field covers the
+            whole support of the feature
+
+        Returns
+        -------
+        np.ndarray
+            N values, NaN where the feature has no support
+
+        Examples
+        --------
+        >>> hanging_wall = model.evaluate_feature_block_value("strat", xyz, {"fault": 1})
+        >>> footwall = model.evaluate_feature_block_value("strat", xyz, {"fault": -1})
+        """
         feature = self.get_feature_by_name(feature_name)
-        if feature:
-            return feature.evaluate_gradient(xyz)
-        else:
-            return np.zeros(xyz.shape[0])
+        return feature.evaluate_value(
+            np.asarray(xyz, dtype=float),
+            ignore_regions=ignore_regions,
+            block=self._check_fault_block(block),
+        )
+
+    @public_api(tier="provisional")
+    def evaluate_feature_block_gradient(
+        self, feature_name: str, xyz: np.ndarray, block: dict, *, ignore_regions: bool = True
+    ) -> np.ndarray:
+        """Evaluate the gradient of a feature as it is in one fault block.
+
+        See :meth:`evaluate_feature_block_value` for the block and the
+        parameters.
+
+        Returns
+        -------
+        np.ndarray
+            Nx3 gradients, NaN where the feature has no support
+        """
+        feature = self.get_feature_by_name(feature_name)
+        return feature.evaluate_gradient(
+            np.asarray(xyz, dtype=float),
+            ignore_regions=ignore_regions,
+            block=self._check_fault_block(block),
+        )
+
+    @public_api(tier="provisional")
+    def get_feature_relations(self) -> dict:
+        """Return the relations between the features of the model.
+
+        For each fault: the faults that displace it, the faults it abuts on
+        and on which side, the unconformities that truncate it. For each
+        other feature: the faults that displace it (restore order) and the
+        unconformities that truncate it. For each unconformity: its series,
+        value and what it truncates. And the order in which the features were
+        added (the event order). The result is a plain dictionary, valid
+        before and after :meth:`update`; nothing is changed. See
+        :meth:`FeatureRelationshipManager.relations` for the keys.
+
+        Returns
+        -------
+        dict
+            keys ``events``, ``faults``, ``features``, ``unconformities``
+
+        Examples
+        --------
+        >>> rel = model.get_feature_relations()
+        >>> rel["faults"]["f_pre"]["displaced_by"]
+        ['f_post']
+        """
+        return FeatureRelationshipManager.relations(self)
+
+    def _check_fault_block(self, block) -> dict:
+        """Check that a fault block names only faults of this model."""
+        block = check_block(block)
+        if block is None:
+            raise ValueError("block must map fault names to +1, -1 or 0")
+        unknown = sorted(set(block) - set(self.fault_names()))
+        if unknown:
+            raise ValueError(f"block names faults that are not in the model: {unknown}")
+        return block
 
     @public_api(tier="stable")
     def update(self, verbose=False, progressbar=True):
