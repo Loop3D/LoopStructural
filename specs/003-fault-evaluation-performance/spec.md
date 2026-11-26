@@ -621,3 +621,8 @@ failed acceptance run T030 (`t030-diagnosis.md`, `profile-d4a.md`).
   removed NaN restored points on a cutting fault; the 5 changed outputs of
   `cutting_faults` were captured again from master 315dff43 with #425, with
   the same evidence (the branch gives the same bits for all 970 arrays).
+  Then #427 restored a cutting fault before the fault it cuts (`faults=[A]`
+  means the fault is faulted by the younger fault A). In `cutting_faults`
+  fault_0 is now restored before fault_1; its 5 changed outputs were captured
+  again from master with #424, #425 and #427 (same evidence). The fault frame of
+  fault_1 then makes no nested restoration (2 fault calls instead of 22).

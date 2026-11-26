@@ -17,7 +17,7 @@
         "unit_boundaries": 8
       },
       "point_count": 158,
-      "sha256": "f2c142d2245e63e77da666fd95620213076bec7e0561a627da722ee264ac6d9d",
+      "sha256": "8314de6a0f4fd5aa413020a9b11358e705cf0a7f7bf0e594f127058d1da51fe0",
       "summary": {
         "feature::fault_0::gradient": {
           "dtype": "float64",
@@ -222,8 +222,8 @@
         "feature::group_0::gradient": {
           "dtype": "float64",
           "finite_count": 474,
-          "finite_max": 343.8898159509513,
-          "finite_min": -77.14536940161088,
+          "finite_max": 26.967488915395734,
+          "finite_min": -73.35450598346608,
           "nan_count": 0,
           "neginf_count": 0,
           "posinf_count": 0,
@@ -235,8 +235,8 @@
         "feature::group_0::value": {
           "dtype": "float64",
           "finite_count": 158,
-          "finite_max": 900.7032391569327,
-          "finite_min": -95.27176772638938,
+          "finite_max": 900.6979267746276,
+          "finite_min": -95.26680567240552,
           "nan_count": 0,
           "neginf_count": 0,
           "posinf_count": 0,
@@ -412,8 +412,8 @@
         "surface::group_0@50::area": {
           "dtype": "float64",
           "finite_count": 1,
-          "finite_max": 1012560.3635470539,
-          "finite_min": 1012560.3635470539,
+          "finite_max": 1012628.2020433627,
+          "finite_min": 1012628.2020433627,
           "nan_count": 0,
           "neginf_count": 0,
           "posinf_count": 0,
@@ -421,14 +421,14 @@
             1
           ],
           "values": [
-            1012560.3635470539
+            1012628.2020433627
           ]
         },
         "surface::group_0@50::bounds": {
           "dtype": "float64",
           "finite_count": 6,
           "finite_max": 999.9999999999999,
-          "finite_min": -871.2001599763569,
+          "finite_min": -871.1724406794498,
           "nan_count": 0,
           "neginf_count": 0,
           "posinf_count": 0,
@@ -440,12 +440,12 @@
             [
               0.0,
               0.0,
-              -871.2001599763569
+              -871.1724406794498
             ],
             [
               999.9999999999999,
               999.9999999999999,
-              -827.5674016852128
+              -827.469035198814
             ]
           ]
         },
@@ -467,8 +467,8 @@
         "unit_boundary_distances": {
           "dtype": "float64",
           "finite_count": 632,
-          "finite_max": 2400.703239156933,
-          "finite_min": 0.09540450760016483,
+          "finite_max": 2400.6979267746274,
+          "finite_min": 0.05663909869614514,
           "nan_count": 0,
           "neginf_count": 0,
           "posinf_count": 0,
@@ -15831,6 +15831,22 @@
         "date": "2026-11-26",
         "evidence": "spec 003 branch output is bit-identical to this code for all 970 arrays of the 21 golden models; only cutting_faults changes",
         "reason": "#425 keeps a step direction where a cutting fault leaves no frame gradient; the C-021 capture had NaN restored points on a cutting fault"
+      },
+      {
+        "changed_keys": {
+          "cutting_faults": [
+            "feature::group_0::gradient",
+            "feature::group_0::value",
+            "surface::group_0@50::area",
+            "surface::group_0@50::bounds",
+            "unit_boundary_distances"
+          ]
+        },
+        "clarification": "C-021",
+        "code": "origin/master 315dff43 (#424) with f188b172 (#425) and 4536bfff (#427)",
+        "date": "2026-11-26",
+        "evidence": "spec 003 branch output is bit-identical to this code for all 970 arrays of the 21 golden models; only cutting_faults changes",
+        "reason": "#427 restores a cutting fault (fault_0) before the fault it cuts (fault_1); the earlier captures restored fault_1 first"
       }
     ],
     "source_hashes": {

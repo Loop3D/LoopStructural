@@ -126,15 +126,18 @@ def test_scope_holds_at_most_one_restoration_per_fault_set(monkeypatch, method):
 
     monkeypatch.setattr(_evaluation.EvaluationContext, "restore", spy)
     getattr(model, method)(points.copy())
-    # cutting_faults: the model fault set and the frame fault set of the younger
-    # fault. The frame set has N points and 4N corners for each frame step. Since
-    # master #421 the fault-side check of a gradient probes the shrinking set of
-    # tetrahedra that still cross a fault, so a gradient has one more slot for each
-    # probe size; each slot still holds one batch.
+    # cutting_faults: the model fault set, and for a gradient the fault set of the
+    # frame of fault_1, which the fault-side check probes (master #421) with the
+    # shrinking set of tetrahedra that still cross a fault: one slot for each probe
+    # size, each slot one batch.
     fault_sets = {slot[:2] for slot in largest}
-    assert len(fault_sets) == 2
     if method == "evaluate_model":
-        assert len(largest) == 3
+        # Since #427 fault_0 is restored first, so the frame of fault_1 adds no batch.
+        assert len(fault_sets) == 1
+        assert len(largest) == 1
+    else:
+        # The fault-side probes of a gradient still restore through fault_0.
+        assert len(fault_sets) == 2
     assert max(held) <= sum(largest.values())
 
 

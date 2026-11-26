@@ -48,8 +48,9 @@ MANIFEST = json.loads((DATA / "manifest.json").read_text(encoding="utf8"))
 F4_U3_GROUP_GRADIENT_CALLS = 8  # 4 faults on N points + 4 faults on 4N points
 F4_U3_GROUP_GRADIENT_FAULT_POINTS_FACTOR = 20  # 4 * N + 4 * 4N
 # Distinct (fault, batch) pairs, frames included. 25 before master #421; since #421 each
-# refinement probes only the tetrahedra that still cross a fault, a new batch each time.
-CUTTING_FAULTS_GROUP_0_GRADIENT_CALLS = 29
+# refinement probes only the tetrahedra that still cross a fault (29). Since #427 fault_0
+# is restored before fault_1, so only the fault-side probes still restore through fault_0.
+CUTTING_FAULTS_GROUP_0_GRADIENT_CALLS = 9
 
 
 # ---------------------------------------------------------------------------
@@ -532,8 +533,8 @@ def test_child_fault_frame_batches_are_counted_separately(record_property):
 
     group_0 uses [fault_1, fault_0]. The frame of fault_1 uses [fault_0] and restores its
     own nested batches, for N points and for the corners. Every nested batch counts
-    on its own (OP1). With one restoration per distinct batch there are 29 calls
-    (25 before master #421), and none repeats an earlier fault and batch.
+    on its own (OP1). With one restoration per distinct batch there are 9 calls
+    (29 before #427, 25 before #421), and none repeats an earlier fault and batch.
     """
     model, golden = _model("cutting_faults"), _golden("cutting_faults")
     points = golden["points"]
@@ -544,8 +545,9 @@ def test_child_fault_frame_batches_are_counted_separately(record_property):
     _assert_golden("cutting_faults", {"points": points, "feature::group_0::gradient": gradient})
     assert diagnostics["duplicate_calls"] == 0
     assert diagnostics["fault_calls_total"] == CUTTING_FAULTS_GROUP_0_GRADIENT_CALLS
-    # Nested calls come from the frame of fault_1 and are not top-level calls.
-    assert diagnostics["fault_calls_top_level"] < diagnostics["fault_calls_total"]
+    # Since #427 no fault is applied inside another one: the frame of fault_1 reads
+    # points that fault_0 already restored.
+    assert diagnostics["fault_calls_top_level"] == diagnostics["fault_calls_total"]
 
 
 # ---------------------------------------------------------------------------

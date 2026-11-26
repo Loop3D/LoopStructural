@@ -483,22 +483,20 @@ def test_region_masks_use_the_original_points(name, monkeypatch):
 
 
 def test_child_fault_frame_batches_are_counted_separately():
-    """``cutting_faults``: group_0 uses [fault_1, fault_0]; the frame of fault_1 uses [fault_0].
+    """``cutting_faults``: the frame of fault_1 is faulted by fault_0 (``faults=[fault_0]``).
 
-    The frame of fault_1 has 3 coordinates and 10 steps. Distinct nested batches:
-    the original points N (3 coordinates share it: 1 application), then the
-    tetrahedron corners of the first step (1), then 9 further steps, each with
-    one moved batch for the 3 values and one corner batch for the gradient (2 each).
-    Nested: 1 + 1 + 9 * 2 = 20. Top level: fault_1 and fault_0 on the group
-    batch = 2. Expected total 22. Legacy: 42 (40 nested + 2).
+    Since #427 fault_0 is restored before fault_1, so the frame of fault_1 reads the
+    points that fault_0 already restored and does not restore them again: one
+    application of each fault, 2 in total, none nested. Before #427 fault_1 came
+    first and its frame restored through fault_0 at each step (22 with sharing,
+    42 without).
     """
     model, golden = build_model("cutting_faults"), _golden("cutting_faults")
     points = golden["points"]
     ids, counts = _counted(lambda: model.evaluate_model(points))
     _assert_golden("cutting_faults", {"points": points, "model_ids": legacy_model_ids(model, ids)})
-    assert counts["fault_calls_total"] == 22
+    assert counts["fault_calls_total"] == 2
     assert counts["fault_calls_top_level"] == 2
-    assert counts["fault_calls_total"] <= 42
 
 
 # ---------------------------------------------------------------------------
