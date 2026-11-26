@@ -4,8 +4,10 @@ An evaluation scope is a short-lived :class:`EvaluationContext`. It stores the r
 coordinates of the faults of a feature. The key of an entry holds the ordered faults,
 ``reverse``, a state token of the faults and the shape of the points. The entry also holds
 the exact content of the points. Two features that use the same ordered faults on equal
-points therefore share one restoration. Each key keeps only its last point batch, so the
-scope holds at most one restoration for each fault set and batch shape (FR-010, OP1).
+points therefore share one restoration. A batch of the caller (a restoration that starts
+when no other restoration runs) is kept for the whole call, so it is restored once (FR-008).
+A batch of a fault frame step replaces the last step batch of its fault set and shape, so
+the scope holds one step batch for each of them (FR-010, C-018).
 
 The scope is stored in a ``contextvars.ContextVar``. It is always reset when the
 outermost ``with`` block ends, also after an exception. The scope keeps
@@ -93,6 +95,9 @@ class EvaluationContext:
         self.model = model
         self._restorations: dict = {}
         self._batches: dict = {}
+        # Number of restorations that are running. A restoration that starts at depth 0
+        # works on the points of the caller; a deeper one on the points of a frame step.
+        self._depth = 0
 
     def restore(
         self, feature: BaseFeature, points: np.ndarray, reverse: bool = False
@@ -132,24 +137,35 @@ class EvaluationContext:
         digest = _digest(points)
         # The scope key holds the faults only. Features with the same ordered faults share
         # one restoration inside the scope. The model does not change inside one scope.
-        # One slot for each fault set and batch shape, so the N points and the 4N
-        # tetrahedron corners of a gradient do not push each other out.
         fault_set = (tuple(_fault_state(fault) for fault in faults), bool(reverse), points.shape)
         batch = (digest, points.dtype.str)
-        if self._batches.get(fault_set) == batch:
-            return self._restorations[fault_set]
-        # Free the old batch of this slot before the new one is made.
-        self._restorations.pop(fault_set, None)
-        self._batches.pop(fault_set, None)
-        restored = np.asarray(restore_through(points, faults, reverse=reverse))
+        if self._depth == 0:
+            # The points of the caller (and the tetrahedron corners made from them) are
+            # kept for the whole call, so each batch is restored once (FR-008).
+            slot = (fault_set, batch)
+            if slot in self._restorations:
+                return self._restorations[slot]
+        else:
+            # A frame step: one slot for each fault set and batch shape. The points move
+            # with each step, so an older step batch is not asked for again (FR-010).
+            slot = fault_set
+            if self._batches.get(slot) == batch:
+                return self._restorations[slot]
+            # Free the old batch of this slot before the new one is made.
+            self._restorations.pop(slot, None)
+            self._batches.pop(slot, None)
+        self._depth += 1
+        try:
+            restored = np.asarray(restore_through(points, faults, reverse=reverse))
+        finally:
+            self._depth -= 1
         if restored is points or np.shares_memory(restored, points):
             restored = restored.copy()
         restored.flags.writeable = False
-        # The entry is stored only after all faults are applied. Each slot keeps only
-        # its last point batch (FR-010). The batches of a fault frame move with each
-        # step, so an older batch is not asked for again.
-        self._restorations[fault_set] = restored
-        self._batches[fault_set] = batch
+        # The entry is stored only after all faults are applied.
+        self._restorations[slot] = restored
+        if self._depth > 0:
+            self._batches[slot] = batch
         return restored
 
 
@@ -181,6 +197,26 @@ def evaluation_scope(model: GeologicalModel | None = None) -> Iterator[Evaluatio
         yield context
     finally:
         _ACTIVE.reset(token)
+
+
+@contextmanager
+def probe_points() -> Iterator[None]:
+    """Treat the restorations inside this block as probes, not as points of the caller.
+
+    A probe batch (for example the fault-side check of a gradient tetrahedron, which
+    makes a new batch at each refinement) replaces the last probe batch of its fault
+    set and shape, as a frame step batch does. Without an active scope this does
+    nothing.
+    """
+    context = _ACTIVE.get()
+    if context is None:
+        yield
+        return
+    context._depth += 1
+    try:
+        yield
+    finally:
+        context._depth -= 1
 
 
 def restore(feature: BaseFeature, points: np.ndarray, reverse: bool = False) -> np.ndarray:

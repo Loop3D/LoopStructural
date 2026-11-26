@@ -28,7 +28,7 @@ from ...utils import LoopValueError, getLogger
 from ...utils._fault_block import block_kwargs, check_block
 from . import FeatureType
 from ._base_geological_feature import BaseFeature
-from ._evaluation import evaluation_scope, restore
+from ._evaluation import evaluation_scope, probe_points, restore
 
 logger = getLogger(__name__)
 
@@ -277,13 +277,15 @@ class GeologicalFeature(BaseFeature):
             while not resolved:
                 resolved = True
                 for f in jumping:
-                    side = (
-                        f[0]
-                        .evaluate_value(
-                            tetrahedron.reshape(-1, 3), fillnan='nearest', **block_kwargs(block)
+                    # Each refinement makes a new corner batch: a probe, not a caller batch.
+                    with probe_points():
+                        side = (
+                            f[0]
+                            .evaluate_value(
+                                tetrahedron.reshape(-1, 3), fillnan='nearest', **block_kwargs(block)
+                            )
+                            .reshape(tetrahedron.shape[0], 4)
                         )
-                        .reshape(tetrahedron.shape[0], 4)
-                    )
                     flag = np.logical_or(np.all(side > 0, axis=1), np.all(side < 0, axis=1))
                     if np.any(~flag):
                         logger.warning(

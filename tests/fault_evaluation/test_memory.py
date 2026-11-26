@@ -131,3 +131,21 @@ def test_scope_holds_at_most_one_restoration_per_fault_set(monkeypatch, method):
     assert len(fault_sets) == 2
     assert len(largest) == 3
     assert max(held) <= sum(largest.values())
+
+
+def test_caller_batches_of_one_size_do_not_replace_each_other():
+    """Two caller batches of the same size on one fault set are each restored once (FR-008).
+
+    Review round 2: with one slot for each fault set and size, the calls e, e + 1, e
+    applied the fault three times.
+    """
+    from benchmarks.fault_evaluation.instrumentation import EvaluationInstrumentation
+
+    model = build_model("cutting_faults")
+    member = model.get_feature_by_name("fault_1")[0]
+    points = sample_points("cutting_faults", 500, seed=1)
+    with EvaluationInstrumentation() as counter, _evaluation.evaluation_scope(model):
+        member.evaluate_value(points)
+        member.evaluate_value(points + 1.0)
+        member.evaluate_value(points)
+    assert counter.snapshot()["fault_calls_total"] == 2 * len(member.faults)
