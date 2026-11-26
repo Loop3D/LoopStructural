@@ -1,10 +1,11 @@
 """Evaluation scope that shares fault restorations inside one call.
 
 An evaluation scope is a short-lived :class:`EvaluationContext`. It stores the restored
-coordinates of the faults of a feature. The key of an entry holds the exact content of the
-points, the ordered faults, ``reverse``, ``faults_enabled`` and a state token of the faults.
-Two features that use the same ordered faults on equal points therefore share one
-restoration.
+coordinates of the faults of a feature. The key of an entry holds the ordered faults,
+``reverse``, a state token of the faults and the shape of the points. The entry also holds
+the exact content of the points. Two features that use the same ordered faults on equal
+points therefore share one restoration. Each key keeps only its last point batch, so the
+scope holds at most one restoration for each fault set and batch shape (FR-010, OP1).
 
 The scope is stored in a ``contextvars.ContextVar``. It is always reset when the
 outermost ``with`` block ends, also after an exception. The scope keeps
@@ -74,6 +75,7 @@ class EvaluationContext:
     def __init__(self, model: GeologicalModel | None = None) -> None:
         self.model = model
         self._restorations: dict = {}
+        self._batches: dict = {}
 
     def restore(
         self, feature: BaseFeature, points: np.ndarray, reverse: bool = False
@@ -109,22 +111,24 @@ class EvaluationContext:
         digest = _digest(points)
         # The scope key holds the faults only. Features with the same ordered faults share
         # one restoration inside the scope. The model does not change inside one scope.
-        key = (
-            digest,
-            points.shape,
-            points.dtype.str,
-            tuple(_fault_state(fault) for fault in faults),
-            bool(reverse),
-        )
-        restored = self._restorations.get(key)
-        if restored is not None:
-            return restored
+        # One slot for each fault set and batch shape, so the N points and the 4N
+        # tetrahedron corners of a gradient do not push each other out.
+        fault_set = (tuple(_fault_state(fault) for fault in faults), bool(reverse), points.shape)
+        batch = (digest, points.dtype.str)
+        if self._batches.get(fault_set) == batch:
+            return self._restorations[fault_set]
+        # Free the old batch of this slot before the new one is made.
+        self._restorations.pop(fault_set, None)
+        self._batches.pop(fault_set, None)
         restored = np.asarray(restore_through(points, faults, reverse=reverse))
         if restored is points or np.shares_memory(restored, points):
             restored = restored.copy()
         restored.flags.writeable = False
-        # The entry is stored only after all faults are applied.
-        self._restorations[key] = restored
+        # The entry is stored only after all faults are applied. Each slot keeps only
+        # its last point batch (FR-010). The batches of a fault frame move with each
+        # step, so an older batch is not asked for again.
+        self._restorations[fault_set] = restored
+        self._batches[fault_set] = batch
         return restored
 
 

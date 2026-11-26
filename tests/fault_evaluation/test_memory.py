@@ -3,6 +3,7 @@
 * The workspace of the digest of the points is bounded. It is far smaller than the
   arrays that are hashed.
 * No restoration stays after a call.
+* One call holds at most one restoration for each fault set (FR-010, OP1).
 
 The large case with 10 million points and the peak RSS is not part of normal pytest
 (T029, T030).
@@ -16,9 +17,10 @@ from collections.abc import Callable
 from pathlib import Path
 
 import numpy as np
+import pytest
 
 from LoopStructural.modelling.features import _evaluation
-from tests.fault_evaluation.models import build_model
+from tests.fault_evaluation.models import build_model, sample_points
 
 MEGABYTE = 1024 * 1024
 DATA = Path(__file__).parent / "data"
@@ -90,3 +92,42 @@ def test_no_restoration_stays_after_the_call():
     gc.collect()
     contexts = [o for o in gc.get_objects() if isinstance(o, _evaluation.EvaluationContext)]
     assert contexts == [], "an EvaluationContext stays alive after the call"
+
+
+# ---------------------------------------------------------------------------
+# Held restorations during a call (FR-010)
+# ---------------------------------------------------------------------------
+
+
+@pytest.mark.parametrize("method", ["evaluate_model", "evaluate_model_gradient"])
+def test_scope_holds_at_most_one_restoration_per_fault_set(monkeypatch, method):
+    """The scope holds at most one restored batch for each fault set and batch size.
+
+    The fault sets include the fault sets of the fault frames, which the frame
+    steps restore through older faults. Per OP1 the memory is counted per actual
+    restored point, so a fault set may hold one N-point batch and one batch of
+    4N tetrahedron corners. Before the fix the scope kept every frame step batch.
+    """
+    model = build_model("cutting_faults")
+    points = sample_points("cutting_faults", 5000, seed=1)
+    largest: dict = {}
+    held = []
+    restore = _evaluation.EvaluationContext.restore
+
+    def spy(self, feature, batch, reverse=False):
+        restored = restore(self, feature, batch, reverse)
+        if feature.faults_enabled and feature.faults:
+            batch = np.asarray(batch)
+            slot = (tuple(map(id, feature.faults)), bool(reverse), batch.shape)
+            largest[slot] = max(largest.get(slot, 0), batch.nbytes)
+        held.append(sum(array.nbytes for array in self._restorations.values()))
+        return restored
+
+    monkeypatch.setattr(_evaluation.EvaluationContext, "restore", spy)
+    getattr(model, method)(points.copy())
+    # cutting_faults: the model fault set and the frame fault set of the younger
+    # fault. The frame set has N points and 4N corners for each frame step.
+    fault_sets = {slot[:2] for slot in largest}
+    assert len(fault_sets) == 2
+    assert len(largest) == 3
+    assert max(held) <= sum(largest.values())
