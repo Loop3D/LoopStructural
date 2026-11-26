@@ -6,12 +6,14 @@ start a program.
 
 from __future__ import annotations
 
+import ipaddress
 import json
 import math
 import os
 import socket
 import sys
-from dataclasses import dataclass
+import warnings
+from dataclasses import dataclass, field
 from pathlib import Path
 
 from loop_link.errors import NoViewerError, TokenError
@@ -40,7 +42,16 @@ class ViewerAddress:
 
     host: str
     port: int
-    token: str
+    token: str = field(repr=False)
+
+
+def _is_loopback(host: str) -> bool:
+    if host.lower() == "localhost":
+        return True
+    try:
+        return ipaddress.ip_address(host).is_loopback
+    except ValueError:
+        return False
 
 
 def settings_dir() -> Path:
@@ -75,13 +86,14 @@ def _file_token(settings: Path) -> str:
     return ""
 
 
-def _resolve_token(token: str | None, settings: Path) -> str:
+def _resolve_token(token: str | None, settings: Path, local: bool) -> str:
     if token:
         return token
     env_token = os.environ.get("GEOVIEWER_TOKEN")
     if env_token:
         return env_token
-    file_token = _file_token(settings)
+    # The saved token belongs to the viewer on this computer: never send it to another host.
+    file_token = _file_token(settings) if local else ""
     if file_token:
         return file_token
     raise TokenError(_TOKEN_TEXT)
@@ -100,7 +112,8 @@ def _find_port(settings: Path, host: str, timeout: float) -> int:
     live: list[tuple[tuple[bool, int], int]] = []
     folder = settings / "instances"
     try:
-        files = sorted(folder.glob("*.json"))
+        # The instance files list the ports of the viewers on this computer only.
+        files = sorted(folder.glob("*.json")) if _is_loopback(host) else []
     except OSError:
         files = []
     for path in files:
@@ -143,9 +156,12 @@ def find_viewer(
         function does not check it and does not read the instance files.
     token : str, optional
         The access token. If not given, the function reads the
-        ``GEOVIEWER_TOKEN`` environment variable, then ``link.json``.
+        ``GEOVIEWER_TOKEN`` environment variable, then ``link.json``. For a
+        host that is not loopback, it does not read ``link.json``.
     host : str
-        The host of the viewer.
+        The host of the viewer. For a host that is not loopback, the function
+        does not read the instance files and gives a warning, because the link
+        is not encrypted.
     settings : pathlib.Path, optional
         The settings folder. The default is :func:`settings_dir`.
     timeout : float
@@ -164,7 +180,14 @@ def find_viewer(
         If no viewer is running.
     """
     folder = settings if settings is not None else settings_dir()
-    resolved = _resolve_token(token, folder)
+    local = _is_loopback(host)
+    if not local:
+        warnings.warn(
+            f"The link to {host} is not encrypted: the token and the data are sent in plain text.",
+            UserWarning,
+            stacklevel=2,
+        )
+    resolved = _resolve_token(token, folder, local)
     if port is not None:
         return ViewerAddress(host=host, port=port, token=resolved)
     return ViewerAddress(host=host, port=_find_port(folder, host, timeout), token=resolved)

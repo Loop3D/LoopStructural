@@ -266,5 +266,93 @@ def test_from_file_allow_pickle_false_raises_without_loading(tmp_path):
         GeologicalModel.from_file(model_file, allow_pickle=False)
 
 
+def test_intrusions_lists_intrusion_features():
+    from LoopStructural.modelling.intrusions import IntrusionFeature
+
+    model = GeologicalModel(np.zeros(3), np.ones(3))
+    intrusion = IntrusionFeature(None, None, name="intrusion", model=model)
+    model.features.append(intrusion)
+    assert model.intrusions == [intrusion]
+
+
+def test_save_with_default_arguments(tmp_path):
+    from tests.fixtures.fault_models import OLD, add_fault, add_layers
+
+    model = GeologicalModel(np.zeros(3), np.ones(3))
+    model.nsteps = [5, 5, 5]
+    fault = add_fault(
+        model,
+        "fault",
+        OLD["center"],
+        OLD["dip"],
+        OLD["dip_azimuth"],
+        OLD["displacement"],
+        nelements=500,
+    )
+    add_layers(model, [fault], nelements=500)
+    model.stratigraphic_column.add_unit("a", thickness=0.3)
+    model.stratigraphic_column.add_unit("b", thickness=0.3)
+    model.stratigraphic_column.group_mapping["Group_0"] = "strat"
+
+    model.save(str(tmp_path / "m.pkl"))
+
+    names = {p.name for p in tmp_path.iterdir()}
+    assert "m_block_model.pkl" in names
+    # one data file per data set: the fault frame data do not overwrite each other
+    fault_data = [d.name for d in model["fault"].get_data()]
+    assert len(fault_data) > 1
+    for d in fault_data:
+        assert f"m_{d}.pkl" in names
+    for d in model["strat"].get_data():
+        assert f"m_{d.name}.pkl" in names
+
+
+def test_get_stratigraphic_surfaces_returns_only_the_requested_units():
+    data, bb = load_claudius()
+    model = GeologicalModel(bb[0, :], bb[1, :])
+    model.data = data
+    model.nsteps = [5, 5, 5]
+    model.create_and_add_foliation("strati", nelements=500)
+    for name, value in (("a", 0.0), ("b", 60.0), ("c", 250.0)):
+        model.stratigraphic_column.add_unit(name, thickness=value or 60.0)
+    model.stratigraphic_column.group_mapping["Group_0"] = "strati"
+    surfaces = model.get_stratigraphic_surfaces(units=["b"])
+    assert [s.name for s in surfaces] == ["b"]
+def test_set_stratigraphic_column_keeps_group_names():
+    """Regression test: with two groups, each unit got the name of the other group."""
+    model = GeologicalModel([0, 0, 0], [1, 1, 1])
+    with pytest.warns(DeprecationWarning):
+        model.set_stratigraphic_column(
+            {
+                "A": {"a1": {"min": 0, "max": 1}, "a2": {"min": 1, "max": 2}},
+                "B": {"b1": {"min": 0, "max": 1}},
+            }
+        )
+    column = model.stratigraphic_column
+    assert column.get_group_for_unit_name("a1").name == "A"
+    assert column.get_group_for_unit_name("b1").name == "B"
+
+
+def test_evaluate_model_returns_unit_ids():
+    """Regression test: evaluate_model gave a running counter, not unit.id."""
+    from LoopStructural.modelling.features._analytical_feature import (
+        AnalyticalGeologicalFeature,
+    )
+
+    model = GeologicalModel([0, 0, 0], [10, 10, 10])
+    column = model.stratigraphic_column
+    column.clear(basement=False)
+    for i in (1, 2, 3):
+        column.add_unit(f"u{i}", thickness=1.0, id=i)
+    column.group_mapping["Group_0"] = "strati"
+    model._add_feature(
+        AnalyticalGeologicalFeature(
+            name="strati", vector=np.array([0.0, 0.0, 1.0]), origin=np.zeros(3)
+        )
+    )
+    points = np.array([[1.0, 1.0, z] for z in (0.5, 1.5, 2.5)])
+    assert model.evaluate_model(points).tolist() == [1, 2, 3]
+
+
 if __name__ == "__main__":
     test_prepare_data_keeps_world_coordinates()

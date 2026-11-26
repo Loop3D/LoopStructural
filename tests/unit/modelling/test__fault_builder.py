@@ -137,3 +137,15 @@ def test_fault_builder_create_data_from_geometry_without_normals(interpolatortyp
 # Run the tests
 if __name__ == "__main__":
     pytest.main([__file__])
+
+
+def test_add_splay_with_the_default_region_builds():
+    from tests.fixtures.fault_models import add_fault
+
+    model = GeologicalModel(np.zeros(3), np.ones(3))
+    splay = add_fault(model, "splay", (0.5, 0.5, 0.5), 70, 100, 0.05, nelements=2000)
+    main = add_fault(model, "main", (0.4, 0.5, 0.5), 60, 90, 0.1, nelements=2000)
+    region = main.builder.add_splay(splay)
+    main.builder.update()
+    mask = region(np.random.default_rng(0).random((50, 3)))
+    assert mask.dtype == bool and mask.shape == (50,)

@@ -32,11 +32,12 @@ Python column layouts are x y z | data | weight.
   the core weight is ``dxy / 4`` (same for ``dxz`` and ``dyz``).
 * Border. ``dx dy dz`` are the same in Python and core.
 * Value. Weight is ``cpw * column 4``.
-* Gradient (direction only). Weight is ``gpw``. The weight column is NOT
-  used by Python.
+* Gradient (direction only). Weight is ``gpw * column 6``.
 * Normal (vector with length). Weight is ``npw / 3 * column 6``. When the
   data has no weight column, the column weight is 1.
-* Tangent. Weight is ``tpw``. The weight column is NOT used by Python.
+* Tangent. Weight is ``tpw * column 6``.
+* Equality (``add_equality_constraints``). A value at a support node with
+  the weight ``EQUALITY_WEIGHT``.
 * Interface. Weight is ``ipw`` (one value for all points). The pairing is
   "star": each point is paired with the first point of its id group.
 * Value inequality. Columns x y z | lower | upper. The weight is 1.
@@ -289,10 +290,10 @@ def _add_data(problem, interpolator) -> None:
         w = _weights(_weight(interpolator, "cpw"), value.shape[0]) * value[:, 4]
         _add_weighted(problem.add_value, value[:, :3], value[:, 3], w, name="value")
 
-    # gradient: weight = gpw (the weight column is not used)
+    # gradient: weight = gpw * column 6
     gradient = _rows(interpolator.get_gradient_constraints())
     if gradient.shape[0] > 0:
-        w = _weights(_weight(interpolator, "gpw"), gradient.shape[0])
+        w = _weights(_weight(interpolator, "gpw"), gradient.shape[0]) * gradient[:, 6]
         _add_weighted(
             problem.add_gradient,
             gradient[:, :3],
@@ -310,10 +311,10 @@ def _add_data(problem, interpolator) -> None:
             w = w * normal[:, 6]
         _add_weighted(problem.add_normal, normal[:, :3], normal[:, 3:6], w, name="normal")
 
-    # tangent: weight = tpw (the weight column is not used)
+    # tangent: weight = tpw * column 6
     tangent = _rows(interpolator.get_tangent_constraints())
     if tangent.shape[0] > 0:
-        w = _weights(_weight(interpolator, "tpw"), tangent.shape[0])
+        w = _weights(_weight(interpolator, "tpw"), tangent.shape[0]) * tangent[:, 6]
         _add_weighted(
             problem.add_tangent,
             tangent[:, :3],
@@ -337,6 +338,13 @@ def _add_data(problem, interpolator) -> None:
             drop_zero_norm=True,
             name=name,
         )
+
+    # equality constraints of a native setup: a value at a support node
+    equality = getattr(interpolator, "_native_equality", None)
+    if not isinstance(equality, dict):
+        equality = {}
+    for name, (points, values, w) in equality.items():
+        _add_weighted(problem.add_value, points, values, _weights(w, points.shape[0]), name=name)
 
     # interface: one weight (ipw)
     interface = _rows(interpolator.get_interface_constraints())

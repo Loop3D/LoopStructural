@@ -30,7 +30,7 @@ from LoopStructural import GeologicalModel
 from LoopStructural.modelling.features._base_geological_feature import BaseFeature
 from LoopStructural.modelling.features._geological_feature import GeologicalFeature
 from LoopStructural.modelling.features.fault import FaultSegment
-from tests.fault_evaluation.golden import assert_matches
+from tests.fault_evaluation.golden import assert_matches, legacy_model_ids
 from tests.fault_evaluation.models import build_model
 
 MODULE_NAME = "LoopStructural.modelling.features._evaluation"
@@ -194,7 +194,7 @@ def test_evaluate_model_restores_once_per_fault():
     """
     model, golden = build_model("f4_u3"), _golden("f4_u3")
     ids, counts = _counted(lambda: model.evaluate_model(golden["points"]))
-    _assert_golden("f4_u3", {"points": golden["points"], "model_ids": ids})
+    _assert_golden("f4_u3", {"points": golden["points"], "model_ids": legacy_model_ids(model, ids)})
     assert counts["fault_calls_total"] == 4
     assert counts["fault_calls_top_level"] == 4
 
@@ -232,7 +232,7 @@ def test_stopped_fault_applies_each_distinct_set_once():
     """
     model, golden = build_model("stopped_fault"), _golden("stopped_fault")
     ids, counts = _counted(lambda: model.evaluate_model(golden["points"]))
-    _assert_golden("stopped_fault", {"points": golden["points"], "model_ids": ids})
+    _assert_golden("stopped_fault", {"points": golden["points"], "model_ids": legacy_model_ids(model, ids)})
     assert counts["fault_calls_total"] == 1
     assert counts["fault_calls_top_level"] == 1
 
@@ -244,7 +244,7 @@ def test_onlap_domain_restores_the_shared_set_once():
     """
     model, golden = build_model("onlap_domain"), _golden("onlap_domain")
     ids, counts = _counted(lambda: model.evaluate_model(golden["points"]))
-    _assert_golden("onlap_domain", {"points": golden["points"], "model_ids": ids})
+    _assert_golden("onlap_domain", {"points": golden["points"], "model_ids": legacy_model_ids(model, ids)})
     assert counts["fault_calls_total"] == 1
 
 
@@ -471,7 +471,7 @@ def test_region_masks_use_the_original_points(name, monkeypatch):
     for batch in batches:
         np.testing.assert_array_equal(batch, points)
     _assert_golden(name, actual)
-    _assert_golden(name, {"points": points, "model_ids": model_ids})
+    _assert_golden(name, {"points": points, "model_ids": legacy_model_ids(model, model_ids)})
     # The restored points differ from the original points, so the check is real.
     fault_group = next(g for g in groups if g.faults)
     assert not np.allclose(_manual_restore(fault_group, points), points)
@@ -495,7 +495,7 @@ def test_child_fault_frame_batches_are_counted_separately():
     model, golden = build_model("cutting_faults"), _golden("cutting_faults")
     points = golden["points"]
     ids, counts = _counted(lambda: model.evaluate_model(points))
-    _assert_golden("cutting_faults", {"points": points, "model_ids": ids})
+    _assert_golden("cutting_faults", {"points": points, "model_ids": legacy_model_ids(model, ids)})
     assert counts["fault_calls_total"] == 22
     assert counts["fault_calls_top_level"] == 2
     assert counts["fault_calls_total"] <= 42
@@ -566,7 +566,7 @@ def test_exception_in_a_fault_application_resets_the_scope(entry, monkeypatch):
     if entry == "value":
         _assert_golden("f4_u3", {"points": points, "feature::group_3::value": result})
     else:
-        _assert_golden("f4_u3", {"points": points, "model_ids": result})
+        _assert_golden("f4_u3", {"points": points, "model_ids": legacy_model_ids(model, result)})
     assert counts["fault_calls_total"] == 4
     _assert_no_stale_scope(_group(model, 3), points, model)
 

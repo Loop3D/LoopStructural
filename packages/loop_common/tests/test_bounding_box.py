@@ -128,3 +128,53 @@ def test_structured_grid_local_coordinates_accounts_for_rotation():
     # not just the two corners obtained by projecting origin/maximum alone.
     assert np.all(grid.origin <= projected_corners.min(axis=0) + 1e-8)
     assert np.all(grid.maximum >= projected_corners.max(axis=0) - 1e-8)
+
+
+def test_support_factory_local_frame_encloses_rotated_box():
+    from loop_common.supports import SupportFactory
+
+    bbox = BoundingBox(origin=[0.0, 0.0, 0.0], maximum=[10.0, 10.0, 10.0], nsteps=[5, 5, 5])
+    angle = np.radians(45.0)
+    rotation = np.array(
+        [
+            [np.cos(angle), -np.sin(angle), 0.0],
+            [np.sin(angle), np.cos(angle), 0.0],
+            [0.0, 0.0, 1.0],
+        ]
+    )
+    bbox.set_local_transform(local_origin=[0.0, 0.0, 0.0], rotation_matrix=rotation)
+    projected_corners = bbox.project(bbox.corners)
+
+    support = SupportFactory.create_support_from_bbox("StructuredGrid", bbox, nelements=None)
+
+    assert np.all(support.origin <= projected_corners.min(axis=0) + 1e-8)
+    assert np.all(support.maximum >= projected_corners.max(axis=0) - 1e-8)
+
+
+@pytest.mark.parametrize("degrees", [0.0, 30.0])
+def test_support_factory_local_frame_keeps_world_cell_size(degrees):
+    from loop_common.supports import SupportFactory
+
+    bbox = BoundingBox(origin=[0.0, 0.0, 0.0], maximum=[10.0, 10.0, 10.0], nsteps=[5, 5, 5])
+    angle = np.radians(degrees)
+    rotation = np.array(
+        [
+            [np.cos(angle), -np.sin(angle), 0.0],
+            [np.sin(angle), np.cos(angle), 0.0],
+            [0.0, 0.0, 1.0],
+        ]
+    )
+    bbox.set_local_transform(local_origin=[0.0, 0.0, 0.0], rotation_matrix=rotation)
+    origin, maximum = bbox.local_enclosure()
+
+    support = SupportFactory.create_support_from_bbox("TetMesh", bbox, nelements=None)
+
+    # The world cell is 2 on each axis; the rotated enclosure gets more cells, not longer ones.
+    np.testing.assert_array_equal(support.nsteps_cells, np.ceil((maximum - origin) / 2.0 - 1e-9))
+    assert np.all(support.step_vector <= 2.0 + 1e-12)
+    assert np.all(support.step_vector > 2.0 * (support.nsteps_cells - 1) / support.nsteps_cells)
+    if degrees == 0.0:
+        np.testing.assert_array_equal(support.nsteps_cells, [5, 5, 5])
+        np.testing.assert_array_equal(support.step_vector, bbox.step_vector)
+    else:
+        np.testing.assert_array_equal(support.nsteps_cells, [7, 7, 5])

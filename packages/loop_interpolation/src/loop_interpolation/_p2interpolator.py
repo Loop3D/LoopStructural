@@ -100,7 +100,7 @@ class P2Interpolator(DiscreteInterpolator):
         self.add_norm_constraints(self.interpolation_weights["npw"])
         self.add_value_constraints(self.interpolation_weights["cpw"])
         self.add_tangent_constraints(self.interpolation_weights["tpw"])
-        # self.add_interface_constraints(self.interpolation_weights["ipw"])
+        self._warn_ignored_data(("interface", "inequality", "inequality_pairs"))
         return self.finalize_setup_diagnostics_report()
 
     def copy(self):
@@ -113,23 +113,6 @@ class P2Interpolator(DiscreteInterpolator):
             A new empty interpolator that shares the support and the bounding box.
         """
         return self._inherit_frame(P2Interpolator(self.support))
-
-    def add_gradient_constraints(self, w: float = 1.0):
-        points = self.get_gradient_constraints()
-        if points.shape[0] > 0:
-            grad, elements, inside = self.support.evaluate_shape_derivatives(
-                points[:, : self.dimensions]
-            )
-            # element size cancels in the row normalisation, w is applied after it
-            wt = np.full(int(np.sum(inside)), float(w))
-            A = np.einsum(
-                "ikj,ij->ik",
-                grad[inside, :],
-                points[inside, self.dimensions : self.dimensions * 2],
-            )
-            B = np.zeros(A.shape[0])
-            elements = self.support.elements[elements[inside]]
-            self.add_constraints_to_least_squares(A, B, elements, w=wt, name="gradient")
 
     def add_gradient_orthogonal_constraints(
         self,
@@ -171,7 +154,7 @@ class P2Interpolator(DiscreteInterpolator):
             grad, elements, inside = self.support.evaluate_shape_derivatives(
                 points[:, : self.dimensions]
             )
-            wt = np.full(int(np.sum(inside)), float(w))
+            wt = w * points[inside, self.dimensions * 2]
             elements = np.tile(self.support.elements[elements[inside]], (self.dimensions, 1, 1))
             elements = elements.swapaxes(0, 1)
             self.add_constraints_to_least_squares(
@@ -186,10 +169,7 @@ class P2Interpolator(DiscreteInterpolator):
         points = self.get_value_constraints()
         if points.shape[0] > 0:
             N, elements, mask = self.support.evaluate_shape(points[:, : self.dimensions])
-            # mask = elements > 0
-            size = self.support.element_size[elements[mask]]
-            wt = np.ones(size.shape[0])
-            wt *= w
+            wt = w * points[mask, self.dimensions + 1]
             self.add_constraints_to_least_squares(
                 N[mask, :],
                 points[mask, self.dimensions],

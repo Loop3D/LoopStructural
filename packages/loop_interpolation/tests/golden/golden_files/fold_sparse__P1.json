@@ -52,7 +52,7 @@
  "metrics": {
   "angle_max": 63.71962891191211,
   "angle_median": 39.89865888624575,
-  "angle_p90": 61.061233254910015,
+  "angle_p90": 61.06123325491003,
   "data_normal_angle_max": 1.5292416061637002,
   "data_value_rms": 2.4699668150190985e-05,
   "flipped_fraction": 0.0,

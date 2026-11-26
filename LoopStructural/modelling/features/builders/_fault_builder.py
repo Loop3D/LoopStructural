@@ -738,9 +738,7 @@ class FaultBuilder(StructuralFrameBuilder):
         if splay_region is None:
 
             def default_splay_region(xyz):
-                pts = (
-                    self.builders[0].data["X", "Y", "Z", "val"].to_numpy()
-                )  # get_value_constraints()
+                pts = self.builders[0].data[["X", "Y", "Z", "val"]].to_numpy()
                 pts = pts[pts[:, 3] == 0, :]
                 ext_field = splay[2].evaluate_value(pts[:, :3])
                 surf_field = splay[0].evaluate_value(pts[:, :3])
@@ -758,6 +756,7 @@ class FaultBuilder(StructuralFrameBuilder):
                     logger.warning(
                         f"Not adding splay, cannot identify splay overlap region for {self.name} and {splay.name}"
                     )
+                    return mask
                     return mask
 
             splay_region = default_splay_region

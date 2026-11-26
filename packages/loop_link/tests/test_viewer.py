@@ -625,3 +625,35 @@ def test_send_after_heartbeat_failure_reconnects(fake_viewer: Any, viewer_factor
     viewer.send(small_points(), id="after")
     assert viewer.connected
     assert viewer.flush() == []
+
+
+def test_send_after_interrupted_send_reconnects(
+    fake_viewer: Any, viewer_factory: FACTORY, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """A Ctrl-C in the middle of a frame closes the client, so the next send opens a new one."""
+    viewer = viewer_factory()
+    viewer.connect()
+    first = viewer._client
+    real = first._sock
+
+    class Interrupted:
+        # The second sendall of a frame is the body: stop there, after the head went out.
+        calls = 0
+
+        def __getattr__(self, name: str) -> Any:
+            return getattr(real, name)
+
+        def sendall(self, data: bytes) -> None:
+            Interrupted.calls += 1
+            if Interrupted.calls == 2:
+                raise KeyboardInterrupt
+            real.sendall(data)
+
+    monkeypatch.setattr(first, "_sock", Interrupted())
+    with pytest.raises(KeyboardInterrupt):
+        viewer.send(small_points(), id="before")
+    assert not viewer.connected
+    viewer.send(small_points(), id="after")
+    assert viewer._client is not first
+    assert viewer.connected
+    assert viewer.flush() == []

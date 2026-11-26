@@ -20,7 +20,8 @@ def test_empty_outside_and_nan_value_queries_keep_legacy_results():
     np.testing.assert_array_equal(feature.evaluate_value(np.empty((0, 3))), np.empty(0))
     values = feature.evaluate_value(np.vstack((outside, [np.nan, 250.0, -250.0])))
     assert values.shape == (2,)
-    np.testing.assert_allclose(values, [np.nan, 0.0], rtol=0.0, atol=0.0, equal_nan=True)
+    # A point with a NaN coordinate gives NaN since master #413 (it gave 0 before).
+    np.testing.assert_allclose(values, [np.nan, np.nan], rtol=0.0, atol=0.0, equal_nan=True)
 
 
 def test_ignore_regions_bypasses_only_the_region_mask():

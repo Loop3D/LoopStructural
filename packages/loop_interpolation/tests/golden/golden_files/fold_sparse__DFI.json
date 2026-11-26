@@ -48,8 +48,8 @@
   },
   "fold orientation": {
    "A_fro": 156.7322557739791,
-   "A_rowmoment": -2.0979769033147022e-09,
-   "A_sum": -5.598160823794274e-13,
+   "A_rowmoment": -8.912479643186089e-10,
+   "A_sum": -5.870165464827437e-13,
    "WA_fro": 1567.322557739791,
    "b_norm": 0.0,
    "b_sum": 0.0,
@@ -78,8 +78,8 @@
   },
   "fold regularisation 2": {
    "A_fro": 156.41759486642567,
-   "A_rowmoment": -9.113136911764741e-10,
-   "A_sum": 1.9484414082171497e-13,
+   "A_rowmoment": -1.025910023599863e-09,
+   "A_sum": 1.6359136267851682e-13,
    "WA_fro": 1.5641759486642568,
    "b_norm": 0.0,
    "b_sum": 0.0,
@@ -140,15 +140,15 @@
  "dof": 5832,
  "engine": "DFI",
  "metrics": {
-  "angle_max": 16.09179039973764,
-  "angle_median": 2.4599700200430394,
+  "angle_max": 16.091790399738144,
+  "angle_median": 2.459970020043632,
   "angle_p90": 10.362774495778687,
-  "data_normal_angle_max": 7.772696499624479,
-  "data_value_rms": 1.2257794538813684e-05,
+  "data_normal_angle_max": 7.7726964996243835,
+  "data_value_rms": 1.2257794538628517e-05,
   "flipped_fraction": 0.0,
-  "grad_norm_ratio_median": 0.5387235948762048,
+  "grad_norm_ratio_median": 0.538723594876275,
   "nan_fraction": 0.0,
-  "value_max": 0.22203421827165537,
-  "value_rms": 0.11191966434086847
+  "value_max": 0.22203421827228953,
+  "value_rms": 0.11191966434078293
  }
 }

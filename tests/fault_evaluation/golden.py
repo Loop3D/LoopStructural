@@ -117,6 +117,27 @@ def _surface_sample_capture(feature: Any, points: np.ndarray):
     return patch.object(feature, "evaluate_value", record), recorded
 
 
+def legacy_model_ids(model: Any, ids: np.ndarray) -> np.ndarray:
+    """Give ``evaluate_model`` ids in the numbering of the golden references.
+
+    The references were made when ``evaluate_model`` numbered the units 0, 1,
+    2, ... in the order of the reversed groups and their units, and counted
+    only groups that the model has. Since master #412 it returns
+    ``StratigraphicUnit.id``. The units of each point are the same; only the
+    numbers are different. -1 (no unit) does not change.
+    """
+    ids = np.asarray(ids)
+    legacy = ids.copy()
+    s_id = 0
+    for group in reversed(model.stratigraphic_column.get_groups()):
+        if model.feature_name_index.get(group.name, -1) < 0:
+            continue
+        for unit in group.units:
+            legacy[ids == unit.id] = s_id
+            s_id += 1
+    return legacy
+
+
 def capture(model: Any, points: np.ndarray) -> dict[str, np.ndarray]:
     """Capture flat numeric model, feature, restoration and surface outputs."""
     points = np.asarray(points, dtype=float)
@@ -124,7 +145,7 @@ def capture(model: Any, points: np.ndarray) -> dict[str, np.ndarray]:
         raise ValueError("points must have shape (N, 3)")
     result: dict[str, np.ndarray] = {"points": points.copy()}
     ids = model.evaluate_model(points.copy())
-    result["model_ids"] = np.asarray(ids)
+    result["model_ids"] = legacy_model_ids(model, ids)
     coordinates = _coordinates(model)
     for feature in coordinates:
         if not callable(getattr(feature, "evaluate_value", None)):

@@ -135,7 +135,7 @@ class FaultTopology(Observable['FaultTopology']):
         units_group_pairs = self.stratigraphic_column.get_group_unit_pairs() 
         matrix = np.zeros((len(self.faults), len(units_group_pairs)), dtype=int)
         for i, fault in enumerate(self.faults):
-            for j, (unit_name, _group) in enumerate(units_group_pairs):
+            for j, (_group, unit_name) in enumerate(units_group_pairs):
                 if (unit_name, fault) in self.stratigraphy_fault_relationships:
                     matrix[i, j] = 1
 

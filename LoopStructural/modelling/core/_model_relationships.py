@@ -323,7 +323,6 @@ class FeatureRelationshipManager:
         unconformity_feature : GeologicalFeature
             the created unconformity
         """
-        feature.regions = []
         uc_feature = UnconformityFeature(feature, value, False, onlap=True)
         feature.add_region(uc_feature.inverse())
         for f in reversed(model.features):

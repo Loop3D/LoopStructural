@@ -78,10 +78,6 @@ class ValuePoints:
 
             with open(filename, "wb") as f:
                 pickle.dump(self, f)
-        elif ext == "vs":
-            from LoopStructural.export.gocad import _write_pointset
-
-            _write_pointset(self, filename)
         elif ext == "csv":
             import pandas as pd
 
@@ -215,10 +211,6 @@ class VectorPoints:
 
             with open(filename, "wb") as f:
                 pickle.dump(self, f)
-        elif ext == "vs":
-            from LoopStructural.export.gocad import _write_pointset
-
-            _write_pointset(self, filename)
         elif ext == "csv":
             import pandas as pd
 

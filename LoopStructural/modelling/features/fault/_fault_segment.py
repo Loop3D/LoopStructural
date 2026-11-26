@@ -250,9 +250,6 @@ class FaultSegment(StructuralFrame):
         )
         return force_side(v, block_side(block, self.name))
 
-    def ellipsoid(self):
-        pass
-
     def mean(self):
         return self.__getitem__(0).mean()
 
@@ -433,8 +430,8 @@ class FaultSegment(StructuralFrame):
                 v = support._values_from_coefficients(
                     idc, inside, coefs, np.asarray(interpolators[i].c)
                 )
-                # The interpolator gives 0 for points that are not finite.
-                v[nan_rows] = 0.0
+                # The interpolator gives NaN for points that are not finite (#413).
+                v[nan_rows] = np.nan
                 v[~mask] = np.nan
                 values[i] = v
         if precomputed_gx is not None:
@@ -442,6 +439,8 @@ class FaultSegment(StructuralFrame):
         if not need_gradient:
             return tuple(values)
         gradient = support._evaluate_gradient_from_lookup(lookup, interpolators[1].c)
+        # The interpolator gives a NaN gradient for points that are not finite (#413).
+        gradient[np.any(np.isnan(np.asarray(local)), axis=1)] = np.nan
         gradient = interpolators[1]._reproject_vectors(gradient)
         return (*values, gradient)
 
@@ -511,15 +510,10 @@ class FaultSegment(StructuralFrame):
         d = np.zeros(gx.shape)
         mask = np.logical_and(~np.isnan(forced), ~np.isnan(gy))
         mask = np.logical_and(mask, ~np.isnan(gz))
-        d[~mask] = 0
-        gx_mask = np.zeros_like(mask, dtype=bool)
-        gx_mask[mask] = forced[mask] > 0
-        d[gx_mask] = 1.0
-        if self.faultfunction is not None:
-            d[mask] = block_displacement(
-                self.faultfunction, gx[mask] + offset, forced[mask] + offset, gy[mask], gz[mask],
-                side,
-            )
+        d[mask] = block_displacement(
+            self.faultfunction, gx[mask] + offset, forced[mask] + offset, gy[mask], gz[mask],
+            side,
+        )
         return d
 
     def evaluate_displacement(self, points, *, block=None):

@@ -16,6 +16,12 @@ The package needs a token. It reads the `GEOVIEWER_TOKEN` environment
 variable. If this variable is not set, it uses the token that the viewer
 saved.
 
+The link is not encrypted. For a host that is not on this computer
+(`Viewer(host=...)` with an address that is not loopback), the package does
+not use the saved token and does not read the instance files of the local
+viewer. Give the token with `token=` or `GEOVIEWER_TOKEN`. The package gives
+a warning, because the token and the data go over the network as plain text.
+
 ## Example
 
 ```python
