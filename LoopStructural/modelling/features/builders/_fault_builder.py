@@ -292,7 +292,9 @@ class FaultBuilder(StructuralFrameBuilder):
         fault_dip_anisotropy : float, default=1.0
             Anisotropy factor for the fault dip.
         fault_pitch : float, optional
-            Pitch angle of the fault.
+            Angle in degrees, in the fault plane, of the slip vector from the strike
+            direction (down_dip x normal). 90 gives the down-dip slip vector, which
+            with a positive displacement is a reverse fault.
         """
         # Suspend automatic rebuilds while we populate internal attributes to avoid recursion
         self._fault_buffer = fault_buffer
@@ -372,10 +374,15 @@ class FaultBuilder(StructuralFrameBuilder):
                 fault_normal_vector = np.array(fault_normal_vector)
 
             if fault_pitch is not None:
-                rotation_matrix = rotation(fault_normal_vector[None, :], np.array([fault_pitch]))
-                fault_slip_vector = np.einsum(
-                    "ijk,ik->ij", rotation_matrix, fault_normal_vector[None, :]
-                )[0]
+                # Pitch is the angle in the fault plane from strike; 90 is down-dip.
+                normal = fault_normal_vector / np.linalg.norm(fault_normal_vector)
+                down_dip = np.array([0.0, 0.0, -1.0]) + normal[2] * normal
+                if np.linalg.norm(down_dip) < 1e-12:
+                    raise ValueError("fault_pitch needs a fault plane that is not horizontal")
+                down_dip /= np.linalg.norm(down_dip)
+                strike = np.cross(down_dip, normal)
+                rotation_matrix = rotation(normal[None, :], np.array([fault_pitch]))
+                fault_slip_vector = np.einsum("ijk,ik->ij", rotation_matrix, strike[None, :])[0]
 
             if fault_slip_vector is None:
                 if (

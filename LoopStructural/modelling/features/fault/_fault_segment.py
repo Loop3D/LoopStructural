@@ -70,15 +70,12 @@ class FaultSegment(StructuralFrame):
 
     @faultfunction.setter
     def faultfunction(self, value):
-        if callable(value):
-            self._faultfunction = value
-        if issubclass(FaultDisplacement, type(value)):
-            self._faultfunction = value
-
-        elif isinstance(value, str) and value == "BaseFault":
+        if isinstance(value, str) and value == "BaseFault":
             self._faultfunction = BaseFault().fault_displacement
         elif isinstance(value, str) and value == "BaseFault3D":
             self._faultfunction = BaseFault3D().fault_displacement
+        elif callable(value):
+            self._faultfunction = value
         else:
             raise ValueError("Fault function must be a function or BaseFault")
 

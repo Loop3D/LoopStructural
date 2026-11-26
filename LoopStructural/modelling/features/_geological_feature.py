@@ -268,31 +268,38 @@ class GeologicalFeature(BaseFeature):
             # generate a regular tetrahedron for each point
             # we will then move these points by the fault and then recalculate the gradient.
             # this should work...
-            resolved = False
             tetrahedron = regular_tetraherdron_for_points(pos, element_scale_parameter)
             # A fault that the block names has no jump, so a tetrahedron may cross it.
             jumping = [f for f in faults if not block or f.name not in block]
 
-            while not resolved:
-                resolved = True
+            def straddles(tet):
+                out = np.zeros(tet.shape[0], dtype=bool)
                 for f in jumping:
                     # Each refinement makes a new corner batch: a probe, not a caller batch.
                     with probe_points():
                         side = (
                             f[0]
                             .evaluate_value(
-                                tetrahedron.reshape(-1, 3), fillnan='nearest', **block_kwargs(block)
+                                tet.reshape(-1, 3), fillnan='nearest', **block_kwargs(block)
                             )
-                            .reshape(tetrahedron.shape[0], 4)
+                            .reshape(tet.shape[0], 4)
                         )
-                    flag = np.logical_or(np.all(side > 0, axis=1), np.all(side < 0, axis=1))
-                    if np.any(~flag):
-                        logger.warning(
-                            f"Points are too close to fault {f[0].name}. Refining the tetrahedron"
-                        )
-                        element_scale_parameter *= 0.5
-                        tetrahedron = regular_tetraherdron_for_points(pos, element_scale_parameter)
-                        resolved = False
+                    out |= ~np.logical_or(np.all(side > 0, axis=1), np.all(side < 0, axis=1))
+                return out
+
+            # Make smaller only the tetrahedra that cross a fault, at most 10 times.
+            straddle = straddles(tetrahedron)
+            for _ in range(10):
+                if not np.any(straddle):
+                    break
+                logger.warning(
+                    f"{np.sum(straddle)} points are too close to a fault. Refining the tetrahedron"
+                )
+                element_scale_parameter *= 0.5
+                tetrahedron[straddle] = regular_tetraherdron_for_points(
+                    pos[straddle], element_scale_parameter
+                )
+                straddle[straddle] = straddles(tetrahedron[straddle])
 
             tetrahedron_faulted = self._restore_points(
                 np.array(tetrahedron.reshape(-1, 3)), block=block, restored_through=restored_through
@@ -301,7 +308,9 @@ class GeologicalFeature(BaseFeature):
             values = self.interpolator.evaluate_value(tetrahedron_faulted.reshape(-1, 3)).reshape(
                 (-1, 4)
             )
-            v[mask, :] = gradient_from_tetrahedron(tetrahedron[mask, :, :], values[mask])
+            # A point on a fault has no single gradient (the field jumps there), so it stays NaN.
+            ok = np.logical_and(mask, ~straddle)
+            v[ok, :] = gradient_from_tetrahedron(tetrahedron[ok, :, :], values[ok])
 
             return v
         pos = self._restore_points(pos, block=block, restored_through=restored_through)
