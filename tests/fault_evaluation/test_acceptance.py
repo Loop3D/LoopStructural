@@ -638,13 +638,42 @@ def test_sc_006_row_reports_worst_ratio_failing_cases_and_compared_count():
 
 
 def test_candidate_without_memory_value_is_not_a_failure():
-    """A candidate case that the memory pass did not run (None) does not fail SC-006."""
+    """A candidate case that the memory pass did not run (None) does not fail SC-006.
+
+    The standard suite measures memory only at 5,000 points, so the 20,000-point
+    case is outside its memory pass.
+    """
     check_acceptance = _check_acceptance()
     base, new = _compliant_pair()
+    new["suite"] = "standard"
     _set(new, SINGLE_F1U0, peak_extra_rss_bytes=None)
     result = check_acceptance(base, new)
     assert result["criteria"]["SC-006"]["passed"] is True
     assert result["passed"] is True
+
+
+def test_sc_006_fails_when_the_candidate_has_no_memory_value():
+    """SC-006 fails when the memory pass gave no value, so no case is compared."""
+    check_acceptance = _check_acceptance()
+    base, new = _compliant_pair()
+    for case in new["cases"]:
+        case["peak_extra_rss_bytes"] = None
+    row = check_acceptance(base, new)["criteria"]["SC-006"]
+    assert row["compared_cases"] == 0
+    assert row["passed"] is False
+
+
+def test_sc_006_fails_a_memory_pass_case_without_a_candidate_value():
+    """A case of the memory pass with no candidate value fails SC-006 with the pass name."""
+    check_acceptance = _check_acceptance()
+    base, new = _compliant_pair()
+    new["suite"] = "standard"
+    _set(new, OLD_F4U3, peak_extra_rss_bytes=None)
+    row = check_acceptance(base, new)["criteria"]["SC-006"]
+    assert row["passed"] is False
+    assert OLD_F4U3 in row["reason"]
+    assert "rss" in row["reason"]
+    assert row["compared_cases"] == 4
 
 
 @pytest.mark.parametrize(

@@ -212,12 +212,16 @@ def _sc004(new: dict[str, dict[str, Any]]) -> dict[str, Any]:
     return _row(ratio <= limit + _TOLERANCE, ratio, limit, f"ratio {ratio:.4f} is above {limit}")
 
 
-def _sc006(base: dict[str, dict[str, Any]], new: dict[str, dict[str, Any]]) -> dict[str, Any]:
+def _sc006(
+    base: dict[str, dict[str, Any]], new: dict[str, dict[str, Any]], suite: str
+) -> dict[str, Any]:
     """SC-006: the peak extra memory of a case is within the ratio limit or the allowance.
 
     A case passes when its memory is at most 120 % of the baseline, or at most
-    ``MEMORY_ALLOWANCE_BYTES`` above it. Only a case with a memory value in both documents is compared. The row value is
-    the worst new/base ratio.
+    ``MEMORY_ALLOWANCE_BYTES`` above it. Only a case with a memory value in both
+    documents is compared. A case of the memory pass of ``suite`` with a baseline
+    value but no candidate value fails, and so does a row with no compared case.
+    The row value is the worst new/base ratio.
     """
     limit = 1.20
     worst = 0.0
@@ -228,13 +232,19 @@ def _sc006(base: dict[str, dict[str, Any]], new: dict[str, dict[str, Any]]) -> d
             continue
         base_rss = base_case["peak_extra_rss_bytes"]
         new_rss = new[case_id]["peak_extra_rss_bytes"]
-        if base_rss is None or new_rss is None:
+        if base_rss is None:
+            continue
+        if new_rss is None:
+            if run.pass_cases([new[case_id]], "rss", suite):
+                problems.append(_unmeasured(new, case_id, "peak_extra_rss_bytes"))
             continue
         compared += 1
         if base_rss > 0:
             worst = max(worst, new_rss / base_rss)
         if new_rss > limit * base_rss + _TOLERANCE and new_rss - base_rss > MEMORY_ALLOWANCE_BYTES:
             problems.append(f"case {case_id!r} memory {base_rss} bytes to {new_rss} bytes")
+    if not compared:
+        problems.append("no case has a memory value in both results")
     row = _row(not problems, worst, limit, "; ".join(problems))
     row["compared_cases"] = compared
     return row
@@ -346,7 +356,8 @@ def check_acceptance(base: dict[str, Any], new: dict[str, Any]) -> dict[str, Any
         "SC-003": _time_ratio_row(base_cases, new_cases, ALL_F4U3, 0.15, 4, IDS_F4U3),
         "SC-004": _sc004(new_cases),
         "SC-005": _time_ratio_row(base_cases, new_cases, PLUGIN_OLD, 0.50, 6),
-        "SC-006": _sc006(base_cases, new_cases),
+        # A result without a suite name is from before D9, when every run was full.
+        "SC-006": _sc006(base_cases, new_cases, new.get("suite", "full")),
         "SC-007": noise,
         "SC-008": _sc008(new),
         "SC-009": _sc009(base_cases, new_cases),
