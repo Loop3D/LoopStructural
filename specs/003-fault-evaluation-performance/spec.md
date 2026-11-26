@@ -404,7 +404,8 @@ the golden tests.
   code differ by less than 10 % in each case. The comparison report uses this
   value as the noise limit. The limit covers the cases with a baseline time of
   1 s or more. A shorter case uses more rounds, and the report shows its
-  noise, but the case does not fail this criterion.
+  noise, but the case does not fail this criterion. A case with a median
+  from 1 s up to 5 s uses the median of 3 rounds (C-022).
 - **SC-008**: One run of the standard suite, with all its passes, takes less
   than 15 minutes on the computer in `research.md`, on the code after this
   feature (C-014).
@@ -626,3 +627,11 @@ failed acceptance run T030 (`t030-diagnosis.md`, `profile-d4a.md`).
   fault_0 is now restored before fault_1; its 5 changed outputs were captured
   again from master with #424, #425 and #427 (same evidence). The fault frame of
   fault_1 then makes no nested restoration (2 fault calls instead of 22).
+- **C-022 Noise of one-round cases (2026-11-27).** The final T030 run on Linux
+  passed every criterion except SC-007, twice, on a different case each time
+  (noise 1.158, then 1.121; limit 1.10). The runner timed a case of 1 s or
+  more only once, and one sample of a 1 to 5 s call varies by about 10 % on
+  the T030 computer. How is SC-007 resolved?
+  **Answer**: a timing case with a median from 1 s up to 5 s uses the median
+  of 3 rounds. The limit of SC-007 does not change. The baseline and the
+  candidate are measured again with this rule.

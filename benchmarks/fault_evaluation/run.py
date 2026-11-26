@@ -28,6 +28,11 @@ SCHEMA_VERSION = 1
 # A timing case with a median below this limit (seconds) runs again with more rounds.
 SHORT_CASE_SECONDS = 1.0
 SHORT_CASE_ROUNDS = 5
+# A timing case with a median from SHORT_CASE_SECONDS up to this limit runs again with
+# MEDIUM_CASE_ROUNDS rounds: one sample of a 1 to 5 s call varies by about 10 %, the
+# SC-007 noise limit (spec 003 C-022).
+MEDIUM_CASE_SECONDS = 5.0
+MEDIUM_CASE_ROUNDS = 3
 ROOT = Path(__file__).parents[2]
 SUITE = Path(__file__).with_name("bench_cases.py")
 PASS_KINDS = ("timing", "counters", "rss")
@@ -449,20 +454,25 @@ def _run_fresh_process_pass(
     if pass_kind == "timing":
         # Choose from all lines of the checkpoint file, also those of an earlier launch.
         # The stored rounds stop a second repeat after a resume.
-        short = [
-            case
-            for case in cases
-            if case["case_id"] in entries
-            and entries[case["case_id"]]["stats"]["median"] < SHORT_CASE_SECONDS
-            and int(entries[case["case_id"]]["stats"]["rounds"]) < SHORT_CASE_ROUNDS
-        ]
-        if short:
+        for low, high, tier_rounds, label in (
+            (0.0, SHORT_CASE_SECONDS, SHORT_CASE_ROUNDS, "short"),
+            (SHORT_CASE_SECONDS, MEDIUM_CASE_SECONDS, MEDIUM_CASE_ROUNDS, "medium"),
+        ):
+            repeat = [
+                case
+                for case in cases
+                if case["case_id"] in entries
+                and low <= entries[case["case_id"]]["stats"]["median"] < high
+                and int(entries[case["case_id"]]["stats"]["rounds"]) < tier_rounds
+            ]
+            if not repeat:
+                continue
             print(
-                f"[{pass_kind}] repeat: {len(short)} short cases with {SHORT_CASE_ROUNDS} rounds",
+                f"[{pass_kind}] repeat: {len(repeat)} {label} cases with {tier_rounds} rounds",
                 file=sys.stderr,
                 flush=True,
             )
-            launch(short, SHORT_CASE_ROUNDS)
+            launch(repeat, tier_rounds)
             # The last line of a case replaces the earlier one.
             entries.update(_read_checkpoint(checkpoint_path))
     missing = [case["case_id"] for case in cases if case["case_id"] not in entries]
