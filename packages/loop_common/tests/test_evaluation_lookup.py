@@ -12,6 +12,8 @@ Corner indexes and the inside mask are integer and boolean data and must be
 exactly equal.
 """
 
+import copy
+
 import numpy as np
 import pytest
 from loop_common.geometry import StructuredGrid3DGeometry
@@ -474,3 +476,23 @@ def test_rectilinear_grid_uses_the_master_path():
         np.array([0.0, 1.0, 3.0]), np.array([0.0, 2.0, 3.0]), np.array([0.0, 1.0, 5.0])
     )
     assert grid._has_uniform_lookup() is False
+
+
+def test_subclass_with_own_corner_weights_uses_the_master_path(grid, pts):
+    # The fast path uses trilinear. A subclass that changes only the corner
+    # weights must keep its own weights.
+    class HalfWeights(type(grid)):
+        def position_to_dof_coefs(self, pos):
+            return 0.5 * super().position_to_dof_coefs(pos)
+
+    half = copy.copy(grid)
+    half.__class__ = HalfWeights
+    assert half._has_uniform_lookup() is False
+    property_array = np.arange(int(grid.n_nodes), dtype=float)
+    np.testing.assert_allclose(
+        half.evaluate_value(pts, property_array),
+        0.5 * grid.evaluate_value(pts, property_array),
+        rtol=RTOL,
+        atol=ATOL,
+        equal_nan=True,
+    )

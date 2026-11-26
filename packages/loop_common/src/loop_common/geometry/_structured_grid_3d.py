@@ -494,17 +494,19 @@ class StructuredGrid3DGeometry:
     def _has_uniform_lookup(self) -> bool:
         """Check that the cell geometry is the uniform geometry of this class.
 
-        A subclass that changes the cell index, the local coordinates or the
-        cell corners cannot use _lookup_points.
+        A subclass that changes the cell index, the local coordinates, the
+        cell corners or the corner weights cannot use _lookup_points and
+        trilinear.
 
         Returns
         -------
         bool
-            True when the three methods are not overridden.
+            True when the four methods are not overridden.
         """
         cls = type(self)
         return (
             cls.position_to_cell_index is StructuredGrid3DGeometry.position_to_cell_index
+            and cls.position_to_dof_coefs is StructuredGrid3DGeometry.position_to_dof_coefs
             and cls.position_to_local_coordinates
             is StructuredGrid3DGeometry.position_to_local_coordinates
             and cls.position_to_cell_corners is StructuredGrid3DGeometry.position_to_cell_corners
@@ -575,27 +577,3 @@ class StructuredGrid3DGeometry:
         result = np.full((idc.shape[0],) + property_array.shape[1:], np.nan)
         result[inside] = np.einsum("nc,nc...->n...", coefs, property_array[idc[inside, :]])
         return result
-
-    def _evaluate_value_from_lookup(
-        self, lookup: tuple[np.ndarray, np.ndarray, np.ndarray], property_array: np.ndarray
-    ) -> np.ndarray:
-        """Get the values from the result of _lookup_points.
-
-        The result is the same as the result of evaluate_value for the
-        points of the lookup. The cell search is not repeated.
-
-        Parameters
-        ----------
-        lookup : tuple[np.ndarray, np.ndarray, np.ndarray]
-            result of _lookup_points
-        property_array : np.ndarray
-            node values, shape ``(n_nodes,)`` or ``(n_nodes, k)``
-
-        Returns
-        -------
-        np.ndarray
-            values, NaN for the points that are outside
-        """
-        idc, inside, local_coords = lookup
-        coefs = self.trilinear(local_coords[inside, :])
-        return self._values_from_coefficients(idc, inside, coefs, np.asarray(property_array))
