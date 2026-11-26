@@ -7,9 +7,9 @@ Usage::
 
 ``check_acceptance`` compares a baseline result with a candidate result. It
 reports one row for each target. A failed target fails the whole result. It is
-never a warning. The candidate holds three more inputs: ``repeat`` (a second
-full result, for SC-007), ``suite_wall_seconds`` (for SC-008) and
-``gradient_decision`` (the OP1 rule).
+never a warning. The candidate holds two more inputs: ``repeat`` (a second
+full result, for SC-007) and ``suite_wall_seconds`` (for SC-008). The OP1 batch
+rule is in the spec (C-018) and the FR-008 tests check it, so it is not an input.
 
 ``--memory-points`` is a local mode for the large-memory check (FR-010). It runs
 each mode in a fresh subprocess. Do not run it in pytest or in CI.
@@ -31,7 +31,6 @@ from benchmarks.fault_evaluation import run
 from benchmarks.fault_evaluation.run import cold_view
 
 SCHEMA_VERSION = 1
-GRADIENT_RULE = "op1-one-restoration-per-fault-set-and-point-batch"
 SHORT_CASE_SECONDS = 1.0
 NOISE_LIMIT = 1.10
 SUITE_WALL_LIMIT_SECONDS = 900.0
@@ -335,9 +334,9 @@ def _sc009(base: dict[str, dict[str, Any]], new: dict[str, dict[str, Any]]) -> d
 def check_acceptance(base: dict[str, Any], new: dict[str, Any]) -> dict[str, Any]:
     """Check SC-002 to SC-009 for a baseline and a candidate result.
 
-    A baseline with warm ids goes through ``run.cold_view`` first. For a standard candidate, ``run.standard_view`` then removes the base cases that the standard suite does not have. The candidate holds ``repeat``, ``suite_wall_seconds`` and ``gradient_decision``.
-    The result is passed only if the case check, the provenance check, the
-    gradient decision and every criterion pass.
+    A baseline with warm ids goes through ``run.cold_view`` first. For a standard candidate, ``run.standard_view`` then removes the base cases that the standard suite does not have. The candidate holds ``repeat`` and ``suite_wall_seconds``.
+    The result is passed only if the case check, the provenance check and every
+    criterion pass.
     """
     base = cold_view(base)
     if new.get("suite") == "standard":
@@ -347,12 +346,6 @@ def check_acceptance(base: dict[str, Any], new: dict[str, Any]) -> dict[str, Any
     new_cases, new_duplicates = _index(new)
     cases = _check_cases(base_cases, new_cases, base_duplicates, new_duplicates)
     provenance = _check_provenance(base, new, base_cases, new_cases)
-    decision = new.get("gradient_decision")
-    gradient = {
-        "passed": decision == GRADIENT_RULE,
-        "expected": GRADIENT_RULE,
-        "value": decision,
-    }
     noise, short_cases = _check_noise(base_cases, new_cases, new.get("repeat"))
     criteria = {
         "SC-002": _time_ratio_row(base_cases, new_cases, OLD_F4U3, 0.40, 4),
@@ -368,7 +361,6 @@ def check_acceptance(base: dict[str, Any], new: dict[str, Any]) -> dict[str, Any
     passed = (
         cases["passed"]
         and provenance["passed"]
-        and gradient["passed"]
         and all(row["passed"] for row in criteria.values())
     )
     return {
@@ -376,7 +368,6 @@ def check_acceptance(base: dict[str, Any], new: dict[str, Any]) -> dict[str, Any
         "criteria": criteria,
         "cases": cases,
         "provenance": provenance,
-        "gradient_decision": gradient,
         "short_cases": short_cases,
     }
 

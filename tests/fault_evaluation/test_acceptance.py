@@ -13,7 +13,6 @@ import importlib
 import pytest
 
 ACCEPTANCE_MODULE = "benchmarks.fault_evaluation.acceptance"
-GRADIENT_RULE = "op1-one-restoration-per-fault-set-and-point-batch"
 CRITERIA = (
     "SC-002",
     "SC-003",
@@ -155,7 +154,6 @@ def _compliant_pair() -> tuple[dict, dict]:
         row["time_samples_seconds"] = [row["median_seconds"]]
     new["repeat"] = repeat
     new["suite_wall_seconds"] = 600.0
-    new["gradient_decision"] = GRADIENT_RULE
     return base, new
 
 
@@ -403,27 +401,6 @@ def test_incompatible_provenance_fails(mutate):
     result = check_acceptance(base, new)
     assert result["provenance"]["passed"] is False
     assert result["provenance"]["problems"]
-    assert result["passed"] is False
-
-
-@pytest.mark.parametrize(
-    "mutate",
-    [
-        pytest.param(lambda base, new: new.pop("gradient_decision"), id="decision-missing"),
-        pytest.param(
-            lambda base, new: new.update(gradient_decision="one-restoration-per-call"),
-            id="decision-other-rule",
-        ),
-    ],
-)
-def test_missing_gradient_decision_fails(mutate):
-    """A missing or different gradient decision fails the result explicitly."""
-    check_acceptance = _check_acceptance()
-    base, new = _compliant_pair()
-    mutate(base, new)
-    result = check_acceptance(base, new)
-    assert result["gradient_decision"]["passed"] is False
-    assert result["gradient_decision"]["expected"] == GRADIENT_RULE
     assert result["passed"] is False
 
 
