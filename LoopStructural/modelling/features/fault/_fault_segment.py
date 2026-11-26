@@ -593,9 +593,6 @@ class FaultSegment(StructuralFrame):
             # hanging wall should be > 0
             mask2 = np.logical_and(~np.isnan(gx), ~np.isnan(gy))
             mask2 = np.logical_and(mask2, ~np.isnan(gz))
-            # the gradient is NaN for points on a younger fault: do not move those points
-            mask2 &= np.all(np.isfinite(g), axis=1)
-            g[~mask2] = 0.0
             d = self._displacement_fraction(gx, gy, gz, block)
             d *= self.displacement
             if reverse:
