@@ -209,10 +209,13 @@ class GeologicalFeature(BaseFeature):
         if fillnan == 'nearest':
             from scipy import spatial
 
-            nanmask = np.isnan(v)
-            tree = spatial.cKDTree(evaluation_points[~nanmask, :])
-            _d, i = tree.query(evaluation_points[nanmask, :])
-            v[nanmask] = v[~nanmask][i]
+            known = ~np.isnan(v)
+            # A point with a NaN coordinate has no nearest point, so its value stays NaN.
+            nanmask = ~known & np.all(np.isfinite(evaluation_points), axis=1)
+            if np.any(nanmask) and np.any(known):
+                tree = spatial.cKDTree(evaluation_points[known, :])
+                _d, i = tree.query(evaluation_points[nanmask, :])
+                v[nanmask] = v[known][i]
         return v
 
     @_in_evaluation_scope
