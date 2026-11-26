@@ -24,7 +24,7 @@ it only within a few cells of the fault.
 
 from __future__ import annotations
 
-from collections.abc import Mapping
+from collections.abc import Iterable, Mapping
 
 import numpy as np
 
@@ -148,11 +148,54 @@ def is_in(fault, faults) -> bool:
     return any(fault is f for f in faults)
 
 
+def _cutters(fault: object) -> list:
+    """Return the faults that displace the frame of ``fault`` (its ``faults=[...]``).
+
+    Before the frame is built only its builders know them; after the build the
+    frame members do.
+    """
+    found = []
+    builder = getattr(fault, "builder", None)
+    sources = [getattr(b, "faults", None) or [] for b in getattr(builder, "builders", None) or []]
+    try:
+        sources += [getattr(fault[i], "faults", None) or [] for i in range(3)]
+    except (IndexError, KeyError, TypeError):
+        pass
+    for source in sources:
+        for cutter in source:
+            if not is_in(cutter, found):
+                found.append(cutter)
+    return found
+
+
+def cutters_first(faults: Iterable) -> list:
+    """Order ``faults`` so that a fault comes after every fault of the list that cuts it.
+
+    A fault created with ``faults=[A]`` is faulted by the younger fault ``A``, so
+    ``A`` must be restored first. Faults without such a relation keep the order
+    of the list. A cycle of relations keeps the order of the list for the faults
+    in it.
+    """
+    faults = list(faults)
+    pending, ordered = list(faults), []
+    while pending:
+        for fault in pending:
+            if not any(is_in(c, pending) and c is not fault for c in _cutters(fault)):
+                break
+        else:
+            fault = pending[0]  # a cycle: keep the order of the list
+        ordered.append(fault)
+        pending = [f for f in pending if f is not fault]
+    return ordered
+
+
 def restore_through(points, faults, *, reverse=False, block=None, restored_through=()):
     """Restore points through a list of faults, each fault once.
 
     The faults are applied in the order of the list (a feature keeps its
-    faults youngest first). Each fault is told which faults the points have
+    faults youngest first), except that a fault faulted by another fault of the
+    list (``faults=[...]``) comes after it; when the points move forward
+    (``reverse``) the cutting fault comes last. Each fault is told which faults the points have
     already been restored through, so that its frame, which was built in the
     space restored by the younger faults that displace it, is evaluated at the
     points as they are and does not apply those younger faults a second time.
@@ -176,7 +219,13 @@ def restore_through(points, faults, *, reverse=False, block=None, restored_throu
         the restored points
     """
     done = list(restored_through)
-    for fault in faults:
+    if reverse:
+        # Forward movement: a cutting fault moves after the faults it cuts. Without
+        # such relations the order of the list does not change.
+        ordered = cutters_first(list(faults)[::-1])[::-1]
+    else:
+        ordered = cutters_first(faults)
+    for fault in ordered:
         if is_in(fault, done):
             continue
         # Pass only the keywords that are needed, so a fault-like object with

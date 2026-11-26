@@ -9,7 +9,7 @@ from ....interpolators import DiscreteInterpolator, GeologicalInterpolator, Inte
 from ....modelling.features import GeologicalFeature
 from ....utils import getLogger
 from ....utils._api_registry import public_api
-from ....utils._fault_block import restore_through
+from ....utils._fault_block import cutters_first, restore_through
 from ....utils.helper import (
     get_data_bounding_box_map as get_data_bounding_box,
 )
@@ -204,7 +204,8 @@ class GeologicalFeatureBuilder(BaseBuilder):
         mask_tangent = np.all(~np.isnan(data.loc[:, tangent_vec_names()].to_numpy(float)), axis=1)
         mask_vector = mask_gradient | mask_normal | mask_tangent
         if np.sum(mask_vector) > 0:
-            for f in self.faults:
+            # the same order as restore_through below: a cutting fault first
+            for f in cutters_first(self.faults):
                 if np.sum(mask_normal) > 0:
                     data.loc[mask_normal, normal_vec_names()] = f.apply_to_vectors(
                         data.loc[mask_normal, xyz_names() + normal_vec_names()].to_numpy(float)
