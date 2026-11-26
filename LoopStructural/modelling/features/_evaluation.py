@@ -58,9 +58,26 @@ def _digest(points: np.ndarray) -> bytes:
     return hasher.digest()
 
 
+def _hashable(value: object) -> Hashable:
+    """Return the value, or a token of its bytes if it cannot be a dict key.
+
+    A displacement can be a NumPy array, for example from ``df[...].values``.
+    """
+    try:
+        hash(value)
+    except TypeError:
+        array = np.asarray(value)
+        return (array.dtype.str, array.shape, array.tobytes())
+    return value
+
+
 def _fault_state(fault: BaseFeature) -> Hashable:
     """Return a token for the identity and the state of one fault."""
-    return (id(fault), getattr(fault, "displacement", None), getattr(fault, "steps", None))
+    return (
+        id(fault),
+        _hashable(getattr(fault, "displacement", None)),
+        _hashable(getattr(fault, "steps", None)),
+    )
 
 
 class EvaluationContext:
@@ -108,6 +125,10 @@ class EvaluationContext:
             builder = getattr(fault, "builder", None)
             if builder is not None:
                 builder.up_to_date()
+        if points.dtype.hasobject:
+            # An array of Python objects has no bytes to compare. Restore it without
+            # sharing, as the legacy path does (apply_to_points makes it float).
+            return restore_through(points, faults, reverse=reverse)
         digest = _digest(points)
         # The scope key holds the faults only. Features with the same ordered faults share
         # one restoration inside the scope. The model does not change inside one scope.

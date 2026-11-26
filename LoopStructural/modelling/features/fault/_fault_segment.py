@@ -328,6 +328,11 @@ class FaultSegment(StructuralFrame):
             interpolator = member.interpolator
             if not isinstance(interpolator, DiscreteInterpolator):
                 return None
+            # The fast path reads the node values and the support directly, so a
+            # subclass with its own evaluation must use its own calls.
+            for name in ("evaluate_value", "_evaluate_value_local", "_evaluate_gradient_local"):
+                if getattr(type(interpolator), name) is not getattr(DiscreteInterpolator, name):
+                    return None
             support = interpolator.support
             if not isinstance(support, StructuredGrid) or not support._has_uniform_lookup():
                 return None

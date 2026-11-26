@@ -514,3 +514,19 @@ def test_fast_path_keeps_the_stale_frame_check():
         fault[1].evaluate_value(xyz)
     with pytest.raises(StaleFrameError):
         fault._evaluate_frame(xyz)
+
+
+def test_interpolator_with_its_own_evaluation_uses_the_legacy_path():
+    """A DiscreteInterpolator subclass that changes its evaluation is not bypassed."""
+    model = build_model("f1_u0")
+    fault = model.faults[0]
+    assert fault._shared_frame_members() is not None
+    interpolator = fault[1].interpolator
+    base = type(interpolator)
+
+    class OwnEvaluation(base):
+        def _evaluate_value_local(self, locations):
+            return base._evaluate_value_local(self, locations) + 1.0
+
+    interpolator.__class__ = OwnEvaluation
+    assert fault._shared_frame_members() is None

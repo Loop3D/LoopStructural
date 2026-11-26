@@ -136,3 +136,24 @@ def test_fault_frame_threads_stay_off():
     from LoopStructural.modelling.features.fault import _fault_segment
 
     assert _fault_segment.use_threads is False
+
+
+def test_points_of_dtype_object_evaluate_as_float_points():
+    """Points from a DataFrame with an object column are evaluated (review round 2)."""
+    from tests.fault_evaluation.models import sample_points
+
+    model = build_model("f2_u0")
+    xyz = sample_points("f2_u0", 50)
+    np.testing.assert_array_equal(model.evaluate_model(xyz.astype(object)), model.evaluate_model(xyz))
+
+
+def test_array_displacement_evaluates_as_a_float_displacement():
+    """A displacement given as a NumPy array is accepted (review round 2)."""
+    from tests.fault_evaluation.models import sample_points
+
+    model = build_model("f2_u0")
+    xyz = sample_points("f2_u0", 50)
+    reference = model.evaluate_model(xyz)
+    for fault in model.faults:
+        fault.displacement = np.array([fault.displacement])
+    np.testing.assert_array_equal(model.evaluate_model(xyz), reference)
