@@ -72,12 +72,9 @@ class Map2LoopProcessor(ProcessInputData):
 
         supergroups = {}
         with open(f"{m2l_directory}/tmp/super_groups.csv") as f:
-            for line in f:
-
-                i = 0
+            for i, line in enumerate(f):
                 for g in line.strip(",\n").split(","):
                     supergroups[g] = f"supergroup_{i}"
-                i += 1
         if "supergroup" not in groups.columns:
             groups["supergroup"] = "none"
             for i in groups.index:
