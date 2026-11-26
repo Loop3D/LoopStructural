@@ -253,3 +253,4 @@ def test_displaced_fault_block_frame_equals_the_frame_on_its_side(displaced):
         inside = side * young_gx > 1e-6
         block_gx = old.evaluate_frame_value(pts, block={"young": side})
         np.testing.assert_array_equal(block_gx[inside], gx[inside])
+

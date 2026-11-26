@@ -155,7 +155,7 @@ class BaseFoldRotationAngleProfile(metaclass=ABCMeta):
                     calculate_wavelength=params.get("calculate_wavelength", True),
                 ),
             )
-            mask = np.logical_or(
+            mask = np.logical_and(
                 ~np.isnan(self.fold_frame_coordinate), ~np.isnan(self.rotation_angle)
             )
             logger.info(f"Percentage of points not used {np.sum(~mask)/len(mask)*100}")
