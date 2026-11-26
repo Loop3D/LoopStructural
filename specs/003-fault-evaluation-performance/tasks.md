@@ -1,7 +1,7 @@
 # Tasks: Faster evaluation of faulted models
 
 **Input**: spec.md and plan.md in `specs/003-fault-evaluation-performance/`
-**State**: Replanned 2026-11-18 for the reduced scope (spec C-012 to C-017, plan D7 to D11). Review of 2026-11-26: T054-T061, T063 and T064 are done (spec C-018 to C-021). T001-T029, T033-T061, T063 and T064 are done. T030 runs on Linux against a new Linux baseline (C-019, OP6 closed); T031 and T032 wait for it.
+**State**: Replanned 2026-11-18 for the reduced scope (spec C-012 to C-017, plan D7 to D11). Review of 2026-11-26: T054-T061, T063 and T064 are done (spec C-018 to C-021). T001-T029, T033-T061, T063 and T064 are done. T062 and T030 are done (2026-11-26: all SC pass on Linux, `measurements.md`). T031 and T032 are open.
 
 ## Orchestrator notes
 
@@ -286,9 +286,10 @@
   - Wave: 14
   - Done when: python -m pytest tests/fault_evaluation/test_acceptance.py -q passes.
 
-- [ ] T030 [US3] [M] Measure full before/after results and all success criteria.
+- [x] T030 [US3] [M] Measure full before/after results and all success criteria.
+  - Done (2026-11-26): `candidate.json`, `candidate_repeat.json`, `acceptance.json` (passes), `measurements.md`, `memory_10m.json`; candidate `6c2bbb03` against `baseline_linux.json` (T062). The `gradient_decision` row of the acceptance check was removed (C-018 records the rule; the FR-008 tests check it).
   - Do: THIRD RUN (2026-11-26): on Linux against `baseline_linux.json` from T062 (spec C-019), with the tracemalloc memory meter (C-020); `acceptance.py` now has the T057 and T059 changes. The rest of this text is the second-run plan. SECOND RUN, after the replan of 2026-11-18 (plan D7 to D11). The first run (revision c8e3f9f1, 2026-11-03) failed SC-003, SC-004, SC-006, SC-007, SC-008 and SC-010; its raw files stay in `C:/Users/lachl/dev/ls-bench-003/cand/`. Use a new output folder. Do not change `acceptance.py`: T050 made it apply the D10 rules (`cold_view` of the baseline, SC-006 passes at 1.20 times the baseline or at most `MEMORY_ALLOWANCE_BYTES` = 16 MiB more, no SC-010 row, time ratios on `baseline.json`, C-015). The standard suite now has 131 cold cases (D9, C-014, C-016); the counter pass runs only the 5,000 and 20,000-point cases, the memory pass only the 5,000-point cases. SC-010 is removed (C-012); write that in measurements.md, and put the T051 numbers there. Run the STANDARD D2 suite twice with identical baseline case ids and machine/environment, in the way the notes on long runs say (outside the repository, clean tree, `suite_wall_seconds` recorded for SC-008). The full suite is not required. Run D5 large-memory cases (cold mode only) and acceptance CLI. Include gradients and total recursive counts. Record raw provenance, peak memory and complete elapsed times. A target miss is a failed task, not permission to remove a case or alter golden references. OP2 requires a user decision only if runtime/noise targets fail; it does not block starting measurement.
-  - Files: `specs/003-fault-evaluation-performance/baseline_linux.json`, `specs/003-fault-evaluation-performance/baseline_linux_repeat.json`, `specs/003-fault-evaluation-performance/candidate.json`, `specs/003-fault-evaluation-performance/candidate_repeat.json`, `specs/003-fault-evaluation-performance/acceptance.json`, `specs/003-fault-evaluation-performance/measurements.md`
+  - Files: `specs/003-fault-evaluation-performance/baseline_linux.json`, `specs/003-fault-evaluation-performance/baseline_linux_repeat.json`, `specs/003-fault-evaluation-performance/memory_10m.json`, `specs/003-fault-evaluation-performance/candidate.json`, `specs/003-fault-evaluation-performance/candidate_repeat.json`, `specs/003-fault-evaluation-performance/acceptance.json`, `specs/003-fault-evaluation-performance/measurements.md`
   - Needs: T027, T029, T042, T043, T051, T053, T054, T055, T057, T058, T059, T060, T061, T062
   - Wave: 40
   - Done when: The acceptance command exits 0 for every SC, all golden tests pass under 120 seconds, and measurements.md records the 10-million-point memory result.
@@ -577,7 +578,7 @@ and SC-009 0.56.
   - Wave: 38
   - Done when: the golden validator exits 0 and the spec tests pass.
 
-- [ ] T062 [US3] [M] Record the Linux baseline of the standard suite twice (C-019).
+- [x] T062 [US3] [M] Record the Linux baseline of the standard suite twice (C-019).
   - Do: On branch `bench/003-linux-baseline` (master at a942177b with the #424 fix, plus one commit with the `benchmarks/`, `tests/fault_evaluation/` and plugin model data of the spec branch, no library change; spec C-019), run the standard suite twice as in T011, with Python 3.13 on the T030 computer. Copy the result files to the spec folder and add a Linux section to baseline.md.
   - Files: `specs/003-fault-evaluation-performance/baseline_linux.json`, `specs/003-fault-evaluation-performance/baseline_linux_repeat.json`, `specs/003-fault-evaluation-performance/baseline.md`
   - Needs: T059

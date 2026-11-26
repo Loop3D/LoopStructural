@@ -126,3 +126,22 @@ check (T030) does.
 - `baseline.json`: run 1. `baseline_repeat.json`: run 2.
 - The work directories (checkpoint files and the raw benchmark data) stay outside
   the repository, in `C:/Users/lachl/dev/ls-bench-003/std/`.
+
+## Linux baseline (T062, 2026-11-26, spec C-019)
+
+The time ratios and the memory limits use a Linux baseline: master `a942177b`
+with the fix of #424 (the code before this feature, with the master changes
+that the candidate has), on branch `bench/003-linux-baseline` at `7b4d910c`,
+which adds only the harness of the spec branch and the plugin model data.
+Same computer as above, Linux 7.0, Python 3.13.13, NumPy 2.4.6, SciPy 1.18.0,
+tracemalloc memory meter (C-020), standard suite.
+
+| Run | File | Whole run |
+|---|---|---|
+| 1 | `baseline_linux.json` | 846 s |
+| 2 | `baseline_linux_repeat.json` | 842 s |
+
+The noise between the two runs is at most 1.05 for the 53 cases with a median
+of 1 s or more. On this computer, Linux runs the code before this feature
+about 1.8 times faster than Windows, so `baseline.json` stays as a historical
+record and is not used for the ratios.

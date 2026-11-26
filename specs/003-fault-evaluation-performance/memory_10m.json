@@ -1,0 +1,26 @@
+{
+  "memory": {
+    "points": 10000000,
+    "records": [
+      {
+        "model": "f1_u0",
+        "mode": "cold",
+        "points": 10000000,
+        "peak_extra_rss_bytes": 7100076303,
+        "memory_method": "tracemalloc",
+        "restored_batch_sizes": {
+          "10000000": 1
+        },
+        "distinct_fault_sets": 1,
+        "allowed_bytes": 240000000,
+        "restored_bytes_observed": 240000000,
+        "peak_over_allowed": 29.5836512625,
+        "input_bytes": 240000000,
+        "fr010": {
+          "bytes_per_point_and_fault_set": 24,
+          "bytes_per_fault_set": 240000000
+        }
+      }
+    ]
+  }
+}
