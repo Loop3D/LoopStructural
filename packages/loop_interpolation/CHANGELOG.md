@@ -1,5 +1,14 @@
 # Changelog
 
+## [0.3.1](https://github.com/Loop3D/LoopStructural/compare/loop-interpolation-v0.3.0...loop-interpolation-v0.3.1) (2026-11-27)
+
+
+### Bug Fixes
+
+* **loop-common:** tetra boundary points, rotated local frames, bounded lookup memory ([#415](https://github.com/Loop3D/LoopStructural/issues/415)) ([1ae507a](https://github.com/Loop3D/LoopStructural/commit/1ae507aa8474bcff15d3f3799498b3ac11ec6a51))
+* **loop-interpolation:** equality, gradient and weight data reach the solve ([#416](https://github.com/Loop3D/LoopStructural/issues/416)) ([3dc4575](https://github.com/Loop3D/LoopStructural/commit/3dc45756cf4ea0560a42d44c2bc5d7bf2fd0a147))
+* **loop-interpolation:** report failed solves, keep the chosen solver, NaN for NaN points ([#413](https://github.com/Loop3D/LoopStructural/issues/413)) ([d3b5f84](https://github.com/Loop3D/LoopStructural/commit/d3b5f84a791a5454bb07a707d885209082aab572))
+
 ## [0.3.0](https://github.com/Loop3D/LoopStructural/compare/loop-interpolation-v0.2.0...loop-interpolation-v0.3.0) (2026-11-18)
 
 
