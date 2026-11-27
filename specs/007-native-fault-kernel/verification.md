@@ -375,3 +375,36 @@ numbers, with `comm -13`).
 - The suite runs without `loop-model-core` (run 3: only the known solver test fails).
 - Ruff: no new errors.
 - Rust: all checks pass in both crates.
+
+## 94-fault model: native against Python (after stage S5)
+
+Run by the orchestrator on 2026-11-27, commit 0f35f75d, on the T030
+computer (i7-12700H, 20 threads), with `loop-model-core` and the solver core
+installed. One build of `benchmarks/fault_evaluation/many_faults.py` (154 s).
+The model has 3 faulted features; `chain_for` and `field_for` are not None
+for all 3, so the native path runs for each of them. For each point count,
+`evaluate_model` and `evaluate_feature_value` of both groups ran with the
+native path on, then off, on the same build and the same points. Tolerance:
+1e-8 x the box size (10000 m) = 1.0e-04.
+
+| Points | Native s | Python s | Max diff group_1 | Max diff group_0 | NaN points (group_1 / group_0) | Model ids that differ |
+|---|---|---|---|---|---|---|
+| 500 | 0.063 | 0.624 | 5.1e-13 | 8.0e-13 | 207 / 293, equal | 0 |
+| 2000 | 0.058 | 0.758 | 6.8e-13 | 1.3e-12 | 772 / 1228, equal | 0 |
+| 5000 | 0.063 | 0.971 | 6.8e-13 | 1.3e-12 | 1959 / 3041, equal | 0 |
+
+The official benchmark with the native path on
+(`python -m benchmarks.fault_evaluation.many_faults --points 500 2000 5000`)
+runs to the end after T036 and writes its JSON (per-fault times are None,
+because the native path makes no Python fault call): 500: 0.122 s; 2000: 0.058 s; 5000: 0.063 s; The first call
+at 500 points includes the build of the native chains and fields.
+
+Result:
+
+- The native results agree with the Python path on the 94-fault model
+  (chains of cuts up to 20 faults deep): the largest difference is 1.3e-12,
+  about 1e-8 of the tolerance; the NaN points are equal; no model id
+  differs (FR-005, FR-005a, FR-005b).
+- SC-004 passes with `loop-model-core`: 0.063 s at 5000 points (target
+  0.5 s; Python 0.971 s in the same run; 2.09 s on master).
+- The official 94-fault benchmark works with the native path on (T036).
