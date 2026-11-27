@@ -95,7 +95,7 @@
     },
     {
       "wave": 15,
-      "base": null,
+      "base": "a95d2e7826030256e06b07b594dc2c2a16a84d82",
       "commit": null,
       "review": null
     }
@@ -391,6 +391,12 @@
       {
         "model": "haiku",
         "result": "pass (also fixed the settings fixture: it reloads _native_faults at teardown)"
+      }
+    ],
+    "T041": [
+      {
+        "model": "haiku",
+        "result": "pass"
       }
     ]
   },

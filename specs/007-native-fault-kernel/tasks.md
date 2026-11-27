@@ -728,7 +728,7 @@ Common rules for every Rust task: `cargo fmt --check` and
     `fault.faultfunction = SubclassOfFaultDisplacement(...)`, with the
     kernel installed: `pytest.importorskip("loop_model_core")`).
 
-- [ ] T041 [US4] [S] Record stage S5 and the package name in `ROADMAP.md` (FR-015).
+- [x] T041 [US4] [S] Record stage S5 and the package name in `ROADMAP.md` (FR-015).
   - Files: `ROADMAP.md`
   - Needs: T039, T040
   - Wave: 15

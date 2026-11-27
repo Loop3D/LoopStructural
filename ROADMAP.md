@@ -175,8 +175,10 @@ deferred. The notice is in `COMPAT.md`.
 ### Native fault application (spec 007)
 Decision date: 2026-11-27 (spec 007, FR-015).
 
-The native path is an optional Rust kernel in `loop_interpolation_core`.
+The native path is an optional Rust kernel in the package `loop-model-core` (module
+`loop_model_core`), separate from the solver core `loop_interpolation_core`.
 The Python path stays the reference and the fallback.
+The `uv.lock` of the repository needs a new lock on master to include `loop-model-core` (spec 007 plan, Answers, T038).
 
 The native path is on by default when the kernel is installed and
 `FAULT_KERNEL_VERSION` matches. To turn it off, set
@@ -949,3 +951,4 @@ See `specs/007-native-fault-kernel/spec.md`.
 - **2026-11-27:** spec 007 S2: native fault restoration in `loop_interpolation_core` (`FaultChain`, `FAULT_KERNEL_VERSION = 1`). SC-002 (1 thread, 10 000 points, native time / Python time, target 0.20 or less): fails. The 5 golden models give 0.23 to 0.30. The native restore is 3.3 to 4.3 times faster than Python on 1 thread. SC-003 (20 threads, target 0.03 or less): passes, 0.022 to 0.028 for all 5 models. SC-007 (10 million points, extra memory): passes, native 685 MB and Python 6430 MB. Largest native difference on the golden models: 9.3e-10 m (plugin, 3e-14 of the box); tolerance 1e-8 x box.
 - **2026-11-27:** spec 007 S3: native field values and gradients (`GridField`, `FaultChain.feature_gradient`). SC-004 (94 faults, `evaluate_model` at 5000 points, target 0.5 s or less): passes, 0.059 s with the native path (Python 0.971 s in the same run; 2.09 s on master before spec 007). SC-005 (golden tests with the native path on): passes, 23 of 23. Largest native difference of the field values and gradients: 1.16e-10. Supported features evaluate values, grid gradients and the gradient of a faulted feature (tetrahedron method) natively. A fold feature on a tetrahedral mesh keeps the Python path.
 - **2026-11-27:** spec 007 S4: prebuilt native packages with the fault kernel. SC-008: Linux x86_64 checked locally (wheel, clean install, smoke test and golden tests pass); Linux aarch64, macOS arm64 and Windows x64 need a CI run of `core-wheels.yml`; macOS x86_64 needs a maintainer check. SC-006: the full suite passes with the native path on (3341 passed), off (3341 passed) and not installed (3296 passed). One known failure with the core installed, `test_the_native_fault_frame_is_the_cg_fault_frame`, is also on master. Ruff: no new errors.
+- **2026-11-27:** spec 007 S5: the fault kernel moves to the new package `loop-model-core`, with its own wheels and release; a negative `native_threads` means all cores; subclasses of the supported fault types use the Python path.
