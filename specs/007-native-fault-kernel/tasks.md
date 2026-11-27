@@ -646,7 +646,7 @@ Common rules for every Rust task: `cargo fmt --check` and
 
 - [ ] T033 [Finish] [M] Run the full test suite with the native path on, off and not installed, and record stage S4 (SC-006, FR-015).
   - Files: `specs/007-native-fault-kernel/verification.md`, `ROADMAP.md`
-  - Needs: T006, T029, T031, T032
+  - Needs: T006, T029, T031, T032, T036
   - Wave: 11
   - Done when: `verification.md` has a section "SC-006" with the result of the three `pytest` runs, and `ROADMAP.md` `## Status log` has a dated line for spec 007 stage S4.
   - Context: Three runs from the repository root: (1) kernel built
