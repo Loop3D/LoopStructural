@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.2.1](https://github.com/Loop3D/LoopStructural/compare/loop-common-v0.2.0...loop-common-v0.2.1) (2026-11-27)
+
+
+### Bug Fixes
+
+* **loop-common:** tetra boundary points, rotated local frames, bounded lookup memory ([#415](https://github.com/Loop3D/LoopStructural/issues/415)) ([1ae507a](https://github.com/Loop3D/LoopStructural/commit/1ae507aa8474bcff15d3f3799498b3ac11ec6a51))
+
+
+### Performance Improvements
+
+* faster evaluation of faulted models (spec 003) ([#391](https://github.com/Loop3D/LoopStructural/issues/391)) ([6874364](https://github.com/Loop3D/LoopStructural/commit/6874364c9f4f772338b1fb30f3ef8c1bf0b4efd2))
+
 ## [0.2.0](https://github.com/Loop3D/LoopStructural/compare/loop-common-v0.1.0...loop-common-v0.2.0) (2026-11-17)
 
 
