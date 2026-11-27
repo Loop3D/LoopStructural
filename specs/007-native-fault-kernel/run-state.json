@@ -1,0 +1,11 @@
+{
+  "spec": "007-native-fault-kernel",
+  "worktree": "/home/lgrose/dev/LoopStructural-wt/feat-007-native-fault-kernel",
+  "branch": "feat/007-native-fault-kernel",
+  "review_mode": "wave",
+  "start_commit": "907acf425c967d0f1a232d010e3245090c0da993",
+  "baseline": {"ruff_errors": 34, "ruff_gate": "no new errors (34 on master 6874364c; CI runs ruff with --exit-zero)"},
+  "waves": [],
+  "runs": {},
+  "findings": {"found": 0, "rejected": 0, "dropped": 0, "fixed": 0, "open_minor": []}
+}
