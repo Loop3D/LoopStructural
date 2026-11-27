@@ -4,8 +4,8 @@
 //! LoopStructural model are too big to copy into a test. T013 and the Python
 //! tests cover that comparison.
 
-use loop_interpolation_core::fault::profile::{Profile, Profile1};
-use loop_interpolation_core::fault::{
+use loop_model_core::fault::profile::{Profile, Profile1};
+use loop_model_core::fault::{
     BlockSettings, Extension, Fault, FaultChain, GridField, Region, Side,
 };
 

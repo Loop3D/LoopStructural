@@ -1,10 +1,8 @@
 //! Tests of the native gradient of a faulted feature on hand-built fault chains.
 
-use loop_interpolation_core::fault::gradient::{feature_gradient, feature_gradient_threads};
-use loop_interpolation_core::fault::profile::{Profile, Profile1};
-use loop_interpolation_core::fault::{
-    BlockSettings, Extension, Fault, FaultChain, GridField, Side,
-};
+use loop_model_core::fault::gradient::{feature_gradient, feature_gradient_threads};
+use loop_model_core::fault::profile::{Profile, Profile1};
+use loop_model_core::fault::{BlockSettings, Extension, Fault, FaultChain, GridField, Side};
 
 const N: usize = 11;
 

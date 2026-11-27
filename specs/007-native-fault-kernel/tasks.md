@@ -660,7 +660,7 @@ Common rules for every Rust task: `cargo fmt --check` and
 
 ## Phase 8: Stage S5, package loop-model-core (maintainer answer 2026-11-27)
 
-- [ ] T037 [Found] [M] Move the fault kernel into the new package `packages/loop_model_core` (D5).
+- [x] T037 [Found] [M] Move the fault kernel into the new package `packages/loop_model_core` (D5).
   - Files: `packages/loop_model_core/`, `packages/loop_interpolation_core/src/fault/`, `packages/loop_interpolation_core/tests/fault_grid_field.rs`, `packages/loop_interpolation_core/tests/fault_profile.rs`, `packages/loop_interpolation_core/tests/fault_restore.rs`, `packages/loop_interpolation_core/tests/fault_nearest.rs`, `packages/loop_interpolation_core/tests/fault_gradient.rs`, `packages/loop_interpolation_core/src/lib.rs`, `packages/loop_interpolation_core/src/python.rs`, `packages/loop_interpolation_core/README.md`
   - Needs: T033
   - Wave: 12

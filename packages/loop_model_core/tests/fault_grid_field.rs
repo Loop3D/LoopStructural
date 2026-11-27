@@ -1,6 +1,6 @@
 //! Tests of the structured grid lookup of `GridField`.
 
-use loop_interpolation_core::fault::grid_field::GridField;
+use loop_model_core::fault::grid_field::GridField;
 
 fn close(a: f64, b: f64) -> bool {
     (a - b).abs() <= 1e-12 * b.abs().max(1.0)

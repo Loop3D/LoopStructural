@@ -77,7 +77,7 @@
     },
     {
       "wave": 12,
-      "base": null,
+      "base": "9f41453fdde37371bd82aa741963c9397fbd9571",
       "commit": null,
       "review": null
     }
@@ -349,6 +349,12 @@
       {
         "model": "sonnet",
         "result": "pass (native on 3341/1 known; off 3341/1 known; not installed 3296/0)"
+      }
+    ],
+    "T037": [
+      {
+        "model": "sonnet",
+        "result": "pass (orchestrator ran cargo fmt on one moved test file)"
       }
     ]
   },

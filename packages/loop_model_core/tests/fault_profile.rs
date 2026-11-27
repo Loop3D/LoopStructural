@@ -24,8 +24,8 @@
 //!                     v = float(block_displacement(fd, a, force_side(a, side), np.array([float(gy)]), np.array([float(gz)]), side)[0])
 //!                     print("B", name, side, gx, gy, gz, repr(v))
 
-use loop_interpolation_core::fault::profile::{Profile, Profile1};
-use loop_interpolation_core::fault::{BlockSettings, Extension, Side};
+use loop_model_core::fault::profile::{Profile, Profile1};
+use loop_model_core::fault::{BlockSettings, Extension, Side};
 
 const W_HW: [f64; 4] = [
     1.9999999999999116,

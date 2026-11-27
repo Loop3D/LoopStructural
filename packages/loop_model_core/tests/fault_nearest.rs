@@ -1,6 +1,6 @@
 //! Tests of the exact nearest-point search.
 
-use loop_interpolation_core::fault::nearest::KdTree;
+use loop_model_core::fault::nearest::KdTree;
 
 /// Small LCG with a fixed seed. Return a number in [0, 1).
 fn lcg(state: &mut u64) -> f64 {
