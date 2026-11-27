@@ -59,7 +59,7 @@
     },
     {
       "wave": 9,
-      "base": null,
+      "base": "d12101b223acf7c758a410ea0d6cdc978450b3eb",
       "commit": null,
       "review": null
     }
@@ -296,6 +296,18 @@
         "model": "haiku",
         "result": "pass (record fix: quiet numbers)"
       }
+    ],
+    "T022": [
+      {
+        "model": "haiku",
+        "result": "pass"
+      }
+    ],
+    "T028": [
+      {
+        "model": "sonnet",
+        "result": "pass (SC-004 0.059 s vs 0.5 s; SC-005 pass)"
+      }
     ]
   },
   "findings": {
@@ -354,5 +366,12 @@
     "plugin": 0.268,
     "target": 0.2,
     "result": "fail"
+  },
+  "sc004": {
+    "native_s_5000": 0.059,
+    "python_same_run_s": 0.971,
+    "master_s": 2.09,
+    "target_s": 0.5,
+    "result": "pass"
   }
 }

@@ -456,7 +456,7 @@ Common rules for every Rust task: `cargo fmt --check` and
     method (scripts in `$CLAUDE_JOB_DIR/tmp/t021/`) and record the result;
     if SC-002 still fails, record the numbers and the remaining costs.
 
-- [ ] T022 [US2] [S] Record stage S2 in `ROADMAP.md` (FR-015).
+- [x] T022 [US2] [S] Record stage S2 in `ROADMAP.md` (FR-015).
   - Files: `ROADMAP.md`
   - Needs: T007, T021, T035
   - Wave: 9
@@ -550,7 +550,7 @@ Common rules for every Rust task: `cargo fmt --check` and
     rows outside the mask are NaN; log the Python warning once if the count
     > 0. Else keep the Python loop. Do not change the signatures (FR-007).
 
-- [ ] T028 [US3] [M] Measure SC-004 and SC-005 with the native path.
+- [x] T028 [US3] [M] Measure SC-004 and SC-005 with the native path.
   - Files: `specs/007-native-fault-kernel/verification.md`
   - Needs: T021, T027
   - Wave: 9
@@ -575,6 +575,24 @@ Common rules for every Rust task: `cargo fmt --check` and
     field values and gradients (`GridField`, `FaultChain.feature_gradient`)",
     with the results from the "Stage S3" section of
     `specs/007-native-fault-kernel/verification.md`.
+
+- [ ] T036 [US4] [S] Let the 94-fault benchmark run with the native path on (FR-013).
+  - Files: `benchmarks/fault_evaluation/many_faults.py`, `tests/fault_evaluation/test_many_faults.py`
+  - Needs: T028
+  - Wave: 10
+  - Done when: `pytest tests/fault_evaluation/test_many_faults.py -q` passes, and the new test fails before the change.
+  - Context: `measure()` in `many_faults.py` takes `np.mean` and `np.max`
+    of the per-fault times that `_FaultTimer` collects by patching
+    `FaultSegment.apply_to_points`. The native path does not call that
+    method, so the lists are empty and `np.max` raises `ValueError`
+    (found in T028). Fix: if a list is empty, write `None` for
+    `isolated_mean_ms`, `cutting_mean_ms` and `cutting_max_ms` (the
+    `fault_calls` count is then 0). Add one fast test in
+    `test_many_faults.py` that calls the summary code with empty per-fault
+    lists (extract the summary into a small private function
+    `_fault_summary(per: dict) -> dict` if needed, so no model build is
+    needed) and checks the `None` values. Keep the JSON keys and the
+    Python-path numbers unchanged.
 
 ## Phase 6: Stage S4, prebuilt packages (story 4)
 

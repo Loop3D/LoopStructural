@@ -211,3 +211,43 @@ Measured on a quiet computer (load average below 3, nothing else running, 2026-1
 | plugin | 726.3 | 194.8 | 0.268 fail | 17.8 | 0.0244 pass |
 
 The ratios are the same as in T021 (Stage S2) within the noise. The changes of T035 did not make the 1-thread restoration measurably faster. The better ratios above this sub-section came from the load on the computer, which made the Python times longer. SC-002 fails for all 5 models. SC-003 passes for all 5 models.
+
+## Stage S3
+
+Measures SC-004 (many-faults model) and SC-005 (golden test with the native path on). Task T028.
+
+### Set-up
+
+- Computer: the computer of spec 003 T030. Intel Core i7-12700H, 20 threads, Linux. Load average was 1.8 to 3 during the runs (another agent edited ROADMAP.md only).
+- Commit: `d12101b223acf7c758a410ea0d6cdc978450b3eb` (HEAD of the worktree, kernel built, no code changed by this task).
+- Native path on: `LOOPSTRUCTURAL_NATIVE_FAULTS` not set. A separate check gave `native_enabled()` = True in this venv. In the 94-fault model, `chain_for(...)` is not `None` for 3 of 3 faulted features (the features in `model.features` that have `faults`).
+- Method: the model of `benchmarks/fault_evaluation/many_faults.py` (94 faults, built once), points from `many_faults.points(n)`, `evaluate_model` timed on the first call for each point count. 500, 2000 and 5000 points. Native build time: 153 s. Python build time: 176 s.
+- Problem found: `python -m benchmarks.fault_evaluation.many_faults` stops with the native path on. The script times the calls of `FaultSegment.apply_to_points`. The native path does not call it, so the lists of per-fault times are empty and `np.max` raises `ValueError`. No JSON is written. The benchmark script was not changed (this task changes no code). The native times come from a scratch script (`/home/lgrose/.claude/jobs/8f5b2ef3/tmp/t028/native_run.py`) that imports `build` and `points` from the benchmark and times `evaluate_model` in the same way. The JSON is `/home/lgrose/.claude/jobs/8f5b2ef3/tmp/t028/many_faults_native.json`. The first call of each point count is the value in the table; the median of 5 repeated calls is 0.053, 0.056 and 0.060 s.
+- Python run: the benchmark script with `LOOPSTRUCTURAL_NATIVE_FAULTS=0`, same venv, `many_faults_python.json` in the same folder. This is the Python path after stage S1 of spec 007.
+- Baselines: (a) same venv, spec 007 S1, quiet computer: 0.615 s at 500 points, 0.894 s at 5000 points (2.05 s at 5000 points before S1). (b) `_runs007/many_faults_python.json`: 2.09 s at 5000 points. This is the master Python path before spec 007.
+
+### SC-004: `evaluate_model` at 5000 points, at most 0.5 s
+
+| Points | Native s | Python s (same run conditions) | Ratio native / Python | Python s (S1 baseline) | Master s (_runs007) |
+|---|---|---|---|---|---|
+| 500 | 0.059 | 0.676 | 0.087 | 0.615 | - |
+| 2000 | 0.056 | 0.742 | 0.076 | - | - |
+| 5000 | 0.059 | 0.971 | 0.061 | 0.894 | 2.09 |
+
+- Target: 0.5 s at 5000 points. Measured: 0.059 s. Pass. (The ratio to master, 2.09 s, is 0.028.)
+- The native time is almost the same for 500, 2000 and 5000 points. The work is not limited by the point count in this range.
+- Mean time of one fault call (Python run, 5000 points): cutting faults 18.3 ms (maximum 28.5 ms), isolated faults 3.83 ms. The native path does not call `apply_to_points`, so these means are not available for it.
+- `fault_calls` is 94 in the Python run. It is not available for the native run (same reason).
+- Native results are not bit-identical to Python (C-001), so `--compare` was not used.
+
+### SC-005: golden test with the native path on
+
+- Command: `OMP_NUM_THREADS=1 .venv/bin/python -m pytest tests/fault_evaluation/test_golden.py -q -n 8 -p no:cacheprovider`, no environment variable. Result: 23 passed, 0 failed (warnings only). The test prints no difference values.
+- Largest field difference: `tests/fault_evaluation/test_native_field.py` gives 11 passed. The largest `max_native_diff` in the junit file is 1.16e-10 (the other values are 2.3e-13 to 1.8e-12).
+
+### Result
+
+- SC-004: pass. 0.059 s at 5000 points (target 0.5 s). Python in the same conditions: 0.971 s.
+- SC-005: pass. 23 of 23 golden tests pass with the native path on.
+- Largest native field difference: 1.16e-10.
+- Open point: `benchmarks/fault_evaluation/many_faults.py` fails with the native path on (empty per-fault timer lists). It must write the JSON without per-fault times for the native path. A separate task is needed.
