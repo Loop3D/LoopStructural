@@ -42,6 +42,12 @@
     {
       "wave": 6,
       "base": "3ee22903c989150b9054a4eecce18d48374fc305",
+      "commit": "1fb6918d8e62042f5cc968cfea49af1af3e88419",
+      "review": "pass (3 minor)"
+    },
+    {
+      "wave": 7,
+      "base": null,
       "commit": null,
       "review": null
     }
@@ -241,7 +247,7 @@
     ]
   },
   "findings": {
-    "found": 18,
+    "found": 21,
     "rejected": 2,
     "dropped": 0,
     "fixed": 1,
@@ -261,7 +267,10 @@
       "T017: test_native_off_by_variable tests only '0' (not false/off/no).",
       "T020: native.yml path filter misses _evaluation.py, _base_geological_feature.py and tests/fault_evaluation/**.",
       "T017: the fallback check accepts None for any reverse case of a feature with cutters; a wrong fallback in such a case would pass.",
-      "T016: restore() and the forward/reverse callers share one _restore_order slot on the feature, so alternating reverse and forward calls recompute the order."
+      "T016: restore() and the forward/reverse callers share one _restore_order slot on the feature, so alternating reverse and forward calls recompute the order.",
+      "T016 (fix first): the support check uses isinstance for FaultSegment and FaultDisplacement; a user subclass that overrides apply_to_points or __call__ would go to the kernel (FR-008). Use type(...) is.",
+      "T016: FaultChain(spec) build errors are raised, not turned into the Python path (for example a node-value count that does not match the grid).",
+      "T016: the token compares floats with ==; a NaN displacement rebuilds the chain at each call."
     ]
   },
   "sc001": {
