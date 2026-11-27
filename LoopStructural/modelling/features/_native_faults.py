@@ -111,9 +111,9 @@ def _grid(member: object, refs: list, grids: list) -> dict:
         "nsteps": [int(n) for n in support.nsteps],
         "step_vector": np.asarray(support.step_vector, dtype=float).tolist(),
         "local_origin": None if box is None else np.asarray(box.local_origin, dtype=float).tolist(),
-        "local_rotation": None
-        if box is None
-        else np.asarray(box.local_rotation, dtype=float).tolist(),
+        "local_rotation": (
+            None if box is None else np.asarray(box.local_rotation, dtype=float).tolist()
+        ),
         # The raw array is kept here; it is converted only when a kernel is built.
         "values": interpolator.c,
     }
@@ -249,9 +249,7 @@ def _fault_spec(fault: object, build: _Build) -> dict:
 def _freeze(value: object) -> object:
     """Return a hashable copy of a spec part; an array of node values becomes its id."""
     if isinstance(value, dict):
-        return tuple(
-            (k, id(v) if k == "values" else _freeze(v)) for k, v in sorted(value.items())
-        )
+        return tuple((k, id(v) if k == "values" else _freeze(v)) for k, v in sorted(value.items()))
     if isinstance(value, (list, tuple)):
         return tuple(_freeze(v) for v in value)
     return value

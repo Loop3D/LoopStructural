@@ -72,8 +72,8 @@
     {
       "wave": 11,
       "base": "3d6cc26e90383a313328a7e784612c02ad251357",
-      "commit": null,
-      "review": null
+      "commit": "3260064e51b1c0b3497966a898e5279fd53f19d2",
+      "review": "end review (opus, Focus all): no blocker; 3 major = maintainer decisions (SC-001, SC-002, SC-008); 3 minor"
     }
   ],
   "runs": {
@@ -347,7 +347,7 @@
     ]
   },
   "findings": {
-    "found": 32,
+    "found": 38,
     "rejected": 2,
     "dropped": 0,
     "fixed": 2,
@@ -379,7 +379,10 @@
       "T027: evaluate_value/evaluate_gradient call _check_frame() and update() again after field_for already did (no wrong result).",
       "T027: the native binding rejects element_scale_parameter <= 0 with ValueError, where Python gave a degenerate result (edge case).",
       "T028: the Python time of SC-004 includes the _FaultTimer patch overhead; the native run has none (favours native slightly).",
-      "T028: the SC-004 scratch script is outside the repo; rerun with the benchmark after T036."
+      "T028: the SC-004 scratch script is outside the repo; rerun with the benchmark after T036.",
+      "End review (fix first): LoopStructuralConfig.native_threads = -1 raises OverflowError in _native_faults.restore (no fallback); clamp to 0 or raise ValueError.",
+      "End review: no test checks that native_threads = 1 really uses one thread (pool(1).current_num_threads()).",
+      "End review: the native unconformity region ignores faults_enabled and the regions of the UnconformityFeature (both default in current models)."
     ]
   },
   "sc001": {
@@ -411,5 +414,14 @@
     "master_s": 2.09,
     "target_s": 0.5,
     "result": "pass"
+  },
+  "end_review": {
+    "model": "opus",
+    "verdict": "changes needed (maintainer decisions only)",
+    "decisions_needed": [
+      "SC-001 10.7 ms vs 10 ms",
+      "SC-002 0.23-0.30 vs 0.20",
+      "SC-008 CI run of core-wheels.yml on 4 platforms"
+    ]
   }
 }
