@@ -129,3 +129,85 @@ All differences are far below the golden tolerance of 1e-8 times the box size. T
 - SC-007: PASS. Native extra memory 685 MB, Python 6430 MB.
 - FR-005c: the largest native difference is 9.3e-10 m (`plugin`), or 3.1e-14 of the box. For the 1000 m models it is 5.7e-13 m or less.
 - One fallback case: `cutting_faults`, `group_0`, `reverse=True` (the native path returns `None`, Python is used). No fallback in the timed (non-reverse) calls.
+
+## Stage S2 after T035
+
+Task T035. It makes the 1-thread native restore faster, with the same results.
+
+### What changed
+
+- `FaultChain::apply` reads the frame point (the point restored through the cutters) one time for each step. Before, it read it up to four times for each step. It also keeps the displacement fraction of step 0 instead of computing it again.
+- `FaultChain::restore` and `Region::Sign::contains` use a stack array (up to 64 faults) in place of `to_vec()` and `vec![false; n]`. There is no allocation for each call.
+- The floating-point operations and their order are the same. No public signature changed.
+
+### Profile
+
+- `perf record` is not allowed on this computer (`perf_event_paranoid`), so there is no function profile.
+- The costs came from the code: the two allocations for each point and the repeated `frame_point` call (a full restore through the cutters). Both are removed.
+- Remaining costs (not measured by a profile): the grid look-ups of `GridField` (`lookup` is done again for `value` and for `gradient` of the same point), and the cutter restores of `Region::Unconformity` and `Region::Sign`. `grid_field.rs` is not in the Files of T035. If SC-002 must pass, add it to a new task.
+
+### Set-up
+
+- Same method as "Stage S2" (10 000 points, median of 7 or 31 repeats, `native_threads = 1` and `0`). Script copy: `/home/lgrose/.claude/jobs/8f5b2ef3/tmp/t035/time.py`.
+- Limit of the numbers: the computer had a load average of about 11 (other agents ran tests). The Python times are about 1.8 times the T021 times, and the 20-thread run is hurt most by the load. Measure again on a quiet computer before you trust a pass or fail near the target.
+
+### SC-002: native restore, 1 thread, at most 20 % of Python
+
+| Model | Python ms | Native ms (1 thread) | Ratio | Target | Result |
+|-------|-----------|----------------------|-------|--------|--------|
+| f1_u0 | 137.6 | 37.0 | 0.269 | <= 0.20 | fail |
+| f4_u0 | 752.2 | 144.8 | 0.192 | <= 0.20 | pass |
+| f4_u3 | 4654.8 | 1050.0 | 0.226 | <= 0.20 | fail |
+| cutting_faults | 907.7 | 184.7 | 0.204 | <= 0.20 | fail |
+| plugin | 1228.6 | 288.0 | 0.234 | <= 0.20 | fail |
+
+Native time of T021 (quiet computer) against now (loaded computer): the ratios went from 0.23-0.30 to 0.19-0.27.
+
+### SC-003: native restore, 20 threads, at most 3 % of Python
+
+| Model | Python ms | Native ms (20 threads) | Ratio | Target | Result |
+|-------|-----------|------------------------|-------|--------|--------|
+| f1_u0 | 137.6 | 6.2 | 0.045 | <= 0.03 | fail (load) |
+| f4_u0 | 752.2 | 19.6 | 0.026 | <= 0.03 | pass |
+| f4_u3 | 4654.8 | 136.6 | 0.029 | <= 0.03 | pass |
+| cutting_faults | 907.7 | 21.9 | 0.024 | <= 0.03 | pass |
+| plugin | 1228.6 | 32.1 | 0.026 | <= 0.03 | pass |
+
+### Largest native difference (`max_native_diff`)
+
+Source: `OMP_NUM_THREADS=1 pytest tests/fault_evaluation/test_native_faults.py --junitxml=...`. 10 passed.
+
+| Model | Max difference (m) | Box size (m) | Difference / box |
+|-------|--------------------|--------------|------------------|
+| f1_u0 | 2.27e-13 | 1000 | 2.3e-16 |
+| f4_u0 | 2.27e-13 | 1000 | 2.3e-16 |
+| f4_u3 | 2.27e-13 | 1000 | 2.3e-16 |
+| cutting_faults | 1.25e-12 | 1000 | 1.3e-15 |
+| plugin | 9.31e-10 | 29 656.82 | 3.1e-14 |
+| stopped_fault | 1.14e-13 | 1000 | 1.1e-16 |
+| faulted_fold | 1.82e-12 | 10 000 | 1.8e-16 |
+
+The `cutting_faults` value is higher than in T021 (5.68e-13). The Rust code computes the same operations; the Python side (sample points or solver) is the likely reason. This was not examined. All values are far below 1e-8 times the box.
+
+### Result
+
+- See the quiet re-measure below: SC-002 fails for all 5 models; SC-003 passes for all 5 models.
+- Rust tests pass (`cargo test --release`, also `--features parallel`). Clippy passes for no features, `parallel`, `python`, `python,parallel`.
+- Python tests pass: `test_native_faults.py`, `test_native_safety.py`, `test_golden.py` (43 passed).
+- SC-002: 1 of 5 models passes (`f4_u0` 0.192), 4 fail (0.204 to 0.269), under load. Not met for all models. (measured under load; replaced by the quiet re-measure below)
+- SC-003: 4 of 5 models pass; `f1_u0` (0.045) fails under load. T021 had 0.028 for this model on a quiet computer. (measured under load; replaced by the quiet re-measure below)
+- FR-005c: the largest native difference is 9.3e-10 m (`plugin`), 3.1e-14 of the box.
+
+### Quiet re-measure (orchestrator)
+
+Measured on a quiet computer (load average below 3, nothing else running, 2026-11-27 15:53). Same script and method as T021: medians of 7 or more repeats, 10 000 points.
+
+| Model | Python ms | Native 1 thread ms | Ratio 1 thread (SC-002, target 0.20) | Native 20 threads ms | Ratio 20 threads (SC-003, target 0.03) |
+|---|---|---|---|---|---|
+| f1_u0 | 77.7 | 23.1 | 0.298 fail | 2.1 | 0.0275 pass |
+| f4_u0 | 305.1 | 88.2 | 0.289 fail | 8.3 | 0.0273 pass |
+| f4_u3 | 2157.1 | 634.4 | 0.294 fail | 58.0 | 0.0269 pass |
+| cutting_faults | 493.4 | 113.8 | 0.231 fail | 11.1 | 0.0225 pass |
+| plugin | 726.3 | 194.8 | 0.268 fail | 17.8 | 0.0244 pass |
+
+The ratios are the same as in T021 (Stage S2) within the noise. The changes of T035 did not make the 1-thread restoration measurably faster. The better ratios above this sub-section came from the load on the computer, which made the Python times longer. SC-002 fails for all 5 models. SC-003 passes for all 5 models.

@@ -31,8 +31,12 @@ MODELS = [
 ENV_VAR = "LOOPSTRUCTURAL_NATIVE_FAULTS"
 # Map a model name to the set of feature names that cannot use the native path by design
 # (a fold, or an interpolator that is not a DiscreteInterpolator on a StructuredGrid).
-# Add an entry only with a comment that gives the reason. No entry is needed now.
-FIELD_EXCLUSIONS: dict = {}
+# Add an entry only with a comment that gives the reason.
+FIELD_EXCLUSIONS: dict = {
+    # The fold interpolator uses a tetrahedral mesh. Spec 007 supports only structured grids
+    # (spec.md "Out of scope").
+    "faulted_fold": {"folded_unit"},
+}
 _CACHE: dict = {}
 
 
@@ -50,8 +54,9 @@ def _faulted(model):
     return [f for f in _coordinates(model) if getattr(f, "faults", None)]
 
 
-def test_field_for_exists():
+def test_field_for_exists(monkeypatch):
     """Story 3: the native field of a faulted feature is available."""
+    monkeypatch.setattr(LoopStructuralConfig, "native_faults", True)
     features = _faulted(_case("f1_u0")[0])
     assert features
     for feature in features:
@@ -67,9 +72,9 @@ def test_native_capture_matches_python(name, monkeypatch, record_property):
     # The native path must run, or this test compares the Python path with itself.
     assert _native_faults.native_enabled()
     for feature in _faulted(model):
+        assert _native_faults.chain_for(feature) is not None
         if feature.name in FIELD_EXCLUSIONS.get(name, set()):
             continue
-        assert _native_faults.chain_for(feature) is not None
         assert _native_faults.field_for(feature) is not None
     native = capture(model, points)
     monkeypatch.setattr(LoopStructuralConfig, "native_faults", False)

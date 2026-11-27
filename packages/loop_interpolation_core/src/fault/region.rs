@@ -51,9 +51,15 @@ impl Region {
                     return false;
                 };
                 // A sign region does not take `restored`: the parent is read with no fault restored.
-                let none = vec![false; restored.len()];
+                let heap;
+                let none: &[bool] = if restored.len() <= 64 {
+                    &[false; 64][..restored.len()]
+                } else {
+                    heap = vec![false; restored.len()];
+                    &heap
+                };
                 let val = force_side(
-                    chain.frame_value(*fault, 0, p, sides, &none),
+                    chain.frame_value(*fault, 0, p, sides, none),
                     sides[*fault],
                     chain.block.side_epsilon,
                 );

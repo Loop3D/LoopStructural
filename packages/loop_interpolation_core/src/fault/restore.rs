@@ -32,8 +32,8 @@ impl FaultChain {
         }
         let f = &self.faults[fault];
         let sign = if reverse { -1.0 } else { 1.0 };
-        let [mut gx, mut gy, mut gz] = self.frame_values(fault, p, sides, restored);
-        let fraction = self.displacement_fraction(fault, [gx, gy, gz], sides);
+        let ([mut gx, mut gy, mut gz], mut q) = self.frame_values_at(fault, p, sides, restored);
+        let mut fraction = self.displacement_fraction(fault, [gx, gy, gz], sides);
         // The mask uses the fraction before the displacement scale, as the Python code does.
         if fraction.abs().partial_cmp(&0.0) != Some(std::cmp::Ordering::Greater) {
             return p;
@@ -41,9 +41,9 @@ impl FaultChain {
         let mut p = p;
         for step in 0..f.steps {
             if step > 0 {
-                [gx, gy, gz] = self.frame_values(fault, p, sides, restored);
+                ([gx, gy, gz], q) = self.frame_values_at(fault, p, sides, restored);
+                fraction = self.displacement_fraction(fault, [gx, gy, gz], sides);
             }
-            let q = self.frame_point(fault, p, sides, restored);
             let mut g = f.frame[1].gradient(q);
             // A cut frame has no single gradient on a cutting fault (#425): use the plain grid gradient.
             if g.iter().any(|v| v.is_nan())
@@ -53,7 +53,7 @@ impl FaultChain {
                 g = f.frame[1].gradient(p);
             }
             let ok = !(gx.is_nan() || gy.is_nan() || gz.is_nan());
-            let d = self.displacement_fraction(fault, [gx, gy, gz], sides) * f.displacement * sign;
+            let d = fraction * f.displacement * sign;
             let mag = if ok {
                 g.iter().map(|v| v * v).sum::<f64>().sqrt()
             } else {
@@ -80,13 +80,23 @@ impl FaultChain {
         sides: &[Side],
         restored: &[bool],
     ) -> [f64; 3] {
-        let mut done = restored.to_vec();
+        // A chain of up to 64 faults uses a stack copy of `restored`: no allocation.
+        let mut stack = [false; 64];
+        let mut heap;
+        let done: &mut [bool] = if restored.len() <= 64 {
+            let d = &mut stack[..restored.len()];
+            d.copy_from_slice(restored);
+            d
+        } else {
+            heap = restored.to_vec();
+            &mut heap
+        };
         let mut p = p;
         for &f in order {
             if done[f] {
                 continue;
             }
-            p = self.apply(f, p, reverse, sides, &done);
+            p = self.apply(f, p, reverse, sides, done);
             done[f] = true;
         }
         p
@@ -101,6 +111,19 @@ impl FaultChain {
         sides: &[Side],
         restored: &[bool],
     ) -> f64 {
+        self.frame_value_at(fault, coordinate, p, &mut None, sides, restored)
+    }
+
+    /// As `frame_value`. `q` holds the frame point of `p` once it is known.
+    fn frame_value_at(
+        &self,
+        fault: usize,
+        coordinate: usize,
+        p: [f64; 3],
+        q: &mut Option<[f64; 3]>,
+        sides: &[Side],
+        restored: &[bool],
+    ) -> f64 {
         let f = &self.faults[fault];
         if !f.regions[coordinate]
             .iter()
@@ -108,7 +131,8 @@ impl FaultChain {
         {
             return f64::NAN;
         }
-        f.frame[coordinate].value(self.frame_point(fault, p, sides, restored))
+        let q = *q.get_or_insert_with(|| self.frame_point(fault, p, sides, restored));
+        f.frame[coordinate].value(q)
     }
 
     /// Move all points through the faults in `order`. Use `threads` threads
@@ -175,15 +199,18 @@ impl FaultChain {
         }
     }
 
-    /// Return the three frame coordinates of `fault` at `p`.
-    fn frame_values(
+    /// Return the three frame coordinates of `fault` at `p` and the frame point of `p`.
+    fn frame_values_at(
         &self,
         fault: usize,
         p: [f64; 3],
         sides: &[Side],
         restored: &[bool],
-    ) -> [f64; 3] {
-        std::array::from_fn(|i| self.frame_value(fault, i, p, sides, restored))
+    ) -> ([f64; 3], [f64; 3]) {
+        let mut q = None;
+        let g = std::array::from_fn(|i| self.frame_value_at(fault, i, p, &mut q, sides, restored));
+        let q = q.unwrap_or_else(|| self.frame_point(fault, p, sides, restored));
+        (g, q)
     }
 
     /// Return the displacement at the frame coordinates as a fraction of the displacement.

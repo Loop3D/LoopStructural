@@ -315,6 +315,100 @@ def chain_for(feature: object) -> tuple | None:
     return chain, build.faults, build.specs
 
 
+def _native_inputs(
+    feature: object,
+    reverse: bool,
+    block: dict | None,
+    restored_through: Sequence,
+) -> tuple | None:
+    """Return the inputs of the native kernel for one restoration, or None.
+
+    Parameters
+    ----------
+    feature : BaseFeature
+        The feature whose faults are restored.
+    reverse : bool
+        Move the points forward instead of restoring them.
+    block : dict, optional
+        Fault block, see ``check_block``.
+    restored_through : sequence of FaultSegment
+        Faults whose restoration the points already have.
+
+    Returns
+    -------
+    tuple or None
+        ``(chain, order, sides, restored)`` as arrays for the kernel, or None
+        if the Python path must be used.
+    """
+    from ...utils._fault_block import check_block, is_in, restore_order
+
+    found = chain_for(feature)
+    if found is None:
+        return None
+    chain, faults, specs = found
+    index = {id(f): i for i, f in enumerate(faults)}
+    ordered = restore_order(feature.faults, reverse=reverse, owner=feature)
+    order = [index[id(f)] for f in ordered if not is_in(f, restored_through)]
+    named = check_block(block) or {}
+    sides = [named.get(f.name, 2) for f in faults]
+    restored = [is_in(f, restored_through) for f in faults]
+    # A cutter that is not restored at the turn of its fault needs the Python path.
+    done = {i for i, flag in enumerate(restored) if flag}
+    for i in order:
+        if not all(c in done for c in specs[i]["cutters"]):
+            return None
+        done.add(i)
+    return (
+        chain,
+        np.asarray(order, dtype=np.int64),
+        np.asarray(sides, dtype=np.int8),
+        np.asarray(restored, dtype=bool),
+    )
+
+
+def field_for(feature: object) -> object | None:
+    """Return the native scalar field of a feature, or None.
+
+    None means that the Python interpolator must be used. The field is kept in
+    ``feature._native_field`` and is made again only if the state token changes.
+
+    Parameters
+    ----------
+    feature : GeologicalFeature
+        The feature whose field is evaluated.
+
+    Returns
+    -------
+    GridField or None
+        The native field, or None if the interpolator or the support is not
+        supported.
+    """
+    from ._geological_feature import GeologicalFeature
+
+    if not native_enabled():
+        return None
+    for name in ("evaluate_value", "evaluate_gradient"):
+        if getattr(type(feature), name) is not getattr(GeologicalFeature, name):
+            return None
+    refs: list = []
+    grids: list = []
+    try:
+        grid = _grid(feature, refs, grids)
+    except (_Unsupported, TypeError, ValueError, IndexError, KeyError, AttributeError):
+        return None
+    token = _freeze(grid)
+    cached = getattr(feature, "_native_field", None)
+    if cached is not None and cached[0] == token:
+        return cached[2]
+    grid["values"] = np.asarray(grid["values"], dtype=float)
+    field = _core.GridField(grid)
+    try:
+        feature._native_field = (token, refs, field)
+    except AttributeError:
+        pass
+    return field
+
+
 def restore(
     feature: object,
     points: np.ndarray,
@@ -343,35 +437,14 @@ def restore(
     np.ndarray or None
         The restored points, or None if the Python path must be used.
     """
-    from ...utils._fault_block import check_block, is_in, restore_order
-
     if not native_enabled():
         return None
     points = np.asarray(points)
     if points.dtype.kind != "f" or points.ndim != 2 or points.shape[1] != 3:
         return None
-    found = chain_for(feature)
-    if found is None:
+    inputs = _native_inputs(feature, reverse, block, restored_through)
+    if inputs is None:
         return None
-    chain, faults, specs = found
-    index = {id(f): i for i, f in enumerate(faults)}
-    ordered = restore_order(feature.faults, reverse=reverse, owner=feature)
-    order = [index[id(f)] for f in ordered if not is_in(f, restored_through)]
-    named = check_block(block) or {}
-    sides = [named.get(f.name, 2) for f in faults]
-    restored = [is_in(f, restored_through) for f in faults]
-    # A cutter that is not restored at the turn of its fault needs the Python path.
-    done = {i for i, flag in enumerate(restored) if flag}
-    for i in order:
-        if not all(c in done for c in specs[i]["cutters"]):
-            return None
-        done.add(i)
+    chain, order, sides, restored = inputs
     points = np.ascontiguousarray(points, dtype=float)
-    return chain.restore(
-        points,
-        np.asarray(order, dtype=np.int64),
-        bool(reverse),
-        np.asarray(sides, dtype=np.int8),
-        np.asarray(restored, dtype=bool),
-        native_threads(),
-    )
+    return chain.restore(points, order, bool(reverse), sides, restored, native_threads())

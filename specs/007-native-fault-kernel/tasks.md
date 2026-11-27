@@ -435,7 +435,7 @@ Common rules for every Rust task: `cargo fmt --check` and
     (`max_native_diff`). Change no code. If a target fails, record it; do
     not change a limit.
 
-- [ ] T035 [US2] [M] Make the 1-thread native restoration faster, with the same results (SC-002; maintainer answer 2026-11-27).
+- [x] T035 [US2] [M] Make the 1-thread native restoration faster, with the same results (SC-002; maintainer answer 2026-11-27).
   - Files: `packages/loop_interpolation_core/src/fault/restore.rs`, `packages/loop_interpolation_core/src/fault/region.rs`, `packages/loop_interpolation_core/src/fault/mod.rs`, `packages/loop_interpolation_core/tests/fault_restore.rs`, `specs/007-native-fault-kernel/verification.md`
   - Needs: T021
   - Wave: 8
@@ -534,7 +534,7 @@ Common rules for every Rust task: `cargo fmt --check` and
     `_native_faults.chain_for(feature)` is not None. Record
     `record_property("max_native_diff", value)`.
 
-- [ ] T027 [US3] [M] Add `field_for` and use the native field and gradient in `GeologicalFeature` (D3).
+- [x] T027 [US3] [M] Add `field_for` and use the native field and gradient in `GeologicalFeature` (D3).
   - Files: `LoopStructural/modelling/features/_native_faults.py`, `LoopStructural/modelling/features/_geological_feature.py`
   - Needs: T025, T026
   - Wave: 8

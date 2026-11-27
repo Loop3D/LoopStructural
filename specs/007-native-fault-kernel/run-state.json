@@ -53,7 +53,7 @@
     },
     {
       "wave": 8,
-      "base": null,
+      "base": "2d44bdaaa8746edf7c8fb2784db730b8b8b1df30",
       "commit": null,
       "review": null
     }
@@ -265,6 +265,30 @@
       {
         "model": "sonnet",
         "result": "pass (review fix)"
+      },
+      {
+        "model": "haiku",
+        "result": "pass (fix: fold exclusion)"
+      },
+      {
+        "model": "haiku",
+        "result": "pass (fix: native on in test_field_for_exists)"
+      }
+    ],
+    "T027": [
+      {
+        "model": "sonnet",
+        "result": "pass (blocked only on a test exclusion; fixed in T026)"
+      }
+    ],
+    "T035": [
+      {
+        "model": "sonnet",
+        "result": "pass (no measurable gain on a quiet computer; SC-002 still fails 0.23-0.30)"
+      },
+      {
+        "model": "haiku",
+        "result": "pass (record fix: quiet numbers)"
       }
     ]
   },
@@ -296,7 +320,8 @@
       "T021: verification.md names the memory rule acceptance.py _check_memory; the function is _sc006.",
       "T021: the SC-007 pass is relative to the Python base; native extra memory is 2.9 x the point array and the reason is open.",
       "T021: the measurement scripts are in the job tmp folder, outside the repo; the method is only described.",
-      "T026: the parity test does not assert that _faulted(model) is not empty."
+      "T026: the parity test does not assert that _faulted(model) is not empty.",
+      "T035: the largest native difference of cutting_faults went from 5.7e-13 to 1.25e-12 although T035 claims the same floating-point operations; within tolerance, not explained."
     ]
   },
   "sc001": {
@@ -312,5 +337,14 @@
   "native_max_diff": {
     "restore": 9.3e-10,
     "model": "stopped_fault"
+  },
+  "sc002_quiet": {
+    "f1_u0": 0.298,
+    "f4_u0": 0.289,
+    "f4_u3": 0.294,
+    "cutting_faults": 0.231,
+    "plugin": 0.268,
+    "target": 0.2,
+    "result": "fail"
   }
 }

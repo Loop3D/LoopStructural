@@ -28,6 +28,7 @@ from ...utils._fault_block import block_kwargs, check_block
 from . import FeatureType
 from ._base_geological_feature import BaseFeature
 from ._evaluation import evaluation_scope, probe_points, restore
+from ._native_faults import _native_inputs, chain_for, field_for, native_threads
 
 logger = getLogger(__name__)
 
@@ -205,7 +206,17 @@ class GeologicalFeature(BaseFeature):
         if mask.dtype not in [int, bool]:
             logger.error(f"Unable to evaluate value for {self.name}")
         else:
-            v[mask] = self.interpolator.evaluate_value(evaluation_points[mask, :])
+            field = field_for(self)
+            if field is None:
+                v[mask] = self.interpolator.evaluate_value(evaluation_points[mask, :])
+            else:
+                # Same stale-frame check as the Python interpolator.
+                self.interpolator._check_frame()
+                self.interpolator.update()
+                v[mask] = field.values(
+                    np.ascontiguousarray(evaluation_points[mask, :], dtype=float),
+                    native_threads(),
+                )
         if fillnan == 'nearest':
             from scipy import spatial
 
@@ -268,6 +279,36 @@ class GeologicalFeature(BaseFeature):
         # then evaluate the gradient at these points
         faults = self._unrestored_faults(restored_through)
         if len(faults) > 0:
+            field = field_for(self)
+            inputs = (
+                _native_inputs(self, False, block, restored_through)
+                if field is not None
+                else None
+            )
+            if inputs is not None:
+                chain, order, sides, restored = inputs
+                # A fault that the block names has no jump, so a tetrahedron may cross it.
+                jumping = [
+                    any(f is g for g in faults) and (not block or f.name not in block)
+                    for f in chain_for(self)[1]
+                ]
+                grads, count = chain.feature_gradient(
+                    field,
+                    np.ascontiguousarray(pos, dtype=float),
+                    order,
+                    sides,
+                    restored,
+                    np.asarray(jumping, dtype=bool),
+                    float(element_scale_parameter),
+                    native_threads(),
+                )
+                # Rows outside the mask stay NaN.
+                v[mask, :] = grads[mask, :]
+                if count > 0:
+                    logger.warning(
+                        f"{count} points are too close to a fault. Refining the tetrahedron"
+                    )
+                return v
             # generate a regular tetrahedron for each point
             # we will then move these points by the fault and then recalculate the gradient.
             # this should work...
@@ -320,7 +361,15 @@ class GeologicalFeature(BaseFeature):
         if mask.dtype not in [int, bool]:
             logger.error(f"Unable to evaluate gradient for {self.name}")
         else:
-            v[mask, :] = self.interpolator.evaluate_gradient(pos[mask, :])
+            field = field_for(self)
+            if field is None:
+                v[mask, :] = self.interpolator.evaluate_gradient(pos[mask, :])
+            else:
+                self.interpolator._check_frame()
+                self.interpolator.update()
+                v[mask, :] = field.gradients(
+                    np.ascontiguousarray(pos[mask, :], dtype=float), native_threads()
+                )
         logger.info(f'Gradient calculated for {self.name}')
         return v
 
