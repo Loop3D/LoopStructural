@@ -19,7 +19,13 @@
       "wave": 2,
       "base": "61b72cdc560536ab38b8ba65eac2420c67437063",
       "commit": "2c719e162002ad84bdbcd506c80a6512abc32a3f",
-      "review": "pass (2 minor); 1 major found by the orchestrator in the review notes: GridField::gradient NaN outside the grid, Python gives 0 (fix sent to T010)"
+      "review": "pass after one fix round (7216f64d; recheck pass)"
+    },
+    {
+      "wave": 3,
+      "base": "599890b6ddea087309ebb7cdba0ab264922dfb59",
+      "commit": null,
+      "review": null
     }
   ],
   "runs": {
@@ -94,6 +100,24 @@
     "T023": [
       {
         "model": "sonnet",
+        "result": "pass"
+      }
+    ],
+    "T005": [
+      {
+        "model": "sonnet",
+        "result": "pass (SC-001 fail: 13.6 ms; group values differ from the _runs007 reference, cause: the reference build, not D1a)"
+      }
+    ],
+    "T012": [
+      {
+        "model": "sonnet",
+        "result": "pass"
+      }
+    ],
+    "T019": [
+      {
+        "model": "haiku",
         "result": "pass"
       }
     ]

@@ -113,7 +113,7 @@ Common rules for every Rust task: `cargo fmt --check` and
     passes `owner=feature` in both `restore_through` calls. Do not change the
     builder calls.
 
-- [ ] T005 [US1] [M] Measure the cut faults again after D1a and compare with SC-001.
+- [x] T005 [US1] [M] Measure the cut faults again after D1a and compare with SC-001.
   - Files: `specs/007-native-fault-kernel/profile-s1.md`
   - Needs: T002, T004
   - Wave: 3
@@ -233,7 +233,7 @@ Common rules for every Rust task: `cargo fmt --check` and
     gx, gy, gz in {-1.5, -1, -0.5, 0, 0.3, 1, 2}, and `block_displacement`
     for side +1 and -1, compared with values from Python to 1e-14.
 
-- [ ] T012 [US2] [M] Implement the native restoration, regions and thread pool (`restore.rs`, `region.rs`, `pool.rs`).
+- [x] T012 [US2] [M] Implement the native restoration, regions and thread pool (`restore.rs`, `region.rs`, `pool.rs`).
   - Files: `packages/loop_interpolation_core/src/fault/restore.rs`, `packages/loop_interpolation_core/src/fault/region.rs`, `packages/loop_interpolation_core/src/fault/pool.rs`, `packages/loop_interpolation_core/src/fault/mod.rs`, `packages/loop_interpolation_core/tests/fault_restore.rs`
   - Needs: T010, T011
   - Wave: 3
@@ -377,7 +377,7 @@ Common rules for every Rust task: `cargo fmt --check` and
     raises `ValueError` and the model state does not change. Reset the
     settings in a fixture.
 
-- [ ] T019 [US4] [S] Add the option `--native-faults {on,off}` to the benchmark runner (FR-013).
+- [x] T019 [US4] [S] Add the option `--native-faults {on,off}` to the benchmark runner (FR-013).
   - Files: `benchmarks/fault_evaluation/run.py`
   - Needs: T015
   - Wave: 3

@@ -27,10 +27,11 @@ pub struct FaultChain {
 pub struct Fault {
     /// The three frame coordinate fields.
     pub frame: [GridField; 3],
-    /// The indices of the faults that cut this fault.
+    /// The indices of the faults that cut this fault, in restore order.
     pub cutters: Vec<usize>,
-    /// The regions where the fault is active.
-    pub regions: Vec<Region>,
+    /// The regions where the fault is active: one list for each frame member.
+    /// A member has a value only where all regions of its own list contain the point.
+    pub regions: [Vec<Region>; 3],
     /// The displacement profile of the fault.
     pub profile: Profile,
     /// The maximum displacement of the fault.

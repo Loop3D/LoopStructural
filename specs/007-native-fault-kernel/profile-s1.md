@@ -70,3 +70,45 @@ The call to `is_in` and its generator, `_cutters`, `cutters_first` and `any` are
 ## Where the time goes
 
 The restore order work is the largest part: `cutters_first` takes 74.8 % of the profiled time, and nearly all of it is in `_cutters` and `is_in` (5.3 million calls). Together with their `any` calls and generators, the self time of these functions is about 6.4 s of 8.17 s. `with_cutters` takes only 7.3 % and `_shared_frame_members` less than 1 %. The frame evaluation work (`_evaluate_frame_legacy`) is high in the cumulative column (95.5 %), but this is because it calls `restore_through` again for each cutting fault; its own time is very small. The `up_to_date` checks add about 16 % in two functions that overlap with the rest. Plan OP3: S1 must remove the `is_in` and `_cutters` loops first, because they are the main cost; the cost of the frame evaluation itself stays small in this profile.
+
+## After D1a
+
+Run: the benchmark and the profile ran one after the other, with the code of D1a (T004). No code was changed for the measurement. Limit: other agents can build Rust code on the same computer at the same time, so the times are not exact.
+
+Command: `python -m benchmarks.fault_evaluation.many_faults --output many_faults_d1a.json --points 500 2000 5000 --compare _runs007/many_faults_python_ref.npz`. The reference file holds arrays for 500, 2000 and 5000 points, and `compare()` marks an array that is missing from the run as a difference. Therefore the run used all three point counts. SC-001 uses the 500 case.
+
+| Value (500 points) | Baseline | After D1a |
+|---|---|---|
+| `evaluate_model_seconds` | 1.78 s | 0.730 s |
+| `fault_calls` | 94 | 94 |
+| `cutting_mean_ms` | 40.0 ms | 13.6 ms |
+| `cutting_max_ms` | 117.4 ms | 25.4 ms |
+| `isolated_mean_ms` | 2.65 ms | 2.66 ms |
+
+Other point counts: 2000 points: cutting mean 15.8 ms, max 27.7 ms, isolated mean 2.75 ms, `evaluate_model` 0.808 s. 5000 points: cutting mean 20.1 ms, max 32.9 ms, isolated mean 3.42 ms, `evaluate_model` 1.019 s. The model build took 195 s.
+
+`--compare` exit code: 1. Message: `differ: ['group_0_2000', 'group_0_500', 'group_0_5000', 'group_1_2000', 'group_1_500', 'group_1_5000']`. The arrays `model_ids_*` are bit-identical. The values of the two groups differ from the reference at all three point counts. This needs a check by the owner of D1a (the difference can come from a change in the order of the fault restore).
+
+SC-001: fail (13.6 ms)
+
+### Profile after D1a
+
+Calls: one warm-up `evaluate_model` call, then one call without the profiler (0.678 s), then one call with `cProfile` (2.456 s; before D1a: 1.73 s and 8.17 s). The shares are of 2.456 s. As before, cumulative times include called functions, so the shares must not be added together.
+
+| Function | ncalls | cumulative time (s) | share of 2.456 s | share before D1a |
+|---|---|---|---|---|
+| `_calculate_mask` | 2868 | 2.381 | 96.9 % | 99.1 % |
+| `restore_through` (now `_fault_block.py:255`) | 2557 | 2.306 | 93.9 % | 98.1 % |
+| `apply_to_points` | 94 | 2.302 | 93.7 % | 97.9 % |
+| `_evaluate_frame` | 1034 | 2.213 | 90.1 % | 96.7 % |
+| `_evaluate_frame_legacy` | 698 | 2.115 | 86.1 % | 95.5 % |
+| `_apply_faults` | 2556 | 1.287 | 52.4 % | 84.8 % |
+| `restore_order` (replaces `cutters_first`) | 2557 | 1.051 | 42.8 % | 74.8 % (`cutters_first`) |
+| `is_in` | 790406 | 0.936 | 38.1 % | 60.0 % (5308363 calls) |
+| `_cutters` | 52428 | 0.834 | 34.0 % | 68.4 % (296025 calls) |
+| `up_to_date` (`_base_builder.py`) | 716108 | 0.649 | 26.4 % | 8.2 % |
+| `up_to_date` (`_fault_builder.py`) | 235948 | 0.629 | 25.6 % | 7.9 % |
+| `with_cutters` | 2557 | 0.589 | 24.0 % | 7.3 % |
+| `any` (built-in) | 791078 | 0.580 | 23.6 % | n/a |
+
+The `is_in` and `_cutters` work is still the largest single part (about 38 % of the profiled time), but it fell from 5.3 million to 0.79 million `is_in` calls. The `up_to_date` checks and `with_cutters` now have a larger share, because the total is smaller (their absolute times are about the same).

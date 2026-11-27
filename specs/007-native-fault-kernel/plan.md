@@ -94,6 +94,22 @@ Answered by the maintainer on 2026-11-27.
 - **OP6**: accept (the default).
 - **OP7**: copy the points and measure SC-007 (the default).
 - **OP8**: identity of the array (the default).
+- **T005 (2026-11-27, orchestrator)**: the `_runs007` reference cannot be
+  reproduced bit for bit in the feat-007 venv: the unchanged pre-D1a code
+  (cceb9b57) also differs from it in all `group_*` arrays (model ids are
+  equal). The cause is the model build (CG solves with atol 1e-6 in another
+  environment), not the code. An in-process check on one build shows D1a is
+  bit-identical (ids and both groups, 500 and 5000 points, with the cache,
+  without it, and on a repeat). Same-environment baseline before D1a: cutting
+  fault mean 39.1 ms at 500 points; after D1a 13.6 ms (SC-001 still fails, so
+  D1b runs, OP3). From now on the bit-identity check of S1 uses one build: the
+  script `ab.py` pattern (cache on against off in one process).
+- **T019 (2026-11-27, orchestrator)**: the benchmark result keeps `"suite"`
+  as a string (`compare.py` and `acceptance.py` compare it with
+  `"standard"`). The native switch is a new top-level key
+  `"native_faults": "on" | "off"`. `--native-faults` also sets
+  `LOOPSTRUCTURAL_NATIVE_FAULTS`, so the subprocesses of each pass use the
+  same path.
 - **OP9**: read the proof-of-concept crate only to find the cause (the
   default). Its path (from `HANDOFF.md`) is
   `/home/lgrose/dev/LoopStructural-wt/_runs003/rust_poc/` (`README.md`,
