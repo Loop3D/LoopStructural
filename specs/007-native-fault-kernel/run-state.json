@@ -30,6 +30,12 @@
     {
       "wave": 4,
       "base": "c9a6b54abde9aad317e4a5546d390ff1d7cb3020",
+      "commit": "66af7228cab42d582d6aadf2508b79416a7a092f",
+      "review": "pass (4 minor)"
+    },
+    {
+      "wave": 5,
+      "base": null,
       "commit": null,
       "review": null
     }
@@ -151,7 +157,7 @@
     ]
   },
   "findings": {
-    "found": 9,
+    "found": 13,
     "rejected": 2,
     "dropped": 0,
     "fixed": 1,
@@ -161,7 +167,11 @@
       "T011: taylor computes 12.0*h*h, Python 12.0*h**2 (1 ulp at most).",
       "T012: Region::Sign::contains allocates vec![false; n] and FaultChain::restore copies restored on each call (hot path; measure in T021).",
       "T019: --native-faults default off overwrites LOOPSTRUCTURAL_NATIVE_FAULTS set by the user (the result records native_faults: off).",
-      "T013: FaultChain requires steps >= 1; Python allows steps = 0 (no movement). T016 must send such a fault to the Python path."
+      "T013: FaultChain requires steps >= 1; Python allows steps = 0 (no movement). T016 must send such a fault to the Python path.",
+      "T013: parse_grid nsteps product can overflow in release; use checked_mul and ValueError.",
+      "T013: the spec parser accepts NaN/inf numbers and a zero step_vector.",
+      "T006: _evaluate_frame_shared calls builder.up_to_date for all 3 members even when one is not evaluated.",
+      "T006: _evaluate_frame_shared uses restore_through, not the scope-shared restore(); no value change."
     ]
   },
   "sc001": {
