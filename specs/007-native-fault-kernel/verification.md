@@ -54,3 +54,78 @@ The items are in order of the likely size of their effect.
 10. Build the local frame from `bounding_box.project`, as the PoC does, but also accept a rotated grid, or refuse it with a clear error.
 11. Check the kernel with a model that has a fault with `smooth_peak` in gy, at the golden tolerance of 1e-8 times the box size. A pass on a model with only `Ones` profiles proves nothing about item 1.
 12. To confirm the cause (open point): export the model f1_u0 with 2001, 20001 and 200001 samples and compare with Python. If the maximum difference falls with the square of the step, item 1 is the cause.
+
+## Stage S2
+
+Measures SC-002, SC-003 and SC-007 and records the native differences (FR-005c). Task T021.
+
+### Set-up
+
+- Computer: the computer of spec 003 T030. Intel Core i7-12700H (12th Gen), 20 threads, Linux.
+- Commit: `dcad71c78bc58501456311cd57a66b028e84f88d` (HEAD of the worktree). Other work was in the tree (an untracked test file of another task).
+- Limit of the numbers: another agent could run tests at the same time (light load). The timings can be a little high. Each timing is the median of 7 repeats (31 repeats for runs below 10 ms), after two warm-up calls.
+- Time method: for each model, 10 000 points (`sample_points(name, 10000, seed=1)`). For each faulted feature (`feature.faults` not empty, `faults_enabled`):
+  - Python: `restore_through(pts, feature.faults, owner=feature)` with `native_faults = False`.
+  - Native: `_native_faults.restore(feature, pts)` with `native_faults = True`, after one call that builds the FaultChain. `native_threads = 1` (SC-002) and `native_threads = 0` (all 20 threads, SC-003).
+  - The time of a model is the sum over its faulted features. Ratio = native / Python.
+  - Every timed feature gave the same result shape and no `None`: no feature fell back to Python and none was excluded.
+- Memory method: `f4_u0`, first faulted feature (`group_0`), 10 000 000 points (`np.tile` of 10 000 sample points, float64 (N, 3), 240 MB), `native_threads = 0`. One restore in a fresh process for each path. The baseline is `VmRSS` after the points exist (and, for native, after the chain is built). The peak is `ru_maxrss` after the call. Extra = peak - baseline. The Python run took about 7.5 minutes, so the full 10 million points were used.
+- Scratch scripts and results: `/home/lgrose/.claude/jobs/8f5b2ef3/tmp/t021/`.
+
+### SC-002: native restore, 1 thread, at most 20 % of Python
+
+| Model | Python ms | Native ms (1 thread) | Ratio | Target | Result |
+|-------|-----------|----------------------|-------|--------|--------|
+| f1_u0 | 76.4 | 22.9 | 0.299 | <= 0.20 | fail |
+| f4_u0 | 314.0 | 92.8 | 0.295 | <= 0.20 | fail |
+| f4_u3 | 2148.4 | 627.2 | 0.292 | <= 0.20 | fail |
+| cutting_faults | 487.9 | 112.8 | 0.231 | <= 0.20 | fail |
+| plugin | 725.6 | 191.6 | 0.264 | <= 0.20 | fail |
+
+### SC-003: native restore, 20 threads, at most 3 % of Python
+
+| Model | Python ms | Native ms (20 threads) | Ratio | Target | Result |
+|-------|-----------|------------------------|-------|--------|--------|
+| f1_u0 | 76.4 | 2.2 | 0.028 | <= 0.03 | pass |
+| f4_u0 | 314.0 | 8.1 | 0.026 | <= 0.03 | pass |
+| f4_u3 | 2148.4 | 57.4 | 0.027 | <= 0.03 | pass |
+| cutting_faults | 487.9 | 11.2 | 0.023 | <= 0.03 | pass |
+| plugin | 725.6 | 17.8 | 0.025 | <= 0.03 | pass |
+
+The margin of SC-003 is small (0.023 to 0.028 against 0.03). A load from other work can change the result for `f1_u0`.
+
+### SC-007: extra peak memory of a native restore, 10 million points
+
+| Path | Baseline MB | Peak MB | Extra MB |
+|------|-------------|---------|----------|
+| Native | 479.2 | 1164.3 | 685.1 |
+| Python | 476.0 | 6912.2 | 6430.4 |
+
+- Rule (spec 003 FR-010, `acceptance.py` `_check_memory`, `limit = 1.20`): a new value fails only if it is above `1.20 * base` AND more than `MEMORY_ALLOWANCE_BYTES` (16 MiB) above `base`. Base = the Python extra memory.
+- New (native) extra is 685.1 MB. The limit value is 1.20 * 6430.4 = 7716.5 MB. Native is below base.
+- Result: pass. Native uses about 11 % of the extra memory of Python.
+- Note: the native extra memory is about 2.9 times the size of the point array (240 MB). The reason was not examined.
+
+### Largest native difference (`max_native_diff`)
+
+Source: `OMP_NUM_THREADS=1 pytest tests/fault_evaluation/test_native_faults.py -q -p no:cacheprovider --junitxml=.../native.xml`. Result: 10 passed. The test uses 2000 points and compares many variants (default, reverse, block sides, `restored_through`). The box size is the largest box extent.
+
+| Model | Max difference (m) | Box size (m) | Difference / box | Fallback cases |
+|-------|--------------------|--------------|------------------|----------------|
+| f1_u0 | 2.27e-13 | 1000 | 2.3e-16 | none |
+| f4_u0 | 2.27e-13 | 1000 | 2.3e-16 | none |
+| f4_u3 | 2.27e-13 | 1000 | 2.3e-16 | none |
+| cutting_faults | 5.68e-13 | 1000 | 5.7e-16 | `group_0` with `reverse=True` uses Python |
+| plugin | 9.31e-10 | 29 656.82 | 3.1e-14 | none |
+| stopped_fault | 1.14e-13 | 1000 | 1.1e-16 | none |
+| faulted_fold | 1.82e-12 | 10 000 | 1.8e-16 | none |
+
+All differences are far below the golden tolerance of 1e-8 times the box size. The PoC difference of C-007 (5.4e-5 m) is not present.
+
+### Result
+
+- SC-002: FAIL for all 5 models. The ratio is 0.23 to 0.30 against a target of 0.20. The limit was not changed.
+- SC-003: PASS for all 5 models. The ratio is 0.023 to 0.028 against a target of 0.03.
+- SC-007: PASS. Native extra memory 685 MB, Python 6430 MB.
+- FR-005c: the largest native difference is 9.3e-10 m (`plugin`), or 3.1e-14 of the box. For the 1000 m models it is 5.7e-13 m or less.
+- One fallback case: `cutting_faults`, `group_0`, `reverse=True` (the native path returns `None`, Python is used). No fallback in the timed (non-reverse) calls.

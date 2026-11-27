@@ -418,7 +418,7 @@ Common rules for every Rust task: `cargo fmt --check` and
     `'LoopStructural/modelling/features/_native_faults.py'` and
     `'LoopStructural/utils/_fault_block.py'`. Change nothing else.
 
-- [ ] T021 [US2] [M] Measure SC-002, SC-003 and SC-007 and record the native differences (FR-005c).
+- [x] T021 [US2] [M] Measure SC-002, SC-003 and SC-007 and record the native differences (FR-005c).
   - Files: `specs/007-native-fault-kernel/verification.md`
   - Needs: T009, T016, T019, T020
   - Wave: 7
@@ -435,10 +435,31 @@ Common rules for every Rust task: `cargo fmt --check` and
     (`max_native_diff`). Change no code. If a target fails, record it; do
     not change a limit.
 
+- [ ] T035 [US2] [M] Make the 1-thread native restoration faster, with the same results (SC-002; maintainer answer 2026-11-27).
+  - Files: `packages/loop_interpolation_core/src/fault/restore.rs`, `packages/loop_interpolation_core/src/fault/region.rs`, `packages/loop_interpolation_core/src/fault/mod.rs`, `packages/loop_interpolation_core/tests/fault_restore.rs`, `specs/007-native-fault-kernel/verification.md`
+  - Needs: T021
+  - Wave: 8
+  - Done when: `cargo test --release` (also `--features parallel`) passes, `pytest tests/fault_evaluation/test_native_faults.py tests/fault_evaluation/test_native_safety.py tests/fault_evaluation/test_golden.py -q` passes after `maturin develop --release`, and `verification.md` has a section "Stage S2 after T035" with the SC-002 and SC-003 ratios measured as in T021.
+  - Context: T021 measured SC-002 at 0.23 to 0.30 (target 0.20) and SC-003
+    at 0.023 to 0.028 (target 0.03). Profile one restore of `f4_u0` and
+    `cutting_faults` at 10 000 points on 1 thread (for example `perf` or a
+    timing of each function) and remove the costs that the profile shows.
+    Known candidates (wave 3 review): `Region::Sign::contains` allocates
+    `vec![false; n]` on each call; `FaultChain::restore` copies `restored`
+    on each call; `frame_point` restores the cutters again for each member
+    and each step; `GridField` lookups that compute the same cell twice for
+    value and gradient. The public signatures of `FaultChain`, `GridField`,
+    `Region` and the batch functions do not change (`src/python.rs` and
+    `gradient.rs` call them). The results must stay the same: the Rust
+    tests and the Python parity tests pass, and the largest native
+    difference stays below 1e-8 x the box. Measure again with the T021
+    method (scripts in `$CLAUDE_JOB_DIR/tmp/t021/`) and record the result;
+    if SC-002 still fails, record the numbers and the remaining costs.
+
 - [ ] T022 [US2] [S] Record stage S2 in `ROADMAP.md` (FR-015).
   - Files: `ROADMAP.md`
-  - Needs: T007, T021
-  - Wave: 8
+  - Needs: T007, T021, T035
+  - Wave: 9
   - Done when: `ROADMAP.md` `## Status log` has a dated line for spec 007 stage S2 with the SC-002, SC-003 and SC-007 results.
   - Context: One line at the end of `## Status log`, as the lines above it:
     "spec 007 S2: native fault restoration in `loop_interpolation_core`
@@ -495,7 +516,7 @@ Common rules for every Rust task: `cargo fmt --check` and
     (`jumping`, `sides` and `restored` must have one item for each fault),
     `RuntimeError` for an internal error, empty input gives `(empty, 0)`.
 
-- [ ] T026 [US3] [M] Test: native values, gradients and model ids agree with the Python path (story 3, FR-004, FR-005, FR-005a, FR-005b).
+- [x] T026 [US3] [M] Test: native values, gradients and model ids agree with the Python path (story 3, FR-004, FR-005, FR-005a, FR-005b).
   - Files: `tests/fault_evaluation/test_native_field.py`
   - Needs: T016
   - Wave: 7

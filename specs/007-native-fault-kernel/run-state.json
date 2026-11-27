@@ -47,7 +47,7 @@
     },
     {
       "wave": 7,
-      "base": null,
+      "base": "dcad71c78bc58501456311cd57a66b028e84f88d",
       "commit": null,
       "review": null
     }
@@ -243,6 +243,18 @@
       {
         "model": "haiku",
         "result": "pass (fix: test_no_retention, test_fault_frame_lookup)"
+      }
+    ],
+    "T021": [
+      {
+        "model": "sonnet",
+        "result": "pass (SC-002 fail 0.23-0.30; SC-003 pass 0.023-0.028; SC-007 pass)"
+      }
+    ],
+    "T026": [
+      {
+        "model": "sonnet",
+        "result": "pass"
       }
     ]
   },

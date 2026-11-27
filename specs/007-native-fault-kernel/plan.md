@@ -94,6 +94,11 @@ Answered by the maintainer on 2026-11-27.
 - **OP6**: accept (the default).
 - **OP7**: copy the points and measure SC-007 (the default).
 - **OP8**: identity of the array (the default).
+- **T021 / SC-002 (2026-11-27, maintainer)**: SC-002 fails (1 thread:
+  0.23 to 0.30 of the Python time; target 0.20). SC-003 (0.023 to 0.028)
+  and SC-007 pass. The maintainer added task T035: profile the 1-thread
+  kernel, remove the hot-path costs with unchanged results, and measure
+  again. T022 waits for T035.
 - **T016 (2026-11-27, maintainer and orchestrator)**:
   - Maintainer: the spec 003 tests that count or patch calls of the Python
     `FaultSegment.apply_to_points` (`tests/fault_evaluation/test_context.py`,
