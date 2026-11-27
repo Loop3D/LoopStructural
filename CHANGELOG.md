@@ -1,5 +1,30 @@
 # Changelog
 
+## [1.12.1](https://github.com/Loop3D/LoopStructural/compare/v1.12.0...v1.12.1) (2026-11-27)
+
+
+### Bug Fixes
+
+* **builder:** check each builder once per up_to_date call ([#429](https://github.com/Loop3D/LoopStructural/issues/429)) ([db5e65a](https://github.com/Loop3D/LoopStructural/commit/db5e65acb69aea0fb1e406160ea1af13fe8c2b6b))
+* **builder:** rotate data vectors through the faults in restore order ([#428](https://github.com/Loop3D/LoopStructural/issues/428)) ([e2ddab7](https://github.com/Loop3D/LoopStructural/commit/e2ddab7e40ed160ada5d9589926d447d8082ca2f))
+* **fault:** keep a step direction where a cutting fault leaves no frame gradient ([#425](https://github.com/Loop3D/LoopStructural/issues/425)) ([67dbcc8](https://github.com/Loop3D/LoopStructural/commit/67dbcc8e657cbbe70abb2cf3bfe5c694012eceec))
+* **fault:** restore a cutting fault before the fault it cuts ([#427](https://github.com/Loop3D/LoopStructural/issues/427)) ([ef6389e](https://github.com/Loop3D/LoopStructural/commit/ef6389e6e68bfb5dbd1e9361b8821fc0d4c160ca))
+* **features:** fillnan='nearest' leaves points with a NaN coordinate NaN ([#424](https://github.com/Loop3D/LoopStructural/issues/424)) ([315dff4](https://github.com/Loop3D/LoopStructural/commit/315dff4349e11f42039f4b54f98872cd02fa096f))
+* **features:** fold rotation angles, fault gradients near faults, fault_pitch, faultfunction setter ([#421](https://github.com/Loop3D/LoopStructural/issues/421)) ([a942177](https://github.com/Loop3D/LoopStructural/commit/a942177b32d99c2b11eca99406bfe8799538d176))
+* **loop-interpolation:** equality, gradient and weight data reach the solve ([#416](https://github.com/Loop3D/LoopStructural/issues/416)) ([3dc4575](https://github.com/Loop3D/LoopStructural/commit/3dc45756cf4ea0560a42d44c2bc5d7bf2fd0a147))
+* **modelling:** correct unit ranges from stratigraphic column dicts and return unit ids from evaluate_model ([#412](https://github.com/Loop3D/LoopStructural/issues/412)) ([c9cb718](https://github.com/Loop3D/LoopStructural/commit/c9cb7185c992108477418d80bad4704ed9c63688))
+* **modelling:** onlap regions, model.save, intrusions list, map2loop supergroups, fault-unit matrix ([#414](https://github.com/Loop3D/LoopStructural/issues/414)) ([6449837](https://github.com/Loop3D/LoopStructural/commit/644983752c46737c70220641ab48d8853382fb4e))
+
+
+### Performance Improvements
+
+* faster evaluation of faulted models (spec 003) ([#391](https://github.com/Loop3D/LoopStructural/issues/391)) ([6874364](https://github.com/Loop3D/LoopStructural/commit/6874364c9f4f772338b1fb30f3ef8c1bf0b4efd2))
+
+
+### Documentation
+
+* **spec:** add 007-native-fault-kernel ([#430](https://github.com/Loop3D/LoopStructural/issues/430)) ([dc533a4](https://github.com/Loop3D/LoopStructural/commit/dc533a4583d858f0c17bf1d6609c933c6e127cfb))
+
 ## [1.12.0](https://github.com/Loop3D/LoopStructural/compare/v1.11.0...v1.12.0) (2026-11-18)
 
 
