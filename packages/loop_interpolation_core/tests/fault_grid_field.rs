@@ -66,7 +66,7 @@ fn rotated_local_frame() {
 }
 
 #[test]
-fn nan_and_outside_points_give_nan() {
+fn nan_and_outside_points() {
     let g = grid([0.0; 3], [3, 3, 3], [1.0; 3], |p| p[0]);
     for p in [
         [f64::NAN, 1.0, 1.0],
@@ -75,7 +75,11 @@ fn nan_and_outside_points_give_nan() {
         [1.0, 1.0, -0.1],
     ] {
         assert!(g.value(p).is_nan());
-        assert!(g.gradient(p).iter().all(|v| v.is_nan()));
+        // Outside finite points give a zero gradient. NaN points give NaN.
+        let is_nan_point = p.iter().any(|v| v.is_nan());
+        for v in g.gradient(p) {
+            assert!(if is_nan_point { v.is_nan() } else { v == 0.0 });
+        }
     }
     // The upper boundary is inside.
     assert!(close(g.value([2.0, 2.0, 2.0]), 2.0));

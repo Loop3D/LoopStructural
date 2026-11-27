@@ -18,8 +18,8 @@
     {
       "wave": 2,
       "base": "61b72cdc560536ab38b8ba65eac2420c67437063",
-      "commit": null,
-      "review": null
+      "commit": "2c719e162002ad84bdbcd506c80a6512abc32a3f",
+      "review": "pass (2 minor); 1 major found by the orchestrator in the review notes: GridField::gradient NaN outside the grid, Python gives 0 (fix sent to T010)"
     }
   ],
   "runs": {
@@ -73,6 +73,10 @@
       {
         "model": "sonnet",
         "result": "pass"
+      },
+      {
+        "model": "sonnet",
+        "result": "pass (review fix)"
       }
     ],
     "T011": [
@@ -95,12 +99,14 @@
     ]
   },
   "findings": {
-    "found": 3,
+    "found": 6,
     "rejected": 2,
     "dropped": 0,
-    "fixed": 0,
+    "fixed": 1,
     "open_minor": [
-      "T001: ROADMAP.md says 'S1 restores the order once'; should say 'S1 computes the restore order once' (fix in T007)."
+      "T001: ROADMAP.md says 'S1 restores the order once'; should say 'S1 computes the restore order once' (fix in T007).",
+      "T011: Profile::block_displacement goes on to continue_profile for a NaN gx (Python returns the profile at forced_gx); no path gives a NaN gx today.",
+      "T011: taylor computes 12.0*h*h, Python 12.0*h**2 (1 ulp at most)."
     ]
   }
 }

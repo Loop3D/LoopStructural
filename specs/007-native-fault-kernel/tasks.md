@@ -208,7 +208,8 @@ Common rules for every Rust task: `cargo fmt --check` and
     and the interpolator methods `_project_points` and `_reproject_vectors`
     (world to local frame with `local_origin` and `local_rotation`; `None`
     means identity). `value(p)` NaN if a coordinate is NaN or the point is
-    outside the grid; `gradient(p)` the same, returned in world axes.
+    outside the grid; `gradient(p)` NaN for a NaN coordinate and [0, 0, 0]
+    outside the grid (as Python), returned in world axes.
     Tests: a field linear in x, y, z (exact value and gradient), a rotated
     local frame, a NaN point, an outside point, and 5 points with expected
     values copied from a Python run of the same grid (write the Python

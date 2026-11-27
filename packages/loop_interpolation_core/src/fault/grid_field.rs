@@ -29,11 +29,14 @@ impl GridField {
         }
     }
 
-    /// Return the field gradient at `p`. Return NaN outside the grid or for NaN input.
-    /// The result is in world axes.
+    /// Return the field gradient at `p`, in world axes.
+    /// Return NaN for NaN input. Return zero outside the grid (as the Python code does).
     pub fn gradient(&self, p: [f64; 3]) -> [f64; 3] {
-        let Some((corners, t)) = self.lookup(p) else {
+        if p.iter().any(|v| v.is_nan()) {
             return [f64::NAN; 3];
+        }
+        let Some((corners, t)) = self.lookup(p) else {
+            return [0.0; 3];
         };
         let w = gradient_weights(t);
         let mut g = [0.0; 3];
