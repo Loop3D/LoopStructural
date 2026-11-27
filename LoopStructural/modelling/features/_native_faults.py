@@ -1,6 +1,6 @@
 """Decide if LoopStructural uses the native fault kernel.
 
-The native fault kernel is the Rust package ``loop_interpolation_core``.
+The native fault kernel is the Rust package ``loop_model_core``.
 """
 
 from __future__ import annotations
@@ -50,9 +50,9 @@ def native_enabled() -> bool:
     if not _core_checked:
         _core_checked = True
         try:
-            import loop_interpolation_core
+            import loop_model_core
 
-            _core = loop_interpolation_core
+            _core = loop_model_core
         except ImportError:
             _core = None
     if _core is None:

@@ -6,10 +6,11 @@ permissions:
   contents: read
 
 jobs:
-  # loop-interpolation-core is the Rust core behind the optional extra
-  # loop-interpolation[native]. It has compiled wheels, so it is built by
-  # core-wheels.yml and not by the sdist matrix below. No other package
-  # waits for it: a failed core upload does not stop their release.
+  # loop-interpolation-core (the solver behind loop-interpolation[native])
+  # and loop-model-core (the fault kernel) are Rust cores with compiled
+  # wheels, so they are built by core-wheels.yml and model-core-wheels.yml
+  # and not by the sdist matrix below. No other package waits for them: a
+  # failed core upload does not stop their release.
   build_core:
     name: Build loop-interpolation-core
     uses: ./.github/workflows/core-wheels.yml
@@ -26,6 +27,29 @@ jobs:
       - uses: actions/download-artifact@v4
         with:
           pattern: core-*
+          path: dist
+          merge-multiple: true
+      - uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          skip-existing: true
+          verbose: true
+
+  build_model_core:
+    name: Build loop-model-core
+    uses: ./.github/workflows/model-core-wheels.yml
+
+  # Trusted publishing (OIDC): no password. PyPI must list this repository
+  # and the workflow file pypi.yml as a trusted publisher of the project loop-model-core.
+  upload_model_core_to_pypi:
+    name: Upload loop-model-core to PyPI
+    needs: ["build_model_core"]
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: model-core-*
           path: dist
           merge-multiple: true
       - uses: pypa/gh-action-pypi-publish@release/v1

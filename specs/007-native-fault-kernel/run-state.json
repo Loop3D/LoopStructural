@@ -83,7 +83,7 @@
     },
     {
       "wave": 13,
-      "base": null,
+      "base": "6c501f4edc7f9ee8a890255d73d0267e1a8aab9d",
       "commit": null,
       "review": null
     }
@@ -361,6 +361,18 @@
       {
         "model": "sonnet",
         "result": "pass (orchestrator ran cargo fmt on one moved test file)"
+      }
+    ],
+    "T038": [
+      {
+        "model": "sonnet",
+        "result": "pass (uv.lock not changed: master lock is stale; orchestrator decision)"
+      }
+    ],
+    "T039": [
+      {
+        "model": "sonnet",
+        "result": "pass"
       }
     ]
   },

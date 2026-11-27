@@ -105,6 +105,14 @@ Answered by the maintainer on 2026-11-27.
   the joblib meaning of -1), and the support checks use `type(x) is` for
   `FaultSegment`, `FaultDisplacement` and the region classes, so a user
   subclass takes the Python path.
+- **T038 / uv.lock (2026-11-27, orchestrator)**: the `uv.lock` of master is
+  stale (release-please raised the versions of loop-common,
+  loop-interpolation and LoopStructural without a new lock). `uv lock` now
+  rewrites about 1100 lines that spec 007 does not need. Spec 007 does not
+  change `uv.lock`; a separate re-lock on master also adds
+  `loop-model-core`. Until then, `uv sync --extra native` reports an old
+  lock. T038 also adds `packages/loop_model_core` to the uv workspace
+  `exclude` list (it builds with maturin, like the solver core).
 - **T021 / SC-002 (2026-11-27, maintainer)**: SC-002 fails (1 thread:
   0.23 to 0.30 of the Python time; target 0.20). SC-003 (0.023 to 0.028)
   and SC-007 pass. The maintainer added task T035: profile the 1-thread

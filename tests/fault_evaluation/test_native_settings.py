@@ -1,6 +1,6 @@
 """Tests for the native fault kernel settings (FR-006, FR-006a, FR-006b, FR-012).
 
-The tests use a fake ``loop_interpolation_core`` module. They check the setting,
+The tests use a fake ``loop_model_core`` module. They check the setting,
 the environment variable, the version check and the thread count of
 ``LoopStructural.modelling.features._native_faults``.
 
@@ -19,7 +19,7 @@ import pytest
 from LoopStructural import LoopStructuralConfig
 
 MODULE_NAME = "LoopStructural.modelling.features._native_faults"
-KERNEL_NAME = "loop_interpolation_core"
+KERNEL_NAME = "loop_model_core"
 ENV_VAR = "LOOPSTRUCTURAL_NATIVE_FAULTS"
 
 

@@ -10,6 +10,7 @@
         "packages/loop_common",
         "packages/loop_interpolation",
         "packages/loop_interpolation_core",
+        "packages/loop_model_core",
         "packages/map2loop",
         "packages/loop_link",
         "packages/loopstructural_visualisation"
@@ -26,6 +27,17 @@
     "packages/loop_interpolation_core": {
       "release-type": "python",
       "component": "loop-interpolation-core",
+      "extra-files": [
+        {
+          "type": "toml",
+          "path": "Cargo.toml",
+          "jsonpath": "$.package.version"
+        }
+      ]
+    },
+    "packages/loop_model_core": {
+      "release-type": "python",
+      "component": "loop-model-core",
       "extra-files": [
         {
           "type": "toml",

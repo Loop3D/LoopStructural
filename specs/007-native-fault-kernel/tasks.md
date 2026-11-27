@@ -678,7 +678,7 @@ Common rules for every Rust task: `cargo fmt --check` and
     new dependency versions: copy them from the interpolation core
     `Cargo.toml`. Never set CARGO_TARGET_DIR; one cargo command at a time.
 
-- [ ] T038 [US4] [M] Use `loop_model_core` from LoopStructural and the tests, and add it to the `native` extra (D5b).
+- [x] T038 [US4] [M] Use `loop_model_core` from LoopStructural and the tests, and add it to the `native` extra (D5b).
   - Files: `LoopStructural/modelling/features/_native_faults.py`, `tests/fault_evaluation/test_native_settings.py`, `tests/fault_evaluation/test_native_faults.py`, `tests/fault_evaluation/test_native_safety.py`, `tests/fault_evaluation/test_native_field.py`, `pyproject.toml`, `uv.lock`
   - Needs: T037
   - Wave: 13
@@ -694,7 +694,7 @@ Common rules for every Rust task: `cargo fmt --check` and
     (try `--offline` first). Do not change solver tests that use
     `loop_interpolation_core` for the solver.
 
-- [ ] T039 [US4] [M] Build, test and release `loop-model-core` in CI (D5c).
+- [x] T039 [US4] [M] Build, test and release `loop-model-core` in CI (D5c).
   - Files: `.github/workflows/model-core-wheels.yml`, `.github/workflows/core-wheels.yml`, `.github/workflows/pypi.yml`, `.github/workflows/native.yml`, `.release-please-config.json`, `.release-please-manifest.json`, `.dev-tools/project.json`
   - Needs: T037
   - Wave: 13

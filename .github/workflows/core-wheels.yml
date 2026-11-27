@@ -67,51 +67,6 @@ jobs:
           assert report["converged"], report
           assert field.shape == (512,), field.shape
           print("solve converged in", report["iterations"], "iterations")
-
-          # Fault kernel: restore two points across one fault.
-          i, j, k = np.meshgrid(np.arange(21.0), np.arange(21.0), np.arange(21.0), indexing="ij")
-          x = i.ravel(order="F")
-          y = j.ravel(order="F")
-          z = k.ravel(order="F")
-
-
-          def grid(values):
-              return {
-                  "origin": [0.0, 0.0, 0.0],
-                  "nsteps": [21, 21, 21],
-                  "step_vector": [1.0, 1.0, 1.0],
-                  "local_origin": None,
-                  "local_rotation": None,
-                  "values": np.asarray(values, dtype=np.float64),
-              }
-
-
-          spec = {
-              "version": 1,
-              "block": {"side_epsilon": 1e-9, "extension": "smooth", "exact": 0.25, "limit": 0.5, "step": 1e-3},
-              "faults": [
-                  {
-                      "name": "f",
-                      "displacement": 10.0,
-                      "steps": 10,
-                      "frame": [grid(x - 10), grid(y), grid(z)],
-                      "cutters": [],
-                      "regions": [[], [], []],
-                      "profile": {"scale": 1.0, "gx": {"kind": "ones"}, "gy": {"kind": "ones"}, "gz": {"kind": "ones"}},
-                  }
-              ],
-          }
-          chain = core.FaultChain(spec)
-          out = chain.restore(
-              np.array([[5.0, 5.0, 5.0], [12.0, 4.0, 8.0]]),
-              np.array([0], dtype=np.int64),
-              False,
-              np.array([2], dtype=np.int8),
-              np.array([False]),
-              0,
-          )
-          assert np.allclose(out, [[5, 15, 5], [12, 14, 8]], rtol=0, atol=1e-12), out
-          print("fault kernel restore ok")
           EOF
       - uses: actions/upload-artifact@v4
         with:

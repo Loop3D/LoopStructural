@@ -1,0 +1,127 @@
+name: "Native model wheels"
+
+# Build the wheels and the sdist of loop-model-core.
+# pypi.yml calls this workflow and then publishes the files.
+# A pull request that changes the crate also runs it, so a broken wheel
+# build shows before a release.
+#
+# The crate uses abi3-py39, so one wheel for each platform works with all
+# Python versions from 3.9.
+
+on:
+  workflow_call:
+  pull_request:
+    branches:
+      - master
+    paths:
+      - 'packages/loop_model_core/**'
+      - '.github/workflows/model-core-wheels.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  MANIFEST: packages/loop_model_core/Cargo.toml
+
+jobs:
+  wheels:
+    name: Wheel ${{ matrix.platform.name }}
+    runs-on: ${{ matrix.platform.runner }}
+    strategy:
+      fail-fast: false
+      matrix:
+        platform:
+          - { name: linux-x86_64, runner: ubuntu-latest, target: x86_64, smoke: true }
+          - { name: linux-aarch64, runner: ubuntu-24.04-arm, target: aarch64, smoke: true }
+          - { name: macos-arm64, runner: macos-latest, target: aarch64, smoke: true }
+          # Cross-compiled on the arm64 runner, so it is not run here.
+          - { name: macos-x86_64, runner: macos-latest, target: x86_64, smoke: false }
+          - { name: windows-x86_64, runner: windows-latest, target: x64, smoke: true }
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      # On Linux the build runs in a manylinux container.
+      - name: Build the wheel
+        uses: PyO3/maturin-action@v1
+        with:
+          target: ${{ matrix.platform.target }}
+          manylinux: auto
+          args: --release --out dist --manifest-path ${{ env.MANIFEST }}
+      - name: Install the wheel and restore points across a fault
+        if: matrix.platform.smoke
+        shell: bash
+        run: |
+          python -m pip install numpy
+          python -m pip install --no-index --find-links dist loop-model-core
+          python - <<'EOF'
+          import numpy as np
+          import loop_model_core as core
+
+          i, j, k = np.meshgrid(np.arange(21.0), np.arange(21.0), np.arange(21.0), indexing="ij")
+          x = i.ravel(order="F")
+          y = j.ravel(order="F")
+          z = k.ravel(order="F")
+
+
+          def grid(values):
+              return {
+                  "origin": [0.0, 0.0, 0.0],
+                  "nsteps": [21, 21, 21],
+                  "step_vector": [1.0, 1.0, 1.0],
+                  "local_origin": None,
+                  "local_rotation": None,
+                  "values": np.asarray(values, dtype=np.float64),
+              }
+
+
+          spec = {
+              "version": 1,
+              "block": {"side_epsilon": 1e-9, "extension": "smooth", "exact": 0.25, "limit": 0.5, "step": 1e-3},
+              "faults": [
+                  {
+                      "name": "f",
+                      "displacement": 10.0,
+                      "steps": 10,
+                      "frame": [grid(x - 10), grid(y), grid(z)],
+                      "cutters": [],
+                      "regions": [[], [], []],
+                      "profile": {"scale": 1.0, "gx": {"kind": "ones"}, "gy": {"kind": "ones"}, "gz": {"kind": "ones"}},
+                  }
+              ],
+          }
+          chain = core.FaultChain(spec)
+          out = chain.restore(
+              np.array([[5.0, 5.0, 5.0], [12.0, 4.0, 8.0]]),
+              np.array([0], dtype=np.int64),
+              False,
+              np.array([2], dtype=np.int8),
+              np.array([False]),
+              0,
+          )
+          assert np.allclose(out, [[5, 15, 5], [12, 14, 8]], rtol=0, atol=1e-12), out
+          print("fault kernel restore ok")
+          EOF
+      - uses: actions/upload-artifact@v4
+        with:
+          name: model-core-wheel-${{ matrix.platform.name }}
+          path: dist/*.whl
+          if-no-files-found: error
+
+  sdist:
+    name: Sdist
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build the sdist
+        uses: PyO3/maturin-action@v1
+        with:
+          command: sdist
+          args: --out dist --manifest-path ${{ env.MANIFEST }}
+      - uses: actions/upload-artifact@v4
+        with:
+          name: model-core-sdist
+          path: dist/*.tar.gz
+          if-no-files-found: error

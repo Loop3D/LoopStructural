@@ -9,7 +9,7 @@ from __future__ import annotations
 import numpy as np
 import pytest
 
-pytest.importorskip("loop_interpolation_core")
+pytest.importorskip("loop_model_core")
 
 from LoopStructural import LoopStructuralConfig
 from LoopStructural.modelling.features import _native_faults

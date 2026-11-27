@@ -49,7 +49,7 @@ export = ["geoh5py", "pyevtk", "dill"]
 jupyter = ["pyvista[all]"]
 inequalities = ["loopsolver"]
 # the Rust solver: solver='native'
-native = ["loop-interpolation[native]"]
+native = ["loop-interpolation[native]", "loop-model-core"]
 tests = ['pytest']
 dev = ['ruff', 'pytest-benchmark']
 docs = [
@@ -91,7 +91,7 @@ LoopStructural = [
 
 [tool.uv.workspace]
 members = ["packages/*"]
-exclude = ["packages/loop_interpolation_core", "packages/loop_link"]
+exclude = ["packages/loop_interpolation_core", "packages/loop_model_core", "packages/loop_link"]
 
 [tool.uv.sources]
 loop-common = { workspace = true }
@@ -103,6 +103,8 @@ LoopStructural = { workspace = true }
 # extra loop-interpolation[native] needs a source so that uv can lock it.
 # uv reads its static metadata. It builds the core only when the extra is used.
 loop-interpolation-core = { path = "packages/loop_interpolation_core" }
+# The fault kernel loop-model-core is also built with maturin. The extra native uses it.
+loop-model-core = { path = "packages/loop_model_core" }
 
 [tool.pytest.ini_options]
 addopts = "--import-mode=importlib"

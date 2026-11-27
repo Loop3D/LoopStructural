@@ -1,6 +1,6 @@
 """Tests that the native fault path is safe to use (story 5, scenarios 2 to 7, edge cases).
 
-The tests need the installed package ``loop_interpolation_core``. They use the model ``f4_u0``.
+The tests need the installed package ``loop_model_core``. They use the model ``f4_u0``.
 """
 
 from __future__ import annotations
@@ -12,9 +12,9 @@ from copy import deepcopy
 import numpy as np
 import pytest
 
-pytest.importorskip("loop_interpolation_core")
+pytest.importorskip("loop_model_core")
 
-from loop_interpolation_core import FaultChain
+from loop_model_core import FaultChain
 
 from LoopStructural import LoopStructuralConfig
 from LoopStructural.modelling.features import _native_faults
