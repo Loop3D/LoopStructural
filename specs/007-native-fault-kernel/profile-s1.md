@@ -112,3 +112,29 @@ Calls: one warm-up `evaluate_model` call, then one call without the profiler (0.
 | `any` (built-in) | 791078 | 0.580 | 23.6 % | n/a |
 
 The `is_in` and `_cutters` work is still the largest single part (about 38 % of the profiled time), but it fell from 5.3 million to 0.79 million `is_in` calls. The `up_to_date` checks and `with_cutters` now have a larger share, because the total is smaller (their absolute times are about the same).
+
+## After D1b
+
+D1b shares one restoration among the three members of a cut frame (`FaultSegment._evaluate_frame_legacy`, helper `_evaluate_frame_shared`). The masks use the original points. The gradient of member 1 keeps its own call: a member with faults, called without `restored_through`, takes the tetrahedron branch, and a direct interpolator gradient on the restored points is not bit-identical to it (it differs by about 5e-5 in `test_fault_frame_lookup`). The values (gx, gy, gz) are shared.
+
+Bit identity: one process, one build of the 94-fault model. `evaluate_model` and `evaluate_feature_value` of both groups at 500 and 5000 points, with D1b and with the switch `_SHARE_CUT_FRAME_RESTORATION = False` (the old path): all 6 comparisons are equal with `np.array_equal(..., equal_nan=True)`. D1b is kept.
+
+Timing (`many_faults`, no `--compare`, other agents built Rust code at the same time, so the timings may be too high):
+
+| Points | `cutting_mean_ms` | `cutting_max_ms` | `isolated_mean_ms` | `evaluate_model` |
+|---|---|---|---|---|
+| 500 | 10.83 | 18.74 | 2.01 | 0.571 s |
+| 2000 | 12.93 | 20.84 | 2.73 | 0.692 s |
+| 5000 | 17.03 | 25.98 | 3.40 | 0.894 s |
+
+SC-001: fail (10.8 ms)
+
+### Quiet run (orchestrator, 2026-11-27, no other work on the computer)
+
+| Points | `cutting_mean_ms` | `cutting_max_ms` | `isolated_mean_ms` | `evaluate_model` |
+|---|---|---|---|---|
+| 500 | 10.77 | 18.55 | 2.65 | 0.615 s |
+| 2000 | 12.97 | - | - | 0.692 s |
+| 5000 | 17.01 | - | - | 0.894 s |
+
+SC-001: fail (10.8 ms; target 10 ms; 39.1 ms before S1)

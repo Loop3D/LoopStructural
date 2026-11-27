@@ -94,6 +94,13 @@ Answered by the maintainer on 2026-11-27.
 - **OP6**: accept (the default).
 - **OP7**: copy the points and measure SC-007 (the default).
 - **OP8**: identity of the array (the default).
+- **T006 (2026-11-27, maintainer)**: D1b is bit-identical but does fewer grid
+  lookups than the legacy fallback. The maintainer allows T006 to change
+  `tests/fault_evaluation/test_fault_frame_lookup.py`: the `child_faults`
+  cases join the cases whose lookup count may be lower than (`<=`) the legacy
+  count. The values stay asserted as before. D1b shares the restoration for
+  the values only; the gradient of member 1 keeps the old call (sharing it
+  changed results by about 5e-5).
 - **T005 (2026-11-27, orchestrator)**: the `_runs007` reference cannot be
   reproduced bit for bit in the feat-007 venv: the unchanged pre-D1a code
   (cceb9b57) also differs from it in all `group_*` arrays (model ids are

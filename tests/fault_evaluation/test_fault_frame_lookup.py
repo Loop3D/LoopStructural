@@ -397,7 +397,9 @@ FALLBACK_CASES = {
 
 # The three frame members of this case share one region object. The fast path can then
 # use one shared mask and make fewer lookups than the legacy path. Both paths are valid.
-EQUIVALENT_REGION_CASES = {"domain_region"}
+# child_faults: spec 007 D1b shares one restoration among the members of a cut frame, so it
+# makes fewer lookups; the values are still asserted.
+EQUIVALENT_REGION_CASES = {"domain_region", "child_faults"}
 
 
 @pytest.fixture(params=sorted(FALLBACK_CASES))
@@ -411,7 +413,7 @@ def fallback_case(fallback_name):
 
 
 def _assert_lookup_count(name, actual_count, legacy_count):
-    """Require the exact legacy count, except when the region masks are equivalent."""
+    """Require the exact legacy count, except when the region masks are equivalent or D1b shares the restoration."""
     if name in EQUIVALENT_REGION_CASES:
         assert actual_count <= legacy_count
     else:

@@ -76,3 +76,16 @@ def test_reverse_order_rule():
     assert restore_order(faults, reverse=True, owner=SimpleNamespace()) == expected
     assert restore_order(faults) == cutters_first(with_cutters(faults))
     assert expected != restore_order(faults)
+
+
+@pytest.mark.parametrize("name", ["cutting_faults", "f4_u3"])
+def test_shared_frame_restoration_gives_identical_values(name):
+    from LoopStructural.modelling.features.fault import _fault_segment
+
+    points = sample_points(name, 200, seed=1)
+    shared = capture(build_model(name), points)
+    with mock.patch.object(_fault_segment, "_SHARE_CUT_FRAME_RESTORATION", False):
+        legacy = capture(build_model(name), points)
+    assert shared.keys() == legacy.keys()
+    for key in shared:
+        np.testing.assert_array_equal(shared[key], legacy[key])

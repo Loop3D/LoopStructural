@@ -26,6 +26,12 @@
       "base": "599890b6ddea087309ebb7cdba0ab264922dfb59",
       "commit": "9bddcc34eb82aa7e1eec92fcf08d89a356300ce2",
       "review": "pass (3 minor; 1 resolved: the benchmark tests pass with the new key)"
+    },
+    {
+      "wave": 4,
+      "base": "c9a6b54abde9aad317e4a5546d390ff1d7cb3020",
+      "commit": null,
+      "review": null
     }
   ],
   "runs": {
@@ -120,6 +126,28 @@
         "model": "haiku",
         "result": "pass"
       }
+    ],
+    "T006": [
+      {
+        "model": "sonnet",
+        "result": "blocked (test_fault_frame_lookup.py lookup counts; maintainer allowed the change)"
+      },
+      {
+        "model": "sonnet",
+        "result": "pass"
+      }
+    ],
+    "T013": [
+      {
+        "model": "sonnet",
+        "result": "pass"
+      }
+    ],
+    "T024": [
+      {
+        "model": "sonnet",
+        "result": "pass"
+      }
     ]
   },
   "findings": {
@@ -132,7 +160,18 @@
       "T011: Profile::block_displacement goes on to continue_profile for a NaN gx (Python returns the profile at forced_gx); no path gives a NaN gx today.",
       "T011: taylor computes 12.0*h*h, Python 12.0*h**2 (1 ulp at most).",
       "T012: Region::Sign::contains allocates vec![false; n] and FaultChain::restore copies restored on each call (hot path; measure in T021).",
-      "T019: --native-faults default off overwrites LOOPSTRUCTURAL_NATIVE_FAULTS set by the user (the result records native_faults: off)."
+      "T019: --native-faults default off overwrites LOOPSTRUCTURAL_NATIVE_FAULTS set by the user (the result records native_faults: off).",
+      "T013: FaultChain requires steps >= 1; Python allows steps = 0 (no movement). T016 must send such a fault to the Python path."
     ]
-  }
+  },
+  "sc001": {
+    "before_s1_ms": 39.1,
+    "after_d1a_ms": 13.6,
+    "after_d1b_quiet_ms": 10.73,
+    "target_ms": 10,
+    "result": "fail (marginal); reported to the maintainer at the end"
+  },
+  "pre_existing_failures": [
+    "tests/unit/modelling/test_native_fault_frame.py::test_the_native_fault_frame_is_the_cg_fault_frame fails on 907acf42 (master + benchmark) when loop_interpolation_core is installed (native solver, #383); it was skipped before the core was installed in the venv."
+  ]
 }

@@ -125,8 +125,8 @@ Common rules for every Rust task: `cargo fmt --check` and
     40.0) and exit code 0. Also run the T002 profile again and give the new
     shares. Change no code.
 
-- [ ] T006 [US1] [M] Share one restoration among the members of a cut frame, only if T005 reports that SC-001 fails (D1b, OP3).
-  - Files: `LoopStructural/modelling/features/fault/_fault_segment.py`, `tests/fault_evaluation/test_restore_order.py`, `specs/007-native-fault-kernel/profile-s1.md`
+- [x] T006 [US1] [M] Share one restoration among the members of a cut frame, only if T005 reports that SC-001 fails (D1b, OP3).
+  - Files: `LoopStructural/modelling/features/fault/_fault_segment.py`, `tests/fault_evaluation/test_restore_order.py`, `specs/007-native-fault-kernel/profile-s1.md`, `tests/fault_evaluation/test_fault_frame_lookup.py`
   - Needs: T005
   - Wave: 4
   - Done when: if T005 says "SC-001: pass", `profile-s1.md` has the line "D1b: not needed" and no code changes; else `pytest tests/fault_evaluation -q` passes, the `many_faults --compare` run of T005 exits with 0, and `profile-s1.md` has an "After D1b" section with "SC-001: pass" or "fail".
@@ -258,7 +258,7 @@ Common rules for every Rust task: `cargo fmt --check` and
     the slip direction), reverse undoes restore to 1e-9, NaN in gives NaN
     out, a block side 0 moves nothing, empty input.
 
-- [ ] T013 [US2] [M] Add the PyO3 classes `FaultChain` and `GridField` and the constant `FAULT_KERNEL_VERSION = 1` (D2b).
+- [x] T013 [US2] [M] Add the PyO3 classes `FaultChain` and `GridField` and the constant `FAULT_KERNEL_VERSION = 1` (D2b).
   - Files: `packages/loop_interpolation_core/src/python.rs`
   - Needs: T012
   - Wave: 4
@@ -445,7 +445,7 @@ Common rules for every Rust task: `cargo fmt --check` and
     small LCG in the test, no new crate) against a brute-force search for
     500 queries; equal distances give the lowest index; 1 point.
 
-- [ ] T024 [US3] [M] Implement the native tetrahedron gradient of a faulted feature (`gradient.rs`, OP5, FR-004).
+- [x] T024 [US3] [M] Implement the native tetrahedron gradient of a faulted feature (`gradient.rs`, OP5, FR-004).
   - Files: `packages/loop_interpolation_core/src/fault/gradient.rs`, `packages/loop_interpolation_core/tests/fault_gradient.rs`
   - Needs: T012, T023
   - Wave: 4
