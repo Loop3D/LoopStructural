@@ -172,6 +172,25 @@ One class now lives in `loop_common`. `LoopStructural.utils` re-exports
 it. This reverses item 2c-5 of the stage sequence, which was closed as
 deferred. The notice is in `COMPAT.md`.
 
+### Native fault application (spec 007)
+Decision date: 2026-11-27 (spec 007, FR-015).
+
+The native path is an optional Rust kernel in `loop_interpolation_core`.
+The Python path stays the reference and the fallback.
+
+The native path is on by default when the kernel is installed and
+`FAULT_KERNEL_VERSION` matches. To turn it off, set
+`LoopStructuralConfig.native_faults = False` or the environment variable
+`LOOPSTRUCTURAL_NATIVE_FAULTS=0`. The setting wins over the environment
+variable.
+
+The tolerance is 1e-8 times the model box (spec 003 FR-004).
+
+The stages are: S1 restores the order once. S2 is the native restore. S3
+gives the native values and gradients. S4 builds the wheels.
+
+See `specs/007-native-fault-kernel/spec.md`.
+
 ## Stage sequence
 
 - [x] **Stage 0 — Planning infra.** This file, release/versioning/compat

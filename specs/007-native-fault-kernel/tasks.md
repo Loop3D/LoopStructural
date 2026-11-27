@@ -37,7 +37,7 @@ Common rules for every Rust task: `cargo fmt --check` and
 
 ## Phase 1: Setup
 
-- [ ] T001 [Setup] [S] Record the decision to add the native fault path in `ROADMAP.md` (FR-015).
+- [x] T001 [Setup] [S] Record the decision to add the native fault path in `ROADMAP.md` (FR-015).
   - Files: `ROADMAP.md`
   - Needs: none
   - Wave: 1
@@ -55,7 +55,7 @@ Common rules for every Rust task: `cargo fmt --check` and
 
 ## Phase 2: Stage S1, restore order once (story 1)
 
-- [ ] T002 [US1] [M] Measure the cut faults of the 94-fault model before stage S1 (SC-001 baseline).
+- [x] T002 [US1] [M] Measure the cut faults of the 94-fault model before stage S1 (SC-001 baseline).
   - Files: `specs/007-native-fault-kernel/profile-s1.md`
   - Needs: none
   - Wave: 1
@@ -74,7 +74,7 @@ Common rules for every Rust task: `cargo fmt --check` and
     `LoopStructural/modelling/features/fault/_fault_segment.py`). Record the
     computer and the commit. Change no code.
 
-- [ ] T003 [US1] [M] Test: the restore order is computed once for each state of the faults (FR-001, FR-002).
+- [x] T003 [US1] [M] Test: the restore order is computed once for each state of the faults (FR-001, FR-002).
   - Files: `tests/fault_evaluation/test_restore_order.py`
   - Needs: none
   - Wave: 1
@@ -156,7 +156,7 @@ Common rules for every Rust task: `cargo fmt --check` and
 
 ## Phase 3: Foundation, Rust module skeleton
 
-- [ ] T008 [Found] [M] Add the Rust module `fault` with all types and function stubs (D2a).
+- [x] T008 [Found] [M] Add the Rust module `fault` with all types and function stubs (D2a).
   - Files: `packages/loop_interpolation_core/src/fault/`, `packages/loop_interpolation_core/src/lib.rs`
   - Needs: none
   - Wave: 1
@@ -178,7 +178,7 @@ Common rules for every Rust task: `cargo fmt --check` and
 
 ## Phase 4: Stage S2, native restoration (stories 2, 4 and 5)
 
-- [ ] T009 [US2] [M] Find why the proof of concept differs from the Python path (C-007, OP9).
+- [x] T009 [US2] [M] Find why the proof of concept differs from the Python path (C-007, OP9).
   - Files: `specs/007-native-fault-kernel/verification.md`
   - Needs: none
   - Wave: 1
@@ -273,7 +273,7 @@ Common rules for every Rust task: `cargo fmt --check` and
     error: `RuntimeError` with a message, no partial result. Empty input:
     empty output.
 
-- [ ] T014 [US4] [S] Test: the native setting, the variable, the version check and the thread count (FR-006, FR-006a, FR-006b, FR-012).
+- [x] T014 [US4] [S] Test: the native setting, the variable, the version check and the thread count (FR-006, FR-006a, FR-006b, FR-012).
   - Files: `tests/fault_evaluation/test_native_settings.py`
   - Needs: none
   - Wave: 1

@@ -4,8 +4,63 @@
   "branch": "feat/007-native-fault-kernel",
   "review_mode": "wave",
   "start_commit": "907acf425c967d0f1a232d010e3245090c0da993",
-  "baseline": {"ruff_errors": 34, "ruff_gate": "no new errors (34 on master 6874364c; CI runs ruff with --exit-zero)"},
-  "waves": [],
-  "runs": {},
-  "findings": {"found": 0, "rejected": 0, "dropped": 0, "fixed": 0, "open_minor": []}
+  "baseline": {
+    "ruff_errors": 34,
+    "ruff_gate": "no new errors (34 on master 6874364c; CI runs ruff with --exit-zero)"
+  },
+  "waves": [
+    {
+      "wave": 1,
+      "base": "d979cff40551c7b55851f20effff81cc3b70662b",
+      "commit": null,
+      "review": null
+    }
+  ],
+  "runs": {
+    "T001": [
+      {
+        "model": "haiku",
+        "result": "pass"
+      }
+    ],
+    "T003": [
+      {
+        "model": "sonnet",
+        "result": "pass"
+      }
+    ],
+    "T008": [
+      {
+        "model": "sonnet",
+        "result": "pass"
+      }
+    ],
+    "T009": [
+      {
+        "model": "sonnet",
+        "result": "pass"
+      }
+    ],
+    "T014": [
+      {
+        "model": "haiku",
+        "result": "pass"
+      }
+    ],
+    "T002": [
+      {
+        "model": "sonnet",
+        "result": "pass"
+      }
+    ]
+  },
+  "findings": {
+    "found": 0,
+    "rejected": 0,
+    "dropped": 0,
+    "fixed": 0,
+    "open_minor": [
+      "T001: ROADMAP.md says 'S1 restores the order once'; should say 'S1 computes the restore order once' (fix in T007)."
+    ]
+  }
 }
