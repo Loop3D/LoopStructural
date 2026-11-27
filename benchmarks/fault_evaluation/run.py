@@ -22,6 +22,7 @@ from pathlib import Path
 from typing import Any
 
 from benchmarks.fault_evaluation.instrumentation import PeakMemory, rss_to_bytes
+from LoopStructural import LoopStructuralConfig
 from tests.fault_evaluation.models import model_names
 
 SCHEMA_VERSION = 1
@@ -505,6 +506,7 @@ def _merge(
     passes: dict[str, dict[str, Any]],
     suite_wall_seconds: float | None = None,
     suite: str | None = None,
+    native_faults: str = "off",
 ) -> dict[str, Any]:
     """Combine the timing, counter and memory passes by case id."""
     counters = {row["case_id"]: row for row in passes["counters"]["cases"]}
@@ -532,6 +534,8 @@ def _merge(
         result["suite_wall_seconds"] = suite_wall_seconds
     if suite is not None:
         result["suite"] = suite
+    # The suite value stays a string. Other tools compare it with "standard".
+    result["native_faults"] = native_faults
     return result
 
 
@@ -600,9 +604,19 @@ def main(argv: list[str] | None = None) -> int:
         default="standard",
         help="Cases to run: the standard suite (default) or the full suite.",
     )
+    parser.add_argument(
+        "--native-faults",
+        choices=("on", "off"),
+        default="off",
+        help="Use the native fault kernel (on) or the Python path (off, default).",
+    )
     options = parser.parse_args(argv)
     if options.rounds < 1:
         parser.error("--rounds must be at least 1")
+    # The class attribute serves in-process use. The environment variable reaches the
+    # fresh subprocesses of each pass.
+    LoopStructuralConfig.native_faults = options.native_faults == "on"
+    os.environ["LOOPSTRUCTURAL_NATIVE_FAULTS"] = "1" if options.native_faults == "on" else "0"
     work_dir = options.work_dir or options.output.with_name(options.output.name + ".work")
     # The work directory and the output file are not changes of the code.
     _set_dirty_excludes(work_dir, options.output)
@@ -631,6 +645,7 @@ def main(argv: list[str] | None = None) -> int:
         passes,
         suite_wall_seconds=float(sum(meta["wall_seconds"].values())),
         suite=options.suite,
+        native_faults=options.native_faults,
     )
     validate_result(result)
     options.output.parent.mkdir(parents=True, exist_ok=True)

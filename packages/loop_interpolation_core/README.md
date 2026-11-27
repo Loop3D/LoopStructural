@@ -134,3 +134,7 @@ npm --prefix packages/loop_interpolation_core/tests_web test
 ## Source
 
 Source: loop-rs crates/interpolation-fd, commit bff51342da8ebff7ca3c87e07c1d4fbd31279c8b, branch lachlan/drillhole
+
+## Fault kernel
+
+The fault kernel is in the package `packages/loop_model_core`.

@@ -17,6 +17,9 @@ from ....utils._fault_block import block_kwargs, block_side, check_block, force_
 
 logger = getLogger(__name__)
 
+# Switch for tests: false gives the old calls, one restoration for each member.
+_SHARE_CUT_FRAME_RESTORATION = True
+
 
 
 class FaultSegment(StructuralFrame):
@@ -452,6 +455,13 @@ class FaultSegment(StructuralFrame):
             kwargs["restored_through"] = tuple(restored_through)
         member0, member1, member2 = (self.__getitem__(i) for i in range(3))
         gx = gy = gz = g = None
+        if _SHARE_CUT_FRAME_RESTORATION and self._share_restoration(
+            (member0, member1, member2)
+        ):
+            return self._evaluate_frame_shared(
+                (member0, member1, member2),
+                points, block, restored_through, need_gradient, need_values, need_gx,
+            )
         if need_values:
             if need_gx:
                 gx = member0.evaluate_value(points, **kwargs)
@@ -460,6 +470,71 @@ class FaultSegment(StructuralFrame):
         if need_gradient:
             g = member1.evaluate_gradient(points, ignore_regions=True, **kwargs)
         if need_gradient:
+            return gx, gy, gz, g
+        return gx, gy, gz
+
+    @staticmethod
+    def _share_restoration(members):
+        """Tell if the three members can use one restoration of the points.
+
+        True only if each member is a plain GeologicalFeature with faults
+        enabled, and the three members have the same non-empty fault list
+        (each item is the same object).
+        """
+        from .._geological_feature import GeologicalFeature
+
+        for member in members:
+            if type(member) is not GeologicalFeature:
+                return False
+            if type(member).evaluate_value is not GeologicalFeature.evaluate_value:
+                return False
+            if type(member).evaluate_gradient is not GeologicalFeature.evaluate_gradient:
+                return False
+            if not member.faults_enabled or len(member.faults) == 0:
+                return False
+        first = members[0].faults
+        return all(
+            len(m.faults) == len(first) and all(a is b for a, b in zip(m.faults, first))
+            for m in members[1:]
+        )
+
+    @staticmethod
+    def _evaluate_frame_shared(
+        members, points, block, restored_through, need_gradient, need_values, need_gx
+    ):
+        """Evaluate the frame with one restoration of the points for the three members.
+
+        The result is the same as the legacy calls. The masks use the points
+        before the restoration, as GeologicalFeature.evaluate_value does.
+        """
+        from LoopStructural.utils._fault_block import restore_through
+
+        m0 = members[0]
+        for member in members:
+            if member.builder is not None:
+                member.builder.up_to_date()
+        gx = gy = gz = g = None
+        if need_values:
+            restored = restore_through(
+                points, m0.faults, block=block, restored_through=restored_through, owner=m0
+            )
+            out = [None, None, None]
+            for i, member in enumerate(members):
+                if i == 0 and not need_gx:
+                    continue
+                v = np.full(points.shape[0], np.nan)
+                mask = member._calculate_mask(
+                    points, block=block, restored_through=restored_through
+                )
+                v[mask] = member.interpolator.evaluate_value(restored[mask, :])
+                out[i] = v
+            gx, gy, gz = out
+        if need_gradient:
+            # The old gradient of a member with faults uses tetrahedra, so it keeps its own calls.
+            kwargs = block_kwargs(block)
+            if restored_through:
+                kwargs["restored_through"] = tuple(restored_through)
+            g = members[1].evaluate_gradient(points, ignore_regions=True, **kwargs)
             return gx, gy, gz, g
         return gx, gy, gz
 

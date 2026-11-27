@@ -207,7 +207,54 @@ def cutters_first(faults: Iterable) -> list:
     return ordered
 
 
-def restore_through(points, faults, *, reverse=False, block=None, restored_through=()):
+def restore_order(faults: Iterable, *, reverse: bool = False, owner: object = None) -> list:
+    """Give the faults in the order to restore through them.
+
+    The list holds the faults and the faults that cut them (see with_cutters),
+    with each cutting fault before the fault it cuts. When ``reverse`` is true
+    the cutting fault comes last. The returned list can be kept in the cache of
+    ``owner``: do not change it in place.
+
+    Parameters
+    ----------
+    faults : iterable of FaultSegment
+        faults in the order to apply them
+    reverse : bool
+        order for a forward movement of the points
+    owner : object, optional
+        object that keeps the last order in its attribute ``_restore_order``.
+        The order is computed again only when the faults, their cutters or
+        ``reverse`` change.
+
+    Returns
+    -------
+    list
+        the faults in the order to restore through them
+    """
+    chain = with_cutters(faults)
+    if owner is None:
+        key = None
+    else:
+        key = (bool(reverse), tuple((id(f), tuple(id(c) for c in _cutters(f))) for f in chain))
+        cached = getattr(owner, "_restore_order", None)
+        if cached is not None and cached[0] == key:
+            return cached[2]
+    # Forward movement: a cutting fault moves after the faults it cuts. Without
+    # such relations the order of the list does not change.
+    ordered = cutters_first(chain[::-1])[::-1] if reverse else cutters_first(chain)
+    if owner is not None:
+        try:
+            # One assignment: the key, the chain and the order stay together.
+            # The chain keeps the faults alive, so their ids stay unique.
+            owner._restore_order = (key, chain, ordered)
+        except AttributeError:
+            pass
+    return ordered
+
+
+def restore_through(
+    points, faults, *, reverse=False, block=None, restored_through=(), owner: object = None
+):
     """Restore points through a list of faults, each fault once.
 
     The faults are applied in the order of the list (a feature keeps its
@@ -231,6 +278,8 @@ def restore_through(points, faults, *, reverse=False, block=None, restored_throu
         checked fault block
     restored_through : sequence of FaultSegment
         faults whose restoration the points already have; they are skipped
+    owner : object, optional
+        object that keeps the order of the faults (see restore_order)
 
     Returns
     -------
@@ -239,13 +288,7 @@ def restore_through(points, faults, *, reverse=False, block=None, restored_throu
     """
     done = list(restored_through)
     # The chain of cutting faults is restored too (see with_cutters).
-    faults = with_cutters(faults)
-    if reverse:
-        # Forward movement: a cutting fault moves after the faults it cuts. Without
-        # such relations the order of the list does not change.
-        ordered = cutters_first(faults[::-1])[::-1]
-    else:
-        ordered = cutters_first(faults)
+    ordered = restore_order(faults, reverse=reverse, owner=owner)
     for fault in ordered:
         if is_in(fault, done):
             continue

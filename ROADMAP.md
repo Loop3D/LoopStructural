@@ -172,6 +172,27 @@ One class now lives in `loop_common`. `LoopStructural.utils` re-exports
 it. This reverses item 2c-5 of the stage sequence, which was closed as
 deferred. The notice is in `COMPAT.md`.
 
+### Native fault application (spec 007)
+Decision date: 2026-11-27 (spec 007, FR-015).
+
+The native path is an optional Rust kernel in the package `loop-model-core` (module
+`loop_model_core`), separate from the solver core `loop_interpolation_core`.
+The Python path stays the reference and the fallback.
+The `uv.lock` of the repository needs a new lock on master to include `loop-model-core` (spec 007 plan, Answers, T038).
+
+The native path is on by default when the kernel is installed and
+`FAULT_KERNEL_VERSION` matches. To turn it off, set
+`LoopStructuralConfig.native_faults = False` or the environment variable
+`LOOPSTRUCTURAL_NATIVE_FAULTS=0`. The setting wins over the environment
+variable.
+
+The tolerance is 1e-8 times the model box (spec 003 FR-004).
+
+The stages are: S1 computes the restore order once. S2 is the native restore. S3
+gives the native values and gradients. S4 builds the wheels.
+
+See `specs/007-native-fault-kernel/spec.md`.
+
 ## Stage sequence
 
 - [x] **Stage 0 — Planning infra.** This file, release/versioning/compat
@@ -926,3 +947,8 @@ deferred. The notice is in `COMPAT.md`.
   `packages/loop_link` exist (`specs/006-loop-link`). The package is new.
 - **2026-11-07:** Stage 7 stage S5 implemented: tool connection, select, read selection, fetch and round trip in `packages/loop_link`.
 - **2026-11-09:** Stage 7 stage S4 implemented: filter and colour calls, colour in `send` and the fake commands endpoint in `packages/loop_link`.
+- **2026-11-27:** spec 007 S1: restore order computed once for each state of the faults (`restore_order`). SC-001 (94 faults, 500 points, mean time of a cutting fault): 39.1 ms before S1; 13.6 ms after D1a (order cache); 10.7 ms after D1b (one shared restoration for the members of a cut frame). Target is 10 ms, so SC-001 fails by a small margin. D1b: used.
+- **2026-11-27:** spec 007 S2: native fault restoration in `loop_interpolation_core` (`FaultChain`, `FAULT_KERNEL_VERSION = 1`). SC-002 (1 thread, 10 000 points, native time / Python time, target 0.20 or less): fails. The 5 golden models give 0.23 to 0.30. The native restore is 3.3 to 4.3 times faster than Python on 1 thread. SC-003 (20 threads, target 0.03 or less): passes, 0.022 to 0.028 for all 5 models. SC-007 (10 million points, extra memory): passes, native 685 MB and Python 6430 MB. Largest native difference on the golden models: 9.3e-10 m (plugin, 3e-14 of the box); tolerance 1e-8 x box.
+- **2026-11-27:** spec 007 S3: native field values and gradients (`GridField`, `FaultChain.feature_gradient`). SC-004 (94 faults, `evaluate_model` at 5000 points, target 0.5 s or less): passes, 0.059 s with the native path (Python 0.971 s in the same run; 2.09 s on master before spec 007). SC-005 (golden tests with the native path on): passes, 23 of 23. Largest native difference of the field values and gradients: 1.16e-10. Supported features evaluate values, grid gradients and the gradient of a faulted feature (tetrahedron method) natively. A fold feature on a tetrahedral mesh keeps the Python path.
+- **2026-11-27:** spec 007 S4: prebuilt native packages with the fault kernel. SC-008: Linux x86_64 checked locally (wheel, clean install, smoke test and golden tests pass); Linux aarch64, macOS arm64 and Windows x64 need a CI run of `core-wheels.yml`; macOS x86_64 needs a maintainer check. SC-006: the full suite passes with the native path on (3341 passed), off (3341 passed) and not installed (3296 passed). One known failure with the core installed, `test_the_native_fault_frame_is_the_cg_fault_frame`, is also on master. Ruff: no new errors.
+- **2026-11-27:** spec 007 S5: the fault kernel moves to the new package `loop-model-core`, with its own wheels and release; a negative `native_threads` means all cores; subclasses of the supported fault types use the Python path.

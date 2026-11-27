@@ -1,0 +1,496 @@
+{
+  "spec": "007-native-fault-kernel",
+  "worktree": "/home/lgrose/dev/LoopStructural-wt/feat-007-native-fault-kernel",
+  "branch": "feat/007-native-fault-kernel",
+  "review_mode": "wave",
+  "start_commit": "907acf425c967d0f1a232d010e3245090c0da993",
+  "baseline": {
+    "ruff_errors": 34,
+    "ruff_gate": "no new errors (34 on master 6874364c; CI runs ruff with --exit-zero)"
+  },
+  "waves": [
+    {
+      "wave": 1,
+      "base": "d979cff40551c7b55851f20effff81cc3b70662b",
+      "commit": "cceb9b575f540f8bb0f2a181c611f8af95ecc570",
+      "review": "pass (1 major rejected: plan text out of date, plan.md D2a fixed; 2 minor)"
+    },
+    {
+      "wave": 2,
+      "base": "61b72cdc560536ab38b8ba65eac2420c67437063",
+      "commit": "2c719e162002ad84bdbcd506c80a6512abc32a3f",
+      "review": "pass after one fix round (7216f64d; recheck pass)"
+    },
+    {
+      "wave": 3,
+      "base": "599890b6ddea087309ebb7cdba0ab264922dfb59",
+      "commit": "9bddcc34eb82aa7e1eec92fcf08d89a356300ce2",
+      "review": "pass (3 minor; 1 resolved: the benchmark tests pass with the new key)"
+    },
+    {
+      "wave": 4,
+      "base": "c9a6b54abde9aad317e4a5546d390ff1d7cb3020",
+      "commit": "66af7228cab42d582d6aadf2508b79416a7a092f",
+      "review": "pass (4 minor)"
+    },
+    {
+      "wave": 5,
+      "base": "60139c091dd46bdf7f91bb38517a724543af7a48",
+      "commit": "6d929073246616a981d214dd96861d9e25db896a",
+      "review": "pass (5 minor)"
+    },
+    {
+      "wave": 6,
+      "base": "3ee22903c989150b9054a4eecce18d48374fc305",
+      "commit": "1fb6918d8e62042f5cc968cfea49af1af3e88419",
+      "review": "pass (3 minor)"
+    },
+    {
+      "wave": 7,
+      "base": "dcad71c78bc58501456311cd57a66b028e84f88d",
+      "commit": "fb85400704439b71ec8df3f2dedeab9805e7a1d5",
+      "review": "pass after one fix round (afe0f593; recheck pass, 1 minor)"
+    },
+    {
+      "wave": 8,
+      "base": "2d44bdaaa8746edf7c8fb2784db730b8b8b1df30",
+      "commit": "23134f85095598524aeb0365817fdda71e5e942f",
+      "review": "pass (2 minor)"
+    },
+    {
+      "wave": 9,
+      "base": "d12101b223acf7c758a410ea0d6cdc978450b3eb",
+      "commit": "f8a612efce119d816d94f8524b39b8b517825328",
+      "review": "pass (2 minor)"
+    },
+    {
+      "wave": 10,
+      "base": "f03510d573851dcd7e5ddd4b498868fc780f8ba9",
+      "commit": "fb1875ad3cd16077b55c0bf79fca1c11e9b27326",
+      "review": "pass (1 minor, fixed in T033)"
+    },
+    {
+      "wave": 11,
+      "base": "3d6cc26e90383a313328a7e784612c02ad251357",
+      "commit": "3260064e51b1c0b3497966a898e5279fd53f19d2",
+      "review": "end review (opus, Focus all): no blocker; 3 major = maintainer decisions (SC-001, SC-002, SC-008); 3 minor"
+    },
+    {
+      "wave": 12,
+      "base": "9f41453fdde37371bd82aa741963c9397fbd9571",
+      "commit": "51e45ca7e727c90aeca557b493c6de499b7cc6b1",
+      "review": "pass (no findings)"
+    },
+    {
+      "wave": 13,
+      "base": "6c501f4edc7f9ee8a890255d73d0267e1a8aab9d",
+      "commit": "d666ae660f9b5df6ac9cec533d59b25c456cd91a",
+      "review": "pass (no findings)"
+    },
+    {
+      "wave": 14,
+      "base": "f89026e71d2a7dc19858381d75bc9d0d805f88c4",
+      "commit": "02e8cb46d9f4eeefd8e1aaf256c1c8df505ef635",
+      "review": "pass (1 minor)"
+    },
+    {
+      "wave": 15,
+      "base": "a95d2e7826030256e06b07b594dc2c2a16a84d82",
+      "commit": "2f2a06e9f648e3677a978496b4c5e372ef5bd895",
+      "review": "pass (1 minor)"
+    },
+    {
+      "wave": 16,
+      "base": "5c7a673f89dccbc03460e7d2497eb63abd800de1",
+      "commit": "see git log",
+      "review": "S5 end review (opus): pass, 3 minor"
+    }
+  ],
+  "runs": {
+    "T001": [
+      {
+        "model": "haiku",
+        "result": "pass"
+      }
+    ],
+    "T003": [
+      {
+        "model": "sonnet",
+        "result": "pass"
+      },
+      {
+        "model": "sonnet",
+        "result": "pass (fix: removed equal_nan; sensitivity to a wrong order checked)"
+      }
+    ],
+    "T008": [
+      {
+        "model": "sonnet",
+        "result": "pass"
+      }
+    ],
+    "T009": [
+      {
+        "model": "sonnet",
+        "result": "pass"
+      }
+    ],
+    "T014": [
+      {
+        "model": "haiku",
+        "result": "pass"
+      }
+    ],
+    "T002": [
+      {
+        "model": "sonnet",
+        "result": "pass"
+      }
+    ],
+    "T004": [
+      {
+        "model": "sonnet",
+        "result": "blocked (T003 test used equal_nan, not accepted by numpy 2.5); passed after the T003 fix"
+      }
+    ],
+    "T010": [
+      {
+        "model": "sonnet",
+        "result": "pass"
+      },
+      {
+        "model": "sonnet",
+        "result": "pass (review fix)"
+      }
+    ],
+    "T011": [
+      {
+        "model": "sonnet",
+        "result": "pass"
+      }
+    ],
+    "T015": [
+      {
+        "model": "sonnet",
+        "result": "pass"
+      }
+    ],
+    "T023": [
+      {
+        "model": "sonnet",
+        "result": "pass"
+      }
+    ],
+    "T005": [
+      {
+        "model": "sonnet",
+        "result": "pass (SC-001 fail: 13.6 ms; group values differ from the _runs007 reference, cause: the reference build, not D1a)"
+      }
+    ],
+    "T012": [
+      {
+        "model": "sonnet",
+        "result": "pass"
+      }
+    ],
+    "T019": [
+      {
+        "model": "haiku",
+        "result": "pass"
+      }
+    ],
+    "T006": [
+      {
+        "model": "sonnet",
+        "result": "blocked (test_fault_frame_lookup.py lookup counts; maintainer allowed the change)"
+      },
+      {
+        "model": "sonnet",
+        "result": "pass"
+      },
+      {
+        "model": "sonnet",
+        "result": "pass (fix: test pins the Python path)"
+      }
+    ],
+    "T013": [
+      {
+        "model": "sonnet",
+        "result": "pass"
+      }
+    ],
+    "T024": [
+      {
+        "model": "sonnet",
+        "result": "pass"
+      }
+    ],
+    "T017": [
+      {
+        "model": "sonnet",
+        "result": "pass"
+      },
+      {
+        "model": "sonnet",
+        "result": "pass (fix: reverse fallback case)"
+      }
+    ],
+    "T018": [
+      {
+        "model": "sonnet",
+        "result": "pass"
+      },
+      {
+        "model": "sonnet",
+        "result": "pass"
+      }
+    ],
+    "T025": [
+      {
+        "model": "sonnet",
+        "result": "pass"
+      }
+    ],
+    "T020": [
+      {
+        "model": "haiku",
+        "result": "pass"
+      }
+    ],
+    "T030": [
+      {
+        "model": "haiku",
+        "result": "pass"
+      }
+    ],
+    "T007": [
+      {
+        "model": "haiku",
+        "result": "pass"
+      }
+    ],
+    "T016": [
+      {
+        "model": "sonnet",
+        "result": "blocked (reverse with an unrestored cutter differs; Python-internals tests count apply_to_points; NaN rows)"
+      },
+      {
+        "model": "sonnet",
+        "result": "pass (blocked on 4 tests whose premise changed; fixed in their owner tasks)"
+      }
+    ],
+    "T031": [
+      {
+        "model": "haiku",
+        "result": "pass"
+      }
+    ],
+    "T034": [
+      {
+        "model": "haiku",
+        "result": "pass"
+      },
+      {
+        "model": "haiku",
+        "result": "pass (fix: test_concurrency)"
+      },
+      {
+        "model": "haiku",
+        "result": "pass (fix: test_no_retention, test_fault_frame_lookup)"
+      }
+    ],
+    "T021": [
+      {
+        "model": "sonnet",
+        "result": "pass (SC-002 fail 0.23-0.30; SC-003 pass 0.023-0.028; SC-007 pass)"
+      }
+    ],
+    "T026": [
+      {
+        "model": "sonnet",
+        "result": "pass"
+      },
+      {
+        "model": "sonnet",
+        "result": "pass (review fix)"
+      },
+      {
+        "model": "haiku",
+        "result": "pass (fix: fold exclusion)"
+      },
+      {
+        "model": "haiku",
+        "result": "pass (fix: native on in test_field_for_exists)"
+      }
+    ],
+    "T027": [
+      {
+        "model": "sonnet",
+        "result": "pass (blocked only on a test exclusion; fixed in T026)"
+      }
+    ],
+    "T035": [
+      {
+        "model": "sonnet",
+        "result": "pass (no measurable gain on a quiet computer; SC-002 still fails 0.23-0.30)"
+      },
+      {
+        "model": "haiku",
+        "result": "pass (record fix: quiet numbers)"
+      }
+    ],
+    "T022": [
+      {
+        "model": "haiku",
+        "result": "pass"
+      }
+    ],
+    "T028": [
+      {
+        "model": "sonnet",
+        "result": "pass (SC-004 0.059 s vs 0.5 s; SC-005 pass)"
+      }
+    ],
+    "T029": [
+      {
+        "model": "haiku",
+        "result": "pass"
+      }
+    ],
+    "T032": [
+      {
+        "model": "sonnet",
+        "result": "pass (Linux x86_64 only; 4 platforms need a CI run)"
+      }
+    ],
+    "T036": [
+      {
+        "model": "haiku",
+        "result": "pass"
+      }
+    ],
+    "T033": [
+      {
+        "model": "sonnet",
+        "result": "pass (native on 3341/1 known; off 3341/1 known; not installed 3296/0)"
+      }
+    ],
+    "T037": [
+      {
+        "model": "sonnet",
+        "result": "pass (orchestrator ran cargo fmt on one moved test file)"
+      }
+    ],
+    "T038": [
+      {
+        "model": "sonnet",
+        "result": "pass (uv.lock not changed: master lock is stale; orchestrator decision)"
+      }
+    ],
+    "T039": [
+      {
+        "model": "sonnet",
+        "result": "pass"
+      }
+    ],
+    "T040": [
+      {
+        "model": "haiku",
+        "result": "pass (also fixed the settings fixture: it reloads _native_faults at teardown)"
+      }
+    ],
+    "T041": [
+      {
+        "model": "haiku",
+        "result": "pass"
+      }
+    ],
+    "T042": [
+      {
+        "model": "sonnet",
+        "result": "pass (on 3343/1 known; off 3343/1 known; model core not installed 3311/1 known)"
+      }
+    ]
+  },
+  "findings": {
+    "found": 43,
+    "rejected": 2,
+    "dropped": 0,
+    "fixed": 4,
+    "open_minor": [
+      "T011: Profile::block_displacement goes on to continue_profile for a NaN gx (Python returns the profile at forced_gx); no path gives a NaN gx today.",
+      "T011: taylor computes 12.0*h*h, Python 12.0*h**2 (1 ulp at most).",
+      "T012: Region::Sign::contains allocates vec![false; n] and FaultChain::restore copies restored on each call (hot path; measure in T021).",
+      "T019: --native-faults default off overwrites LOOPSTRUCTURAL_NATIVE_FAULTS set by the user (the result records native_faults: off).",
+      "T013: FaultChain requires steps >= 1; Python allows steps = 0 (no movement). T016 must send such a fault to the Python path.",
+      "T013: parse_grid nsteps product can overflow in release; use checked_mul and ValueError.",
+      "T013: the spec parser accepts NaN/inf numbers and a zero step_vector.",
+      "T006: _evaluate_frame_shared calls builder.up_to_date for all 3 members even when one is not evaluated.",
+      "T006: _evaluate_frame_shared uses restore_through, not the scope-shared restore(); no value change.",
+      "T018: test_native_path_is_used cannot fail if evaluate_value skips the native path (restore() sets _native_chain first).",
+      "T018: test_two_threads_equal_single_thread warms the chain first, so a race while the chain is built is not exercised.",
+      "T018: test_bad_spec_raises_and_state_is_kept: the state check cannot fail (the bad spec never touches the feature).",
+      "T017: test_native_off_by_variable tests only '0' (not false/off/no).",
+      "T020: native.yml path filter misses _evaluation.py, _base_geological_feature.py and tests/fault_evaluation/**.",
+      "T017: the fallback check accepts None for any reverse case of a feature with cutters; a wrong fallback in such a case would pass.",
+      "T016: restore() and the forward/reverse callers share one _restore_order slot on the feature, so alternating reverse and forward calls recompute the order.",
+      "T016: FaultChain(spec) build errors are raised, not turned into the Python path (for example a node-value count that does not match the grid).",
+      "T016: the token compares floats with ==; a NaN displacement rebuilds the chain at each call.",
+      "T021: verification.md names the memory rule acceptance.py _check_memory; the function is _sc006.",
+      "T021: the SC-007 pass is relative to the Python base; native extra memory is 2.9 x the point array and the reason is open.",
+      "T021: the measurement scripts are in the job tmp folder, outside the repo; the method is only described.",
+      "T026: the parity test does not assert that _faulted(model) is not empty.",
+      "T035: the largest native difference of cutting_faults went from 5.7e-13 to 1.25e-12 although T035 claims the same floating-point operations; within tolerance, not explained.",
+      "T027: evaluate_value/evaluate_gradient call _check_frame() and update() again after field_for already did (no wrong result).",
+      "T027: the native binding rejects element_scale_parameter <= 0 with ValueError, where Python gave a degenerate result (edge case).",
+      "T028: the Python time of SC-004 includes the _FaultTimer patch overhead; the native run has none (favours native slightly).",
+      "T028: the SC-004 scratch script is outside the repo; rerun with the benchmark after T036.",
+      "End review: no test checks that native_threads = 1 really uses one thread (pool(1).current_num_threads()).",
+      "End review: the native unconformity region ignores faults_enabled and the regions of the UnconformityFeature (both default in current models).",
+      "T040: the subclass test does not first assert that chain_for gives a chain for the unchanged model.",
+      "T041: the ROADMAP spec 007 decision section lists stages S1 to S4 only; add S5 (kernel moved to loop-model-core).",
+      "S5: native.yml header comment names only loop_interpolation_core.",
+      "S5: the loop-model-core README and the LoopStructuralConfig docstring do not say that a negative native_threads means all cores.",
+      "S5 (merge): release-please makes the first loop-model-core release only for a feat/fix commit; squash-merge with a feat title or add Release-As."
+    ]
+  },
+  "sc001": {
+    "before_s1_ms": 39.1,
+    "after_d1a_ms": 13.6,
+    "after_d1b_quiet_ms": 10.73,
+    "target_ms": 10,
+    "result": "fail (marginal); reported to the maintainer at the end"
+  },
+  "pre_existing_failures": [
+    "tests/unit/modelling/test_native_fault_frame.py::test_the_native_fault_frame_is_the_cg_fault_frame fails on 907acf42 (master + benchmark) when loop_interpolation_core is installed (native solver, #383); it was skipped before the core was installed in the venv."
+  ],
+  "native_max_diff": {
+    "restore": 9.3e-10,
+    "model": "stopped_fault"
+  },
+  "sc002_quiet": {
+    "f1_u0": 0.298,
+    "f4_u0": 0.289,
+    "f4_u3": 0.294,
+    "cutting_faults": 0.231,
+    "plugin": 0.268,
+    "target": 0.2,
+    "result": "fail"
+  },
+  "sc004": {
+    "native_s_5000": 0.059,
+    "python_same_run_s": 0.971,
+    "master_s": 2.09,
+    "target_s": 0.5,
+    "result": "pass"
+  },
+  "end_review": {
+    "model": "opus",
+    "verdict": "changes needed (maintainer decisions only)",
+    "decisions_needed": [
+      "SC-001 10.7 ms vs 10 ms",
+      "SC-002 0.23-0.30 vs 0.20",
+      "SC-008 CI run of core-wheels.yml on 4 platforms"
+    ]
+  }
+}
