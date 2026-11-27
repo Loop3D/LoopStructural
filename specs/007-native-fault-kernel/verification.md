@@ -250,7 +250,7 @@ Measures SC-004 (many-faults model) and SC-005 (golden test with the native path
 - SC-004: pass. 0.059 s at 5000 points (target 0.5 s). Python in the same conditions: 0.971 s.
 - SC-005: pass. 23 of 23 golden tests pass with the native path on.
 - Largest native field difference: 1.16e-10.
-- Open point: `benchmarks/fault_evaluation/many_faults.py` fails with the native path on (empty per-fault timer lists). It must write the JSON without per-fault times for the native path. A separate task is needed.
+- Open point: `benchmarks/fault_evaluation/many_faults.py` fails with the native path on (empty per-fault timer lists). It must write the JSON without per-fault times for the native path. A separate task is needed. (fixed by T036: the per-fault times are None on the native path)
 
 ## Stage S4
 
@@ -301,3 +301,31 @@ Output:
 - macOS x86_64: not run in CI (cross-compiled). Maintainer check needed.
 - Next step: run `core-wheels.yml` after the branch is pushed (maintainer
   decision), then fill the other rows.
+
+## SC-006
+
+Task T033, check SC-006 and FR-015. Date: 2026-11-27. Commands run from the
+worktree root with `OMP_NUM_THREADS=1` and `-n 8 -p no:cacheprovider -rf`.
+
+| Run | Setting | Passed | Failed | Skipped | Failures |
+|---|---|---|---|---|---|
+| 1 | Core built (`maturin develop --release`), native path on | 3341 | 1 | 23 | `tests/unit/modelling/test_native_fault_frame.py::test_the_native_fault_frame_is_the_cg_fault_frame` |
+| 2 | Core built, `LOOPSTRUCTURAL_NATIVE_FAULTS=0` | 3341 | 1 | 23 | the same test |
+| 3 | Core uninstalled (`import loop_interpolation_core` gives `ModuleNotFoundError`) | 3296 | 0 | 40 | none |
+
+The one failure in runs 1 and 2 is not in scope. It fails on master `907acf42`
+too, whenever the native core is installed (native solver, #383). In run 3 the
+test is skipped because the core is not installed. After run 3 the core was
+installed again and `import loop_interpolation_core` works.
+
+### Ruff
+
+`ruff check LoopStructural packages`: 34 errors. The baseline on master
+`6874364c` also has 34 errors. No line is new (compared by file, code and
+message, without line numbers).
+
+### Result
+
+- SC-006: pass, with the one known failure above. No other test fails with the native path on, off or not installed.
+- FR-015: the suite runs without the core (run 3: 0 failed).
+- Ruff: no new errors.

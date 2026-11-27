@@ -71,7 +71,7 @@
     },
     {
       "wave": 11,
-      "base": null,
+      "base": "3d6cc26e90383a313328a7e784612c02ad251357",
       "commit": null,
       "review": null
     }
@@ -337,6 +337,12 @@
       {
         "model": "haiku",
         "result": "pass"
+      }
+    ],
+    "T033": [
+      {
+        "model": "sonnet",
+        "result": "pass (native on 3341/1 known; off 3341/1 known; not installed 3296/0)"
       }
     ]
   },

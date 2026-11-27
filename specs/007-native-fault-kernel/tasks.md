@@ -644,7 +644,7 @@ Common rules for every Rust task: `cargo fmt --check` and
 
 ## Phase 7: Finish
 
-- [ ] T033 [Finish] [M] Run the full test suite with the native path on, off and not installed, and record stage S4 (SC-006, FR-015).
+- [x] T033 [Finish] [M] Run the full test suite with the native path on, off and not installed, and record stage S4 (SC-006, FR-015).
   - Files: `specs/007-native-fault-kernel/verification.md`, `ROADMAP.md`
   - Needs: T006, T029, T031, T032, T036
   - Wave: 11
