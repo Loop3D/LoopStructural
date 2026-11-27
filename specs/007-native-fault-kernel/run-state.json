@@ -35,7 +35,7 @@
     },
     {
       "wave": 5,
-      "base": null,
+      "base": "60139c091dd46bdf7f91bb38517a724543af7a48",
       "commit": null,
       "review": null
     }
@@ -154,6 +154,42 @@
         "model": "sonnet",
         "result": "pass"
       }
+    ],
+    "T017": [
+      {
+        "model": "sonnet",
+        "result": "pass"
+      }
+    ],
+    "T018": [
+      {
+        "model": "sonnet",
+        "result": "pass"
+      }
+    ],
+    "T025": [
+      {
+        "model": "sonnet",
+        "result": "pass"
+      }
+    ],
+    "T020": [
+      {
+        "model": "haiku",
+        "result": "pass"
+      }
+    ],
+    "T030": [
+      {
+        "model": "haiku",
+        "result": "pass"
+      }
+    ],
+    "T007": [
+      {
+        "model": "haiku",
+        "result": "pass"
+      }
     ]
   },
   "findings": {
@@ -162,7 +198,6 @@
     "dropped": 0,
     "fixed": 1,
     "open_minor": [
-      "T001: ROADMAP.md says 'S1 restores the order once'; should say 'S1 computes the restore order once' (fix in T007).",
       "T011: Profile::block_displacement goes on to continue_profile for a NaN gx (Python returns the profile at forced_gx); no path gives a NaN gx today.",
       "T011: taylor computes 12.0*h*h, Python 12.0*h**2 (1 ulp at most).",
       "T012: Region::Sign::contains allocates vec![false; n] and FaultChain::restore copies restored on each call (hot path; measure in T021).",

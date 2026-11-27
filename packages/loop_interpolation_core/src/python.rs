@@ -798,6 +798,19 @@ fn read_restored(restored: &PyReadonlyArray1<'_, bool>, n: usize) -> PyResult<Ve
     Ok(r)
 }
 
+/// Fault indexes in the order of use. Each index must be less than `n`.
+fn read_order(order: &PyReadonlyArray1<'_, i64>, n: usize) -> PyResult<Vec<usize>> {
+    order
+        .as_array()
+        .iter()
+        .map(|&i| {
+            usize::try_from(i).ok().filter(|&i| i < n).ok_or_else(|| {
+                PyValueError::new_err(format!("'order' has index {i}; the spec has {n} faults"))
+            })
+        })
+        .collect()
+}
+
 /// A set of faults. It is read only after it is made.
 #[pyclass(name = "FaultChain", frozen)]
 struct PyFaultChain {
@@ -830,15 +843,7 @@ impl PyFaultChain {
         let pts = read_points(&points)?;
         let sides = read_sides(&sides, n)?;
         let restored = read_restored(&restored, n)?;
-        let order = order
-            .as_array()
-            .iter()
-            .map(|&i| {
-                usize::try_from(i).ok().filter(|&i| i < n).ok_or_else(|| {
-                    PyValueError::new_err(format!("'order' has index {i}; the spec has {n} faults"))
-                })
-            })
-            .collect::<PyResult<Vec<usize>>>()?;
+        let order = read_order(&order, n)?;
         let out = guarded(py, || {
             self.inner
                 .restore_batch(&order, &pts, reverse, &sides, &restored, threads)
@@ -875,6 +880,48 @@ impl PyFaultChain {
                 .frame_value_batch(fault, coordinate, &pts, &sides, &restored, threads)
         })?;
         Ok(PyArray1::from_vec(py, out))
+    }
+
+    /// Return the gradient of the feature at the points and the count of points that
+    /// straddle a fault. Return a tuple of an (N, 3) array and an int.
+    #[allow(clippy::too_many_arguments)] // the Python signature is fixed by the plan
+    fn feature_gradient<'py>(
+        &self,
+        py: Python<'py>,
+        field: &Bound<'py, PyGridField>,
+        points: PyReadonlyArray2<'py, f64>,
+        order: PyReadonlyArray1<'py, i64>,
+        sides: PyReadonlyArray1<'py, i8>,
+        restored: PyReadonlyArray1<'py, bool>,
+        jumping: PyReadonlyArray1<'py, bool>,
+        scale: f64,
+        threads: usize,
+    ) -> PyResult<(Bound<'py, PyAny>, usize)> {
+        let n = self.inner.faults.len();
+        if !(scale.is_finite() && scale > 0.0) {
+            return Err(PyValueError::new_err("'scale' must be finite and > 0"));
+        }
+        let pts = read_points(&points)?;
+        let order = read_order(&order, n)?;
+        let sides = read_sides(&sides, n)?;
+        let restored = read_restored(&restored, n)?;
+        let jumping = jumping.as_array().to_vec();
+        per_fault("jumping", &jumping, n)?;
+        let field = field.get();
+        let (out, count) = guarded(py, || {
+            crate::fault::gradient::feature_gradient_threads(
+                &self.inner,
+                &field.inner,
+                &pts,
+                &order,
+                &sides,
+                &restored,
+                &jumping,
+                scale,
+                threads,
+            )
+        })?;
+        Ok((rows_array(py, out)?, count))
     }
 }
 

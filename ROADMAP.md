@@ -186,7 +186,7 @@ variable.
 
 The tolerance is 1e-8 times the model box (spec 003 FR-004).
 
-The stages are: S1 restores the order once. S2 is the native restore. S3
+The stages are: S1 computes the restore order once. S2 is the native restore. S3
 gives the native values and gradients. S4 builds the wheels.
 
 See `specs/007-native-fault-kernel/spec.md`.
@@ -945,3 +945,4 @@ See `specs/007-native-fault-kernel/spec.md`.
   `packages/loop_link` exist (`specs/006-loop-link`). The package is new.
 - **2026-11-07:** Stage 7 stage S5 implemented: tool connection, select, read selection, fetch and round trip in `packages/loop_link`.
 - **2026-11-09:** Stage 7 stage S4 implemented: filter and colour calls, colour in `send` and the fake commands endpoint in `packages/loop_link`.
+- **2026-11-27:** spec 007 S1: restore order computed once for each state of the faults (`restore_order`). SC-001 (94 faults, 500 points, mean time of a cutting fault): 39.1 ms before S1; 13.6 ms after D1a (order cache); 10.7 ms after D1b (one shared restoration for the members of a cut frame). Target is 10 ms, so SC-001 fails by a small margin. D1b: used.

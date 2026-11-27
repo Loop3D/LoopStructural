@@ -143,7 +143,7 @@ Common rules for every Rust task: `cargo fmt --check` and
     with and without D1b. If a difference shows, revert D1b and record
     "D1b: dropped (not bit-identical)".
 
-- [ ] T007 [US1] [S] Record stage S1 in `ROADMAP.md` (FR-015).
+- [x] T007 [US1] [S] Record stage S1 in `ROADMAP.md` (FR-015).
   - Files: `ROADMAP.md`
   - Needs: T001, T006
   - Wave: 5
@@ -339,7 +339,7 @@ Common rules for every Rust task: `cargo fmt --check` and
     `_apply_faults`: try native first. `_evaluation.py`: new private
     `_restore_direct(feature, points, reverse)` used by both calls.
 
-- [ ] T017 [US2] [M] Test: native restoration agrees with the Python path on the golden models (story 2, FR-003, FR-005, FR-005a, FR-005c).
+- [x] T017 [US2] [M] Test: native restoration agrees with the Python path on the golden models (story 2, FR-003, FR-005, FR-005a, FR-005c).
   - Files: `tests/fault_evaluation/test_native_faults.py`
   - Needs: T013, T015
   - Wave: 5
@@ -358,7 +358,7 @@ Common rules for every Rust task: `cargo fmt --check` and
     scenarios 1 to 3 with the real kernel: native used (the function returns
     an array), off by setting, off by variable.
 
-- [ ] T018 [US5] [M] Test: the native path is safe to use (story 5 scenarios 2 to 7, edge cases).
+- [x] T018 [US5] [M] Test: the native path is safe to use (story 5 scenarios 2 to 7, edge cases).
   - Files: `tests/fault_evaluation/test_native_safety.py`
   - Needs: T013, T015
   - Wave: 5
@@ -390,7 +390,7 @@ Common rules for every Rust task: `cargo fmt --check` and
     `"native_faults": options.native_faults`; pass it through the existing
     call chain to that function. Schema version stays 1.
 
-- [ ] T020 [US4] [S] Run the fault evaluation tests with the native kernel in CI (FR-013, SC-006).
+- [x] T020 [US4] [S] Run the fault evaluation tests with the native kernel in CI (FR-013, SC-006).
   - Files: `.github/workflows/native.yml`
   - Needs: T013
   - Wave: 5
@@ -467,7 +467,7 @@ Common rules for every Rust task: `cargo fmt --check` and
     Tests: a feature with no fault crossing equals the grid gradient to
     1e-10; a point on a fault gives NaN; count > 0 near a fault.
 
-- [ ] T025 [US3] [M] Add the binding `FaultChain.feature_gradient` (D2b).
+- [x] T025 [US3] [M] Add the binding `FaultChain.feature_gradient` (D2b).
   - Files: `packages/loop_interpolation_core/src/python.rs`
   - Needs: T013, T024
   - Wave: 5
@@ -541,7 +541,7 @@ Common rules for every Rust task: `cargo fmt --check` and
 
 ## Phase 6: Stage S4, prebuilt packages (story 4)
 
-- [ ] T030 [US4] [S] Add a fault kernel smoke test to the wheel workflow (FR-014).
+- [x] T030 [US4] [S] Add a fault kernel smoke test to the wheel workflow (FR-014).
   - Files: `.github/workflows/core-wheels.yml`
   - Needs: T013
   - Wave: 5

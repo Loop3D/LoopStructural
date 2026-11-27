@@ -10,6 +10,8 @@ on:
     paths:
       - 'packages/loop_interpolation_core/**'
       - 'packages/loop_interpolation/src/loop_interpolation/_native.py'
+      - 'LoopStructural/modelling/features/_native_faults.py'
+      - 'LoopStructural/utils/_fault_block.py'
       - '.github/workflows/native.yml'
   pull_request:
     branches:
@@ -17,6 +19,8 @@ on:
     paths:
       - 'packages/loop_interpolation_core/**'
       - 'packages/loop_interpolation/src/loop_interpolation/_native.py'
+      - 'LoopStructural/modelling/features/_native_faults.py'
+      - 'LoopStructural/utils/_fault_block.py'
       - '.github/workflows/native.yml'
   workflow_dispatch:
 
@@ -95,6 +99,8 @@ jobs:
           python -m pip install -e packages/loop_common -e packages/loop_interpolation
           maturin develop --release -m packages/loop_interpolation_core/Cargo.toml
           python -m pytest packages/loop_interpolation/tests -q
+          python -m pip install -e .
+          python -m pytest tests/fault_evaluation -q
 
   # Build the WebAssembly package, check its size and run the browser tests.
   wasm:
