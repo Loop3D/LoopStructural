@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "loop-link"
 description = "Send geoscience data to the LoopConnect viewer"
-version = "0.1.0"
+version = "0.1.1"
 requires-python = ">=3.10"
 authors = [{ name = "Lachlan Grose", email = "lachlan.grose@monash.edu" }]
 readme = "README.md"
