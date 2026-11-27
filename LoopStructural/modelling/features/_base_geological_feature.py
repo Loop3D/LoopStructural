@@ -297,6 +297,7 @@ class BaseFeature(metaclass=ABCMeta):
                 reverse=reverse,
                 block=block,
                 restored_through=restored_through,
+                owner=self,
             )
         return evaluation_points
 

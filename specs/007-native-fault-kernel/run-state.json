@@ -14,6 +14,12 @@
       "base": "d979cff40551c7b55851f20effff81cc3b70662b",
       "commit": "cceb9b575f540f8bb0f2a181c611f8af95ecc570",
       "review": "pass (1 major rejected: plan text out of date, plan.md D2a fixed; 2 minor)"
+    },
+    {
+      "wave": 2,
+      "base": "61b72cdc560536ab38b8ba65eac2420c67437063",
+      "commit": null,
+      "review": null
     }
   ],
   "runs": {
@@ -27,6 +33,10 @@
       {
         "model": "sonnet",
         "result": "pass"
+      },
+      {
+        "model": "sonnet",
+        "result": "pass (fix: removed equal_nan; sensitivity to a wrong order checked)"
       }
     ],
     "T008": [
@@ -52,6 +62,36 @@
         "model": "sonnet",
         "result": "pass"
       }
+    ],
+    "T004": [
+      {
+        "model": "sonnet",
+        "result": "blocked (T003 test used equal_nan, not accepted by numpy 2.5); passed after the T003 fix"
+      }
+    ],
+    "T010": [
+      {
+        "model": "sonnet",
+        "result": "pass"
+      }
+    ],
+    "T011": [
+      {
+        "model": "sonnet",
+        "result": "pass"
+      }
+    ],
+    "T015": [
+      {
+        "model": "sonnet",
+        "result": "pass"
+      }
+    ],
+    "T023": [
+      {
+        "model": "sonnet",
+        "result": "pass"
+      }
     ]
   },
   "findings": {
@@ -60,8 +100,7 @@
     "dropped": 0,
     "fixed": 0,
     "open_minor": [
-      "T001: ROADMAP.md says 'S1 restores the order once'; should say 'S1 computes the restore order once' (fix in T007).",
-      "T003: test_cache_gives_identical_values patches _fault_block.restore_order; it works only while callers look it up as a module global (restore_through does). Check after T004."
+      "T001: ROADMAP.md says 'S1 restores the order once'; should say 'S1 computes the restore order once' (fix in T007)."
     ]
   }
 }

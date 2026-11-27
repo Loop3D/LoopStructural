@@ -94,7 +94,7 @@ Common rules for every Rust task: `cargo fmt --check` and
     (`np.testing.assert_array_equal`, `equal_nan=True`). (4) `reverse=True`
     gives the reversed order rule of `restore_through`.
 
-- [ ] T004 [US1] [M] Add `restore_order` with the order cache and pass `owner` from the two callers (D1a).
+- [x] T004 [US1] [M] Add `restore_order` with the order cache and pass `owner` from the two callers (D1a).
   - Files: `LoopStructural/utils/_fault_block.py`, `LoopStructural/modelling/features/_base_geological_feature.py`, `LoopStructural/modelling/features/_evaluation.py`
   - Needs: T003
   - Wave: 2
@@ -196,7 +196,7 @@ Common rules for every Rust task: `cargo fmt --check` and
     steps and of the faults. If the folder is not there, write
     "not available" and list only the risks.
 
-- [ ] T010 [US2] [M] Port the structured grid lookup to `grid_field.rs`, with Rust tests.
+- [x] T010 [US2] [M] Port the structured grid lookup to `grid_field.rs`, with Rust tests.
   - Files: `packages/loop_interpolation_core/src/fault/grid_field.rs`, `packages/loop_interpolation_core/tests/fault_grid_field.rs`
   - Needs: T008
   - Wave: 2
@@ -214,7 +214,7 @@ Common rules for every Rust task: `cargo fmt --check` and
     values copied from a Python run of the same grid (write the Python
     snippet in a comment of the test).
 
-- [ ] T011 [US2] [M] Port the fault displacement profiles to `profile.rs`, with Rust tests.
+- [x] T011 [US2] [M] Port the fault displacement profiles to `profile.rs`, with Rust tests.
   - Files: `packages/loop_interpolation_core/src/fault/profile.rs`, `packages/loop_interpolation_core/tests/fault_profile.rs`
   - Needs: T008
   - Wave: 2
@@ -292,7 +292,7 @@ Common rules for every Rust task: `cargo fmt --check` and
     warning that contains "2" and "1" over two calls (`caplog`);
     `native_threads()` is 0 for None and 1 for 1.
 
-- [ ] T015 [US4] [M] Add the settings and `native_enabled`, `native_threads` (D2c, D2e).
+- [x] T015 [US4] [M] Add the settings and `native_enabled`, `native_threads` (D2c, D2e).
   - Files: `LoopStructural/__init__.py`, `LoopStructural/modelling/features/_native_faults.py`
   - Needs: T014
   - Wave: 2
@@ -423,7 +423,7 @@ Common rules for every Rust task: `cargo fmt --check` and
 
 ## Phase 5: Stage S3, native values and gradients (story 3)
 
-- [ ] T023 [US3] [M] Implement the exact nearest-point search `KdTree` (OP5).
+- [x] T023 [US3] [M] Implement the exact nearest-point search `KdTree` (OP5).
   - Files: `packages/loop_interpolation_core/src/fault/nearest.rs`, `packages/loop_interpolation_core/tests/fault_nearest.rs`
   - Needs: T008
   - Wave: 2

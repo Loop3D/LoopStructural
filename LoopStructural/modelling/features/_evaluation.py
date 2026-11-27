@@ -133,7 +133,7 @@ class EvaluationContext:
         if points.dtype.hasobject:
             # An array of Python objects has no bytes to compare. Restore it without
             # sharing, as the legacy path does (apply_to_points makes it float).
-            return restore_through(points, faults, reverse=reverse)
+            return restore_through(points, faults, reverse=reverse, owner=feature)
         digest = _digest(points)
         # The scope key holds the faults only. Features with the same ordered faults share
         # one restoration inside the scope. The model does not change inside one scope.
@@ -156,7 +156,7 @@ class EvaluationContext:
             self._batches.pop(slot, None)
         self._depth += 1
         try:
-            restored = np.asarray(restore_through(points, faults, reverse=reverse))
+            restored = np.asarray(restore_through(points, faults, reverse=reverse, owner=feature))
         finally:
             self._depth -= 1
         if restored is points or np.shares_memory(restored, points):

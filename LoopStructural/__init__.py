@@ -4,6 +4,8 @@ LoopStructural
 
 """
 
+from __future__ import annotations
+
 import logging
 from dataclasses import dataclass
 from logging.config import dictConfig
@@ -59,6 +61,12 @@ class LoopStructuralConfig:
     ----------
     nelements : int, optional
         The default number of elements to use in interpolation, by default 10_000
+    native_faults : bool, optional
+        Turns the native fault kernel on (True) or off (False). If None, the
+        environment variable ``LOOPSTRUCTURAL_NATIVE_FAULTS`` decides.
+    native_threads : int, optional
+        The number of threads for the native fault kernel. If None, the kernel
+        uses its default (0).
 
     Examples
     --------
@@ -68,6 +76,8 @@ class LoopStructuralConfig:
     """
    
     nelements: int = 10_000
+    native_faults: bool | None = None
+    native_threads: int | None = None
 
 from .geometry import BoundingBox
 from .interpolators import InterpolatorBuilder

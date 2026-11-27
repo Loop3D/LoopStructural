@@ -63,7 +63,7 @@ def test_cache_gives_identical_values(name):
         plain = capture(build_model(name), points)
     assert cached.keys() == plain.keys()
     for key in cached:
-        np.testing.assert_array_equal(cached[key], plain[key], equal_nan=True)
+        np.testing.assert_array_equal(cached[key], plain[key])
 
 
 def test_reverse_order_rule():
