@@ -294,7 +294,7 @@ NumPy arrays; lists in JSON below stand for them.
         "<member 2, same keys>"
       ],
       "cutters": [2],
-      "regions": ["<R>"],
+      "regions": [["<R>"], [], []],
       "profile": {"scale": 0.5, "gx": "<P>", "gy": "<P>", "gz": "<P>"}
     }
   ]
@@ -311,6 +311,22 @@ bounding box. A profile part `P` is one of:
 {"kind": "cubic", "w": [0, 0, 0, 1], "lim": [-1, 1], "min": -1e308, "max": 1e308, "value_points": [[0, 1], [1, 0]]}
 {"kind": "composite", "positive": "<P>", "negative": "<P>"}
 ```
+
+Rules found while building (wave 3, 2026-11-27):
+
+- `cutters` is the full chain of cutting faults of the frame, in restore
+  order: the indices of `restore_order(member0.faults)` (the members have the
+  same fault list). The frame restores a point through each of them that is
+  not in `restored`, in this order, before it reads the grids.
+- `regions` has one list for each frame member. Each member is masked by its
+  own list only (`_evaluate_frame_legacy` calls each member with its own
+  `_calculate_mask`). A frame with no faults whose 3 members share the same
+  region objects gives the same result, so one rule serves both paths.
+- A `Sign` region needs `vector` and `point` at build time (`add_abutting_fault`
+  sets both). If either is None, the fault is not supported (Python path).
+- A region gets `restored` only if the Python region has
+  `takes_restored_through` (an `UnconformityFeature` has it; a sign region has
+  not, so it evaluates its parent fault without `restored`).
 
 A region `R` is one of:
 

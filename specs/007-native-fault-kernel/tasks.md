@@ -250,7 +250,10 @@ Common rules for every Rust task: `cargo fmt --check` and
     `PositiveRegion`/`NegativeRegion.__call__` (`LoopStructural/utils/regions.py`).
     `Region::Unconformity`: port `UnconformityFeature.evaluate`
     (`.../features/_unconformity_feature.py`): `<= value` if `sign`, else
-    `>= value`, NaN gives false. `pool(0)` = all cores; cache by thread
+    `>= value`, NaN gives false. `Fault.regions` is `[Vec<Region>; 3]`
+    (one list per member, each member masked by its own list); `cutters` is
+    the full cutter chain in restore order (plan D2b "Rules found while
+    building"). `pool(0)` = all cores; cache by thread
     count. Tests: one fault with constant displacement (exact shift along
     the slip direction), reverse undoes restore to 1e-9, NaN in gives NaN
     out, a block side 0 moves nothing, empty input.
@@ -263,6 +266,7 @@ Common rules for every Rust task: `cargo fmt --check` and
   - Context: Register in `#[pymodule] fn loop_interpolation_core` next to
     `PyProblem`. `FaultChain(spec: dict)`: parse the dict of plan D2b
     (keys `version`, `block`, `faults[*].displacement/steps/frame/cutters/regions/profile`;
+    `regions` is a list of 3 lists, one per member;
     region `kind` = positive / negative / unconformity; profile `kind` =
     ones / zeros / smooth_peak / cubic / composite); `version != 1` or a
     bad key raises `ValueError`. `restore(points (N,3) f64, order i64,
@@ -326,7 +330,10 @@ Common rules for every Rust task: `cargo fmt --check` and
     `_has_uniform_lookup()`; equal member fault lists; regions Sign or
     Unconformity only; `FaultDisplacement` with `Ones`, `Zeros`,
     `CubicFunction` (call `solve()` first), `Composite`, or `smooth_peak` by
-    `is`). Cache `feature._native_chain = (token, refs, chain, faults)`;
+    `is`). `cutters` = indices of `restore_order(member0.faults)`; `regions`
+    = 3 lists (one per member); a sign region with `vector` or `point` None
+    is not supported (plan D2b "Rules found while building").
+    Cache `feature._native_chain = (token, refs, chain, faults)`;
     token and refs as D2c. `restore(feature, points, *, reverse=False,
     block=None, restored_through=())` returns None for the Python path.
     `_apply_faults`: try native first. `_evaluation.py`: new private
