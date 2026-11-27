@@ -351,6 +351,11 @@ Rules found while building (wave 3, 2026-11-27):
   `takes_restored_through` (an `UnconformityFeature` has it; a sign region has
   not, so it evaluates its parent fault without `restored`).
 
+- The chain also holds every fault that a region needs (the parent fault of
+  a sign region, the faults of an unconformity region) and their cutters,
+  appended after the faults of the restore order. The `order` argument of
+  `restore` names only the faults of the restore order.
+
 A region `R` is one of:
 
 ```json

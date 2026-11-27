@@ -36,6 +36,12 @@
     {
       "wave": 5,
       "base": "60139c091dd46bdf7f91bb38517a724543af7a48",
+      "commit": "6d929073246616a981d214dd96861d9e25db896a",
+      "review": "pass (5 minor)"
+    },
+    {
+      "wave": 6,
+      "base": null,
       "commit": null,
       "review": null
     }
@@ -193,7 +199,7 @@
     ]
   },
   "findings": {
-    "found": 13,
+    "found": 18,
     "rejected": 2,
     "dropped": 0,
     "fixed": 1,
@@ -206,7 +212,12 @@
       "T013: parse_grid nsteps product can overflow in release; use checked_mul and ValueError.",
       "T013: the spec parser accepts NaN/inf numbers and a zero step_vector.",
       "T006: _evaluate_frame_shared calls builder.up_to_date for all 3 members even when one is not evaluated.",
-      "T006: _evaluate_frame_shared uses restore_through, not the scope-shared restore(); no value change."
+      "T006: _evaluate_frame_shared uses restore_through, not the scope-shared restore(); no value change.",
+      "T018: test_native_path_is_used cannot fail if evaluate_value skips the native path (restore() sets _native_chain first).",
+      "T018: test_two_threads_equal_single_thread warms the chain first, so a race while the chain is built is not exercised.",
+      "T018: test_bad_spec_raises_and_state_is_kept: the state check cannot fail (the bad spec never touches the feature).",
+      "T017: test_native_off_by_variable tests only '0' (not false/off/no).",
+      "T020: native.yml path filter misses _evaluation.py, _base_geological_feature.py and tests/fault_evaluation/**."
     ]
   },
   "sc001": {
