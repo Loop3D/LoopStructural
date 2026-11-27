@@ -594,6 +594,8 @@ failed acceptance run T030 (`t030-diagnosis.md`, `profile-d4a.md`).
   `baseline_linux_repeat.json`. All the time ratios of C-015 use
   `baseline_linux.json`. `baseline.json` stays as the historical Windows
   record. The ratio limits do not change.
+  Final run (2026-11-27): the code before this feature is master `db5e65ac`,
+  which has all the fixes that the candidate has.
 - **C-020 Memory meter.** The memory pass measured the growth of the process
   RSS in one process that runs many cases. Freed pages of an earlier case hide
   the memory of a later case: 187 of 254 values of a Linux baseline were 4096

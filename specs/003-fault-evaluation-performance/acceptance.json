@@ -3,50 +3,50 @@
   "criteria": {
     "SC-002": {
       "passed": true,
-      "value": 0.09846596316680153,
+      "value": 0.09831134296057692,
       "limit": 0.4,
       "reason": null
     },
     "SC-003": {
       "passed": true,
-      "value": 0.1218924429831994,
+      "value": 0.11954657390842025,
       "limit": 0.15,
       "reason": null
     },
     "SC-004": {
       "passed": true,
-      "value": 1.0906226721327108,
+      "value": 1.0561251588736245,
       "limit": 1.5,
       "reason": null
     },
     "SC-005": {
       "passed": true,
-      "value": 0.2155600195707454,
+      "value": 0.2165207394771525,
       "limit": 0.5,
       "reason": null
     },
     "SC-006": {
       "passed": true,
-      "value": 1.21468626031685,
+      "value": 1.214571706839912,
       "limit": 1.2,
       "reason": null,
       "compared_cases": 105
     },
     "SC-007": {
       "passed": true,
-      "value": 1.0599268918763598,
+      "value": 1.0709413911573153,
       "limit": 1.1,
       "reason": null
     },
     "SC-008": {
       "passed": true,
-      "value": 331.2253370749968,
+      "value": 328.57611393400293,
       "limit": 900.0,
       "reason": null
     },
     "SC-009": {
       "passed": true,
-      "value": 0.36519884159406096,
+      "value": 0.3469474592141483,
       "limit": 0.5,
       "reason": null
     }
@@ -62,315 +62,327 @@
   "short_cases": [
     {
       "case_id": "f0_u0:oldest_value:5000:cold",
-      "noise_ratio": 1.0172448484270344
+      "noise_ratio": 1.052084057518922
     },
     {
       "case_id": "f0_u0:all_group_values:5000:cold",
-      "noise_ratio": 1.0086238201342856
+      "noise_ratio": 1.0582576353011333
     },
     {
       "case_id": "f0_u0:all_group_values:100000:cold",
-      "noise_ratio": 1.0996249953006685
+      "noise_ratio": 1.0093658342239111
     },
     {
       "case_id": "f0_u0:model_ids:5000:cold",
-      "noise_ratio": 1.1078918323342275
+      "noise_ratio": 1.0402196298335398
     },
     {
       "case_id": "f0_u0:oldest_gradient:5000:cold",
-      "noise_ratio": 1.111330864936824
+      "noise_ratio": 1.19774331198472
     },
     {
       "case_id": "f0_u0:model_gradient:5000:cold",
-      "noise_ratio": 1.000742554577217
+      "noise_ratio": 1.0065225963368076
     },
     {
       "case_id": "f0_u1:oldest_value:5000:cold",
-      "noise_ratio": 1.033149022981168
+      "noise_ratio": 1.0022071605621812
     },
     {
       "case_id": "f0_u1:oldest_value:100000:cold",
-      "noise_ratio": 1.0922263776761785
+      "noise_ratio": 1.0797763516075785
     },
     {
       "case_id": "f0_u1:all_group_values:5000:cold",
-      "noise_ratio": 1.125527316601902
+      "noise_ratio": 1.081277880572231
     },
     {
       "case_id": "f0_u1:model_ids:5000:cold",
-      "noise_ratio": 1.061559348062657
+      "noise_ratio": 1.0581783066174844
     },
     {
       "case_id": "f0_u1:model_ids:50000:cold",
-      "noise_ratio": 1.0115394274512137
+      "noise_ratio": 1.0514120721838136
     },
     {
       "case_id": "f0_u1:oldest_gradient:5000:cold",
-      "noise_ratio": 1.0117488597974267
+      "noise_ratio": 1.0178513491754544
     },
     {
       "case_id": "f0_u1:model_gradient:5000:cold",
-      "noise_ratio": 1.022217818734328
+      "noise_ratio": 1.0016555254501296
     },
     {
       "case_id": "f0_u2:oldest_value:5000:cold",
-      "noise_ratio": 1.008225265680737
+      "noise_ratio": 1.0742404692058996
     },
     {
       "case_id": "f0_u2:oldest_value:50000:cold",
-      "noise_ratio": 1.0168480401447855
+      "noise_ratio": 1.0330364416332565
     },
     {
       "case_id": "f0_u2:all_group_values:5000:cold",
-      "noise_ratio": 1.035152533467388
+      "noise_ratio": 1.020530689752252
     },
     {
       "case_id": "f0_u2:model_ids:5000:cold",
-      "noise_ratio": 1.044437649249276
+      "noise_ratio": 1.002476845065275
     },
     {
       "case_id": "f0_u2:oldest_gradient:5000:cold",
-      "noise_ratio": 1.0792627298869613
+      "noise_ratio": 1.0369632496150858
     },
     {
       "case_id": "f0_u2:model_gradient:5000:cold",
-      "noise_ratio": 1.0290123001656646
+      "noise_ratio": 1.0035285752754992
     },
     {
       "case_id": "f0_u3:oldest_value:5000:cold",
-      "noise_ratio": 1.0220162627094398
+      "noise_ratio": 1.0222652797240979
     },
     {
       "case_id": "f0_u3:all_group_values:5000:cold",
-      "noise_ratio": 1.056252388504213
+      "noise_ratio": 1.0004996509939743
     },
     {
       "case_id": "f0_u3:model_ids:5000:cold",
-      "noise_ratio": 1.0096066132298898
+      "noise_ratio": 1.0240424698905368
     },
     {
       "case_id": "f0_u3:model_ids:100000:cold",
-      "noise_ratio": 1.0100426420264634
+      "noise_ratio": 1.0098441535956277
     },
     {
       "case_id": "f0_u3:oldest_gradient:5000:cold",
-      "noise_ratio": 1.0256166135569427
+      "noise_ratio": 1.016339136387944
     },
     {
       "case_id": "f0_u3:model_gradient:5000:cold",
-      "noise_ratio": 1.006922551854133
+      "noise_ratio": 1.0022425728292228
     },
     {
       "case_id": "f1_u0:oldest_value:5000:cold",
-      "noise_ratio": 1.0106007387392408
+      "noise_ratio": 1.1143607176637385
     },
     {
       "case_id": "f1_u0:oldest_value:20000:cold",
-      "noise_ratio": 1.0044554394728342
+      "noise_ratio": 1.124933669703629
     },
     {
       "case_id": "f1_u0:all_group_values:5000:cold",
-      "noise_ratio": 1.0598164317516399
+      "noise_ratio": 1.0682880937178763
     },
     {
       "case_id": "f1_u0:all_group_values:20000:cold",
-      "noise_ratio": 1.0139400835969745
+      "noise_ratio": 1.014503868825309
     },
     {
       "case_id": "f1_u0:model_ids:5000:cold",
-      "noise_ratio": 1.019145374276802
+      "noise_ratio": 1.065234187283806
     },
     {
       "case_id": "f1_u0:model_ids:20000:cold",
-      "noise_ratio": 1.0172836244569314
+      "noise_ratio": 1.0399189491162686
     },
     {
       "case_id": "f1_u0:oldest_gradient:5000:cold",
-      "noise_ratio": 1.0058751622191968
+      "noise_ratio": 1.0406359714986768
     },
     {
       "case_id": "f1_u0:model_gradient:5000:cold",
-      "noise_ratio": 1.0117693343823109
+      "noise_ratio": 1.0001738920322132
     },
     {
       "case_id": "f1_u1:oldest_value:5000:cold",
-      "noise_ratio": 1.0265906874988528
+      "noise_ratio": 1.0111884113200988
     },
     {
       "case_id": "f1_u1:all_group_values:5000:cold",
-      "noise_ratio": 1.002830875102743
+      "noise_ratio": 1.0111347376115392
     },
     {
       "case_id": "f1_u1:model_ids:5000:cold",
-      "noise_ratio": 1.0298281257000446
+      "noise_ratio": 1.0121089924492834
     },
     {
       "case_id": "f1_u1:oldest_gradient:5000:cold",
-      "noise_ratio": 1.0270646212690464
+      "noise_ratio": 1.0095949680695755
     },
     {
       "case_id": "f1_u1:model_gradient:5000:cold",
-      "noise_ratio": 1.0166438822476787
+      "noise_ratio": 1.0030552199904719
     },
     {
       "case_id": "f1_u2:oldest_value:5000:cold",
-      "noise_ratio": 1.0178201759911518
+      "noise_ratio": 1.0824761507153544
     },
     {
       "case_id": "f1_u2:all_group_values:5000:cold",
-      "noise_ratio": 1.0157065355850954
+      "noise_ratio": 1.0180936214590237
     },
     {
       "case_id": "f1_u2:model_ids:5000:cold",
-      "noise_ratio": 1.0036467143063674
+      "noise_ratio": 1.019329055417186
     },
     {
       "case_id": "f1_u2:oldest_gradient:5000:cold",
-      "noise_ratio": 1.0191020512315343
+      "noise_ratio": 1.0034709290530581
     },
     {
       "case_id": "f1_u3:oldest_value:5000:cold",
-      "noise_ratio": 1.0283225354955778
+      "noise_ratio": 1.1204220867682388
     },
     {
       "case_id": "f1_u3:oldest_gradient:5000:cold",
-      "noise_ratio": 1.0200247193141196
+      "noise_ratio": 1.0073321061918006
     },
     {
       "case_id": "f2_u0:oldest_value:5000:cold",
-      "noise_ratio": 1.0241803362275197
+      "noise_ratio": 1.0043313493245019
     },
     {
       "case_id": "f2_u0:all_group_values:5000:cold",
-      "noise_ratio": 1.0152290647447175
+      "noise_ratio": 1.0854644588137197
     },
     {
       "case_id": "f2_u0:model_ids:5000:cold",
-      "noise_ratio": 1.0230932241540653
+      "noise_ratio": 1.032833635256692
     },
     {
       "case_id": "f2_u0:oldest_gradient:5000:cold",
-      "noise_ratio": 1.0375257957394415
+      "noise_ratio": 1.0181518481845577
     },
     {
       "case_id": "f2_u0:model_gradient:5000:cold",
-      "noise_ratio": 1.0444879825586677
+      "noise_ratio": 1.0499759917181408
     },
     {
       "case_id": "f2_u1:oldest_value:5000:cold",
-      "noise_ratio": 1.0370837308697567
+      "noise_ratio": 1.0603941647237016
     },
     {
       "case_id": "f2_u1:all_group_values:5000:cold",
-      "noise_ratio": 1.0247477595505987
+      "noise_ratio": 1.0506854558743586
     },
     {
       "case_id": "f2_u1:model_ids:5000:cold",
-      "noise_ratio": 1.0577031858903365
+      "noise_ratio": 1.0614552079854624
     },
     {
       "case_id": "f2_u1:oldest_gradient:5000:cold",
-      "noise_ratio": 1.032551759717727
+      "noise_ratio": 1.0573019632135126
     },
     {
       "case_id": "f2_u2:oldest_value:5000:cold",
-      "noise_ratio": 1.0556629098882766
+      "noise_ratio": 1.00133469533968
     },
     {
       "case_id": "f2_u3:oldest_value:5000:cold",
-      "noise_ratio": 1.0470751763006494
+      "noise_ratio": 1.0336529673686368
     },
     {
       "case_id": "f4_u0:oldest_value:5000:cold",
-      "noise_ratio": 1.0008440844108755
+      "noise_ratio": 1.03934068511102
     },
     {
       "case_id": "f4_u0:all_group_values:5000:cold",
-      "noise_ratio": 1.006327100531492
+      "noise_ratio": 1.0564001729621866
     },
     {
       "case_id": "f4_u0:model_ids:5000:cold",
-      "noise_ratio": 1.0236724651436613
+      "noise_ratio": 1.0480587768415544
     },
     {
       "case_id": "f4_u1:oldest_value:5000:cold",
-      "noise_ratio": 1.0047590877622388
+      "noise_ratio": 1.000309733083147
     },
     {
       "case_id": "stopped_fault:oldest_value:5000:cold",
-      "noise_ratio": 1.0605828472719434
+      "noise_ratio": 1.0597061510386692
     },
     {
       "case_id": "stopped_fault:all_group_values:5000:cold",
-      "noise_ratio": 1.0112653304127015
+      "noise_ratio": 1.0085643143399385
     },
     {
       "case_id": "stopped_fault:model_ids:5000:cold",
-      "noise_ratio": 1.0883026711622752
+      "noise_ratio": 1.0142746985938782
     },
     {
       "case_id": "stopped_fault:model_ids:50000:cold",
-      "noise_ratio": 1.0050628214202364
+      "noise_ratio": 1.0000788795842113
     },
     {
       "case_id": "stopped_fault:oldest_gradient:5000:cold",
-      "noise_ratio": 1.0112823511382725
+      "noise_ratio": 1.0002134500619784
     },
     {
       "case_id": "stopped_fault:model_gradient:5000:cold",
-      "noise_ratio": 1.0479061000756817
+      "noise_ratio": 1.0453617052804476
+    },
+    {
+      "case_id": "cutting_faults:oldest_value:5000:cold",
+      "noise_ratio": 1.0356412992076063
+    },
+    {
+      "case_id": "cutting_faults:all_group_values:5000:cold",
+      "noise_ratio": 1.038995011294707
+    },
+    {
+      "case_id": "cutting_faults:model_ids:5000:cold",
+      "noise_ratio": 1.0347320170552026
     },
     {
       "case_id": "onlap_domain:oldest_value:5000:cold",
-      "noise_ratio": 1.0472157029031968
+      "noise_ratio": 1.059948577384242
     },
     {
       "case_id": "onlap_domain:all_group_values:5000:cold",
-      "noise_ratio": 1.0414265468814747
+      "noise_ratio": 1.0191103716043044
     },
     {
       "case_id": "onlap_domain:model_ids:5000:cold",
-      "noise_ratio": 1.0499885461277898
+      "noise_ratio": 1.0140532092346377
     },
     {
       "case_id": "onlap_domain:oldest_gradient:5000:cold",
-      "noise_ratio": 1.0253258891196861
+      "noise_ratio": 1.0069948539381826
     },
     {
       "case_id": "onlap_domain:model_gradient:5000:cold",
-      "noise_ratio": 1.0355404780115365
+      "noise_ratio": 1.0009905205170826
     },
     {
       "case_id": "faulted_fold:oldest_value:5000:cold",
-      "noise_ratio": 1.0607337207902607
+      "noise_ratio": 1.0798965697207388
     },
     {
       "case_id": "faulted_fold:all_group_values:5000:cold",
-      "noise_ratio": 1.0206433267179433
+      "noise_ratio": 1.0412889414325905
     },
     {
       "case_id": "faulted_fold:model_ids:5000:cold",
-      "noise_ratio": 1.0907182395412178
+      "noise_ratio": 1.0329820692674805
     },
     {
       "case_id": "faulted_fold:oldest_gradient:5000:cold",
-      "noise_ratio": 1.0472147681209665
+      "noise_ratio": 1.0393148721054686
     },
     {
       "case_id": "faulted_fold:model_gradient:5000:cold",
-      "noise_ratio": 1.035600850994785
+      "noise_ratio": 1.038938330128755
     },
     {
       "case_id": "plugin:oldest_value:5000:cold",
-      "noise_ratio": 1.0411368957940093
+      "noise_ratio": 1.029993600601538
     },
     {
       "case_id": "plugin:all_group_values:5000:cold",
-      "noise_ratio": 1.0262029961229153
+      "noise_ratio": 1.0044862177629068
     },
     {
       "case_id": "plugin:model_ids:5000:cold",
-      "noise_ratio": 1.0298024969373016
+      "noise_ratio": 1.0382013558031093
     }
   ]
 }

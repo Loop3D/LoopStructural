@@ -145,3 +145,10 @@ The noise between the two runs is at most 1.05 for the 53 cases with a median
 of 1 s or more. On this computer, Linux runs the code before this feature
 about 1.8 times faster than Windows, so `baseline.json` stays as a historical
 record and is not used for the ratios.
+
+### Final Linux baseline (2026-11-27)
+
+The final T030 run uses master `db5e65ac` (all fixes merged) on branch
+`bench/003-linux-baseline-db5e65ac` at `23a37ee3`, with the harness of
+`e88269b1` (C-022: 3 rounds for cases from 1 s up to 5 s). Runs: 906 s and
+988 s; noise at most 1.086 for the cases of 1 s or more.
