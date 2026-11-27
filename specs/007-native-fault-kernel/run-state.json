@@ -61,6 +61,12 @@
       "wave": 9,
       "base": "d12101b223acf7c758a410ea0d6cdc978450b3eb",
       "commit": "f8a612efce119d816d94f8524b39b8b517825328",
+      "review": "pass (2 minor)"
+    },
+    {
+      "wave": 10,
+      "base": null,
+      "commit": null,
       "review": null
     }
   ],
@@ -311,7 +317,7 @@
     ]
   },
   "findings": {
-    "found": 29,
+    "found": 31,
     "rejected": 2,
     "dropped": 0,
     "fixed": 2,
@@ -341,7 +347,9 @@
       "T026: the parity test does not assert that _faulted(model) is not empty.",
       "T035: the largest native difference of cutting_faults went from 5.7e-13 to 1.25e-12 although T035 claims the same floating-point operations; within tolerance, not explained.",
       "T027: evaluate_value/evaluate_gradient call _check_frame() and update() again after field_for already did (no wrong result).",
-      "T027: the native binding rejects element_scale_parameter <= 0 with ValueError, where Python gave a degenerate result (edge case)."
+      "T027: the native binding rejects element_scale_parameter <= 0 with ValueError, where Python gave a degenerate result (edge case).",
+      "T028: the Python time of SC-004 includes the _FaultTimer patch overhead; the native run has none (favours native slightly).",
+      "T028: the SC-004 scratch script is outside the repo; rerun with the benchmark after T036."
     ]
   },
   "sc001": {
