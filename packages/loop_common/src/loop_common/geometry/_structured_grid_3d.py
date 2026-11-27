@@ -481,16 +481,99 @@ class StructuredGrid3DGeometry:
             raise ValueError(
                 f"cannot assign {property_array.shape[0]} vlaues to array of shape {self.n_nodes}"
             )
-        idc, inside = self.position_to_cell_corners(evaluation_points)
-        if idc.shape[0] != inside.shape[0]:
-            raise ValueError("index does not match number of nodes")
-        weights = self.position_to_dof_coefs(evaluation_points[inside, :])
+        if self._has_uniform_lookup():
+            idc, inside, local_coords = self._lookup_points(evaluation_points)
+            weights = self.trilinear(local_coords[inside, :])
+        else:
+            idc, inside = self.position_to_cell_corners(evaluation_points)
+            if idc.shape[0] != inside.shape[0]:
+                raise ValueError("index does not match number of nodes")
+            weights = self.position_to_dof_coefs(evaluation_points[inside, :])
+        return self._values_from_coefficients(idc, inside, weights, property_array)
+
+    def _has_uniform_lookup(self) -> bool:
+        """Check that the cell geometry is the uniform geometry of this class.
+
+        A subclass that changes the cell index, the local coordinates, the
+        cell corners or the corner weights cannot use _lookup_points and
+        trilinear.
+
+        Returns
+        -------
+        bool
+            True when the four methods are not overridden.
+        """
+        cls = type(self)
+        return (
+            cls.position_to_cell_index is StructuredGrid3DGeometry.position_to_cell_index
+            and cls.position_to_dof_coefs is StructuredGrid3DGeometry.position_to_dof_coefs
+            and cls.position_to_local_coordinates
+            is StructuredGrid3DGeometry.position_to_local_coordinates
+            and cls.position_to_cell_corners is StructuredGrid3DGeometry.position_to_cell_corners
+        )
+
+    def _lookup_points(self, pos: np.ndarray) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
+        """Find the cell, the corner nodes and the local coordinates of points.
+
+        The cell index is found one time for all points.
+
+        Parameters
+        ----------
+        pos : np.ndarray
+            (N, 3) locations
+
+        Returns
+        -------
+        tuple[np.ndarray, np.ndarray, np.ndarray]
+            corners is an integer (N, 8) array of node indexes, with -1 in each
+            row of a point that is outside. inside is a boolean (N,) array.
+            local_coords is a float (N, 3) array in the range 0 to 1. Rows of
+            points that are outside use the cell with index 0.
+        """
+        pos = self.check_position(pos)
+        cell_indexes, inside = self.position_to_cell_index(pos)
+        nx, ny = self.nsteps[0], self.nsteps[1]
+        offsets = np.array(
+            [0, 1, nx, nx + 1, nx * ny, nx * ny + 1, nx * ny + nx, nx * ny + nx + 1],
+            dtype=np.intp,
+        )
+        g = cell_indexes[:, 0] + nx * cell_indexes[:, 1] + nx * ny * cell_indexes[:, 2]
+        corners = g[:, None] + offsets[None, :]
+        corners[~inside] = -1
+        # Use cell origin (not modulo) so points on max faces/vertices map to local=1.
+        cell_origin = self.origin[None, :] + self.step_vector[None, :] * cell_indexes
+        local_coords = (pos - cell_origin) / self.step_vector[None, :]
+        local_coords = np.clip(local_coords, 0.0, 1.0)
+        return corners, inside, local_coords
+
+    @staticmethod
+    def _values_from_coefficients(
+        idc: np.ndarray, inside: np.ndarray, coefs: np.ndarray, property_array: np.ndarray
+    ) -> np.ndarray:
+        """Sum the corner values of the cells, weighted by the coefficients.
+
+        Parameters
+        ----------
+        idc : np.ndarray
+            (N, 8) corner node indexes of the cells
+        inside : np.ndarray
+            (N,) boolean, True for each point that is inside the grid
+        coefs : np.ndarray
+            (M, 8) trilinear coefficients of the M points that are inside
+        property_array : np.ndarray
+            node values, shape ``(n_nodes,)`` or ``(n_nodes, k)``
+
+        Returns
+        -------
+        np.ndarray
+            ``(N,)`` (or ``(N, k)``) values, NaN for the points that are outside
+        """
         if property_array.ndim == 1:
             v = np.zeros(idc.shape)
             v[:, :] = np.nan
-            v[inside, :] = weights
+            v[inside, :] = coefs
             v[inside, :] *= property_array[idc[inside, :]]
             return np.sum(v, axis=1)
         result = np.full((idc.shape[0],) + property_array.shape[1:], np.nan)
-        result[inside] = np.einsum("nc,nc...->n...", weights, property_array[idc[inside, :]])
+        result[inside] = np.einsum("nc,nc...->n...", coefs, property_array[idc[inside, :]])
         return result

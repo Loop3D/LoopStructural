@@ -7,6 +7,7 @@ models such as foliations, fault planes, and fold rotation angles.
 from __future__ import annotations
 
 import dataclasses
+import functools
 import warnings
 
 import numpy as np
@@ -26,8 +27,21 @@ from ...utils import LoopValueError, getLogger
 from ...utils._fault_block import block_kwargs, check_block
 from . import FeatureType
 from ._base_geological_feature import BaseFeature
+from ._evaluation import evaluation_scope, probe_points, restore
 
 logger = getLogger(__name__)
+
+
+def _in_evaluation_scope(method):
+    """Run an evaluation inside an evaluation scope that shares fault restorations."""
+
+    @functools.wraps(method)
+    def wrapper(self, *args, **kwargs):
+        with evaluation_scope(self.model):
+            return method(self, *args, **kwargs)
+
+    return wrapper
+
 
 
 class GeologicalFeature(BaseFeature):
@@ -126,6 +140,17 @@ class GeologicalFeature(BaseFeature):
     def set_model(self, model):
         self.model = model
 
+    def _restore_points(self, points, *, block=None, restored_through=()):
+        """Restore points through the faults, sharing the result inside an evaluation scope.
+
+        Only a plain call (no block, no faults already restored) is shared; any other
+        call restores directly.
+        """
+        if block is None and not restored_through:
+            return restore(self, points)
+        return self._apply_faults(points, block=block, restored_through=restored_through)
+
+    @_in_evaluation_scope
     def evaluate_value(
         self, pos: np.ndarray, ignore_regions=False, fillnan=None, *, block=None,
         restored_through=(),
@@ -174,7 +199,7 @@ class GeologicalFeature(BaseFeature):
         mask = self._calculate_mask(
             pos, ignore_regions=ignore_regions, block=block, restored_through=restored_through
         )
-        evaluation_points = self._apply_faults(
+        evaluation_points = self._restore_points(
             evaluation_points, block=block, restored_through=restored_through
         )
         if mask.dtype not in [int, bool]:
@@ -193,6 +218,7 @@ class GeologicalFeature(BaseFeature):
                 v[nanmask] = v[known][i]
         return v
 
+    @_in_evaluation_scope
     def evaluate_gradient(
         self, pos: np.ndarray, ignore_regions=False, element_scale_parameter=None, *, block=None,
         restored_through=(),
@@ -252,13 +278,15 @@ class GeologicalFeature(BaseFeature):
             def straddles(tet):
                 out = np.zeros(tet.shape[0], dtype=bool)
                 for f in jumping:
-                    side = (
-                        f[0]
-                        .evaluate_value(
-                            tet.reshape(-1, 3), fillnan='nearest', **block_kwargs(block)
+                    # Each refinement makes a new corner batch: a probe, not a caller batch.
+                    with probe_points():
+                        side = (
+                            f[0]
+                            .evaluate_value(
+                                tet.reshape(-1, 3), fillnan='nearest', **block_kwargs(block)
+                            )
+                            .reshape(tet.shape[0], 4)
                         )
-                        .reshape(tet.shape[0], 4)
-                    )
                     out |= ~np.logical_or(np.all(side > 0, axis=1), np.all(side < 0, axis=1))
                 return out
 
@@ -276,7 +304,7 @@ class GeologicalFeature(BaseFeature):
                 )
                 straddle[straddle] = straddles(tetrahedron[straddle])
 
-            tetrahedron_faulted = self._apply_faults(
+            tetrahedron_faulted = self._restore_points(
                 np.array(tetrahedron.reshape(-1, 3)), block=block, restored_through=restored_through
             ).reshape(tetrahedron.shape)
 
@@ -288,7 +316,7 @@ class GeologicalFeature(BaseFeature):
             v[ok, :] = gradient_from_tetrahedron(tetrahedron[ok, :, :], values[ok])
 
             return v
-        pos = self._apply_faults(pos, block=block, restored_through=restored_through)
+        pos = self._restore_points(pos, block=block, restored_through=restored_through)
         if mask.dtype not in [int, bool]:
             logger.error(f"Unable to evaluate gradient for {self.name}")
         else:

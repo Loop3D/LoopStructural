@@ -1,6 +1,6 @@
 # Feature spec: Faster evaluation of faulted models
 
-**Feature**: `003-fault-evaluation-performance` | **Created**: 2026-11-01 | **Status**: Clarified 2026-11-01
+**Feature**: `003-fault-evaluation-performance` | **Created**: 2026-11-01 | **Status**: Clarified 2026-11-26 (C-018 to C-021: batch rule of FR-008 and FR-010, Linux baseline, memory meter, references after master #421)
 
 **Input**: The user renders models in the QGIS plugin. A model with faults and
 unconformities is slow to render, and it becomes slower with each fault and
@@ -39,6 +39,13 @@ The analysis of the present code and the baseline numbers are in research.md.
   it moves each point in 10 steps and evaluates the fault frame at each step.
 - The solver does not change this. The cost is the same with `cg` and with
   `solver='native'`.
+- Related work on master (2026-11-18):
+  - The structured grid code of `loop_common` moved into
+    `StructuredGrid3DGeometry` (#367, #369). The faster grid lookup of user
+    story 5 must use the new place of that code.
+  - Spec `005-coordinate-frame-correctness` changes how the fault frames and
+    the coordinate transforms are made. The golden results of this spec can
+    change only under C-006.
 - Words used in this spec:
   - **evaluation call**: one call of a public evaluation function, for example
     one `evaluate_model(xyz)`.
@@ -53,7 +60,12 @@ The analysis of the present code and the baseline numbers are in research.md.
     before this feature. The tests compare the new output with it.
   - **benchmark case**: one golden model, one evaluation function and one
     number of points.
-  - **baseline**: the benchmark results of the code before this feature.
+  - **standard suite**: the set of benchmark cases that a developer runs
+    for each measurement (FR-012a).
+  - **full suite**: all the cases of FR-012, including the large ones that the
+    standard suite leaves out. A developer starts it on purpose.
+  - **baseline**: the benchmark results of the standard suite on the code
+    before this feature.
 
 ## User scenarios and tests
 
@@ -112,11 +124,16 @@ applications with the baseline.
 3. **Given** the plugin model of `research.md` (one group, six faults, one
    unconformity), **when** the caller evaluates the group at 20 000 points,
    **then** the time is at most half of the baseline.
-4. **Given** a model that the viewer evaluated on a grid, **when** the viewer
-   evaluates the same grid again and the model did not change, **then** the
-   evaluation call makes no fault applications. **When** the model changed
-   before the second call, **then** the result is the result of the changed
-   model.
+4. **Given** one model, **when** two threads evaluate it at the same time,
+   **then** each thread gets the result that it gets when it runs alone
+   (FR-010a).
+5. **Given** the public evaluation functions before and after this feature,
+   **when** a caller uses them with the same arguments, **then** the
+   functions, the arguments and the return types are the same (FR-011).
+6. **Given** a model that the caller evaluated, **when** the model changes and
+   the caller evaluates the same points again, **then** the result is the
+   result of the changed model, because no restored points stay after an
+   evaluation call (FR-009).
 
 ### User story 3: Measure the cost with benchmarks (priority: P2)
 
@@ -128,9 +145,9 @@ files and shows which cases became slower or faster.
 if a later change makes the code slow again. The benchmarks are a tool for
 developers on their own computers. CI does not run them (C-005).
 
-**Independent test**: run the benchmarks two times on the same computer and
-the same code. Compare the two files. No case shows a change of more than the
-noise limit (SC-007).
+**Independent test**: run the standard suite two times on the same computer
+and the same code. Compare the two files. No case shows a change of more than
+the noise limit (SC-007).
 
 **Acceptance scenarios**:
 
@@ -203,15 +220,18 @@ the golden tests.
 - **A feature that is not built.** The first evaluation call still builds the
   feature (the builder is called), and builds it only one time.
 - **The model changes between two evaluation calls.** A second call after a
-  change (new data, new fault displacement, a solve, or an accepted and rebuilt
-  restoration transform) must use the new model and agree with cache-off
-  evaluation. No stale result of the first call can stay in use. If the
-  coordinate owner rejects a transform change, it must do so before mutation;
-  model state, fingerprints, and results stay unchanged.
+  change (new data, new fault displacement, a solve, or a changed coordinate
+  transform) must use the new model. No restored points of the first call can
+  stay in use (FR-009).
+- **An evaluation call that fails.** The next call must not use a part of the
+  work of the failed call.
 - **Very many points.** Extra memory must stay within FR-010, also for 10
   million points.
-- **Threads.** `use_threads` in `_fault_segment.py` must give the same results
-  as without threads, or stay off as today.
+- **Threads.** The fault frame is evaluated without threads. The `use_threads`
+  switch of `_fault_segment.py` (always off because of a known bug) was
+  removed on 2026-11-26.
+- **Saved and loaded models.** A model that is saved and loaded again (for
+  example with `to_file` and `from_file`) must evaluate as today.
 
 ## Requirements
 
@@ -269,43 +289,61 @@ the golden tests.
   of points at most once, also when the feature and the regions of the
   feature use the same fault set.
 - **FR-008**: In one call of `evaluate_model` or `evaluate_model_gradient`,
-  the number of fault applications MUST be at most the sum, over the
-  different fault sets of the model, of the number of faults in each fault
-  set.
-- **FR-009**: Restored points MAY be kept between evaluation calls (C-003),
-  only with all of these conditions:
-  - a kept result is used only for the same points and the same fault set;
-  - a change to any state that affects restoration MUST prevent use of the
-    previous result. This includes a solve or a build of a fault frame or a
-    feature that it cuts, new data, a build argument, a fault displacement,
-    fault function or `steps`, a region, `faults_enabled`, and the transform
-    used to map points into the fault frame. The coordinate owner rebuilds or
-    rejects changed coordinate state; this cache work fingerprints that state
-    and prevents a stale cache hit;
-  - a golden test MUST evaluate the same points, change a restoration dependency,
-    evaluate again, and get the changed-model result with the cache on and off.
-    For a transform change, test the owner's accepted-and-rebuilt behavior or
-    its rejected-before-mutation behavior, as applicable.
-- **FR-010**: The extra memory of one evaluation call MUST be at most the
-  restored points of each different fault set (3 floats for each point and
-  each fault set). Restored points that are kept between calls MUST have a
-  size limit that the user can set, and MUST be removed first when they are
-  the oldest. The user MUST be able to clear them and to turn the keeping
-  off.
+  each different fault set MUST be applied at most once to each different
+  point batch (C-018). A point batch is the evaluation points, the corners of
+  the gradient tetrahedra (4 points for each point), or the points of one step
+  of a fault frame. For `evaluate_model` on the evaluation points, the number
+  of fault applications is then at most the sum, over the different fault
+  sets of the model, of the number of faults in each fault set.
+- **FR-009**: Restored points MUST NOT be kept after the evaluation call that
+  made them ends, also when the call fails (C-012). A later evaluation call
+  MUST make its restored points again from the present model.
+- **FR-010**: The restored points that one evaluation call keeps MUST be at
+  most the batches of the caller (the evaluation points and the corners of
+  their gradient tetrahedra, 3 floats for each point), and one batch for each
+  different fault set and batch size of the fault frame steps and of the
+  fault-side checks of a gradient (C-018). This memory MUST be free when the
+  call ends.
 - **FR-010a**: The evaluation MUST give the same results when two threads
   evaluate the same model at the same time (the QGIS plugin evaluates in
-  background threads).
+  background threads). This feature MUST NOT add a lock that lets only one
+  evaluation call of a model run at a time (C-012).
 - **FR-011**: The public API MUST stay the same: the same functions, the same
   arguments and the same return values.
 
 **Benchmarks**
 
 - **FR-012**: The repository MUST contain a benchmark suite that uses the
-  golden models. The cases MUST cover:
+  golden models. The full suite MUST cover:
   - `evaluate_value` of the oldest group, all groups one by one,
     `evaluate_model`, `evaluate_gradient` and `evaluate_model_gradient`;
-  - 5 000, 50 000 and 500 000 points;
+  - 5 000, 20 000 (the plugin model and the model with one fault and no
+    unconformity only), 50 000, 100 000 and 500 000 points;
   - all the fault and unconformity counts of FR-001.
+- **FR-012a**: The standard suite MUST be a part of the full suite. It MUST
+  contain every case that a success criterion (SC-002 to SC-009) uses. The
+  baseline of FR-016 MUST contain each case of the standard suite. The
+  standard suite MUST contain:
+  - all the 5 000-point cases (every golden model, every function);
+  - the 20 000-point cases of the plugin model and of the model with one fault
+    and no unconformity;
+  - 9 cases at 50 000 points and 7 cases at 100 000 points (C-016). They come
+    from the fixed random choice of 2026-11-02 (fixed seed), which picked
+    12 cases at each size from the models with 0 or 1 faults and from the
+    stopped-fault, onlap-domain and faulted-fold models. The models that cost
+    the most (the models with 2 or 4 faults, the cutting-faults model and the
+    plugin model) are not in this choice, because they are measured at 5 000
+    and 20 000 points. The choice is the same in every run, so two result
+    files have the same cases. The gradient cases at 100 000 points are not in
+    the standard suite (C-014).
+  The time pass runs all the cases of the standard suite. The count pass runs
+  only its 5 000-point and 20 000-point cases, because SC-009 reads the count
+  of a 20 000-point case. The memory pass runs only its 5 000-point cases
+  (C-014). The full suite is
+  not limited in time. It is the standard suite plus all the other cases of
+  the full suite (FR-012), with all the passes.
+- **FR-012b**: The command that runs the suite MUST run the standard suite by
+  default, and MUST run the full suite only when the developer asks for it.
 - **FR-013**: The suite MUST count the fault applications and the field
   evaluations of each case. The counters MUST be off in normal use, and MUST
   cost nothing when they are off.
@@ -314,8 +352,10 @@ the golden tests.
 - **FR-015**: The benchmarks are for local development only. They MUST NOT
   run in the normal test run or in CI. A developer starts them on purpose.
   They use `pytest-benchmark` (C-004), as a development dependency only.
-- **FR-016**: The repository MUST contain the baseline result file of the code
-  before this feature, with the computer that made it.
+- **FR-016**: The repository MUST contain the baseline result file of the
+  standard suite on the code before this feature, with the computer that made
+  it. A baseline of the full suite is not required. The time ratios and the
+  memory limits use `baseline_linux.json` (C-019, C-020).
 
 ### Key entities
 
@@ -327,6 +367,7 @@ the golden tests.
   points.
 - **Benchmark result file**: the results of all cases of one run, with the
   versions and the computer.
+- **Suite**: the standard suite or the full suite (see Context).
 - **Fault set**: the ordered list of faults that a feature applies. Two
   features with the same faults in the same order have the same fault set.
 
@@ -342,30 +383,36 @@ the golden tests.
 - **SC-002**: For the golden model with 4 faults and 3 unconformities and
   5 000 points, `evaluate_value` of the oldest group makes 4 fault
   applications (baseline: 16) and takes at most 40 % of the baseline time
-  (baseline: 2.55 s on the computer in `research.md`).
-- **SC-003**: For the same model, evaluating all groups makes 4 fault
-  applications (baseline: 52) and takes at most 15 % of the baseline time
-  (baseline: 8.65 s).
-- **SC-004**: For the golden models with 4 faults, the time to evaluate all
-  groups with 3 unconformities is at most 1.5 times the time with 0
-  unconformities (baseline: 12.9 times).
+  (baseline: 1.96 s in the Windows `baseline.json`; the ratio uses
+  `baseline_linux.json`, C-015, C-019).
+- **SC-003**: For the same model, one `evaluate_model` call, which evaluates
+  all groups, makes 4 fault applications (baseline: 52). Evaluating all groups
+  one by one takes at most 15 % of the baseline time (baseline: 6.48 s in the
+  Windows `baseline.json`; the ratio uses `baseline_linux.json`, C-015, C-017,
+  C-019).
+- **SC-004**: For the golden models with 4 faults and 5 000 points, the time
+  of one `evaluate_model` call with 3 unconformities is at most 1.5 times the
+  time with 0 unconformities (baseline: 13.3 times in the Windows
+  `baseline.json`; C-017, C-019).
 - **SC-005**: For the plugin model of `research.md`, the evaluation of the
   group at 20 000 points takes at most 50 % of the baseline (baseline: 8.2 s).
-- **SC-006**: The peak memory of each benchmark case is at most 120 % of the
-  baseline.
-- **SC-007**: Two runs of the benchmarks on the same computer and the same
+- **SC-006**: For each case of the memory pass of the standard suite, the peak
+  extra memory (the `tracemalloc` peak of the call, C-020) is at most 120 % of the baseline, or at most 16 MiB
+  (16 777 216 bytes) more than the baseline (C-013). A case passes when one
+  of the two limits holds. A baseline of 0 bytes uses the 16 MiB limit only.
+- **SC-007**: Two runs of the standard suite on the same computer and the same
   code differ by less than 10 % in each case. The comparison report uses this
-  value as the noise limit.
-- **SC-008**: The full benchmark suite takes less than 15 minutes on the
-  computer in `research.md`.
+  value as the noise limit. The limit covers the cases with a baseline time of
+  1 s or more. A shorter case uses more rounds, and the report shows its
+  noise, but the case does not fail this criterion. A case with a median
+  from 1 s up to 5 s uses the median of 3 rounds (C-022).
+- **SC-008**: One run of the standard suite, with all its passes, takes less
+  than 15 minutes on the computer in `research.md`, on the code after this
+  feature (C-014).
 - **SC-009** (user story 5): the time for each point of one fault application
-  is at most 50 % of the baseline (about 34 µs for each point).
-- **SC-010**: A second `evaluate_model` of the same points, with no change of
-  the model, makes 0 fault applications and takes at most 10 % of the first
-  call. After a change of a fault displacement or restoration transform, the
-  second call gives the changed-model result and agrees with a cache-off
-  evaluation. If the coordinate owner rejects the transform change before
-  mutation, the prior model state, fingerprints, and result stay unchanged.
+  is at most 50 % of the baseline (about 34 µs for each point in the Windows
+  `baseline.json`; the ratio uses `baseline_linux.json`, C-019).
+- **SC-010**: Removed on 2026-11-18 (C-012). The number is not used again.
 
 ## Out of scope
 
@@ -374,6 +421,9 @@ the golden tests.
   coordinate repairs. Their affected references may change only under C-006.
 - A change of the default number of fault steps, unless the golden tests pass
   with the new value (this is part of user story 5).
+- Keeping restored points or other evaluation results between evaluation
+  calls (C-012). The QGIS plugin can keep its own output if it evaluates the
+  same points again.
 - Changes to the solvers (`cg`, `admm`, `native`).
 - The algorithm that makes the surfaces from the field (marching cubes).
 - Changes in the QGIS plugin. The plugin gets the improvement through a new
@@ -400,9 +450,7 @@ and world/local conversion defects.
   5000 fixed points (difference 0).
 - **C-003 Results between calls.** Is it in scope to keep restored points
   between calls when the faults did not change?
-  **Answer**: yes. The risks are stale results after a model change, memory,
-  the cost of the key for many points, and threads. FR-009, FR-010 and
-  FR-010a control them.
+  **Answer** (2026-11-01): yes. **Replaced on 2026-11-18 by C-012: no.**
 - **C-004 Benchmark tool.** Is a new development dependency allowed?
   **Answer**: yes, `pytest-benchmark` or `asv`. This spec uses
   `pytest-benchmark`, because it runs with pytest, writes JSON and compares
@@ -420,11 +468,172 @@ and world/local conversion defects.
   converts once. The transform is the mapping between those spaces and is part
   of the restoration dependency. The coordinate owner must rebuild dependent
   local state after an accepted change or reject the change before mutation.
-  The restoration cache must fingerprint the current transform and must not use
-  a stale result. A future result may change
+  No restored points stay after an evaluation call (FR-009, C-012), so a
+  changed transform cannot give a stale restoration. A future result may change
   only when analytic evidence proves the defect and the review records its
   expected physical effect. Append new correctness provenance for that change;
   keep current references and manifests as valid historical records. Keep
   unaffected references, numeric tolerances, and performance limits fixed.
   Record each changed correctness reference separately from its performance
   baseline, with provenance that permits comparable runs.
+
+Answered on 2026-11-02. The first full run of the 650 cases on the code
+before this feature did not finish in 4 hours. The 500 000-point cases were
+90 % of the time that was measured. No success criterion uses them. (These
+answers were C-006 to C-010 in the text of 2026-11-02. The cascade of spec
+005 removed them by mistake on 2026-11-04. They were put back with new
+numbers on 2026-11-18.)
+
+- **C-007 Suite time budget.** What is the time budget of one run of the
+  standard suite?
+  **Answer**: about 1 hour on the code before this feature, with all passes.
+  (Changed by C-014: the count and memory passes now run fewer cases.)
+- **C-008 Standard suite content.** Which cases are in the standard suite?
+  **Answer**: all the 5 000-point cases; the 20 000-point cases of the plugin
+  model and of the model with 1 fault and no unconformity; a fixed choice of
+  50 000 and 100 000-point cases of the cheaper models (C-011). The full suite
+  stays available on request (FR-012a, FR-012b).
+- **C-009 Noise limit and short cases.** How does SC-007 treat short cases?
+  **Answer**: the 10 % limit covers the cases with a baseline time of 1 s or
+  more. Short cases use more rounds and are reported, but they do not fail the
+  criterion (SC-007).
+- **C-010 Time limit after the change.** What is the limit of SC-008?
+  **Answer**: 15 minutes for the standard suite on the code after this
+  feature (SC-008).
+- **C-011 Large point counts.** A measurement on 2026-11-02 shows that the
+  cutting-faults model needs 13 to 66 s for one call at 5 000 points, and the
+  model with 4 faults and 3 unconformities needs 42 s for the five functions.
+  At 50 000 points these models would need hours. How does the standard suite
+  keep the 1 hour budget?
+  **Answer**: a fixed random choice of cases at 50 000 and 100 000 points,
+  taken from the cheaper models. Every time is measured; no time is inferred
+  (FR-012a). The success criteria use only the 5 000 and 20 000-point cases.
+
+Answered on 2026-11-18, after a review of the implementation and of the
+failed acceptance run T030 (`t030-diagnosis.md`, `profile-d4a.md`).
+
+- **C-012 Cache between calls.** The first evaluation call is about 29 times
+  faster than the baseline without a cache (`f4_u3`, `evaluate_model`,
+  5 000 points: 6.34 s to 0.22 s). A cache between calls makes a second call
+  on the same points about 10 times faster again. It needs a revision counter
+  in many setters, a hash of the state of each fault set in each call, a lock
+  for each model and up to 64 MiB of memory. It caused most of the SC-006
+  failures. Do we keep it, move it to a later spec, or remove it?
+  **Answer**: remove it. This spec keeps no restored points between calls
+  (FR-009, FR-010) and adds no lock for each model (FR-010a). SC-010 and the
+  warm benchmark state are removed. No later spec is planned. If the plugin
+  evaluates the same points again, it can keep its own output.
+- **C-013 Memory limit for small cases.** The first acceptance run failed the
+  memory criterion (SC-006) in 45 cases. In 34 of them the baseline is below
+  10 MB, and in 16 the
+  extra memory is below 1 MiB. How does SC-006 treat a small baseline?
+  **Answer**: a case passes when its peak extra memory is at most 120 % of
+  the baseline, or at most 16 MiB more than the baseline (SC-006).
+- **C-014 Suite time.** The first acceptance run took about 3 000 s against
+  the 900 s limit of SC-008. More than half of the time was the priming call
+  of the warm cases. The two `onlap_domain` gradient cases at 100 000 points
+  took 24 % of the time. How does the suite meet SC-008?
+  **Answer**: keep the limit of 15 minutes, and make the standard suite
+  shorter: no warm state (C-012), the count and memory passes run only the
+  5 000-point cases, and the gradient cases at 100 000 points move to the
+  full suite (FR-012a). The planner added the 20 000-point cases to the count
+  pass on 2026-11-18, because SC-009 needs their counts.
+- **C-015 Baseline of the time ratios.** SC-002 and SC-003 gave the baselines
+  of `research.md` (2.55 s and 8.65 s, from a different script). The baseline
+  file of FR-016 has 1.96 s and 6.48 s for the same golden-model cases. Which
+  baseline do the time ratios use?
+  **Answer**: all the time ratios use the baseline file of FR-016 (the ratios
+  of SC-002, SC-003, SC-005 and SC-009). The numbers of `research.md` are for
+  information only. The ratio limits do not change.
+- **C-016 Large cases without the warm state.** The fixed choice of
+  2026-11-02 has 24 large case ids with a cold or a warm state. How does the
+  standard suite pick its large cases now?
+  **Answer**: use the same 24 ids without the state. Merge the ids that
+  become equal, and remove the 5 gradient cases at 100 000 points. This
+  gives 9 cases at 50 000 points and 7 cases at 100 000 points. The baseline
+  file has a measured value for each of them: the code before this feature
+  has no cache, so its warm case was one cold call. No new baseline run is
+  necessary.
+- **C-017 Count and ratio of "all groups" without reuse between calls.**
+  SC-003 and SC-004 measured the evaluation of all groups one by one (one
+  `evaluate_value` call for each group). After C-012, each call applies its
+  faults again: T051 measured 16 fault applications for `f4_u3` (4 for each
+  call) and a ratio of 3.8 between `f4_u3` and `f4_u0`. One `evaluate_model`
+  call gives 4 applications and a ratio of 1.03. Which call do SC-003 and
+  SC-004 measure?
+  **Answer** (2026-11-18): the count of SC-003 (4) and the ratio of SC-004
+  (at most 1.5) use one `evaluate_model` call (benchmark case `model_ids`).
+  The time limit of SC-003 (at most 15 % of the baseline) stays on the
+  evaluation of all groups one by one (case `all_group_values`). The limits
+  do not change.
+- **C-018 Batch rule of FR-008 and FR-010.** FR-008 gave one application of
+  each fault set, and FR-010 gave one restored copy of the points for each
+  fault set. The plan (OP1, accepted on 2026-11-01) counts each point batch
+  separately: a gradient restores the corners of its tetrahedra (4N points),
+  and the frame of a fault restores the points of each of its steps. Which
+  rule applies?
+  **Answer** (2026-11-26): the rule of OP1. Each different fault set is
+  applied at most once to each different point batch. The call keeps each
+  batch of the caller; the batches of the fault frame steps and of the
+  fault-side checks of a gradient (which move or change at each step) keep
+  one batch for each fault set and batch size. FR-008 and FR-010 now say
+  this. (Amended the same day after review round 2: with one batch for each
+  fault set and size for all batches, two batches of the caller of one size
+  replaced each other and the first was restored again.)
+- **C-019 Baseline of the time ratios after C-015.** The baseline file
+  `baseline.json` of FR-016 was made on Windows 11 with Python 3.13. On the
+  same computer, Linux runs the code before this feature about 1.8 times
+  faster, so a Windows baseline makes the ratios of a Linux run too small.
+  T030 runs on Linux. Which baseline do the time ratios use?
+  **Answer** (2026-11-26): a new baseline of the code before this feature
+  (master at a942177b with the fix of #424, which has the master changes
+  that the candidate has, but not this feature; branch
+  `bench/003-linux-baseline` adds only the harness and the plugin model
+  data), measured on Linux on the same computer and Python
+  version as T030, two runs, in `baseline_linux.json` and
+  `baseline_linux_repeat.json`. All the time ratios of C-015 use
+  `baseline_linux.json`. `baseline.json` stays as the historical Windows
+  record. The ratio limits do not change.
+  Final run (2026-11-27): the code before this feature is master `db5e65ac`,
+  which has all the fixes that the candidate has.
+- **C-020 Memory meter.** The memory pass measured the growth of the process
+  RSS in one process that runs many cases. Freed pages of an earlier case hide
+  the memory of a later case: 187 of 254 values of a Linux baseline were 4096
+  bytes, and the Windows baseline has cases with 0 bytes. How is the peak
+  memory measured?
+  **Answer** (2026-11-26): with the `tracemalloc` peak of the call above the
+  value at its start (NumPy reports its arrays to `tracemalloc`). The result
+  does not depend on the order of the cases or on the operating system. The
+  provenance records the method, and the acceptance check compares only
+  results of the same method. The baseline memory is measured again with this
+  meter (C-019). The meter does not see memory that a C library allocates
+  outside Python and NumPy.
+- **C-021 Golden references after master #421.** Master #421 changes fault
+  gradients near faults, `fault_pitch` and fold rotation angles, so 60 golden
+  outputs of 17 models no longer match the frozen references. The spec branch
+  gives the same bits as master for all of them. Do the references change?
+  **Answer** (2026-11-26): yes. The changed outputs are captured again from
+  master a942177b with the fix of #424 (which stops a crash of
+  `fillnan='nearest'` on points with a NaN coordinate), at the stored
+  reference points. Evidence: the spec branch gives the same bits as that
+  code for all 970 golden arrays, and every array that #421 does not change
+  is bit-identical to the old reference. The manifest records the code, the
+  reason and the changed keys (`provenance.reference_updates`). Tests that
+  count gradient batches follow the refinement of #421. Later the same day,
+  #425 (a step direction where a cutting fault leaves no frame gradient)
+  removed NaN restored points on a cutting fault; the 5 changed outputs of
+  `cutting_faults` were captured again from master 315dff43 with #425, with
+  the same evidence (the branch gives the same bits for all 970 arrays).
+  Then #427 restored a cutting fault before the fault it cuts (`faults=[A]`
+  means the fault is faulted by the younger fault A). In `cutting_faults`
+  fault_0 is now restored before fault_1; its 5 changed outputs were captured
+  again from master with #424, #425 and #427 (same evidence). The fault frame of
+  fault_1 then makes no nested restoration (2 fault calls instead of 22).
+- **C-022 Noise of one-round cases (2026-11-27).** The final T030 run on Linux
+  passed every criterion except SC-007, twice, on a different case each time
+  (noise 1.158, then 1.121; limit 1.10). The runner timed a case of 1 s or
+  more only once, and one sample of a 1 to 5 s call varies by about 10 % on
+  the T030 computer. How is SC-007 resolved?
+  **Answer**: a timing case with a median from 1 s up to 5 s uses the median
+  of 3 rounds. The limit of SC-007 does not change. The baseline and the
+  candidate are measured again with this rule.

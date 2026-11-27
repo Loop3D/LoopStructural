@@ -1,5 +1,3 @@
-from concurrent.futures import ThreadPoolExecutor
-
 import numpy as np
 
 from LoopStructural.utils.maths import gradient_from_tetrahedron, regular_tetraherdron_for_points
@@ -19,8 +17,6 @@ from ....utils._fault_block import block_kwargs, block_side, check_block, force_
 
 logger = getLogger(__name__)
 
-use_threads = False  # there is a bug with threading causing the interpolation dictionary to change size during iterations
-# for now 19/4/24 LG is turning threading off. This will slow down evaluation of models a bit.
 
 
 class FaultSegment(StructuralFrame):
@@ -286,8 +282,88 @@ class FaultSegment(StructuralFrame):
         v[mask, :] *= scale[:, None] * self.displacement
         return v
 
-    def _evaluate_frame(self, points, block=None, precomputed_gx=None, restored_through=()):
+    def _shared_frame_members(self):
+        """Get the frame members that can share one grid lookup.
+
+        The fast path is only safe when all of these are true for the three
+        members of the frame:
+
+        - each member is a plain GeologicalFeature with a discrete interpolator
+          on a StructuredGrid that has the uniform cell lookup,
+        - the grids have equal geometry and the interpolators have equal
+          transforms,
+        - no member has faults,
+        - the regions of the members are the same objects, so one mask is
+          valid for all members.
+
+        Returns
+        -------
+        list or None
+            the three members, or None if the legacy calls are needed
+        """
+        from loop_common.supports import StructuredGrid
+        from loop_interpolation import DiscreteInterpolator
+
+        from .._geological_feature import GeologicalFeature
+
+        try:
+            members = [self.__getitem__(i) for i in range(3)]
+        except (IndexError, KeyError, TypeError):
+            return None
+        reference = None
+        for member in members:
+            if type(member).evaluate_value is not GeologicalFeature.evaluate_value:
+                return None
+            if type(member).evaluate_gradient is not GeologicalFeature.evaluate_gradient:
+                return None
+            if len(member.faults) > 0:
+                return None
+            interpolator = member.interpolator
+            if not isinstance(interpolator, DiscreteInterpolator):
+                return None
+            # The fast path reads the node values and the support directly, so a
+            # subclass with its own evaluation must use its own calls.
+            for name in ("evaluate_value", "_evaluate_value_local", "_evaluate_gradient_local"):
+                if getattr(type(interpolator), name) is not getattr(DiscreteInterpolator, name):
+                    return None
+            support = interpolator.support
+            if not isinstance(support, StructuredGrid) or not support._has_uniform_lookup():
+                return None
+            box = interpolator.bounding_box
+            description = (
+                np.asarray(support.origin),
+                np.asarray(support.nsteps),
+                np.asarray(support.step_vector),
+                None if box is None else np.asarray(box.local_origin),
+                None if box is None else np.asarray(box.local_rotation),
+                member.regions,
+            )
+            if reference is None:
+                reference = description
+                continue
+            for index, (a, b) in enumerate(zip(reference, description)):
+                if index == 5:
+                    if len(a) != len(b) or any(x is not y for x, y in zip(a, b)):
+                        return None
+                elif a is None or b is None:
+                    if a is not b:
+                        return None
+                elif not np.array_equal(a, b):
+                    return None
+        return members
+
+    def _evaluate_frame(
+        self, points, block=None, precomputed_gx=None, restored_through=(), *,
+        need_gradient=False, need_values=True, need_gx=True,
+    ):
         """Evaluate the three fault frame coordinates at the points.
+
+        If the three members have equal StructuredGrid supports and no faults,
+        one grid lookup gives the values of all members and the gradient of
+        coordinate 1. The block and the restored faults have no effect on the
+        values of a member without faults, but they go to the regions of the
+        members. Other frames use the calls of the members (the legacy path).
+        The lookup is not kept after this call.
 
         Parameters
         ----------
@@ -302,33 +378,89 @@ class FaultSegment(StructuralFrame):
         restored_through : sequence of FaultSegment
             faults whose restoration the points already have; the frame does
             not apply them again
+        need_gradient : bool
+            add the gradient of coordinate 1 to the result. This gradient is not
+            normalised and it ignores the regions.
+        need_values : bool
+            if false, the values are not evaluated and are None
+        need_gx : bool
+            if false, the values of coordinate 0 are not evaluated and are None
 
         Returns
         -------
-        tuple of np.ndarray
-            gx, gy, gz
+        tuple
+            (gx, gy, gz) or (gx, gy, gz, gradient)
         """
+        if precomputed_gx is not None:
+            need_gx = False
+        points = np.asarray(points)
+        members = self._shared_frame_members() if len(points) > 0 else None
+        if members is None:
+            gx, gy, gz, *g = self._evaluate_frame_legacy(
+                points, block, restored_through, need_gradient, need_values, need_gx
+            )
+            if precomputed_gx is not None:
+                gx = precomputed_gx
+            return (gx, gy, gz, *g)
+        for member in members:
+            if member.builder is not None:
+                member.builder.up_to_date()
+        interpolators = [member.interpolator for member in members]
+        for interpolator in interpolators:
+            # the same stale-frame check as GeologicalInterpolator.evaluate_value
+            interpolator._check_frame()
+            interpolator.update()
+        support = interpolators[0].support
+        local = interpolators[0]._project_points(points)
+        lookup = support._lookup_points(local)
+        values = [None, None, None]
+        if need_values:
+            mask = members[0]._calculate_mask(
+                points, block=block, restored_through=restored_through
+            )
+            nan_rows = np.any(np.isnan(np.asarray(local)), axis=1)
+            idc, inside, local_coords = lookup
+            # one set of trilinear weights serves the three members
+            coefs = support.trilinear(local_coords[inside, :])
+            for i in range(3):
+                if i == 0 and not need_gx:
+                    continue
+                v = support._values_from_coefficients(
+                    idc, inside, coefs, np.asarray(interpolators[i].c)
+                )
+                # The interpolator gives NaN for points that are not finite (#413).
+                v[nan_rows] = np.nan
+                v[~mask] = np.nan
+                values[i] = v
+        if precomputed_gx is not None:
+            values[0] = precomputed_gx
+        if not need_gradient:
+            return tuple(values)
+        gradient = support._evaluate_gradient_from_lookup(lookup, interpolators[1].c)
+        # The interpolator gives a NaN gradient for points that are not finite (#413).
+        gradient[np.any(np.isnan(np.asarray(local)), axis=1)] = np.nan
+        gradient = interpolators[1]._reproject_vectors(gradient)
+        return (*values, gradient)
+
+
+    def _evaluate_frame_legacy(
+        self, points, block, restored_through, need_gradient, need_values, need_gx
+    ):
+        """Evaluate the frame with one call for each member and gradient."""
         kwargs = block_kwargs(block)
         if restored_through:
             kwargs["restored_through"] = tuple(restored_through)
-        if precomputed_gx is not None:
-            gx = precomputed_gx
-            gy = self.__getitem__(1).evaluate_value(points, **kwargs)
-            gz = self.__getitem__(2).evaluate_value(points, **kwargs)
-        elif use_threads:
-            with ThreadPoolExecutor(max_workers=8) as executor:
-                # all of these operations should be independent so
-                # just run as different threads
-                gx_future = executor.submit(self.__getitem__(0).evaluate_value, points, **kwargs)
-                gy_future = executor.submit(self.__getitem__(1).evaluate_value, points, **kwargs)
-                gz_future = executor.submit(self.__getitem__(2).evaluate_value, points, **kwargs)
-                gx = gx_future.result()
-                gy = gy_future.result()
-                gz = gz_future.result()
-        else:
-            gx = self.__getitem__(0).evaluate_value(points, **kwargs)
-            gy = self.__getitem__(1).evaluate_value(points, **kwargs)
-            gz = self.__getitem__(2).evaluate_value(points, **kwargs)
+        member0, member1, member2 = (self.__getitem__(i) for i in range(3))
+        gx = gy = gz = g = None
+        if need_values:
+            if need_gx:
+                gx = member0.evaluate_value(points, **kwargs)
+            gy = member1.evaluate_value(points, **kwargs)
+            gz = member2.evaluate_value(points, **kwargs)
+        if need_gradient:
+            g = member1.evaluate_gradient(points, ignore_regions=True, **kwargs)
+        if need_gradient:
+            return gx, gy, gz, g
         return gx, gy, gz
 
     def _displacement_fraction(self, gx, gy, gz, block=None, offset=0.0):
@@ -567,18 +699,20 @@ class FaultSegment(StructuralFrame):
             d *= -1.0
         # calculate the fault frame for the evaluation points
         for _i in range(steps):
-            g = None
             if _i == 0:
                 # Reuse gx/gy/gz from the initial full-array evaluation above — newp[mask] hasn't
                 # moved yet on the first iteration, so values are identical.
                 gx_m = gx[mask]
                 gy_m = gy[mask]
                 gz_m = gz[mask]
+                g = self._evaluate_frame(
+                    newp[mask, :], block, restored_through=restored_through,
+                    need_gradient=True, need_values=False,
+                )[3]
             else:
-                gx_m, gy_m, gz_m = self._evaluate_frame(
-                    newp[mask, :], block, restored_through=restored_through
+                gx_m, gy_m, gz_m, g = self._evaluate_frame(
+                    newp[mask, :], block, restored_through=restored_through, need_gradient=True
                 )
-            g = self.__getitem__(1).evaluate_gradient(newp[mask, :], ignore_regions=True, **kwargs)
             # A frame cut by younger faults has no single gradient on a cutting fault, so the
             # gradient is NaN there (#421). A step only needs a direction: use the gradient
             # of the frame without the cutting faults at that point. A frame without cutting

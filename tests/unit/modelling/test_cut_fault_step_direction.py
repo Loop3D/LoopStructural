@@ -69,6 +69,9 @@ def test_frame_without_cutting_faults_keeps_a_nan_gradient(monkeypatch):
     fault = add_fault(model, "young", **YOUNG, steps=3)
     points = interior_points()
     moved = ~np.isclose(fault.apply_to_points(points.copy()), points).all(axis=1)
+    # A frame without faults takes the shared grid lookup of spec 003, which does not
+    # call evaluate_gradient; use the member calls so that the NaN gradient arrives.
+    monkeypatch.setattr(type(fault), "_shared_frame_members", lambda self: None)
     monkeypatch.setattr(fault[1], "evaluate_gradient", _nan_on_every_other_row(fault[1]))
     restored = fault.apply_to_points(points.copy())
     assert np.isnan(restored[moved]).any()

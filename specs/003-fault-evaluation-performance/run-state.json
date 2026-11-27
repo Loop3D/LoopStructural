@@ -1,0 +1,286 @@
+{
+  "spec": "003-fault-evaluation-performance",
+  "worktree": "C:/Users/lachl/dev/LoopStructural-native",
+  "branch": "spec/003-fault-evaluation-performance",
+  "review_mode": "wave",
+  "start_commit": "21616db7d1c2fa09f823092dd1b3d6dff880eec2",
+  "baseline": {
+    "ruff_findings": 474,
+    "pytest": "1283 passed, 4 skipped, 1 deselected (test_p2fold_save_load hangs: pickle defect) in 660 s, at 89f797d3",
+    "ruff_findings_after_merge": 475,
+    "ruff_note": "+1 from master #365 (dtm_creator.py FA100), not from 003"
+  },
+  "waves": [
+    {
+      "wave": 15,
+      "tasks": [
+        "T043"
+      ],
+      "base": "89f797d39359ec4d4cb603025aec54ba5d136c5b",
+      "commit": "8e2a0f108f1a19fc1ce6d14ceda9beda89143a7b",
+      "review": "skipped: report only, no code"
+    },
+    {
+      "wave": 28,
+      "tasks": [
+        "T040"
+      ],
+      "base": "a1989c492d37b0f9e1e325b830696a20791ed220",
+      "commit": "a02a413c45c0dda7726653511de80a5f1f975771",
+      "review": "pass (sonnet), 3 minor"
+    },
+    {
+      "wave": 29,
+      "tasks": [
+        "T041"
+      ],
+      "base": "a02a413c45c0dda7726653511de80a5f1f975771",
+      "commit": "7d865f7c106750bc6f3f815921ba951c69af3075",
+      "review": "pass (sonnet), 1 minor kept, 2 rejected"
+    },
+    {
+      "wave": 30,
+      "tasks": [
+        "T042"
+      ],
+      "base": "7d865f7c106750bc6f3f815921ba951c69af3075",
+      "commit": "3ef8cb1ff6e0aa72fb1d4cd5293f82e0421be271",
+      "review": "none: report only"
+    },
+    {
+      "wave": 30,
+      "tasks": [
+        "T044"
+      ],
+      "base": "465688ec9e71c7aa364362ad5fba14283eed97f6",
+      "commit": "c1250aba42c7ad6b46bdf9f2e0cd67f2b25934a6",
+      "review": "pass (sonnet), no findings"
+    },
+    {
+      "wave": 31,
+      "tasks": [
+        "T045"
+      ],
+      "base": "c1250aba42c7ad6b46bdf9f2e0cd67f2b25934a6",
+      "commit": "e492ac7a9407845c887fad1036386c576487a70c",
+      "review": "pass (sonnet), no findings"
+    },
+    {
+      "wave": 32,
+      "tasks": [
+        "T042"
+      ],
+      "base": "45980adc34cbe13acb6a00ab4889860ed572a942",
+      "review": "none: report only",
+      "commit": "31e056f6808fff1df147f3e1951bbb877842f28e"
+    },
+    {
+      "wave": 32,
+      "tasks": [
+        "T046"
+      ],
+      "base": "fe2ee9f16dc6bcc831017a6fa7307418b55ec440",
+      "review": "pass (sonnet), 1 minor",
+      "commit": "12a7385d7a0c2e3fade08d18f59eac5809563b61"
+    },
+    {
+      "wave": 33,
+      "tasks": [
+        "T047",
+        "T049"
+      ],
+      "base": "12a7385d7a0c2e3fade08d18f59eac5809563b61",
+      "commit": "8caf50d3",
+      "review": "changes needed (sonnet): 1 major fixed (SC-006 row test), 3 minor; recheck of cf7af167 pass",
+      "fix_commit": "cf7af167e55aea9aeab642ef58f71d22b18b4a02"
+    },
+    {
+      "wave": 34,
+      "tasks": [
+        "T048"
+      ],
+      "base": "cf7af167e55aea9aeab642ef58f71d22b18b4a02",
+      "commit": "28d88a7318703bd944666ba3f18ffec39daedc4d",
+      "review": "pass (sonnet), 1 minor"
+    },
+    {
+      "wave": 35,
+      "tasks": [
+        "T050"
+      ],
+      "base": "28d88a7318703bd944666ba3f18ffec39daedc4d",
+      "commit": "15d095ff8ced0eafcbaa43bed58f932456892692",
+      "review": "changes needed (sonnet): 1 blocker fixed (standard_view for the 5 baseline-only gradient ids), 1 minor; recheck of 1991682c pass",
+      "fix_commit": "1991682ce65510476592962574a6870cc795b3cc"
+    },
+    {
+      "wave": 36,
+      "tasks": [
+        "T051",
+        "T052"
+      ],
+      "base": "3865c80b722dcf7ac8f3b9449ef76723bf8e246f",
+      "commit_T051": "f446cbf0a1b8f6b566fb607fca2f65265426b3b9",
+      "commit": "d0ffb0993beb65508990fe2916488076bc36490f",
+      "review": "pass (sonnet), 2 minor"
+    },
+    {
+      "wave": 37,
+      "tasks": [
+        "T053"
+      ],
+      "base": "d0ffb0993beb65508990fe2916488076bc36490f",
+      "commit": "c692fbcfc2cc5e1516e8e785a587eb39fcc3d430",
+      "review": "pass (sonnet), 1 minor"
+    },
+    {
+      "wave": 38,
+      "tasks": [
+        "T030"
+      ],
+      "base": "b6ff1a86c2ffc07baf9bc2573f52a9cd688442b1",
+      "review": "none: parked"
+    }
+  ],
+  "runs": {
+    "T043": [
+      {
+        "model": "sonnet",
+        "result": "pass"
+      }
+    ],
+    "T040": [
+      {
+        "model": "sonnet",
+        "result": "red as expected (11 failed, 154 passed); held: cascade changed the task text of test (5)"
+      },
+      {
+        "model": "sonnet",
+        "result": "pass: 12 red for the expected reasons, changed existing tests pass"
+      },
+      {
+        "model": "sonnet",
+        "result": "pass: test fix after D4a (user answer), 1 follow-up question answered from the plan"
+      }
+    ],
+    "T041": [
+      {
+        "model": "sonnet",
+        "result": "blocked: 4 old D4 tests; code kept"
+      }
+    ],
+    "T042": [
+      {
+        "model": "sonnet",
+        "result": "fail: gate G4 fingerprint 8 ms > 5 ms (measurement correct, verified)"
+      },
+      {
+        "model": "sonnet",
+        "result": "pass: G1-G5 pass; G4 2.6-3.5 ms (orchestrator check 2.76 ms median for f4_u3); OP5 f4_u3 0.093, f4_u0 0.024, onlap_domain 0.254"
+      }
+    ],
+    "T044": [
+      {
+        "model": "sonnet",
+        "result": "pass: 8 red for the expected reasons (7 absent constant, 1 per-column path), 21 pass"
+      }
+    ],
+    "T045": [
+      {
+        "model": "haiku",
+        "result": "blocked: plan code gave Ruff PERF102; tests pass"
+      },
+      {
+        "model": "haiku",
+        "result": "pass: loop form from user answer; 561 passed, golden 19 s, ruff clean"
+      }
+    ],
+    "T046": [
+      {
+        "model": "sonnet",
+        "result": "pass: conflict resolved, 2 new lookup tests; fixture cell_index_counter now patches StructuredGrid3DGeometry; loop_common 424 passed, fault_evaluation 561 passed"
+      }
+    ],
+    "T047": [
+      {
+        "model": "sonnet",
+        "result": "pass: 11 red (the 3 named + 8 scope/frame tests that see cache hits after the cache-off lines were removed, as D7 says; they must pass after T048); 110 pass"
+      }
+    ],
+    "T049": [
+      {
+        "model": "sonnet",
+        "result": "pass: 30 red, all new or changed tests, for absent D9/D10 names and rules; 59 pass"
+      },
+      {
+        "model": "sonnet",
+        "result": "fix: SC-006 allowance test baseline 100 MB -> 50 MB"
+      }
+    ],
+    "T048": [
+      {
+        "model": "sonnet",
+        "result": "pass: 11 T047 red tests green; fault_evaluation + unit/modelling + API contract 491 passed; golden 23 passed in 28 s; master diff of 3 files empty; grep clean; no new Ruff finding"
+      }
+    ],
+    "T050": [
+      {
+        "model": "sonnet",
+        "result": "blocked: 1 wrong T049 test (SC-006 allowance with a 100 MB baseline) and a grep gate too strict; orchestrator answers; T049 test fixed by a sonnet run; then 336 passed"
+      }
+    ],
+    "T051": [
+      {
+        "model": "sonnet",
+        "result": "blocked: f4_u3 all_group_values 16 fault calls (SC-003 target 4); G2 0.1919 s pass; G5 0.5143 s; 340 tests pass. User answer: spec C-017 (count and SC-004 on model_ids); new tasks T052, T053"
+      },
+      {
+        "model": "sonnet",
+        "result": "pass at 808b4911: G1 model_ids 4 calls; all_group_values 16 (info); G2 0.2067 s <= 0.2429 s; G5 0.5380 s; 340 tests pass in 60 s"
+      }
+    ],
+    "T052": [
+      {
+        "model": "sonnet",
+        "result": "pass: 9 red (3 changed, 6 new SC-003/SC-004 tests) for the expected reason; 46 pass"
+      }
+    ],
+    "T053": [
+      {
+        "model": "sonnet",
+        "result": "pass: 347 passed in 64 s; ruff clean"
+      }
+    ],
+    "T030": [
+      {
+        "model": "orchestrator (commands)",
+        "result": "measured at b6ff1a86 with Python 3.13.12: SC-002/003/004/006/008/009 pass; SC-005 0.520 fail; SC-007 2.02 fail (noise in both directions, low system memory); memory check stopped by low memory. Raw files: C:/Users/lachl/dev/ls-bench-003/cand2/"
+      }
+    ]
+  },
+  "findings": {
+    "found": 17,
+    "rejected": 2,
+    "dropped": 0,
+    "fixed": 2,
+    "open_minor": [
+      "T040 test_fault_set_key.py:188 publish-guard result equality is weak; retained_bytes == 0 is the real check",
+      "T040 test_fault_set_key.py: no test for the b'Nbox;' branch (interpolator with no bounding box)",
+      "T040 test_fault_set_key.py:93-112: no fingerprint-level test for one fault edit (covered through the cache in test_invalidation.py)",
+      "T040 fix test_persistent.py:550 helper _evaluation_fingerprint has no caller now",
+      "T041 stale docs: _evaluation.py restore comment and module docstring, _evaluation_cache.py 'Invalidation' section, _StateHasher.node docstring still describe the old key (fix in T031 or a follow-up)",
+      "T046 _structured_grid_3d.py: Black rewrapped lines that T046 does not touch (rotation matrix, resize errors, corner indexes, global_index_to_cell_index)",
+      "T049 None on the base side is not tested in compare_results or _sc006",
+      "T049 validate_result has no negative test for rss_unit None; no test that _memory_worker and _cache_fields lose their cache lines",
+      "T047 test_memory.py has no peak-memory bound test for one evaluate_model call (FR-010)",
+      "T048 _evaluation.py module docstring: one long, slightly redundant line after the reword",
+      "T050 cold_view lives in run.py, which imports tests.fault_evaluation.models; acceptance and compare (warm base) need the tests package on the path",
+      "T052 test_acceptance.py:55 base f4_u0 model_ids is 1.2 s (real 0.48 s) to stay out of the SC-007 short set",
+      "T052 no test of a model_ids count of 3",
+      "T053 acceptance.py:47 ALL_F4U0 is unused now"
+    ]
+  },
+  "resumed": "2026-11-04: resumed after the D4b replan (465688ec). tests/fault_evaluation baseline: 550 passed in 89 s.",
+  "resumed_2": "2026-11-18: resumed after the reduced-scope replan (fe2ee9f1). Baseline before the merge: tests/fault_evaluation + packages/loop_common/tests 846 passed in 172 s; Ruff 474 findings. Merge of master started with --no-commit; spec.md conflict resolved by the orchestrator (our side, master had the older 003 text).",
+  "paused": "2026-11-18: T030 parked by the user (OP6: needs a quiet computer). Resume: run the script C:/Users/lachl/dev/ls-bench-003/cand2/go.sh steps in a new folder, without the memory step; then the memory step alone. Then T031, T032 and the end review."
+}

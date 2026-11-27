@@ -51,7 +51,7 @@ inequalities = ["loopsolver"]
 # the Rust solver: solver='native'
 native = ["loop-interpolation[native]"]
 tests = ['pytest']
-dev = ['ruff']
+dev = ['ruff', 'pytest-benchmark']
 docs = [
     "pyvista[all]",
     "pydata-sphinx-theme",
