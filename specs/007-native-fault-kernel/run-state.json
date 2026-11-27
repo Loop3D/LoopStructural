@@ -96,6 +96,12 @@
     {
       "wave": 15,
       "base": "a95d2e7826030256e06b07b594dc2c2a16a84d82",
+      "commit": "2f2a06e9f648e3677a978496b4c5e372ef5bd895",
+      "review": "pass (1 minor)"
+    },
+    {
+      "wave": 16,
+      "base": null,
       "commit": null,
       "review": null
     }
@@ -401,7 +407,7 @@
     ]
   },
   "findings": {
-    "found": 39,
+    "found": 40,
     "rejected": 2,
     "dropped": 0,
     "fixed": 4,
@@ -435,7 +441,8 @@
       "T028: the SC-004 scratch script is outside the repo; rerun with the benchmark after T036.",
       "End review: no test checks that native_threads = 1 really uses one thread (pool(1).current_num_threads()).",
       "End review: the native unconformity region ignores faults_enabled and the regions of the UnconformityFeature (both default in current models).",
-      "T040: the subclass test does not first assert that chain_for gives a chain for the unchanged model."
+      "T040: the subclass test does not first assert that chain_for gives a chain for the unchanged model.",
+      "T041: the ROADMAP spec 007 decision section lists stages S1 to S4 only; add S5 (kernel moved to loop-model-core)."
     ]
   },
   "sc001": {
