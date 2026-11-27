@@ -32,7 +32,7 @@ Common rules for every Rust task: `cargo fmt --check` and
 
 - Run this file with the spec-orchestrator skill. It has the rules for the
   worktree, the sub agents, the checks and the commits.
-- Waves: 11. Tiers: [S] = simple model, [M] = standard model.
+- Waves: 16. Tiers: [S] = simple model, [M] = standard model.
 - Do not start a task with "Blocked by".
 
 ## Phase 1: Setup
@@ -658,25 +658,130 @@ Common rules for every Rust task: `cargo fmt --check` and
     native packages with the fault kernel" with the SC-008 rows of
     `verification.md`. Change no code.
 
+## Phase 8: Stage S5, package loop-model-core (maintainer answer 2026-11-27)
+
+- [ ] T037 [Found] [M] Move the fault kernel into the new package `packages/loop_model_core` (D5).
+  - Files: `packages/loop_model_core/`, `packages/loop_interpolation_core/src/fault/`, `packages/loop_interpolation_core/tests/fault_grid_field.rs`, `packages/loop_interpolation_core/tests/fault_profile.rs`, `packages/loop_interpolation_core/tests/fault_restore.rs`, `packages/loop_interpolation_core/tests/fault_nearest.rs`, `packages/loop_interpolation_core/tests/fault_gradient.rs`, `packages/loop_interpolation_core/src/lib.rs`, `packages/loop_interpolation_core/src/python.rs`, `packages/loop_interpolation_core/README.md`
+  - Needs: T033
+  - Wave: 12
+  - Done when: in `packages/loop_model_core`, `cargo test --release` (also `--features parallel`) and `cargo clippy --all-targets -- -D warnings` (no features, parallel, python, python,parallel) pass; in `packages/loop_interpolation_core` the same commands pass (and `cargo clippy --all-targets --features wasm --target wasm32-unknown-unknown -- -D warnings` if the target is installed); after `maturin develop --release` of both packages, `python -c "import loop_model_core as m; assert m.FAULT_KERNEL_VERSION == 1; m.FaultChain; m.GridField; import loop_interpolation_core as c; assert not hasattr(c, 'FaultChain')"` passes.
+  - Context: Follow plan.md "Design of stage S5", D5, exactly. Use
+    `git mv` for `src/fault/` and the five `tests/fault_*.rs` files so the
+    history follows them. In the moved tests replace
+    `loop_interpolation_core::fault` with `loop_model_core::fault`. The new
+    `src/python.rs` holds the fault part of the old `python.rs` (from the
+    comment `// Fault kernel` on) and its own `#[pymodule] fn
+    loop_model_core`; the old `python.rs` keeps only the solver
+    (`PyProblem`) and its helpers. Copy a helper that both parts use. The
+    old README section "Fault kernel" moves to the new README; the old
+    README keeps one line that points to `packages/loop_model_core`. No
+    new dependency versions: copy them from the interpolation core
+    `Cargo.toml`. Never set CARGO_TARGET_DIR; one cargo command at a time.
+
+- [ ] T038 [US4] [M] Use `loop_model_core` from LoopStructural and the tests, and add it to the `native` extra (D5b).
+  - Files: `LoopStructural/modelling/features/_native_faults.py`, `tests/fault_evaluation/test_native_settings.py`, `tests/fault_evaluation/test_native_faults.py`, `tests/fault_evaluation/test_native_safety.py`, `tests/fault_evaluation/test_native_field.py`, `pyproject.toml`, `uv.lock`
+  - Needs: T037
+  - Wave: 13
+  - Done when: `pytest tests/fault_evaluation -q` passes with both cores installed, the native tests do not skip, and `uv lock --check` passes (or `uv lock` updated `uv.lock` with only the new package).
+  - Context: Plan D5b. `_native_faults.py`: `import loop_model_core` in
+    place of `loop_interpolation_core` (and the module docstring). Tests:
+    every `loop_interpolation_core` that names the fault kernel becomes
+    `loop_model_core` (`importorskip`, `from ... import FaultChain`, the
+    fake module name `KERNEL_NAME` in test_native_settings.py). Root
+    `pyproject.toml`: `native = ["loop-interpolation[native]", "loop-model-core"]`
+    and `[tool.uv.sources]` `loop-model-core = { path = "packages/loop_model_core" }`
+    with a comment like the one of the interpolation core. Run `uv lock`
+    (try `--offline` first). Do not change solver tests that use
+    `loop_interpolation_core` for the solver.
+
+- [ ] T039 [US4] [M] Build, test and release `loop-model-core` in CI (D5c).
+  - Files: `.github/workflows/model-core-wheels.yml`, `.github/workflows/core-wheels.yml`, `.github/workflows/pypi.yml`, `.github/workflows/native.yml`, `.release-please-config.json`, `.release-please-manifest.json`, `.dev-tools/project.json`
+  - Needs: T037
+  - Wave: 13
+  - Done when: each changed YAML and JSON file loads (`yaml.safe_load`, `json.load`), the heredoc smoke script of `model-core-wheels.yml` runs with the local venv and prints "fault kernel restore ok", and `core-wheels.yml` no longer names `FaultChain`.
+  - Context: Plan D5c exactly. `model-core-wheels.yml` is a copy of
+    `core-wheels.yml` with `MANIFEST: packages/loop_model_core/Cargo.toml`,
+    package `loop-model-core`, artifact names `model-core-wheel-*` and
+    `model-core-sdist`, its own `paths`, and the fault smoke test (the T030
+    heredoc with `import loop_model_core as core`); no solver smoke test.
+    `core-wheels.yml` keeps only the solver smoke test. `pypi.yml`: copy
+    the `build_core` / upload jobs for the new workflow (read how the
+    interpolation core is published and follow it). `native.yml`: plan D5c.
+    release-please files and `.dev-tools/project.json`: plan D5c. Change
+    nothing else.
+
+- [ ] T040 [US5] [S] Treat a negative thread count as all cores, and use exact type checks for supported parts (end review findings).
+  - Files: `LoopStructural/modelling/features/_native_faults.py`, `tests/fault_evaluation/test_native_settings.py`
+  - Needs: T038
+  - Wave: 14
+  - Done when: `pytest tests/fault_evaluation/test_native_settings.py tests/fault_evaluation/test_native_faults.py tests/fault_evaluation/test_native_safety.py tests/fault_evaluation/test_native_field.py -q` passes, and the two new tests fail before the change.
+  - Context: `native_threads()` returns `max(int(setting), 0)` when the
+    setting is not None (a negative value means all cores, as `-1` in
+    joblib); say so in its docstring. In `chain_for` and `field_for`
+    (and their helpers), replace `isinstance(x, FaultSegment)`,
+    `isinstance(x, FaultDisplacement)` and the region class checks
+    (`PositiveRegion`, `NegativeRegion`, `UnconformityFeature`) with
+    `type(x) is ...`, so a subclass takes the Python path (FR-008). New
+    tests in test_native_settings.py: `native_threads()` is 0 for -1;
+    a subclass of `FaultDisplacement` makes `chain_for` return None (build
+    a fake chain input or use `build_model("f1_u0")` and set
+    `fault.faultfunction = SubclassOfFaultDisplacement(...)`, with the
+    kernel installed: `pytest.importorskip("loop_model_core")`).
+
+- [ ] T041 [US4] [S] Record stage S5 and the package name in `ROADMAP.md` (FR-015).
+  - Files: `ROADMAP.md`
+  - Needs: T039, T040
+  - Wave: 15
+  - Done when: the spec 007 decision section names `loop-model-core` as the package of the native path, and `## Status log` has a dated line for spec 007 stage S5.
+  - Context: In `### Native fault application (spec 007)`, replace "an
+    optional Rust kernel in `loop_interpolation_core`" with "an optional
+    Rust kernel in the package `loop-model-core` (module
+    `loop_model_core`), separate from the solver core
+    `loop_interpolation_core`". Status line (format of the lines above it):
+    "2026-11-27: spec 007 S5: the fault kernel moves to the new package
+    `loop-model-core`, with its own wheels and release; a negative
+    `native_threads` means all cores; subclasses of the supported fault
+    types use the Python path."
+
+- [ ] T042 [Finish] [M] Run the full test suite with the native path on, off and not installed after the move (SC-006).
+  - Files: `specs/007-native-fault-kernel/verification.md`
+  - Needs: T041
+  - Wave: 16
+  - Done when: `verification.md` has a section "Stage S5" with the three `pytest` runs, the Ruff result and the Rust checks of both crates.
+  - Context: As T033, with both cores: (1) `maturin develop --release`
+    of `packages/loop_interpolation_core` and `packages/loop_model_core`,
+    `pytest -q`; (2) `LOOPSTRUCTURAL_NATIVE_FAULTS=0 pytest -q`; (3)
+    uninstall `loop-model-core` only, `pytest -q` (the fault kernel is
+    missing, the solver core stays); then reinstall it. Known
+    pre-existing failure: `tests/unit/modelling/test_native_fault_frame.py::test_the_native_fault_frame_is_the_cg_fault_frame`
+    (native solver). Ruff: no new errors against the master baseline. Also
+    `cargo fmt --check` and `cargo clippy --all-targets -- -D warnings` in
+    both crates. Change no code.
+
 ## Wave table
 
 | Wave | Tasks | Tier [S] | Tier [M] |
 |---|---|---|---|
-| 1 | T001, T002, T003, T008, T009, T014 | 2 | 4 |
+| 1 | T001, T002, T003, T008, T034, T009, T014 | 3 | 4 |
 | 2 | T004, T010, T011, T015, T023 | 0 | 5 |
 | 3 | T005, T012, T019 | 1 | 2 |
 | 4 | T006, T013, T024 | 0 | 3 |
 | 5 | T007, T017, T018, T020, T025, T030 | 3 | 3 |
 | 6 | T016, T031 | 1 | 1 |
 | 7 | T021, T026 | 0 | 2 |
-| 8 | T022, T027 | 1 | 1 |
-| 9 | T028 | 0 | 1 |
-| 10 | T029, T032 | 1 | 1 |
+| 8 | T035, T027 | 0 | 2 |
+| 9 | T022, T028 | 1 | 1 |
+| 10 | T029, T036, T032 | 2 | 1 |
 | 11 | T033 | 0 | 1 |
+| 12 | T037 | 0 | 1 |
+| 13 | T038, T039 | 0 | 2 |
+| 14 | T040 | 1 | 0 |
+| 15 | T041 | 1 | 0 |
+| 16 | T042 | 0 | 1 |
 
 ## Critical path
 
-T008 -> T010 -> T012 -> T013 -> T017 -> T016 -> T026 -> T027 -> T028 -> T029 -> T033
+T008 -> T010 -> T012 -> T013 -> T017 -> T016 -> T021 -> T035 -> T022 -> T029 -> T033 -> T037 -> T038 -> T040 -> T041 -> T042
 
 ## Dependencies
 
@@ -695,3 +800,7 @@ T008 -> T010 -> T012 -> T013 -> T017 -> T016 -> T026 -> T027 -> T028 -> T029 -> 
   platforms. T033 runs the full suite three ways and closes the spec.
 - `ROADMAP.md` is a chain: T001, T007, T022, T029, T033.
   `verification.md` is a chain: T009, T021, T028, T032, T033.
+- S5 (maintainer answer): T037 moves the fault kernel into
+  `packages/loop_model_core`; T038 (Python side, extra, lock) and T039 (CI,
+  release) follow in parallel; T040 fixes two end review findings; T041
+  records S5; T042 runs the suite three ways again.

@@ -74,6 +74,12 @@
       "base": "3d6cc26e90383a313328a7e784612c02ad251357",
       "commit": "3260064e51b1c0b3497966a898e5279fd53f19d2",
       "review": "end review (opus, Focus all): no blocker; 3 major = maintainer decisions (SC-001, SC-002, SC-008); 3 minor"
+    },
+    {
+      "wave": 12,
+      "base": null,
+      "commit": null,
+      "review": null
     }
   ],
   "runs": {
