@@ -54,6 +54,12 @@
     {
       "wave": 8,
       "base": "2d44bdaaa8746edf7c8fb2784db730b8b8b1df30",
+      "commit": "23134f85095598524aeb0365817fdda71e5e942f",
+      "review": "pass (2 minor)"
+    },
+    {
+      "wave": 9,
+      "base": null,
       "commit": null,
       "review": null
     }
@@ -293,7 +299,7 @@
     ]
   },
   "findings": {
-    "found": 27,
+    "found": 29,
     "rejected": 2,
     "dropped": 0,
     "fixed": 2,
@@ -321,7 +327,9 @@
       "T021: the SC-007 pass is relative to the Python base; native extra memory is 2.9 x the point array and the reason is open.",
       "T021: the measurement scripts are in the job tmp folder, outside the repo; the method is only described.",
       "T026: the parity test does not assert that _faulted(model) is not empty.",
-      "T035: the largest native difference of cutting_faults went from 5.7e-13 to 1.25e-12 although T035 claims the same floating-point operations; within tolerance, not explained."
+      "T035: the largest native difference of cutting_faults went from 5.7e-13 to 1.25e-12 although T035 claims the same floating-point operations; within tolerance, not explained.",
+      "T027: evaluate_value/evaluate_gradient call _check_frame() and update() again after field_for already did (no wrong result).",
+      "T027: the native binding rejects element_scale_parameter <= 0 with ValueError, where Python gave a degenerate result (edge case)."
     ]
   },
   "sc001": {
