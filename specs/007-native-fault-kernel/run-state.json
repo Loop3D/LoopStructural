@@ -101,7 +101,7 @@
     },
     {
       "wave": 16,
-      "base": null,
+      "base": "5c7a673f89dccbc03460e7d2497eb63abd800de1",
       "commit": null,
       "review": null
     }
@@ -403,6 +403,12 @@
       {
         "model": "haiku",
         "result": "pass"
+      }
+    ],
+    "T042": [
+      {
+        "model": "sonnet",
+        "result": "pass (on 3343/1 known; off 3343/1 known; model core not installed 3311/1 known)"
       }
     ]
   },

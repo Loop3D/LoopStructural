@@ -743,7 +743,7 @@ Common rules for every Rust task: `cargo fmt --check` and
     `native_threads` means all cores; subclasses of the supported fault
     types use the Python path."
 
-- [ ] T042 [Finish] [M] Run the full test suite with the native path on, off and not installed after the move (SC-006).
+- [x] T042 [Finish] [M] Run the full test suite with the native path on, off and not installed after the move (SC-006).
   - Files: `specs/007-native-fault-kernel/verification.md`
   - Needs: T041
   - Wave: 16

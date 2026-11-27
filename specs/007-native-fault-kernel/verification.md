@@ -329,3 +329,49 @@ message, without line numbers).
 - SC-006: pass, with the one known failure above. No other test fails with the native path on, off or not installed.
 - FR-015: the suite runs without the core (run 3: 0 failed).
 - Ruff: no new errors.
+
+## Stage S5
+
+Task T042, check SC-006 after the package move. Date: 2026-11-27. Commands run
+from the worktree root with `OMP_NUM_THREADS=1` and `-n 8 -p no:cacheprovider -rf`.
+
+The fault kernel is now the package `packages/loop_model_core` (module `loop_model_core`).
+The solver core stays in `packages/loop_interpolation_core`. Both were built with `maturin develop --release`.
+
+| Run | Setting | Installed cores | Passed | Failed | Skipped | Failures |
+|---|---|---|---|---|---|---|
+| 1 | Native path on | `loop_interpolation_core`, `loop_model_core` | 3343 | 1 | 23 | `tests/unit/modelling/test_native_fault_frame.py::test_the_native_fault_frame_is_the_cg_fault_frame` (known failure, native solver) |
+| 2 | `LOOPSTRUCTURAL_NATIVE_FAULTS=0` | `loop_interpolation_core`, `loop_model_core` | 3343 | 1 | 23 | the same test |
+| 3 | `loop-model-core` uninstalled (`import loop_model_core` gives `ModuleNotFoundError`, `import loop_interpolation_core` works) | `loop_interpolation_core` | 3311 | 1 | 27 | the same test |
+
+In run 3 the solver core is still installed. For this reason the known solver
+test still runs and fails, unlike T033 (where the solver core was removed
+too). The fault kernel tests are skipped in run 3. After run 3,
+`loop-model-core` was installed again with `maturin develop --release` and
+`import loop_model_core` works.
+
+### Ruff
+
+`ruff check LoopStructural packages`: 34 errors. The master baseline also has
+34 errors. No line is new (compared by file, code and message, without line
+numbers, with `comm -13`).
+
+### Rust
+
+`cargo test --release` and `cargo test --release --features parallel` pass.
+
+| Check | `loop_interpolation_core` | `loop_model_core` |
+|---|---|---|
+| `cargo fmt --check` | pass | pass |
+| `cargo clippy --all-targets -- -D warnings` | pass | pass |
+| `cargo clippy --all-targets --features parallel -- -D warnings` | pass | pass |
+| `cargo clippy --all-targets --features python -- -D warnings` | pass | pass |
+| `cargo test --release` | pass | pass |
+| `cargo test --release --features parallel` | pass | pass |
+
+### Result
+
+- SC-006: pass, with the one known failure above. No other test fails with the native path on, off or with the fault kernel not installed.
+- The suite runs without `loop-model-core` (run 3: only the known solver test fails).
+- Ruff: no new errors.
+- Rust: all checks pass in both crates.
