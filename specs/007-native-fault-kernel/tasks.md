@@ -566,7 +566,7 @@ Common rules for every Rust task: `cargo fmt --check` and
     (no `LOOPSTRUCTURAL_NATIVE_FAULTS`), and record the result and the
     largest difference. Change no code; if a target fails, record it.
 
-- [ ] T029 [US3] [S] Record stage S3 in `ROADMAP.md` (FR-015).
+- [x] T029 [US3] [S] Record stage S3 in `ROADMAP.md` (FR-015).
   - Files: `ROADMAP.md`
   - Needs: T022, T028
   - Wave: 10
@@ -576,7 +576,7 @@ Common rules for every Rust task: `cargo fmt --check` and
     with the results from the "Stage S3" section of
     `specs/007-native-fault-kernel/verification.md`.
 
-- [ ] T036 [US4] [S] Let the 94-fault benchmark run with the native path on (FR-013).
+- [x] T036 [US4] [S] Let the 94-fault benchmark run with the native path on (FR-013).
   - Files: `benchmarks/fault_evaluation/many_faults.py`, `tests/fault_evaluation/test_many_faults.py`
   - Needs: T028
   - Wave: 10
@@ -628,7 +628,7 @@ Common rules for every Rust task: `cargo fmt --check` and
     document the spec dict in detail; point to
     `specs/007-native-fault-kernel/plan.md` D2b.
 
-- [ ] T032 [US4] [M] Check the prebuilt packages on each platform (SC-008).
+- [x] T032 [US4] [M] Check the prebuilt packages on each platform (SC-008).
   - Files: `specs/007-native-fault-kernel/verification.md`
   - Needs: T028, T030
   - Wave: 10

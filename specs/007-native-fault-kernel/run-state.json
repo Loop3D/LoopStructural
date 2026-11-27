@@ -65,7 +65,7 @@
     },
     {
       "wave": 10,
-      "base": null,
+      "base": "f03510d573851dcd7e5ddd4b498868fc780f8ba9",
       "commit": null,
       "review": null
     }
@@ -313,6 +313,24 @@
       {
         "model": "sonnet",
         "result": "pass (SC-004 0.059 s vs 0.5 s; SC-005 pass)"
+      }
+    ],
+    "T029": [
+      {
+        "model": "haiku",
+        "result": "pass"
+      }
+    ],
+    "T032": [
+      {
+        "model": "sonnet",
+        "result": "pass (Linux x86_64 only; 4 platforms need a CI run)"
+      }
+    ],
+    "T036": [
+      {
+        "model": "haiku",
+        "result": "pass"
       }
     ]
   },

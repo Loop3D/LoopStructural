@@ -251,3 +251,53 @@ Measures SC-004 (many-faults model) and SC-005 (golden test with the native path
 - SC-005: pass. 23 of 23 golden tests pass with the native path on.
 - Largest native field difference: 1.16e-10.
 - Open point: `benchmarks/fault_evaluation/many_faults.py` fails with the native path on (empty per-fault timer lists). It must write the JSON without per-fault times for the native path. A separate task is needed.
+
+## Stage S4
+
+Task T032, check SC-008. Date: 2026-11-27.
+
+The branch `feat/007-native-fault-kernel` is not pushed. No CI run of
+`core-wheels.yml` exists for this code. The maintainer has not agreed to start
+one. Only Linux x86_64 (this computer) is checked.
+
+| Platform | Wheel built | Installed clean | Smoke test | Golden tests, native on | Note |
+|---|---|---|---|---|---|
+| Linux x86_64 | pass | pass | pass | pass (23 passed) | Built locally, Python 3.13. Wheel tag is `manylinux_2_35_x86_64`: there is no manylinux container here. CI uses `manylinux: auto`. Python 3.9 is not installed here (only 3.12, 3.13, 3.14), so abi3-py39 is not tested on 3.9. |
+| Linux aarch64 | not checked | not checked | not checked | not checked | Needs a CI run of `core-wheels.yml` on the pushed branch (maintainer decision). |
+| macOS arm64 | not checked | not checked | not checked | not checked | Needs a CI run of `core-wheels.yml` on the pushed branch (maintainer decision). |
+| macOS x86_64 | not checked | not checked | not checked | not checked | Not run in CI (cross-compiled). Maintainer check needed. |
+| Windows x64 | not checked | not checked | not checked | not checked | Needs a CI run of `core-wheels.yml` on the pushed branch (maintainer decision). |
+
+### Commands (Linux x86_64)
+
+Run from the worktree root. `T` is the scratch directory.
+
+```
+.venv/bin/maturin build --release --out $T/dist -m packages/loop_interpolation_core/Cargo.toml
+uv venv --python 3.13 $T/venv
+uv pip install -p $T/venv/bin/python numpy scipy pandas pytest
+uv pip install -p $T/venv/bin/python --no-index --find-links $T/dist loop-interpolation-core
+uv pip install -p $T/venv/bin/python -e packages/loop_common -e packages/loop_interpolation -e .
+$T/venv/bin/python -I -c "import loop_interpolation_core as c; print(c.__file__, c.FAULT_KERNEL_VERSION)"
+$T/venv/bin/python smoke.py      # heredoc of the CI step "Install the wheel and solve a small problem"
+$T/venv/bin/python -m pytest tests/fault_evaluation/test_golden.py -q -p no:cacheprovider
+```
+
+Only the wheel is under test. LoopStructural is an editable install from the
+worktree. `LOOPSTRUCTURAL_NATIVE_FAULTS` is not set, so the native path is on.
+
+Output:
+
+- `import loop_interpolation_core` loads from
+  `$T/venv/lib/python3.13/site-packages/loop_interpolation_core/__init__.py`
+  (the clean venv). `FAULT_KERNEL_VERSION` is 1.
+- Smoke script: "solve converged in 78 iterations", "fault kernel restore ok".
+- Golden tests: 23 passed.
+
+### Result
+
+- SC-008 is checked for Linux x86_64 only.
+- Linux aarch64, macOS arm64 and Windows x64: not checked.
+- macOS x86_64: not run in CI (cross-compiled). Maintainer check needed.
+- Next step: run `core-wheels.yml` after the branch is pushed (maintainer
+  decision), then fill the other rows.

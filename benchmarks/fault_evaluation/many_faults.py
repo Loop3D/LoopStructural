@@ -243,6 +243,19 @@ class _FaultTimer:
         FaultSegment.apply_to_points = self._original
 
 
+def _fault_summary(per):
+    """Mean and max fault times in ms; None when no Python fault call was timed (native path)."""
+
+    def mean(values):
+        return float(np.mean(values)) if values else None
+
+    return dict(
+        isolated_mean_ms=mean(per["isolated"]),
+        cutting_mean_ms=mean(per["cutting"]),
+        cutting_max_ms=float(np.max(per["cutting"])) if per["cutting"] else None,
+    )
+
+
 def measure(model, specs, counts):
     kind = {s["name"]: s["kind"] for s in specs}
     result, arrays = {}, {}
@@ -258,9 +271,7 @@ def measure(model, specs, counts):
         result[str(n)] = dict(
             evaluate_model_seconds=seconds,
             fault_calls=sum(timer.calls.values()),
-            isolated_mean_ms=float(np.mean(per["isolated"])),
-            cutting_mean_ms=float(np.mean(per["cutting"])),
-            cutting_max_ms=float(np.max(per["cutting"])),
+            **_fault_summary(per),
         )
         arrays[f"model_ids_{n}"] = np.asarray(ids)
         for group in GROUPS:
