@@ -49,7 +49,13 @@
       "wave": 7,
       "base": "dcad71c78bc58501456311cd57a66b028e84f88d",
       "commit": "fb85400704439b71ec8df3f2dedeab9805e7a1d5",
-      "review": "changes needed: 1 major (T026 parity test does not check that the native path ran), 4 minor"
+      "review": "pass after one fix round (afe0f593; recheck pass, 1 minor)"
+    },
+    {
+      "wave": 8,
+      "base": null,
+      "commit": null,
+      "review": null
     }
   ],
   "runs": {
@@ -263,7 +269,7 @@
     ]
   },
   "findings": {
-    "found": 26,
+    "found": 27,
     "rejected": 2,
     "dropped": 0,
     "fixed": 2,
@@ -289,7 +295,8 @@
       "T016: the token compares floats with ==; a NaN displacement rebuilds the chain at each call.",
       "T021: verification.md names the memory rule acceptance.py _check_memory; the function is _sc006.",
       "T021: the SC-007 pass is relative to the Python base; native extra memory is 2.9 x the point array and the reason is open.",
-      "T021: the measurement scripts are in the job tmp folder, outside the repo; the method is only described."
+      "T021: the measurement scripts are in the job tmp folder, outside the repo; the method is only described.",
+      "T026: the parity test does not assert that _faulted(model) is not empty."
     ]
   },
   "sc001": {
