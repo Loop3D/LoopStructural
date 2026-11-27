@@ -710,7 +710,7 @@ Common rules for every Rust task: `cargo fmt --check` and
     release-please files and `.dev-tools/project.json`: plan D5c. Change
     nothing else.
 
-- [ ] T040 [US5] [S] Treat a negative thread count as all cores, and use exact type checks for supported parts (end review findings).
+- [x] T040 [US5] [S] Treat a negative thread count as all cores, and use exact type checks for supported parts (end review findings).
   - Files: `LoopStructural/modelling/features/_native_faults.py`, `tests/fault_evaluation/test_native_settings.py`
   - Needs: T038
   - Wave: 14

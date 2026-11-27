@@ -89,7 +89,7 @@
     },
     {
       "wave": 14,
-      "base": null,
+      "base": "f89026e71d2a7dc19858381d75bc9d0d805f88c4",
       "commit": null,
       "review": null
     }
@@ -380,13 +380,19 @@
         "model": "sonnet",
         "result": "pass"
       }
+    ],
+    "T040": [
+      {
+        "model": "haiku",
+        "result": "pass (also fixed the settings fixture: it reloads _native_faults at teardown)"
+      }
     ]
   },
   "findings": {
     "found": 38,
     "rejected": 2,
     "dropped": 0,
-    "fixed": 2,
+    "fixed": 4,
     "open_minor": [
       "T011: Profile::block_displacement goes on to continue_profile for a NaN gx (Python returns the profile at forced_gx); no path gives a NaN gx today.",
       "T011: taylor computes 12.0*h*h, Python 12.0*h**2 (1 ulp at most).",
@@ -404,7 +410,6 @@
       "T020: native.yml path filter misses _evaluation.py, _base_geological_feature.py and tests/fault_evaluation/**.",
       "T017: the fallback check accepts None for any reverse case of a feature with cutters; a wrong fallback in such a case would pass.",
       "T016: restore() and the forward/reverse callers share one _restore_order slot on the feature, so alternating reverse and forward calls recompute the order.",
-      "T016 (fix first): the support check uses isinstance for FaultSegment and FaultDisplacement; a user subclass that overrides apply_to_points or __call__ would go to the kernel (FR-008). Use type(...) is.",
       "T016: FaultChain(spec) build errors are raised, not turned into the Python path (for example a node-value count that does not match the grid).",
       "T016: the token compares floats with ==; a NaN displacement rebuilds the chain at each call.",
       "T021: verification.md names the memory rule acceptance.py _check_memory; the function is _sc006.",
@@ -416,7 +421,6 @@
       "T027: the native binding rejects element_scale_parameter <= 0 with ValueError, where Python gave a degenerate result (edge case).",
       "T028: the Python time of SC-004 includes the _FaultTimer patch overhead; the native run has none (favours native slightly).",
       "T028: the SC-004 scratch script is outside the repo; rerun with the benchmark after T036.",
-      "End review (fix first): LoopStructuralConfig.native_threads = -1 raises OverflowError in _native_faults.restore (no fallback); clamp to 0 or raise ValueError.",
       "End review: no test checks that native_threads = 1 really uses one thread (pool(1).current_num_threads()).",
       "End review: the native unconformity region ignores faults_enabled and the regions of the UnconformityFeature (both default in current models)."
     ]

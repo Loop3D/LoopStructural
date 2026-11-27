@@ -57,7 +57,9 @@ def native(monkeypatch):
     _set_kernel_version(monkeypatch, 1)
     module = importlib.import_module(MODULE_NAME)
     importlib.reload(module)
-    return module
+    yield module
+    # Drop the fake kernel from the module state, so other tests in the same worker do not use it.
+    importlib.reload(module)
 
 
 @pytest.fixture
@@ -144,3 +146,36 @@ def test_native_threads_one(monkeypatch, native):
     """A thread setting of 1 is returned as 1."""
     monkeypatch.setattr(LoopStructuralConfig, "native_threads", 1, raising=False)
     assert native.native_threads() == 1
+
+
+def test_negative_thread_count_means_all_cores(monkeypatch, native):
+    """A negative thread setting means all cores, as -1 in joblib, so it is returned as 0."""
+    monkeypatch.setattr(LoopStructuralConfig, "native_threads", -1, raising=False)
+    assert native.native_threads() == 0
+
+
+def test_subclass_of_fault_displacement_uses_python_path(monkeypatch):
+    """A subclass of FaultDisplacement takes the Python path (FR-008)."""
+    pytest.importorskip("loop_model_core")
+    from LoopStructural.modelling.features import _native_faults
+    from LoopStructural.modelling.features.fault._fault_function import FaultDisplacement
+    from tests.fault_evaluation.models import build_model
+
+    # The fake kernel of the native fixture is undone after its test, so the real kernel is used.
+    monkeypatch.setattr(LoopStructuralConfig, "native_faults", True, raising=False)
+    monkeypatch.setattr(LoopStructuralConfig, "native_threads", None, raising=False)
+    monkeypatch.delenv(ENV_VAR, raising=False)
+    importlib.reload(_native_faults)
+
+    class Sub(FaultDisplacement):
+        pass
+
+    model = build_model("f1_u0")
+    feature = next(f for f in model.features if getattr(f, "faults", None))
+    fault = feature.faults[0]
+    old = fault.faultfunction
+    sub = Sub.__new__(Sub)
+    sub.__dict__.update(old.__dict__)
+    fault.faultfunction = sub
+    assert fault.faultfunction is sub
+    assert _native_faults.chain_for(feature) is None

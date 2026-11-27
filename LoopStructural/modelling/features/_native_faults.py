@@ -76,10 +76,14 @@ def native_threads() -> int:
     -------
     int
         The setting ``LoopStructuralConfig.native_threads``, or 0 if it is None.
+        A negative value means all cores, as -1 in joblib.
     """
     from LoopStructural import LoopStructuralConfig
 
-    return LoopStructuralConfig.native_threads or 0
+    setting = LoopStructuralConfig.native_threads
+    if setting is None:
+        return 0
+    return max(int(setting), 0)
 
 
 class _Unsupported(Exception):
@@ -184,7 +188,7 @@ def _region(region: object, build: _Build) -> dict:
     from ._unconformity_feature import UnconformityFeature
     from .fault._fault_segment import FaultSegment
 
-    if isinstance(region, UnconformityFeature):
+    if type(region) is UnconformityFeature:
         return {
             "kind": "unconformity",
             "field": _grid(region, build.refs, build.grids),
@@ -192,8 +196,8 @@ def _region(region: object, build: _Build) -> dict:
             "value": float(region.value),
             "sign": bool(region.sign),
         }
-    if isinstance(region, (PositiveRegion, NegativeRegion)):
-        if not isinstance(region.feature, FaultSegment) or region.vector is None:
+    if type(region) in (PositiveRegion, NegativeRegion):
+        if type(region.feature) is not FaultSegment or region.vector is None:
             raise _Unsupported("region")
         if region.point is None:
             raise _Unsupported("region")
@@ -212,12 +216,12 @@ def _fault_spec(fault: object, build: _Build) -> dict:
     from .fault._fault_function import FaultDisplacement
     from .fault._fault_segment import FaultSegment
 
-    if not isinstance(fault, FaultSegment):
+    if type(fault) is not FaultSegment:
         raise _Unsupported("fault")
     if fault.builder is not None:
         fault.builder.up_to_date()
     function = fault.faultfunction
-    if not isinstance(function, FaultDisplacement) or int(fault.steps) < 1:
+    if type(function) is not FaultDisplacement or int(fault.steps) < 1:
         raise _Unsupported("profile")
     members = [fault[i] for i in range(3)]
     for member in members:
