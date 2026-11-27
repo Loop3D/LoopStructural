@@ -184,10 +184,10 @@ def test_nan_coordinate(shared):
     pts[3, 1] = np.nan
     result = _native_faults.restore(feature, pts)
     assert result is not None
-    assert np.isnan(result[3]).all()
-    keep = np.arange(len(pts)) != 3
+    # The Python path keeps a row with a NaN coordinate as it is. The native path must do the same.
     expected = _python_restored(feature, pts)
-    np.testing.assert_allclose(result[keep], expected[keep], atol=_tolerance(model))
+    np.testing.assert_array_equal(np.isnan(result), np.isnan(expected))
+    np.testing.assert_allclose(result, expected, atol=_tolerance(model))
 
 
 def test_bad_spec_raises_and_state_is_kept(fresh):

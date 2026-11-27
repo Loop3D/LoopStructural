@@ -176,6 +176,21 @@ Common rules for every Rust task: `cargo fmt --check` and
     with the id of the task that writes the body. Derive `Debug, Clone` on
     data types. Doc comment on each public item.
 
+- [x] T034 [Found] [S] Run the spec 003 tests of the Python path internals with the native path off (plan "Answers", T016).
+  - Files: `tests/fault_evaluation/conftest.py`
+  - Needs: none
+  - Wave: 1
+  - Done when: `LOOPSTRUCTURAL_NATIVE_FAULTS= pytest tests/fault_evaluation/test_context.py tests/fault_evaluation/test_gradient_context.py tests/fault_evaluation/test_memory.py -q` passes with the native kernel installed and T016 code present.
+  - Context: New file `tests/fault_evaluation/conftest.py`. An autouse
+    fixture `_python_path_for_internals(request, monkeypatch)`: if
+    `request.module.__name__` ends with one of `test_context`,
+    `test_gradient_context`, `test_memory`, set
+    `monkeypatch.setattr(LoopStructuralConfig, "native_faults", False)`
+    (`from LoopStructural import LoopStructuralConfig`). Docstring: these
+    tests count or patch calls of the Python `FaultSegment.apply_to_points`,
+    which the native path does not call (spec 007 plan, Answers, T016).
+    `from __future__ import annotations`; numpy-style docstring.
+
 ## Phase 4: Stage S2, native restoration (stories 2, 4 and 5)
 
 - [x] T009 [US2] [M] Find why the proof of concept differs from the Python path (C-007, OP9).
@@ -317,9 +332,9 @@ Common rules for every Rust task: `cargo fmt --check` and
     `"native fault kernel version {found} found, LoopStructural needs version {required}; using the Python path"`.
     `native_threads()`: the setting, or 0 if None.
 
-- [ ] T016 [US2] [M] Add `chain_for`, `restore` and the state token, and call them from the Python path (D2c, D2d).
+- [x] T016 [US2] [M] Add `chain_for`, `restore` and the state token, and call them from the Python path (D2c, D2d).
   - Files: `LoopStructural/modelling/features/_native_faults.py`, `LoopStructural/modelling/features/_base_geological_feature.py`, `LoopStructural/modelling/features/_evaluation.py`
-  - Needs: T004, T017, T018
+  - Needs: T004, T017, T018, T034
   - Wave: 6
   - Done when: `pytest tests/fault_evaluation -q` passes with the kernel built (`test_native_faults.py` and `test_native_safety.py` do not skip).
   - Context: Follow plan.md D2c and D2d exactly (read those two sections).
@@ -373,7 +388,8 @@ Common rules for every Rust task: `cargo fmt --check` and
     progress during a native `restore` on 10 million points. (6) Two threads
     evaluate one model; each result equals the result alone. (7)
     `LoopStructuralConfig.native_threads = 1` gives the same result as 0.
-    Edge: empty points; a NaN coordinate; `FaultChain({"version": 99})`
+    Edge: empty points; a NaN coordinate (the row equals the Python path
+    result: its finite coordinates are kept); `FaultChain({"version": 99})`
     raises `ValueError` and the model state does not change. Reset the
     settings in a fixture.
 
@@ -557,7 +573,7 @@ Common rules for every Rust task: `cargo fmt --check` and
     `threads=0`; expected (5, 15, 5) and (12, 14, 8) (the step direction is
     the gradient of member 1, +y), to 1e-12. Change nothing else.
 
-- [ ] T031 [US4] [S] Describe the fault kernel in the package README.
+- [x] T031 [US4] [S] Describe the fault kernel in the package README.
   - Files: `packages/loop_interpolation_core/README.md`
   - Needs: T025
   - Wave: 6

@@ -291,6 +291,17 @@ class BaseFeature(metaclass=ABCMeta):
         """
 
         if self.faults_enabled:
+            from . import _native_faults
+
+            native = _native_faults.restore(
+                self,
+                evaluation_points,
+                reverse=reverse,
+                block=block,
+                restored_through=restored_through,
+            )
+            if native is not None:
+                return native
             evaluation_points = restore_through(
                 evaluation_points,
                 self.faults,

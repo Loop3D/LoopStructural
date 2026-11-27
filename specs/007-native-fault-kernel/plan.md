@@ -94,6 +94,29 @@ Answered by the maintainer on 2026-11-27.
 - **OP6**: accept (the default).
 - **OP7**: copy the points and measure SC-007 (the default).
 - **OP8**: identity of the array (the default).
+- **T016 (2026-11-27, maintainer and orchestrator)**:
+  - Maintainer: the spec 003 tests that count or patch calls of the Python
+    `FaultSegment.apply_to_points` (`tests/fault_evaluation/test_context.py`,
+    `test_gradient_context.py`, `test_memory.py`) run with the Python path.
+    New task T034 adds `tests/fault_evaluation/conftest.py` with an autouse
+    fixture that sets `LoopStructuralConfig.native_faults = False` for these
+    modules only. The orchestrator added three more modules of the same kind
+    under this answer: `test_concurrency.py` (patches the Python fault call),
+    `test_no_retention.py` (counts Python fault calls) and
+    `test_fault_frame_lookup.py` (counts the grid lookups of the Python frame
+    path). The T006 tests of D1b and of the order cache in
+    `test_restore_order.py` turn the native path off in the test itself.
+  - Orchestrator: when a fault of the order has cutters that are not all
+    restored at its turn (this occurs for `reverse=True` with a cutting
+    fault), Python takes the frame gradient with the tetrahedron method and
+    the kernel does not. In that case `_native_faults.restore` returns None
+    (Python path). The check is linear in the chain.
+  - Orchestrator: a row with a NaN coordinate stays as the Python path gives
+    it (the finite coordinates are kept). `restore` must not set the whole
+    row to NaN; the T018 test is corrected.
+  - Orchestrator: `chain_for` computes cutter orders with an owner
+    (`restore_order(member0.faults, owner=member0)`, and the unconformity as
+    owner for its faults), so the order is not computed again at each call.
 - **T006 (2026-11-27, maintainer)**: D1b is bit-identical but does fewer grid
   lookups than the legacy fallback. The maintainer allows T006 to change
   `tests/fault_evaluation/test_fault_frame_lookup.py`: the `child_faults`

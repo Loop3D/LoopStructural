@@ -13,7 +13,7 @@ pytest.importorskip("loop_interpolation_core")
 
 from LoopStructural import LoopStructuralConfig
 from LoopStructural.modelling.features import _native_faults
-from LoopStructural.utils._fault_block import check_block, restore_through
+from LoopStructural.utils._fault_block import _cutters, check_block, restore_through
 from tests.fault_evaluation.golden import _coordinates
 from tests.fault_evaluation.models import build_model, sample_points
 
@@ -63,7 +63,7 @@ def _variants(feature):
 def test_native_restore_matches_python(name, monkeypatch, record_property):
     """Native and Python restoration agree for every supported faulted feature."""
     _, points, size, features = _case(name)
-    skipped, supported, worst = [], [], 0.0
+    skipped, supported, fallback, worst = [], [], [], 0.0
     for feature in features:
         monkeypatch.delenv(ENV_VAR, raising=False)
         monkeypatch.setattr(LoopStructuralConfig, "native_faults", None)
@@ -74,7 +74,16 @@ def test_native_restore_matches_python(name, monkeypatch, record_property):
         for kwargs in _variants(feature):
             monkeypatch.setattr(LoopStructuralConfig, "native_faults", None)
             native = _native_faults.restore(feature, points, **kwargs)
-            assert native is not None
+            if native is None:
+                # Documented fallback (plan.md, T016). Simple check: a reverse
+                # call of a feature with a cutting fault goes to the Python path.
+                assert kwargs.get("reverse") is True, (feature.name, kwargs)
+                assert any(_cutters(f) for f in feature.faults), (feature.name, kwargs)
+                fallback.append(f"{feature.name}:{kwargs}")
+                monkeypatch.setattr(LoopStructuralConfig, "native_faults", None)
+                public = feature._apply_faults(points, reverse=True)
+                monkeypatch.setattr(LoopStructuralConfig, "native_faults", False)
+                native = public
             monkeypatch.setattr(LoopStructuralConfig, "native_faults", False)
             reference = restore_through(
                 points,
@@ -94,6 +103,7 @@ def test_native_restore_matches_python(name, monkeypatch, record_property):
                 assert diff <= 1e-8 * size, (feature.name, kwargs, diff)
     record_property("max_native_diff", worst)
     record_property("native_supported_features", ",".join(supported))
+    record_property("native_fallback_cases", ";".join(fallback))
     record_property("native_skipped_features", ",".join(skipped))
     if name in MUST_BE_SUPPORTED:
         assert features

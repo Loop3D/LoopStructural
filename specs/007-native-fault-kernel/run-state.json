@@ -41,7 +41,7 @@
     },
     {
       "wave": 6,
-      "base": null,
+      "base": "3ee22903c989150b9054a4eecce18d48374fc305",
       "commit": null,
       "review": null
     }
@@ -147,6 +147,10 @@
       {
         "model": "sonnet",
         "result": "pass"
+      },
+      {
+        "model": "sonnet",
+        "result": "pass (fix: test pins the Python path)"
       }
     ],
     "T013": [
@@ -165,9 +169,17 @@
       {
         "model": "sonnet",
         "result": "pass"
+      },
+      {
+        "model": "sonnet",
+        "result": "pass (fix: reverse fallback case)"
       }
     ],
     "T018": [
+      {
+        "model": "sonnet",
+        "result": "pass"
+      },
       {
         "model": "sonnet",
         "result": "pass"
@@ -196,6 +208,36 @@
         "model": "haiku",
         "result": "pass"
       }
+    ],
+    "T016": [
+      {
+        "model": "sonnet",
+        "result": "blocked (reverse with an unrestored cutter differs; Python-internals tests count apply_to_points; NaN rows)"
+      },
+      {
+        "model": "sonnet",
+        "result": "pass (blocked on 4 tests whose premise changed; fixed in their owner tasks)"
+      }
+    ],
+    "T031": [
+      {
+        "model": "haiku",
+        "result": "pass"
+      }
+    ],
+    "T034": [
+      {
+        "model": "haiku",
+        "result": "pass"
+      },
+      {
+        "model": "haiku",
+        "result": "pass (fix: test_concurrency)"
+      },
+      {
+        "model": "haiku",
+        "result": "pass (fix: test_no_retention, test_fault_frame_lookup)"
+      }
     ]
   },
   "findings": {
@@ -217,7 +259,9 @@
       "T018: test_two_threads_equal_single_thread warms the chain first, so a race while the chain is built is not exercised.",
       "T018: test_bad_spec_raises_and_state_is_kept: the state check cannot fail (the bad spec never touches the feature).",
       "T017: test_native_off_by_variable tests only '0' (not false/off/no).",
-      "T020: native.yml path filter misses _evaluation.py, _base_geological_feature.py and tests/fault_evaluation/**."
+      "T020: native.yml path filter misses _evaluation.py, _base_geological_feature.py and tests/fault_evaluation/**.",
+      "T017: the fallback check accepts None for any reverse case of a feature with cutters; a wrong fallback in such a case would pass.",
+      "T016: restore() and the forward/reverse callers share one _restore_order slot on the feature, so alternating reverse and forward calls recompute the order."
     ]
   },
   "sc001": {
@@ -229,5 +273,9 @@
   },
   "pre_existing_failures": [
     "tests/unit/modelling/test_native_fault_frame.py::test_the_native_fault_frame_is_the_cg_fault_frame fails on 907acf42 (master + benchmark) when loop_interpolation_core is installed (native solver, #383); it was skipped before the core was installed in the venv."
-  ]
+  ],
+  "native_max_diff": {
+    "restore": 9.3e-10,
+    "model": "stopped_fault"
+  }
 }

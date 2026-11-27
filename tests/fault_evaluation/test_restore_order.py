@@ -12,6 +12,7 @@ from unittest import mock
 import numpy as np
 import pytest
 
+from LoopStructural import LoopStructuralConfig
 from LoopStructural.utils import _fault_block
 from LoopStructural.utils._fault_block import cutters_first, restore_order, with_cutters
 from tests.fault_evaluation.golden import capture
@@ -52,7 +53,9 @@ def test_order_changes_when_a_cutter_is_added():
 
 
 @pytest.mark.parametrize("name", ["cutting_faults", "f4_u3"])
-def test_cache_gives_identical_values(name):
+def test_cache_gives_identical_values(name, monkeypatch):
+    # The test checks the Python path bit for bit; the native path gives equal results within the tolerance only.
+    monkeypatch.setattr(LoopStructuralConfig, "native_faults", False)
     model = build_model(name)
     points = sample_points(name, 200, seed=1)
     cached = capture(model, points)
@@ -79,7 +82,9 @@ def test_reverse_order_rule():
 
 
 @pytest.mark.parametrize("name", ["cutting_faults", "f4_u3"])
-def test_shared_frame_restoration_gives_identical_values(name):
+def test_shared_frame_restoration_gives_identical_values(name, monkeypatch):
+    # The test checks the Python path bit for bit; the native path gives equal results within the tolerance only.
+    monkeypatch.setattr(LoopStructuralConfig, "native_faults", False)
     from LoopStructural.modelling.features.fault import _fault_segment
 
     points = sample_points(name, 200, seed=1)
