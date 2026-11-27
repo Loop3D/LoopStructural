@@ -48,8 +48,8 @@
     {
       "wave": 7,
       "base": "dcad71c78bc58501456311cd57a66b028e84f88d",
-      "commit": null,
-      "review": null
+      "commit": "fb85400704439b71ec8df3f2dedeab9805e7a1d5",
+      "review": "changes needed: 1 major (T026 parity test does not check that the native path ran), 4 minor"
     }
   ],
   "runs": {
@@ -255,14 +255,18 @@
       {
         "model": "sonnet",
         "result": "pass"
+      },
+      {
+        "model": "sonnet",
+        "result": "pass (review fix)"
       }
     ]
   },
   "findings": {
-    "found": 21,
+    "found": 26,
     "rejected": 2,
     "dropped": 0,
-    "fixed": 1,
+    "fixed": 2,
     "open_minor": [
       "T011: Profile::block_displacement goes on to continue_profile for a NaN gx (Python returns the profile at forced_gx); no path gives a NaN gx today.",
       "T011: taylor computes 12.0*h*h, Python 12.0*h**2 (1 ulp at most).",
@@ -282,7 +286,10 @@
       "T016: restore() and the forward/reverse callers share one _restore_order slot on the feature, so alternating reverse and forward calls recompute the order.",
       "T016 (fix first): the support check uses isinstance for FaultSegment and FaultDisplacement; a user subclass that overrides apply_to_points or __call__ would go to the kernel (FR-008). Use type(...) is.",
       "T016: FaultChain(spec) build errors are raised, not turned into the Python path (for example a node-value count that does not match the grid).",
-      "T016: the token compares floats with ==; a NaN displacement rebuilds the chain at each call."
+      "T016: the token compares floats with ==; a NaN displacement rebuilds the chain at each call.",
+      "T021: verification.md names the memory rule acceptance.py _check_memory; the function is _sc006.",
+      "T021: the SC-007 pass is relative to the Python base; native extra memory is 2.9 x the point array and the reason is open.",
+      "T021: the measurement scripts are in the job tmp folder, outside the repo; the method is only described."
     ]
   },
   "sc001": {

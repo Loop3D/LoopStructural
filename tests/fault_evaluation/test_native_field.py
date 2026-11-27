@@ -29,6 +29,10 @@ MODELS = [
     "onlap_domain",
 ]
 ENV_VAR = "LOOPSTRUCTURAL_NATIVE_FAULTS"
+# Map a model name to the set of feature names that cannot use the native path by design
+# (a fold, or an interpolator that is not a DiscreteInterpolator on a StructuredGrid).
+# Add an entry only with a comment that gives the reason. No entry is needed now.
+FIELD_EXCLUSIONS: dict = {}
 _CACHE: dict = {}
 
 
@@ -60,6 +64,13 @@ def test_native_capture_matches_python(name, monkeypatch, record_property):
     model, points, size = _case(name)
     monkeypatch.delenv(ENV_VAR, raising=False)
     monkeypatch.setattr(LoopStructuralConfig, "native_faults", None)
+    # The native path must run, or this test compares the Python path with itself.
+    assert _native_faults.native_enabled()
+    for feature in _faulted(model):
+        if feature.name in FIELD_EXCLUSIONS.get(name, set()):
+            continue
+        assert _native_faults.chain_for(feature) is not None
+        assert _native_faults.field_for(feature) is not None
     native = capture(model, points)
     monkeypatch.setattr(LoopStructuralConfig, "native_faults", False)
     reference = capture(model, points)
@@ -104,6 +115,11 @@ def test_gradient_on_fault_is_nan_and_warns_once(monkeypatch, caplog):
     assert np.isnan(gradient).all()
     warnings = [r for r in caplog.records if "too close to a fault" in r.getMessage()]
     assert len(warnings) == 1
+    # The Python path must also give a NaN gradient at this point.
+    monkeypatch.setattr(LoopStructuralConfig, "native_faults", False)
+    python_gradient = feature.evaluate_gradient(point[None])
+    assert python_gradient.shape == (1, 3)
+    assert np.isnan(python_gradient).all()
 
 
 def test_unconformity_region_uses_native_path(monkeypatch):
