@@ -90,6 +90,12 @@
     {
       "wave": 14,
       "base": "f89026e71d2a7dc19858381d75bc9d0d805f88c4",
+      "commit": "02e8cb46d9f4eeefd8e1aaf256c1c8df505ef635",
+      "review": "pass (1 minor)"
+    },
+    {
+      "wave": 15,
+      "base": null,
       "commit": null,
       "review": null
     }
@@ -389,7 +395,7 @@
     ]
   },
   "findings": {
-    "found": 38,
+    "found": 39,
     "rejected": 2,
     "dropped": 0,
     "fixed": 4,
@@ -422,7 +428,8 @@
       "T028: the Python time of SC-004 includes the _FaultTimer patch overhead; the native run has none (favours native slightly).",
       "T028: the SC-004 scratch script is outside the repo; rerun with the benchmark after T036.",
       "End review: no test checks that native_threads = 1 really uses one thread (pool(1).current_num_threads()).",
-      "End review: the native unconformity region ignores faults_enabled and the regions of the UnconformityFeature (both default in current models)."
+      "End review: the native unconformity region ignores faults_enabled and the regions of the UnconformityFeature (both default in current models).",
+      "T040: the subclass test does not first assert that chain_for gives a chain for the unchanged model."
     ]
   },
   "sc001": {
