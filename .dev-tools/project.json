@@ -1,0 +1,33 @@
+{
+  "schema_version": 1,
+  "project_name": "LoopStructural",
+  "agents": [
+    "claude",
+    "codex",
+    "copilot"
+  ],
+  "skills": "user",
+  "commands": {
+    "check": "ruff check LoopStructural packages && pytest",
+    "test": "pytest",
+    "format": "black .",
+    "lint": "ruff check LoopStructural packages"
+  },
+  "documentation": {
+    "architecture": "ROADMAP.md",
+    "specs": "specs",
+    "constitution": ".specify/memory/constitution.md"
+  },
+  "build": {
+    "packages": {
+      "packages/loop_interpolation_core": {
+        "commands": {
+          "check": "cargo check --all-targets",
+          "test": "cargo test --release",
+          "format": "cargo fmt --check",
+          "lint": "cargo clippy --all-targets -- -D warnings"
+        }
+      }
+    }
+  }
+}

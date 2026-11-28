@@ -4,19 +4,23 @@ on:
   push:
     paths:
       - '**.py'
+      - .github/workflows/linter.yml
 
   pull_request:
     branches:
       - master
     paths:
       - '**.py'
+      - .github/workflows/linter.yml
   workflow_dispatch:
 
 env:
   # All linted packages in the workspace: the main library plus every
   # package under packages/ (packages/loop_common, packages/loop_interpolation, ...).
   PROJECT_FOLDERS: "LoopStructural packages"
-  PYTHON_VERSION: 3.9
+  # ubuntu-latest (26.04) has no Python 3.9 build. black and ruff still
+  # check against py39 through target-version in pyproject.toml.
+  PYTHON_VERSION: "3.12"
 permissions:
   contents: write
 
@@ -46,12 +50,16 @@ jobs:
       - name: Lint with ruff
         run: |
           ruff check ${{ env.PROJECT_FOLDERS }} --fix --exit-zero
+      # A pull request from a fork gets a read-only GITHUB_TOKEN, so it
+      # cannot push the style branch. Skip the push and the PR for it.
       - uses: stefanzweifel/git-auto-commit-action@v5
+        if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
         with:
           commit_message: "style: style fixes by ruff and autoformatting by black"
           branch: lint/style-fixes-${{ github.run_id }}
           create_branch: true
       - name: Create Pull Request
+        if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
         uses: peter-evans/create-pull-request@v6
         with:
           token: ${{ secrets.GITHUB_TOKEN }}

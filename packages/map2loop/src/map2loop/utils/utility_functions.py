@@ -1,12 +1,13 @@
-import numpy
-import math
-import shapely
-import geopandas
-import beartype
-from beartype.typing import Union, Optional, Dict
-import pandas
-import re
 import json
+import math
+import re
+
+import beartype
+import geopandas
+import numpy
+import pandas
+import shapely
+from beartype.typing import Dict, Optional, Union
 from osgeo import gdal
 
 from ..logging import getLogger
@@ -312,7 +313,7 @@ def rebuild_sampled_basal_contacts(
 
 
 @beartype.beartype
-def generate_random_hex_colors(n: int, seed: int = None) -> list:
+def generate_random_hex_colors(n: int, seed: Optional[int] = None) -> list:
     """
     Generate a list of unique random hex color codes.
 
@@ -339,7 +340,7 @@ def generate_random_hex_colors(n: int, seed: int = None) -> list:
     colors = set()  # set prevents duplicates
 
     while len(colors) < n:
-        color = "#{:06x}".format(rng.integers(0, 0xFFFFFF))
+        color = f"#{rng.integers(0, 0xFFFFFF):06x}"
         colors.add(color)
     return list(colors)
 
@@ -384,7 +385,7 @@ def hex_to_rgb(hex_color: str) -> tuple:
 
 @beartype.beartype
 def calculate_minimum_fault_length(
-    bbox: dict[str, Union[int, float]], area_percentage: float
+    bbox: Dict[str, Union[int, float]], area_percentage: float
 ) -> float:
     """
     Calculate the minimum fault length based on the map bounding box and a given area percentage.
@@ -505,8 +506,8 @@ def update_from_legacy_file(
     # try and ready the file:
     try:
         parsed_data = read_hjson_with_json(filename)
-    except Exception as e:
-        logger.error(f"Error reading file {filename}: {e}")
+    except Exception:
+        logger.exception("Error reading file %s", filename)
         return
     # map the keys
     file_map = file_map.to_dict()
@@ -592,6 +593,7 @@ def set_z_values_from_raster_df(dtm_data: gdal.Dataset, df: pandas.DataFrame):
 
     return df
 
+
 def clean_line_geometry(geometry: shapely.geometry.base.BaseGeometry):
     """Clean and normalize a Shapely geometry to a single LineString or None.
 
@@ -644,6 +646,7 @@ def clean_line_geometry(geometry: shapely.geometry.base.BaseGeometry):
             return None
     return None
 
+
 def iter_line_segments(geometry):
     """Produce all LineString segments contained in a Shapely geometry.
 
@@ -684,7 +687,10 @@ def iter_line_segments(geometry):
         return segments
     return []
 
-def nearest_orientation_to_line(orientation_tree, orientation_dips, orientation_coords, line_geom: shapely.geometry.LineString):
+
+def nearest_orientation_to_line(
+    orientation_tree, orientation_dips, orientation_coords, line_geom: shapely.geometry.LineString
+):
     """Find the nearest orientation measurement to the midpoint of a line.
 
     This function queries the provided spatial index and orientation arrays and
@@ -742,7 +748,9 @@ def nearest_orientation_to_line(orientation_tree, orientation_dips, orientation_
     try:
         distances, indices = orientation_tree.query(query_xy, k=k)
     except Exception:
-        logger.exception("Exception occurred during KDTree query in nearest_orientation_to_line; returning (nan, None, None)")
+        logger.exception(
+            "Exception occurred during KDTree query in nearest_orientation_to_line; returning (nan, None, None)"
+        )
         return numpy.nan, None, None
     distances = numpy.atleast_1d(distances)
     indices = numpy.atleast_1d(indices)
@@ -760,7 +768,10 @@ def nearest_orientation_to_line(orientation_tree, orientation_dips, orientation_
         return numpy.nan, None, None
     return float(orientation_dips[best_idx]), best_idx, best_dist
 
-def segment_measure_range(parent_line: shapely.geometry.LineString, segment: shapely.geometry.LineString):
+
+def segment_measure_range(
+    parent_line: shapely.geometry.LineString, segment: shapely.geometry.LineString
+):
     """Compute projected measures of a segment's end points along a parent line.
 
     This function projects the start and end points of ``segment`` onto

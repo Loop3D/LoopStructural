@@ -2,6 +2,7 @@
 ### Two main test cases are considered: cases in which there is clut file and cases in which there is no clut file
 
 import pandas as pd
+
 from map2loop.mapdata import MapData
 
 

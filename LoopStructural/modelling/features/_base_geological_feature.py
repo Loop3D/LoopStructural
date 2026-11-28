@@ -4,10 +4,14 @@ from abc import ABCMeta, abstractmethod
 
 import numpy as np
 
-from LoopStructural.geometry import StructuredGrid, VectorPoints
+from LoopStructural.geometry import VectorPoints
 from LoopStructural.modelling.features import FeatureType
 from LoopStructural.utils import LoopIsosurfacer, LoopValueError, getLogger, surface_list
+from LoopStructural.utils._fault_block import block_kwargs, is_in, restore_through
+from LoopStructural.utils.regions import BaseRegion
 from LoopStructural.utils.typing import NumericInput
+
+from ._evaluation import evaluation_scope
 
 logger = getLogger(__name__)
 
@@ -193,20 +197,22 @@ class BaseFeature(metaclass=ABCMeta):
         """
         self.regions.append(region)
 
-    def __call__(self, xyz):
+    def __call__(self, xyz, *, block=None):
         """Calls evaluate_value method
 
         Parameters
         ----------
         xyz : np.ndarray
             location to evaluate feature
+        block : dict, optional
+            fault block, passed to evaluate_value if given
 
         Returns
         -------
         np.ndarray
             the value of the feature at the locations
         """
-        return self.evaluate_value(xyz)
+        return self.evaluate_value(xyz, **block_kwargs(block))
 
     @abstractmethod
     def evaluate_value(self, pos, ignore_regions=False):
@@ -223,16 +229,28 @@ class BaseFeature(metaclass=ABCMeta):
         pos : NumericInput
             An array or arraylike object with locations
         """
-        value = self.evaluate_value(pos)
-        return (value - self.min()) / (self.max() - self.min())
+        with evaluation_scope(self.model):
+            value = self.evaluate_value(pos)
+            return (value - self.min()) / (self.max() - self.min())
 
-    def _calculate_mask(self, evaluation_points: np.ndarray, ignore_regions=False) -> np.ndarray:
+    def _calculate_mask(
+        self, evaluation_points: np.ndarray, ignore_regions=False, block=None,
+        restored_through=(),
+    ) -> np.ndarray:
         """Calculate the mask for which evaluation points need to be calculated
 
         Parameters
         ----------
         evaluation_points : np.ndarray
             location to be evaluated, Nx3 array
+        block : dict, optional
+            fault block, passed on to the regions that are features or
+            region objects (a plain function region is called without it)
+        restored_through : sequence of FaultSegment
+            faults whose restoration the points already have. A region that
+            is an unconformity is read without applying them again: the
+            frame of a fault that younger faults displace is built in the
+            restored space, and it ends on the unconformity in that space.
 
         Returns
         -------
@@ -245,17 +263,26 @@ class BaseFeature(metaclass=ABCMeta):
         if not ignore_regions:
             # check regions
             for r in self.regions:
-                # try:
-                mask = np.logical_and(mask, r(evaluation_points))
+                kwargs = block_kwargs(block) if isinstance(r, (BaseRegion, BaseFeature)) else {}
+                if restored_through and getattr(r, "takes_restored_through", False):
+                    kwargs["restored_through"] = tuple(restored_through)
+                mask = np.logical_and(mask, r(evaluation_points, **kwargs))
         return mask
 
-    def _apply_faults(self, evaluation_points: np.ndarray, reverse: bool = False) -> np.ndarray:
+    def _apply_faults(
+        self, evaluation_points: np.ndarray, reverse: bool = False, block=None,
+        restored_through=(),
+    ) -> np.ndarray:
         """Calculate the restored location of the points given any faults if faults are enabled
 
         Parameters
         ----------
         evaluation_points : np.ndarray
             location to be evaluated, Nx3 array
+        block : dict, optional
+            fault block, see :meth:`FaultSegment.apply_to_points`
+        restored_through : sequence of FaultSegment
+            faults whose restoration the points already have (skipped)
 
         Returns
         -------
@@ -264,17 +291,27 @@ class BaseFeature(metaclass=ABCMeta):
         """
 
         if self.faults_enabled:
-            # check faults
-            for f in self.faults:
-                evaluation_points = f.apply_to_points(evaluation_points, reverse=reverse)
+            evaluation_points = restore_through(
+                evaluation_points,
+                self.faults,
+                reverse=reverse,
+                block=block,
+                restored_through=restored_through,
+            )
         return evaluation_points
+
+    def _unrestored_faults(self, restored_through=()) -> list:
+        """The faults of the feature that the points have not been restored through."""
+        if not self.faults_enabled:
+            return []
+        return [f for f in self.faults if not is_in(f, restored_through)]
 
     @abstractmethod
     def evaluate_gradient(self, pos, ignore_regions=False):
         """
         Evaluate the gradient of the feature at a given position.
         """
-    
+
         raise NotImplementedError
 
     def min(self):
@@ -338,10 +375,19 @@ class BaseFeature(metaclass=ABCMeta):
                 raise ValueError("Must specify bounding box")
             bounding_box = self.model.bounding_box
         regions = self.regions
-        
+
         try:
+            # A region can also be a plain callable (e.g. the lambdas
+            # add_domain_fault_below/above attach for a domain-fault crop),
+            # not just another BaseFeature -- those have no .name/.parent,
+            # so getattr(..., None) rather than direct attribute access,
+            # or this raises AttributeError and silently drops every
+            # surface for any feature cropped by a domain fault.
             self.regions = [
-                r for r in self.regions if r.name != self.name and r.parent.name != self.name
+                r
+                for r in self.regions
+                if getattr(r, 'name', None) != self.name
+                and getattr(getattr(r, 'parent', None), 'name', None) != self.name
             ]
 
             callable = lambda xyz: self.evaluate_value(xyz)
@@ -375,15 +421,7 @@ class BaseFeature(metaclass=ABCMeta):
             if self.model is None:
                 raise ValueError("Must specify bounding box")
             bounding_box = self.model.bounding_box
-        # NOTE: bounding_box.structured_grid() returns loop_common's
-        # interpolation-support StructuredGrid (no properties dict); use
-        # LoopStructural's own geometry StructuredGrid for storing values.
-        grid = StructuredGrid(
-            origin=bounding_box.origin,
-            step_vector=bounding_box.step_vector,
-            nsteps=bounding_box.nsteps,
-            name=self.name,
-        )
+        grid = bounding_box.structured_grid(name=self.name)
         value = self.evaluate_value(bounding_box.regular_grid(local=False, order='F'))
         grid.properties[self.name] = value
 
@@ -408,12 +446,7 @@ class BaseFeature(metaclass=ABCMeta):
             if self.model is None:
                 raise ValueError("Must specify bounding box")
             bounding_box = self.model.bounding_box
-        grid = StructuredGrid(
-            origin=bounding_box.origin,
-            step_vector=bounding_box.step_vector,
-            nsteps=bounding_box.nsteps,
-            name=self.name,
-        )
+        grid = bounding_box.structured_grid(name=self.name)
         value = np.linalg.norm(
             self.evaluate_gradient(bounding_box.regular_grid(local=False, order='F')),
             axis=1,
@@ -426,6 +459,7 @@ class BaseFeature(metaclass=ABCMeta):
         )
         grid.cell_properties[self.name] = value
         return grid
+
     def vector_field(self, bounding_box=None, tolerance=0.05, scale=1.0):
         """Create a vector field for the feature
 

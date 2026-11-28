@@ -1,16 +1,18 @@
 import logging
-from map2loop.logging import loggers, ch
-
-from .project import Project
-from .version import __version__
-
+import pathlib
+import re
 import warnings  # TODO: convert warnings to logging
+from importlib.metadata import PackageNotFoundError
+from importlib.metadata import version as get_installed_version
+
 from packaging import (
     version as pkg_version,
 )  # used instead of importlib.version because adheres to PEP 440 using pkg_version.parse
-import pathlib
-import re
-from importlib.metadata import version as get_installed_version, PackageNotFoundError 
+
+from map2loop.logging import ch, loggers
+
+from .project import Project
+from .version import __version__
 
 
 class DependencyChecker:
@@ -106,11 +108,10 @@ def check_all_dependencies(dependency_file="dependencies.txt"):
 
                     checker = DependencyChecker(package_name, dependency_file=dependency_file)
                     checker.check_version()
-                    
+
     except FileNotFoundError:
         warnings.warn(
-            f"{dependency_file} not found. No dependencies checked for map2loop.",
-            UserWarning
+            f"{dependency_file} not found. No dependencies checked for map2loop.", UserWarning
         )
 
 

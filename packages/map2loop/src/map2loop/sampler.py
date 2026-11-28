@@ -1,15 +1,18 @@
 # internal imports
-from .utils import set_z_values_from_raster_df
-
 # external imports
+from __future__ import annotations
+
 from abc import ABC, abstractmethod
+from typing import Optional
+
 import beartype
 import geopandas
+import numpy
 import pandas
 import shapely
-import numpy
-from typing import Optional
 from osgeo import gdal
+
+from .utils import set_z_values_from_raster_df
 
 
 class Sampler(ABC):
@@ -39,9 +42,7 @@ class Sampler(ABC):
 
     @beartype.beartype
     @abstractmethod
-    def sample(
-        self, spatial_data: geopandas.GeoDataFrame
-    ) -> pandas.DataFrame:
+    def sample(self, spatial_data: geopandas.GeoDataFrame) -> pandas.DataFrame:
         """
         Execute sampling method (abstract method)
 
@@ -51,9 +52,10 @@ class Sampler(ABC):
         Returns:
             pandas.DataFrame: data frame containing samples
         """
-        pass
+
     def __call__(self, **kwargs):
         return self.sample(**kwargs)
+
 
 class SamplerDecimator(Sampler):
     """
@@ -63,7 +65,12 @@ class SamplerDecimator(Sampler):
     """
 
     @beartype.beartype
-    def __init__(self, decimation: int = 1, dtm_data: Optional[gdal.Dataset] = None, geology_data: Optional[geopandas.GeoDataFrame] = None):
+    def __init__(
+        self,
+        decimation: int = 1,
+        dtm_data: Optional[gdal.Dataset] = None,
+        geology_data: Optional[geopandas.GeoDataFrame] = None,
+    ):
         """
         Initialiser for decimator sampler
 
@@ -77,11 +84,8 @@ class SamplerDecimator(Sampler):
         decimation = max(decimation, 1)
         self.decimation = decimation
 
-
     @beartype.beartype
-    def sample(
-        self, spatial_data: geopandas.GeoDataFrame
-    ) -> pandas.DataFrame:
+    def sample(self, spatial_data: geopandas.GeoDataFrame) -> pandas.DataFrame:
         """
         Execute sample method takes full point data, samples the data and returns the decimated points
 
@@ -103,9 +107,7 @@ class SamplerDecimator(Sampler):
         else:
             data["Z"] = None
         if self.geology_data is not None:
-            data["layerID"] = geopandas.sjoin(
-                data, self.geology_data, how='left'
-            )['index_right']
+            data["layerID"] = geopandas.sjoin(data, self.geology_data, how='left')['index_right']
         else:
             data["layerID"] = None
         data.reset_index(drop=True, inplace=True)
@@ -122,7 +124,12 @@ class SamplerSpacing(Sampler):
     """
 
     @beartype.beartype
-    def __init__(self, spacing: float = 50.0, dtm_data: Optional[gdal.Dataset] = None, geology_data: Optional[geopandas.GeoDataFrame] = None):
+    def __init__(
+        self,
+        spacing: float = 50.0,
+        dtm_data: Optional[gdal.Dataset] = None,
+        geology_data: Optional[geopandas.GeoDataFrame] = None,
+    ):
         """
         Initialiser for spacing sampler
 
@@ -138,10 +145,9 @@ class SamplerSpacing(Sampler):
 
     def __call__(self, **kwargs):
         return self.sample(**kwargs)
+
     @beartype.beartype
-    def sample(
-        self, spatial_data: geopandas.GeoDataFrame
-    ) -> pandas.DataFrame:
+    def sample(self, spatial_data: geopandas.GeoDataFrame) -> pandas.DataFrame:
         """
         Execute sample method takes full point data, samples the data and returns the sampled points
 
@@ -185,7 +191,7 @@ class SamplerSpacing(Sampler):
                                 continue
                             # which poly is the hole in? assign featureId of the same poly
                             t2_polygon = shapely.geometry.Polygon(target2)
-                            if target.within(t2_polygon):  #
+                            if target.within(t2_polygon):
                                 df2['featureId'] = str(j)
 
                 df2["ID"] = row["ID"] if "ID" in spatial_data.columns else 0

@@ -1,10 +1,11 @@
-import pandas
-from map2loop.sampler import SamplerSpacing
-from beartype.roar import BeartypeCallHintParamViolation
-import pytest
-import shapely
 import geopandas
 import numpy
+import pandas
+import pytest
+import shapely
+from beartype.roar import BeartypeCallHintParamViolation
+
+from map2loop.sampler import SamplerSpacing
 
 # add test for SamplerSpacing specifically
 
@@ -21,7 +22,10 @@ def correct_geodata():
             shapely.geometry.LineString([(0, 0), (1, 1), (2, 2)]),
             shapely.geometry.Polygon([(0, 0), (1, 1), (1, 0), (0, 0)]),
             shapely.geometry.MultiLineString(
-                [shapely.geometry.LineString([(0, 0), (1, 1)]), shapely.geometry.LineString([(2, 2), (3, 3)])]
+                [
+                    shapely.geometry.LineString([(0, 0), (1, 1)]),
+                    shapely.geometry.LineString([(2, 2), (3, 3)]),
+                ]
             ),
         ],
         'ID': ['1', '2', '3'],
@@ -54,7 +58,10 @@ def test_sample_function_incorrect_data(sampler_spacing, incorrect_geodata):
 def test_sample_function_target_less_than_or_equal_to_2():
     sampler_spacing = SamplerSpacing(spacing=1.0)
     data = {
-        'geometry': [shapely.geometry.LineString([(0, 0), (0, 1)]), shapely.geometry.LineString([(0, 0), (1, 0)])],
+        'geometry': [
+            shapely.geometry.LineString([(0, 0), (0, 1)]),
+            shapely.geometry.LineString([(0, 0), (1, 0)]),
+        ],
         'ID': ['1', '2'],
     }
     gdf = geopandas.GeoDataFrame(data, geometry='geometry')

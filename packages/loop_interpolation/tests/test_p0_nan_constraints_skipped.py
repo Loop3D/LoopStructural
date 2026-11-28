@@ -1,4 +1,4 @@
-"""Regression test for NaN constraints being skipped (P0 fix)."""
+"""Regression tests: NaN constraint rows are dropped, the rest of the family is kept."""
 
 from unittest.mock import Mock, patch
 
@@ -6,8 +6,8 @@ import numpy as np
 from loop_interpolation._discrete_interpolator import DiscreteInterpolator
 
 
-def test_add_constraints_to_least_squares_skips_nan_constraints():
-    """Test that constraints with NaN values are actually skipped, not added to the system."""
+def test_add_constraints_to_least_squares_drops_nan_rows():
+    """Test that rows with NaN values are dropped and the other rows are added."""
     # Create a mock DiscreteInterpolator (can't instantiate abstract class directly)
     interpolator = Mock(spec=DiscreteInterpolator)
     interpolator.constraints = {}
@@ -33,8 +33,8 @@ def test_add_constraints_to_least_squares_skips_nan_constraints():
     with patch("loop_interpolation._discrete_interpolator.logger") as mock_logger:
         add_method(A, B, idc, w=1.0, name="test_nan_constraint")
 
-        # Constraint should NOT be added to self.constraints due to NaN
-        assert "test_nan_constraint" not in interpolator.constraints
+        # the nan row is dropped, the other three are added
+        assert interpolator.constraints["test_nan_constraint"]["matrix"].shape[0] == 3
         assert mock_logger.warning.called  # Should log the warning
 
         # Test case 2: valid constraint (no NaN)
@@ -52,7 +52,7 @@ def test_add_constraints_to_least_squares_skips_nan_constraints():
         assert not mock_logger.warning.called  # No warning for valid data
 
 
-def test_add_constraints_to_least_squares_skips_nan_in_matrix():
+def test_add_constraints_to_least_squares_drops_nan_row_in_matrix():
     """Test that constraints with NaN in matrix A are skipped."""
     interpolator = Mock(spec=DiscreteInterpolator)
     interpolator.constraints = {}
@@ -70,12 +70,12 @@ def test_add_constraints_to_least_squares_skips_nan_in_matrix():
     with patch("loop_interpolation._discrete_interpolator.logger") as mock_logger:
         add_method(A_with_nan, B, idc, w=1.0, name="test_nan_matrix")
 
-        # Constraint should NOT be added
-        assert "test_nan_matrix" not in interpolator.constraints
+        # the nan row is dropped
+        assert interpolator.constraints["test_nan_matrix"]["matrix"].shape[0] == 3
         assert mock_logger.warning.called
 
 
-def test_add_constraints_to_least_squares_skips_nan_in_b():
+def test_add_constraints_to_least_squares_drops_nan_row_in_b():
     """Test that constraints with NaN in vector B are skipped."""
     interpolator = Mock(spec=DiscreteInterpolator)
     interpolator.constraints = {}
@@ -93,6 +93,43 @@ def test_add_constraints_to_least_squares_skips_nan_in_b():
     with patch("loop_interpolation._discrete_interpolator.logger") as mock_logger:
         add_method(A, B_with_nan, idc, w=1.0, name="test_nan_b_vector")
 
-        # Constraint should NOT be added
-        assert "test_nan_b_vector" not in interpolator.constraints
+        # the nan row is dropped
+        assert interpolator.constraints["test_nan_b_vector"]["matrix"].shape[0] == 3
         assert mock_logger.warning.called
+
+
+def test_nan_row_filter_keeps_weights_aligned():
+    interpolator = Mock(spec=DiscreteInterpolator)
+    interpolator.constraints = {}
+    interpolator.dof = 100
+    add_method = DiscreteInterpolator.add_constraints_to_least_squares.__get__(
+        interpolator, type(interpolator)
+    )
+    idc = np.arange(8).reshape(4, 2)
+    A = np.array([[1.0, 0.0], [np.nan, 1.0], [0.0, 2.0], [3.0, 0.0]])
+    add_method(A, np.array([1.0, 2.0, 3.0, 4.0]), idc, w=np.array([1.0, 2.0, 3.0, 4.0]), name="fam")
+    fam = interpolator.constraints["fam"]
+    assert fam["matrix"].shape == (3, 100)
+    np.testing.assert_array_equal(fam["w"], [1.0, 3.0, 4.0])
+    np.testing.assert_allclose(fam["b"], [1.0, 3.0 / 2.0, 4.0 / 3.0])
+
+
+def test_fold_constraints_drop_only_nan_elements():
+    """Fold families go through the same filter: one nan element drops one row."""
+    from tests.golden import engines, geomodels
+
+    case = geomodels.build("fold_sparse")
+    interp = engines.make_interpolator("DFI", case)
+    engines.add_data(interp, case)
+    original = interp.fold.get_deformed_orientation
+
+    def with_nan(points):
+        ori, axis, dgz = (np.array(a, dtype=float) for a in original(points))
+        ori[0, :] = np.nan
+        return ori, axis, dgz
+
+    interp.fold.get_deformed_orientation = with_nan
+    interp.setup_interpolator()
+    n = interp.support.n_elements
+    assert interp.constraints["fold orientation"]["matrix"].shape[0] == n - 1
+    assert interp.constraints["fold axis"]["matrix"].shape[0] == n

@@ -1,9 +1,10 @@
 from pathlib import Path
 
-import pandas
-from map2loop.sampler import SamplerSpacing
-import shapely
 import geopandas
+import pandas
+import shapely
+
+from map2loop.sampler import SamplerSpacing
 
 geology_original = pandas.read_csv(Path(__file__).parent / "geo_test.csv")
 geology_original['geometry'] = geology_original['geometry'].apply(shapely.wkt.loads)

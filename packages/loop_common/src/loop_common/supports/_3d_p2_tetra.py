@@ -25,7 +25,19 @@ class P2UnstructuredTetMesh(UnStructuredTetMesh):
                     "neighbours arrays, or origin/step_vector/nsteps_cells to build a "
                     "quadratic tetrahedral mesh over a bounding box"
                 )
+            origin = np.asarray(origin, dtype=float)
+            step_vector = np.asarray(step_vector, dtype=float)
+            nsteps_cells = np.asarray(nsteps_cells)
             nodes, elements, neighbours = self._build_from_bbox(origin, step_vector, nsteps_cells)
+            # kept so that inside() and the setup diagnostics work on a bbox-built mesh
+            self.origin = origin
+            self.step_vector = step_vector
+            self.nsteps_cells = nsteps_cells
+        elif origin is not None and step_vector is not None and nsteps_cells is not None:
+            # explicit arrays (e.g. from to_dict) keep the grid description
+            self.origin = np.asarray(origin, dtype=float)
+            self.step_vector = np.asarray(step_vector, dtype=float)
+            self.nsteps_cells = np.asarray(nsteps_cells)
         UnStructuredTetMesh.__init__(self, nodes, elements, neighbours, aabb_nsteps)
         self.type = SupportType.P2UnstructuredTetMesh
         if self.elements.shape[1] != 10:
@@ -49,6 +61,20 @@ class P2UnstructuredTetMesh(UnStructuredTetMesh):
                 ],
             ]
         )
+
+    def to_dict(self):
+        """Serialise as explicit arrays, SupportFactory.from_dict reads this back."""
+        d = {
+            "type": self.type.numerator,
+            "nodes": self.nodes,
+            "elements": self.elements,
+            "neighbours": self.neighbours,
+        }
+        if hasattr(self, "origin"):
+            d["origin"] = self.origin
+            d["step_vector"] = self.step_vector
+            d["nsteps_cells"] = self.nsteps_cells
+        return d
 
     @staticmethod
     def _build_from_bbox(origin: np.ndarray, step_vector: np.ndarray, nsteps_cells: np.ndarray):
@@ -184,7 +210,31 @@ class P2UnstructuredTetMesh(UnStructuredTetMesh):
                 ii += 1
         return d2
 
-    def evaluate_shape_derivatives(
+    def evaluate_shape_derivatives(self, locations: np.ndarray, elements=None):
+        """Evaluate P2 shape derivatives in global coordinates.
+
+        Returns
+        -------
+        dN, elements, inside
+            dN has shape (n, 3, n_nodes_per_element). Points outside the mesh
+            have element index -1, ``inside`` False and NaN rows in dN. They do
+            not affect other points in the batch.
+        """
+        locations = np.asarray(locations)
+        if elements is None:
+            _verts, _c, elements, inside = self.get_element_for_location(locations)
+            elements = np.asarray(elements)
+            valid = (elements >= 0) & np.asarray(inside, dtype=bool)
+        else:
+            elements = np.asarray(elements)
+            valid = elements >= 0
+        out_elements = np.where(valid, elements, -1)
+        dN = np.full((locations.shape[0], 3, self.elements.shape[1]), np.nan)
+        if np.any(valid):
+            dN[valid], _ = self._evaluate_shape_derivatives_valid(locations[valid], elements[valid])
+        return dN, out_elements, valid
+
+    def _evaluate_shape_derivatives_valid(
         self, locations: np.ndarray, elements: np.ndarray = None
     ) -> np.ndarray:
         """
@@ -365,10 +415,10 @@ class P2UnstructuredTetMesh(UnStructuredTetMesh):
             raise ValueError("property array must have same length as nodes")
         values = np.zeros(pos.shape)
         values[:] = np.nan
-        element_gradients, tetra = self.evaluate_shape_derivatives(pos[:, :3])
-        inside = tetra >= 0
+        element_gradients, tetra, inside = self.evaluate_shape_derivatives(pos[:, :3])
         values[inside, :] = (
-            element_gradients[:, :, :] * property_array[self.elements[tetra[inside], None, :]]
+            element_gradients[inside, :, :]
+            * property_array[self.elements[tetra[inside], None, :]]
         ).sum(2)
 
         return values

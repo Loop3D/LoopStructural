@@ -10,6 +10,7 @@ from typing import Callable
 
 import numpy as np
 from loop_common.logging import get_logger as getLogger
+from loop_common.math import get_vectors
 from scipy import sparse  # import sparse.coo_matrix, sparse.bmat, sparse.eye
 from scipy.sparse.linalg import LinearOperator
 
@@ -26,8 +27,42 @@ from ._regularisation import (
 logger = getLogger(__name__)
 
 
+# Weight of an equality row (a row with unit norm, as all rows). The default
+# data weights (cpw, gpw) are 1 and the regularisation weights are 0.1 to 1, so
+# 100 makes the equality rows dominate by 1e4 in the squared misfit, but keeps
+# the system well conditioned enough for cg.
+EQUALITY_WEIGHT = 100.0
+
+
+def _drop_nan_rows(A, B, idc, w, name):
+    """Remove constraint rows with a nan in A, B or idc, and log how many were dropped.
+
+    A, B, idc are 2d, 1d, 2d with one row per constraint. ``w`` is filtered
+    too when it is a per-row array.
+    """
+    bad = np.isnan(A).any(axis=1) | np.isnan(B) | np.isnan(idc).any(axis=1)
+    n_bad = int(bad.sum())
+    if n_bad == 0:
+        return A, B, idc, w
+    logger.warning(f"Dropping {n_bad} of {bad.shape[0]} constraint rows containing nan: {name}")
+    keep = ~bad
+    if isinstance(w, np.ndarray) and w.shape[0] == bad.shape[0]:
+        w = w[keep]
+    return A[keep], B[keep], idc[keep], w
+
+
 class DiscreteInterpolator(GeologicalInterpolator):
     """ """
+
+    @property
+    def up_to_date(self):
+        return self._up_to_date
+
+    @up_to_date.setter
+    def up_to_date(self, value):
+        self._up_to_date = value
+        # a solve or a change to the constraints lets update() solve again
+        self._update_failed = False
 
     def __init__(self, support, data=None, c=None, up_to_date=False):
         """
@@ -41,6 +76,7 @@ class DiscreteInterpolator(GeologicalInterpolator):
         """
         GeologicalInterpolator.__init__(self, data=data, up_to_date=up_to_date)
         self.B = []
+        self._setup_kwargs = {}
         self.support = support
         self.dimensions = support.dimension
         self.c = (
@@ -58,13 +94,6 @@ class DiscreteInterpolator(GeologicalInterpolator):
 
         self.solver = "cg"
 
-        self.eq_const_C = []
-        self.eq_const_row = []
-        self.eq_const_col = []
-        self.eq_const_d = []
-
-        self.equal_constraints = {}
-        self.eq_const_c = 0
         self.ineq_constraints = {}
         self.ineq_const_c = 0
 
@@ -301,7 +330,8 @@ class DiscreteInterpolator(GeologicalInterpolator):
         """
         self.constraints = {}
         self.ineq_constraints = {}
-        self.equal_constraints = {}
+        self._native_orthogonal = {}
+        self._native_equality = {}
 
     def reset(self):
         """
@@ -309,6 +339,15 @@ class DiscreteInterpolator(GeologicalInterpolator):
 
         """
         self.constraints = {}
+        # Gradient orthogonal constraints of a native setup, as raw data:
+        # name -> (points, vectors, w). See add_gradient_orthogonal_constraints.
+        self._native_orthogonal = {}
+        # Equality constraints of a native setup, as raw data:
+        # name -> (node points, values, w). See add_equality_constraints.
+        self._native_equality = {}
+        # setup_interpolator sets these two values again when it ends.
+        self._native_setup = False
+        self._setup_constraint_names = None
         self.c_ = 0
         self.regularisation_scale = np.ones(self.dof)
         logger.info("Resetting interpolation constraints")
@@ -346,17 +385,19 @@ class DiscreteInterpolator(GeologicalInterpolator):
         if len(A.shape) > 2:
             n_rows = A.shape[0] * A.shape[1]
             if isinstance(w, np.ndarray):
-                w = np.tile(w, (A.shape[1]))
+                # reshape below puts row (i, j) at i * A.shape[1] + j, so repeat, not tile
+                w = np.repeat(w, A.shape[1])
             A = A.reshape((A.shape[0] * A.shape[1], A.shape[2]))
             idc = idc.reshape((idc.shape[0] * idc.shape[1], idc.shape[2]))
             B = B.reshape(A.shape[0])
             # w = w.reshape((A.shape[0]))
 
-        # Check for nan before any row normalisation, which would otherwise
+        # Drop nan rows before any row normalisation, which would otherwise
         # zero out nan rows in A and mask this check further down.
-        if np.any(np.isnan(idc)) or np.any(np.isnan(A)) or np.any(np.isnan(B)):
-            logger.warning(f"Constraints contain nan not adding constraints: {name}")
+        A, B, idc, w = _drop_nan_rows(A, B, idc, w, name)
+        if A.shape[0] == 0:
             return
+        n_rows = A.shape[0]
 
         # normalise by rows of A
         # Should this be done? It should make the solution more stable
@@ -392,7 +433,9 @@ class DiscreteInterpolator(GeologicalInterpolator):
     def add_gradient_orthogonal_constraints(
         self, points: np.ndarray, vectors: np.ndarray, w: float = 1.0
     ):
-        pass
+        """`points` are target-local support points; `vectors` are target-local
+        unit directions.
+        """
 
     def get_regularisation_sample_points(self) -> np.ndarray:
         raise NotImplementedError(
@@ -423,6 +466,21 @@ class DiscreteInterpolator(GeologicalInterpolator):
         self,
         directional_regularisation,
     ) -> tuple[DirectionalRegularisation, ...]:
+        """Add directional regularisation terms to the interpolator.
+
+        Parameters
+        ----------
+        directional_regularisation
+            Directional regularisation terms. Each term has a weight, a name
+            and a direction. A callable direction receives world sample
+            points and returns world directions. An array gives world
+            directions, one row for each sample point.
+
+        Returns
+        -------
+        tuple[DirectionalRegularisation, ...]
+            The directional terms that were resolved from the input.
+        """
         directional_terms = self.resolve_regularisation_config(
             directional_regularisation=directional_regularisation
         ).directional
@@ -430,13 +488,14 @@ class DiscreteInterpolator(GeologicalInterpolator):
             return directional_terms
 
         sample_points = np.asarray(self.get_regularisation_sample_points(), dtype=float)
+        world_samples = self.local_to_world_points(sample_points)
         expected_shape = sample_points.shape
 
         for term in directional_terms:
             if term.weight == 0:
                 continue
 
-            vectors = term.direction(sample_points) if callable(term.direction) else term.direction
+            vectors = term.direction(world_samples) if callable(term.direction) else term.direction
             vectors = np.asarray(vectors, dtype=float)
             if vectors.shape != expected_shape:
                 logger.warning(
@@ -446,6 +505,7 @@ class DiscreteInterpolator(GeologicalInterpolator):
                     vectors.shape,
                 )
                 continue
+            vectors = self.world_to_local_vectors(vectors)
             self._add_directional_regularisation(term.weight, vectors, name=term.name)
 
         return directional_terms
@@ -603,6 +663,9 @@ class DiscreteInterpolator(GeologicalInterpolator):
         Evaluate the feature at the interpolation nodes.
         Can provide a boolean mask to restrict to only some parts
 
+        `feature` receives world points and returns one value for
+        each support node.
+
         Parameters
         ----------
         feature : BaseFeature
@@ -616,7 +679,7 @@ class DiscreteInterpolator(GeologicalInterpolator):
         # flag lower determines whether the feature is a lower bound or upper bound
         # mask is just a boolean array determining which nodes to apply it to
 
-        value = feature(self.support.nodes)
+        value = feature(self.local_to_world_points(self.support.nodes))
         if mask is None:
             mask = np.ones(value.shape[0], dtype=bool)
         l = np.zeros(value.shape[0]) - np.inf
@@ -637,9 +700,10 @@ class DiscreteInterpolator(GeologicalInterpolator):
 
     def add_equality_constraints(self, node_idx, values, name="undefined"):
         """
-        Adds hard constraints to the least squares system. For now this just
-        sets
-        the node values to be fixed using a lagrangian.
+        Fix the values of some support nodes.
+
+        The constraint is a least-squares row with the weight
+        EQUALITY_WEIGHT for each node, so it is strong but not exact.
 
         Parameters
         ----------
@@ -647,23 +711,60 @@ class DiscreteInterpolator(GeologicalInterpolator):
             int array of node indexes
         values : numpy array/list
             array of node values
-
-        Returns
-        -------
-
+        name : str
+            name of the constraint
         """
         idc = np.asarray(node_idx, dtype=int)
-        values = np.asarray(values)
+        values = np.asarray(values, dtype=float)
         inside = np.logical_and(idc >= 0, idc < self.dof)
+        idc, values = idc[inside], values[inside]
+        if idc.shape[0] == 0:
+            return
+        self.up_to_date = False
+        if getattr(self, "_native_setup", False):
+            # The native core reads raw data, not sparse rows: a value at a node
+            # is the same row (see _native._add_data).
+            self._native_equality[name] = (self.support.nodes[idc], values, EQUALITY_WEIGHT)
+            return
+        self.add_constraints_to_least_squares(
+            np.ones((idc.shape[0], 1)), values, idc[:, None], w=EQUALITY_WEIGHT, name=name
+        )
 
-        self.equal_constraints[name] = {
-            "A": np.ones(idc[inside].shape[0]),
-            "B": values[inside],
-            "col": idc[inside],
-            # "w": w,
-            "row": np.arange(self.eq_const_c, self.eq_const_c + idc[inside].shape[0]),
-        }
-        self.eq_const_c += idc[inside].shape[0]
+    def add_gradient_constraints(self, w=1.0):
+        """Constrain the direction of the gradient (P1 and P2 supports).
+
+        As in the finite difference interpolator, the gradient is made
+        orthogonal to two vectors in the plane of the data (strike and dip).
+        Each row has the weight w times the weight column of the data.
+        """
+        points = self.get_gradient_constraints()
+        if points.shape[0] == 0:
+            return
+        d = self.dimensions
+        grad, elements, inside = self.support.evaluate_shape_derivatives(points[:, :d])
+        if not np.any(inside):
+            return
+        vectors = np.array(points[inside, d : 2 * d], dtype=float)
+        if d == 2:
+            directions = [np.column_stack([-vectors[:, 1], vectors[:, 0]])]
+        else:
+            directions = [v.T for v in get_vectors(vectors)]
+        grad = grad[inside]
+        A = np.vstack([np.einsum("ij,ijk->ik", v, grad) for v in directions])
+        idc = np.tile(self.support.elements[elements[inside]], (len(directions), 1))
+        wt = np.tile(w * points[inside, 2 * d], len(directions))
+        self.add_constraints_to_least_squares(A, np.zeros(A.shape[0]), idc, w=wt, name="gradient")
+        self.up_to_date = False
+
+    def _warn_ignored_data(self, families):
+        """Warn when data is set for a family that this interpolator does not use."""
+        for family in families:
+            n = self.data[family].shape[0]
+            if n > 0:
+                logger.warning(
+                    f"{type(self).__name__} does not use {family} constraints: "
+                    f"{n} {family} points are ignored"
+                )
 
     def add_tangent_constraints(self, w=1.0):
         r"""Adds the constraints :math:`f(X)\cdotT=0`
@@ -679,7 +780,7 @@ class DiscreteInterpolator(GeologicalInterpolator):
         """
         points = self.get_tangent_constraints()
         if points.shape[0] > 0:
-            self.add_gradient_orthogonal_constraints(points[:, :3], points[:, 3:6], w)
+            self.add_gradient_orthogonal_constraints(points[:, :3], points[:, 3:6], w * points[:, 6])
 
     def _assemble_explicit_constraint_matrix(self) -> tuple[sparse.spmatrix, np.ndarray]:
         """Stack every recorded explicit constraint (``self.constraints``,
@@ -706,9 +807,7 @@ class DiscreteInterpolator(GeologicalInterpolator):
 
     def build_matrix(self):
         """
-        Assemble constraints into interpolation matrix. Adds equaltiy
-        constraints
-        using lagrange modifiers if necessary
+        Assemble constraints into interpolation matrix.
 
         Parameters
         ----------
@@ -831,45 +930,6 @@ class DiscreteInterpolator(GeologicalInterpolator):
         scaling_factors[mask] = 1.0 / col_norms[mask]
         S = sparse.diags(scaling_factors)
         return S
-
-    def add_equality_block(self, A, B):
-        if len(self.equal_constraints) > 0:
-            ATA = A.T.dot(A)
-            ATB = A.T.dot(B)
-            logger.info(f"Equality block is {self.eq_const_c} x {self.dof}")
-            # solving constrained least squares using
-            # | ATA CT | |c| = b
-            # | C   0  | |y|   d
-            # where A is the interpoaltion matrix
-            # C is the equality constraint matrix
-            # b is the interpolation constraints to be honoured
-            # in a least squares sense
-            # and d are the equality constraints
-            # c are the node values and y are the
-            # lagrange multipliers#
-            a = []
-            rows = []
-            cols = []
-            b = []
-            for c in self.equal_constraints.values():
-                b.extend((c["B"]).tolist())
-                aa = c["A"].flatten()
-                mask = aa == 0
-                a.extend(aa[~mask].tolist())
-                rows.extend(c["row"].flatten()[~mask].tolist())
-                cols.extend(c["col"].flatten()[~mask].tolist())
-
-            C = sparse.coo_matrix(
-                (np.array(a), (np.array(rows), cols)),
-                shape=(self.eq_const_c, self.dof),
-                dtype=float,
-            ).tocsr()
-
-            d = np.array(b)
-            ATA = sparse.bmat([[ATA, C.T], [C, None]])
-            ATB = np.hstack([ATB, d])
-
-            return ATA, ATB
 
     def build_inequality_matrix(self):
         mats = []
@@ -1017,12 +1077,18 @@ class DiscreteInterpolator(GeologicalInterpolator):
         A: sparse.spmatrix,
         b: np.ndarray,
         timing: dict,
+        add_ridge_regularisation: bool | None = None,
+        ridge_factor: float | None = None,
     ) -> tuple[sparse.spmatrix, np.ndarray, sparse.spmatrix | None]:
+        if add_ridge_regularisation is None:
+            add_ridge_regularisation = self.add_ridge_regulatisation
+        if ridge_factor is None:
+            ridge_factor = self.ridge_factor
         return _solver_pipeline.preprocess_main_system(
             A=A,
             b=b,
-            add_ridge_regularisation=self.add_ridge_regulatisation,
-            ridge_factor=self.ridge_factor,
+            add_ridge_regularisation=add_ridge_regularisation,
+            ridge_factor=ridge_factor,
             apply_scaling_matrix=self.apply_scaling_matrix,
             compute_column_scaling_matrix_fn=self.compute_column_scaling_matrix,
             logger=logger,
@@ -1049,9 +1115,51 @@ class DiscreteInterpolator(GeologicalInterpolator):
         tol: float | None,
         solver_kwargs: dict,
         timing: dict,
+        x0: np.ndarray | None = None,
+        position_stop=None,
     ) -> bool:
-        self.c, ok = _solver_strategy.solve_with_cg(A, b, tol, solver_kwargs, timing, logger)
+        # position_stop is passed only when it is set, so that the call is
+        # unchanged without a position tolerance
+        extra = {} if position_stop is None else {"position_stop": position_stop}
+        self.c, ok = _solver_strategy.solve_with_cg(
+            A, b, tol, solver_kwargs, timing, logger, x0=x0, **extra
+        )
         return ok
+
+    def _position_error_function(self, scaling_matrix=None):
+        """The position error that a change of the solver unknowns means.
+
+        Returns ``position_error(x, dx)`` for
+        ``_solver_strategy.cg_to_position_tolerance``: the largest change of
+        the field at a degree of freedom, divided by the median norm of the
+        gradient of the field at the support nodes. ``x`` and ``dx`` are in
+        the unknowns of the solver (``c = scaling_matrix @ x``). The support
+        works in the local frame, which is the world frame moved and rotated
+        but not scaled, so the result is in the length units of the model.
+
+        The gradient at the nodes costs more than a cg iteration. It is
+        evaluated at the first call and then at every fifth call (every 50
+        iterations); the solver calls this only when the residual has
+        dropped by 1e-6, where the gradient hardly changes any more.
+        """
+        scale = None if scaling_matrix is None else np.asarray(scaling_matrix.diagonal())
+        nodes = self.support.nodes
+        state = {"calls": 0, "gradient": float("nan")}
+
+        def position_error(x: np.ndarray, dx: np.ndarray) -> float:
+            if state["calls"] % 5 == 0:
+                c = x if scale is None else scale * x
+                gradient = np.asarray(self.support.evaluate_gradient(nodes, c))
+                norm = np.linalg.norm(gradient, axis=1)
+                norm = norm[np.isfinite(norm) & (norm > 0)]
+                state["gradient"] = float(np.median(norm)) if norm.size else float("nan")
+            state["calls"] += 1
+            if not state["gradient"] > 0:
+                return float("inf")
+            dc = dx if scale is None else scale * dx
+            return float(np.max(np.abs(dc)) / state["gradient"])
+
+        return position_error
 
     def _use_fused_cg_regularisation(self, solver_choice) -> bool:
         """Whether the fused-kernel matrix-free-regularisation CG fast path
@@ -1081,6 +1189,10 @@ class DiscreteInterpolator(GeologicalInterpolator):
         tol: float | None,
         solver_kwargs: dict,
         timing: dict,
+        add_ridge_regularisation: bool | None = None,
+        ridge_factor: float | None = None,
+        x0: np.ndarray | None = None,
+        position_stop=None,
     ) -> bool:
         """CG fast path for ``regularisation_matrix_free=True``: assemble the
         normal-equations system ``(A_data^T A_data + R_reg^T R_reg) x =
@@ -1119,6 +1231,10 @@ class DiscreteInterpolator(GeologicalInterpolator):
         separate sparse matvecs (``A_data @ x`` then ``A_data.T @ (...)``)
         every iteration.
         """
+        if add_ridge_regularisation is None:
+            add_ridge_regularisation = self.add_ridge_regulatisation
+        if ridge_factor is None:
+            ridge_factor = self.ridge_factor
         assembly_started = perf_counter()
         A_data, b_data = self._assemble_explicit_constraint_matrix()
         A_data = A_data.tocsr()
@@ -1126,8 +1242,8 @@ class DiscreteInterpolator(GeologicalInterpolator):
 
         AtA_data = (A_data.T @ A_data).tocsr()
         rhs = np.asarray(A_data.T @ b_data).reshape(-1)
-        if self.add_ridge_regulatisation:
-            AtA_data = AtA_data + sparse.eye(dof, format="csr") * (self.ridge_factor**2)
+        if add_ridge_regularisation:
+            AtA_data = AtA_data + sparse.eye(dof, format="csr") * (ridge_factor**2)
 
         reg_operator = self._build_fused_cg_regularisation_operator()
         timing["assembly_seconds"] = perf_counter() - assembly_started
@@ -1149,8 +1265,9 @@ class DiscreteInterpolator(GeologicalInterpolator):
         )
         timing["preprocess_seconds"] = perf_counter() - preprocess_started
 
+        extra = {} if position_stop is None else {"position_stop": position_stop}
         self.c, ok = _solver_strategy.solve_with_cg_normal_equations(
-            normal_operator, rhs, tol, solver_kwargs, timing, logger
+            normal_operator, rhs, tol, solver_kwargs, timing, logger, x0=x0, **extra
         )
         return ok
 
@@ -1161,8 +1278,11 @@ class DiscreteInterpolator(GeologicalInterpolator):
         tol: float | None,
         solver_kwargs: dict,
         timing: dict,
+        x0: np.ndarray | None = None,
     ) -> bool:
-        self.c, ok = _solver_strategy.solve_with_lsmr(A, b, tol, solver_kwargs, timing, logger)
+        self.c, ok = _solver_strategy.solve_with_lsmr(
+            A, b, tol, solver_kwargs, timing, logger, x0=x0
+        )
         return ok
 
     def _extract_admm_kwargs(self, solver_kwargs: dict, admm_solve) -> tuple[str, dict]:
@@ -1179,14 +1299,13 @@ class DiscreteInterpolator(GeologicalInterpolator):
         constant_norm_iterations: int,
         constant_norm_weight: float,
         constant_norm_target: float | None,
+        x0: np.ndarray | None = None,
+        ridge_kwargs: dict | None = None,
     ) -> bool:
         logger.info("Solving using admm")
 
-        constant_norm_solver_kwargs = dict(solver_kwargs)
-        if Q is None:
-            logger.warning("No inequality constraints, using lsmr")
-            return self.solve_system("lsmr", solver_kwargs=solver_kwargs)
-
+        # the polish re-solves must use the same ridge options as this solve
+        constant_norm_solver_kwargs = {**solver_kwargs, **(ridge_kwargs or {})}
         try:
             c, history, ok = _solver_strategy.solve_with_admm(
                 A,
@@ -1197,6 +1316,7 @@ class DiscreteInterpolator(GeologicalInterpolator):
                 timing,
                 self.support,
                 logger,
+                x0=x0,
             )
             if not ok:
                 return False
@@ -1223,6 +1343,7 @@ class DiscreteInterpolator(GeologicalInterpolator):
         solver: Callable[[sparse.csr_matrix, np.ndarray], np.ndarray] | str | None = None,
         tol: float | None = None,
         solver_kwargs: dict | None = None,
+        position_tolerance: float | None = None,
     ) -> bool:
         """
         Main entry point to run the solver and update the node value
@@ -1233,8 +1354,66 @@ class DiscreteInterpolator(GeologicalInterpolator):
         ----------
         solver : string/callable
             solver 'cg' conjugate gradient, 'lsmr' or callable function
+        tol : float, optional
+            Absolute tolerance of the residual of the solver (``atol`` of cg,
+            ``btol`` of lsmr). It has no length meaning. Not used by cg when
+            ``position_tolerance`` is given.
+        position_tolerance : float, optional
+            Only for ``solver="cg"``. How far the isosurfaces of the solved
+            field may be from the isosurfaces of the fully converged field,
+            as a length in the units of the model (the support is not
+            rescaled). For example 1.0 for 1 m in a model in metres. None,
+            the default, keeps the stop on the residual (``tol``, ``rtol``).
+
+            The solve stops when the estimated position error is below the
+            tolerance. The position error is the error of the field value
+            divided by the gradient norm of the field. The estimate takes
+            the size of the error from the residual and the smallest Ritz
+            value of the cg steps (``|r| / theta``, a bound of the 2-norm of
+            the error once the Ritz value has converged), its distribution
+            over the degrees of freedom from the change of the field over
+            the last 50 iterations, and the median gradient norm at the
+            support nodes. See
+            ``_solver_strategy.cg_to_position_tolerance``.
+
+            **What is guaranteed:** nothing in the strict sense; it is an
+            estimate. Measured on five models (foliations, fault frames and
+            fold frames; FDI, PLI and DFI; boxes of 1 unit to 10 km), for
+            tolerances of 1e-3 to 1e-5 of the box: the largest position
+            error at a node, with the gradient at that node, was between
+            0.00006 and 0.19 times the tolerance. So the solve is usually
+            more exact than asked, by 5 to 1000 times. On three synthetic
+            systems where cg stagnates it was at most 0.13 times the
+            tolerance, where a stop on the change of the solution alone was
+            up to 1000 times over the tolerance.
+
+            **What it does not cover:** the error of the converged field
+            against the geology (the discretisation and the data); places
+            where the gradient is much lower than the median, where the
+            position of an isosurface is not well defined; an error that is
+            concentrated at a few nodes while the recent change is spread
+            out. The stop is not tested before the residual has dropped by
+            1e-6. With this option the cg stop ignores ``tol`` and the
+            ``rtol`` and ``atol`` of ``solver_kwargs``, and a
+            preconditioner ``M`` is refused. A warning is logged if the
+            solve reaches a relative residual of 1e-13 or ``maxiter``
+            first. The timing of the solve (``get_last_solve_timing``) has
+            ``cg_iterations``, ``cg_stop``, ``position_error_estimate`` and
+            ``position_error_change``.
         solver_kwargs
-            kwargs for solver check scipy documentation for more information
+            kwargs for solver check scipy documentation for more information.
+            These keys are used by the interpolator and not sent to the solver:
+
+            - ``ridge_factor`` (float): ridge factor for this solve. 0
+              disables the ridge term. Default ``self.ridge_factor``.
+            - ``add_ridge_regularisation`` (bool): enable or disable the
+              ridge term for this solve. Default
+              ``self.add_ridge_regulatisation``.
+            - ``warm_start`` (bool): start the solver from the previous
+              solution. Default False.
+            - ``x0`` (array or callable): initial guess, or a callable that
+              takes the support and returns one. Has priority over
+              ``warm_start``. A custom callable solver ignores it.
 
         Returns
         -------
@@ -1242,12 +1421,78 @@ class DiscreteInterpolator(GeologicalInterpolator):
             True if the interpolation is run
 
         """
+        solver_choice = self._normalise_solver_choice(solver)
+        # update() repeats this solve; copy now because the solve pops keys from solver_kwargs
+        last_solve = {"tol": tol, "solver_kwargs": dict(solver_kwargs or {})}
+        requested_solver = solver_choice
+        if position_tolerance is not None:
+            last_solve["position_tolerance"] = position_tolerance
+        if position_tolerance is not None:
+            position_tolerance = float(position_tolerance)
+            if not position_tolerance > 0:
+                raise ValueError("position_tolerance must be a positive length")
+            if solver_choice != "cg":
+                logger.warning(
+                    "position_tolerance is used only by solver='cg'; it is ignored here"
+                )
+                position_tolerance = None
+        # A native setup builds no sparse rows. A matrix solver needs them.
+        # Check this before _pre_solve, so that the old field stays.
+        if getattr(self, "_native_setup", False) and solver_choice != "native":
+            raise ValueError(
+                "The interpolator was set up with solver='native', so it has no "
+                "sparse rows. Run setup again with the new solver, or use "
+                "solver='native'."
+            )
+        # _pre_solve makes a new c array filled with NaN. A native solve that
+        # does not converge must keep the old field, so keep the old array.
+        # This is safe only because _pre_solve does not fill c in place.
+        previous_c = self.c if solver_choice == "native" else None
+        solver_kwargs = dict(solver_kwargs or {})
+        # read the initial guess before _pre_solve clears the previous solution
+        x0 = _solver_pipeline.extract_initial_guess(
+            solver_kwargs, self.c, self.support, self.dof, logger
+        )
+        add_ridge, ridge_factor = _solver_pipeline.extract_ridge_options(
+            solver_kwargs, self.add_ridge_regulatisation, self.ridge_factor, logger
+        )
+        ridge_kwargs = {"add_ridge_regularisation": add_ridge, "ridge_factor": ridge_factor}
         if not self._pre_solve():
             raise ValueError("Pre solve failed")
 
         solve_started = perf_counter()
-        solver_choice = self._normalise_solver_choice(solver)
-        solver_kwargs = dict(solver_kwargs or {})
+        if solver_choice == "native":
+            self.c = previous_c
+            # Clear the history and the timing keys of an earlier matrix solve.
+            self.solver_history = None
+            self.latest_solve_timing = _solver_pipeline.init_timing("native")
+            # Import here. The core is not loaded when the package is imported.
+            from . import _native
+
+            # The ridge and start value keys are already taken out of
+            # solver_kwargs. The core gets them as arguments.
+            _native.check_supported(self, getattr(self, "_setup_kwargs", {}), solver_kwargs)
+            if len(self.constraints) > 0:
+                # The rows come from a matrix setup. The core ignores them.
+                logger.warning(
+                    'solver="native" saves memory only when it is set before setup'
+                )
+            converged = _native.solve(
+                self,
+                tol,
+                solver_kwargs,
+                x0=x0,
+                ridge_factor=ridge_factor if add_ridge else 0.0,
+            )
+            self.up_to_date = bool(converged)
+            # _native.solve sets the timing with a "total" key. Keep it.
+            timing_native = dict(getattr(self, "latest_solve_timing", None) or {})
+            timing_native.setdefault("solver", "native")
+            timing_native.setdefault("total", perf_counter() - solve_started)
+            timing_native["up_to_date"] = self.up_to_date
+            self.latest_solve_timing = timing_native
+            self.solver, self._last_solve_kwargs = requested_solver, last_solve
+            return self.up_to_date
         constant_norm_iterations, constant_norm_weight, constant_norm_target = (
             _solver_pipeline.extract_constant_norm_options(solver_kwargs, logger)
         )
@@ -1266,6 +1511,13 @@ class DiscreteInterpolator(GeologicalInterpolator):
             self._materialise_matrix_free_regularisation_blocks()
 
         Q, bounds = self._assemble_inequality_system(timing)
+        if solver_choice == "admm" and Q.shape[0] == 0:
+            from .loopsolver import admm_solve
+
+            logger.warning("No inequality constraints, using lsmr")
+            solver_choice = timing["solver"] = "lsmr"
+            # lsmr does not take the ADMM keys
+            self._extract_admm_kwargs(solver_kwargs, admm_solve)
         # Legacy compatibility: ignore deprecated backend switch.
         solver_kwargs.pop("backend", None)
 
@@ -1278,19 +1530,38 @@ class DiscreteInterpolator(GeologicalInterpolator):
             # every other solver/case below). See
             # `_solve_with_cg_fused_regularisation` / `FiniteDifferenceInterpolator.
             # _build_fused_cg_regularisation_operator`.
+            position_kwargs = {}
+            if position_tolerance is not None:
+                position_kwargs["position_stop"] = (
+                    position_tolerance,
+                    self._position_error_function(),
+                )
             self.up_to_date = self._solve_with_cg_fused_regularisation(
-                tol, solver_kwargs, timing
+                tol, solver_kwargs, timing, x0=x0, **ridge_kwargs, **position_kwargs
             )
         else:
             A, b = self._assemble_main_system(timing)
-            A, b, scaling_matrix = self._preprocess_main_system(A, b, timing)
+            A, b, scaling_matrix = self._preprocess_main_system(A, b, timing, **ridge_kwargs)
+            if x0 is not None and scaling_matrix is not None:
+                # the solver works on y where c = S @ y
+                x0 = x0 / scaling_matrix.diagonal()
 
             if callable(solver_choice):
                 self.up_to_date = self._solve_with_callable(solver_choice, A, b, timing)
             elif solver_choice == "cg":
-                self.up_to_date = self._solve_with_cg(A, b, tol, solver_kwargs, timing)
+                position_kwargs = {}
+                if position_tolerance is not None:
+                    position_kwargs["position_stop"] = (
+                        position_tolerance,
+                        self._position_error_function(scaling_matrix),
+                    )
+                self.up_to_date = self._solve_with_cg(
+                    A, b, tol, solver_kwargs, timing, x0=x0, **position_kwargs
+                )
             elif solver_choice == "lsmr":
-                self.up_to_date = self._solve_with_lsmr(A, b, tol, solver_kwargs, timing)
+                self.up_to_date = self._solve_with_lsmr(
+                    A, b, tol, solver_kwargs, timing, x0=x0
+                )
             elif solver_choice == "admm":
                 self.up_to_date = self._solve_with_admm(
                     A,
@@ -1302,6 +1573,8 @@ class DiscreteInterpolator(GeologicalInterpolator):
                     constant_norm_iterations,
                     constant_norm_weight,
                     constant_norm_target,
+                    x0=x0,
+                    ridge_kwargs=ridge_kwargs,
                 )
             else:
                 logger.error(f"Unknown solver {solver_choice}")
@@ -1316,6 +1589,8 @@ class DiscreteInterpolator(GeologicalInterpolator):
             solve_started=solve_started,
             up_to_date=bool(self.up_to_date),
         )
+        # set at the end, so a nested solve (ADMM polish or fallback) does not replace it
+        self.solver, self._last_solve_kwargs = requested_solver, last_solve
         return self.up_to_date
 
     def update(self) -> bool:
@@ -1333,9 +1608,18 @@ class DiscreteInterpolator(GeologicalInterpolator):
         if self.solver is None:
             logger.debug("Cannot rerun interpolator")
             return False
-        if not self.up_to_date:
-            self.setup_interpolator()
-            self.up_to_date = self.solve_system(self.solver)
+        if not self.up_to_date and not self._update_failed:
+            self.setup_interpolator(**self._setup_kwargs)
+            self.up_to_date = self.solve_system(
+                self.solver, **getattr(self, "_last_solve_kwargs", {})
+            )
+            if not self.up_to_date:
+                # do not solve again at each evaluation: nothing changed since this solve
+                self._update_failed = True
+                logger.warning(
+                    "The solve did not converge; the field is the last iteration. Change the "
+                    "solver or solver_kwargs, then call solve_system"
+                )
             return self.up_to_date
         return bool(self.up_to_date)
 
@@ -1354,7 +1638,7 @@ class DiscreteInterpolator(GeologicalInterpolator):
         """
         self.update()
         evaluation_points = np.array(locations)
-        evaluated = np.zeros(evaluation_points.shape[0])
+        evaluated = np.full(evaluation_points.shape[0], np.nan)
         mask = np.any(np.isnan(evaluation_points), axis=1)
 
         if evaluation_points[~mask, :].shape[0] > 0:
@@ -1374,9 +1658,12 @@ class DiscreteInterpolator(GeologicalInterpolator):
 
         """
         self.update()
-        if locations.shape[0] > 0:
-            return self.support.evaluate_gradient(locations, self.c)
-        return np.zeros((0, 3))
+        locations = np.asarray(locations)
+        gradient = np.full(locations.shape, np.nan)
+        mask = np.any(np.isnan(locations), axis=1)
+        if np.any(~mask):
+            gradient[~mask] = self.support.evaluate_gradient(locations[~mask], self.c)
+        return gradient
 
     def to_dict(self):
         return {

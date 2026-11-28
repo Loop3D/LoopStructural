@@ -12,6 +12,11 @@ from ._3d_base_structured import BaseStructuredSupport
 
 logger = getLogger(__name__)
 
+# Tolerance of the point-in-tetrahedron test, in barycentric units.
+_BARYCENTRIC_TOLERANCE = 1e-10
+# Points located per block: the lookup holds (n, 5, 4, 3) arrays, about 2.7 KB a point.
+_LOCATION_CHUNK_SIZE = int(1e4)
+
 
 class TetMesh(BaseStructuredSupport):
     """ """
@@ -261,16 +266,6 @@ class TetMesh(BaseStructuredSupport):
         # values[inside,:] /= length[:,None]
         return values
 
-    def inside(self, pos: np.ndarray):
-        inside = np.ones(pos.shape[0]).astype(bool)
-        for i in range(3):
-            inside *= pos[:, i] > self.origin[None, i]
-            inside *= (
-                pos[:, i]
-                < self.origin[None, i] + self.step_vector[None, i] * self.nsteps_cells[None, i]
-            )
-        return inside
-
     def get_element_for_location(self, pos: np.ndarray):
         """
         Determine the tetrahedron from a numpy array of points
@@ -287,7 +282,15 @@ class TetMesh(BaseStructuredSupport):
         """
         pos = np.array(pos)
         pos = pos[:, : self.dimension]
-        inside = self.inside(pos)
+        if pos.shape[0] <= _LOCATION_CHUNK_SIZE:
+            return self._get_element_for_location_block(pos)
+        blocks = [
+            self._get_element_for_location_block(pos[start : start + _LOCATION_CHUNK_SIZE])
+            for start in range(0, pos.shape[0], _LOCATION_CHUNK_SIZE)
+        ]
+        return tuple(np.concatenate(parts) for parts in zip(*blocks))
+
+    def _get_element_for_location_block(self, pos: np.ndarray):
         # initialise array for tetrahedron vertices
         vertices = np.zeros((pos.shape[0], 5, 4, 3))
         vertices[:] = np.nan
@@ -328,7 +331,10 @@ class TetMesh(BaseStructuredSupport):
         c[:, :, 3] = vd / v
 
         # if all coords are +ve then point is inside cell
-        mask = np.all(c >= 0, axis=2)
+        # A point on a face has a barycentric coordinate of exactly 0 in the tetra
+        # that holds it. Rounding can give -1e-17, and the point would be lost
+        # (only the tetra of its own cell are tested). The tolerance keeps it.
+        mask = np.all(c >= -_BARYCENTRIC_TOLERANCE, axis=2)
         i, j = np.where(mask)
         ## find any cases where the point belongs to two cells
         ## just use the second cell

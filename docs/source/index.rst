@@ -52,7 +52,7 @@ evaluate the scalar field and gradient of the interpolator at some random locati
     model = GeologicalModel(bb[0,:],bb[1,:])
     model.data = data
     # nelements specifies the number of discrete interpolation elements
-    # 'stratí' is the feature name in the data dataframe
+    # 'strati' is the feature name in the data dataframe
     model.create_and_add_foliation('strati',nelements=1e5)
     model.update()
     # get the value of the interpolator at some random locations
@@ -84,6 +84,7 @@ constraints.
    :force_static:
 
     from LoopStructural import BoundingBox, InterpolatorBuilder
+    from LoopStructural.geometry import StructuredGrid
     from LoopStructural.utils import EuclideanTransformation
     from LoopStructural.datasets import load_claudius
 
@@ -105,8 +106,13 @@ constraints.
         .build()
     )
     # Set the number of elements in the bounding box to 10000 and create a structured grid
+    # to hold the results
     bounding_box.nelements = 10000
-    mesh = bounding_box.structured_grid()
+    mesh = StructuredGrid(
+        origin=bounding_box.origin,
+        step_vector=bounding_box.step_vector,
+        nsteps=bounding_box.nsteps,
+    )
     # add the interpolated values to the mesh at the nodes
     mesh.properties["v"] = interpolator.evaluate_value(mesh.nodes)
 
@@ -128,12 +134,6 @@ constraints.
    getting_started/index
    _auto_examples/index
    user_guide/index
-
-   
-   .. toctree::
-   :caption: LoopStructural API
-   :hidden:
-
    API
 
 

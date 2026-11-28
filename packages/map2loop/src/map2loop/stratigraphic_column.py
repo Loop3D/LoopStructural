@@ -1,6 +1,6 @@
-import pandas
-import numpy
 import geopandas
+import numpy
+import pandas
 
 
 class StratigraphicColumn:
@@ -106,7 +106,7 @@ class StratigraphicColumn:
                 The unit information to add
         """
         if issubclass(type(unit), pandas.DataFrame) or issubclass(type(unit), dict):
-            if "name" in unit.keys():
+            if "name" in unit:
                 if unit["name"] in self.stratigraphicUnits.index:
                     print("Replacing stratigraphic unit", unit["name"])
                 self.stratigraphicUnits.loc[unit["name"]] = unit
@@ -124,7 +124,7 @@ class StratigraphicColumn:
                 The unit information to add
         """
         if issubclass(type(unit), pandas.DataFrame) or issubclass(type(unit), dict):
-            if "name" in unit.keys():
+            if "name" in unit:
                 if unit["name"] in self.lithologyUnits.index:
                     print("Replacing lithology unit", unit["name"])
                 self.lithologyUnits.loc[unit["name"]] = unit

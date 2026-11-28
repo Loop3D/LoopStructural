@@ -1,5 +1,52 @@
 # Changelog
 
+## [0.3.0](https://github.com/Loop3D/LoopStructural/compare/loop-interpolation-v0.2.0...loop-interpolation-v0.3.0) (2026-11-18)
+
+
+### Features
+
+* add fold frame coordinate validation, P2 support fixes and dev-tools setup ([bb2962b](https://github.com/Loop3D/LoopStructural/commit/bb2962b4d8c02b18d6c0efa78ed9f672a13a2e33))
+* **native:** solve structural frames, use the cg iteration limit, and keep no stale field ([#383](https://github.com/Loop3D/LoopStructural/issues/383)) ([4f8a582](https://github.com/Loop3D/LoopStructural/commit/4f8a5825f662e5197cf2548356736d9db335c7c7))
+
+
+### Bug Fixes
+
+* coordinate and fault-frame correctness, stage S1 (spec 005) ([#392](https://github.com/Loop3D/LoopStructural/issues/392)) ([03a6e58](https://github.com/Loop3D/LoopStructural/commit/03a6e58bdd2f528fc193368df0c3e2617f2d329b))
+* fold frames, stage S2 (spec 005) ([#396](https://github.com/Loop3D/LoopStructural/issues/396)) ([f439905](https://github.com/Loop3D/LoopStructural/commit/f4399054f33a249dd3d3b516aef175076c941235))
+* keep the legacy interpolator load backward compatible until the next major release (spec 005 S3) ([#400](https://github.com/Loop3D/LoopStructural/issues/400)) ([f0aa71f](https://github.com/Loop3D/LoopStructural/commit/f0aa71f51780e53de5193d77ce6235d44441985c))
+* point transformations, fault-frame validation and backend matrix, stage S6 (spec 005) ([#403](https://github.com/Loop3D/LoopStructural/issues/403)) ([6ec0263](https://github.com/Loop3D/LoopStructural/commit/6ec0263876ee9f1ca983eeb206d6d27cb972a4d9))
+* resize paths, non-mutating diagnostics and residual report, stage S5 (spec 005) ([#402](https://github.com/Loop3D/LoopStructural/issues/402)) ([e1c10ef](https://github.com/Loop3D/LoopStructural/commit/e1c10ef68bbc320d21e8a4befd9b648be20b11c0))
+* saved interpolator frames, copies and stale-frame check, stage S3 (spec 005) ([#397](https://github.com/Loop3D/LoopStructural/issues/397)) ([e5ff480](https://github.com/Loop3D/LoopStructural/commit/e5ff4803695987b4af9cfb63e8349d640e9483ac))
+
+
+### Documentation
+
+* make the documentation build complete ([#365](https://github.com/Loop3D/LoopStructural/issues/365)) ([3d7e240](https://github.com/Loop3D/LoopStructural/commit/3d7e240358cc072650177c53fcb6a70bf17f806e))
+
+## [0.2.0](https://github.com/Loop3D/LoopStructural/compare/loop-interpolation-v0.1.0...loop-interpolation-v0.2.0) (2026-10-28)
+
+
+### Features
+
+* **loop-interpolation-core:** add a low-memory native solver for Python and the browser ([#354](https://github.com/Loop3D/LoopStructural/issues/354)) ([e5c7539](https://github.com/Loop3D/LoopStructural/commit/e5c7539c63c64d4cdc18e6b9eb76d44386ad4e92))
+
+## [0.1.0](https://github.com/Loop3D/LoopStructural/compare/loop-interpolation-v0.0.2...loop-interpolation-v0.1.0) (2026-10-20)
+
+
+### Features
+
+* **folds:** validate P2Fold on Bermagui and document gauss4 ([#349](https://github.com/Loop3D/LoopStructural/issues/349)) ([4bf2de1](https://github.com/Loop3D/LoopStructural/commit/4bf2de13bbd261db11d77dd7077654438c83f6ef))
+* **interp:** add P2Fold golden and accuracy regression coverage ([b1ca2cd](https://github.com/Loop3D/LoopStructural/commit/b1ca2cd7165ac1a0c0c7be2073225b73a62e2fd1))
+* **interpolation:** P2 phase 1 - P2FoldInterpolator ([#346](https://github.com/Loop3D/LoopStructural/issues/346)) ([a1cae84](https://github.com/Loop3D/LoopStructural/commit/a1cae847a0f9ef31cdf499a93a89d9e2742654d7))
+* **interp:** register P2Fold interpolator type ([738ea92](https://github.com/Loop3D/LoopStructural/commit/738ea928a8a6fc11b4f4360eb10c17035534e0c4))
+
+
+### Bug Fixes
+
+* **interp:** log dropped P2Fold rows and pin fold behaviour ([5646cbd](https://github.com/Loop3D/LoopStructural/commit/5646cbdc94653175fc3ba6c614556fbfcc983304))
+* **interpolation:** P2 phase 0 prerequisites (bugs 3, 4, 5, 6, 11, F1) ([#345](https://github.com/Loop3D/LoopStructural/issues/345)) ([4194616](https://github.com/Loop3D/LoopStructural/commit/41946168b2f60d48508037743d0fc9f98cf7d979))
+* remove rng from dfi and make dfi runs reproducible ([a04e555](https://github.com/Loop3D/LoopStructural/commit/a04e555081f81a70fb1280329ee21c9bba344dab))
+
 ## [0.0.2](https://github.com/Loop3D/LoopStructural/compare/loop-interpolation-v0.0.1...loop-interpolation-v0.0.2) (2026-08-14)
 
 

@@ -1,6 +1,7 @@
 """
 structural frame builder
 """
+
 from __future__ import annotations
 
 import copy
@@ -18,9 +19,9 @@ logger = getLogger(__name__)
 
 
 from ....modelling.features import StructuralFrame
+from ._base_builder import BaseBuilder
 from ._folded_feature_builder import FoldedFeatureBuilder
 from ._geological_feature_builder import GeologicalFeatureBuilder
-from ._base_builder import BaseBuilder
 
 
 class StructuralFrameBuilder(BaseBuilder):
@@ -144,13 +145,13 @@ class StructuralFrameBuilder(BaseBuilder):
         if hasattr(feature_builder, 'fold'):
             logger.warning("feature builder has a fold - using this to create a folded frame")
             kwargs['fold'] = copy.deepcopy(feature_builder.fold)
-        builder  = cls(
-            interpolatortype=[feature_builder.interpolator.type]*3,
+        builder = cls(
+            interpolatortype=[feature_builder.interpolator.type] * 3,
             bounding_box=feature_builder.model.bounding_box,
-            nelements=[feature_builder.interpolator.n_elements]*3,
+            nelements=[feature_builder.interpolator.n_elements] * 3,
             name=feature_builder.name,
             model=feature_builder.model,
-            **kwargs
+            **kwargs,
         )
         builder.add_data_from_data_frame(feature_builder.data)
         return builder
@@ -158,9 +159,11 @@ class StructuralFrameBuilder(BaseBuilder):
     @property
     def build_arguments(self):
         return self.builders[0].build_arguments
+
     def update_build_arguments(self, kwargs):
         for i in range(3):
             self.builders[i].update_build_arguments(kwargs)
+
     @property
     def frame(self):
         return self._frame
@@ -222,6 +225,8 @@ class StructuralFrameBuilder(BaseBuilder):
 
         """
         step = kwargs.get("step", 10)
+        # where the orthogonality constraints are sampled, see add_orthogonal_feature
+        sample_rule = kwargs.pop("orthogonal_sample_rule", None)
         if "gxxgy" in kwargs:
             logger.warning("gxxgy deprecated please use w1")
             w1 = kwargs["gxxgy"]
@@ -250,16 +255,22 @@ class StructuralFrameBuilder(BaseBuilder):
         if len(self.builders[2].data) > 0:
             logger.info(f"Building {self.name} coordinate 2")
             if w2 > 0:
-                self.builders[2].add_orthogonal_feature(self.builders[0].feature, w2, step=step)
+                self.builders[2].add_orthogonal_feature(
+                    self.builders[0].feature, w2, step=step, sample_rule=sample_rule
+                )
             kwargs["regularisation"] = regularisation[2]
             self.builders[2].update_build_arguments(kwargs)
 
         if len(self.builders[1].data) > 0:
             logger.info(f"Building {self.name} coordinate 1")
             if w1 > 0:
-                self.builders[1].add_orthogonal_feature(self.builders[0].feature, w1, step=step)
+                self.builders[1].add_orthogonal_feature(
+                    self.builders[0].feature, w1, step=step, sample_rule=sample_rule
+                )
             if w3 > 0 and len(self.builders[2].data) > 0:
-                self.builders[1].add_orthogonal_feature(self.builders[2].feature, w3, step=step)
+                self.builders[1].add_orthogonal_feature(
+                    self.builders[2].feature, w3, step=step, sample_rule=sample_rule
+                )
             kwargs["regularisation"] = regularisation[1]
             self.builders[1].update_build_arguments(kwargs)
 

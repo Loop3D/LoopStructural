@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "map2loop"
 description = "Generate 3D model data from 2D maps."
-version = "3.4.0"
+version = "3.5.1"
 requires-python = ">=3.8"
 authors = [{ name = "Loop team" }]
 readme = "README.md"
@@ -56,3 +56,10 @@ include = ["map2loop", "map2loop.*"]
 
 [tool.setuptools.package-data]
 map2loop = ["_datasets/geodata_files/hamersley/*"]
+
+[tool.ruff]
+extend = "../../pyproject.toml"
+target-version = "py38"
+
+[tool.ruff.lint.pyupgrade]
+keep-runtime-typing = true

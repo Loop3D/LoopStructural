@@ -17,6 +17,9 @@ from ._3d_base_structured import BaseStructuredSupport
 
 logger = getLogger(__name__)
 
+# Tolerance of the point-in-tetrahedron test, in barycentric units.
+_BARYCENTRIC_TOLERANCE = 1e-10
+
 
 class P2TetMesh(BaseStructuredSupport):
     """P2 (piecewise quadratic) tetrahedral mesh from a structured cartesian grid.
@@ -260,6 +263,30 @@ class P2TetMesh(BaseStructuredSupport):
         return N, elements, inside
 
     def evaluate_shape_derivatives(self, locations: np.ndarray, elements=None):
+        """Evaluate P2 shape derivatives in global coordinates.
+
+        Returns
+        -------
+        dN, elements, inside
+            dN has shape (n, 3, n_nodes_per_element). Points outside the mesh
+            have element index -1, ``inside`` False and NaN rows in dN. They do
+            not affect other points in the batch.
+        """
+        locations = np.asarray(locations)
+        if elements is None:
+            _verts, _c, elements, inside = self.get_element_for_location(locations)
+            elements = np.asarray(elements)
+            valid = (elements >= 0) & np.asarray(inside, dtype=bool)
+        else:
+            elements = np.asarray(elements)
+            valid = elements >= 0
+        out_elements = np.where(valid, elements, -1)
+        dN = np.full((locations.shape[0], 3, self.elements.shape[1]), np.nan)
+        if np.any(valid):
+            dN[valid], _ = self._evaluate_shape_derivatives_valid(locations[valid], elements[valid])
+        return dN, out_elements, valid
+
+    def _evaluate_shape_derivatives_valid(self, locations: np.ndarray, elements=None):
         """Evaluate quadratic tetrahedral shape derivatives at locations."""
         locations = np.array(locations)
         if elements is None:
@@ -480,8 +507,7 @@ class P2TetMesh(BaseStructuredSupport):
         values = np.zeros(pos.shape)
         values[:] = np.nan
 
-        element_gradients, tetras = self.evaluate_shape_derivatives(pos)
-        _, _, inside = self.evaluate_shape(pos)
+        element_gradients, tetras, inside = self.evaluate_shape_derivatives(pos)
         values[inside, :] = np.einsum(
             "ijk,ik->ij",
             element_gradients[inside, :, :],
@@ -532,7 +558,10 @@ class P2TetMesh(BaseStructuredSupport):
         c[:, :, 2] = vc / v
         c[:, :, 3] = vd / v
         
-        mask = np.all(c >= 0, axis=2)
+        # A point on a face has a barycentric coordinate of exactly 0 in the tetra
+        # that holds it. Rounding can give -1e-17, and the point would be lost
+        # (only the tetra of its own cell are tested). The tolerance keeps it.
+        mask = np.all(c >= -_BARYCENTRIC_TOLERANCE, axis=2)
         i, j = np.where(mask)
         pairs = dict(zip(i, j))
         mask[:] = False
@@ -614,14 +643,3 @@ class P2TetMesh(BaseStructuredSupport):
             + self.nsteps_cells[0] * indices[:, 1] * 5
             + self.nsteps_cells[0] * self.nsteps_cells[1] * indices[:, 2] * 5
         )
-
-    def inside(self, pos: np.ndarray):
-        """Check if points are inside the mesh domain."""
-        inside = np.ones(pos.shape[0]).astype(bool)
-        for i in range(3):
-            inside *= pos[:, i] > self.origin[None, i]
-            inside *= (
-                pos[:, i]
-                < self.origin[None, i] + self.step_vector[None, i] * self.nsteps_cells[None, i]
-            )
-        return inside

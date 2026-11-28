@@ -13,40 +13,53 @@ bottom of ``geological_model.py``).
 
 from __future__ import annotations
 
+from typing import TYPE_CHECKING, Callable
+
 import numpy as np
 import pandas as pd
 
 from LoopStructural import LoopStructuralConfig
 
-from ...modelling.features import FeatureType, UnconformityFeature
+from ...modelling.features import FeatureType, GeologicalFeature, UnconformityFeature
 from ...modelling.features.builders import (
     FaultBuilder,
     FoldedFeatureBuilder,
     GeologicalFeatureBuilder,
     StructuralFrameBuilder,
 )
+from ...modelling.features.fault import FaultSegment
 from ...modelling.features.fold import FoldEvent, FoldFrame
-from ...modelling.intrusions import IntrusionBuilder, IntrusionFrameBuilder
+from ...modelling.intrusions import IntrusionBuilder, IntrusionFeature, IntrusionFrameBuilder
 from ...utils import getLogger
+from ._model_relationships import FeatureRelationshipManager
+
+if TYPE_CHECKING:
+    from numpy.typing import ArrayLike
+
+    from .geological_model import GeologicalModel
 
 logger = getLogger(__name__)
+
+# interpolator types that implement fold constraints
+FOLD_INTERPOLATOR_TYPES = ("DFI", "P2Fold")
 
 
 class ModelFeatureFactory:
     @staticmethod
     def build_foliation(
-        model,
+        model: GeologicalModel,
         series_surface_name: str,
         *,
         index: int | None = None,
         data: pd.DataFrame | None = None,
         interpolatortype: str = "FDI",
         nelements: int = LoopStructuralConfig.nelements,
-        tol=None,
-        faults=None,
-        **kwargs,
-    ):
-        """
+        tol: float | None = None,
+        faults: list[GeologicalFeature | str] | None = None,
+        **kwargs: object,
+    ) -> GeologicalFeature | None:
+        """Build a foliation feature from model data.
+
         Parameters
         ----------
         series_surface_name : string
@@ -69,7 +82,7 @@ class ModelFeatureFactory:
             the created geological feature
 
         Notes
-        ------
+        -----
         This function creates an instance of a
         :class:`LoopStructural.modelling.features.builders.GeologicalFeatureBuilder` and will return
         a :class:`LoopStructural.modelling.features.builders.GeologicalFeature`
@@ -80,7 +93,6 @@ class ModelFeatureFactory:
         An interpolator will be chosen by calling :meth:`LoopStructural.GeologicalModel.get_interpolator`
 
         """
-
         # if tol is not specified use the model default
         if tol is None:
             tol = model.tol
@@ -100,7 +112,9 @@ class ModelFeatureFactory:
         if data.shape[0] == 0:
             logger.warning("No data for {series_surface_data}, skipping")
             return
-        series_builder.add_data_from_data_frame(model.prepare_data(data, include_feature_name=False))
+        series_builder.add_data_from_data_frame(
+            model.prepare_data(data, include_feature_name=False)
+        )
         model._add_faults(series_builder, features=faults)
 
         # build feature
@@ -115,18 +129,19 @@ class ModelFeatureFactory:
 
     @staticmethod
     def build_fold_frame(
-        model,
+        model: GeologicalModel,
         fold_frame_name: str,
         *,
         index: int | None = None,
-        data=None,
-        interpolatortype="FDI",
-        nelements=LoopStructuralConfig.nelements,
-        tol=None,
-        buffer=0.1,
-        **kwargs,
-    ):
-        """
+        data: pd.DataFrame | None = None,
+        interpolatortype: str = "FDI",
+        nelements: int = LoopStructuralConfig.nelements,
+        tol: float | None = None,
+        buffer: float = 0.1,
+        **kwargs: object,
+    ) -> FoldFrame | None:
+        """Build a fold frame from model data.
+
         Parameters
         ----------
         fold_frame_name : string
@@ -153,7 +168,6 @@ class ModelFeatureFactory:
         fold_frame : FoldFrame
             the created fold frame
         """
-
         if tol is None:
             tol = model.tol
 
@@ -192,22 +206,22 @@ class ModelFeatureFactory:
 
     @staticmethod
     def build_folded_foliation(
-        model,
-        foliation_name,
+        model: GeologicalModel,
+        foliation_name: str,
         *,
         index: int | None = None,
-        data=None,
-        interpolatortype="DFI",
-        nelements=LoopStructuralConfig.nelements,
-        buffer=0.1,
-        fold_frame=None,
-        svario=True,
-        tol=None,
-        invert_fold_norm=False,
-        **kwargs,
-    ):
+        data: pd.DataFrame | None = None,
+        interpolatortype: str = "DFI",
+        nelements: int = LoopStructuralConfig.nelements,
+        buffer: float = 0.1,
+        fold_frame: FoldFrame | None = None,
+        svario: bool = True,
+        tol: float | None = None,
+        invert_fold_norm: bool = False,
+        **kwargs: object,
+    ) -> GeologicalFeature | None:
         """
-        Create a folded foliation field from data and a fold frame
+        Create a folded foliation field from data and a fold frame.
 
         Parameters
         ----------
@@ -216,6 +230,13 @@ class ModelFeatureFactory:
         fold_frame :  FoldFrame
         svario  : Boolean
             whether to calculate svariograms, saves time if avoided
+        interpolatortype : str
+            ``"DFI"`` (default, piecewise linear) or ``"P2Fold"`` (piecewise quadratic).
+            Other values are replaced by ``"DFI"`` with a warning.
+        nelements : int
+            requested structured-grid cell budget. Each cell splits into five
+            tetrahedra. For ``"P2Fold"``, a request of 1e4 gave about 56k tets
+            and 86k unknowns in the Bermagui validation; inspect the actual counts
         kwargs
             additional kwargs to be passed through to other functions
 
@@ -226,14 +247,13 @@ class ModelFeatureFactory:
 
         Notes
         -----
-
+        - The P2 mesh is larger than the model box because of ``buffer``.
         - Building a folded foliation uses the fold interpolation code from Laurent et al., 2016
         and fold profile fitting from Grose et al., 2017. For more information about the fold modelling
         see :class:`LoopStructural.modelling.features.fold.FoldEvent`,
         :class:`LoopStructural.modelling.features.builders.FoldedFeatureBuilder`
 
         """
-
         if tol is None:
             tol = model.tol
 
@@ -245,8 +265,11 @@ class ModelFeatureFactory:
 
         fold = FoldEvent(fold_frame, name=f"Fold_{foliation_name}", invert_norm=invert_fold_norm)
 
-        if interpolatortype != "DFI":
-            logger.warning("Folded foliation only supports DFI interpolator, changing to DFI")
+        if interpolatortype not in FOLD_INTERPOLATOR_TYPES:
+            logger.warning(
+                f"Folded foliation only supports {FOLD_INTERPOLATOR_TYPES} interpolators, "
+                f"changing {interpolatortype} to DFI"
+            )
             interpolatortype = "DFI"
         series_builder = FoldedFeatureBuilder(
             interpolatortype=interpolatortype,
@@ -263,7 +286,9 @@ class ModelFeatureFactory:
         if data.shape[0] == 0:
             logger.warning(f"No data for {foliation_name}, skipping")
             return
-        series_builder.add_data_from_data_frame(model.prepare_data(data, include_feature_name=False))
+        series_builder.add_data_from_data_frame(
+            model.prepare_data(data, include_feature_name=False)
+        )
 
         model._add_faults(series_builder)
         # build feature
@@ -280,18 +305,18 @@ class ModelFeatureFactory:
 
     @staticmethod
     def build_folded_fold_frame(
-        model,
+        model: GeologicalModel,
         fold_frame_name: str,
         *,
         index: int | None = None,
         data: pd.DataFrame | None = None,
-        interpolatortype="FDI",
-        nelements=LoopStructuralConfig.nelements,
-        fold_frame=None,
-        tol=None,
-        **kwargs,
-    ):
-        """
+        interpolatortype: str = "FDI",
+        nelements: int = LoopStructuralConfig.nelements,
+        fold_frame: FoldFrame | None = None,
+        tol: float | None = None,
+        **kwargs: object,
+    ) -> FoldFrame:
+        """Build a folded fold frame from model data.
 
         Parameters
         ----------
@@ -300,7 +325,10 @@ class ModelFeatureFactory:
         fold_frame_data : pandas data frame, optional
             data frame containing the fold frame data, if not specified uses the model data
         interpolatortype : str
-            the type of interpolator to use, default is 'FDI' (unused) 5/6/2025
+            ``"DFI"`` or ``"P2Fold"`` sets the interpolator of the first (fold) coordinate.
+            Any other value gives ``"DFI"``. The other two coordinates always use FDI.
+            ``nelements`` is a structured-grid cell budget, not a literal
+            tetrahedron count. P2 adds edge nodes; inspect the actual dof.
         fold_frame : StructuralFrame, optional
             the fold frame for the fold if not specified uses last feature added
         nelements : int
@@ -331,7 +359,6 @@ class ModelFeatureFactory:
         see :class:`LoopStructural.modelling.features.fold.FoldEvent`,
         :class:`LoopStructural.modelling.features.builders.FoldedFeatureBuilder`
         """
-
         if tol is None:
             tol = model.tol
 
@@ -342,8 +369,9 @@ class ModelFeatureFactory:
             raise TypeError("Please specify a FoldFrame")
         fold = FoldEvent(fold_frame, name=f"Fold_{fold_frame_name}")
 
+        # the first coordinate carries the fold constraints, the others are plain FDI
         interpolatortypes = [
-            "DFI",
+            interpolatortype if interpolatortype in FOLD_INTERPOLATOR_TYPES else "DFI",
             "FDI",
             "FDI",
         ]
@@ -380,14 +408,15 @@ class ModelFeatureFactory:
 
     @staticmethod
     def validate_intrusion_inputs(
-        intrusion_name,
-        intrusion_frame_name,
-        intrusion_data,
-        intrusion_frame_data,
-        intrusion_frame_parameters,
-    ):
-        """Fail fast, at the `create_and_add_intrusion` boundary, with a clear
-        message naming the missing piece -- instead of a bare `KeyError`
+        intrusion_name: str,
+        intrusion_frame_name: str,
+        intrusion_data: pd.DataFrame,
+        intrusion_frame_data: pd.DataFrame,
+        intrusion_frame_parameters: dict[str, object],
+    ) -> None:
+        """Fail fast at the intrusion creation boundary with a clear error.
+
+        This names the missing piece instead of raising a bare `KeyError`
         several calls deep inside `IntrusionFrameBuilder`/`IntrusionBuilder`
         once building has already started. See ``INTRUSIONS.md`` finding 4.
         """
@@ -424,17 +453,17 @@ class ModelFeatureFactory:
 
     @staticmethod
     def build_intrusion(
-        model,
-        intrusion_name,
-        intrusion_frame_name,
+        model: GeologicalModel,
+        intrusion_name: str,
+        intrusion_frame_name: str,
         *,
-        intrusion_frame_parameters=None,
-        intrusion_lateral_extent_model=None,
-        intrusion_vertical_extent_model=None,
-        geometric_scaling_parameters=None,
-        **kwargs,
-    ):
-        """
+        intrusion_frame_parameters: dict[str, object] | None = None,
+        intrusion_lateral_extent_model: Callable[..., object] | None = None,
+        intrusion_vertical_extent_model: Callable[..., object] | None = None,
+        geometric_scaling_parameters: dict[str, object] | None = None,
+        **kwargs: object,
+    ) -> IntrusionFeature:
+        """Build an intrusion feature from model data.
 
         Note
         -----
@@ -552,15 +581,16 @@ class ModelFeatureFactory:
 
     @staticmethod
     def build_domain_fault(
-        model,
-        fault_surface_data,
+        model: GeologicalModel,
+        fault_surface_data: pd.DataFrame | str,
         *,
-        nelements=LoopStructuralConfig.nelements,
-        interpolatortype="FDI",
+        nelements: int = LoopStructuralConfig.nelements,
+        interpolatortype: str = "FDI",
         index: int | None = None,
-        **kwargs,
-    ):
-        """
+        **kwargs: object,
+    ) -> UnconformityFeature:
+        """Build a domain fault from model data.
+
         Parameters
         ----------
         fault_surface_data : string
@@ -608,32 +638,33 @@ class ModelFeatureFactory:
 
     @staticmethod
     def build_fault(
-        model,
+        model: GeologicalModel,
         fault_name: str,
         displacement: float,
         *,
         index: int | None = None,
         data: pd.DataFrame | None = None,
-        interpolatortype="FDI",
-        tol=None,
-        fault_slip_vector=None,
-        fault_normal_vector=None,
-        fault_center=None,
-        major_axis=None,
-        minor_axis=None,
-        intermediate_axis=None,
-        faultfunction="BaseFault",
-        faults=None,
+        interpolatortype: str = "FDI",
+        tol: float | None = None,
+        fault_slip_vector: ArrayLike | None = None,
+        fault_normal_vector: ArrayLike | None = None,
+        fault_center: ArrayLike | None = None,
+        major_axis: float | None = None,
+        minor_axis: float | None = None,
+        intermediate_axis: float | None = None,
+        faultfunction: str = "BaseFault",
+        faults: list[GeologicalFeature | str] | None = None,
         force_mesh_geometry: bool = False,
         points: bool = False,
-        fault_buffer=0.2,
-        fault_trace_anisotropy=0.0,
-        fault_dip=90,
-        fault_dip_anisotropy=0.0,
-        fault_pitch=None,
-        **kwargs,
-    ):
-        """
+        fault_buffer: float = 0.2,
+        fault_trace_anisotropy: float = 0.0,
+        fault_dip: float = 90,
+        fault_dip_anisotropy: float = 0.0,
+        fault_pitch: float | None = None,
+        **kwargs: object,
+    ) -> FaultSegment:
+        """Build a fault from model data.
+
         Parameters
         ----------
         fault_name : string
@@ -718,8 +749,6 @@ class ModelFeatureFactory:
         model._add_faults(fault_frame_builder, features=faults)
         # add data
 
-        if fault_center is not None and ~np.isnan(fault_center).any():
-            fault_center = model.scale(fault_center, inplace=False)
         # Keep the supplied fault-axis values unchanged; the previous self-assignment
         # was only present to satisfy a linter and did not affect behavior.
         fault_frame_builder.create_data_from_geometry(
@@ -738,8 +767,6 @@ class ModelFeatureFactory:
             fault_dip_anisotropy=fault_dip_anisotropy,
             fault_pitch=fault_pitch,
         )
-        if "force_mesh_geometry" not in kwargs:
-            fault_frame_builder.set_mesh_geometry(kwargs.get("fault_buffer", 0.2), 0)
         if "splay" in kwargs and "splayregion" in kwargs:
             fault_frame_builder.add_splay(kwargs["splay"], kwargs["splayregion"])
 
@@ -749,10 +776,7 @@ class ModelFeatureFactory:
         fault.displacement = displacement_scaled
         fault.faultfunction = faultfunction
 
-        for f in reversed(model.features):
-            if f.type == FeatureType.UNCONFORMITY:
-                fault.add_region(f)
-                break
+        FeatureRelationshipManager.add_unconformities_above_fault(model, fault, index=index)
         if displacement == 0:
             fault.type = FeatureType.INACTIVEFAULT
         model._add_feature(fault, index=index)

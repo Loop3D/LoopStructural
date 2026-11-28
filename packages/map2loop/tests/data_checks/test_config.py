@@ -1,4 +1,5 @@
 import pytest
+
 from map2loop.data_checks import validate_config_dictionary
 
 
@@ -14,7 +15,7 @@ def valid_config():
             "overturned_column": "no_col",
             "overturned_text": "blah",
             "objectid_column": "geographic",
-            "desciption_column": "sub_type"
+            "desciption_column": "sub_type",
         },
         "geology": {
             "unitname_column": "formatted_",
@@ -30,7 +31,7 @@ def valid_config():
             "intrusive_text": "intrusion",
             "volcanic_text": "volc",
             "objectid_column": "ID",
-            "ignore_lithology_codes": ["cover"]
+            "ignore_lithology_codes": ["cover"],
         },
         "fault": {
             "structtype_column": "featuretyp",
@@ -44,8 +45,8 @@ def valid_config():
             "dipestimate_text": "no_col",
             "name_column": "no_col",
             "objectid_column": "geographic",
-            "minimum_fault_length": 100.0, 
-            "ignore_fault_codes": []
+            "minimum_fault_length": 100.0,
+            "ignore_fault_codes": [],
         },
         "fold": {
             "structtype_column": "featuretyp",
@@ -53,8 +54,8 @@ def valid_config():
             "description_column": "no_col",
             "synform_text": "syn",
             "foldname_column": "NAME",
-            "objectid_column": "geographic"
-        }
+            "objectid_column": "geographic",
+        },
     }
 
 
@@ -74,10 +75,10 @@ def test_missing_required_section(valid_config):
 
 
 def test_missing_required_key(valid_config):
-    
+
     config_missing_dip = dict(valid_config)
-    
-    del config_missing_dip["structure"]["dip_column"] # remove required key
+
+    del config_missing_dip["structure"]["dip_column"]  # remove required key
 
     with pytest.raises(ValueError) as exc_info:
         validate_config_dictionary(config_missing_dip)
@@ -95,13 +96,15 @@ def test_unrecognized_section(valid_config):
 
 
 def test_unrecognized_key_in_section(valid_config):
-    
+
     config_extra_key = dict(valid_config)
     config_extra_key["structure"]["random_key"] = "random_value"
 
     with pytest.raises(ValueError) as exc_info:
         validate_config_dictionary(config_extra_key)
-    assert "Key 'random_key' is not an allowed key in the 'structure' section." in str(exc_info.value)
+    assert "Key 'random_key' is not an allowed key in the 'structure' section." in str(
+        exc_info.value
+    )
 
 
 def test_legacy_key_detected(valid_config):
@@ -132,4 +135,3 @@ def test_minimum_fault_length_missing(valid_config):
 
     # Should not raise any error, as it's optional
     validate_config_dictionary(config_no_mfl)
-

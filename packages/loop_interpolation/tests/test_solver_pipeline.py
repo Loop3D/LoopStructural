@@ -54,6 +54,45 @@ def test_preprocess_main_system_adds_ridge_and_scaling():
     assert "preprocess_seconds" in timing
 
 
+def test_extract_ridge_options_defaults_and_overrides():
+    logger = logging.getLogger("test_solver_pipeline")
+
+    kwargs = {}
+    assert pipeline.extract_ridge_options(kwargs, True, 1e-8, logger) == (True, 1e-8)
+
+    kwargs = {"ridge_factor": 0.5}
+    assert pipeline.extract_ridge_options(kwargs, False, 1e-8, logger) == (True, 0.5)
+    assert kwargs == {}
+
+    kwargs = {"ridge_factor": 0.0}
+    assert pipeline.extract_ridge_options(kwargs, True, 1e-8, logger)[0] is False
+
+    kwargs = {"add_ridge_regularisation": False}
+    assert pipeline.extract_ridge_options(kwargs, True, 1e-8, logger)[0] is False
+
+
+def test_extract_initial_guess_priority_and_validation():
+    logger = logging.getLogger("test_solver_pipeline")
+    previous = np.array([1.0, 2.0])
+
+    assert pipeline.extract_initial_guess({}, previous, None, 2, logger) is None
+
+    x0 = pipeline.extract_initial_guess({"warm_start": True}, previous, None, 2, logger)
+    assert np.allclose(x0, previous)
+    # the guess is a copy, so _pre_solve cannot change it
+    previous[0] = np.nan
+    assert np.isfinite(x0[0])
+
+    kwargs = {"warm_start": True, "x0": lambda _support: np.array([3.0, 4.0])}
+    x0 = pipeline.extract_initial_guess(kwargs, previous, None, 2, logger)
+    assert np.allclose(x0, [3.0, 4.0])
+    assert kwargs == {}
+
+    nan_previous = np.array([np.nan, 1.0])
+    assert pipeline.extract_initial_guess({"warm_start": True}, nan_previous, None, 2, logger) is None
+    assert pipeline.extract_initial_guess({"x0": np.zeros(3)}, previous, None, 2, logger) is None
+
+
 def test_assemble_inequality_system_records_timing():
     def fake_build_ineq():
         return sparse.csr_matrix((3, 2), dtype=float), np.zeros((3, 3), dtype=float)

@@ -1,0 +1,13 @@
+{
+  "name": "loop-interpolation-core-tests-web",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Browser tests (Chromium) for the loop_interpolation_core WebAssembly package.",
+  "scripts": {
+    "test": "playwright test"
+  },
+  "devDependencies": {
+    "@playwright/test": "1.62.1",
+    "typescript": "5.9.3"
+  }
+}

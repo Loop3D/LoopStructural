@@ -1,0 +1,89 @@
+"""A point on a tetrahedron face must be found despite rounding.
+
+On a face the barycentric coordinate across the face is exactly 0. Rounding can
+give a value a few 1e-17 below 0, and the point was lost: its value was NaN. This
+happened on some platforms, for points on a lattice plane of the support.
+"""
+
+import numpy as np
+import pytest
+from loop_common.supports import P2TetMesh, TetMesh
+
+FACES = ((0, 1, 2), (0, 1, 3), (0, 2, 3), (1, 2, 3))
+
+
+def _meshes():
+    origin = np.array([0.1, 0.2, 0.3])
+    step = np.array([0.7, 0.9, 1.1])
+    nsteps = np.array([6, 6, 6])
+    return {
+        "TetMesh": TetMesh(origin=origin, nsteps_cells=nsteps, step_vector=step),
+        "P2TetMesh": P2TetMesh(origin=origin, nsteps=nsteps + 1, step_vector=step),
+    }, origin, step * nsteps
+
+
+def _interior_face_centres(mesh, origin, extent):
+    centres = []
+    for element in mesh.elements[:, :4]:
+        for face in FACES:
+            centres.append(mesh.nodes[element[list(face)]].mean(axis=0))
+    centres = np.unique(np.round(np.array(centres), 9), axis=0)
+    keep = np.all((centres > origin + 1e-3) & (centres < origin + extent - 1e-3), axis=1)
+    return centres[keep]
+
+
+@pytest.mark.parametrize("name", ["TetMesh", "P2TetMesh"])
+def test_points_on_interior_faces_are_found_with_rounding_noise(name):
+    meshes, origin, extent = _meshes()
+    mesh = meshes[name]
+    centres = _interior_face_centres(mesh, origin, extent)
+    assert len(centres) > 100
+    rng = np.random.default_rng(1)
+    scale = np.abs(centres).max()
+    for _ in range(5):
+        # The noise is about 1 ulp of the coordinates: far below the tolerance.
+        noisy = centres + rng.uniform(-1e-16, 1e-16, size=centres.shape) * scale
+        inside = mesh.get_element_for_location(noisy)[3]
+        assert inside.all(), f"{(~inside).sum()} of {len(inside)} face points lost"
+
+
+def test_points_outside_the_mesh_stay_outside():
+    meshes, origin, extent = _meshes()
+    mesh = meshes["TetMesh"]
+    outside = np.array(
+        [
+            origin + extent * [0.5, 0.5, 0.5] + [-1.0, 0.0, 0.0] * extent,
+            origin + extent * [0.5, 0.5, 0.5] + [0.0, 1.0, 0.0] * extent,
+            origin + extent * [0.5, 0.5, 0.5] + [0.0, 0.0, 1.0] * extent,
+        ]
+    )
+    inside = mesh.get_element_for_location(outside)[3]
+    assert not inside.any()
+
+
+@pytest.mark.parametrize("name", ["TetMesh", "P2TetMesh"])
+def test_points_on_the_mesh_boundary_are_inside(name):
+    origin, step = np.zeros(3), np.ones(3)
+    mesh = {
+        "TetMesh": TetMesh(origin=origin, nsteps_cells=[4, 4, 4], step_vector=step),
+        "P2TetMesh": P2TetMesh(origin=origin, nsteps=[4, 4, 4], step_vector=step),
+    }[name]
+    # origin corner, max corner, a point on the max face and on the min face
+    points = np.array([[0, 0, 0], [4, 4, 4], [4, 1.5, 1.5], [0, 1.5, 1.5]], dtype=float)
+    values = mesh.evaluate_value(points, mesh.nodes.sum(axis=1))
+    np.testing.assert_allclose(values, points.sum(axis=1), atol=1e-12)
+
+
+def test_tetmesh_location_lookup_in_chunks_gives_the_same_result(monkeypatch):
+    from loop_common.supports import _3d_structured_tetra
+
+    meshes, origin, extent = _meshes()
+    mesh = meshes["TetMesh"]
+    rng = np.random.default_rng(2)
+    # some points outside, so the inside mask is mixed
+    points = origin + rng.uniform(-0.1, 1.1, size=(101, 3)) * extent
+    expected = mesh.get_element_for_location(points)
+    monkeypatch.setattr(_3d_structured_tetra, "_LOCATION_CHUNK_SIZE", 7)
+    chunked = mesh.get_element_for_location(points)
+    for a, b in zip(expected, chunked):
+        np.testing.assert_array_equal(a, b)

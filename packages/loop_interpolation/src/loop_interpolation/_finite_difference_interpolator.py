@@ -142,20 +142,24 @@ class FiniteDifferenceInterpolator(DiscreteInterpolator):
         Default masks are the second derivative in x,y,z direction and the second
         derivative of x wrt y and y wrt z and z wrt x. Custom masks can be used
         by specifying the operator as a 3d numpy array
-        e.g. [ [ [ 0 0 0 ]
-                 [ 0 1 0 ]
-                 [ 0 0 0 ] ]
-                 [ [ 1 1 1 ]
-                 [ 1 1 1 ]
-                 [ 1 1 1 ] ]
-                 [ [ 0 0 0 ]
-                 [ 0 1 0 ]
-                 [ 0 0 0 ] ]
+        e.g.::
+
+            [ [ [ 0 0 0 ]
+                [ 0 1 0 ]
+                [ 0 0 0 ] ]
+              [ [ 1 1 1 ]
+                [ 1 1 1 ]
+                [ 1 1 1 ] ]
+              [ [ 0 0 0 ]
+                [ 0 1 0 ]
+                [ 0 0 0 ] ] ]
 
         Returns
         -------
 
         """
+        # kept so that update() can rebuild the system with the same options
+        self._setup_kwargs = dict(kwargs)
         self.reset()
         regularisation_config = self.resolve_regularisation_config(
             regularisation=kwargs.get("regularisation", None),
@@ -177,6 +181,28 @@ class FiniteDifferenceInterpolator(DiscreteInterpolator):
         self.use_regularisation_weight_scale = kwargs.get("use_regularisation_weight_scale", False)
         self.regularisation_weight_sigma = kwargs.get("regularisation_weight_sigma", None)
         self.matrix_free_regularisation_blocks = {}
+        self.interface_pair_mode = kwargs.get("interface_pair_mode", self.interface_pair_mode)
+        self.interface_pair_threshold = int(
+            kwargs.get("interface_pair_threshold", self.interface_pair_threshold)
+        )
+        self.interface_pair_fallback = kwargs.get(
+            "interface_pair_fallback", self.interface_pair_fallback
+        )
+        if self.solver == "native":
+            # The native solver reads the raw data (get_*_constraints) and the
+            # stored weights. It does not use sparse rows, so we do not build
+            # them. This saves Python memory (plan D7.2).
+            # The weights and kwargs are stored above. This branch is safe to
+            # run again from update(): reset() already cleared the rows.
+            self.matrix_free_regularisation_blocks = {}
+            self.regularisation_matrix_free = False
+            # add_inequality_pairs_constraints and add_value_inequality_constraints
+            # only build sparse inequality rows. They store no raw data. The
+            # core reads the raw inequality data itself, so we skip them here.
+            self._native_setup = True
+            self._setup_constraint_names = frozenset(self.constraints)
+            # The report uses the raw data, not the rows, so it is still valid.
+            return self.finalize_setup_diagnostics_report()
         self.regularisation_matrix_free = bool(kwargs.get("regularisation_matrix_free", False))
         if self.regularisation_matrix_free and self.apply_scaling_matrix:
             logger.warning(
@@ -199,13 +225,6 @@ class FiniteDifferenceInterpolator(DiscreteInterpolator):
                 "consume a LinearOperator and will fall back to explicit regularisation assembly "
                 "(with a warning) for that solve."
             )
-        self.interface_pair_mode = kwargs.get("interface_pair_mode", self.interface_pair_mode)
-        self.interface_pair_threshold = int(
-            kwargs.get("interface_pair_threshold", self.interface_pair_threshold)
-        )
-        self.interface_pair_fallback = kwargs.get(
-            "interface_pair_fallback", self.interface_pair_fallback
-        )
         self.add_norm_constraints(self.interpolation_weights["npw"])
         self.add_gradient_constraints(self.interpolation_weights["gpw"])
         self.add_value_constraints(self.interpolation_weights["cpw"])
@@ -221,17 +240,20 @@ class FiniteDifferenceInterpolator(DiscreteInterpolator):
             self.assemble_inner(o[0], o[1], name=k)
         self.add_directional_regularisation(regularisation_config.directional)
         self.assemble_borders()
+        # The rows up to here come from setup. Any other row is an extra row.
+        self._setup_constraint_names = frozenset(self.constraints)
         return self.finalize_setup_diagnostics_report()
 
     def copy(self):
         """
-        Create a new identical interpolator
+        Create an empty copy on the same support, with the same coordinate frame.
 
         Returns
         -------
-        returns a new empy interpolator from the same support
+        FiniteDifferenceInterpolator
+            A new empty interpolator that shares the support and the bounding box.
         """
-        return FiniteDifferenceInterpolator(self.support)
+        return self._inherit_frame(FiniteDifferenceInterpolator(self.support))
 
     def add_value_constraints(self, w=1.0):
         """
@@ -386,9 +408,10 @@ class FiniteDifferenceInterpolator(DiscreteInterpolator):
             )
             A = np.einsum("ij,ijk->ik", strike_vector.T, T)
             B = np.zeros(points[inside, :].shape[0])
-            self.add_constraints_to_least_squares(A, B, idc[inside, :], w=w, name="gradient")
+            wt = w * points[inside, 2 * self.support.dimension]
+            self.add_constraints_to_least_squares(A, B, idc[inside, :], w=wt, name="gradient")
             A = np.einsum("ij,ijk->ik", dip_vector.T, T)
-            self.add_constraints_to_least_squares(A, B, idc[inside, :], w=w, name="gradient")
+            self.add_constraints_to_least_squares(A, B, idc[inside, :], w=wt, name="gradient")
             # self.regularisation_scale += compute_weighting(
             #     self.support.nodes,
             #     points[inside, : self.support.dimension],
@@ -433,15 +456,16 @@ class FiniteDifferenceInterpolator(DiscreteInterpolator):
                 points[inside, : self.support.dimension]
             )
 
-            sigma = self.regularisation_weight_sigma
-            if sigma is None:
-                sigma = self.support.nsteps[0] * 10
+            if self.use_regularisation_weight_scale:
+                sigma = self.regularisation_weight_sigma
+                if sigma is None:
+                    sigma = self.support.nsteps[0] * 10
 
-            self.regularisation_scale += compute_weighting(
-                self.support.nodes,
-                points[inside, : self.support.dimension],
-                sigma=sigma,
-            )
+                self.regularisation_scale += compute_weighting(
+                    self.support.nodes,
+                    points[inside, : self.support.dimension],
+                    sigma=sigma,
+                )
             # Apply optional per-constraint weights from the points array.
             # For normal constraints, row format is xyz|nx ny nz|w.
             point_weights = np.ones(np.sum(inside), dtype=float)
@@ -499,6 +523,19 @@ class FiniteDifferenceInterpolator(DiscreteInterpolator):
         -------
 
         """
+        if getattr(self, "_native_setup", False) and np.all(np.asarray(b) == 0):
+            # The native core reads raw data, not sparse rows. With b = 0 this
+            # constraint is a tangent constraint (gradient . vector = 0), so keep
+            # the points and the vectors for the core (see _native._add_data).
+            # A structural frame adds these for the orthogonal coordinates.
+            if points.shape[0] > 0:
+                self._native_orthogonal[name] = (
+                    np.array(points[:, :3], dtype=float),
+                    np.array(vectors[:, :3], dtype=float),
+                    w,
+                )
+                self.up_to_date = False
+            return
         if points.shape[0] > 0:
             # calculate unit vector for orientation data
             node_idx, inside = self.support.position_to_cell_corners(
@@ -529,7 +566,8 @@ class FiniteDifferenceInterpolator(DiscreteInterpolator):
             # dot product of vector and element gradient = 0
             A = np.einsum("ij,ijk->ik", vectors[inside, : self.support.dimension], T)
             b_ = np.zeros(np.sum(inside)) + b
-            self.add_constraints_to_least_squares(A, b_, idc[inside, :], w=w, name=name)
+            wt = np.broadcast_to(np.asarray(w, dtype=float), (points.shape[0],))[inside]
+            self.add_constraints_to_least_squares(A, b_, idc[inside, :], w=wt, name=name)
 
             if np.sum(inside) <= 0:
                 logger.warning(

@@ -1,12 +1,15 @@
-import pytest
 import geopandas as gpd
+import pytest
 import shapely.geometry
-from map2loop.mapdata import MapData
+
 from map2loop.data_checks import check_structure_fields_validity
+from map2loop.mapdata import MapData
+
 
 # Datatype Enum
 class Datatype:
     STRUCTURE = 1
+
 
 # Config
 class MockConfig:

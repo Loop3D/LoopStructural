@@ -4,7 +4,7 @@ build-backend = 'setuptools.build_meta'
 
 [project]
 name = 'LoopStructural'
-version = "1.8.1"
+version = "1.12.0"
 description = '3D geological modelling'
 authors = [{ name = 'Lachlan Grose', email = 'lachlan.grose@monash.edu' }]
 readme = 'README.md'
@@ -33,8 +33,8 @@ classifiers = [
     'Programming Language :: Python :: 3.12',
 ]
 dependencies = [
-    "loop-common>=0.0.1,<0.1.0",
-    "loop-interpolation>=0.0.1,<0.1.0",
+    "loop-common>=0.2.0,<0.3.0",
+    "loop-interpolation>=0.3.0,<0.4.0",
     "numpy>=1.18",
     "pandas",
     "scipy",
@@ -48,8 +48,10 @@ visualisation = ["matplotlib", "pyvista", "loopstructuralvisualisation>=0.1.14"]
 export = ["geoh5py", "pyevtk", "dill"]
 jupyter = ["pyvista[all]"]
 inequalities = ["loopsolver"]
+# the Rust solver: solver='native'
+native = ["loop-interpolation[native]"]
 tests = ['pytest']
-dev = ['ruff']
+dev = ['ruff', 'pytest-benchmark']
 docs = [
     "pyvista[all]",
     "pydata-sphinx-theme",
@@ -66,6 +68,9 @@ docs = [
     "sphinxcontrib-bibtex",
     "myst-parser",
     "sphinx-design",
+    "trame",
+    "trame-vtk",
+    "trame-vuetify",
 ]
 [project.urls]
 Documentation = 'https://Loop3d.org/LoopStructural/'
@@ -86,6 +91,7 @@ LoopStructural = [
 
 [tool.uv.workspace]
 members = ["packages/*"]
+exclude = ["packages/loop_interpolation_core", "packages/loop_link"]
 
 [tool.uv.sources]
 loop-common = { workspace = true }
@@ -93,10 +99,15 @@ loop-interpolation = { workspace = true }
 loopstructuralvisualisation = { workspace = true }
 map2loop = { workspace = true }
 LoopStructural = { workspace = true }
+# The Rust core is not a workspace member (it builds with maturin), but the
+# extra loop-interpolation[native] needs a source so that uv can lock it.
+# uv reads its static metadata. It builds the core only when the extra is used.
+loop-interpolation-core = { path = "packages/loop_interpolation_core" }
 
 [tool.pytest.ini_options]
 addopts = "--import-mode=importlib"
 testpaths = ["tests"]
+pythonpath = ["."]
 
 [tool.isort]
 profile = 'black'
@@ -223,16 +234,12 @@ allow-dict-calls-with-keyword-arguments = true
 "LoopStructural/geometry/_structured_grid.py" = ["D", "ANN"]
 "LoopStructural/interpolators/__init__.py" = ["D", "ANN"]
 "LoopStructural/interpolators/_api.py" = ["D", "ANN"]
-"LoopStructural/interpolators/_builders.py" = ["D", "ANN"]
-"LoopStructural/interpolators/_constant_norm.py" = ["D", "ANN"]
 "LoopStructural/interpolators/_cython/__init__.py" = ["D", "ANN"]
-"LoopStructural/interpolators/_discrete_fold_interpolator.py" = ["D", "ANN"]
 "LoopStructural/interpolators/_discrete_interpolator.py" = ["D", "ANN"]
 "LoopStructural/interpolators/_finite_difference_interpolator.py" = ["D", "ANN"]
 "LoopStructural/interpolators/_geological_interpolator.py" = ["D", "ANN"]
 "LoopStructural/interpolators/_interpolator_builder.py" = ["D", "ANN"]
 "LoopStructural/interpolators/_interpolator_factory.py" = ["D", "ANN"]
-"LoopStructural/interpolators/_interpolatortype.py" = ["D", "ANN"]
 "LoopStructural/interpolators/_operator.py" = ["D", "ANN"]
 "LoopStructural/interpolators/_p1interpolator.py" = ["D", "ANN"]
 "LoopStructural/interpolators/_p2interpolator.py" = ["D", "ANN"]
@@ -255,7 +262,6 @@ allow-dict-calls-with-keyword-arguments = true
 "LoopStructural/modelling/features/_structural_frame.py" = ["D", "ANN"]
 "LoopStructural/modelling/features/_unconformity_feature.py" = ["D", "ANN"]
 "LoopStructural/modelling/features/builders/__init__.py" = ["D", "ANN"]
-"LoopStructural/modelling/features/builders/_analytical_fold_builder.py" = ["D", "ANN"]
 "LoopStructural/modelling/features/builders/_base_builder.py" = ["D", "ANN"]
 "LoopStructural/modelling/features/builders/_fault_builder.py" = ["D", "ANN"]
 "LoopStructural/modelling/features/builders/_folded_feature_builder.py" = ["D", "ANN"]
@@ -294,15 +300,11 @@ allow-dict-calls-with-keyword-arguments = true
 "LoopStructural/utils/_surface.py" = ["D", "ANN"]
 "LoopStructural/utils/_transformation.py" = ["D", "ANN"]
 "LoopStructural/utils/colours.py" = ["D", "ANN"]
-"LoopStructural/utils/config.py" = ["D", "ANN"]
 "LoopStructural/utils/dtm_creator.py" = ["D", "ANN"]
 "LoopStructural/utils/exceptions.py" = ["D", "ANN"]
-"LoopStructural/utils/features.py" = ["D", "ANN"]
 "LoopStructural/utils/helper.py" = ["D", "ANN"]
 "LoopStructural/utils/json_encoder.py" = ["D", "ANN"]
-"LoopStructural/utils/linalg.py" = ["D", "ANN"]
 "LoopStructural/utils/logging.py" = ["D", "ANN"]
-"LoopStructural/utils/maths.py" = ["D", "ANN"]
 "LoopStructural/utils/observer.py" = ["D", "ANN"]
 "LoopStructural/utils/regions.py" = ["D", "ANN"]
 "LoopStructural/utils/typing.py" = ["D", "ANN"]
@@ -314,6 +316,7 @@ allow-dict-calls-with-keyword-arguments = true
 "docs/*" = ["D", "ANN"]
 "setup.py" = ["D", "ANN"]
 "packages/loop_common/tests/*" = ["D", "ANN"]
+"packages/loop_link/tests/*" = ["D", "ANN"]
 "packages/loop_interpolation/tests/*" = ["D", "ANN"]
 "packages/map2loop/tests/*" = ["D", "ANN"]
 "packages/loopstructural_visualisation/tests/*" = ["D", "ANN"]

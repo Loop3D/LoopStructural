@@ -183,7 +183,7 @@ class TestP2TetMeshShapeFunctions:
         mesh = P2TetMesh(nsteps=np.array([3, 3, 3]))
 
         centroid = np.array([[1.0, 1.0, 1.0]])
-        dN, _elem_ids = mesh.evaluate_shape_derivatives(centroid)
+        dN, _elem_ids, _inside = mesh.evaluate_shape_derivatives(centroid)
 
         # dN should have shape (n_points, 3, 10)
         assert dN.shape == (1, 3, 10)

@@ -601,13 +601,20 @@ class StratigraphicColumn(Observable['StratigraphicColumn']):
         if event is not None and not event.startswith('unit/'):
             return
         cumulative_thickness = 0
+        basal = True
         for element in self.order:
             if isinstance(element, StratigraphicUnit):
-                element.min_value = cumulative_thickness
-                element.max_value = cumulative_thickness + (element.thickness or 0)
-                cumulative_thickness = element.max_value
+                if basal and element.thickness == np.inf:
+                    # an infinite basal unit (e.g. basement) lies below the 0 isovalue
+                    element.min_value, element.max_value = -np.inf, 0
+                else:
+                    element.min_value = cumulative_thickness
+                    element.max_value = cumulative_thickness + (element.thickness or 0)
+                    cumulative_thickness = element.max_value
+                basal = False
             elif isinstance(element, StratigraphicUnconformity):
                 cumulative_thickness = 0
+                basal = True
 
     def update_element(self, unit_data: dict):
         """
@@ -690,13 +697,11 @@ class StratigraphicColumn(Observable['StratigraphicColumn']):
         if where not in ('top', 'bottom'):
             raise ValueError("Invalid 'where' argument. Use 'top' or 'bottom'.")
         surface_values = {}
+        self.update_unit_values()  # from_dict adds units without computing their values
         for g in reversed(self.get_groups()):
-            v = 0
             for u in reversed(g.units):
-                base = v
-                v += u.thickness
                 surface_values[u.name] = {
-                    'value': v if where == 'top' else base,
+                    'value': u.max() if where == 'top' else u.min(),
                     'group': g.name,
                     'colour': u.colour,
                 }
@@ -817,7 +822,8 @@ class StratigraphicColumn(Observable['StratigraphicColumn']):
                     data.append((u.id, u.colour))
                     colours.append(u.colour)
                     boundaries.append(u.id)
-            # print(u,v)
+            # order by unit id: evaluate_model gives unit.id and viewers map it to colour in order
+            colours = [c for _, c in sorted(data, key=lambda d: d[0])]
             cmap = colors.ListedColormap(colours)
         except ImportError:
             logger.warning("Cannot use predefined colours as I can't import matplotlib")

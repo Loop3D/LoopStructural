@@ -16,6 +16,10 @@ from ._3d_structured_grid import StructuredGrid
 
 logger = getLogger(__name__)
 
+_RESIZE_MESSAGE = (
+    "A rectilinear grid has fixed node arrays and cannot be resized. Build a new RectilinearGrid."
+)
+
 
 class RectilinearGrid(StructuredGrid):
     """A rectilinear (non-uniformly spaced) 3-D structured grid.
@@ -77,6 +81,91 @@ class RectilinearGrid(StructuredGrid):
     @property
     def znodes(self) -> np.ndarray:
         return self._znodes
+
+    # ------------------------------------------------------------------
+    # Resize guards: the node arrays are fixed, so the setters refuse
+    # ------------------------------------------------------------------
+
+    @property
+    def origin(self) -> np.ndarray:
+        """Return the origin of the grid.
+
+        Returns
+        -------
+        np.ndarray
+            The origin, shape (3,).
+        """
+        return self._origin
+
+    @origin.setter
+    def origin(self, origin: np.ndarray) -> None:
+        """Refuse to move the origin.
+
+        Parameters
+        ----------
+        origin : np.ndarray
+            The requested origin. It is not used.
+
+        Raises
+        ------
+        NotImplementedError
+            Always. The node arrays are fixed. No state changes.
+        """
+        raise NotImplementedError(_RESIZE_MESSAGE)
+
+    @property
+    def nsteps(self) -> np.ndarray:
+        """Return the number of nodes per axis.
+
+        Returns
+        -------
+        np.ndarray
+            The node counts, shape (3,).
+        """
+        return self._nsteps
+
+    @nsteps.setter
+    def nsteps(self, nsteps: np.ndarray) -> None:
+        """Refuse to change the node counts.
+
+        Parameters
+        ----------
+        nsteps : np.ndarray
+            The requested node counts. It is not used.
+
+        Raises
+        ------
+        NotImplementedError
+            Always. The node arrays are fixed. No state changes.
+        """
+        raise NotImplementedError(_RESIZE_MESSAGE)
+
+    @property
+    def step_vector(self) -> np.ndarray:
+        """Return the step vector of the grid.
+
+        Returns
+        -------
+        np.ndarray
+            The step vector, shape (3,).
+        """
+        return self._step_vector
+
+    @step_vector.setter
+    def step_vector(self, step_vector: np.ndarray) -> None:
+        """Refuse to change the step vector.
+
+        Parameters
+        ----------
+        step_vector : np.ndarray
+            The requested step vector. It is not used.
+
+        Raises
+        ------
+        NotImplementedError
+            Always. The node arrays are fixed. No state changes.
+        """
+        raise NotImplementedError(_RESIZE_MESSAGE)
 
     def onGeometryChange(self):
         if self.interpolator is not None:

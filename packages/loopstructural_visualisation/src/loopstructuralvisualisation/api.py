@@ -15,9 +15,7 @@ def plot_block_model(model, filename=None, **kwargs):
 
     p = Loop3DView(model)
     p.plot_block_model(**kwargs)
-    if filename is not None:
-        p.screenshot(filename)
-    p.show()
+    p.show(screenshot=filename)
 
 
 def plot_surface(model, geological_feature, **kwargs):

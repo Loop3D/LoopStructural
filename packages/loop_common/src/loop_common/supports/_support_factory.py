@@ -55,18 +55,18 @@ class SupportFactory:
         if local_coordinates:
             # Build the mesh in the bounding box's local (interpolation) frame
             # rather than raw world coordinates -- keeps node coordinates
-            # numerically well-conditioned. Project origin/maximum directly
-            # (rather than all corners, which BoundingBox.corners only
-            # supports in 3D) -- exact for translation-only transforms, which
-            # is the only kind in use today (no code sets a non-identity
-            # rotation on a bounding box).
-            local_points = bounding_box.project(np.array([bounding_box.origin, bounding_box.maximum]))
-            origin = np.min(local_points, axis=0)
-            local_maximum = np.max(local_points, axis=0)
-            step_vector = (local_maximum - origin) / bounding_box.nsteps
+            # numerically well-conditioned. The local box encloses every
+            # projected corner, so a rotated frame gives a full support.
+            origin, local_maximum = bounding_box.local_enclosure()
+            # A rotated enclosure is longer than the world box: add cells so each
+            # axis keeps the world cell size (an unrotated box keeps its nsteps).
+            ratio = (local_maximum - origin) / (bounding_box.maximum - bounding_box.origin)
+            nsteps = np.maximum(np.ceil(bounding_box.nsteps * ratio - 1e-9).astype(int), 1)
+            step_vector = (local_maximum - origin) / nsteps
         else:
             origin = bounding_box.origin
             step_vector = bounding_box.step_vector
+            nsteps = bounding_box.nsteps
 
         nsteps_kwarg = (
             "nsteps_cells" if support_type in SupportFactory._CELL_COUNT_SUPPORT_TYPES else "nsteps"
@@ -74,5 +74,5 @@ class SupportFactory:
         return support_map[support_type](
             origin=origin,
             step_vector=step_vector,
-            **{nsteps_kwarg: bounding_box.nsteps},
+            **{nsteps_kwarg: nsteps},
         )

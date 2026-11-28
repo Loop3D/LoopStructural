@@ -1,0 +1,33 @@
+[build-system]
+requires = ["maturin>=1,<2"]
+build-backend = "maturin"
+
+[project]
+name = "loop-interpolation-core"
+version = "0.1.0"
+description = "Native (Rust) core for the low-memory LoopStructural interpolator"
+readme = "README.md"
+requires-python = ">=3.9"
+dependencies = ["numpy"]
+authors = [{ name = "Lachlan Grose", email = "lachlan.grose@monash.edu" }]
+license = { text = "MIT" }
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Science/Research",
+    "Topic :: Scientific/Engineering :: Information Analysis",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: Microsoft :: Windows",
+    "Operating System :: POSIX :: Linux",
+    "Operating System :: MacOS",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Rust",
+]
+
+[project.urls]
+Documentation = "https://Loop3d.org/LoopStructural/"
+"Bug Tracker" = "https://github.com/loop3d/loopstructural/issues"
+"Source Code" = "https://github.com/loop3d/loopstructural"
+
+[tool.maturin]
+features = ["python", "parallel"]
+module-name = "loop_interpolation_core"

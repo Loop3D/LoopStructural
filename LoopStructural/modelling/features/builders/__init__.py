@@ -1,4 +1,3 @@
-from ._analytical_fold_builder import AnalyticalFoldBuilder
 from ._base_builder import BaseBuilder
 from ._fault_builder import FaultBuilder
 from ._folded_feature_builder import FoldedFeatureBuilder

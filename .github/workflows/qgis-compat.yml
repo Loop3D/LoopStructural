@@ -36,7 +36,7 @@ jobs:
       - name: Set up uv and Python
         uses: astral-sh/setup-uv@v5
         with:
-          python-version: "3.9"
+          python-version: "3.12"
           enable-cache: true
 
       - name: Install plugin's non-QGIS test requirements

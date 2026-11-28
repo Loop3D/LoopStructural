@@ -60,6 +60,8 @@ strati = model.create_and_add_foliation(
 
 # "strati" (oldest group) - four units from shallowest to deepest, the
 # last of which extends to infinite thickness
+# the default column ends in an empty 'Basement' group; start from an empty column
+model.stratigraphic_column.clear(basement=False)
 model.stratigraphic_column.add_unit("unit2", thickness=60, id=1)
 model.stratigraphic_column.add_unit("unit3", thickness=190, id=2)
 model.stratigraphic_column.add_unit("unit4", thickness=80, id=3)

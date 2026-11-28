@@ -21,9 +21,10 @@ class FakeP2Support:
 
     def evaluate_shape_derivatives(self, points):
         n = points.shape[0]
-        grad = np.ones((n, self.elements.shape[1], 3))
+        # real P2 supports return (n, 3, nodes per element)
+        grad = np.ones((n, 3, self.elements.shape[1]))
         elements = np.zeros(n, dtype=int)
-        return grad, elements
+        return grad, elements, np.ones(n, dtype=bool)
 
     def evaluate_shape(self, points):
         n = points.shape[0]
@@ -52,7 +53,8 @@ def test_add_gradient_constraints_uses_correct_support_indexing(interpolator):
     interpolator.add_gradient_constraints(w=1.0)
     assert "gradient" in interpolator.constraints
     matrix = interpolator.constraints["gradient"]["matrix"]
-    assert matrix.shape == (1, interpolator.dof)
+    # one row for the strike vector and one for the dip vector
+    assert matrix.shape == (2, interpolator.dof)
 
 
 def test_evaluate_d2_masks_nan_rows(interpolator):

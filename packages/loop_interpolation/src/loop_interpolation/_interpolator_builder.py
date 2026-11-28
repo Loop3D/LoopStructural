@@ -4,13 +4,15 @@ This class intentionally stays thin: it delegates object creation to
 InterpolatorFactory and provides a chainable API for adding constraints,
 configuring setup options, and solving.
 """
+
 from __future__ import annotations
 
 import numpy as np
 from loop_common.geometry import BoundingBox
 
-from ._interpolatortype import InterpolatorType
+from ._geological_interpolator import GeologicalInterpolator
 from ._interpolator_factory import InterpolatorFactory
+from ._interpolatortype import InterpolatorType
 
 
 class InterpolatorBuilder:
@@ -79,6 +81,8 @@ class InterpolatorBuilder:
         self,
         solver: str | None = None,
         tol: float | None = None,
+        ridge_factor: float | None = None,
+        warm_start: bool | None = None,
         **solver_kwargs,
     ) -> InterpolatorBuilder:
         """Solve the configured interpolator system.
@@ -89,6 +93,12 @@ class InterpolatorBuilder:
             Override solver name for this call.
         tol : Optional[float], optional
             Optional solver tolerance.
+        ridge_factor : Optional[float], optional
+            Ridge regularisation factor for this call. 0 disables the ridge
+            term. If None, the interpolator default is used.
+        warm_start : Optional[bool], optional
+            If True, start the solver from the previous solution. Use
+            ``x0`` in ``solver_kwargs`` to give an initial guess directly.
         **solver_kwargs
             Additional arguments passed to ``solve_system``.
 
@@ -101,6 +111,10 @@ class InterpolatorBuilder:
             selected_solver = solver if solver is not None else self.solver
             merged_solver_kwargs = dict(self.solver_kwargs)
             merged_solver_kwargs.update(solver_kwargs)
+            if ridge_factor is not None:
+                merged_solver_kwargs["ridge_factor"] = ridge_factor
+            if warm_start is not None:
+                merged_solver_kwargs["warm_start"] = warm_start
             self.interpolator.solve_system(
                 solver=selected_solver,
                 tol=tol,
@@ -216,9 +230,7 @@ class InterpolatorBuilder:
         """
         return self._set_constraint("set_tangent_constraints", tangent_constraints)
 
-    def add_inequality_constraints(
-        self, inequality_constraints: np.ndarray
-    ) -> InterpolatorBuilder:
+    def add_inequality_constraints(self, inequality_constraints: np.ndarray) -> InterpolatorBuilder:
         return self._set_constraint("set_value_inequality_constraints", inequality_constraints)
 
     def add_inequality_pair_constraints(

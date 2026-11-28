@@ -60,6 +60,8 @@ class P2Interpolator(DiscreteInterpolator):
         -------
 
         """
+        # kept so that update() can rebuild the system with the same options
+        self._setup_kwargs = dict(kwargs)
         self.reset()
         regularisation_config = self.resolve_regularisation_config(
             regularisation=kwargs.get("regularisation", None),
@@ -98,73 +100,68 @@ class P2Interpolator(DiscreteInterpolator):
         self.add_norm_constraints(self.interpolation_weights["npw"])
         self.add_value_constraints(self.interpolation_weights["cpw"])
         self.add_tangent_constraints(self.interpolation_weights["tpw"])
-        # self.add_interface_constraints(self.interpolation_weights["ipw"])
+        self._warn_ignored_data(("interface", "inequality", "inequality_pairs"))
         return self.finalize_setup_diagnostics_report()
 
     def copy(self):
-        return P2Interpolator(self.support)
-
-    def add_gradient_constraints(self, w: float = 1.0):
-        points = self.get_gradient_constraints()
-        if points.shape[0] > 0:
-            grad, elements = self.support.evaluate_shape_derivatives(points[:, : self.dimensions])
-            inside = elements > -1
-            area = self.support.element_size[elements[inside]]
-            wt = np.ones(area.shape[0])
-            wt *= w * area
-            A = np.einsum(
-                "ikj,ij->ik",
-                grad[inside, :],
-                points[inside, self.dimensions : self.dimensions * 2],
-            )
-            B = np.zeros(A.shape[0])
-            elements = self.support.elements[elements[inside]]
-            self.add_constraints_to_least_squares(A * wt[:, None], B, elements, name="gradient")
-
-    def add_gradient_orthogonal_constraints(
-        self, points: np.ndarray, vector: np.ndarray, w=1.0, B=0
-    ):
         """
-        Constraints scalar field to be orthogonal to a given vector
-
-        Parameters
-        ----------
-        position
-        normals
-        w
-        B
+        Create an empty copy on the same support, with the same coordinate frame.
 
         Returns
         -------
+        P2Interpolator
+            A new empty interpolator that shares the support and the bounding box.
+        """
+        return self._inherit_frame(P2Interpolator(self.support))
 
+    def add_gradient_orthogonal_constraints(
+        self,
+        points: np.ndarray,
+        vectors: np.ndarray,
+        w: float = 1.0,
+        b: float = 0,
+        name: str = "gradient orthogonal",
+    ):
+        """
+        Constrains the scalar field gradient to be orthogonal to a given vector
+
+        Parameters
+        ----------
+        points : np.ndarray
+            locations of the constraints
+        vectors : np.ndarray
+            vector to be orthogonal to at each point, same shape as points
+        w : float or np.ndarray
+            weight of the constraint, one value or one per point
+        b : float
+            value of the dot product of the gradient and the vector
+        name : str
+            name of the constraint
         """
         if points.shape[0] > 0:
-            grad, elements = self.support.evaluate_shape_derivatives(points[:, : self.dimensions])
-            inside = elements > -1
-            area = self.support.element_size[elements[inside]]
-            wt = np.ones(area.shape[0])
-            wt *= w * area
-            A = np.einsum("ijk,ij->ik", grad[inside, :], vector[inside, :])
-            B = np.zeros(A.shape[0])
-            elements = self.support.elements[elements[inside]]
-            self.add_constraints_to_least_squares(
-                A * wt[:, None], B, elements, name="gradient orthogonal"
+            grad, elements, inside = self.support.evaluate_shape_derivatives(
+                points[:, : self.dimensions]
             )
+            wt = np.broadcast_to(np.asarray(w, dtype=float), (points.shape[0],))[inside]
+            A = np.einsum("ijk,ij->ik", grad[inside, :], vectors[inside, : self.dimensions])
+            B = np.zeros(A.shape[0]) + b
+            elements = self.support.elements[elements[inside]]
+            self.add_constraints_to_least_squares(A, B, elements, w=wt, name=name)
 
     def add_norm_constraints(self, w: float = 1.0):
         points = self.get_norm_constraints()
         if points.shape[0] > 0:
-            grad, elements = self.support.evaluate_shape_derivatives(points[:, : self.dimensions])
-            inside = elements > -1
-            area = self.support.element_size[elements[inside]]
-            wt = np.ones(area.shape[0])
-            wt *= w * area
+            grad, elements, inside = self.support.evaluate_shape_derivatives(
+                points[:, : self.dimensions]
+            )
+            wt = w * points[inside, self.dimensions * 2]
             elements = np.tile(self.support.elements[elements[inside]], (self.dimensions, 1, 1))
             elements = elements.swapaxes(0, 1)
             self.add_constraints_to_least_squares(
-                grad[inside, :, :] * wt[:, None, None],
-                points[inside, self.dimensions : self.dimensions * 2] * wt[:, None],
+                grad[inside, :, :],
+                points[inside, self.dimensions : self.dimensions * 2],
                 elements,
+                w=wt,
                 name="norm",
             )
 
@@ -172,10 +169,7 @@ class P2Interpolator(DiscreteInterpolator):
         points = self.get_value_constraints()
         if points.shape[0] > 0:
             N, elements, mask = self.support.evaluate_shape(points[:, : self.dimensions])
-            # mask = elements > 0
-            size = self.support.element_size[elements[mask]]
-            wt = np.ones(size.shape[0])
-            wt *= w
+            wt = w * points[mask, self.dimensions + 1]
             self.add_constraints_to_least_squares(
                 N[mask, :],
                 points[mask, self.dimensions],
@@ -201,13 +195,13 @@ class P2Interpolator(DiscreteInterpolator):
         maskall : bool, default False
             whether to apply on all elements or just internal elements (default)
         wtfunc :  callable, optional
-            a function that returns the weight to be applied at xyz. Called on the barycentre
-            of the tetrahedron
+            a function that receives the world barycentres of the weighted elements and
+            returns one weight for each
         """
         elements = np.arange(0, len(self.support.elements))
         mask = np.ones(self.support.neighbours.shape[0], dtype=bool)
         if not maskall:
-            mask[:] = np.all(self.support.neighbours > 3, axis=1)
+            mask[:] = np.all(self.support.neighbours >= 0, axis=1)
 
         d2 = self.support.evaluate_shape_d2(elements[mask])
         # d2 shape is [ele_idx, deriv, node]
@@ -215,7 +209,9 @@ class P2Interpolator(DiscreteInterpolator):
         wt *= w  # * self.support.element_size[mask]
         if callable(wtfunc):
             logger.info("Using function to weight gradient steepness")
-            wt = wtfunc(self.support.barycentre) * self.support.element_size[mask]
+            wt = wtfunc(
+                self.local_to_world_points(self.support.barycentre[elements[mask]])
+            ) * self.support.element_size[elements[mask]]
         idc = self.support.elements[elements[mask]]
         for i in range(d2.shape[1]):
             self.add_constraints_to_least_squares(
@@ -257,10 +253,10 @@ class P2Interpolator(DiscreteInterpolator):
             if callable(vector_func):
                 norm = vector_func(cp[:, i, :])
             # evaluate the shape function for the edges for each neighbouring triangle
-            cp_Dt, cp_tri1 = self.support.evaluate_shape_derivatives(
+            cp_Dt, cp_tri1, _inside1 = self.support.evaluate_shape_derivatives(
                 cp[:, i, :], elements=self.support.shared_element_relationships[:, 0]
             )
-            cp_Dn, cp_tri2 = self.support.evaluate_shape_derivatives(
+            cp_Dn, cp_tri2, _inside2 = self.support.evaluate_shape_derivatives(
                 cp[:, i, :], elements=self.support.shared_element_relationships[:, 1]
             )
             # constraint for each cp is triangle - neighbour create a Nx12 matrix
