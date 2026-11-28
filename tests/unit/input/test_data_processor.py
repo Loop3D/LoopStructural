@@ -88,3 +88,26 @@ def test_from_processor_unit_ranges_match_processor_values():
     unit = column.get_unit_by_name("Bunjinah_Formation")
     unit.thickness = unit.thickness
     check()
+
+
+def test_from_processor_populates_stratigraphic_column_with_contacts_only():
+    """Build a stratigraphic column from contacts without orientation data."""
+    from LoopStructural import GeologicalModel
+
+    df = pd.DataFrame(rng.random(size=(10, 3)), columns=["X", "Y", "Z"])
+    df["name"] = [f"unit_{name % 2}" for name in range(10)]
+    stratigraphic_order = [("sg", ["unit_0", "unit_1", "basement"])]
+    thicknesses = {"unit_0": 1.0, "unit_1": 0.5}
+    processor = ProcessInputData(
+        contacts=df,
+        stratigraphic_order=stratigraphic_order,
+        thicknesses=thicknesses,
+        origin=np.zeros(3),
+        maximum=np.ones(3),
+    )
+
+    model = GeologicalModel.from_processor(processor)
+
+    unit_names = [unit.name for unit in model.stratigraphic_column.order if hasattr(unit, "name")]
+    assert "unit_0" in unit_names
+    assert "unit_1" in unit_names
